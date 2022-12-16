@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.controllerInstitution.controller
 
 import io.cloudflight.jems.api.controllerInstitutions.ControllerInstitutionApi
 import io.cloudflight.jems.api.controllerInstitutions.dto.*
+import io.cloudflight.jems.api.project.dto.report.file.UserSimpleDTO
 import io.cloudflight.jems.server.controllerInstitution.service.assignInstitutionToPartner.AssignInstitutionToPartnerInteractor
 import io.cloudflight.jems.server.controllerInstitution.service.createControllerInstitution.CreateControllerInteractor
 import io.cloudflight.jems.server.controllerInstitution.service.getControllerInstitution.GetControllerInteractor
@@ -9,6 +10,7 @@ import io.cloudflight.jems.server.controllerInstitution.service.getInstitutionPa
 import io.cloudflight.jems.server.controllerInstitution.service.getInstitutionUserAccessLevel.GetInstitutionUserAccessLevelInteractor
 import io.cloudflight.jems.server.controllerInstitution.service.updateControllerInstitution.UpdateControllerInteractor
 import io.cloudflight.jems.server.controllerInstitution.service.getInstitutionUsers.GetInstitutionUsersInteractor
+import io.cloudflight.jems.server.project.controller.report.partner.toDto
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.web.bind.annotation.RestController
@@ -49,7 +51,7 @@ class ControllerInstitutionController(
     override fun getControllerUserAccessLevelForPartner(partnerId: Long): UserInstitutionAccessLevelDTO? =
         getInstitutionUserAccessLevel.getControllerUserAccessLevelForPartner(partnerId).toDto()
 
-    override fun getUsersByControllerInstitutionId(partnerId: Long, institutionId: Long): List<ControllerUserDTO> =
+    override fun getUsersByControllerInstitutionId(partnerId: Long, institutionId: Long): List<UserSimpleDTO> =
         getInstitutionUsers.getInstitutionUsers(partnerId, institutionId).map { it.toDto() }
 
 }

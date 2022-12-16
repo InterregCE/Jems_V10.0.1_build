@@ -10,12 +10,12 @@ import io.cloudflight.jems.server.controllerInstitution.service.model.Institutio
 import io.cloudflight.jems.server.controllerInstitution.service.model.UpdateControllerInstitution
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignmentRow
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignment
-import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerUser
 import io.cloudflight.jems.server.nuts.entity.NutsRegion3
 import io.cloudflight.jems.server.nuts.service.groupNuts
 import io.cloudflight.jems.server.nuts.service.toOutputNuts
 import io.cloudflight.jems.server.project.entity.partner.ControllerInstitutionEntity
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import io.cloudflight.jems.server.user.entity.UserEntity
 import org.springframework.data.domain.Page
 import java.time.ZonedDateTime
@@ -82,7 +82,7 @@ fun ControllerInstitutionUserEntity.toModel() = ControllerInstitutionUser(
     accessLevel = accessLevel
 )
 
-fun ControllerInstitutionUserEntity.toModelForReport() = ControllerUser(
+fun ControllerInstitutionUserEntity.toModelForReport() = UserSimple(
     id = id.user.id,
     name = id.user.name,
     surname = id.user.surname,
@@ -128,4 +128,3 @@ fun InstitutionPartnerAssignmentRow.toModel() = InstitutionPartnerAssignment(
     partnerId = partnerId,
     partnerProjectId = partnerProjectId
 )
-

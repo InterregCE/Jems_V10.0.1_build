@@ -2,9 +2,9 @@ package io.cloudflight.jems.server.controllerInstitution.controller
 
 import io.cloudflight.jems.api.common.dto.IdNamePairDTO
 import io.cloudflight.jems.api.controllerInstitutions.dto.ControllerInstitutionListDTO
-import io.cloudflight.jems.api.controllerInstitutions.dto.ControllerUserDTO
 import io.cloudflight.jems.api.controllerInstitutions.dto.InstitutionPartnerDetailsDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
+import io.cloudflight.jems.api.project.dto.report.file.UserSimpleDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.controllerInstitution.service.assignInstitutionToPartner.AssignInstitutionToPartnerInteractor
@@ -14,10 +14,10 @@ import io.cloudflight.jems.server.controllerInstitution.service.getInstitutionPa
 import io.cloudflight.jems.server.controllerInstitution.service.getInstitutionUserAccessLevel.GetInstitutionUserAccessLevelInteractor
 import io.cloudflight.jems.server.controllerInstitution.service.getInstitutionUsers.GetInstitutionUsersInteractor
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionList
-import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerUser
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerDetails
 import io.cloudflight.jems.server.controllerInstitution.service.updateControllerInstitution.UpdateControllerInteractor
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -168,7 +168,7 @@ class ControllerInstitutionControllerTest: UnitTest() {
     @Test
     fun getControlUsersForControlReport() {
         val controlUsers = listOf(
-            ControllerUser(
+            UserSimple(
                 id = 1L,
                 name = "test name",
                 surname = "test surname",
@@ -177,7 +177,7 @@ class ControllerInstitutionControllerTest: UnitTest() {
         )
 
         val expectedControllers = listOf(
-            ControllerUserDTO(
+            UserSimpleDTO(
                 id = 1L,
                 name = "test name",
                 surname = "test surname",

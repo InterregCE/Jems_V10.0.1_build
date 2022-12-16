@@ -10,9 +10,9 @@ import io.cloudflight.jems.server.controllerInstitution.service.model.Institutio
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignment
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignmentWithUsers
 import io.cloudflight.jems.server.controllerInstitution.service.model.UserInstitutionAccessLevel
-import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerUser
 import io.cloudflight.jems.server.nuts.repository.NutsRegion3Repository
 import io.cloudflight.jems.server.project.entity.partner.ControllerInstitutionEntity
+import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -107,7 +107,7 @@ class ControllerInstitutionPersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun getControllerUsersForReportByInstitutionId(institutionId: Long): List<ControllerUser> {
+    override fun getControllerUsersForReportByInstitutionId(institutionId: Long): List<UserSimple> {
         return institutionUserRepository.findAllByControllerInstitutionId(institutionId).map { it.toModelForReport() }
     }
 

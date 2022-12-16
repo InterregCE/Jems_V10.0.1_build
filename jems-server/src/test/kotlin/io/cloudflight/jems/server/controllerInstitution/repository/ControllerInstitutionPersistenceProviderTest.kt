@@ -9,9 +9,9 @@ import io.cloudflight.jems.server.controllerInstitution.service.model.Controller
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignment
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignmentRow
 import io.cloudflight.jems.server.controllerInstitution.service.model.UserInstitutionAccessLevel
-import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerUser
 import io.cloudflight.jems.server.nuts.repository.NutsRegion3Repository
 import io.cloudflight.jems.server.project.entity.partner.ControllerInstitutionEntity
+import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.repository.user.UserRepository
@@ -98,7 +98,7 @@ class ControllerInstitutionPersistenceProviderTest: UnitTest() {
         )
 
         private val expectedUser =
-            ControllerUser(
+            UserSimple(
                 id = 1L,
                 name = "some name",
                 surname = "some surname",

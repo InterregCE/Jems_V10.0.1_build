@@ -2,8 +2,8 @@ package io.cloudflight.jems.server.controllerInstitution.service.getInstitutionU
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
-import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerUser
 import io.cloudflight.jems.server.project.authorization.CanViewPartnerReport
+import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -14,6 +14,6 @@ class GetInstitutionUsers(
     @CanViewPartnerReport
     @ExceptionWrapper(GetInstitutionUsersException::class)
     @Transactional(readOnly = true)
-    override fun getInstitutionUsers(partnerId: Long, institutionId: Long): List<ControllerUser> =
+    override fun getInstitutionUsers(partnerId: Long, institutionId: Long): List<UserSimple> =
         controllerInstitutionPersistence.getControllerUsersForReportByInstitutionId(institutionId)
 }

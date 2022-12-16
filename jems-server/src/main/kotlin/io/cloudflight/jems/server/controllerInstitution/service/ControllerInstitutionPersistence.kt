@@ -8,8 +8,8 @@ import io.cloudflight.jems.server.controllerInstitution.service.model.Institutio
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignment
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignmentWithUsers
 import io.cloudflight.jems.server.controllerInstitution.service.model.UserInstitutionAccessLevel
-import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerUser
 import io.cloudflight.jems.server.project.entity.partner.ControllerInstitutionEntity
+import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import java.util.Optional
@@ -41,7 +41,7 @@ interface ControllerInstitutionPersistence {
 
     fun getInstitutionUsersByInstitutionId(institutionId: Long): List<ControllerInstitutionUser>
 
-    fun getControllerUsersForReportByInstitutionId(institutionId: Long): List<ControllerUser>
+    fun getControllerUsersForReportByInstitutionId(institutionId: Long): List<UserSimple>
 
     fun getControllerInstitutionUsersByInstitutionIds(institutionIds: Set<Long>): List<ControllerInstitutionUser>
 

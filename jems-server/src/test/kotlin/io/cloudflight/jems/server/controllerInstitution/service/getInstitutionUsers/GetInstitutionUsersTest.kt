@@ -2,12 +2,12 @@ package io.cloudflight.jems.server.controllerInstitution.service.getInstitutionU
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
-import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerUser
+import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 class GetInstitutionUsersTest: UnitTest() {
@@ -19,11 +19,10 @@ class GetInstitutionUsersTest: UnitTest() {
 
     @Test
     fun getInstitutionUsers() {
-        val users = mockk<List<ControllerUser>>()
+        val user = mockk<UserSimple>()
         every { controllerInstitutionPersistence.getControllerUsersForReportByInstitutionId(
             institutionId = 1L
-        ) } returns users
-        Assertions.assertThat(getInstitutionUsers.getInstitutionUsers(1L, 1L))
-            .isEqualTo(users)
+        ) } returns listOf(user)
+        assertThat(getInstitutionUsers.getInstitutionUsers(1L, 1L)).containsExactly(user)
     }
 }

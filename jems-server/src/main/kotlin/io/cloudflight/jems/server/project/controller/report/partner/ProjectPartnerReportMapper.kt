@@ -93,7 +93,7 @@ fun JemsFile.toDto() = ProjectReportFileDTO(
     name = name,
     type = ProjectPartnerReportFileTypeDTO.valueOf(type.name),
     uploaded = uploaded,
-    author = partnerReportMapper.map(author),
+    author = author.toDto(),
     size = size,
     sizeString = size.sizeToString(),
     description = description,
@@ -119,6 +119,7 @@ fun MultipartFile.toProjectFile() = ProjectFile(inputStream, originalFilename ?:
 val partnerReportMapper = Mappers.getMapper(ProjectPartnerReportMapper::class.java)
 
 fun JemsFileMetadata.toDto() = partnerReportMapper.map(this)
+fun UserSimple.toDto() = partnerReportMapper.map(this)
 
 @Mapper
 interface ProjectPartnerReportMapper {
