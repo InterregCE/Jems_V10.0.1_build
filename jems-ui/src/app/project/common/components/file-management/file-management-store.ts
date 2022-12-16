@@ -7,6 +7,7 @@ import {
   ProjectFileService,
   ProjectPartnerSummaryDTO,
   ProjectStatusDTO,
+  ProjectVersionDTO,
   SettingsService,
   UserRoleDTO
 } from '@cat/api';
@@ -33,6 +34,7 @@ import {DownloadService} from '@common/services/download.service';
 import {RoutingService} from '@common/services/routing.service';
 import {v4 as uuid} from 'uuid';
 import {ProjectUtil} from '@project/common/project-util';
+import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
 
@@ -46,11 +48,10 @@ export class FileManagementStore {
   selectedCategory$ = new ReplaySubject<CategoryInfo | undefined>(1);
   selectedCategoryPath$: Observable<I18nMessage[]>;
 
-  projectStatus$: Observable<ProjectStatusDTO>;
   userIsProjectOwnerOrEditCollaborator$: Observable<boolean>;
 
   canUpload$: Observable<boolean>;
-  isModifiable$: Observable<boolean>;
+  currentVersion$: Observable<ProjectVersionDTO | undefined>;
   canChangeAssessmentFile$: Observable<boolean>;
   canChangeApplicationFile$: Observable<boolean>;
   canChangeModificationFile$: Observable<boolean>;
@@ -74,9 +75,10 @@ export class FileManagementStore {
               private permissionService: PermissionService,
               private visibilityStatusService: FormVisibilityStatusService,
               private downloadService: DownloadService,
-              private routingService: RoutingService
+              private routingService: RoutingService,
+              private projectVersionStore: ProjectVersionStore
   ) {
-    this.projectStatus$ = this.projectStore.projectStatus$;
+    this.currentVersion$ = this.projectVersionStore.currentVersion$;
     this.userIsProjectOwnerOrEditCollaborator$ = this.projectStore.userIsProjectOwnerOrEditCollaborator$;
     this.canChangeAssessmentFile$ = this.permissionService.hasPermission(PermissionsEnum.ProjectFileAssessmentUpdate);
     this.canChangeApplicationFile$ = this.permissionService.hasPermission(PermissionsEnum.ProjectFileApplicationUpdate);
@@ -85,7 +87,6 @@ export class FileManagementStore {
     this.canReadAssessmentFile$ = this.permissionService.hasPermission(PermissionsEnum.ProjectFileAssessmentRetrieve);
     this.canReadModificationFile$ = this.permissionService.hasPermission(PermissionsEnum.ProjectModificationFileAssessmentRetrieve);
     this.canUpload$ = this.canUpload();
-    this.isModifiable$ = this.isModifiable();
     this.canReadFiles$ = this.canReadFiles();
     this.selectedCategoryPath$ = this.selectedCategoryPath();
     this.fileList$ = this.fileList();
@@ -139,29 +140,25 @@ export class FileManagementStore {
       this.canChangeApplicationFile$,
       this.canChangeModificationFile$,
       this.userIsProjectOwnerOrEditCollaborator$,
+      this.currentVersion$
     ]).pipe(
-      map(([selectedCategory, canUploadAssessmentFile, canUploadApplicationFile, canUploadModificationFile, userIsProjectOwnerOrEditCollaborator]) => {
+      map(([selectedCategory, canUploadAssessmentFile, canUploadApplicationFile, canUploadModificationFile, userIsProjectOwnerOrEditCollaborator, currentVersion]) => {
         if (selectedCategory?.type === FileCategoryTypeEnum.ASSESSMENT) {
           return canUploadAssessmentFile;
         }
         if (selectedCategory?.type === FileCategoryTypeEnum.MODIFICATION) {
           return canUploadModificationFile;
         }
-        if (selectedCategory?.type === FileCategoryTypeEnum.APPLICATION || selectedCategory?.id) {
+        if ((selectedCategory?.type === FileCategoryTypeEnum.APPLICATION || selectedCategory?.id) && this.isInModifiableStatus(currentVersion ? currentVersion.status : '')) {
           return canUploadApplicationFile || userIsProjectOwnerOrEditCollaborator;
         }
+
         return false;
       })
     );
   }
 
-  private isModifiable(): Observable<boolean> {
-    return this.projectStore.projectStatus$.pipe(
-        map((status: ProjectStatusDTO) => this.isInModifiableStatus(status))
-    );
-  }
-
-  private isInModifiableStatus(status: ProjectStatusDTO): boolean {
+  isInModifiableStatus(status: ProjectStatusDTO | string): boolean {
     return ProjectUtil.isOpenForModifications(status) ||
         ProjectUtil.isInModifiableStatusBeforeApproved(status) ||
         ProjectUtil.isInModifiableStatusAfterApproved(status);
@@ -344,6 +341,7 @@ export class FileManagementStore {
           break;
         }
       }
+
       return [node.name as any, ...potentialPath];
     }
 

@@ -12,7 +12,7 @@ class DeleteProjectFileException(cause: Throwable) : ApplicationException(
     i18nMessage = I18nMessage("$DELETE_PROJECT_FILE_ERROR_KEY_PREFIX.failed"), cause = cause
 )
 
-class DeletingOldFileFromApplicationCategoryIsNotAllowedException : ApplicationUnprocessableException(
+class DeletingFileFromApplicationCategoryIsNotAllowedException : ApplicationUnprocessableException(
     code = "$DELETE_PROJECT_FILE_ERROR_CODE_PREFIX-001",
     i18nMessage = I18nMessage("$DELETE_PROJECT_FILE_ERROR_KEY_PREFIX.from.updated.application.is.not.allowed")
 )

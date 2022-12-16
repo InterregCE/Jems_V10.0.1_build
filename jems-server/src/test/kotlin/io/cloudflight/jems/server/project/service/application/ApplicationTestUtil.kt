@@ -69,6 +69,21 @@ fun projectWithId(id: Long, status: ApplicationStatus = ApplicationStatus.SUBMIT
     duration = 10,
 )
 
+fun projectWithIdAndInModificationStatus(id: Long) = ProjectFull(
+    id = id,
+    customIdentifier = "01",
+    callSettings = callSettings,
+    acronym = "project acronym",
+    applicant = UserSummary(3L, "email", "name", "surname", UserRoleSummary(4L, "role"), UserStatus.ACTIVE),
+    projectStatus = ProjectStatus(
+        id = null,
+        status = ApplicationStatus.IN_MODIFICATION,
+        user = UserSummary(0, "", "", "", UserRoleSummary(name = ""), UserStatus.ACTIVE),
+        updated = ZonedDateTime.now(),
+    ),
+    duration = 10,
+)
+
 fun listOfApplicationStates() =
     listOf(
         Pair(

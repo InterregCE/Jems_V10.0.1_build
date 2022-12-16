@@ -6,17 +6,17 @@ export enum ProjectPaths {
 
 export class ProjectUtil {
 
-  static isDraft(statusOrProject: ProjectDetailDTO | ProjectStatusDTO): boolean {
+  static isDraft(statusOrProject: ProjectDetailDTO | ProjectStatusDTO | string): boolean {
     const status = this.getStatus(statusOrProject);
     return status === ProjectStatusDTO.StatusEnum.DRAFT;
   }
 
-  static isStep1Draft(statusOrProject: ProjectDetailDTO | ProjectStatusDTO): boolean {
+  static isStep1Draft(statusOrProject: ProjectDetailDTO | ProjectStatusDTO | string): boolean {
     const status = this.getStatus(statusOrProject);
     return status === ProjectStatusDTO.StatusEnum.STEP1DRAFT;
   }
 
-  static isReturnedToApplicant(statusOrProject: ProjectDetailDTO | ProjectStatusDTO): boolean {
+  static isReturnedToApplicant(statusOrProject: ProjectDetailDTO | ProjectStatusDTO | string): boolean {
     const status = this.getStatus(statusOrProject);
     return status === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANT
       || status === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANTFORCONDITIONS
@@ -24,16 +24,16 @@ export class ProjectUtil {
       || status === ProjectStatusDTO.StatusEnum.INMODIFICATION;
   }
 
-  static isOpenForModifications(statusOrProject: ProjectDetailDTO | ProjectStatusDTO): boolean {
+  static isOpenForModifications(statusOrProject: ProjectDetailDTO | ProjectStatusDTO | string): boolean {
     return ProjectUtil.isDraft(statusOrProject) || ProjectUtil.isStep1Draft(statusOrProject) || ProjectUtil.isReturnedToApplicant(statusOrProject);
   }
 
-  static isInModifiableStatusAfterApproved(statusOrProject: ProjectDetailDTO | ProjectStatusDTO): boolean {
+  static isInModifiableStatusAfterApproved(statusOrProject: ProjectDetailDTO | ProjectStatusDTO | string): boolean {
     return this.getStatus(statusOrProject) === ProjectStatusDTO.StatusEnum.MODIFICATIONPRECONTRACTING ||
       this.getStatus(statusOrProject) === ProjectStatusDTO.StatusEnum.INMODIFICATION;
   }
 
-  static isInModifiableStatusBeforeApproved(statusOrProject: ProjectDetailDTO | ProjectStatusDTO): boolean {
+  static isInModifiableStatusBeforeApproved(statusOrProject: ProjectDetailDTO | ProjectStatusDTO | string): boolean {
     const status = this.getStatus(statusOrProject);
     return status === ProjectStatusDTO.StatusEnum.STEP1DRAFT
       || status === ProjectStatusDTO.StatusEnum.DRAFT
@@ -60,7 +60,7 @@ export class ProjectUtil {
       || status === ProjectStatusDTO.StatusEnum.MODIFICATIONREJECTED;
   }
 
-  private static getStatus(statusOrProject: ProjectDetailDTO | ProjectStatusDTO | ProjectStatusDTO.StatusEnum) {
+  private static getStatus(statusOrProject: ProjectDetailDTO | ProjectStatusDTO | ProjectStatusDTO.StatusEnum | string) {
     return ((statusOrProject as ProjectDetailDTO)?.projectStatus || statusOrProject)?.status || statusOrProject;
   }
 }
