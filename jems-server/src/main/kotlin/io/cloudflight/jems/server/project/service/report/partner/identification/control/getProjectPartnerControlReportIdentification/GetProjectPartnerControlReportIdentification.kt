@@ -9,9 +9,13 @@ import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ProjectPartnerControlReport
+import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportDesignatedControllerPersistence
+import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportVerificationPersistence
 import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportIdentificationPersistence
 import io.cloudflight.jems.server.project.service.report.partner.identification.control.toModelObject
 import io.cloudflight.jems.server.project.service.report.partner.identification.getProjectPartnerReportIdentification.GetProjectPartnerReportIdentificationService.Companion.emptyIdentification
+import io.cloudflight.jems.server.project.service.report.partner.identification.getProjectPartnerReportIdentification.GetProjectPartnerReportIdentificationService.Companion.emptyVerification
+import io.cloudflight.jems.server.project.service.report.partner.identification.getProjectPartnerReportIdentification.GetProjectPartnerReportIdentificationService.Companion.emptyDesignatedController
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -21,6 +25,8 @@ class GetProjectPartnerControlReportIdentification(
     private val reportIdentificationPersistence: ProjectPartnerReportIdentificationPersistence,
     private val partnerPersistence: PartnerPersistence,
     private val projectPersistence: ProjectPersistence,
+    private val designatedControllerPersistence: ProjectPartnerReportDesignatedControllerPersistence,
+    private val reportVerificationPersistence: ProjectPartnerReportVerificationPersistence,
     private val programmeDataRepository: ProgrammeDataRepository,
     private val getContractingMonitoringService: GetContractingMonitoringService,
 ) : GetProjectPartnerControlReportIdentificationInteractor {
@@ -44,12 +50,21 @@ class GetProjectPartnerControlReportIdentification(
 
         val startAndEndDate = getContractingMonitoringService.getContractMonitoringDates(projectId)
 
+        val designatedController = designatedControllerPersistence
+            .getControlReportDesignatedController(partnerId, reportId)
+
+        val reportVerification = reportVerificationPersistence
+            .getControlReportVerification(partnerId, reportId)
+            .orElse(emptyVerification())
+
         return toModelObject(
             report = report,
             projectTitle = project.title,
             programmeTitle = programmeDataRepository.findById(1L).orElse(null)?.title,
             startAndEndDate = startAndEndDate,
             identification = identification,
+            designatedController = designatedController,
+            reportVerification = reportVerification
         )
     }
 

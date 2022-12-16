@@ -3,16 +3,34 @@ package io.cloudflight.jems.server.project.controller.report.partner.identificat
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
-import io.cloudflight.jems.api.project.dto.report.partner.identification.*
+import io.cloudflight.jems.api.project.dto.report.partner.identification.ProjectPartnerReportSpendingProfileDTO
+import io.cloudflight.jems.api.project.dto.report.partner.identification.UpdateProjectPartnerReportIdentificationDTO
+import io.cloudflight.jems.api.project.dto.report.partner.identification.ProjectPartnerReportIdentificationDTO
+import io.cloudflight.jems.api.project.dto.report.partner.identification.ProjectPartnerReportPeriodDTO
+import io.cloudflight.jems.api.project.dto.report.partner.identification.ProjectPartnerReportIdentificationTargetGroupDTO
 import io.cloudflight.jems.api.project.dto.report.partner.identification.control.ProjectPartnerControlReportDTO
+import io.cloudflight.jems.api.project.dto.report.partner.identification.control.ReportDesignatedControllerDTO
 import io.cloudflight.jems.api.project.dto.report.partner.identification.control.ReportFileFormatDTO
 import io.cloudflight.jems.api.project.dto.report.partner.identification.control.ReportTypeDTO
+import io.cloudflight.jems.api.project.dto.report.partner.identification.control.ReportOnTheSpotVerificationDTO
+import io.cloudflight.jems.api.project.dto.report.partner.identification.control.ReportLocationOnTheSpotVerificationDTO
+import io.cloudflight.jems.api.project.dto.report.partner.identification.control.ReportVerificationDTO
+import io.cloudflight.jems.api.project.dto.report.partner.identification.control.ReportMethodologyDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
-import io.cloudflight.jems.server.project.service.report.model.partner.identification.*
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportIdentification
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportIdentificationTargetGroup
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportSpendingProfile
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.UpdateProjectPartnerReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ProjectPartnerControlReport
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportFileFormat
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportType
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportDesignatedController
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportOnTheSpotVerification
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportLocationOnTheSpotVerification
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportVerification
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportMethodology
 import io.cloudflight.jems.server.project.service.report.partner.identification.control.getProjectPartnerControlReportIdentification.GetProjectPartnerControlReportIdentificationInteractor
 import io.cloudflight.jems.server.project.service.report.partner.identification.control.updateProjectPartnerControlReportIdentification.UpdateProjectPartnerControlReportIdentificationInteractor
 import io.cloudflight.jems.server.project.service.report.partner.identification.getProjectPartnerReportAvailablePeriods.GetProjectPartnerReportAvailablePeriodsInteractor
@@ -21,11 +39,9 @@ import io.cloudflight.jems.server.project.service.report.partner.identification.
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.junit5.MockKExtension
 import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
@@ -120,6 +136,36 @@ class ProjectPartnerReportIdentificationControllerTest : UnitTest() {
             nextReportForecast = BigDecimal.valueOf(8)
         )
 
+        private val designatedController = ReportDesignatedController(
+            controlInstitution = "Test",
+            controlInstitutionId = 1,
+            controllingUserId = 2,
+            jobTitle = "JobTitle",
+            divisionUnit = "divisionUnit",
+            address = "address",
+            countryCode = "RO",
+            country = "Romania (RO)",
+            telephone = "0000123456",
+            controllerReviewerId = 3
+        )
+
+        private val verificationInstances = listOf(
+            ReportOnTheSpotVerification(
+                id = 1,
+                verificationFrom = YESTERDAY,
+                verificationTo = TOMORROW,
+                verificationLocations = setOf(ReportLocationOnTheSpotVerification.PlaceOfPhysicalProjectOutput),
+                verificationFocus = "some Focus"
+            )
+            )
+
+        private val reportVerification = ReportVerification(
+            generalMethodologies = setOf(ReportMethodology.AdministrativeVerification),
+            verificationInstances = verificationInstances,
+            riskBasedVerificationApplied = true,
+            riskBasedVerificationDescription = "some description"
+        )
+
         private val dummyControlIdentification = ProjectPartnerControlReport(
             id = 4L,
             programmeTitle = "programmeTitle",
@@ -138,6 +184,38 @@ class ProjectPartnerReportIdentificationControllerTest : UnitTest() {
                 ReportFileFormat.Electronic,
             ),
             type = ReportType.FinalReport,
+            designatedController = designatedController,
+            reportVerification = reportVerification
+        )
+
+        private val expectedDesignatedController = ReportDesignatedControllerDTO(
+            controlInstitution = "Test",
+            controlInstitutionId = 1,
+            controllingUserId = 2,
+            jobTitle = "JobTitle",
+            divisionUnit = "divisionUnit",
+            address = "address",
+            countryCode = "RO",
+            country = "Romania (RO)",
+            telephone = "0000123456",
+            controllerReviewerId = 3
+        )
+
+        private val expectedVerificationInstances = listOf(
+            ReportOnTheSpotVerificationDTO(
+                id = 1,
+                verificationFrom = YESTERDAY,
+                verificationTo = TOMORROW,
+                verificationLocations = setOf(ReportLocationOnTheSpotVerificationDTO.PlaceOfPhysicalProjectOutput),
+                verificationFocus = "some Focus"
+            )
+        )
+
+        private val expectedReportVerification = ReportVerificationDTO(
+            generalMethodologies = setOf(ReportMethodologyDTO.AdministrativeVerification),
+            verificationInstances = expectedVerificationInstances,
+            riskBasedVerificationApplied = true,
+            riskBasedVerificationDescription = "some description"
         )
 
         private val expectedDummyControlIdentification = ProjectPartnerControlReportDTO(
@@ -158,8 +236,9 @@ class ProjectPartnerReportIdentificationControllerTest : UnitTest() {
                 ReportFileFormatDTO.Electronic,
             ),
             type = ReportTypeDTO.FinalReport,
+            designatedController = expectedDesignatedController,
+            reportVerification = expectedReportVerification
         )
-
     }
 
     @MockK

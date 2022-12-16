@@ -1,19 +1,25 @@
 package io.cloudflight.jems.server.project.repository.report.partner.identification
 
 import io.cloudflight.jems.server.common.entity.extractField
-import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportBudgetPerPeriodEntity
+import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationEntity
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationTargetGroupEntity
+import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportBudgetPerPeriodEntity
+import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportDesignatedControllerEntity
+import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportVerificationEntity
+import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportOnTheSpotVerificationEntity
+import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportVerificationGeneralMethodologyEntity
+import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportVerificationOnTheSpotLocationEntity
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportIdentificationTargetGroup
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportSpendingProfile
-import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportFileFormat
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.*
 import java.math.BigDecimal
 
 fun ProjectPartnerReportIdentificationEntity.toModel(
     targetGroups: List<ProjectPartnerReportIdentificationTargetGroupEntity>,
-    periodResolver: (Int?) -> ProjectPartnerReportBudgetPerPeriodEntity?,
+    periodResolver: (Int?) -> ProjectPartnerReportBudgetPerPeriodEntity?
 ) = ProjectPartnerReportIdentification(
     startDate = startDate,
     endDate = endDate,
@@ -34,7 +40,7 @@ fun ProjectPartnerReportIdentificationEntity.toModel(
         ReportFileFormat.Copy to formatCopy,
         ReportFileFormat.Electronic to formatElectronic,
     ).filter { it.value }.keys,
-    type = type,
+    type = type
 )
 
 fun ProjectPartnerReportBudgetPerPeriodEntity.toModel() = ProjectPartnerReportPeriod(
@@ -55,3 +61,62 @@ fun List<ProjectPartnerReportIdentificationTargetGroupEntity>.toModel() = map {
 }
 
 fun List<ProjectPartnerReportBudgetPerPeriodEntity>.toPeriodModel() = map { it.toModel() }
+
+fun ProjectPartnerReportDesignatedControllerEntity.toModel() = ReportDesignatedController(
+    controlInstitution = if (reportEntity.status.isCertified()) institutionName else controlInstitution.name,
+    controlInstitutionId = controlInstitution.id,
+    controllingUserId = controllingUser?.id,
+    jobTitle = jobTitle,
+    divisionUnit = divisionUnit,
+    address = address,
+    countryCode = countryCode,
+    country = country,
+    telephone = telephone,
+    controllerReviewerId = controllerReviewer?.id
+)
+
+fun ProjectPartnerReportVerificationEntity.toModel() = ReportVerification(
+    generalMethodologies = generalMethodologies.map { it.toModel() }.toSet(),
+    verificationInstances = verificationInstances.map {it.toModel()}.toList(),
+    riskBasedVerificationApplied = riskBasedVerificationApplied,
+    riskBasedVerificationDescription = riskBasedVerificationDescription
+)
+
+fun ProjectPartnerReportVerificationGeneralMethodologyEntity.toModel() = this.methodology
+
+fun ProjectPartnerReportOnTheSpotVerificationEntity.toModel() = ReportOnTheSpotVerification(
+    id = id,
+    verificationFrom = verificationFrom,
+    verificationTo = verificationTo,
+    verificationFocus = verificationFocus,
+    verificationLocations = verificationLocations.map { it.toModel() }.toSet()
+)
+
+fun ProjectPartnerReportVerificationOnTheSpotLocationEntity.toModel() = this.location
+
+fun ReportVerification.toEntity(reportEntity: ProjectPartnerReportEntity) = ProjectPartnerReportVerificationEntity(
+    reportEntity = reportEntity,
+    generalMethodologies = generalMethodologies.map { it.toEntity(reportEntity.id) }.toMutableSet(),
+    verificationInstances = verificationInstances.map { it.toEntity(reportEntity.id) }.toList(),
+    riskBasedVerificationApplied = riskBasedVerificationApplied,
+    riskBasedVerificationDescription = riskBasedVerificationDescription
+)
+
+fun ReportMethodology.toEntity(reportVerificationId: Long) = ProjectPartnerReportVerificationGeneralMethodologyEntity(
+    reportVerificationId = reportVerificationId,
+    methodology = this
+)
+
+fun ReportOnTheSpotVerification.toEntity(reportVerificationId: Long) = ProjectPartnerReportOnTheSpotVerificationEntity(
+    // verificationLocations needs ProjectPartnerReportOnTheSpotVerificationEntity id
+    reportVerificationId = reportVerificationId,
+    verificationFrom = verificationFrom,
+    verificationTo = verificationTo,
+    verificationFocus = verificationFocus,
+    verificationLocations = if (id == 0L) mutableSetOf() else verificationLocations.map { it.toEntity(id) }.toMutableSet()
+)
+
+fun ReportLocationOnTheSpotVerification.toEntity(reportOnTheSpotVerificationId: Long) = ProjectPartnerReportVerificationOnTheSpotLocationEntity(
+    reportOnTheSpotVerificationId = reportOnTheSpotVerificationId,
+    location = this
+)

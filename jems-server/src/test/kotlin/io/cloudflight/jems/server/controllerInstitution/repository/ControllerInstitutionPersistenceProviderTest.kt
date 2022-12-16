@@ -2,13 +2,20 @@ package io.cloudflight.jems.server.controllerInstitution.repository
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.controllerInstitution.entity.ControllerInstitutionPartnerEntity
+import io.cloudflight.jems.server.controllerInstitution.entity.ControllerInstitutionUserEntity
+import io.cloudflight.jems.server.controllerInstitution.entity.ControllerInstitutionUserId
 import io.cloudflight.jems.server.controllerInstitution.nutsAustria
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionList
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignment
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignmentRow
+import io.cloudflight.jems.server.controllerInstitution.service.model.UserInstitutionAccessLevel
+import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerUser
 import io.cloudflight.jems.server.nuts.repository.NutsRegion3Repository
 import io.cloudflight.jems.server.project.entity.partner.ControllerInstitutionEntity
+import io.cloudflight.jems.server.user.entity.UserEntity
+import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.repository.user.UserRepository
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.*
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -68,6 +75,35 @@ class ControllerInstitutionPersistenceProviderTest: UnitTest() {
             partnerId = 1L,
             partnerProjectId = 1L
         )
+
+        private val userEntities = listOf(
+            ControllerInstitutionUserEntity(
+                id = ControllerInstitutionUserId(
+                    controllerInstitutionId = 1L,
+                    user = UserEntity(
+                        id = 1L,
+                        email = "some email",
+                        name = "some name",
+                        surname = "some surname",
+                        userRole = UserRoleEntity(
+                            id = 1L,
+                            name = "some role"
+                        ),
+                        password = "some password",
+                        userStatus = UserStatus.ACTIVE
+                    )
+                ),
+                accessLevel = UserInstitutionAccessLevel.Edit
+            )
+        )
+
+        private val expectedUser =
+            ControllerUser(
+                id = 1L,
+                name = "some name",
+                surname = "some surname",
+                email = "some email"
+            )
     }
 
     @MockK
@@ -151,5 +187,12 @@ class ControllerInstitutionPersistenceProviderTest: UnitTest() {
             listOf(dummyAssignmentToDelete)
         assertThat(controllerInstitutionPersistenceProvider.getInstitutionPartnerAssignmentsToDeleteByInstitutionId(1L))
             .containsExactly(dummyAssignmentToDelete.toModel())
+    }
+
+    @Test
+    fun getControllerUsersForReportByInstitutionId() {
+        every { institutionUserRepository.findAllByControllerInstitutionId(2L) } returns userEntities
+        assertThat(controllerInstitutionPersistenceProvider.getControllerUsersForReportByInstitutionId(2L))
+            .containsExactly(expectedUser)
     }
 }

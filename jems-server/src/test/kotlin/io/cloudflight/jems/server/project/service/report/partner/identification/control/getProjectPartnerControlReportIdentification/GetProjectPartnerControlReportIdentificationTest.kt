@@ -18,8 +18,15 @@ import io.cloudflight.jems.server.project.service.report.model.partner.identific
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportSpendingProfile
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ProjectPartnerControlReport
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportFileFormat
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportLocationOnTheSpotVerification
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportMethodology
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportOnTheSpotVerification
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportType
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportVerification
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportDesignatedController
 import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportIdentificationPersistence
+import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportDesignatedControllerPersistence
+import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportVerificationPersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -84,6 +91,36 @@ internal class GetProjectPartnerControlReportIdentificationTest : UnitTest() {
             type = ReportType.PartnerReport,
         )
 
+        private val designatedController = ReportDesignatedController(
+            controlInstitution = "Test",
+            controlInstitutionId = 1,
+            controllingUserId = 2,
+            jobTitle = "JobTitle",
+            divisionUnit = "divisionUnit",
+            address = "address",
+            countryCode = "RO",
+            country = "Romania (RO)",
+            telephone = "0000123456",
+            controllerReviewerId = 3
+        )
+
+        private val verificationInstances = listOf(
+            ReportOnTheSpotVerification(
+                id = 1,
+                verificationFrom = YESTERDAY,
+                verificationTo = TOMORROW,
+                verificationLocations = setOf(ReportLocationOnTheSpotVerification.PlaceOfPhysicalProjectOutput),
+                verificationFocus = "some Focus"
+            )
+        )
+
+        private val reportVerification = ReportVerification(
+            generalMethodologies = setOf(ReportMethodology.AdministrativeVerification),
+            verificationInstances = verificationInstances,
+            riskBasedVerificationApplied = true,
+            riskBasedVerificationDescription = "some description"
+        )
+
         private val expectedIdentification = ProjectPartnerControlReport(
             id = 10L,
             programmeTitle = "programmeTitle",
@@ -102,6 +139,8 @@ internal class GetProjectPartnerControlReportIdentificationTest : UnitTest() {
                 ReportFileFormat.Electronic,
             ),
             type = ReportType.PartnerReport,
+            designatedController = designatedController,
+            reportVerification = reportVerification
         )
     }
 
@@ -113,6 +152,10 @@ internal class GetProjectPartnerControlReportIdentificationTest : UnitTest() {
     lateinit var partnerPersistence: PartnerPersistence
     @MockK
     lateinit var projectPersistence: ProjectPersistence
+    @MockK
+    lateinit var designatedControllerPersistence: ProjectPartnerReportDesignatedControllerPersistence
+    @MockK
+    lateinit var reportVerificationPersistence: ProjectPartnerReportVerificationPersistence
     @MockK
     lateinit var programmeDataRepository: ProgrammeDataRepository
     @MockK
@@ -134,6 +177,8 @@ internal class GetProjectPartnerControlReportIdentificationTest : UnitTest() {
         val programme = mockk<ProgrammeDataEntity>()
         every { programme.title } returns "programmeTitle"
         every { programmeDataRepository.findById(1L) } returns of(programme)
+        every { designatedControllerPersistence.getControlReportDesignatedController(PARTNER_ID, 12L)} returns designatedController
+        every { reportVerificationPersistence.getControlReportVerification(PARTNER_ID, 12L)} returns of(reportVerification)
 
         assertThat(interactor.getControlIdentification(PARTNER_ID, reportId = 12L)).isEqualTo(expectedIdentification)
     }

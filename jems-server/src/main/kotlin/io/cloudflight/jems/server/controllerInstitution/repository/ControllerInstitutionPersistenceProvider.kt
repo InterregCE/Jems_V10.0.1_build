@@ -10,6 +10,7 @@ import io.cloudflight.jems.server.controllerInstitution.service.model.Institutio
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignment
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignmentWithUsers
 import io.cloudflight.jems.server.controllerInstitution.service.model.UserInstitutionAccessLevel
+import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerUser
 import io.cloudflight.jems.server.nuts.repository.NutsRegion3Repository
 import io.cloudflight.jems.server.project.entity.partner.ControllerInstitutionEntity
 import io.cloudflight.jems.server.user.repository.user.UserRepository
@@ -103,6 +104,11 @@ class ControllerInstitutionPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getInstitutionUsersByInstitutionId(institutionId: Long): List<ControllerInstitutionUser> {
        return institutionUserRepository.findAllByControllerInstitutionId(institutionId).map { it.toModel() }
+    }
+
+    @Transactional(readOnly = true)
+    override fun getControllerUsersForReportByInstitutionId(institutionId: Long): List<ControllerUser> {
+        return institutionUserRepository.findAllByControllerInstitutionId(institutionId).map { it.toModelForReport() }
     }
 
     @Transactional(readOnly = true)

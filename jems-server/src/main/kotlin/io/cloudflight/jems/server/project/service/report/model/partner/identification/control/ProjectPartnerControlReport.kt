@@ -20,4 +20,6 @@ data class ProjectPartnerControlReport(
     val reportFirstSubmission: ZonedDateTime,
     val controllerFormats: Set<ReportFileFormat>,
     val type: ReportType,
+    val designatedController: ReportDesignatedController,
+    val reportVerification: ReportVerification
 )

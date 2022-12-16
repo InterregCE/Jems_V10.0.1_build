@@ -3,6 +3,8 @@ package io.cloudflight.jems.server.project.service.report.partner.identification
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportSpendingProfile
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportType
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportVerification
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportDesignatedController
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.GetReportExpenditureCostCategoryCalculatorService
 import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportIdentificationPersistence
 import org.springframework.stereotype.Service
@@ -33,6 +35,26 @@ class GetProjectPartnerReportIdentificationService(
             ),
             controllerFormats = emptySet(),
             type = ReportType.PartnerReport,
+        )
+
+        fun emptyVerification() = ReportVerification(
+            generalMethodologies = emptySet(),
+            verificationInstances = emptyList(),
+            riskBasedVerificationApplied = false,
+            riskBasedVerificationDescription = null
+        )
+
+        fun emptyDesignatedController() = ReportDesignatedController(
+            controlInstitution = null,
+            controlInstitutionId = 0,
+            controllingUserId = null,
+            jobTitle = null,
+            divisionUnit = null,
+            address = null,
+            countryCode = null,
+            country = null,
+            telephone = null,
+            controllerReviewerId = null,
         )
     }
 

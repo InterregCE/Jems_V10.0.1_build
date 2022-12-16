@@ -11,6 +11,9 @@ import io.cloudflight.jems.server.project.service.report.model.partner.ReportSta
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ProjectPartnerControlReport
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ProjectPartnerControlReportChange
 import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportIdentificationPersistence
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportVerification
+import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportDesignatedControllerPersistence
+import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportVerificationPersistence
 import io.cloudflight.jems.server.project.service.report.partner.identification.control.toModelObject
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -19,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional
 class UpdateProjectPartnerControlReportIdentification(
     private val reportPersistence: ProjectPartnerReportPersistence,
     private val reportIdentificationPersistence: ProjectPartnerReportIdentificationPersistence,
+    private val reportDesignatedControllerPersistence: ProjectPartnerReportDesignatedControllerPersistence,
+    private val reportReportVerificationPersistence: ProjectPartnerReportVerificationPersistence,
     private val partnerPersistence: PartnerPersistence,
     private val projectPersistence: ProjectPersistence,
     private val programmeDataRepository: ProgrammeDataRepository,
@@ -35,11 +40,24 @@ class UpdateProjectPartnerControlReportIdentification(
     ): ProjectPartnerControlReport {
         val report = reportPersistence.getPartnerReportById(partnerId, reportId = reportId)
         validateReportInControl(status = report.status)
+        validateVerificationSize(data.reportVerification)
 
         val identification = reportIdentificationPersistence.updatePartnerControlReportIdentification(
             partnerId = partnerId,
             reportId = reportId,
             data = data,
+        )
+
+        val designatedController = reportDesignatedControllerPersistence.updateDesignatedController(
+            partnerId,
+            reportId,
+            data.designatedController
+        )
+
+        val reportVerification = reportReportVerificationPersistence.updateReportVerification(
+            partnerId,
+            reportId,
+            data.reportVerification
         )
 
         val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId, report.version)
@@ -50,6 +68,8 @@ class UpdateProjectPartnerControlReportIdentification(
             programmeTitle = programmeDataRepository.findById(1L).orElse(null)?.title,
             startAndEndDate = getContractingMonitoringService.getContractMonitoringDates(projectId),
             identification = identification,
+            designatedController = designatedController,
+            reportVerification = reportVerification
         )
     }
 
@@ -58,4 +78,8 @@ class UpdateProjectPartnerControlReportIdentification(
             throw ReportNotInControl()
     }
 
+    private fun validateVerificationSize(verification: ReportVerification) {
+        if (verification.verificationInstances.size > 5)
+            throw ControlIdentificationTooManyVerifications()
+    }
 }

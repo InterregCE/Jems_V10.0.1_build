@@ -12,6 +12,7 @@ enum class ReportStatus {
 
     fun controlNotOpenAnymore() = this != InControl
     fun controlNotStartedYet() = this !in CONTROL_STATUSES
+    fun isCertified() = this == Certified
 
     fun isFinalized() = this == Certified
 

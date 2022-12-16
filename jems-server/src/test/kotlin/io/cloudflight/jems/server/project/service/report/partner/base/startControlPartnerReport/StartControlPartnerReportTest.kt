@@ -3,12 +3,15 @@ package io.cloudflight.jems.server.project.service.report.partner.base.startCont
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
+import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionList
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
+import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportDesignatedControllerPersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -45,6 +48,14 @@ internal class StartControlPartnerReportTest : UnitTest() {
             partnerRole = ProjectPartnerRole.LEAD_PARTNER,
         )
 
+        private val controllerInstitution = ControllerInstitutionList(
+            id = 1,
+            name = "Test institution",
+            description = null,
+            institutionNuts = emptyList(),
+            createdAt = ZonedDateTime.now()
+        )
+
     }
 
     @MockK
@@ -52,6 +63,12 @@ internal class StartControlPartnerReportTest : UnitTest() {
 
     @MockK
     lateinit var partnerPersistence: PartnerPersistence
+
+    @MockK
+    lateinit var controlInstitutionPersistence: ControllerInstitutionPersistence
+
+    @MockK
+    lateinit var reportDesignatedControllerPersistence: ProjectPartnerReportDesignatedControllerPersistence
 
     @MockK
     lateinit var auditPublisher: ApplicationEventPublisher
@@ -64,6 +81,8 @@ internal class StartControlPartnerReportTest : UnitTest() {
         clearMocks(reportPersistence)
         clearMocks(partnerPersistence)
         clearMocks(auditPublisher)
+        clearMocks(controlInstitutionPersistence)
+        clearMocks(reportDesignatedControllerPersistence)
     }
 
     @ParameterizedTest(name = "startControl (status {0})")
@@ -73,6 +92,8 @@ internal class StartControlPartnerReportTest : UnitTest() {
         every { reportPersistence.getPartnerReportById(PARTNER_ID, 37L) } returns report
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID, "5.6.1") } returns PROJECT_ID
         every { reportPersistence.startControlOnReportById(any(), any()) } returns mockedResult
+        every { controlInstitutionPersistence.getControllerInstitutions(setOf(PARTNER_ID))} returns mapOf(Pair(PARTNER_ID, controllerInstitution))
+        every { reportDesignatedControllerPersistence.create(PARTNER_ID, 37L, controllerInstitution.id)} returns Unit
 
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit

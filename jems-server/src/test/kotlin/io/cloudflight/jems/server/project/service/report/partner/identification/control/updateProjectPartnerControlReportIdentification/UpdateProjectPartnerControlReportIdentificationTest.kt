@@ -19,9 +19,16 @@ import io.cloudflight.jems.server.project.service.report.model.partner.identific
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportSpendingProfile
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ProjectPartnerControlReport
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ProjectPartnerControlReportChange
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportDesignatedController
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportFileFormat
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportLocationOnTheSpotVerification
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportMethodology
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportOnTheSpotVerification
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportType
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportVerification
 import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportIdentificationPersistence
+import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportDesignatedControllerPersistence
+import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportVerificationPersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -45,6 +52,8 @@ internal class UpdateProjectPartnerControlReportIdentificationTest : UnitTest() 
         private const val PROJECT_ID = 490L
 
         private val YESTERDAY = ZonedDateTime.now().minusDays(1)
+        private val YESTERDAY_LOCALDATE = LocalDate.now().plusDays(1)
+        private val TOMORROW = LocalDate.now().plusDays(1)
         private val YEARS_AGO_3 = LocalDate.now().minusYears(3)
         private val YEARS_AGO_5 = LocalDate.now().minusYears(5)
 
@@ -96,6 +105,36 @@ internal class UpdateProjectPartnerControlReportIdentificationTest : UnitTest() 
             type = ReportType.FinalReport,
         )
 
+        private val designatedController = ReportDesignatedController(
+            controlInstitution = "Test",
+            controlInstitutionId = 1,
+            controllingUserId = 2,
+            jobTitle = "JobTitle",
+            divisionUnit = "divisionUnit",
+            address = "address",
+            countryCode = "RO",
+            country = "Romania (RO)",
+            telephone = "0000123456",
+            controllerReviewerId = 3
+        )
+
+        private val verificationInstances = listOf(
+            ReportOnTheSpotVerification(
+                id = 1,
+                verificationFrom = YESTERDAY_LOCALDATE,
+                verificationTo = TOMORROW,
+                verificationLocations = setOf(ReportLocationOnTheSpotVerification.PlaceOfPhysicalProjectOutput),
+                verificationFocus = "some Focus"
+            )
+        )
+
+        private val reportVerification = ReportVerification(
+            generalMethodologies = setOf(ReportMethodology.AdministrativeVerification),
+            verificationInstances = verificationInstances,
+            riskBasedVerificationApplied = true,
+            riskBasedVerificationDescription = "some description"
+        )
+
         private fun expectedControlReport(id: Long) = ProjectPartnerControlReport(
             id = id,
             programmeTitle = "programme title",
@@ -112,6 +151,8 @@ internal class UpdateProjectPartnerControlReportIdentificationTest : UnitTest() 
             reportFirstSubmission = YESTERDAY,
             controllerFormats = setOf(ReportFileFormat.Originals),
             type = ReportType.FinalReport,
+            designatedController = designatedController,
+            reportVerification = reportVerification
         )
 
     }
@@ -120,6 +161,10 @@ internal class UpdateProjectPartnerControlReportIdentificationTest : UnitTest() 
     lateinit var reportPersistence: ProjectPartnerReportPersistence
     @MockK
     lateinit var reportIdentificationPersistence: ProjectPartnerReportIdentificationPersistence
+    @MockK
+    lateinit var reportDesignatedControllerPersistence: ProjectPartnerReportDesignatedControllerPersistence
+    @MockK
+    lateinit var reportReportVerificationPersistence: ProjectPartnerReportVerificationPersistence
     @MockK
     lateinit var partnerPersistence: PartnerPersistence
     @MockK
@@ -162,9 +207,14 @@ internal class UpdateProjectPartnerControlReportIdentificationTest : UnitTest() 
             LocalDate.of(2025, 8, 14),
         )
 
+        every { reportDesignatedControllerPersistence.updateDesignatedController(PARTNER_ID, reportId, designatedController)} returns designatedController
+        every { reportReportVerificationPersistence.updateReportVerification(PARTNER_ID, reportId, reportVerification)} returns reportVerification
+
         val change = ProjectPartnerControlReportChange(
             controllerFormats = setOf(ReportFileFormat.Electronic),
             type = ReportType.FinalReport,
+            designatedController = designatedController,
+            reportVerification = reportVerification
         )
         assertThat(interactor.updateControlIdentification(PARTNER_ID, reportId = reportId, change))
             .isEqualTo(expectedControlReport(reportId))

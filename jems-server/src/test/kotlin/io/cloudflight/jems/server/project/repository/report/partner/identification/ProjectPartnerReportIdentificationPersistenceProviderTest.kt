@@ -6,13 +6,20 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
-import io.cloudflight.jems.server.project.entity.report.identification.*
+import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportBudgetPerPeriodEntity
+import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportBudgetPerPeriodId
+import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationEntity
+import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationTargetGroupEntity
+import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationTargetGroupTranslEntity
+import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationTranslEntity
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
-import io.cloudflight.jems.server.project.service.report.model.partner.identification.*
-import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ProjectPartnerControlReportChange
-import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportFileFormat
-import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportType
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportIdentification
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportIdentificationTargetGroup
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportSpendingProfile
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.UpdateProjectPartnerReportIdentification
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.*
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -264,6 +271,24 @@ class ProjectPartnerReportIdentificationPersistenceProviderTest : UnitTest() {
         val change = ProjectPartnerControlReportChange(
             controllerFormats = setOf(ReportFileFormat.Originals, ReportFileFormat.Copy),
             type = ReportType.PartnerReport,
+            designatedController = ReportDesignatedController(
+                controlInstitution = null,
+                controlInstitutionId = 0,
+                controllingUserId = null,
+                jobTitle = null,
+                divisionUnit = null,
+                address = null,
+                countryCode = null,
+                country = null,
+                telephone = null,
+                controllerReviewerId = null
+            ),
+            reportVerification = ReportVerification(
+                generalMethodologies = emptySet(),
+                verificationInstances = emptyList(),
+                riskBasedVerificationApplied = false,
+                riskBasedVerificationDescription = null
+            )
         )
         val result = persistence.updatePartnerControlReportIdentification(PARTNER_ID, reportId = reportId, change)
         assertThat(result.controllerFormats).containsExactly(ReportFileFormat.Originals, ReportFileFormat.Copy)
@@ -275,7 +300,28 @@ class ProjectPartnerReportIdentificationPersistenceProviderTest : UnitTest() {
         every { identificationRepository.findByReportEntityIdAndReportEntityPartnerId(reportId = -1L, PARTNER_ID) } returns
             Optional.empty()
 
-        val change = ProjectPartnerControlReportChange(emptySet(), ReportType.PartnerReport)
+        val change = ProjectPartnerControlReportChange(
+            emptySet(),
+            ReportType.PartnerReport,
+            designatedController = ReportDesignatedController(
+                controlInstitution = null,
+                controlInstitutionId = 0,
+                controllingUserId = null,
+                jobTitle = null,
+                divisionUnit = null,
+                address = null,
+                countryCode = null,
+                country = null,
+                telephone = null,
+                controllerReviewerId = null
+            ),
+            reportVerification = ReportVerification(
+                generalMethodologies = emptySet(),
+                verificationInstances = emptyList(),
+                riskBasedVerificationApplied = false,
+                riskBasedVerificationDescription = null
+            )
+        )
         assertThrows<ResourceNotFoundException> {
             persistence.updatePartnerControlReportIdentification(PARTNER_ID, reportId = -1L, change)
         }

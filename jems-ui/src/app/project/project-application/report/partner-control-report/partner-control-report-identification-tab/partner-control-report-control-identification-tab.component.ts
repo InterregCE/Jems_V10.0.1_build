@@ -1,6 +1,11 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {combineLatest, Observable} from 'rxjs';
-import {ProjectDetailDTO, ProjectPartnerControlReportDTO, ProjectPartnerDetailDTO} from '@cat/api';
+import {
+  ProjectDetailDTO,
+  ProjectPartnerControlReportDTO,
+  ProjectPartnerDetailDTO,
+  ReportDesignatedControllerDTO, ReportVerificationDTO
+} from '@cat/api';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {
     PartnerReportDetailPageStore
@@ -93,6 +98,8 @@ export class PartnerControlReportControlIdentificationTabComponent {
         const data = {
             controllerFormats: this.form.value.formats,
             type: this.form.value.partnerType,
+          designatedController: {} as ReportDesignatedControllerDTO,
+          reportVerification: {} as ReportVerificationDTO
         };
         this.store.saveIdentification(data)
             .pipe(

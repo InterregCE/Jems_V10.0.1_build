@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.controllerInstitution.controller
 
 import io.cloudflight.jems.api.common.dto.IdNamePairDTO
 import io.cloudflight.jems.api.controllerInstitutions.dto.ControllerInstitutionListDTO
+import io.cloudflight.jems.api.controllerInstitutions.dto.ControllerUserDTO
 import io.cloudflight.jems.api.controllerInstitutions.dto.InstitutionPartnerDetailsDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.UnitTest
@@ -11,7 +12,9 @@ import io.cloudflight.jems.server.controllerInstitution.service.createController
 import io.cloudflight.jems.server.controllerInstitution.service.getControllerInstitution.GetControllerInteractor
 import io.cloudflight.jems.server.controllerInstitution.service.getInstitutionPartnerAssignment.GetInstitutionPartnerAssignmentInteractor
 import io.cloudflight.jems.server.controllerInstitution.service.getInstitutionUserAccessLevel.GetInstitutionUserAccessLevelInteractor
+import io.cloudflight.jems.server.controllerInstitution.service.getInstitutionUsers.GetInstitutionUsersInteractor
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionList
+import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerUser
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerDetails
 import io.cloudflight.jems.server.controllerInstitution.service.updateControllerInstitution.UpdateControllerInteractor
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
@@ -63,6 +66,9 @@ class ControllerInstitutionControllerTest: UnitTest() {
 
     @MockK
     lateinit var assignInstitutionToPartnerInteractor: AssignInstitutionToPartnerInteractor
+
+    @MockK
+    lateinit var getInstitutionUsers: GetInstitutionUsersInteractor
 
     @InjectMockKs
     lateinit var controllerInstitutionController: ControllerInstitutionController
@@ -157,5 +163,31 @@ class ControllerInstitutionControllerTest: UnitTest() {
             PageImpl(institutionPartnerAssignments)
         assertThat(controllerInstitutionController.getInstitutionPartnerAssignments(Pageable.unpaged()).content)
             .containsAll(expectedInstitutionPartnerAssignments)
+    }
+
+    @Test
+    fun getControlUsersForControlReport() {
+        val controlUsers = listOf(
+            ControllerUser(
+                id = 1L,
+                name = "test name",
+                surname = "test surname",
+                email = "test@email.com"
+            )
+        )
+
+        val expectedControllers = listOf(
+            ControllerUserDTO(
+                id = 1L,
+                name = "test name",
+                surname = "test surname",
+                email = "test@email.com"
+            )
+        )
+        every { getInstitutionUsers.getInstitutionUsers(1L, 1L) } returns
+            controlUsers
+        assertThat(controllerInstitutionController.getUsersByControllerInstitutionId(1L, 1L)).containsAll(
+            expectedControllers
+        )
     }
 }
