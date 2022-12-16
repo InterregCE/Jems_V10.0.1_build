@@ -4,6 +4,7 @@
             <h3 class="mt-3">{{'project.application.partner.report.tab.controlChecklists' | translate}}</h3>
             <jems-control-checklist-instance-list [relatedType]="ChecklistType.CONTROL"
                                           [relatedId]="data.partnerControlReport.id"
+                                          [isReportEditable]="controlReportEditable$ | async"
                                           jemsNoWidthLimit>
             </jems-control-checklist-instance-list>
         </ng-container>

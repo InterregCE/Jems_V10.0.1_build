@@ -4,7 +4,7 @@ import {
   ChecklistInstanceDTO,
   ControllerInstitutionsApiService,
   IdNamePairDTO,
-  ProgrammeChecklistDetailDTO,
+  ProgrammeChecklistDetailDTO, UserDTO,
 } from '@cat/api';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {
@@ -27,6 +27,7 @@ import {FormBuilder, Validators} from '@angular/forms';
 import {ChecklistItem} from '@common/components/checklist/checklist-item';
 import {AlertMessage} from '@common/components/file-list/file-list-table/alert-message';
 import {Alert} from '@common/components/forms/alert';
+import {SecurityService} from '../../../../security/security.service';
 
 @Component({
   selector: 'jems-control-checklist-instance-list',
@@ -38,11 +39,14 @@ import {Alert} from '@common/components/forms/alert';
 export class ControlChecklistInstanceListComponent implements OnInit {
   Status = ChecklistInstanceDTO.StatusEnum;
   projectId: number;
+  currentUser: UserDTO | null;
 
   @Input()
   relatedType: ProgrammeChecklistDetailDTO.TypeEnum;
   @Input()
   relatedId: number;
+  @Input()
+  isReportEditable: boolean;
 
   partnerId = Number(this.routingService.getParameter(this.activatedRoute, 'partnerId'));
   reportId = Number(this.routingService.getParameter(this.activatedRoute, 'reportId'));
@@ -81,10 +85,14 @@ export class ControlChecklistInstanceListComponent implements OnInit {
               private formBuilder: FormBuilder,
               private dialog: MatDialog,
               private controllerInstitutionService: ControllerInstitutionsApiService,
-              private partnerReportDetailPageStore: PartnerReportDetailPageStore) {
+              private partnerReportDetailPageStore: PartnerReportDetailPageStore,
+              private securityService: SecurityService) {
     this.projectId = this.activatedRoute.snapshot.params.projectId;
     this.checklistUtils = new ChecklistUtilsComponent();
     this.userCanEditControlChecklists$ = this.userCanEditControlChecklists();
+    this.securityService.currentUserDetails.subscribe(
+      currentUser => this.currentUser = currentUser
+    );
     this.data$ = combineLatest([
       this.partnerReportDetailPageStore.partnerReport$,
     ]).pipe(
@@ -102,6 +110,10 @@ export class ControlChecklistInstanceListComponent implements OnInit {
       .pipe(
         map((level) => level === 'Edit')
       );
+  }
+
+  currentUserIsCreator(checkList: ChecklistItem) {
+    return checkList?.creatorEmail === this.currentUser?.email;
   }
 
   private institutionUserControlReportLevel(): Observable<string> {
@@ -131,7 +143,13 @@ export class ControlChecklistInstanceListComponent implements OnInit {
         take(1),
         filter(answer => !!answer),
         switchMap(() => this.pageStore.deleteChecklistInstance(this.partnerId, this.relatedId, checklist.id)),
-      ).subscribe();
+        catchError(error => {
+          this.showAlert(ChecklistUtilsComponent.errorAlert(
+            'use.case.delete.checklist.instance.failed'
+          ));
+          throw error;
+        }),
+        ).subscribe();
   }
 
   createInstance(): void {

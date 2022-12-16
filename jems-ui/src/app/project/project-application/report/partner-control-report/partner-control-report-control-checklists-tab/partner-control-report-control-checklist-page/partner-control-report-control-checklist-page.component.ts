@@ -28,6 +28,7 @@ export class PartnerControlReportControlChecklistPageComponent {
   data$: Observable<{
     checklist: ChecklistInstanceDetailDTO;
     editable: boolean;
+    reportEditable: boolean;
   }>;
 
   confirmFinish = {
@@ -55,9 +56,9 @@ export class PartnerControlReportControlChecklistPageComponent {
     this.data$ = combineLatest([
       this.pageStore.checklist$,
       this.pageStore.checklistEditable$,
-      this.partnerReportDetailPageStore.partnerReport$,
+      this.pageStore.reportEditable$
     ]).pipe(
-      map(([checklist, editable]) => ({checklist, editable})),
+      map(([checklist, editable, reportEditable]) => ({checklist, editable, reportEditable})),
     );
     this.userCanEditControlChecklists$ = this.userCanEditControlChecklists();
   }

@@ -6,6 +6,9 @@ import {map, shareReplay, switchMap, take, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {SecurityService} from '../../../../../../security/security.service';
 import {ActivatedRoute} from '@angular/router';
+import {
+  PartnerControlReportStore
+} from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
 
 @Injectable()
 export class PartnerControlReportControlChecklistPageStore {
@@ -13,6 +16,7 @@ export class PartnerControlReportControlChecklistPageStore {
 
   checklist$: Observable<ChecklistInstanceDetailDTO>;
   checklistEditable$: Observable<boolean>;
+  reportEditable$: Observable<boolean>;
 
   partnerId = Number(this.routingService.getParameter(this.activatedRoute, 'partnerId'));
   reportId = Number(this.routingService.getParameter(this.activatedRoute, 'reportId'));
@@ -22,9 +26,11 @@ export class PartnerControlReportControlChecklistPageStore {
   constructor(private routingService: RoutingService,
               private checklistInstanceService: ControlChecklistInstanceService,
               private securityService: SecurityService,
-              private activatedRoute: ActivatedRoute) {
+              private activatedRoute: ActivatedRoute,
+              private reportControlStore: PartnerControlReportStore) {
     this.checklist$ = this.checklist();
     this.checklistEditable$ = this.checklistEditable();
+    this.reportEditable$ = this.reportControlStore.controlReportEditable$;
   }
 
   updateChecklist(partnerId: number, reportId: number, checklist: ChecklistInstanceDetailDTO): Observable<ChecklistInstanceDetailDTO> {
@@ -63,10 +69,10 @@ export class PartnerControlReportControlChecklistPageStore {
   }
 
   private checklistEditable(): Observable<boolean> {
-    return combineLatest([this.checklist$, this.securityService.currentUserDetails])
+    return combineLatest([this.checklist$, this.securityService.currentUserDetails, this.reportControlStore.controlReportEditable$])
       .pipe(
-        map(([checklist, user]) =>
-          checklist.status === ChecklistInstanceDetailDTO.StatusEnum.DRAFT && user?.email === checklist.creatorEmail)
+        map(([checklist, user, reportEditable]) =>
+          checklist.status === ChecklistInstanceDetailDTO.StatusEnum.DRAFT && user?.email === checklist.creatorEmail && reportEditable)
       );
   }
 }

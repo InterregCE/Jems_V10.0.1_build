@@ -1,4 +1,4 @@
-<span jemsMultiColumnRow *ngIf="(userCanEditControlChecklists$ | async)">
+<span jemsMultiColumnRow *ngIf="(userCanEditControlChecklists$ | async) && isReportEditable">
     <mat-form-field jemsFormFieldWidth="xx-large">
         <mat-select placeholder="{{'checklists.instance.list.new.select' | translate}}"
                     [(ngModel)]="selectedTemplate">
@@ -77,7 +77,7 @@
     <ng-container>
         <button
                 (click)="delete(checklist);$event.stopPropagation();"
-                [disabled]="checklist.status !== Status.DRAFT || (userCanEditControlChecklists$ | async) === false"
+                [disabled]="!isReportEditable || checklist.status !== Status.DRAFT || (userCanEditControlChecklists$ | async) === false || (currentUserIsCreator(checklist) === false)"
                 color="accent"
                 mat-icon-button
                 matTooltip="{{'common.delete.entry.tooltip' | translate}}">

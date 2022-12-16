@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.checklist.update.control
 
+import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerControlReport
@@ -10,8 +11,8 @@ import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInsta
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
 import io.cloudflight.jems.server.project.service.checklist.projectControlReportChecklistStatusChanged
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
-import io.cloudflight.jems.server.user.service.authorization.UserAuthorization
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -21,9 +22,9 @@ class UpdateControlChecklistInstance(
     private val persistence: ChecklistInstancePersistence,
     private val auditPublisher: ApplicationEventPublisher,
     private val checklistInstanceValidator: ChecklistInstanceValidator,
-    private val userAuthorization: UserAuthorization,
     private val partnerPersistence: PartnerPersistence,
-    private val reportPersistence: ProjectPartnerReportPersistence
+    private val reportPersistence: ProjectPartnerReportPersistence,
+    private val securityService: SecurityService
 ) : UpdateControlChecklistInstanceInteractor {
 
     @CanEditPartnerControlReport
@@ -31,8 +32,9 @@ class UpdateControlChecklistInstance(
     @ExceptionWrapper(UpdateControlChecklistInstanceException::class)
     override fun update(partnerId: Long, reportId: Long, checklist: ChecklistInstanceDetail): ChecklistInstanceDetail {
         val existing = persistence.getChecklistDetail(checklist.id, ProgrammeChecklistType.CONTROL, reportId)
+        val report = reportPersistence.getPartnerReportStatusAndVersion(partnerId, reportId)
 
-        if (existing.status != checklist.status || (userAuthorization.getUser().email != existing.creatorEmail))
+        if (report.status == ReportStatus.Certified || existing.status != checklist.status || (securityService.currentUser?.user?.id != existing.creatorId))
             throw UpdateControlChecklistInstanceStatusNotAllowedException()
 
         checklistInstanceValidator.validateChecklistComponents(checklist.components)
@@ -50,17 +52,14 @@ class UpdateControlChecklistInstance(
         status: ChecklistInstanceStatus
     ): ChecklistInstance {
         val partner = partnerPersistence.getById(partnerId)
+        val reportStatus = this.reportPersistence.getPartnerReportStatusAndVersion(partnerId, reportId).status
+        val existing = persistence.getChecklistDetail(checklistId, ProgrammeChecklistType.CONTROL, reportId)
 
-        val existing = persistence.getChecklistSummary(checklistId, ProgrammeChecklistType.CONTROL, reportId)
+        val statusNotChanged = status == existing.status
+        val isNotAuthor = securityService.getUserIdOrThrow() != existing.creatorId
+        val isFinishedNotByAuthor = status == ChecklistInstanceStatus.FINISHED && isNotAuthor
 
-        val isReturnToDraft = existing.status == ChecklistInstanceStatus.FINISHED
-                && status == ChecklistInstanceStatus.DRAFT
-
-        val userCanFinish = existing.status == ChecklistInstanceStatus.DRAFT
-                && status == ChecklistInstanceStatus.FINISHED
-                && userAuthorization.getUser().email == existing.creatorEmail
-
-        if (!isReturnToDraft && !userCanFinish)
+        if (statusNotChanged || isFinishedNotByAuthor || reportStatus.controlNotOpenAnymore())
             throw UpdateControlChecklistInstanceStatusNotAllowedException()
 
         return persistence.changeStatus(checklistId, status).also {
