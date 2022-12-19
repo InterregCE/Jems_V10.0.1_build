@@ -104,7 +104,7 @@ internal class GetProjectPartnerControlReportIdentificationTest : UnitTest() {
             controllerReviewerId = 3
         )
 
-        private val verificationInstances = listOf(
+        private val verificationInstances = setOf(
             ReportOnTheSpotVerification(
                 id = 1,
                 verificationFrom = YESTERDAY,

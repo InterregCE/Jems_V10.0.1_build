@@ -22,3 +22,8 @@ class ControlIdentificationTooManyVerifications : ApplicationUnprocessableExcept
     code = "$UPDATE_PROJECT_PARTNER_CONTROL_REPORT_IDENTIFICATION_ERROR_CODE_PREFIX-002",
     i18nMessage = I18nMessage(i18nKey = "$UPDATE_PROJECT_PARTNER_CONTROL_REPORT_IDENTIFICATION_ERROR_KEY_PREFIX.report.too.many.verification.locations"),
 )
+
+class ControlIdentificationDesignatedControllerDoesNotExist : ApplicationUnprocessableException(
+    code = "$UPDATE_PROJECT_PARTNER_CONTROL_REPORT_IDENTIFICATION_ERROR_CODE_PREFIX-002",
+    i18nMessage = I18nMessage(i18nKey = "$UPDATE_PROJECT_PARTNER_CONTROL_REPORT_IDENTIFICATION_ERROR_KEY_PREFIX.report.designated.controller.does.not.exist"),
+)

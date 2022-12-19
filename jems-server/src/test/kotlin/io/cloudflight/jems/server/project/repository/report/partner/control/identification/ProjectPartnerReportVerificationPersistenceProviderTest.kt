@@ -42,7 +42,7 @@ class ProjectPartnerReportVerificationPersistenceProviderTest: UnitTest() {
                     methodology = ReportMethodology.AdministrativeVerification
                 )
             ),
-            verificationInstances = mutableListOf(
+            verificationInstances = mutableSetOf(
                 ProjectPartnerReportOnTheSpotVerificationEntity(
                     id = OnTheSpotVerificationId,
                     reportVerificationId = 1L,
@@ -58,6 +58,25 @@ class ProjectPartnerReportVerificationPersistenceProviderTest: UnitTest() {
                     verificationFocus = "some focus"
                 )
             ),
+            riskBasedVerificationApplied = true,
+            riskBasedVerificationDescription = "some description"
+        )
+
+        private fun entityMapper(
+            reportId: Long,
+            methodologyId: Long,
+            report: ProjectPartnerReportEntity
+        ) = ProjectPartnerReportVerificationEntity(
+            reportId = reportId,
+            reportEntity = report,
+            generalMethodologies = mutableSetOf(
+                ProjectPartnerReportVerificationGeneralMethodologyEntity(
+                    id = methodologyId,
+                    reportVerificationId = 1L,
+                    methodology = ReportMethodology.AdministrativeVerification
+                )
+            ),
+            verificationInstances = mutableSetOf(),
             riskBasedVerificationApplied = true,
             riskBasedVerificationDescription = "some description"
         )
@@ -84,7 +103,7 @@ class ProjectPartnerReportVerificationPersistenceProviderTest: UnitTest() {
             reportId = reportId,
             reportEntity = report,
             generalMethodologies = mutableSetOf(),
-            verificationInstances = mutableListOf(),
+            verificationInstances = mutableSetOf(),
             riskBasedVerificationApplied = false,
             riskBasedVerificationDescription = "some wrong description"
         )
@@ -139,7 +158,7 @@ class ProjectPartnerReportVerificationPersistenceProviderTest: UnitTest() {
 
         val dto = ReportVerification(
             generalMethodologies = mutableSetOf(ReportMethodology.AdministrativeVerification),
-            verificationInstances = mutableListOf(
+            verificationInstances = mutableSetOf(
                 ReportOnTheSpotVerification(
                     id = 0L,
                     verificationFrom = LocalDate.now(),
@@ -156,7 +175,7 @@ class ProjectPartnerReportVerificationPersistenceProviderTest: UnitTest() {
 
         val updateDto = ReportVerification(
             generalMethodologies = mutableSetOf(ReportMethodology.AdministrativeVerification),
-            verificationInstances = mutableListOf(
+            verificationInstances = mutableSetOf(
                 ReportOnTheSpotVerification(
                     id = 1L,
                     verificationFrom = LocalDate.now(),
@@ -173,7 +192,7 @@ class ProjectPartnerReportVerificationPersistenceProviderTest: UnitTest() {
 
         val expectedDto = ReportVerification(
             generalMethodologies = mutableSetOf(ReportMethodology.AdministrativeVerification),
-            verificationInstances = mutableListOf(
+            verificationInstances = mutableSetOf(
                 ReportOnTheSpotVerification(
                     id = 1L,
                     verificationFrom = LocalDate.now(),
@@ -242,11 +261,11 @@ class ProjectPartnerReportVerificationPersistenceProviderTest: UnitTest() {
         } returns Optional.empty()
 
         every {
-            verificationRepository.save(entity(0, 0, 0, 0, report))
+            verificationRepository.save(entityMapper(0, 0, report))
         } returns entity(1, 0, 0, 0, report)
 
         every {
-            verificationRepository.save(entity(1, 0, 1, 1, report))
+            verificationRepository.save(entityMapper(1, 0, report))
         } returns entity(1, 1, 1, 1,report)
 
         every { onTheSpotVerificationRepository.findById(0L) } returns Optional.empty()
@@ -282,7 +301,7 @@ class ProjectPartnerReportVerificationPersistenceProviderTest: UnitTest() {
         } returns Optional.of(updateEntity(1, report))
 
         every {
-            verificationRepository.save(entity(1, 0, 1, 1, report))
+            verificationRepository.save(entity(1, 0, 1, 0, report))
         } returns entity(1, 1, 1, 1,report)
 
         every { onTheSpotVerificationRepository.findById(0L) } returns Optional.empty()
@@ -318,7 +337,7 @@ class ProjectPartnerReportVerificationPersistenceProviderTest: UnitTest() {
         } returns Optional.of(entity(1, 1, 1, 1, report))
 
         every {
-            verificationRepository.save(entity(1, 0, 1, 1, report))
+            verificationRepository.save(entity(1, 0, 1, 0, report))
         } returns entity(1, 1, 1, 1,report)
 
         every { onTheSpotVerificationRepository.findById(1L) } returns Optional.of(existingOnTheSpot)

@@ -3,6 +3,8 @@ package io.cloudflight.jems.server.project.service.report.partner.identification
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.validator.GeneralValidatorService
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.programme.entity.ProgrammeDataEntity
 import io.cloudflight.jems.server.programme.repository.ProgrammeDataRepository
 import io.cloudflight.jems.server.project.service.ProjectPersistence
@@ -10,6 +12,7 @@ import io.cloudflight.jems.server.project.service.contracting.monitoring.getProj
 import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.PartnerReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
@@ -33,6 +36,7 @@ import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
 import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
@@ -118,7 +122,7 @@ internal class UpdateProjectPartnerControlReportIdentificationTest : UnitTest() 
             controllerReviewerId = 3
         )
 
-        private val verificationInstances = listOf(
+        private val verificationInstances = setOf(
             ReportOnTheSpotVerification(
                 id = 1,
                 verificationFrom = YESTERDAY_LOCALDATE,
@@ -133,6 +137,21 @@ internal class UpdateProjectPartnerControlReportIdentificationTest : UnitTest() 
             verificationInstances = verificationInstances,
             riskBasedVerificationApplied = true,
             riskBasedVerificationDescription = "some description"
+        )
+
+        private val controllerUsersAvailable = listOf(
+            UserSimple(
+                id = 2,
+                email = "test",
+                name = "controller",
+                surname = "user"
+            ),
+            UserSimple(
+                id = 3,
+                email = "test2",
+                name = "controller2",
+                surname = "user2"
+            ),
         )
 
         private fun expectedControlReport(id: Long) = ProjectPartnerControlReport(
@@ -173,6 +192,10 @@ internal class UpdateProjectPartnerControlReportIdentificationTest : UnitTest() 
     lateinit var programmeDataRepository: ProgrammeDataRepository
     @MockK
     lateinit var getContractingMonitoringService: GetContractingMonitoringService
+    @MockK
+    lateinit var controllerInstitutionPersistence: ControllerInstitutionPersistence
+    @RelaxedMockK
+    lateinit var generalValidator: GeneralValidatorService
 
     @InjectMockKs
     lateinit var interactor: UpdateProjectPartnerControlReportIdentification
@@ -180,7 +203,8 @@ internal class UpdateProjectPartnerControlReportIdentificationTest : UnitTest() 
     @BeforeEach
     fun setup() {
         clearMocks(reportPersistence, reportIdentificationPersistence, partnerPersistence,
-            projectPersistence, programmeDataRepository, getContractingMonitoringService)
+            projectPersistence, programmeDataRepository, getContractingMonitoringService,
+            controllerInstitutionPersistence)
     }
 
     @ParameterizedTest(name = "updateControlIdentification (status {0})")
@@ -206,6 +230,8 @@ internal class UpdateProjectPartnerControlReportIdentificationTest : UnitTest() 
             LocalDate.of(2020, 9, 30),
             LocalDate.of(2025, 8, 14),
         )
+
+        every {controllerInstitutionPersistence.getControllerUsersForReportByInstitutionId(1)} returns controllerUsersAvailable
 
         every { reportDesignatedControllerPersistence.updateDesignatedController(PARTNER_ID, reportId, designatedController)} returns designatedController
         every { reportReportVerificationPersistence.updateReportVerification(PARTNER_ID, reportId, reportVerification)} returns reportVerification

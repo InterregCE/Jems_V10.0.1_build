@@ -45,12 +45,8 @@ class ProjectPartnerReportVerificationPersistenceProvider(
             val verificationInstances = reportVerification.verificationInstances.map {
                     verification -> saveOnTheSpotVerification(verification, created)
             }
-            return verificationRepository.save(
-                created.copy(
-                    generalMethodologies = reportVerification.generalMethodologies.map { it.toEntity(reportEntity.id) }.toMutableSet(),
-                    verificationInstances = verificationInstances
-                )
-            ).toModel()
+            created.verificationInstances = verificationInstances.toMutableSet()
+            return created.toModel()
         } else {
             val verificationInstances = reportVerification.verificationInstances.map {
                     verification -> saveOnTheSpotVerification(verification, entity.get())
@@ -61,7 +57,7 @@ class ProjectPartnerReportVerificationPersistenceProvider(
                     generalMethodologies = reportVerification.generalMethodologies.map {
                         it.toEntity(reportEntity.id)
                     }.toMutableSet(),
-                    verificationInstances = verificationInstances,
+                    verificationInstances = verificationInstances.toMutableSet(),
                     riskBasedVerificationApplied = reportVerification.riskBasedVerificationApplied,
                     riskBasedVerificationDescription = reportVerification.riskBasedVerificationDescription
                 )
@@ -76,20 +72,14 @@ class ProjectPartnerReportVerificationPersistenceProvider(
         val entity = onTheSpotVerificationRepository.findById(verification.id)
         return if (entity.isEmpty) {
             val created = onTheSpotVerificationRepository.save(verification.toEntity(verificationEntity.reportId))
-            onTheSpotVerificationRepository.save(
-                created.copy(
-                    verificationLocations = verification.verificationLocations.map { it.toEntity(created.id) }.toMutableSet()
-                )
-            )
+            created.verificationLocations = verification.verificationLocations.map { it.toEntity(created.id) }.toMutableSet()
+            created
         } else {
-            onTheSpotVerificationRepository.save(
-                entity.get().copy(
-                    verificationFrom = verification.verificationFrom,
-                    verificationTo = verification.verificationTo,
-                    verificationFocus = verification.verificationFocus,
-                    verificationLocations = verification.verificationLocations.map { it.toEntity(entity.get().id) }.toMutableSet()
-                )
-            )
+            entity.get().verificationFrom = verification.verificationFrom
+            entity.get().verificationTo = verification.verificationTo
+            entity.get().verificationFocus = verification.verificationFocus
+            entity.get().verificationLocations = verification.verificationLocations.map { it.toEntity(entity.get().id) }.toMutableSet()
+            entity.get()
         }
 
     }

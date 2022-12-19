@@ -77,7 +77,7 @@ fun ProjectPartnerReportDesignatedControllerEntity.toModel() = ReportDesignatedC
 
 fun ProjectPartnerReportVerificationEntity.toModel() = ReportVerification(
     generalMethodologies = generalMethodologies.map { it.toModel() }.toSet(),
-    verificationInstances = verificationInstances.map {it.toModel()}.toList(),
+    verificationInstances = verificationInstances.map {it.toModel()}.toSet(),
     riskBasedVerificationApplied = riskBasedVerificationApplied,
     riskBasedVerificationDescription = riskBasedVerificationDescription
 )
@@ -97,7 +97,6 @@ fun ProjectPartnerReportVerificationOnTheSpotLocationEntity.toModel() = this.loc
 fun ReportVerification.toEntity(reportEntity: ProjectPartnerReportEntity) = ProjectPartnerReportVerificationEntity(
     reportEntity = reportEntity,
     generalMethodologies = generalMethodologies.map { it.toEntity(reportEntity.id) }.toMutableSet(),
-    verificationInstances = verificationInstances.map { it.toEntity(reportEntity.id) }.toList(),
     riskBasedVerificationApplied = riskBasedVerificationApplied,
     riskBasedVerificationDescription = riskBasedVerificationDescription
 )

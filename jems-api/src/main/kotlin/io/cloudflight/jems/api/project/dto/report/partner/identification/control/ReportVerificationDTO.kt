@@ -2,7 +2,7 @@ package io.cloudflight.jems.api.project.dto.report.partner.identification.contro
 
 data class ReportVerificationDTO(
     val generalMethodologies: Set<ReportMethodologyDTO>,
-    val verificationInstances: List<ReportOnTheSpotVerificationDTO>,
+    val verificationInstances: Set<ReportOnTheSpotVerificationDTO>,
     val riskBasedVerificationApplied: Boolean,
     val riskBasedVerificationDescription: String?
 )

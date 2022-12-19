@@ -1,6 +1,9 @@
 package io.cloudflight.jems.server.project.service.report.partner.identification.control.updateProjectPartnerControlReportIdentification
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import io.cloudflight.jems.server.common.validator.GeneralValidatorService
+import io.cloudflight.jems.server.common.validator.TELEPHONE_REGEX
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.programme.repository.ProgrammeDataRepository
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerControlReport
 import io.cloudflight.jems.server.project.service.ProjectPersistence
@@ -10,6 +13,7 @@ import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerR
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ProjectPartnerControlReport
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ProjectPartnerControlReportChange
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportDesignatedController
 import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportIdentificationPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportVerification
 import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportDesignatedControllerPersistence
@@ -28,6 +32,8 @@ class UpdateProjectPartnerControlReportIdentification(
     private val projectPersistence: ProjectPersistence,
     private val programmeDataRepository: ProgrammeDataRepository,
     private val getContractingMonitoringService: GetContractingMonitoringService,
+    private val controllerInstitutionPersistence: ControllerInstitutionPersistence,
+    private val generalValidator: GeneralValidatorService,
 ) : UpdateProjectPartnerControlReportIdentificationInteractor {
 
     @CanEditPartnerControlReport
@@ -41,6 +47,8 @@ class UpdateProjectPartnerControlReportIdentification(
         val report = reportPersistence.getPartnerReportById(partnerId, reportId = reportId)
         validateReportInControl(status = report.status)
         validateVerificationSize(data.reportVerification)
+        validateInputs(data = data.designatedController)
+        validateUsers(data.designatedController)
 
         val identification = reportIdentificationPersistence.updatePartnerControlReportIdentification(
             partnerId = partnerId,
@@ -81,5 +89,31 @@ class UpdateProjectPartnerControlReportIdentification(
     private fun validateVerificationSize(verification: ReportVerification) {
         if (verification.verificationInstances.size > 5)
             throw ControlIdentificationTooManyVerifications()
+    }
+
+    private fun validateInputs(data: ReportDesignatedController) {
+        generalValidator.throwIfAnyIsInvalid(
+            generalValidator.maxLength(data.jobTitle, 50, "jobTitle"),
+            generalValidator.maxLength(data.divisionUnit, 100, "divisionUnit"),
+            generalValidator.maxLength(data.address, 100, "address"),
+            generalValidator.maxLength(data.telephone, 100, "telephone"),
+            if (data.telephone.isNullOrBlank()) emptyMap () else
+                generalValidator.matches(
+                    data.telephone,
+                    TELEPHONE_REGEX,
+                    "telephone",
+                    "project.contact.telephone.wrong.format"
+                ),
+        )
+    }
+
+    private fun validateUsers(data: ReportDesignatedController) {
+        val userIdsAssignedToReport =
+            controllerInstitutionPersistence.getControllerUsersForReportByInstitutionId(data.controlInstitutionId)
+                .map {it.id}
+        if (data.controllingUserId != null && !userIdsAssignedToReport.contains(data.controllingUserId))
+            throw ControlIdentificationDesignatedControllerDoesNotExist()
+        if(data.controllerReviewerId != null && !userIdsAssignedToReport.contains(data.controllerReviewerId))
+            throw ControlIdentificationDesignatedControllerDoesNotExist()
     }
 }

@@ -39,22 +39,9 @@ class GetProjectPartnerReportIdentificationService(
 
         fun emptyVerification() = ReportVerification(
             generalMethodologies = emptySet(),
-            verificationInstances = emptyList(),
+            verificationInstances = emptySet(),
             riskBasedVerificationApplied = false,
             riskBasedVerificationDescription = null
-        )
-
-        fun emptyDesignatedController() = ReportDesignatedController(
-            controlInstitution = null,
-            controlInstitutionId = 0,
-            controllingUserId = null,
-            jobTitle = null,
-            divisionUnit = null,
-            address = null,
-            countryCode = null,
-            country = null,
-            telephone = null,
-            controllerReviewerId = null,
         )
     }
 

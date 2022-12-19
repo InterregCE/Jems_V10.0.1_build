@@ -285,7 +285,7 @@ class ProjectPartnerReportIdentificationPersistenceProviderTest : UnitTest() {
             ),
             reportVerification = ReportVerification(
                 generalMethodologies = emptySet(),
-                verificationInstances = emptyList(),
+                verificationInstances = emptySet(),
                 riskBasedVerificationApplied = false,
                 riskBasedVerificationDescription = null
             )
@@ -317,7 +317,7 @@ class ProjectPartnerReportIdentificationPersistenceProviderTest : UnitTest() {
             ),
             reportVerification = ReportVerification(
                 generalMethodologies = emptySet(),
-                verificationInstances = emptyList(),
+                verificationInstances = emptySet(),
                 riskBasedVerificationApplied = false,
                 riskBasedVerificationDescription = null
             )

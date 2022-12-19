@@ -18,11 +18,11 @@ data class ProjectPartnerReportOnTheSpotVerificationEntity (
     @field:NotNull
     val reportVerificationId: Long,
 
-    val verificationFrom: LocalDate?,
-    val verificationTo: LocalDate?,
+    var verificationFrom: LocalDate?,
+    var verificationTo: LocalDate?,
 
     @OneToMany(mappedBy = "reportOnTheSpotVerificationId", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val verificationLocations: MutableSet<ProjectPartnerReportVerificationOnTheSpotLocationEntity> = mutableSetOf(),
+    var verificationLocations: MutableSet<ProjectPartnerReportVerificationOnTheSpotLocationEntity> = mutableSetOf(),
 
-    val verificationFocus: String?
+    var verificationFocus: String?
 )

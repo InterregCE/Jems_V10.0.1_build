@@ -15,7 +15,6 @@ import io.cloudflight.jems.server.project.service.report.partner.identification.
 import io.cloudflight.jems.server.project.service.report.partner.identification.control.toModelObject
 import io.cloudflight.jems.server.project.service.report.partner.identification.getProjectPartnerReportIdentification.GetProjectPartnerReportIdentificationService.Companion.emptyIdentification
 import io.cloudflight.jems.server.project.service.report.partner.identification.getProjectPartnerReportIdentification.GetProjectPartnerReportIdentificationService.Companion.emptyVerification
-import io.cloudflight.jems.server.project.service.report.partner.identification.getProjectPartnerReportIdentification.GetProjectPartnerReportIdentificationService.Companion.emptyDesignatedController
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 

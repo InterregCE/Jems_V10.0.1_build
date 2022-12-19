@@ -18,7 +18,7 @@ import {
 import CategoryEnum = ProjectPartnerReportUnitCostDTO.CategoryEnum;
 import {
   PartnerReportDetailPageStore
-} from "@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service";
+} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 
 @UntilDestroy()
 @Component({

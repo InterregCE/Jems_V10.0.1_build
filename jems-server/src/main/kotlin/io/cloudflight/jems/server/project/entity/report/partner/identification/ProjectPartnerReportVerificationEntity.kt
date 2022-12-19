@@ -22,12 +22,12 @@ data class ProjectPartnerReportVerificationEntity (
     val reportEntity: ProjectPartnerReportEntity,
 
     @OneToMany(mappedBy = "reportVerificationId", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val generalMethodologies: MutableSet<ProjectPartnerReportVerificationGeneralMethodologyEntity> = mutableSetOf(),
+    var generalMethodologies: MutableSet<ProjectPartnerReportVerificationGeneralMethodologyEntity> = mutableSetOf(),
 
     @OneToMany(mappedBy = "reportVerificationId", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val verificationInstances: List<ProjectPartnerReportOnTheSpotVerificationEntity> = emptyList(),
+    var verificationInstances: MutableSet<ProjectPartnerReportOnTheSpotVerificationEntity> = mutableSetOf(),
 
     @field:NotNull
-    val riskBasedVerificationApplied: Boolean,
-    val riskBasedVerificationDescription: String?
+    var riskBasedVerificationApplied: Boolean,
+    var riskBasedVerificationDescription: String?
 )

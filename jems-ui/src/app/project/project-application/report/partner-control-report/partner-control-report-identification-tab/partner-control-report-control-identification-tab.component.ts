@@ -62,6 +62,7 @@ export class PartnerControlReportControlIdentificationTabComponent implements On
     partnerType: [],
     designatedController: this.formBuilder.group({
       controlInstitution: this.formBuilder.control(''),
+      controlInstitutionId: this.formBuilder.control(''),
       controllingUserId: this.formBuilder.control(''),
       controllingUserName: this.formBuilder.control(''),
       jobTitle: this.formBuilder.control('', [Validators.maxLength(this.constants.JOB_TITLE_MAX_LENGTH)]),
@@ -178,6 +179,7 @@ export class PartnerControlReportControlIdentificationTabComponent implements On
     }
 
     this.designatedController.get('controlInstitution')?.patchValue(this.returnValueOrNull(data.designatedController?.controlInstitution));
+    this.designatedController.get('controlInstitutionId')?.patchValue(this.returnValueOrNull(data.designatedController?.controlInstitutionId));
     this.designatedController.get('controllingUserId')?.patchValue(this.returnValueOrNull(data.designatedController?.controllingUserId));
     this.designatedController.get('jobTitle')?.patchValue(this.returnValueOrNull(data.designatedController?.jobTitle));
     this.designatedController.get('divisionUnit')?.patchValue(this.returnValueOrNull(data.designatedController?.divisionUnit));
@@ -261,6 +263,8 @@ export class PartnerControlReportControlIdentificationTabComponent implements On
       type: this.form.value.partnerType,
       designatedController: {
         ...this.form.value.designatedController,
+        controlInstitutionId: this.designatedController.get('controlInstitutionId')?.value,
+        controlInstitution: this.designatedController.get('controlInstitution')?.value,
         countryCode: this.selectedCountry?.code,
         controllingUserId: this.selectedControllerUser?.id,
         controllerReviewerId: this.selectedReviewerUser?.id
@@ -268,7 +272,7 @@ export class PartnerControlReportControlIdentificationTabComponent implements On
       reportVerification: {
         ...this.form.value.reportVerification,
         generalMethodologies: this.getListOfGeneralMethodologies(this.form.value.reportVerification),
-        verificationInstances: this.formatVerificationInstances(this.form.value.reportVerification.verificationInstances),
+        verificationInstances: this.form.controls.reportVerification?.get(this.constants.FORM_CONTROL_NAMES.onTheSpotVerification)?.value ? this.formatVerificationInstances(this.form.value.reportVerification.verificationInstances) : [],
       }
     } as ProjectPartnerControlReportChangeDTO;
 

@@ -30,7 +30,9 @@
         </div>
         <div class="project-row">
             <span class="header p-1 pr-3">{{'project.application.partner.control.report.reporting.period' | translate}}</span>
-            <span class="p-1">{{data.partnerControlReport.reportPeriodNumber}}: {{data.partnerControlReport.reportPeriodStart | localeDate : 'L'}} - {{data.partnerControlReport.reportPeriodEnd | localeDate : 'L'}}</span>
+            <span class="p-1" *ngIf="data.partnerControlReport.reportPeriodNumber">
+                {{data.partnerControlReport.reportPeriodNumber}}: {{data.partnerControlReport.reportPeriodStart | localeDate : 'L'}} - {{data.partnerControlReport.reportPeriodEnd | localeDate : 'L'}}
+            </span>
         </div>
         <div class="project-row">
             <span class="header p-1 pr-3">{{'project.application.partner.control.report.report.number' | translate}}</span>
@@ -98,7 +100,7 @@
         <h3>{{'project.application.partner.control.report.section.three' | translate}}</h3>
         <div id="control-project-partner-controller" class="mb-5 mt-3" [formGroupName]="constants.FORM_CONTROL_NAMES.designatedController">
             <div class="control-institution-container">
-                <mat-form-field jemsFormFieldWidth="two-thirds" >
+                <mat-form-field jemsFormFieldWidth="half" >
                     <mat-label>{{'project.application.partner.control.report.controller.institution.name' | translate}}</mat-label>
                     <input [formControlName]="constants.FORM_CONTROL_NAMES.controlInstitution" matInput>
                 </mat-form-field>
@@ -106,14 +108,14 @@
             </div>
 
             <div>
-                <mat-form-field jemsFormFieldWidth="two-thirds" >
+                <mat-form-field jemsFormFieldWidth="half" >
 
                     <mat-label>{{'project.application.partner.control.report.controller.name' | translate}}</mat-label>
                     <input name="controlUser" [formControlName]="constants.FORM_CONTROL_NAMES.controllingUserName" matInput
                            [matAutocomplete]="controllingUser">
                     <mat-autocomplete #controllingUser="matAutocomplete"
                                       (optionSelected)="controlUserChanged($event.option?.value)">
-                        <mat-option *ngFor="let controlUser of filteredControllerUsers$ | async" [value]="controlUser" class="nuts-text-size">
+                        <mat-option *ngFor="let controlUser of filteredControllerUsers$ | async" [value]="controlUser" class="autocomplete-text-size">
                             {{controlUser}}
                         </mat-option>
                     </mat-autocomplete>
@@ -121,7 +123,7 @@
             </div>
 
             <div>
-                <mat-form-field jemsFormFieldWidth="two-thirds" >
+                <mat-form-field jemsFormFieldWidth="half" >
                     <mat-label>{{'project.application.partner.control.report.job.title' | translate}}</mat-label>
                     <input [formControlName]="constants.FORM_CONTROL_NAMES.jobTitle" matInput #jobTitle>
                     <mat-hint [jemsHintFor]="jobTitle">
@@ -136,7 +138,7 @@
             </div>
 
             <div>
-                <mat-form-field jemsFormFieldWidth="two-thirds">
+                <mat-form-field jemsFormFieldWidth="half">
                     <mat-label>{{'project.application.partner.control.report.division' | translate}}</mat-label>
                     <input [formControlName]="constants.FORM_CONTROL_NAMES.divisionUnit" #reportDivision matInput>
                     <mat-hint [jemsHintFor]="reportDivision">
@@ -151,7 +153,7 @@
             </div>
 
             <div>
-                <mat-form-field jemsFormFieldWidth="two-thirds">
+                <mat-form-field jemsFormFieldWidth="half">
                     <mat-label>{{'project.application.partner.control.report.address' | translate}}</mat-label>
                     <input [formControlName]="constants.FORM_CONTROL_NAMES.address" #address matInput>
                     <mat-hint [jemsHintFor]="address">
@@ -167,14 +169,14 @@
 
             <div>
                 <ng-container *ngIf="data.nuts">
-                    <mat-form-field jemsFormFieldWidth="two-thirds">
+                    <mat-form-field jemsFormFieldWidth="half">
                         <mat-label>{{'project.partner.main-address.country' | translate}}</mat-label>
                         <input name="country" [formControlName]="constants.FORM_CONTROL_NAMES.country" matInput
                                [matAutocomplete]="country"
                              >
                         <mat-autocomplete #country="matAutocomplete"
                                           (optionSelected)="countryChanged($event.option?.value)">
-                            <mat-option *ngFor="let region of filteredCountry$ | async" [value]="region" class="nuts-text-size">
+                            <mat-option *ngFor="let region of filteredCountry$ | async" [value]="region" class="autocomplete-text-size">
                                 {{region}}
                             </mat-option>
                         </mat-autocomplete>
@@ -183,7 +185,7 @@
             </div>
 
             <div>
-                <mat-form-field jemsFormFieldWidth="two-thirds">
+                <mat-form-field jemsFormFieldWidth="half">
                     <mat-label>{{'project.application.partner.control.report.phone.number' | translate}}</mat-label>
                     <input #telephoneNumber [formControlName]="constants.FORM_CONTROL_NAMES.telephone" matInput >
                     <mat-hint [jemsHintFor]="telephoneNumber">
@@ -200,13 +202,13 @@
 
             <h4>{{'project.application.partner.control.report.controller.reviewer.header' | translate}}</h4>
             <div>
-                <mat-form-field jemsFormFieldWidth="two-thirds" >
+                <mat-form-field jemsFormFieldWidth="half" >
                     <mat-label>{{'project.application.partner.control.report.controller.name' | translate}}</mat-label>
                     <input name="controlUser" [formControlName]="constants.FORM_CONTROL_NAMES.controllerReviewerName" matInput
                            [matAutocomplete]="reviewerUser">
                     <mat-autocomplete #reviewerUser="matAutocomplete"
                                       (optionSelected)="reviewerUserChanged($event.option?.value)">
-                        <mat-option *ngFor="let reviewerUser of filteredReviewerUsers$ | async" [value]="reviewerUser" class="nuts-text-size">
+                        <mat-option *ngFor="let reviewerUser of filteredReviewerUsers$ | async" [value]="reviewerUser" class="autocomplete-text-size">
                             {{reviewerUser}}
                         </mat-option>
                     </mat-autocomplete>
@@ -229,103 +231,106 @@
                 </mat-checkbox>
             </div>
 
+
             <div  *ngIf="form.controls.reportVerification?.get(constants.FORM_CONTROL_NAMES.onTheSpotVerification)?.value" id="on-the-spot-verification-container" class="mt-4" >
-                <h4>{{'project.application.partner.control.report.administrative.on.spot.verification.list.header' | translate}}</h4>
 
-                <div id="on-the-spot-verification-table">
-                    <div [jemsTableConfig]="[{minInRem:22, maxInRem:30}, {minInRem:12, maxInRem:20},{minInRem:12}, {minInRem:3, maxInRem:3}]" jemsNoWidthLimit>
-                        <div>
-                            <span>{{ 'project.application.partner.control.report.administrative.on.spot.verification.table.date.header' | translate }}</span>
-                            <span>{{ 'project.application.partner.control.report.administrative.on.spot.verification.table.location.header' | translate }}</span>
-                            <span>{{ 'project.application.partner.control.report.administrative.on.spot.verification.table.focus.header' | translate }}</span>
-                            <div>{{ 'project.application.partner.control.report.administrative.on.spot.verification.table.delete.header' | translate }}
-                            </div>
-                        </div>
-
-                        <ng-container *ngFor="let verificationRow of verificationInstances.controls; let verificationIndex = index"
-                                    [formArrayName]="constants.FORM_CONTROL_NAMES.verificationInstances" >
-                                <div [formGroupName]="verificationIndex">
-                                    <div class="date-wrapper">
-                                        <mat-form-field class="date" jemsFormFieldWidth="large">
-                                            <mat-label>{{'project.application.partner.control.report.administrative.on.spot.verification.table.date.from.label' | translate}}</mat-label>
-                                            <input [formControlName]="constants.FORM_CONTROL_NAMES.verificationFrom" matInput
-                                                   [matDatepicker]="onTheSpotVerificationFrom">
-                                            <mat-datepicker-toggle matSuffix [for]="onTheSpotVerificationFrom"></mat-datepicker-toggle>
-                                            <mat-datepicker #onTheSpotVerificationFrom></mat-datepicker>
-                                            <mat-error>
-                                                <jems-form-field-errors
-                                                        [errors]="verificationRow.get(constants.FORM_CONTROL_NAMES.verificationFrom)?.errors">
-                                                </jems-form-field-errors>
-                                            </mat-error>
-                                        </mat-form-field>
-
-                                        <mat-form-field class="date" jemsFormFieldWidth="large">
-                                            <mat-label>{{'project.application.partner.control.report.administrative.on.spot.verification.table.date.to.label' | translate}}</mat-label>
-                                            <input [formControlName]="constants.FORM_CONTROL_NAMES.verificationTo" matInput
-                                                   [matDatepicker]="onTheSpotVerificationTo">
-                                            <mat-datepicker-toggle matSuffix [for]="onTheSpotVerificationTo"></mat-datepicker-toggle>
-                                            <mat-datepicker #onTheSpotVerificationTo></mat-datepicker>
-                                            <mat-error>
-                                                <jems-form-field-errors
-                                                        [errors]="verificationRow.get(constants.FORM_CONTROL_NAMES.verificationTo)?.errors">
-                                                </jems-form-field-errors>
-                                            </mat-error>
-                                        </mat-form-field>
-                                    </div>
-
-                                    <div class="location-checkboxes">
-                                        <mat-checkbox [formControlName]="constants.FORM_CONTROL_NAMES.premisesOfProjectPartner">
-                                            {{ 'project.application.partner.control.report.administrative.on.spot.verification.premises.of.partner.checkbox' | translate }}
-                                        </mat-checkbox>
-
-                                        <mat-checkbox [formControlName]="constants.FORM_CONTROL_NAMES.projectEvent">
-                                            {{ 'project.application.partner.control.report.administrative.on.spot.verification.project.event.checkbox' | translate }}
-                                        </mat-checkbox>
-
-                                        <mat-checkbox [formControlName]="constants.FORM_CONTROL_NAMES.placeOfProjectOutput">
-                                            {{ 'project.application.partner.control.report.administrative.on.spot.verification.place.of.physical.project.checkbox' | translate }}
-                                        </mat-checkbox>
-
-                                        <mat-checkbox [formControlName]="constants.FORM_CONTROL_NAMES.virtual">
-                                            {{ 'project.application.partner.control.report.administrative.on.spot.verification.virtual.checkbox' | translate }}
-                                        </mat-checkbox>
-                                    </div>
-
-                                    <div>
-                                        <mat-form-field jemsFormFieldWidth="full">
-                                            <mat-label>{{'common.textarea.enter.text' | translate}}</mat-label>
-
-                                            <textarea [formControlName]="constants.FORM_CONTROL_NAMES.verificationFocus" matInput
-                                                      #autosize="cdkTextareaAutosize"
-                                                      [matTooltip]="focus.value"
-                                                      [cdkTextareaAutosize]
-                                                      [cdkAutosizeMinRows]="3"
-                                                      [cdkAutosizeMaxRows]="5"
-                                                      #focus>
-                                            </textarea>
-                                            <mat-hint [jemsHintFor]="focus">
-                                                <jems-text-hint [currentLength]="focus.value.length" [maxLength]="3000"></jems-text-hint>
-                                            </mat-hint>
-                                            <mat-error>
-                                                <jems-form-field-errors [errors]="verificationRow.get(constants.FORM_CONTROL_NAMES.verificationFocus)?.errors"></jems-form-field-errors>
-                                            </mat-error>
-                                        </mat-form-field>
-                                    </div>
-
-
-                                    <div>
-                                        <button
-                                                (click)="removeItem(verificationIndex);$event.stopPropagation();"
-                                                color="accent"
-                                                mat-icon-button
-                                                matTooltip="{{'common.delete.entry.tooltip' | translate}}">
-                                            <mat-icon>delete</mat-icon>
-                                        </button>
-                                    </div>
+                <ng-container *ngIf="verificationInstances.controls.length > 0">
+                    <h4>{{'project.application.partner.control.report.administrative.on.spot.verification.list.header' | translate}}</h4>
+                    <div id="on-the-spot-verification-table">
+                        <div [jemsTableConfig]="[{minInRem:22, maxInRem:30}, {minInRem:12, maxInRem:20},{minInRem:12}, {minInRem:3, maxInRem:3}]" jemsNoWidthLimit>
+                            <div>
+                                <span>{{ 'project.application.partner.control.report.administrative.on.spot.verification.table.date.header' | translate }}</span>
+                                <span>{{ 'project.application.partner.control.report.administrative.on.spot.verification.table.location.header' | translate }}</span>
+                                <span>{{ 'project.application.partner.control.report.administrative.on.spot.verification.table.focus.header' | translate }}</span>
+                                <div>{{ 'project.application.partner.control.report.administrative.on.spot.verification.table.delete.header' | translate }}
                                 </div>
-                            </ng-container>
+                            </div>
+
+                            <ng-container *ngFor="let verificationRow of verificationInstances.controls; let verificationIndex = index"
+                                        [formArrayName]="constants.FORM_CONTROL_NAMES.verificationInstances" >
+                                    <div [formGroupName]="verificationIndex">
+                                        <div class="date-wrapper">
+                                            <mat-form-field class="date" jemsFormFieldWidth="large">
+                                                <mat-label>{{'project.application.partner.control.report.administrative.on.spot.verification.table.date.from.label' | translate}}</mat-label>
+                                                <input [formControlName]="constants.FORM_CONTROL_NAMES.verificationFrom" matInput
+                                                       [matDatepicker]="onTheSpotVerificationFrom">
+                                                <mat-datepicker-toggle matSuffix [for]="onTheSpotVerificationFrom"></mat-datepicker-toggle>
+                                                <mat-datepicker #onTheSpotVerificationFrom></mat-datepicker>
+                                                <mat-error>
+                                                    <jems-form-field-errors
+                                                            [errors]="verificationRow.get(constants.FORM_CONTROL_NAMES.verificationFrom)?.errors">
+                                                    </jems-form-field-errors>
+                                                </mat-error>
+                                            </mat-form-field>
+
+                                            <mat-form-field class="date" jemsFormFieldWidth="large">
+                                                <mat-label>{{'project.application.partner.control.report.administrative.on.spot.verification.table.date.to.label' | translate}}</mat-label>
+                                                <input [formControlName]="constants.FORM_CONTROL_NAMES.verificationTo" matInput
+                                                       [matDatepicker]="onTheSpotVerificationTo">
+                                                <mat-datepicker-toggle matSuffix [for]="onTheSpotVerificationTo"></mat-datepicker-toggle>
+                                                <mat-datepicker #onTheSpotVerificationTo></mat-datepicker>
+                                                <mat-error>
+                                                    <jems-form-field-errors
+                                                            [errors]="verificationRow.get(constants.FORM_CONTROL_NAMES.verificationTo)?.errors">
+                                                    </jems-form-field-errors>
+                                                </mat-error>
+                                            </mat-form-field>
+                                        </div>
+
+                                        <div class="location-checkboxes">
+                                            <mat-checkbox [formControlName]="constants.FORM_CONTROL_NAMES.premisesOfProjectPartner">
+                                                {{ 'project.application.partner.control.report.administrative.on.spot.verification.premises.of.partner.checkbox' | translate }}
+                                            </mat-checkbox>
+
+                                            <mat-checkbox [formControlName]="constants.FORM_CONTROL_NAMES.projectEvent">
+                                                {{ 'project.application.partner.control.report.administrative.on.spot.verification.project.event.checkbox' | translate }}
+                                            </mat-checkbox>
+
+                                            <mat-checkbox [formControlName]="constants.FORM_CONTROL_NAMES.placeOfProjectOutput">
+                                                {{ 'project.application.partner.control.report.administrative.on.spot.verification.place.of.physical.project.checkbox' | translate }}
+                                            </mat-checkbox>
+
+                                            <mat-checkbox [formControlName]="constants.FORM_CONTROL_NAMES.virtual">
+                                                {{ 'project.application.partner.control.report.administrative.on.spot.verification.virtual.checkbox' | translate }}
+                                            </mat-checkbox>
+                                        </div>
+
+                                        <div>
+                                            <mat-form-field jemsFormFieldWidth="full">
+                                                <mat-label>{{'common.textarea.enter.text' | translate}}</mat-label>
+
+                                                <textarea [formControlName]="constants.FORM_CONTROL_NAMES.verificationFocus" matInput
+                                                          #autosize="cdkTextareaAutosize"
+                                                          [matTooltip]="focus.value"
+                                                          [cdkTextareaAutosize]
+                                                          [cdkAutosizeMinRows]="3"
+                                                          [cdkAutosizeMaxRows]="5"
+                                                          #focus>
+                                                </textarea>
+                                                <mat-hint [jemsHintFor]="focus">
+                                                    <jems-text-hint [currentLength]="focus.value.length" [maxLength]="3000"></jems-text-hint>
+                                                </mat-hint>
+                                                <mat-error>
+                                                    <jems-form-field-errors [errors]="verificationRow.get(constants.FORM_CONTROL_NAMES.verificationFocus)?.errors"></jems-form-field-errors>
+                                                </mat-error>
+                                            </mat-form-field>
+                                        </div>
+
+
+                                        <div>
+                                            <button
+                                                    (click)="removeItem(verificationIndex);$event.stopPropagation();"
+                                                    color="accent"
+                                                    mat-icon-button
+                                                    matTooltip="{{'common.delete.entry.tooltip' | translate}}">
+                                                <mat-icon>delete</mat-icon>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </ng-container>
+                        </div>
                     </div>
-                </div>
+                </ng-container>
                 <button *ngIf="(verificationInstances.length < 5) && (reportEditable$ | async)"
                         class="mt-2"
                         jemsText mat-stroked-button
@@ -350,7 +355,7 @@
             </mat-button-toggle-group>
             <p class="mt-3">{{'project.application.partner.control.report.risk.verification.applied.info' | translate}}</p>
 
-            <mat-form-field jemsFormFieldWidth="full">
+            <mat-form-field jemsFormFieldWidth="half">
                 <mat-label>{{'common.textarea.enter.text' | translate}}</mat-label>
                 <textarea [formControlName]="constants.FORM_CONTROL_NAMES.riskBasedVerificationDescription" matInput
                       #autosize="cdkTextareaAutosize"
