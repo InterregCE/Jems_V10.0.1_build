@@ -6,7 +6,6 @@ import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPa
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import java.math.BigDecimal
 import java.time.ZonedDateTime
 
 interface ProjectPartnerReportPersistence {
@@ -19,7 +18,6 @@ interface ProjectPartnerReportPersistence {
         partnerId: Long,
         reportId: Long,
         controlEnd: ZonedDateTime,
-        totalEligibleAfterControl: BigDecimal,
     ): ProjectPartnerReportSubmissionSummary
 
     fun getPartnerReportStatusAndVersion(partnerId: Long, reportId: Long): ProjectPartnerReportStatusAndVersion

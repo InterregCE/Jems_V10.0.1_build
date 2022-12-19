@@ -68,7 +68,6 @@ class FinalizeControlPartnerReport(
             partnerId = partnerId,
             reportId = reportId,
             controlEnd = ZonedDateTime.now(),
-            totalEligibleAfterControl = afterControlCostCategories.sum,
         ).also {
             val projectId = partnerPersistence.getProjectIdForPartnerId(id = partnerId, it.version)
             auditPublisher.publishEvent(

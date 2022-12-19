@@ -22,7 +22,7 @@ interface ProjectPartnerReportRepository : JpaRepository<ProjectPartnerReportEnt
             report.firstSubmission,
             report.controlEnd,
             report.createdAt,
-            report.totalEligibleAfterControl,
+            report_co_fin.sumTotalEligibleAfterControl,
             report_identification.periodNumber,
             report_identification.startDate,
             report_identification.endDate,
@@ -36,6 +36,8 @@ interface ProjectPartnerReportRepository : JpaRepository<ProjectPartnerReportEnt
             ON report.id = report_identification.reportId
         LEFT JOIN #{#entityName}_budget_per_period report_period
             ON report.id = report_period.id.report.id AND report_identification.periodNumber = report_period.id.periodNumber
+        LEFT JOIN #{#entityName}_expenditure_co_financing report_co_fin
+            ON report.id = report_co_fin.reportEntity.id
         WHERE report.partnerId = :partnerId
     """
     )

@@ -16,6 +16,6 @@ data class ProjectPartnerReportSummary(
     val startDate: LocalDate?,
     val endDate: LocalDate?,
     val periodDetail: ProjectPartnerReportPeriod?,
-    val totalEligibleAfterControl: BigDecimal?,
+    var totalEligibleAfterControl: BigDecimal?,
     var deletable: Boolean,
 )

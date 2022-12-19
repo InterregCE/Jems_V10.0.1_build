@@ -52,7 +52,7 @@ fun ReportSummary.toModelSummary() =
         deletable = false,
     )
 
-fun ProjectPartnerReportEntity.toModelSummary() =
+fun ProjectPartnerReportEntity.toModelSummaryAfterCreate() =
     ProjectPartnerReportSummary(
         id = id,
         reportNumber = number,
@@ -64,7 +64,7 @@ fun ProjectPartnerReportEntity.toModelSummary() =
         startDate = null,
         endDate = null,
         periodDetail = null,
-        totalEligibleAfterControl = totalEligibleAfterControl,
+        totalEligibleAfterControl = null,
         deletable = false,
     )
 
@@ -156,7 +156,6 @@ fun ProjectPartnerReportCreate.toEntity(
         country = identification.country,
         currency = identification.currency
     ),
-    totalEligibleAfterControl = ZERO,
 )
 
 fun List<PreviouslyReportedFund>.toEntity(

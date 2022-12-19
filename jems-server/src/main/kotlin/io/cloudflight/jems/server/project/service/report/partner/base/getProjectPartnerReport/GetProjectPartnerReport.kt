@@ -29,9 +29,17 @@ class GetProjectPartnerReport(
 
         return reportPersistence.listPartnerReports(partnerId, pageable)
             .fillInDeletableFor(latestReportId)
+            .removeEligibleAfterControlFromNotInControlOnes()
     }
 
     private fun Page<ProjectPartnerReportSummary>.fillInDeletableFor(latestReportId: Long?) =
         this.onEach { it.deletable = it.id == latestReportId && it.status.isOpen() }
+
+    private fun Page<ProjectPartnerReportSummary>.removeEligibleAfterControlFromNotInControlOnes() =
+        this.onEach {
+            if (it.status.controlNotStartedYet()) {
+                it.totalEligibleAfterControl = null
+            }
+        }
 
 }

@@ -14,6 +14,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
+import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
@@ -50,10 +51,10 @@ internal class GetProjectPartnerReportTest : UnitTest() {
     }
 
     @MockK
-    lateinit var reportPersistence: ProjectPartnerReportPersistence
+    private lateinit var reportPersistence: ProjectPartnerReportPersistence
 
     @InjectMockKs
-    lateinit var getReport: GetProjectPartnerReport
+    private lateinit var getReport: GetProjectPartnerReport
 
     @Test
     fun findById() {
@@ -62,57 +63,47 @@ internal class GetProjectPartnerReportTest : UnitTest() {
         assertThat(getReport.findById(PARTNER_ID, 14L).equals(report)).isTrue
     }
 
-    @ParameterizedTest(name = "findAll when last status {0}")
+    @ParameterizedTest(name = "findAll when last status Draft and isDeletable {0}")
+    @ValueSource(booleans = [true, false])
+    fun `findAll when last status Draft and isDeletable`(isDeletable: Boolean) {
+        val lastReport = mockk<ProjectPartnerReport>()
+        every { lastReport.id } returns if (isDeletable) 10L else 9457L
+        every { reportPersistence.getCurrentLatestReportForPartner(PARTNER_ID) } returns lastReport
+
+        every { reportPersistence.listPartnerReports(PARTNER_ID, Pageable.unpaged()) } returns
+            PageImpl(ReportStatus.values().map { report(10L + it.ordinal, it) })
+
+        assertThat(getReport.findAll(PARTNER_ID, Pageable.unpaged()).content).containsExactly(
+            report(10L, ReportStatus.Draft).copy(deletable = isDeletable, totalEligibleAfterControl = null),
+            report(11L, ReportStatus.Submitted).copy(totalEligibleAfterControl = null),
+            report(12L, ReportStatus.InControl),
+            report(13L, ReportStatus.Certified),
+        )
+    }
+
+    @ParameterizedTest(name = "findAll when last status is not draft, but {0}")
     @EnumSource(value = ReportStatus::class, names = ["Draft"], mode = EnumSource.Mode.EXCLUDE)
-    fun `findAll when last status`(status: ReportStatus) {
+    fun `findAll when last status is not draft`(status: ReportStatus) {
         val lastReport = mockk<ProjectPartnerReport>()
-        every { lastReport.id } returns 16L
+        every { lastReport.id } returns 20L
         every { reportPersistence.getCurrentLatestReportForPartner(PARTNER_ID) } returns lastReport
 
         every { reportPersistence.listPartnerReports(PARTNER_ID, Pageable.unpaged()) } returns
-            PageImpl(listOf(
-                report(16L, status),
-                report(15L, ReportStatus.Draft),
-            ))
+            PageImpl(
+                listOf(report(20L, status))
+                    .plus(ReportStatus.values().map { report(21L + it.ordinal, it) }) // should not affect test
+            )
+
         assertThat(getReport.findAll(PARTNER_ID, Pageable.unpaged()).content).containsExactly(
-            report(16L, status),
-            report(15L, ReportStatus.Draft),
-        )
-    }
-
-    @ParameterizedTest(name = "findAll when last is Draft {0}")
-    @EnumSource(value = ReportStatus::class, names = ["Draft"])
-    fun `findAll when last is Draft`(status: ReportStatus) {
-        val lastReport = mockk<ProjectPartnerReport>()
-        every { lastReport.id } returns 26L
-        every { reportPersistence.getCurrentLatestReportForPartner(PARTNER_ID) } returns lastReport
-
-        every { reportPersistence.listPartnerReports(PARTNER_ID, Pageable.unpaged()) } returns
-            PageImpl(listOf(
-                report(26L, status),
-                report(25L, status),
-            ))
-        assertThat(getReport.findAll(PARTNER_ID, Pageable.unpaged()).content).containsExactly(
-            report(26L, status).copy(deletable = true),
-            report(25L, status).copy(deletable = false),
-        )
-    }
-
-    @Test
-    /*
-     * this scenario is not very realistic, but to have it covered we should have this test
-     */
-    fun `findAll when there is no report`() {
-        every { reportPersistence.getCurrentLatestReportForPartner(PARTNER_ID) } returns null
-
-        every { reportPersistence.listPartnerReports(PARTNER_ID, Pageable.unpaged()) } returns
-            PageImpl(listOf(
-                report(36L, ReportStatus.Draft),
-                report(35L, ReportStatus.Draft),
-            ))
-        assertThat(getReport.findAll(PARTNER_ID, Pageable.unpaged()).content).containsExactly(
-            report(36L, ReportStatus.Draft).copy(deletable = false),
-            report(35L, ReportStatus.Draft).copy(deletable = false),
+            report(20L, status).copy(
+                deletable = false,
+                // test removal of total when status is not yet in control
+                totalEligibleAfterControl = if (status in setOf(ReportStatus.InControl, ReportStatus.Certified)) BigDecimal.TEN else null,
+            ),
+            report(21L, ReportStatus.Draft).copy(deletable = false, totalEligibleAfterControl = null),
+            report(22L, ReportStatus.Submitted).copy(totalEligibleAfterControl = null),
+            report(23L, ReportStatus.InControl),
+            report(24L, ReportStatus.Certified),
         )
     }
 

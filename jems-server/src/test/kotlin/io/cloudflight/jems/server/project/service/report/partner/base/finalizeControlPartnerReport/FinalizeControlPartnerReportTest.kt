@@ -184,7 +184,6 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
             listOf(expenditure1, expenditure2)
 
         every { reportExpenditureCostCategoryPersistence.getCostCategories(PARTNER_ID, reportId = 42L) } returns options
-        val totalSlot = slot<BigDecimal>()
 
         val slotCostCategory = slot<BudgetCostsCalculationResultFull>()
         every { reportExpenditureCostCategoryPersistence.updateAfterControlValues(PARTNER_ID, reportId = 42L, capture(slotCostCategory)) } answers { }
@@ -200,15 +199,14 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
         val slotInvestment = slot<Map<Long, BigDecimal>>()
         every { reportInvestmentPersistence.updateAfterControlValues(PARTNER_ID, reportId = 42L, capture(slotInvestment)) } answers { }
 
-        every { reportPersistence.finalizeControlOnReportById(any(), any(), any(), capture(totalSlot)) } returns mockedResult
+        every { reportPersistence.finalizeControlOnReportById(any(), any(), any()) } returns mockedResult
 
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
 
         assertThat(interactor.finalizeControl(PARTNER_ID, 42L)).isEqualTo(ReportStatus.Certified)
 
-        verify(exactly = 1) { reportPersistence.finalizeControlOnReportById(PARTNER_ID, 42L, any(), any()) }
-        assertThat(totalSlot.captured).isEqualTo(BigDecimal.valueOf(37041L, 2))
+        verify(exactly = 1) { reportPersistence.finalizeControlOnReportById(PARTNER_ID, 42L, any()) }
 
         assertThat(auditSlot.captured.auditCandidate.action).isEqualTo(AuditAction.PARTNER_REPORT_CONTROL_FINALIZED)
         assertThat(auditSlot.captured.auditCandidate.project?.id).isEqualTo(PROJECT_ID.toString())
@@ -232,7 +230,7 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
 
         assertThrows<ReportNotInControl> { interactor.finalizeControl(PARTNER_ID, 44L) }
 
-        verify(exactly = 0) { reportPersistence.finalizeControlOnReportById(any(), any(), any(), any()) }
+        verify(exactly = 0) { reportPersistence.finalizeControlOnReportById(any(), any(), any()) }
         verify(exactly = 0) { auditPublisher.publishEvent(any()) }
     }
 

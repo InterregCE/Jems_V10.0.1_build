@@ -43,12 +43,10 @@ class ProjectPartnerReportPersistenceProvider(
         partnerId: Long,
         reportId: Long,
         controlEnd: ZonedDateTime,
-        totalEligibleAfterControl: BigDecimal,
     ) = partnerReportRepository.findByIdAndPartnerId(id = reportId, partnerId = partnerId)
         .apply {
             this.status = ReportStatus.Certified
             this.controlEnd = controlEnd
-            this.totalEligibleAfterControl = totalEligibleAfterControl
         }.toSubmissionSummary()
 
     @Transactional(readOnly = true)

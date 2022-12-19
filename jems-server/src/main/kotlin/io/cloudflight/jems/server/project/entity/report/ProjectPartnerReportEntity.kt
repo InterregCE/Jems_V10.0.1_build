@@ -42,6 +42,4 @@ class ProjectPartnerReportEntity(
     @field:NotNull
     val createdAt: ZonedDateTime = ZonedDateTime.now(),
 
-    var totalEligibleAfterControl: BigDecimal?,
-
 )

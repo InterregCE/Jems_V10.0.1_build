@@ -78,7 +78,7 @@ class ProjectPartnerReportCreatePersistenceProvider(
         persistAvailableInvestmentsToReport(report.budget.investments, report = reportEntity)
         persistBudgetPerPeriodToReport(report.budget.budgetPerPeriod, report = reportEntity)
         persistBudgetExpenditureSetupToReport(report.budget.expenditureSetup, report = reportEntity)
-        return reportEntity.toModelSummary()
+        return reportEntity.toModelSummaryAfterCreate()
     }
 
     private fun persistReport(report: ProjectPartnerReportCreate): ProjectPartnerReportEntity =
