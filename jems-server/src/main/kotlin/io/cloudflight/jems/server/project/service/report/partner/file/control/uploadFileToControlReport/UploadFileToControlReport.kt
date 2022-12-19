@@ -29,7 +29,7 @@ class UploadFileToControlReport(
     override fun uploadToControlReport(partnerId: Long, reportId: Long, file: ProjectFile): JemsFileMetadata {
         val report = reportPersistence.getPartnerReportById(partnerId, reportId = reportId)
 
-        if (report.status.controlNotOpenAnymore())
+        if (report.status.controlNotStartedYet())
             throw ReportNotInControl()
 
         if (isFileTypeInvalid(file))

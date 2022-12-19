@@ -62,7 +62,7 @@ class UploadFileToControlReportTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "uploadToControlReport (status {0})")
-    @EnumSource(value = ReportStatus::class, names = ["InControl"])
+    @EnumSource(value = ReportStatus::class, names = ["InControl", "Certified"])
     fun uploadToControlReport(status: ReportStatus) {
         val reportId = 49L
         val report = mockk<ProjectPartnerReport>()
@@ -98,7 +98,7 @@ class UploadFileToControlReportTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "uploadToControlReport - wrong status (status {0})")
-    @EnumSource(value = ReportStatus::class, names = ["InControl"], mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = ReportStatus::class, names = ["InControl", "Certified"], mode = EnumSource.Mode.EXCLUDE)
     fun `uploadToControlReport - wrong status`(status: ReportStatus) {
         val reportId = 56L
         val report = mockk<ProjectPartnerReport>()
@@ -115,7 +115,7 @@ class UploadFileToControlReportTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "uploadToControlReport - wrong file type (status {0})")
-    @EnumSource(value = ReportStatus::class, names = ["InControl"])
+    @EnumSource(value = ReportStatus::class, names = ["InControl", "Certified"])
     fun `uploadToControlReport - wrong file type`(status: ReportStatus) {
         val reportId = 10L
         val report = mockk<ProjectPartnerReport>()
@@ -132,7 +132,7 @@ class UploadFileToControlReportTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "uploadToControlReport - file duplicate (status {0})")
-    @EnumSource(value = ReportStatus::class, names = ["InControl"])
+    @EnumSource(value = ReportStatus::class, names = ["InControl", "Certified"])
     fun `uploadToControlReport - file duplicate`(status: ReportStatus) {
         val reportId = 28L
         val report = mockk<ProjectPartnerReport>()
