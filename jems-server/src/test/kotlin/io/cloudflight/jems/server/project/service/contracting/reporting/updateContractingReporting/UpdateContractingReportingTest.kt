@@ -258,21 +258,15 @@ class UpdateContractingReportingTest : UnitTest() {
 
         val reporting = listOf(
             deadlineAt(1, LocalDate.of(2022, 1, 30)),
-            deadlineAt(1, LocalDate.of(2022, 2, 28)),
             deadlineAt(2, LocalDate.of(2022, 2, 27)),
-            deadlineAt(2, LocalDate.of(2022, 3, 31)),
             deadlineAt(3, LocalDate.of(2022, 3, 30)),
-            deadlineAt(3, LocalDate.of(2022, 4, 30)),
         )
 
         val ex = assertThrows<DeadlinesDoNotFitPeriod> { interactor.updateReportingSchedule(projectId, reporting) }
-        assertThat(ex.formErrors).hasSize(6)
+        assertThat(ex.formErrors).hasSize(3)
         assertThat(ex.message).isEqualTo("Following dates are invalid: 2022-01-30 does not fit into period 1 (2022-01-31 - 2022-02-27), " +
-            "2022-02-28 does not fit into period 1 (2022-01-31 - 2022-02-27), " +
             "2022-02-27 does not fit into period 2 (2022-02-28 - 2022-03-30), " +
-            "2022-03-31 does not fit into period 2 (2022-02-28 - 2022-03-30), " +
-            "2022-03-30 does not fit into period 3 (2022-03-31 - 2022-04-29), " +
-            "2022-04-30 does not fit into period 3 (2022-03-31 - 2022-04-29)")
+            "2022-03-30 does not fit into period 3 (2022-03-31 - 2022-04-29)")
     }
 
     @Test

@@ -75,7 +75,6 @@
                             <mat-label>{{'project.application.contract.reporting.column.date' | translate}}</mat-label>
                             <input formControlName="deadlineDate" matInput
                                    [min]="control.get('deadlinePeriodStartDate').value"
-                                   [max]="control.get('deadlinePeriodEndDate').value"
                                    [matDatepicker]="deadlineDate"
                                    required>
                             <mat-datepicker-toggle matSuffix [for]="deadlineDate"></mat-datepicker-toggle>

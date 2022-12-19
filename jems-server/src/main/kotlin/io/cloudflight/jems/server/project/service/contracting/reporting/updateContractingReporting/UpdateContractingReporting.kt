@@ -104,9 +104,7 @@ class UpdateContractingReporting(
         if (deadlines.any { it.date == null })
             throw EmptyDeadlineDate()
         val periodLimits = periods.mapValues { it.value.toLimits(startDate) }
-        val invalidDates = deadlines.filter {
-            it.date!!.isBefore(periodLimits.startLimit(it.periodNumber!!)) || it.date.isAfter(periodLimits.endLimit(it.periodNumber))
-        }
+        val invalidDates = deadlines.filter { it.date!!.isBefore(periodLimits.startLimit(it.periodNumber!!)) }
         if (invalidDates.isNotEmpty())
             throw DeadlinesDoNotFitPeriod(invalidDates.map { Triple(it, periodLimits.startLimit(it.periodNumber!!), periodLimits.endLimit(it.periodNumber)) })
     }
