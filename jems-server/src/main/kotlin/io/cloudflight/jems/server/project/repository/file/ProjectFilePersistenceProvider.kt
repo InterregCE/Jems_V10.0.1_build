@@ -68,6 +68,11 @@ class ProjectFilePersistenceProvider(
         projectFileCategoryRepository.findAllByCategoryIdFileId(fileId).toFileCategoryTypeSet()
 
     @Transactional(readOnly = true)
+    override fun getCategoriesMap(fileIds: Set<Long>): Map<Long, Set<ProjectFileCategoryType>> =
+        projectFileCategoryRepository.findAllByCategoryIdFileIdIn(fileIds)
+            .groupBy { it.categoryId.fileId }.mapValues { it.value.toFileCategoryTypeSet() }
+
+    @Transactional(readOnly = true)
     override fun listFileMetadata(
         projectId: Long, fileCategory: ProjectFileCategory, page: Pageable
     ): Page<ProjectFileMetadata> =

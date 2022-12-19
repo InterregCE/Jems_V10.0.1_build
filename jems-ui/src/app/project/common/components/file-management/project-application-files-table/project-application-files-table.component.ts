@@ -59,7 +59,7 @@ export class ProjectApplicationFilesTableComponent {
           fileList: files.content.map((file: ProjectFileMetadataDTO) => ({
             id: file.id,
             name: file.name,
-            type: selectedCategory?.type,
+            type: file.category || selectedCategory?.type,
             uploaded: file.uploadedAt,
             author: file.uploadedBy,
             sizeString: file.sizeString,

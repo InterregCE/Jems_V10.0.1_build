@@ -200,6 +200,25 @@ internal class ProjectFilePersistenceProviderTest : UnitTest() {
         )
     }
 
+    @Test
+    fun getCategoriesMap() {
+        val projectFileEntity = projectFileEntity()
+        every { projectFileCategoryRepository.findAllByCategoryIdFileIdIn(setOf(FILE_ID)) } returns listOf(
+            projectFileCategoryEntity(
+                FILE_ID, categoryTypeString = ProjectFileCategoryType.APPLICATION.name, projectFileEntity
+            ),
+            projectFileCategoryEntity(
+                FILE_ID, categoryTypeString = ProjectFileCategoryType.PARTNER.name, projectFileEntity
+            ),
+        )
+        assertThat(projectFilePersistenceProvider.getCategoriesMap(setOf(FILE_ID)))
+            .containsExactlyEntriesOf(mapOf(FILE_ID to setOf(
+                ProjectFileCategoryType.APPLICATION,
+                ProjectFileCategoryType.PARTNER,
+                ProjectFileCategoryType.ALL,
+            )))
+    }
+
     @Nested
     inner class ListFileMetadata {
         @Test

@@ -21,11 +21,15 @@ class ListProjectFileMetadata(
     @ExceptionWrapper(ListProjectFileMetadataExceptions::class)
     override fun list(
         projectId: Long, projectFileCategory: ProjectFileCategory, page: Pageable
-    ): Page<ProjectFileMetadata> =
-        with(authorization.getRetrievableCategories(projectId)) {
+    ): Page<ProjectFileMetadata> {
+        val files = with(authorization.getRetrievableCategories(projectId)) {
             if (hasNoAccess(this, projectFileCategory)) return Page.empty()
             filePersistence.listFileMetadata(projectId, getFileCategory(this, projectFileCategory), page)
         }
+        return files.fillInCategory(
+            categoriesMap = filePersistence.getCategoriesMap(files.mapTo(HashSet()) { it.id })
+        )
+    }
 
 
     private fun hasNoAccess(
@@ -45,4 +49,22 @@ class ListProjectFileMetadata(
                     else categoryTypes.map { ProjectFileCategory(it, null) }.first()
                 }
         }
+
+    private fun Page<ProjectFileMetadata>.fillInCategory(categoriesMap: Map<Long, Set<ProjectFileCategoryType>>) =
+        this.onEach { it.category = categoriesMap[it.id]?.getCategory() }
+
+    private fun Set<ProjectFileCategoryType>.getCategory(): ProjectFileCategoryType? =
+        if (this.contains(ProjectFileCategoryType.PARTNER))
+            ProjectFileCategoryType.PARTNER
+        else if (this.contains(ProjectFileCategoryType.INVESTMENT))
+            ProjectFileCategoryType.INVESTMENT
+        else if (this.contains(ProjectFileCategoryType.APPLICATION))
+            ProjectFileCategoryType.APPLICATION
+        else if (this.contains(ProjectFileCategoryType.MODIFICATION))
+            ProjectFileCategoryType.MODIFICATION
+        else if (this.contains(ProjectFileCategoryType.ASSESSMENT))
+            ProjectFileCategoryType.ASSESSMENT
+        else
+            null
+
 }

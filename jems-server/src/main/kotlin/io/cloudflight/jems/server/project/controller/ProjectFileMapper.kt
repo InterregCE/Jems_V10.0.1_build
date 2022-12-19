@@ -34,7 +34,8 @@ abstract class ProjectFileMapper {
             fileMetadata.size.sizeToString(),
             fileMetadata.uploadedAt,
             fileMetadata.uploadedBy.toDto(),
-            fileMetadata.description
+            fileMetadata.description,
+            fileMetadata.category?.let { ProjectFileCategoryTypeDTO.valueOf(it.name) },
         )
 }
 

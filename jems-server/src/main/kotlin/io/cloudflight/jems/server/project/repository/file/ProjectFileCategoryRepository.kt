@@ -21,4 +21,5 @@ interface ProjectFileCategoryRepository : JpaRepository<ProjectFileCategoryEntit
     fun existsByProjectFileProjectIdAndProjectFileName(projectId: Long, fileName: String) : Boolean
     fun deleteAllByCategoryIdFileId(fileId: Long)
     fun findAllByCategoryIdFileId(fileId: Long) : List<ProjectFileCategoryEntity>
+    fun findAllByCategoryIdFileIdIn(fileIds: Set<Long>): List<ProjectFileCategoryEntity>
 }
