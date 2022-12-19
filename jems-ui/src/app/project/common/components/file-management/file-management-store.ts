@@ -192,7 +192,7 @@ export class FileManagementStore {
           this.projectFileService.listProjectFiles(projectId, (category as any)?.id, pageIndex, pageSize, sort, (category as any)?.type)
         ),
         tap(page => {
-          if (page.number >= page.totalPages) {
+          if (page.totalPages > 0 && page.number >= page.totalPages) {
             this.newPageIndex$.next(page.totalPages - 1);
           }
         }),
