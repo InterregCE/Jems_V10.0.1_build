@@ -61,7 +61,10 @@
     <jems-alert show="true" *ngIf="!data.finalizationAllowed" [type]="Alert.INFO" [closable]="false">
         <span>{{ 'project.application.partner.report.finalize.wrong.status' | translate }}</span>
     </jems-alert>
-    <div jemsNoWidthLimit *ngIf="data.finalizationAllowed" class="mt-3">
+    <jems-alert show="true" *ngIf="!data.userCanEdit" [type]="Alert.INFO" [closable]="false">
+        <span>{{ 'project.application.partner.report.finalize.no.edit.permission' | translate }}</span>
+    </jems-alert>
+    <div jemsNoWidthLimit *ngIf="data.finalizationAllowed && data.userCanEdit" class="mt-3">
         <jems-pending-button
                 [confirm]="{ title: 'project.application.partner.report.button.finalize', message: 'project.application.partner.report.finalize.dialog.message' }"
                 [pending]="finalizationLoading"

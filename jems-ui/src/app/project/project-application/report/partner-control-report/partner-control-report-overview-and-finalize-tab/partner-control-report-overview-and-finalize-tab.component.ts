@@ -13,6 +13,7 @@ import {
 import {APIError} from '@common/models/APIError';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Alert} from '@common/components/forms/alert';
+import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
 
 @Component({
   selector: 'jems-partner-control-report-overview-and-finalize-tab',
@@ -32,30 +33,34 @@ export class PartnerControlReportOverviewAndFinalizeTabComponent {
     finalizationAllowed: boolean;
     reportId: number;
     partnerId: number;
+    userCanEdit: boolean;
   }>;
   constructor(
     private pageStore: PartnerControlReportOverviewAndFinalizeStore,
-    private reportPageStore: PartnerReportDetailPageStore,
+    private reportDetailPageStore: PartnerReportDetailPageStore,
+    private reportPageStore: PartnerReportPageStore,
     private router: Router,
     private route: ActivatedRoute,
   ) {
     this.data$ = combineLatest([
       this.pageStore.controlWorkOverview$,
-      this.reportPageStore.partnerReport$,
-      this.reportPageStore.partnerId$.pipe(map(id => Number(id))),
+      this.reportDetailPageStore.partnerReport$,
+      this.reportDetailPageStore.partnerId$.pipe(map(id => Number(id))),
+      this.reportPageStore.institutionUserCanEditControlReports$,
     ]).pipe(
-      map(([data, report, partnerId]) => ({
+      map(([data, report, partnerId, userCanEdit]) => ({
         dataSource: new MatTableDataSource([data]),
         finalizationAllowed: report.status === ProjectPartnerReportDTO.StatusEnum.InControl,
         reportId: report.id,
         partnerId,
+        userCanEdit,
       })),
     );
   }
 
   finalizeReport(partnerId: number, reportId: number): void {
     this.finalizationLoading = true;
-    this.reportPageStore.finalizeReport(partnerId, reportId)
+    this.reportDetailPageStore.finalizeReport(partnerId, reportId)
       .pipe(
         tap(() => this.redirectToReportList()),
         catchError((error) => this.showErrorMessage(error.error)),
