@@ -6,8 +6,8 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostTranslEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostTranslId
-import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
-import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportUnitCostEntity
+import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
+import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportUnitCostEntity
 import io.cloudflight.jems.server.project.repository.report.partner.expenditure.ProjectPartnerReportUnitCostRepository
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.unitCost.ExpenditureUnitCostBreakdownLine
 import io.mockk.clearMocks

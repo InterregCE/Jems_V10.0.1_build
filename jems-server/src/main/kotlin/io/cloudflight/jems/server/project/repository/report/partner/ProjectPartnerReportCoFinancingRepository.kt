@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.repository.report.partner
 
-import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportCoFinancingEntity
-import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportCoFinancingIdEntity
+import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportCoFinancingEntity
+import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportCoFinancingIdEntity
 import io.cloudflight.jems.server.project.repository.report.partner.financialOverview.coFinancing.ReportCumulativeFund
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query

@@ -4,8 +4,8 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.entity.TranslationId
-import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportInvestmentEntity
-import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportInvestmentTranslEntity
+import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportInvestmentEntity
+import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportInvestmentTranslEntity
 import io.cloudflight.jems.server.project.repository.report.partner.expenditure.ProjectPartnerReportInvestmentRepository
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.investments.ExpenditureInvestmentBreakdownLine
 import io.mockk.clearMocks

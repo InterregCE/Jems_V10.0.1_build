@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.repository.report.partner.procurement.subcontract
 
-import io.cloudflight.jems.server.project.entity.report.procurement.subcontract.ProjectPartnerReportProcurementSubcontractEntity
+import io.cloudflight.jems.server.project.entity.report.partner.procurement.subcontract.ProjectPartnerReportProcurementSubcontractEntity
 import io.cloudflight.jems.server.project.repository.report.partner.procurement.ProjectPartnerReportProcurementRepository
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.subcontract.ProjectPartnerReportProcurementSubcontract
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.subcontract.ProjectPartnerReportProcurementSubcontractChange

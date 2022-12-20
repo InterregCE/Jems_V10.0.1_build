@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.repository.report.partner.control.identification
 
-import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
-import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportDesignatedControllerEntity
+import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
+import io.cloudflight.jems.server.project.entity.report.partner.identification.ProjectPartnerReportDesignatedControllerEntity
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface ProjectPartnerReportDesignatedControllerRepository :

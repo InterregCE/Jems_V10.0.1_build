@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.repository.report.partner.control.identification
 
-import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
-import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportVerificationEntity
+import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
+import io.cloudflight.jems.server.project.entity.report.partner.identification.ProjectPartnerReportVerificationEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import java.util.Optional

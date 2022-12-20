@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.repository.report.partner.identification
 
-import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportBudgetPerPeriodEntity
-import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportBudgetPerPeriodId
+import io.cloudflight.jems.server.project.entity.report.partner.identification.ProjectPartnerReportBudgetPerPeriodEntity
+import io.cloudflight.jems.server.project.entity.report.partner.identification.ProjectPartnerReportBudgetPerPeriodId
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 

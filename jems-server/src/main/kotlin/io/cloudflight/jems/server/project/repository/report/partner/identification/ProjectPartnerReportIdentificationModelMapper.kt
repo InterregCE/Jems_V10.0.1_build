@@ -1,15 +1,15 @@
 package io.cloudflight.jems.server.project.repository.report.partner.identification
 
 import io.cloudflight.jems.server.common.entity.extractField
-import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
-import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationEntity
-import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationTargetGroupEntity
-import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportBudgetPerPeriodEntity
-import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportDesignatedControllerEntity
-import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportVerificationEntity
-import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportOnTheSpotVerificationEntity
-import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportVerificationGeneralMethodologyEntity
-import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportVerificationOnTheSpotLocationEntity
+import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
+import io.cloudflight.jems.server.project.entity.report.partner.identification.ProjectPartnerReportIdentificationEntity
+import io.cloudflight.jems.server.project.entity.report.partner.identification.ProjectPartnerReportIdentificationTargetGroupEntity
+import io.cloudflight.jems.server.project.entity.report.partner.identification.ProjectPartnerReportBudgetPerPeriodEntity
+import io.cloudflight.jems.server.project.entity.report.partner.identification.ProjectPartnerReportDesignatedControllerEntity
+import io.cloudflight.jems.server.project.entity.report.partner.identification.ProjectPartnerReportVerificationEntity
+import io.cloudflight.jems.server.project.entity.report.partner.identification.ProjectPartnerReportOnTheSpotVerificationEntity
+import io.cloudflight.jems.server.project.entity.report.partner.identification.ProjectPartnerReportVerificationGeneralMethodologyEntity
+import io.cloudflight.jems.server.project.entity.report.partner.identification.ProjectPartnerReportVerificationOnTheSpotLocationEntity
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportIdentificationTargetGroup
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod

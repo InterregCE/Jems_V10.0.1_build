@@ -1,11 +1,9 @@
 package io.cloudflight.jems.server.project.repository.report.partner.control.identification
 
-import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.controllerInstitution.repository.ControllerInstitutionRepository
-import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionList
 import io.cloudflight.jems.server.project.entity.partner.ControllerInstitutionEntity
-import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
-import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportDesignatedControllerEntity
+import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
+import io.cloudflight.jems.server.project.entity.report.partner.identification.ProjectPartnerReportDesignatedControllerEntity
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.partner.identification.toModel
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportDesignatedController
@@ -13,7 +11,6 @@ import io.cloudflight.jems.server.project.service.report.partner.identification.
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
-import java.util.Optional
 
 @Repository
 class ProjectPartnerReportDesignatedControllerPersistenceProvider(

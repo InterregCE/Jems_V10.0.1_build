@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.repository.report.partner.procurement.beneficial
 
-import io.cloudflight.jems.server.project.entity.report.procurement.ProjectPartnerReportProcurementEntity
-import io.cloudflight.jems.server.project.entity.report.procurement.beneficial.ProjectPartnerReportProcurementBeneficialEntity
+import io.cloudflight.jems.server.project.entity.report.partner.procurement.ProjectPartnerReportProcurementEntity
+import io.cloudflight.jems.server.project.entity.report.partner.procurement.beneficial.ProjectPartnerReportProcurementBeneficialEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository

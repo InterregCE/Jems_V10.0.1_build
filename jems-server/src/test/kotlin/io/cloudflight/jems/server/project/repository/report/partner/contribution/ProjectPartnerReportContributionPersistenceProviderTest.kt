@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.repository.report.partner.contributio
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
-import io.cloudflight.jems.server.project.entity.report.contribution.ProjectPartnerReportContributionEntity
+import io.cloudflight.jems.server.project.entity.report.partner.contribution.ProjectPartnerReportContributionEntity
 import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus

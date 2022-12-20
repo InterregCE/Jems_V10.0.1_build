@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.repository.report.partner.procurement
 
-import io.cloudflight.jems.server.project.entity.report.procurement.ProjectPartnerReportProcurementEntity
+import io.cloudflight.jems.server.project.entity.report.partner.procurement.ProjectPartnerReportProcurementEntity
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository

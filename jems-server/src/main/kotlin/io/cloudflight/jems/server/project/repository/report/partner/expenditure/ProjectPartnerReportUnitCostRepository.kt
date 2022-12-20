@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.repository.report.partner.expenditure
 
-import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportUnitCostEntity
+import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportUnitCostEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository

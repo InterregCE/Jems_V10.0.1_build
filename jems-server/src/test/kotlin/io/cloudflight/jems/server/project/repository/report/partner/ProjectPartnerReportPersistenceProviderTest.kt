@@ -8,10 +8,10 @@ import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatus
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatusType
-import io.cloudflight.jems.server.project.entity.report.PartnerReportIdentificationEntity
-import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportCoFinancingEntity
-import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportCoFinancingIdEntity
-import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
+import io.cloudflight.jems.server.project.entity.report.partner.PartnerReportIdentificationEntity
+import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportCoFinancingEntity
+import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportCoFinancingIdEntity
+import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.repository.report.partner.model.ReportSummary
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing

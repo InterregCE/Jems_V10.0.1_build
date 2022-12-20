@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.repository.report.partner.control.expenditure
 
-import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportExpenditureCostEntity
+import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportExpenditureCostEntity
 import io.cloudflight.jems.server.project.repository.report.partner.expenditure.ProjectPartnerReportExpenditureRepository
 import io.cloudflight.jems.server.project.repository.report.partner.model.ExpenditureVerificationUpdate
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification

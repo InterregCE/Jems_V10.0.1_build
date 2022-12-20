@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.repository.report.partner.procurement.attachment
 
-import io.cloudflight.jems.server.project.entity.report.procurement.file.ProjectPartnerReportProcurementFileEntity
+import io.cloudflight.jems.server.project.entity.report.partner.procurement.file.ProjectPartnerReportProcurementFileEntity
 import io.cloudflight.jems.server.common.file.service.toModel
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectReportProcurementFile
 

@@ -2,8 +2,8 @@ package io.cloudflight.jems.server.project.repository.report.partner.procurement
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
-import io.cloudflight.jems.server.project.entity.report.procurement.ProjectPartnerReportProcurementEntity
-import io.cloudflight.jems.server.project.entity.report.procurement.file.ProjectPartnerReportProcurementFileEntity
+import io.cloudflight.jems.server.project.entity.report.partner.procurement.ProjectPartnerReportProcurementEntity
+import io.cloudflight.jems.server.project.entity.report.partner.procurement.file.ProjectPartnerReportProcurementFileEntity
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectReportProcurementFile

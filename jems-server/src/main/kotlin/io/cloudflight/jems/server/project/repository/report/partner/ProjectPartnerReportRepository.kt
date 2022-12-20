@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.repository.report.partner
 
-import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
+import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.repository.report.partner.model.ReportSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import org.springframework.data.domain.Page

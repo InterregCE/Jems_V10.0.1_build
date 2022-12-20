@@ -3,10 +3,10 @@ package io.cloudflight.jems.server.project.repository.report.partner.financialOv
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
-import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportCoFinancingEntity
-import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportCoFinancingIdEntity
-import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
-import io.cloudflight.jems.server.project.entity.report.financialOverview.ReportProjectPartnerExpenditureCoFinancingEntity
+import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportCoFinancingEntity
+import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportCoFinancingIdEntity
+import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
+import io.cloudflight.jems.server.project.entity.report.partner.financialOverview.ReportProjectPartnerExpenditureCoFinancingEntity
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportCoFinancingRepository
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn

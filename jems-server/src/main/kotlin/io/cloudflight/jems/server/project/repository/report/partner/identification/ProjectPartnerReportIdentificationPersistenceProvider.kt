@@ -3,11 +3,11 @@ package io.cloudflight.jems.server.project.repository.report.partner.identificat
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
-import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationEntity
-import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationTargetGroupEntity
-import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationTargetGroupTranslEntity
-import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationTranslEntity
+import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
+import io.cloudflight.jems.server.project.entity.report.partner.identification.ProjectPartnerReportIdentificationEntity
+import io.cloudflight.jems.server.project.entity.report.partner.identification.ProjectPartnerReportIdentificationTargetGroupEntity
+import io.cloudflight.jems.server.project.entity.report.partner.identification.ProjectPartnerReportIdentificationTargetGroupTranslEntity
+import io.cloudflight.jems.server.project.entity.report.partner.identification.ProjectPartnerReportIdentificationTranslEntity
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod

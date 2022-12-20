@@ -3,11 +3,11 @@ package io.cloudflight.jems.server.project.repository.report.partner.expenditure
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
-import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportExpenditureCostEntity
-import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportExpenditureCostTranslEntity
-import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportInvestmentEntity
-import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportLumpSumEntity
-import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportUnitCostEntity
+import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportExpenditureCostEntity
+import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportExpenditureCostTranslEntity
+import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportInvestmentEntity
+import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportLumpSumEntity
+import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportUnitCostEntity
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.partner.financialOverview.costCategory.ReportProjectPartnerExpenditureCostCategoryRepository
 import io.cloudflight.jems.server.project.repository.report.partner.financialOverview.costCategory.toBudgetOptionsModel

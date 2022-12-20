@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.repository.report.partner.control.identification
 
-import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportOnTheSpotVerificationEntity
-import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportVerificationEntity
+import io.cloudflight.jems.server.project.entity.report.partner.identification.ProjectPartnerReportOnTheSpotVerificationEntity
+import io.cloudflight.jems.server.project.entity.report.partner.identification.ProjectPartnerReportVerificationEntity
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.partner.identification.toEntity
 import io.cloudflight.jems.server.project.repository.report.partner.identification.toModel

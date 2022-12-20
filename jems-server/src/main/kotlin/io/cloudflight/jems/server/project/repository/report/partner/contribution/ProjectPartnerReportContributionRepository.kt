@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.repository.report.partner.contribution
 
-import io.cloudflight.jems.server.project.entity.report.contribution.ProjectPartnerReportContributionEntity
+import io.cloudflight.jems.server.project.entity.report.partner.contribution.ProjectPartnerReportContributionEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
