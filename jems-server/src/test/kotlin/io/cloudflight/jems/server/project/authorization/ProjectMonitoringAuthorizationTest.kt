@@ -34,10 +34,10 @@ class ProjectMonitoringAuthorizationTest: UnitTest() {
 
     @MockK
     lateinit var securityService: SecurityService
-
     @MockK
     lateinit var authorization: Authorization
-
+    @MockK
+    lateinit var authorizationUtilService: AuthorizationUtilService
     @MockK
     lateinit var currentUser: CurrentUser
 
@@ -79,6 +79,19 @@ class ProjectMonitoringAuthorizationTest: UnitTest() {
         every { authorization.hasPermissionForProject(UserRolePermission.ProjectContractingView, 1L) } returns true
         every { authorization.hasPermissionForProject(UserRolePermission.ProjectSetToContracted, 1L) } returns true
         assertThat(projectMonitoringAuthorization.canEditProjectMonitoring(1L)).isTrue
+        assertThat(projectMonitoringAuthorization.canViewProjectMonitoring(1L)).isTrue
+    }
+
+    @Test
+    fun canViewProjectMonitoringAsController() {
+        val currentUser = LocalCurrentUser(
+            programmeUser, "hash_pass", listOf(SimpleGrantedAuthority(UserRolePermission.ProjectContractingView.key))
+        )
+        every { securityService.currentUser } returns currentUser
+        every { authorization.hasPermissionForProject(UserRolePermission.ProjectContractingView, 1L) } returns false
+        every {
+            authorizationUtilService.hasPermissionAsController(UserRolePermission.ProjectContractingView, 1L)
+        } returns true
         assertThat(projectMonitoringAuthorization.canViewProjectMonitoring(1L)).isTrue
     }
 }

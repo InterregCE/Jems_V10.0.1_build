@@ -34,7 +34,8 @@ annotation class CanDownloadFileFromCategory
 class ProjectFileAuthorization(
     override val securityService: SecurityService,
     val projectAuthorization: ProjectAuthorization,
-    val projectFilePersistence: ProjectFilePersistence
+    val projectFilePersistence: ProjectFilePersistence,
+    val authorizationUtilService: AuthorizationUtilService
 ) : Authorization(securityService) {
 
     fun canUploadFileInCategory(projectId: Long, projectFileCategory: ProjectFileCategory): Boolean =
@@ -107,6 +108,7 @@ class ProjectFileAuthorization(
 
     private fun canRetrieveModificationAttachments(projectId: Long) =
         hasPermissionForProject(ProjectModificationFileAssessmentRetrieve, projectId)
+            || authorizationUtilService.hasPermissionAsController(ProjectModificationFileAssessmentRetrieve, projectId)
 
     private fun canUpdateModificationAttachments(projectId: Long) =
         hasPermissionForProject(ProjectModificationFileAssessmentUpdate, projectId)

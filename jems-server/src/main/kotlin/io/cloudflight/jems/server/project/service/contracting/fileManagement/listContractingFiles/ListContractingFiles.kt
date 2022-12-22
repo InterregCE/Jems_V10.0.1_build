@@ -50,7 +50,7 @@ class ListContractingFiles(
             )
         } else if (contractInfoAuth.canViewContractInfo(projectId)) {
             validateConfiguration(searchRequest = searchRequest, partnerId, CONTRACT_ALLOWED_FILE_TYPES)
-           return filePersistence.listAttachments(
+            return filePersistence.listAttachments(
                 pageable = pageable,
                 indexPrefix = searchRequest.treeNode.generatePath(projectId),
                 filterSubtypes = searchRequest.filterSubtypes,

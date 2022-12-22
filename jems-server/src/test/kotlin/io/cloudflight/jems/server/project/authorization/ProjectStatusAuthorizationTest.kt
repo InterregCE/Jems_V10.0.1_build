@@ -9,9 +9,9 @@ import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Compan
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
-import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectSubmission
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectCheckApplicationForm
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectRetrieve
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectSubmission
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -36,6 +36,9 @@ internal class ProjectStatusAuthorizationTest: UnitTest() {
 
     @MockK
     lateinit var mockStatus: ApplicationStatus
+
+    @MockK
+    lateinit var authorizationUtilService: AuthorizationUtilService
 
     @InjectMockKs
     lateinit var projectStatusAuthorization: ProjectStatusAuthorization
@@ -110,4 +113,29 @@ internal class ProjectStatusAuthorizationTest: UnitTest() {
         assertThrows<ResourceNotFoundException> { projectStatusAuthorization.hasPermissionOrIsEditCollaborator(ProjectCheckApplicationForm, PROJECT_ID) }
     }
 
+    @Test
+    fun `user is controller with permission`() {
+        every {
+            authorizationUtilService.hasPermissionAsController(ProjectCheckApplicationForm, PROJECT_ID)
+        } returns true
+        val user = applicantUser
+        every { securityService.currentUser } returns user
+        assertThat(user.user.assignedProjects).isEmpty()
+
+        assertThat(projectStatusAuthorization.hasPermissionOrAsController(ProjectCheckApplicationForm, PROJECT_ID))
+            .isTrue
+    }
+
+    @Test
+    fun `user is controller without permission`() {
+        every {
+            authorizationUtilService.hasPermissionAsController(ProjectCheckApplicationForm, PROJECT_ID)
+        } returns false
+        val user = applicantUser
+        every { securityService.currentUser } returns user
+        assertThat(user.user.assignedProjects).isEmpty()
+
+        assertThat(projectStatusAuthorization.hasPermissionOrAsController(ProjectCheckApplicationForm, PROJECT_ID))
+            .isFalse
+    }
 }
