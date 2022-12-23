@@ -368,7 +368,7 @@ export class ProjectApplicationFormSidenavService {
           this.sideNavService.setHeadlines(ProjectPaths.PROJECT_DETAIL_PATH, [
             this.getProjectOverviewHeadline(project.id),
             ...canSeeReporting ? this.getReportingHeadline(reportSectionPartners) : [],
-            ...(canSeeProjectManagement || canSeeContractMonitoring || canSeeContractReporting || canSeeContractPartner) ?
+            ...(canSeeProjectManagement || canSeeProjectContracts || canSeeContractMonitoring || canSeeContractReporting || canSeeContractPartner) ?
               this.getContractingHeadlines(project.id, canSeeContractMonitoring, canSeeProjectContracts, canSeeProjectManagement, canSeeContractReporting,
                 canSeeContractPartner, contractingPartnerSection) : [],
             this.getApplicationFormHeadline(project.id, partners, packages, versionTemplate, canReadApplicationFiles,
