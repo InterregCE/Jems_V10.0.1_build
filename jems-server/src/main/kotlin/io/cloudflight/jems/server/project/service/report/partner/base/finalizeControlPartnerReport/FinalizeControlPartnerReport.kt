@@ -10,6 +10,7 @@ import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerR
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectPartnerReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partner.contribution.extractOverview
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.ProjectPartnerReportExpenditureVerificationPersistence
+import io.cloudflight.jems.server.project.service.report.partner.control.overview.ProjectPartnerReportControlOverviewPersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.overview.getReportControlWorkOverview.calculateCertified
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
@@ -26,6 +27,7 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
+import java.time.LocalDate
 import java.time.ZonedDateTime
 
 @Service
@@ -39,6 +41,7 @@ class FinalizeControlPartnerReport(
     private val reportLumpSumPersistence: ProjectPartnerReportLumpSumPersistence,
     private val reportUnitCostPersistence: ProjectPartnerReportUnitCostPersistence,
     private val reportInvestmentPersistence: ProjectPartnerReportInvestmentPersistence,
+    private val controlOverviewPersistence: ProjectPartnerReportControlOverviewPersistence,
     private val auditPublisher: ApplicationEventPublisher,
 ) : FinalizeControlPartnerReportInteractor {
 
@@ -63,6 +66,8 @@ class FinalizeControlPartnerReport(
         saveAfterControlLumpSums(expenditures.getAfterControlForLumpSums(), partnerId = partnerId, reportId)
         saveAfterControlUnitCosts(expenditures.getAfterControlForUnitCosts(), partnerId = partnerId, reportId)
         saveAfterControlInvestments(expenditures.getAfterControlForInvestments(), partnerId = partnerId, reportId)
+
+        controlOverviewPersistence.updatePartnerControlReportOverviewEndDate(partnerId, reportId, LocalDate.now())
 
         return reportPersistence.finalizeControlOnReportById(
             partnerId = partnerId,

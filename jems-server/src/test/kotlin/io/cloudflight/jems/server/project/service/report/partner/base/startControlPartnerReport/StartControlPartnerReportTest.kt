@@ -11,6 +11,8 @@ import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerR
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.partner.control.overview.ControlOverview
+import io.cloudflight.jems.server.project.service.report.partner.control.overview.ProjectPartnerReportControlOverviewPersistence
 import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportDesignatedControllerPersistence
 import io.mockk.clearMocks
 import io.mockk.every
@@ -25,6 +27,7 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
+import java.time.LocalDate
 import java.time.ZonedDateTime
 
 internal class StartControlPartnerReportTest : UnitTest() {
@@ -56,6 +59,17 @@ internal class StartControlPartnerReportTest : UnitTest() {
             createdAt = ZonedDateTime.now()
         )
 
+        private val controlOverview = ControlOverview(
+            startDate = LocalDate.now(),
+            requestsForClarifications = "test",
+            receiptOfSatisfactoryAnswers = "test answers",
+            endDate = null,
+            findingDescription = null,
+            followUpMeasuresFromLastReport = "test from last report",
+            conclusion = "result",
+            followUpMeasuresForNextReport = null
+        )
+
     }
 
     @MockK
@@ -69,6 +83,9 @@ internal class StartControlPartnerReportTest : UnitTest() {
 
     @MockK
     lateinit var reportDesignatedControllerPersistence: ProjectPartnerReportDesignatedControllerPersistence
+
+    @MockK
+    lateinit var controlOverviewPersistence: ProjectPartnerReportControlOverviewPersistence
 
     @MockK
     lateinit var auditPublisher: ApplicationEventPublisher
@@ -94,6 +111,8 @@ internal class StartControlPartnerReportTest : UnitTest() {
         every { reportPersistence.startControlOnReportById(any(), any()) } returns mockedResult
         every { controlInstitutionPersistence.getControllerInstitutions(setOf(PARTNER_ID))} returns mapOf(Pair(PARTNER_ID, controllerInstitution))
         every { reportDesignatedControllerPersistence.create(PARTNER_ID, 37L, controllerInstitution.id)} returns Unit
+        every { reportPersistence.getLastCertifiedPartnerReportId(PARTNER_ID)} returns 5
+        every { controlOverviewPersistence.createPartnerControlReportOverview(PARTNER_ID, 37L, 5)} returns controlOverview
 
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
@@ -102,7 +121,7 @@ internal class StartControlPartnerReportTest : UnitTest() {
 
         verify(exactly = 1) { reportPersistence.startControlOnReportById(PARTNER_ID, 37L) }
 
-        assertThat(auditSlot.captured.auditCandidate.action).isEqualTo(AuditAction.CONTROL_ONGOING)
+        assertThat(auditSlot.captured.auditCandidate.action).isEqualTo(AuditAction.PARTNER_REPORT_CONTROL_ONGOING)
         assertThat(auditSlot.captured.auditCandidate.project?.id).isEqualTo(PROJECT_ID.toString())
         assertThat(auditSlot.captured.auditCandidate.project?.customIdentifier).isEqualTo("FG01_654")
         assertThat(auditSlot.captured.auditCandidate.project?.name).isEqualTo("acronym")

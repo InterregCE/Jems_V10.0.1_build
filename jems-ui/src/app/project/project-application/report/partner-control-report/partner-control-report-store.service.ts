@@ -10,7 +10,7 @@ import {
   ProjectPartnerReportIdentificationService,
   ProjectPartnerReportSummaryDTO,
   ProjectPartnerService,
-  ProjectPartnerUserCollaboratorService,
+  ProjectPartnerUserCollaboratorService, ControlOverviewDTO, ProjectPartnerReportControlOverviewService,
 } from '@cat/api';
 import {RoutingService} from '@common/services/routing.service';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
@@ -31,6 +31,7 @@ export class PartnerControlReportStore {
   controlReportEditable$: Observable<boolean>;
   partner$: Observable<ProjectPartnerDetailDTO>;
   controlInstitutionUsers$: Observable<UserSimpleDTO[]>;
+  partnerControlReportOverview$: Observable<ControlOverviewDTO>;
 
   partnerId$: Observable<number>;
   reportId$: Observable<number>;
@@ -77,13 +78,15 @@ export class PartnerControlReportStore {
     private reportIdentificationService: ProjectPartnerReportIdentificationService,
     private partnerService: ProjectPartnerService,
     private partnerUserCollaboratorService: ProjectPartnerUserCollaboratorService,
-    private controllerInstitutionsService: ControllerInstitutionsApiService
+    private controllerInstitutionsService: ControllerInstitutionsApiService,
+    private projectPartnerReportControlOverviewService: ProjectPartnerReportControlOverviewService
   ) {
     this.partnerControlReport$ = this.partnerControlReport();
     this.controlReportEditable$ = this.controlReportEditable();
     this.partner$ = this.partner();
     this.partnerId$ = this.partnerId();
     this.reportId$ = this.reportId();
+    this.partnerControlReportOverview$ = this.partnerControlReportOverview();
     this.controlInstitutionUsers$ = this.controlInstitutionUsers();
   }
 
@@ -201,5 +204,15 @@ export class PartnerControlReportStore {
   private reportId(): Observable<number> {
     return this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')
         .pipe(map(id => Number(id)));
+  }
+
+  private partnerControlReportOverview(): Observable<ControlOverviewDTO> {
+    return combineLatest([
+      this.partnerId$,
+      this.reportId$
+    ]).pipe(
+      switchMap(([partnerId, reportId]) => this.projectPartnerReportControlOverviewService.getControlOverview(partnerId, reportId)
+      )
+    );
   }
 }

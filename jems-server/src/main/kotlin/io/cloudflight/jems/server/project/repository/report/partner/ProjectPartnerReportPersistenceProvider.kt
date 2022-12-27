@@ -10,7 +10,6 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
-import java.math.BigDecimal
 import java.time.ZonedDateTime
 
 @Repository
@@ -72,6 +71,10 @@ class ProjectPartnerReportPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getSubmittedPartnerReportIds(partnerId: Long): Set<Long> =
         partnerReportRepository.findAllIdsByPartnerIdAndStatusIn(partnerId, ReportStatus.SUBMITTED_STATUSES)
+
+    @Transactional(readOnly = true)
+    override fun getLastCertifiedPartnerReportId(partnerId: Long): Long? =
+        partnerReportRepository.findFirstByPartnerIdAndStatusOrderByIdDesc(partnerId, ReportStatus.Certified)?.id
 
     @Transactional(readOnly = true)
     override fun getReportIdsBefore(partnerId: Long, beforeReportId: Long): Set<Long> =

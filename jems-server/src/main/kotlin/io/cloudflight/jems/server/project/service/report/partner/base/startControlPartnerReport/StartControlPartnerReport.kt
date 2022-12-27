@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
+import io.cloudflight.jems.server.project.service.report.partner.control.overview.ProjectPartnerReportControlOverviewPersistence
 import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportDesignatedControllerPersistence
 import io.cloudflight.jems.server.project.service.report.partner.partnerReportStartedControl
 import org.springframework.context.ApplicationEventPublisher
@@ -19,6 +20,7 @@ class StartControlPartnerReport(
     private val partnerPersistence: PartnerPersistence,
     private val controlInstitutionPersistence: ControllerInstitutionPersistence,
     private val reportDesignatedControllerPersistence: ProjectPartnerReportDesignatedControllerPersistence,
+    private val controlOverviewPersistence: ProjectPartnerReportControlOverviewPersistence,
     private val auditPublisher: ApplicationEventPublisher
 ) : StartControlPartnerReportInteractor {
 
@@ -28,6 +30,9 @@ class StartControlPartnerReport(
     override fun startControl(partnerId: Long, reportId: Long): ReportStatus {
         val report = reportPersistence.getPartnerReportById(partnerId = partnerId, reportId = reportId)
         validateReportIsSubmitted(report)
+
+        val lastCertifiedReportId = reportPersistence.getLastCertifiedPartnerReportId(partnerId)
+        controlOverviewPersistence.createPartnerControlReportOverview(partnerId, reportId, lastCertifiedReportId)
 
         val institution = controlInstitutionPersistence.getControllerInstitutions(setOf(partnerId)).values.firstOrNull()
         reportDesignatedControllerPersistence.create(partnerId, reportId, institution!!.id)

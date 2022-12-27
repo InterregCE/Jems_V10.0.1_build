@@ -30,6 +30,8 @@ interface ProjectPartnerReportPersistence {
 
     fun getReportIdsBefore(partnerId: Long, beforeReportId: Long): Set<Long>
 
+    fun getLastCertifiedPartnerReportId(partnerId: Long): Long?
+
     fun exists(partnerId: Long, reportId: Long): Boolean
 
     fun getCurrentLatestReportForPartner(partnerId: Long): ProjectPartnerReport?

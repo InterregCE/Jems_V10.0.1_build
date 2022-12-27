@@ -59,7 +59,7 @@ fun partnerReportStartedControl(
 ): AuditCandidateEvent =
     AuditCandidateEvent(
         context = context,
-        auditCandidate = AuditBuilder(AuditAction.CONTROL_ONGOING)
+        auditCandidate = AuditBuilder(AuditAction.PARTNER_REPORT_CONTROL_ONGOING)
             .project(
                 projectId = projectId,
                 customIdentifier = report.projectIdentifier,
@@ -85,9 +85,8 @@ fun partnerReportControlFinalized(
         auditCandidate = AuditBuilder(AuditAction.PARTNER_REPORT_CONTROL_FINALIZED)
             .project(projectId = projectId, customIdentifier = report.projectIdentifier, acronym = report.projectAcronym)
             .entityRelatedId(entityRelatedId = report.id)
-            .description("[${report.projectIdentifier}] [" +
-                (if (report.partnerRole == ProjectPartnerRole.LEAD_PARTNER) "LP" else "PP") +
-                "${report.partnerNumber}] Partner report R.${report.reportNumber} control work finalized")
+            .description("Control work is finalised for partner report R.${report.reportNumber} of partner " +
+                (if (report.partnerRole == ProjectPartnerRole.LEAD_PARTNER) "LP" else "PP") + "${report.partnerNumber}")
             .build()
     )
 
