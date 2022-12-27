@@ -26,7 +26,7 @@
         </div>
         <div class="project-row">
             <span class="header p-1 pr-3">{{'project.application.partner.control.report.project.implementation.period' | translate}}</span>
-            <span class="p-1">{{data.partnerControlReport.projectStart | localeDate : 'L'}} - {{data.partnerControlReport.projectEnd | localeDate : 'L'}}</span>
+            <span class="p-1" *ngIf="data.partnerControlReport.projectStart">{{data.partnerControlReport.projectStart | localeDate : 'L'}} - {{data.partnerControlReport.projectEnd | localeDate : 'L'}}</span>
         </div>
         <div class="project-row">
             <span class="header p-1 pr-3">{{'project.application.partner.control.report.reporting.period' | translate}}</span>
@@ -48,36 +48,30 @@
         </div>
     </div>
 
-    <form [formGroup]="form">
+    <form [formGroup]="form" jemsFormLayout>
         <h3>{{'project.application.partner.control.report.section.one.part.two' | translate}}</h3>
         <div id="control-report-format-of-supporting-documents" class="mb-5">
-            <div class="project-row">
-                <span class="header p-1 pr-3">{{'project.application.partner.control.report.documents.availability.part.one' | translate}}</span>
+            <h4>{{'project.application.partner.control.report.documents.availability' | translate}}</h4>
+            <div *ngFor="let element of formats">
+                <mat-checkbox class="ml-2" (click)="$event.stopPropagation()"
+                              (change)="checkSelection(element)"
+                              [checked]="selection.isSelected(element)"
+                              [disabled]="(store.controlReportEditable$ | async) === false">
+                    {{'project.application.partner.control.report.' + element | translate}}
+                </mat-checkbox>
+                <br>
             </div>
-            <div class="project-row">
-                <span class="header p-1 pr-3">{{'project.application.partner.control.report.documents.availability.part.two' | translate}}</span>
-                <div *ngFor="let element of formats">
-                    <mat-checkbox class="ml-2" (click)="$event.stopPropagation()"
-                                  (change)="checkSelection(element)"
-                                  [checked]="selection.isSelected(element)"
-                                  [disabled]="(store.controlReportEditable$ | async) === false">
-                        {{'project.application.partner.control.report.' + element | translate}}
-                    </mat-checkbox>
-                    <br>
-                </div>
-            </div>
-            <div class="project-row">
-                <span class="header p-1 pr-3">{{'project.application.partner.control.report.report.type' | translate}}</span>
-                <div class="ml-2">
-                    <mat-button-toggle-group formControlName="partnerType">
-                        <mat-button-toggle [value]="ProjectPartnerControlReportDTO.TypeEnum.PartnerReport">{{'project.application.partner.control.report.report.type.partner' | translate}}</mat-button-toggle>
-                        <mat-button-toggle [value]="ProjectPartnerControlReportDTO.TypeEnum.FinalReport">{{'project.application.partner.control.report.report.type.final' | translate}}</mat-button-toggle>
-                    </mat-button-toggle-group>
-                </div>
+
+            <h4>{{'project.application.partner.control.report.report.type' | translate}}</h4>
+            <div>
+                <mat-button-toggle-group formControlName="partnerType">
+                    <mat-button-toggle [value]="ProjectPartnerControlReportDTO.TypeEnum.PartnerReport">{{'project.application.partner.control.report.report.type.partner' | translate}}</mat-button-toggle>
+                    <mat-button-toggle [value]="ProjectPartnerControlReportDTO.TypeEnum.FinalReport">{{'project.application.partner.control.report.report.type.final' | translate}}</mat-button-toggle>
+                </mat-button-toggle-group>
             </div>
         </div>
 
-        <h3>{{'project.application.partner.control.report.section.two' | translate}}</h3>
+        <h3 class="mt-0">{{'project.application.partner.control.report.section.two' | translate}}</h3>
         <div id="control-report-partner" class="mb-5">
             <div class="project-row">
                 <span class="header p-1 pr-3">{{'project.application.partner.control.report.report.partner.name.in.english' | translate}}</span>
@@ -97,19 +91,17 @@
             </div>
         </div>
 
-        <h3>{{'project.application.partner.control.report.section.three' | translate}}</h3>
+        <h3 class="mt-0">{{'project.application.partner.control.report.section.three' | translate}}</h3>
         <div id="control-project-partner-controller" class="mb-5 mt-3" [formGroupName]="constants.FORM_CONTROL_NAMES.designatedController">
             <div class="control-institution-container">
-                <mat-form-field jemsFormFieldWidth="half" >
+                <mat-form-field jemsFormFieldWidth="full" >
                     <mat-label>{{'project.application.partner.control.report.controller.institution.name' | translate}}</mat-label>
                     <input [formControlName]="constants.FORM_CONTROL_NAMES.controlInstitution" matInput>
                 </mat-form-field>
-                <jems-context-info infoPosition="right" class="" infoText="{{'project.application.partner.control.report.controller.institution.name.info' | translate}}"></jems-context-info>
             </div>
 
             <div>
-                <mat-form-field jemsFormFieldWidth="half" >
-
+                <mat-form-field jemsFormFieldWidth="full">
                     <mat-label>{{'project.application.partner.control.report.controller.name' | translate}}</mat-label>
                     <input name="controlUser" [formControlName]="constants.FORM_CONTROL_NAMES.controllingUserName" matInput
                            [matAutocomplete]="controllingUser">
@@ -123,7 +115,7 @@
             </div>
 
             <div>
-                <mat-form-field jemsFormFieldWidth="half" >
+                <mat-form-field jemsFormFieldWidth="full" >
                     <mat-label>{{'project.application.partner.control.report.job.title' | translate}}</mat-label>
                     <input [formControlName]="constants.FORM_CONTROL_NAMES.jobTitle" matInput #jobTitle>
                     <mat-hint [jemsHintFor]="jobTitle">
@@ -138,7 +130,7 @@
             </div>
 
             <div>
-                <mat-form-field jemsFormFieldWidth="half">
+                <mat-form-field jemsFormFieldWidth="full">
                     <mat-label>{{'project.application.partner.control.report.division' | translate}}</mat-label>
                     <input [formControlName]="constants.FORM_CONTROL_NAMES.divisionUnit" #reportDivision matInput>
                     <mat-hint [jemsHintFor]="reportDivision">
@@ -153,7 +145,7 @@
             </div>
 
             <div>
-                <mat-form-field jemsFormFieldWidth="half">
+                <mat-form-field jemsFormFieldWidth="full">
                     <mat-label>{{'project.application.partner.control.report.address' | translate}}</mat-label>
                     <input [formControlName]="constants.FORM_CONTROL_NAMES.address" #address matInput>
                     <mat-hint [jemsHintFor]="address">
@@ -169,7 +161,7 @@
 
             <div>
                 <ng-container *ngIf="data.nuts">
-                    <mat-form-field jemsFormFieldWidth="half">
+                    <mat-form-field jemsFormFieldWidth="full">
                         <mat-label>{{'project.partner.main-address.country' | translate}}</mat-label>
                         <input name="country" [formControlName]="constants.FORM_CONTROL_NAMES.country" matInput
                                [matAutocomplete]="country"
@@ -185,7 +177,7 @@
             </div>
 
             <div>
-                <mat-form-field jemsFormFieldWidth="half">
+                <mat-form-field jemsFormFieldWidth="full">
                     <mat-label>{{'project.application.partner.control.report.phone.number' | translate}}</mat-label>
                     <input #telephoneNumber [formControlName]="constants.FORM_CONTROL_NAMES.telephone" matInput >
                     <mat-hint [jemsHintFor]="telephoneNumber">
@@ -202,7 +194,7 @@
 
             <h4>{{'project.application.partner.control.report.controller.reviewer.header' | translate}}</h4>
             <div>
-                <mat-form-field jemsFormFieldWidth="half" >
+                <mat-form-field jemsFormFieldWidth="full" >
                     <mat-label>{{'project.application.partner.control.report.controller.name' | translate}}</mat-label>
                     <input name="controlUser" [formControlName]="constants.FORM_CONTROL_NAMES.controllerReviewerName" matInput
                            [matAutocomplete]="reviewerUser">
@@ -216,7 +208,7 @@
             </div>
         </div>
 
-        <div [formGroupName]="constants.FORM_CONTROL_NAMES.reportVerification">
+        <div jemsNoWidthLimit [formGroupName]="constants.FORM_CONTROL_NAMES.reportVerification">
             <h3>{{'project.application.partner.control.report.section.four' | translate}}</h3>
             <h4>{{'project.application.partner.control.report.general.methodology.header' | translate}}</h4>
 
@@ -231,19 +223,15 @@
                 </mat-checkbox>
             </div>
 
-
-            <div  *ngIf="form.controls.reportVerification?.get(constants.FORM_CONTROL_NAMES.onTheSpotVerification)?.value" id="on-the-spot-verification-container" class="mt-4" >
-
+            <ng-container  *ngIf="form.controls.reportVerification?.get(constants.FORM_CONTROL_NAMES.onTheSpotVerification)?.value" id="on-the-spot-verification-container" class="mt-4">
                 <ng-container *ngIf="verificationInstances.controls.length > 0">
                     <h4>{{'project.application.partner.control.report.administrative.on.spot.verification.list.header' | translate}}</h4>
-                    <div id="on-the-spot-verification-table">
-                        <div [jemsTableConfig]="[{minInRem:22, maxInRem:30}, {minInRem:12, maxInRem:20},{minInRem:12}, {minInRem:3, maxInRem:3}]" jemsNoWidthLimit>
+                    <div jemsNoWidthLimit id="on-the-spot-verification-table" [jemsTableConfig]="[{minInRem:22, maxInRem:30}, {minInRem:12, maxInRem:20},{minInRem:12}, {minInRem:3, maxInRem:3}]">
                             <div>
                                 <span>{{ 'project.application.partner.control.report.administrative.on.spot.verification.table.date.header' | translate }}</span>
                                 <span>{{ 'project.application.partner.control.report.administrative.on.spot.verification.table.location.header' | translate }}</span>
                                 <span>{{ 'project.application.partner.control.report.administrative.on.spot.verification.table.focus.header' | translate }}</span>
-                                <div>{{ 'project.application.partner.control.report.administrative.on.spot.verification.table.delete.header' | translate }}
-                                </div>
+                                <span *ngIf="reportEditable$ | async">{{ 'project.application.partner.control.report.administrative.on.spot.verification.table.delete.header' | translate }}</span>
                             </div>
 
                             <ng-container *ngFor="let verificationRow of verificationInstances.controls; let verificationIndex = index"
@@ -316,9 +304,8 @@
                                             </mat-form-field>
                                         </div>
 
-
                                         <div>
-                                            <button
+                                            <button *ngIf="reportEditable$ | async"
                                                     (click)="removeItem(verificationIndex);$event.stopPropagation();"
                                                     color="accent"
                                                     mat-icon-button
@@ -329,7 +316,6 @@
                                     </div>
                                 </ng-container>
                         </div>
-                    </div>
                 </ng-container>
                 <button *ngIf="(verificationInstances.length < 5) && (reportEditable$ | async)"
                         class="mt-2"
@@ -337,7 +323,7 @@
                         (click)="addOnSpotVerification()">
                     + {{'project.application.partner.control.report.administrative.on.spot.verification.add.button' | translate}}
                 </button>
-            </div>
+            </ng-container>
 
             <h4>{{'project.application.partner.control.report.risk.verification.applied' | translate}}</h4>
             <mat-button-toggle-group [formControlName]="constants.FORM_CONTROL_NAMES.riskBasedVerificationApplied"
@@ -355,7 +341,7 @@
             </mat-button-toggle-group>
             <p class="mt-3">{{'project.application.partner.control.report.risk.verification.applied.info' | translate}}</p>
 
-            <mat-form-field jemsFormFieldWidth="half">
+            <mat-form-field jemsFormFieldWidth="full">
                 <mat-label>{{'common.textarea.enter.text' | translate}}</mat-label>
                 <textarea [formControlName]="constants.FORM_CONTROL_NAMES.riskBasedVerificationDescription" matInput
                       #autosize="cdkTextareaAutosize"
@@ -363,7 +349,7 @@
                       [cdkTextareaAutosize]
                       [cdkAutosizeMinRows]="4"
                       [cdkAutosizeMaxRows]="7"
-                #samplingMethodology>
+                      #samplingMethodology>
                 </textarea>
                 <mat-hint [jemsHintFor]="samplingMethodology">
                     <jems-text-hint [currentLength]="samplingMethodology.value.length" [maxLength]="5000"></jems-text-hint>

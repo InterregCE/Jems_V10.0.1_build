@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {combineLatest, Observable} from 'rxjs';
 import {
   UserSimpleDTO,
@@ -27,6 +27,8 @@ import {
 import {NutsStore} from '@common/services/nuts.store';
 import VerificationLocationsEnum = ReportOnTheSpotVerificationDTO.VerificationLocationsEnum;
 import GeneralMethodologiesEnum = ReportVerificationDTO.GeneralMethodologiesEnum;
+import {APIError} from "@common/models/APIError";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'jems-partner-control-report-identification-tab',
@@ -103,7 +105,9 @@ export class PartnerControlReportControlIdentificationTabComponent implements On
     public formService: FormService,
     private formBuilder: FormBuilder,
     private projectStore: ProjectStore,
-    private nutsStore: NutsStore
+    private nutsStore: NutsStore,
+    private translateService: TranslateService,
+    private changeDetectorRef: ChangeDetectorRef
   ) {
     this.reportEditable$ = this.store.controlReportEditable$;
     this.data$ = combineLatest([
@@ -280,8 +284,20 @@ export class PartnerControlReportControlIdentificationTabComponent implements On
       .pipe(
         take(1),
         tap(() => this.formService.setSuccess('project.application.partner.report.tab.identification.saved')),
-        catchError(err => this.formService.setError(err))
-      ).subscribe();
+        catchError(error => {
+          const apiError = error.error as APIError;
+          if (apiError?.formErrors) {
+            Object.keys(apiError.formErrors).forEach(field => {
+              const control = this.designatedController.get(field);
+              control?.setErrors({error: this.translateService.instant(apiError.formErrors[field].i18nKey)});
+              control?.markAsDirty();
+            });
+            this.changeDetectorRef.detectChanges();
+          }
+          this.formService.setError(error);
+          throw error;
+        }
+      )).subscribe();
   }
 
   formatVerificationInstances(verificationList: any): any {

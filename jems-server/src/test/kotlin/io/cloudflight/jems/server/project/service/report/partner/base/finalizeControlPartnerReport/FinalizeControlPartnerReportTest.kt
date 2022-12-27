@@ -4,6 +4,8 @@ import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
+import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionList
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
@@ -27,6 +29,7 @@ import io.cloudflight.jems.server.project.service.report.partner.financialOvervi
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportInvestmentPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportLumpSumPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportUnitCostPersistence
+import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportDesignatedControllerPersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -151,6 +154,14 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
             conclusion = "test",
             followUpMeasuresForNextReport = "test"
         )
+
+        private val controllerInstitution = ControllerInstitutionList(
+            id = 1,
+            name = "Test institution",
+            description = null,
+            institutionNuts = emptyList(),
+            createdAt = ZonedDateTime.now()
+        )
     }
 
     @MockK
@@ -185,6 +196,12 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
 
     @MockK
     private lateinit var auditPublisher: ApplicationEventPublisher
+
+    @MockK
+    private lateinit var controlInstitutionPersistence: ControllerInstitutionPersistence
+
+    @MockK
+    private lateinit var reportDesignatedControllerPersistence: ProjectPartnerReportDesignatedControllerPersistence
 
     @InjectMockKs
     private lateinit var interactor: FinalizeControlPartnerReport
@@ -233,6 +250,19 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
                 capture(slotCostCategory)
             )
         } answers { }
+        every {
+            reportDesignatedControllerPersistence.updateWithInstitutionName(
+                PARTNER_ID,
+                reportId = 42,
+                controllerInstitution.name
+            )
+        } returns Unit
+        every { controlInstitutionPersistence.getControllerInstitutions(setOf(PARTNER_ID)) } returns mapOf(
+            Pair(
+                PARTNER_ID,
+                controllerInstitution
+            )
+        )
 
         val slotCostCoFin = slot<ReportExpenditureCoFinancingColumn>()
         every {

@@ -49,14 +49,14 @@ export class PartnerControlReportStore {
     )
   );
 
-  readonly limitedControlReportView$ = combineLatest([
+  readonly fullControlReportViewAfterFinalized$ = combineLatest([
     this.partnerReportDetailPageStore.partnerReportPageStore.userCanViewReport$,
     this.partnerReportDetailPageStore.partnerReportPageStore.userCanEditReport$,
     this.partnerReportDetailPageStore.partnerReportPageStore.institutionUserCanViewControlReports$,
     this.partnerReportDetailPageStore.partnerReportPageStore.institutionUserCanEditControlReports$
   ]).pipe(
     map(([viewRightsForReport, editRightsForReport, viewRightsFromInstitution, editRightsFromInstitution]) =>
-      (viewRightsForReport || editRightsForReport) && !viewRightsFromInstitution && !editRightsFromInstitution
+      editRightsForReport || viewRightsForReport || viewRightsFromInstitution || editRightsFromInstitution
     )
   );
 
@@ -122,17 +122,24 @@ export class PartnerControlReportStore {
       this.partnerReportDetailPageStore.partnerReportId$,
       this.projectStore.projectId$,
       this.partnerReportDetailPageStore.reportStatus$,
-      this.fullControlReportView$
+      this.fullControlReportView$,
+      this.fullControlReportViewAfterFinalized$
     ]).pipe(
-      switchMap(([partnerId, reportId, projectId, status, isAllowed]) => !!partnerId && !!projectId && !!reportId && status !== 'Draft' && status !== 'Submitted' && isAllowed
-        ? this.reportIdentificationService.getControlIdentification(Number(partnerId), Number(reportId))
-          .pipe(
-            catchError(() => {
-              this.routingService.navigate([ProjectPaths.PROJECT_DETAIL_PATH, projectId, 'reporting']);
-              return of({} as ProjectPartnerControlReportDTO);
-            })
-          )
-        : of({} as ProjectPartnerControlReportDTO)
+      switchMap(([partnerId, reportId, projectId, status, isAllowed, isAllowedAfterFinalized]) =>
+        !!partnerId &&
+        !!projectId &&
+        !!reportId &&
+        status !== 'Draft' &&
+        status !== 'Submitted' &&
+        (isAllowed || (status === 'Certified' && isAllowedAfterFinalized))
+          ? this.reportIdentificationService.getControlIdentification(Number(partnerId), Number(reportId))
+            .pipe(
+              catchError(() => {
+                this.routingService.navigate([ProjectPaths.PROJECT_DETAIL_PATH, projectId, 'reporting']);
+                return of({} as ProjectPartnerControlReportDTO);
+              })
+            )
+          : of({} as ProjectPartnerControlReportDTO)
       ),
       tap(report => Log.info('Fetched the partner control report:', this, report)),
     );

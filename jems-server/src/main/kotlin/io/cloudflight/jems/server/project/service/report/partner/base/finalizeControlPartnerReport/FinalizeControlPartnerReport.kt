@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.partner.base.finalizeControlPartnerReport
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerControlReport
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
@@ -22,6 +23,7 @@ import io.cloudflight.jems.server.project.service.report.partner.financialOvervi
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureInvestementsBreakdown.getAfterControlForInvestments
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureLumpSumBreakdown.getAfterControlForLumpSums
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureUnitCostBreakdown.getAfterControlForUnitCosts
+import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportDesignatedControllerPersistence
 import io.cloudflight.jems.server.project.service.report.partner.partnerReportControlFinalized
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
@@ -43,6 +45,8 @@ class FinalizeControlPartnerReport(
     private val reportInvestmentPersistence: ProjectPartnerReportInvestmentPersistence,
     private val controlOverviewPersistence: ProjectPartnerReportControlOverviewPersistence,
     private val auditPublisher: ApplicationEventPublisher,
+    private val controlInstitutionPersistence: ControllerInstitutionPersistence,
+    private val reportDesignatedControllerPersistence: ProjectPartnerReportDesignatedControllerPersistence
 ) : FinalizeControlPartnerReportInteractor {
 
     @CanEditPartnerControlReport
@@ -56,6 +60,7 @@ class FinalizeControlPartnerReport(
             .getPartnerControlReportExpenditureVerification(partnerId, reportId = reportId)
         val costCategories = reportExpenditureCostCategoryPersistence.getCostCategories(partnerId, reportId = reportId)
         val afterControlCostCategories = expenditures.calculateCertified(options = costCategories.options)
+        val institution = controlInstitutionPersistence.getControllerInstitutions(setOf(partnerId)).values.first()
 
         saveAfterControlCostCategories(afterControlCostCategories, partnerId = partnerId, reportId)
         saveAfterControlCoFinancing(
@@ -66,8 +71,8 @@ class FinalizeControlPartnerReport(
         saveAfterControlLumpSums(expenditures.getAfterControlForLumpSums(), partnerId = partnerId, reportId)
         saveAfterControlUnitCosts(expenditures.getAfterControlForUnitCosts(), partnerId = partnerId, reportId)
         saveAfterControlInvestments(expenditures.getAfterControlForInvestments(), partnerId = partnerId, reportId)
-
-        controlOverviewPersistence.updatePartnerControlReportOverviewEndDate(partnerId, reportId, LocalDate.now())
+        saveInstitutionName(partnerId, reportId, institution.name)
+        saveControlEndDate(partnerId, reportId)
 
         return reportPersistence.finalizeControlOnReportById(
             partnerId = partnerId,
@@ -138,5 +143,13 @@ class FinalizeControlPartnerReport(
             reportId = reportId,
             afterControl = afterControlInvestments,
         )
+    }
+
+    private fun saveInstitutionName(partnerId: Long, reportId: Long, institutionName: String) {
+        reportDesignatedControllerPersistence.updateWithInstitutionName(partnerId, reportId, institutionName)
+    }
+
+    private fun saveControlEndDate(partnerId: Long, reportId: Long) {
+        controlOverviewPersistence.updatePartnerControlReportOverviewEndDate(partnerId, reportId, LocalDate.now())
     }
 }
