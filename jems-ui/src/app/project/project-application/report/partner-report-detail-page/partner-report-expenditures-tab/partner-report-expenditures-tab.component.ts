@@ -679,11 +679,11 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     } else {
       let postfix = '';
       if (costOption.period && costOption.period === this.PERIOD_PREPARATION) {
-        postfix = '-' + this.customTranslatePipe.transform('project.application.form.section.part.e.period.preparation');
+        postfix = ' - ' + this.customTranslatePipe.transform('project.application.form.section.part.e.period.preparation');
       } else if (costOption.period && costOption.period === this.PERIOD_CLOSURE) {
-        postfix = '-' + this.customTranslatePipe.transform('project.application.form.section.part.e.period.preparation');
+        postfix = ' - ' + this.customTranslatePipe.transform('project.application.form.section.part.e.period.preparation');
       } else if(costOption.period) {
-        postfix = '-' + costOption.period;
+        postfix = ' - ' + this.customTranslatePipe.transform('project.partner.budget.table.period') + ' ' + costOption.period;
       }
       return this.translateByInputLanguagePipe.transform(costOption.name).pipe(map(n => n + postfix));
     }
