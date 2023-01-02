@@ -15,6 +15,9 @@ class PartnerReportExpenditureCostEntity(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0L,
 
+    @field:NotNull
+    var number: Int,
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "partner_report_id")
     @field:NotNull
@@ -60,6 +63,10 @@ class PartnerReportExpenditureCostEntity(
     var deductedAmount: BigDecimal,
 
     var typologyOfErrorId: Long?,
+
+    @field:NotNull
+    var parked: Boolean,
+
     var verificationComment: String?,
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")

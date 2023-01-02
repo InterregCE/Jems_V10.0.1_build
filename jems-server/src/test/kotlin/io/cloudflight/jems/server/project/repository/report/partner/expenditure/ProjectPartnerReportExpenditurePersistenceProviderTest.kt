@@ -78,6 +78,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
             investment: PartnerReportInvestmentEntity?,
         ) = PartnerReportExpenditureCostEntity(
             id = id,
+            number = 1,
             partnerReport = report,
             reportLumpSum = lumpSum,
             reportUnitCost = unitCost,
@@ -102,7 +103,8 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
             certifiedAmount = BigDecimal.valueOf(3680),
             deductedAmount = BigDecimal.ZERO,
             typologyOfErrorId = null,
-            verificationComment = null
+            verificationComment = null,
+            parked = false
         ).apply {
             translatedValues.add(
                 PartnerReportExpenditureCostTranslEntity(
@@ -113,52 +115,66 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
             )
         }
 
-        private fun dummyExpectedExpenditure(id: Long, lumpSumId: Long?, unitCostId: Long?, investmentId: Long?) = ProjectPartnerReportExpenditureCost(
-            id = id,
-            lumpSumId = lumpSumId,
-            unitCostId = unitCostId,
-            costCategory = ReportBudgetCategory.InfrastructureCosts,
-            investmentId = investmentId,
-            contractId = PROCUREMENT_ID + 10,
-            internalReferenceNumber = "irn",
-            invoiceNumber = "invoice",
-            invoiceDate = YESTERDAY,
-            dateOfPayment = TOMORROW,
-            description = setOf(InputTranslation(SystemLanguage.EN, "desc EN")),
-            comment = setOf(InputTranslation(SystemLanguage.EN, "comment EN")),
-            totalValueInvoice = BigDecimal.ONE,
-            vat = BigDecimal.ZERO,
-            numberOfUnits = BigDecimal.ONE,
-            pricePerUnit = BigDecimal.ZERO,
-            declaredAmount = BigDecimal.TEN,
-            currencyCode = "HUF",
-            currencyConversionRate = BigDecimal.valueOf(368),
-            declaredAmountAfterSubmission = BigDecimal.valueOf(3680),
-            attachment = JemsFileMetadata(dummyAttachment.id, dummyAttachment.name, dummyAttachment.uploaded),
+        private fun dummyExpectedExpenditure(
+            id: Long,
+            lumpSumId: Long?,
+            unitCostId: Long?,
+            investmentId: Long?,
+            number: Int) =
+            ProjectPartnerReportExpenditureCost(
+                id = id,
+                number = number,
+                lumpSumId = lumpSumId,
+                unitCostId = unitCostId,
+                costCategory = ReportBudgetCategory.InfrastructureCosts,
+                investmentId = investmentId,
+                contractId = PROCUREMENT_ID + 10,
+                internalReferenceNumber = "irn",
+                invoiceNumber = "invoice",
+                invoiceDate = YESTERDAY,
+                dateOfPayment = TOMORROW,
+                description = setOf(InputTranslation(SystemLanguage.EN, "desc EN")),
+                comment = setOf(InputTranslation(SystemLanguage.EN, "comment EN")),
+                totalValueInvoice = BigDecimal.ONE,
+                vat = BigDecimal.ZERO,
+                numberOfUnits = BigDecimal.ONE,
+                pricePerUnit = BigDecimal.ZERO,
+                declaredAmount = BigDecimal.TEN,
+                currencyCode = "HUF",
+                currencyConversionRate = BigDecimal.valueOf(368),
+                declaredAmountAfterSubmission = BigDecimal.valueOf(3680),
+                attachment = JemsFileMetadata(dummyAttachment.id, dummyAttachment.name, dummyAttachment.uploaded),
         )
 
-        private fun dummyExpectedExpenditureNew(id: Long, lumpSumId: Long?, unitCostId: Long?, investmentId: Long?) = ProjectPartnerReportExpenditureCost(
-            id = id,
-            lumpSumId = lumpSumId,
-            unitCostId = unitCostId,
-            costCategory = ReportBudgetCategory.EquipmentCosts,
-            investmentId = investmentId,
-            contractId = PROCUREMENT_ID + 10,
-            internalReferenceNumber = "irn NEW",
-            invoiceNumber = "invoice NEW",
-            invoiceDate = YESTERDAY.minusDays(1),
-            dateOfPayment = TOMORROW.plusDays(1),
-            description = setOf(InputTranslation(SystemLanguage.EN, "desc EN NEW")),
-            comment = setOf(InputTranslation(SystemLanguage.EN, "comment EN NEW")),
-            totalValueInvoice = BigDecimal.ZERO,
-            vat = BigDecimal.TEN,
-            numberOfUnits = BigDecimal.ONE,
-            pricePerUnit = BigDecimal.ZERO,
-            declaredAmount = BigDecimal.ONE,
-            currencyCode = "HUF",
-            currencyConversionRate = BigDecimal.valueOf(368),
-            declaredAmountAfterSubmission = BigDecimal.valueOf(3680),
-            attachment = null,
+        private fun dummyExpectedExpenditureNew(
+            id: Long,
+            lumpSumId: Long?,
+            unitCostId: Long?,
+            investmentId: Long?,
+            number: Int) =
+            ProjectPartnerReportExpenditureCost(
+                id = id,
+                number = number,
+                lumpSumId = lumpSumId,
+                unitCostId = unitCostId,
+                costCategory = ReportBudgetCategory.EquipmentCosts,
+                investmentId = investmentId,
+                contractId = PROCUREMENT_ID + 10,
+                internalReferenceNumber = "irn NEW",
+                invoiceNumber = "invoice NEW",
+                invoiceDate = YESTERDAY.minusDays(1),
+                dateOfPayment = TOMORROW.plusDays(1),
+                description = setOf(InputTranslation(SystemLanguage.EN, "desc EN NEW")),
+                comment = setOf(InputTranslation(SystemLanguage.EN, "comment EN NEW")),
+                totalValueInvoice = BigDecimal.ZERO,
+                vat = BigDecimal.TEN,
+                numberOfUnits = BigDecimal.ONE,
+                pricePerUnit = BigDecimal.ZERO,
+                declaredAmount = BigDecimal.ONE,
+                currencyCode = "HUF",
+                currencyConversionRate = BigDecimal.valueOf(368),
+                declaredAmountAfterSubmission = BigDecimal.valueOf(3680),
+                attachment = null,
         )
 
         private fun dummyLumpSumEntity(reportEntity: ProjectPartnerReportEntity) = PartnerReportLumpSumEntity(
@@ -318,7 +334,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
 
         assertThat(persistence.getPartnerReportExpenditureCosts(PARTNER_ID, reportId = 44L))
             .containsExactly(
-                dummyExpectedExpenditure(id = 14L, LUMP_SUM_ID, UNIT_COST_ID, INVESTMENT_ID)
+                dummyExpectedExpenditure(id = 14L, LUMP_SUM_ID, UNIT_COST_ID, INVESTMENT_ID, 1)
                     .copy(contractId = PROCUREMENT_ID)
             )
     }
@@ -407,15 +423,15 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
         every { reportExpenditureRepository.save(capture(slotSavedEntities)) } returnsArgument 0
 
         assertThat(persistence.updatePartnerReportExpenditureCosts(PARTNER_ID, reportId = 58L, listOf(
-            dummyExpectedExpenditure(id = EXPENDITURE_TO_STAY, null, null, null),
-            dummyExpectedExpenditure(id = EXPENDITURE_TO_UPDATE, LUMP_SUM_ID, UNIT_COST_ID, INVESTMENT_ID),
-            dummyExpectedExpenditureNew(id = EXPENDITURE_TO_ADD_1, LUMP_SUM_ID, UNIT_COST_ID, INVESTMENT_ID),
-            dummyExpectedExpenditureNew(id = EXPENDITURE_TO_ADD_2, null, null, null),
+            dummyExpectedExpenditure(id = EXPENDITURE_TO_STAY, null, null, null, 1),
+            dummyExpectedExpenditure(id = EXPENDITURE_TO_UPDATE, LUMP_SUM_ID, UNIT_COST_ID, INVESTMENT_ID, 2),
+            dummyExpectedExpenditureNew(id = EXPENDITURE_TO_ADD_1, LUMP_SUM_ID, UNIT_COST_ID, INVESTMENT_ID, 3),
+            dummyExpectedExpenditureNew(id = EXPENDITURE_TO_ADD_2, null, null, null, 4),
         ))).containsExactly(
-            dummyExpectedExpenditure(id = EXPENDITURE_TO_STAY, null, null, null),
-            dummyExpectedExpenditure(id = EXPENDITURE_TO_UPDATE, LUMP_SUM_ID, UNIT_COST_ID, INVESTMENT_ID),
-            dummyExpectedExpenditureNew(id = EXPENDITURE_TO_ADD_1, LUMP_SUM_ID, UNIT_COST_ID, INVESTMENT_ID),
-            dummyExpectedExpenditureNew(id = EXPENDITURE_TO_ADD_2, null, null, null),
+            dummyExpectedExpenditure(id = EXPENDITURE_TO_STAY, null, null, null, 1),
+            dummyExpectedExpenditure(id = EXPENDITURE_TO_UPDATE, LUMP_SUM_ID, UNIT_COST_ID, INVESTMENT_ID, 2),
+            dummyExpectedExpenditureNew(id = EXPENDITURE_TO_ADD_1, LUMP_SUM_ID, UNIT_COST_ID, INVESTMENT_ID, 3),
+            dummyExpectedExpenditureNew(id = EXPENDITURE_TO_ADD_2, null, null, null, 4),
         )
 
         assertThat(slotDeleted.captured).containsExactly(entityToDelete)

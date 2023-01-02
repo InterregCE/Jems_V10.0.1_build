@@ -22,3 +22,13 @@ class TypologyOfErrorMissing(invalidIds: Set<Long>) : ApplicationUnprocessableEx
         "$UPDATE_PROJECT_PARTNER_CONTROL_REPORT_EV_ERROR_KEY_PREFIX.typology.cannot.be.null"
     ) }),
 )
+
+class InvalidParkedExpenditure(invalidIds: Set<Long>) : ApplicationUnprocessableException(
+    code = "$UPDATE_PROJECT_PARTNER_CONTROL_REPORT_EV_ERROR_CODE_PREFIX-002",
+    i18nMessage = I18nMessage(
+        i18nKey = "$UPDATE_PROJECT_PARTNER_CONTROL_REPORT_EV_ERROR_KEY_PREFIX.invalid.data.for.parked"
+    ),
+    formErrors = invalidIds.associateBy({ it.toString() }, { I18nMessage(
+        "$UPDATE_PROJECT_PARTNER_CONTROL_REPORT_EV_ERROR_KEY_PREFIX.parked.expenditure.should.have.empty.inputs"
+    ) }),
+)

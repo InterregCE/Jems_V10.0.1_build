@@ -103,6 +103,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
 
         val expenditureLumpSum = ProjectPartnerReportExpenditureCost(
             id = 201L,
+            number = 1,
             lumpSumId = 45L,
             unitCostId = null,
             costCategory = ReportBudgetCategory.Multiple,
@@ -123,6 +124,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
 
         val expenditureUnitCost = ProjectPartnerReportExpenditureCost(
             id = 202L,
+            number = 2,
             lumpSumId = null,
             unitCostId = 46L,
             costCategory = ReportBudgetCategory.Multiple,
@@ -143,6 +145,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
 
         val expenditureStaffCost = ProjectPartnerReportExpenditureCost(
             id = 203L,
+            number = 3,
             lumpSumId = null,
             unitCostId = null,
             costCategory = ReportBudgetCategory.StaffCosts,
@@ -163,6 +166,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
 
         val expenditureExternalCost = ProjectPartnerReportExpenditureCost(
             id = 204L,
+            number = 4,
             lumpSumId = null,
             unitCostId = null,
             costCategory = ReportBudgetCategory.ExternalCosts,
@@ -183,6 +187,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
 
         val expenditureEquipmentCost = ProjectPartnerReportExpenditureCost(
             id = 205L,
+            number = 5,
             lumpSumId = null,
             unitCostId = null,
             costCategory = ReportBudgetCategory.EquipmentCosts,
@@ -203,6 +208,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
 
         val expenditureInfrastructureCost = ProjectPartnerReportExpenditureCost(
             id = 206L,
+            number = 6,
             lumpSumId = null,
             unitCostId = null,
             costCategory = ReportBudgetCategory.InfrastructureCosts,
@@ -223,6 +229,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
 
         val expenditureMultipleCost = ProjectPartnerReportExpenditureCost(
             id = 207L,
+            number = 7,
             lumpSumId = null,
             unitCostId = null,
             costCategory = ReportBudgetCategory.Multiple,

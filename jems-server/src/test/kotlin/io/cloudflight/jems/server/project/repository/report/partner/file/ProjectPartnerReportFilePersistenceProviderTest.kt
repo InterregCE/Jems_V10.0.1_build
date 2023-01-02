@@ -104,6 +104,7 @@ class ProjectPartnerReportFilePersistenceProviderTest : UnitTest() {
 
         private fun expenditure(id: Long, attachment: JemsFileMetadataEntity?) = PartnerReportExpenditureCostEntity(
             id = id,
+            number = 1,
             partnerReport = mockk(),
             reportLumpSum = null,
             reportUnitCost = null,
@@ -127,7 +128,8 @@ class ProjectPartnerReportFilePersistenceProviderTest : UnitTest() {
             certifiedAmount = ONE,
             deductedAmount = ZERO,
             typologyOfErrorId = null,
-            verificationComment = null
+            verificationComment = null,
+            parked = false
         )
 
         private fun fileCreate(name: String = "new_file.txt", type: JemsFileType) = JemsFileCreate(

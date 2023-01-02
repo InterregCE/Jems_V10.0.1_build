@@ -81,6 +81,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
 
         private val expenditure1 = ProjectPartnerReportExpenditureCost(
             id = 630,
+            number = 1,
             lumpSumId = null,
             unitCostId = null,
             costCategory = ReportBudgetCategory.StaffCosts,
@@ -101,6 +102,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
 
         private val expenditure2 = ProjectPartnerReportExpenditureCost(
             id = 631,
+            number = 2,
             lumpSumId = 22L,
             unitCostId = null,
             costCategory = ReportBudgetCategory.Multiple,
@@ -121,6 +123,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
 
         private val expenditure3 = ProjectPartnerReportExpenditureCost(
             id = 632,
+            number = 3,
             lumpSumId = null,
             unitCostId = 15L,
             costCategory = ReportBudgetCategory.InfrastructureCosts,
@@ -141,6 +144,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
 
         private val expenditureVerification1 = ProjectPartnerReportExpenditureVerification(
             id = 630,
+            number = 1,
             lumpSumId = null,
             unitCostId = null,
             costCategory = ReportBudgetCategory.StaffCosts,
@@ -161,11 +165,13 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             certifiedAmount = BigDecimal.valueOf(9.99),
             deductedAmount = BigDecimal.ZERO,
             typologyOfErrorId = null,
-            verificationComment = null
+            verificationComment = null,
+            parked = false
         )
 
         private val expenditureVerification2 = ProjectPartnerReportExpenditureVerification(
             id = 631,
+            number = 2,
             lumpSumId = 22L,
             unitCostId = null,
             costCategory = ReportBudgetCategory.Multiple,
@@ -186,11 +192,13 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             certifiedAmount = BigDecimal.valueOf(48.50).setScale(2),
             deductedAmount = BigDecimal.ZERO,
             typologyOfErrorId = null,
-            verificationComment = null
+            verificationComment = null,
+            parked = false
         )
 
         private val expenditureVerification3 = ProjectPartnerReportExpenditureVerification(
             id = 632,
+            number = 3,
             lumpSumId = null,
             unitCostId = 15L,
             costCategory = ReportBudgetCategory.InfrastructureCosts,
@@ -211,7 +219,8 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             certifiedAmount = BigDecimal.valueOf(16.50).setScale(2),
             deductedAmount = BigDecimal.ZERO,
             typologyOfErrorId = null,
-            verificationComment = null
+            verificationComment = null,
+            parked = false
         )
 
         private val expenditureVerificationUpdate1 = ExpenditureVerificationUpdate(
@@ -220,7 +229,8 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             certifiedAmount = BigDecimal.valueOf(999, 2),
             deductedAmount = BigDecimal.ZERO,
             typologyOfErrorId = null,
-            verificationComment = null
+            verificationComment = null,
+            parked = false
         )
 
         private val expenditureVerificationUpdate2 = ExpenditureVerificationUpdate(
@@ -229,7 +239,8 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             certifiedAmount = BigDecimal.valueOf(4850, 2),
             deductedAmount = BigDecimal.ZERO,
             typologyOfErrorId = null,
-            verificationComment = null
+            verificationComment = null,
+            parked = false
         )
 
         private val expenditureVerificationUpdate3 = ExpenditureVerificationUpdate(
@@ -238,7 +249,8 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             certifiedAmount = BigDecimal.valueOf(1650, 2),
             deductedAmount = BigDecimal.ZERO,
             typologyOfErrorId = null,
-            verificationComment = null
+            verificationComment = null,
+            parked = false
         )
 
         val options = mockk<ReportExpenditureCostCategory>().also {

@@ -96,6 +96,7 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
 
         private val expenditure1 = ProjectPartnerReportExpenditureVerification(
             id = 630,
+            number = 1,
             lumpSumId = null,
             unitCostId = 18L,
             costCategory = ReportBudgetCategory.StaffCosts,
@@ -117,10 +118,12 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
             deductedAmount = BigDecimal.ZERO,
             typologyOfErrorId = null,
             verificationComment = null,
+            parked = false
         )
 
         private val expenditure2 = ProjectPartnerReportExpenditureVerification(
             id = 631,
+            number = 2,
             lumpSumId = 22L,
             unitCostId = null,
             costCategory = ReportBudgetCategory.Multiple,
@@ -142,6 +145,7 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
             deductedAmount = BigDecimal.ZERO,
             typologyOfErrorId = null,
             verificationComment = null,
+            parked = false
         )
 
         private val controlOverview = ControlOverview(

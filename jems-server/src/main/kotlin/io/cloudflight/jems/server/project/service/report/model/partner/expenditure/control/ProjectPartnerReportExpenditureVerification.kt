@@ -10,6 +10,7 @@ import java.time.LocalDate
 data class ProjectPartnerReportExpenditureVerification(
     override val id: Long,
     override var lumpSumId: Long?,
+    val number: Int,
     val unitCostId: Long?,
     override val costCategory: ReportBudgetCategory,
     val investmentId: Long?,
@@ -34,5 +35,6 @@ data class ProjectPartnerReportExpenditureVerification(
     var certifiedAmount: BigDecimal,
     var deductedAmount: BigDecimal,
     var typologyOfErrorId: Long?,
+    var parked: Boolean,
     var verificationComment: String?,
 ): ExpenditureCost

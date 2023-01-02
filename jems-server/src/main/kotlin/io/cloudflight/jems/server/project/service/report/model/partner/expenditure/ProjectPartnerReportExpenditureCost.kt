@@ -8,6 +8,7 @@ import java.time.LocalDate
 
 data class ProjectPartnerReportExpenditureCost(
     override val id: Long?,
+    var number: Int,
     override var lumpSumId: Long?,
     var unitCostId: Long?,
     override var costCategory: ReportBudgetCategory,

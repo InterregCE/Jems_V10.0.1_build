@@ -321,6 +321,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
 
         private val expenditure = ProjectPartnerReportExpenditureCost(
             id = 770L,
+            number = 1,
             lumpSumId = null,
             unitCostId = null,
             costCategory = ReportBudgetCategory.OfficeAndAdministrationCosts,

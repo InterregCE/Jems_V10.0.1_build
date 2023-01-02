@@ -7,5 +7,6 @@ data class ProjectPartnerReportExpenditureVerificationUpdate(
     val partOfSample: Boolean,
     val certifiedAmount: BigDecimal,
     val typologyOfErrorId: Long?,
+    val parked: Boolean,
     val verificationComment: String?
 )

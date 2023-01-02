@@ -28,6 +28,7 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
 
     private val reportExpenditureVerification = ProjectPartnerReportExpenditureVerification(
         id = 754,
+        number = 1,
         lumpSumId = 2L,
         unitCostId = null,
         costCategory = ReportBudgetCategory.ExternalCosts,
@@ -53,10 +54,12 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
         deductedAmount = BigDecimal.ZERO,
         typologyOfErrorId = 15L,
         verificationComment = "comment dummy",
+        parked = false
     )
 
     private val reportExpenditureVerificationUpdated = ProjectPartnerReportExpenditureVerification(
         id = 754,
+        number = 1,
         lumpSumId = null,
         unitCostId = null,
         costCategory = ReportBudgetCategory.ExternalCosts,
@@ -81,11 +84,13 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
         certifiedAmount = BigDecimal.valueOf(1),
         deductedAmount = BigDecimal.valueOf(0.3),
         typologyOfErrorId = 1,
-        verificationComment = "test"
+        verificationComment = "test",
+        parked = false
     )
 
     private val reportExpenditureVerificationDto = ProjectPartnerControlReportExpenditureVerificationDTO(
         id = 754,
+        number = 1,
         lumpSumId = 2L,
         unitCostId = null,
         costCategory = BudgetCategoryDTO.ExternalCosts,
@@ -111,10 +116,12 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
         deductedAmount = BigDecimal.ZERO,
         typologyOfErrorId = 15L,
         verificationComment = "comment dummy",
+        parked = false
     )
 
     private val reportExpenditureVerificationDtoUpdated = ProjectPartnerControlReportExpenditureVerificationDTO(
         id = 754,
+        number = 1,
         lumpSumId = null,
         unitCostId = null,
         costCategory = BudgetCategoryDTO.ExternalCosts,
@@ -139,7 +146,8 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
         certifiedAmount = BigDecimal.valueOf(1),
         deductedAmount = BigDecimal.valueOf(0.3),
         typologyOfErrorId = 1,
-        verificationComment = "test"
+        verificationComment = "test",
+        parked = false
     )
 
     private val toUpdateDto = ProjectPartnerControlReportExpenditureVerificationUpdateDTO(
@@ -147,7 +155,8 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
         partOfSample = true,
         certifiedAmount = BigDecimal.valueOf(1),
         typologyOfErrorId = 1,
-        verificationComment = "test"
+        verificationComment = "test",
+        parked = false
     )
 
     private val toUpdate = ProjectPartnerReportExpenditureVerificationUpdate(
@@ -155,7 +164,8 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
         partOfSample = true,
         certifiedAmount = BigDecimal.valueOf(1),
         typologyOfErrorId = 1,
-        verificationComment = "test"
+        verificationComment = "test",
+        parked = false
     )
 
     @MockK

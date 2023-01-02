@@ -8,6 +8,7 @@ import java.time.LocalDate
 
 data class ProjectPartnerControlReportExpenditureVerificationDTO(
     val id: Long?,
+    val number: Int,
     val lumpSumId: Long?,
     val unitCostId: Long?,
     val costCategory: BudgetCategoryDTO,
@@ -33,5 +34,6 @@ data class ProjectPartnerControlReportExpenditureVerificationDTO(
     val certifiedAmount: BigDecimal,
     val deductedAmount: BigDecimal,
     val typologyOfErrorId: Long?,
+    val parked: Boolean,
     val verificationComment: String?
 )

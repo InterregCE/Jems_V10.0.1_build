@@ -9,6 +9,7 @@ export class PartnerControlReportExpenditureConstants {
   public static FOCUS_TIMEOUT = 50;
   public static FORM_CONTROL_NAMES = {
     rowId: 'rowId',
+    number: 'number',
     costOptions: 'costOptions',
     costCategory: 'costCategory',
     investmentId: 'investmentId',
@@ -34,6 +35,7 @@ export class PartnerControlReportExpenditureConstants {
     certifiedAmount: 'certifiedAmount',
     deductedAmount: 'deductedAmount',
     typologyOfErrorId: 'typologyOfErrorId',
+    parked: 'parked',
     verificationComment: 'verificationComment',
   };
 

@@ -67,6 +67,7 @@ internal class GetReportExpenditureUnitCostBreakdownCalculatorTest : UnitTest() 
 
         private val expenditureWithUnitCost = ProjectPartnerReportExpenditureCost(
             id = 2965L,
+            number = 1,
             lumpSumId = null,
             unitCostId = 1L,
             costCategory = ReportBudgetCategory.StaffCosts,

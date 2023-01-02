@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.expenditu
 fun Collection<PartnerReportExpenditureCostEntity>.toExtendedModel() = map {
     ProjectPartnerReportExpenditureVerification(
         id = it.id,
+        number = it.number,
         lumpSumId = it.reportLumpSum?.id,
         unitCostId = it.reportUnitCost?.id,
         costCategory = it.costCategory,
@@ -32,6 +33,7 @@ fun Collection<PartnerReportExpenditureCostEntity>.toExtendedModel() = map {
         certifiedAmount = it.certifiedAmount,
         deductedAmount = it.deductedAmount,
         typologyOfErrorId = it.typologyOfErrorId,
+        parked = it.parked,
         verificationComment = it.verificationComment
     )
 }

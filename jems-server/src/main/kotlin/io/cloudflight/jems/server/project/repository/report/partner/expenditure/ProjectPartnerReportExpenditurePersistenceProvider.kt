@@ -67,11 +67,15 @@ class ProjectPartnerReportExpenditurePersistenceProvider(
             .findByReportEntityPartnerIdAndReportEntityIdOrderByWorkPackageNumberAscInvestmentNumberAsc(partnerId, reportId)
             .associateBy { it.id }
 
-        return expenditureCosts.map { newData ->
+        return expenditureCosts.mapIndexed { index, newData ->
             existingIds[newData.id].let { existing ->
                 when {
-                    existing != null -> existing.apply { updateWith(newData, lumpSumsById, unitCostsById, investmentsById) }
-                    else -> reportExpenditureRepository.save(newData.toEntity(reportEntity, lumpSumsById, unitCostsById, investmentsById))
+                    existing != null -> existing.apply {
+                        updateWith(newData, lumpSumsById, unitCostsById, investmentsById, index + 1)
+                    }
+                    else -> reportExpenditureRepository.save(
+                        newData.toEntity(reportEntity, lumpSumsById, unitCostsById, investmentsById, index + 1)
+                    )
                 }
             }
         }.toModel()
@@ -114,6 +118,7 @@ class ProjectPartnerReportExpenditurePersistenceProvider(
         lumpSums: Map<Long, PartnerReportLumpSumEntity>,
         unitCosts: Map<Long, PartnerReportUnitCostEntity>,
         investments: Map<Long, PartnerReportInvestmentEntity>,
+        expenditureNumber: Int
     ) {
         reportLumpSum = if (newData.lumpSumId != null) lumpSums[newData.lumpSumId] else null
         reportUnitCost = if (newData.unitCostId != null) unitCosts[newData.unitCostId] else null
@@ -132,6 +137,7 @@ class ProjectPartnerReportExpenditurePersistenceProvider(
         currencyCode = newData.currencyCode
         currencyConversionRate = newData.currencyConversionRate
         declaredAmountAfterSubmission = newData.declaredAmountAfterSubmission
+        number = expenditureNumber
 
         // update translations
         val toBeUpdatedComments = newData.comment.associateBy({ it.language }, { it.translation })

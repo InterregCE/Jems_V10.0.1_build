@@ -17,6 +17,7 @@ import java.math.BigDecimal
 fun List<PartnerReportExpenditureCostEntity>.toModel() = map {
     ProjectPartnerReportExpenditureCost(
         id = it.id,
+        number = it.number,
         lumpSumId = it.reportLumpSum?.id,
         unitCostId = it.reportUnitCost?.id,
         costCategory = it.costCategory,
@@ -45,9 +46,11 @@ fun ProjectPartnerReportExpenditureCost.toEntity(
     lumpSums: Map<Long, PartnerReportLumpSumEntity>,
     unitCosts: Map<Long, PartnerReportUnitCostEntity>,
     investments: Map<Long, PartnerReportInvestmentEntity>,
+    number: Int
 ) =
     PartnerReportExpenditureCostEntity(
         id = id ?: 0L,
+        number = number,
         partnerReport = reportEntity,
         reportLumpSum = if (lumpSumId != null) lumpSums[lumpSumId] else null,
         reportUnitCost = if (unitCostId != null) unitCosts[unitCostId] else null,
@@ -72,6 +75,7 @@ fun ProjectPartnerReportExpenditureCost.toEntity(
         certifiedAmount = BigDecimal.ZERO,
         deductedAmount = BigDecimal.ZERO,
         typologyOfErrorId = null,
+        parked = false,
         verificationComment = null
     ).apply {
         translatedValues.addTranslation(this, comment, description)

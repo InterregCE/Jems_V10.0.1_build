@@ -7,6 +7,7 @@ import java.time.LocalDate
 
 data class ProjectPartnerReportExpenditureCostDTO(
     val id: Long?,
+    val number: Int,
     val lumpSumId: Long?,
     val unitCostId: Long?,
     val costCategory: BudgetCategoryDTO,

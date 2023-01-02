@@ -45,6 +45,7 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
 
     private val reportExpenditureCost = ProjectPartnerReportExpenditureCost(
         id = 754,
+        number = 1,
         lumpSumId = null,
         unitCostId = null,
         costCategory = ReportBudgetCategory.ExternalCosts,
@@ -69,6 +70,7 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
 
     private val reportExpenditureCostDto = ProjectPartnerReportExpenditureCostDTO(
         id = 754,
+        number = 1,
         lumpSumId = null,
         unitCostId = null,
         costCategory = BudgetCategoryDTO.ExternalCosts,

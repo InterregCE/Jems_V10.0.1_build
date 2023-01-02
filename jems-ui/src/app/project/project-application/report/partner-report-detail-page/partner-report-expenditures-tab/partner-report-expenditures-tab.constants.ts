@@ -8,6 +8,7 @@ export class PartnerReportExpendituresTabConstants {
   public static FOCUS_TIMEOUT = 50;
   public static FORM_CONTROL_NAMES = {
     rowId: 'rowId',
+    number: 'number',
     costOptions: 'costOptions',
     costCategory: 'costCategory',
     investmentId: 'investmentId',

@@ -25,8 +25,8 @@
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <ng-container>
-                                    <div class="text-overflow-ellipsis">
-                                        {{'R' + currentReport.reportNumber + '.' + (i + 1)}}
+                                    <div class="text-overflow-ellipsis" [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}">
+                                        {{'R' + currentReport.reportNumber + '.' + control.get(constants.FORM_CONTROL_NAMES.number).value}}
                                     </div>
                                 </ng-container>
                             </mat-cell>
@@ -42,7 +42,7 @@
                                 <div  class="custom-wrapper pointer"
                                      [matTooltip]="getCostOptionsDefinition(control.get(constants.FORM_CONTROL_NAMES.costOptions).value) | async"
                                      [matTooltipClass]="'tooltip'">
-                                    <div class="custom-dropdown-text">
+                                    <div class="custom-dropdown-text" [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}">
                                         <div>
                                             {{getCostOptionsDefinition(control.get(constants.FORM_CONTROL_NAMES.costOptions).value) | async}}
                                         </div>
@@ -61,7 +61,7 @@
                                 <div [matTooltip]="('project.application.partner.report.expenditures.cost.category.' + control.get(constants.FORM_CONTROL_NAMES.costCategory).value) | translate"
                                      [matTooltipClass]="'tooltip'"
                                      class="custom-wrapper pointer">
-                                    <div class="custom-dropdown-text cost-category">
+                                    <div class="custom-dropdown-text cost-category" [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}">
                                         {{ ('project.application.partner.report.expenditures.cost.category.' + control.get(constants.FORM_CONTROL_NAMES.costCategory).value) | translate}}
                                     </div>
                                 </div>
@@ -78,7 +78,7 @@
                                 <div
                                       class="custom-wrapper pointer"
                                      [matTooltip]="control.get(constants.FORM_CONTROL_NAMES.investmentId)?.value" [matTooltipClass]="'tooltip'">
-                                    <div class="custom-dropdown-text">
+                                    <div class="custom-dropdown-text" [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}">
                                         <span *ngIf="control.get(constants.FORM_CONTROL_NAMES.investmentId)?.value">
                                             {{getInvestmentIdValue(control.get(constants.FORM_CONTROL_NAMES.investmentId)?.value)}}
                                         </span>
@@ -97,7 +97,7 @@
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.contract.ID' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <span>
+                                <span [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}">
                                     {{getContractName(data.contractIDs, data.expendituresCosts[i].contractId)}}
                                 </span>
                             </mat-cell>
@@ -110,7 +110,7 @@
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.internal.reference.number' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <div class="custom-wrapper">
+                                <div class="custom-wrapper" [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}">
                                     {{data.expendituresCosts[i].internalReferenceNumber}}
                                 </div>
                             </mat-cell>
@@ -123,7 +123,9 @@
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.invoice.number' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <span>{{data.expendituresCosts[i].invoiceNumber}}</span>
+                                <span [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}">
+                                    {{data.expendituresCosts[i].invoiceNumber}}
+                                </span>
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
@@ -134,7 +136,7 @@
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.invoice.date' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <span>
+                                <span [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}">
                                     {{data.expendituresCosts[i].invoiceDate}}
                                 </span>
                             </mat-cell>
@@ -147,7 +149,7 @@
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.date.of.payment' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <span>
+                                <span [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}">
                                     {{data.expendituresCosts[i].dateOfPayment}}
                                 </span>
                             </mat-cell>
@@ -163,7 +165,7 @@
                                 <div class="custom-wrapper"
                                      [matTooltip]="getLimitedTextInputTooltip(data.expendituresCosts[i]?.description[0]?.translation, constants.MAX_LENGTH)"
                                      [matTooltipClass]="'tooltip'">
-                                    <div class="custom-text-area">
+                                    <div class="custom-text-area" [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}">
                                         {{data.expendituresCosts[i].description | translateByInputLanguage | async}}
                                     </div>
                                 </div>
@@ -180,7 +182,7 @@
                                 <div  class="custom-wrapper"
                                      [matTooltip]="getLimitedTextInputTooltip(data.expendituresCosts[i].comment[0]?.translation, constants.MAX_LENGTH)"
                                      [matTooltipClass]="'tooltip'">
-                                    <div class="custom-text-area">
+                                    <div class="custom-text-area" [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}">
                                         {{data.expendituresCosts[i].comment | translateByInputLanguage | async}}
                                     </div>
                                 </div>
@@ -193,7 +195,7 @@
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.total.value.invoice' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <div class="custom-wrapper align-right">
+                                <div class="custom-wrapper align-right" [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}">
                                     {{ getValueOrZero(data.expendituresCosts[i].totalValueInvoice) | asMoney}}
                                 </div>
                             </mat-cell>
@@ -206,7 +208,7 @@
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.vat' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <div class="custom-wrapper align-right">
+                                <div class="custom-wrapper align-right" [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}">
                                     {{ getValueOrZero(data.expendituresCosts[i].vat) | asMoney}}
                                 </div>
                             </mat-cell>
@@ -219,7 +221,7 @@
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.number.of.units' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <div class="custom-wrapper align-right">
+                                <div class="custom-wrapper align-right" [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}">
                                     {{ getValueOrZero(data.expendituresCosts[i].numberOfUnits) | asMoney}}
                                 </div>
                             </mat-cell>
@@ -232,7 +234,7 @@
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.price.per.unit' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <div class="custom-wrapper align-right">
+                                <div class="custom-wrapper align-right" [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}">
                                     {{ getValueOrZero(data.expendituresCosts[i].pricePerUnit) | asMoney}}
                                 </div>
                             </mat-cell>
@@ -245,7 +247,7 @@
                                               maxLines="2">{{'project.application.partner.report.expenditures.declared.amount' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <div class="custom-wrapper align-right">
+                                <div class="custom-wrapper align-right" [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}">
                                     {{data.expendituresCosts[i].declaredAmount | asMoney}}
                                 </div>
                             </mat-cell>
@@ -259,7 +261,7 @@
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <div class="custom-wrapper pointer">
-                                    <div class="custom-dropdown-text">
+                                    <div class="custom-dropdown-text" [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}">
                                         {{data.expendituresCosts[i].currencyCode}}
                                     </div>
                                 </div>
@@ -274,7 +276,7 @@
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <div class="custom-wrapper align-right">
-                                    <div class="custom-text-area">
+                                    <div class="custom-text-area" [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}">
                                         {{data.expendituresCosts[i].currencyConversionRate}}
                                     </div>
                                 </div>
@@ -293,7 +295,7 @@
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <div class="custom-wrapper align-right">
-                                    <div class="custom-text-area" >
+                                    <div class="custom-text-area" [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}">
                                         {{data.expendituresCosts[i].declaredAmountAfterSubmission | asMoney}}
                                     </div>
                                 </div>
@@ -318,6 +320,7 @@
                             <mat-header-cell class="left-separator" *matHeaderCellDef>{{'project.application.partner.report.control.expenditure.table.header.part.of.sample' | translate}}</mat-header-cell>
                             <mat-cell class="justify-start left-separator" *matCellDef="let control;let expenditureIndex=index" [formGroupName]="expenditureIndex" >
                                 <mat-slide-toggle color="primary"
+                                                  [disabled] = "control.get(constants.FORM_CONTROL_NAMES.parked).value"
                                                   [formControlName]="constants.FORM_CONTROL_NAMES.partOfSample">
                                 </mat-slide-toggle>
                             </mat-cell>
@@ -331,6 +334,8 @@
                                 <mat-form-field  jemsFormFieldWidth="full">
                                     <input [formControlName]="constants.FORM_CONTROL_NAMES.certifiedAmount"
                                            [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
+                                           [readonly] = "control.get(constants.FORM_CONTROL_NAMES.parked).value"
+                                           [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}"
                                            (keyup)="updateDeductedAmount(expenditureIndex,
                                             data.expendituresCosts[expenditureIndex].declaredAmountAfterSubmission,
                                             items.controls[expenditureIndex].get(constants.FORM_CONTROL_NAMES.certifiedAmount)?.value)"
@@ -346,6 +351,8 @@
                             <mat-cell class="justify-start" *matCellDef="let control;let expenditureIndex=index" [formGroupName]="expenditureIndex" >
                                 <mat-form-field  jemsFormFieldWidth="full">
                                     <input [formControlName]="constants.FORM_CONTROL_NAMES.deductedAmount"
+                                           [disabled] = "control.get(constants.FORM_CONTROL_NAMES.parked).value"
+                                           [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}"
                                            [options]="{allowNegative: true, align: 'right'}"
                                            currencyMask matInput
                                            type="decimal">
@@ -357,16 +364,28 @@
                         <ng-container matColumnDef="typologyOfErrorId">
                             <mat-header-cell *matHeaderCellDef>{{'project.application.partner.report.control.expenditure.table.header.typology.error.eur' | translate}}</mat-header-cell>
                             <mat-cell class="justify-start" *matCellDef="let control;let expenditureIndex=index" [formGroupName]="expenditureIndex" >
-                                <mat-form-field jemsFormFieldWidth="full" >
+                                <mat-form-field jemsFormFieldWidth="full">
                                     <mat-select [ngClass]="{'placeholder-required': items.controls[expenditureIndex].get(constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.errors !== null} "
                                                 [formControlName]="constants.FORM_CONTROL_NAMES.typologyOfErrorId" #typologyOfErrorSelect
                                                 [matTooltip]="getTypologyOfErrorsTooltip(data.typologyOfErrors, typologyOfErrorSelect.triggerValue)"
                                                 [placeholder]="'common.not.applicable.option' | translate"
+                                                [disabled] = "control.get(constants.FORM_CONTROL_NAMES.parked).value"
                                                 [value]="null">
                                        <mat-option [value]="null">{{'common.not.applicable.option' | translate}}</mat-option>
                                        <mat-option *ngFor="let typologyOfError of data.typologyOfErrors" [value]="typologyOfError.id">{{typologyOfError.description}}</mat-option>
                                    </mat-select>
                                </mat-form-field>
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="parked">
+                            <mat-header-cell class="left-separator" *matHeaderCellDef>{{'project.application.partner.report.control.expenditure.table.header.park.item' | translate}}</mat-header-cell>
+                            <mat-cell class="justify-start left-separator" *matCellDef="let control;let expenditureIndex=index" [formGroupName]="expenditureIndex" >
+                                <mat-slide-toggle color="primary"
+                                                  (change)="parkedChange(expenditureIndex, $event)"
+                                                  [formControlName]="constants.FORM_CONTROL_NAMES.parked">
+                                </mat-slide-toggle>
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>

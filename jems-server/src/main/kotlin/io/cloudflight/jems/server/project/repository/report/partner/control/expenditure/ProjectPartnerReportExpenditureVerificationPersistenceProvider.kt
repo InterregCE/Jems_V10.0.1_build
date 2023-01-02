@@ -42,6 +42,7 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProvider(
         deductedAmount = newData.deductedAmount
         partOfSample = newData.partOfSample
         typologyOfErrorId = newData.typologyOfErrorId
+        parked = newData.parked
         verificationComment = newData.verificationComment
     }
 

@@ -36,6 +36,7 @@ import {
   PartnerControlReportFileExpenditureVerificationStore
 } from '@project/project-application/report/partner-control-report/partner-control-expenditure-verification-tab/partner-control-report-file-expenditure-verification-store';
 import {Alert} from '@common/components/forms/alert';
+import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 
 @UntilDestroy()
 @Component({
@@ -240,6 +241,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
     columnsToDisplay.push('certifiedAmount');
     columnsToDisplay.push('deductedAmount');
     columnsToDisplay.push('typologyOfErrorId');
+    columnsToDisplay.push('parked');
     columnsToDisplay.push('verificationComment');
 
     this.columnsToDisplay = columnsToDisplay;
@@ -284,8 +286,8 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
       {minInRem: 7, maxInRem: 8},   // certifiedAmount
       {minInRem: 7, maxInRem: 8},   // deductedAmount
       {minInRem: 8, maxInRem: 10},   // typologyOfError
+      {minInRem: 3, maxInRem: 4},   // parked
       {minInRem: 15, maxInRem: 20},   // verificationComment
-
     );
 
     if (investments.length > 0) {
@@ -312,14 +314,17 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
     this.items.push(this.formBuilder.group(
       {
         id: this.formBuilder.control(reportExpenditureControl.id),
+        number: this.formBuilder.control(reportExpenditureControl.number),
         costOptions: this.formBuilder.control(costOption),
         costCategory: this.formBuilder.control(reportExpenditureControl.costCategory),
         investmentId: this.formBuilder.control(reportExpenditureControl.investmentId),
         attachment: this.formBuilder.control(reportExpenditureControl.attachment, []),
         partOfSample: this.formBuilder.control(reportExpenditureControl.partOfSample),
+        declaredAmountInEur: this.formBuilder.control(reportExpenditureControl.declaredAmountAfterSubmission),
         certifiedAmount: this.formBuilder.control(this.getCertifiedAmount(reportExpenditureControl)),
         deductedAmount: this.formBuilder.control(this.getDeductedAmount(reportExpenditureControl)),
         typologyOfErrorId: this.formBuilder.control(reportExpenditureControl.typologyOfErrorId || null),
+        parked: this.formBuilder.control(reportExpenditureControl.parked),
         verificationComment: this.formBuilder.control(reportExpenditureControl.verificationComment, [Validators.maxLength(1000)]),
       })
     );
@@ -330,12 +335,13 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
   }
 
   private getCertifiedAmount(reportExpenditureControl: ProjectPartnerControlReportExpenditureVerificationDTO) {
-    return reportExpenditureControl.certifiedAmount || reportExpenditureControl.declaredAmountAfterSubmission;
+    return reportExpenditureControl.parked ? 0 : reportExpenditureControl.certifiedAmount || reportExpenditureControl.declaredAmountAfterSubmission;
   }
 
   private getDeductedAmount(reportExpenditureControl: ProjectPartnerControlReportExpenditureVerificationDTO) {
-    return reportExpenditureControl.deductedAmount || reportExpenditureControl.declaredAmountAfterSubmission - this.getCertifiedAmount(reportExpenditureControl);
+    return reportExpenditureControl.parked ? 0 : reportExpenditureControl.deductedAmount || reportExpenditureControl.declaredAmountAfterSubmission - this.getCertifiedAmount(reportExpenditureControl);
   }
+
   private formToReportExpenditures(): ProjectPartnerControlReportExpenditureVerificationUpdateDTO[] {
     return this.items.controls.map((formGroup: FormGroup) => ({
       ...formGroup.getRawValue(),
@@ -416,5 +422,19 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
     }
     this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.deductedAmount)?.setValue(declaredAmountInEur - certifiedAmount);
     this.items.at(expenditureIndex)?.get(this.constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.updateValueAndValidity();
+  }
+
+  parkedChange(expenditureIndex: number, event: MatSlideToggleChange) {
+    if (event.source.checked) {
+      this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.deductedAmount)?.setValue(0);
+      this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.certifiedAmount)?.setValue(0);
+      this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.setValue(null);
+      this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.setErrors(null);
+      this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.clearValidators();
+      this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.updateValueAndValidity();
+    } else {
+      const declared = this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.declaredAmountInEur)?.value;
+      this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.certifiedAmount)?.setValue(declared);
+    }
   }
 }

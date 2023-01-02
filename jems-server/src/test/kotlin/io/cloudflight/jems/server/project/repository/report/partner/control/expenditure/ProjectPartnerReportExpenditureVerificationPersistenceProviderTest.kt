@@ -60,6 +60,7 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
             investment: PartnerReportInvestmentEntity?,
         ) = PartnerReportExpenditureCostEntity(
             id = id,
+            number = 1,
             partnerReport = report,
             reportLumpSum = lumpSum,
             reportUnitCost = unitCost,
@@ -85,6 +86,7 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
             deductedAmount = BigDecimal.ZERO,
             typologyOfErrorId = 1L,
             verificationComment = "dummy comment",
+            parked = false
         ).apply {
             translatedValues.add(
                 PartnerReportExpenditureCostTranslEntity(
@@ -97,33 +99,35 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
 
         private fun dummyExpectedExpenditure(id: Long, lumpSumId: Long?, unitCostId: Long?, investmentId: Long?) =
             ProjectPartnerReportExpenditureVerification(
-            id = id,
-            lumpSumId = lumpSumId,
-            unitCostId = unitCostId,
-            costCategory = ReportBudgetCategory.InfrastructureCosts,
-            investmentId = investmentId,
-            contractId = 18L,
-            internalReferenceNumber = "irn",
-            invoiceNumber = "invoice",
-            invoiceDate = YESTERDAY,
-            dateOfPayment = TOMORROW,
-            description = setOf(InputTranslation(SystemLanguage.EN, "desc EN")),
-            comment = setOf(InputTranslation(SystemLanguage.EN, "comment EN")),
-            totalValueInvoice = BigDecimal.ONE,
-            vat = BigDecimal.ZERO,
-            numberOfUnits = BigDecimal.ONE,
-            pricePerUnit = BigDecimal.ZERO,
-            declaredAmount = BigDecimal.TEN,
-            currencyCode = "HUF",
-            currencyConversionRate = BigDecimal.valueOf(368),
-            declaredAmountAfterSubmission = BigDecimal.valueOf(3680),
-            attachment = JemsFileMetadata(dummyAttachment.id, dummyAttachment.name, dummyAttachment.uploaded),
-            partOfSample = false,
-            certifiedAmount = BigDecimal.ZERO,
-            deductedAmount = BigDecimal.ZERO,
-            typologyOfErrorId = 1L,
-            verificationComment = "dummy comment",
-        )
+                id = id,
+                number = 1,
+                lumpSumId = lumpSumId,
+                unitCostId = unitCostId,
+                costCategory = ReportBudgetCategory.InfrastructureCosts,
+                investmentId = investmentId,
+                contractId = 18L,
+                internalReferenceNumber = "irn",
+                invoiceNumber = "invoice",
+                invoiceDate = YESTERDAY,
+                dateOfPayment = TOMORROW,
+                description = setOf(InputTranslation(SystemLanguage.EN, "desc EN")),
+                comment = setOf(InputTranslation(SystemLanguage.EN, "comment EN")),
+                totalValueInvoice = BigDecimal.ONE,
+                vat = BigDecimal.ZERO,
+                numberOfUnits = BigDecimal.ONE,
+                pricePerUnit = BigDecimal.ZERO,
+                declaredAmount = BigDecimal.TEN,
+                currencyCode = "HUF",
+                currencyConversionRate = BigDecimal.valueOf(368),
+                declaredAmountAfterSubmission = BigDecimal.valueOf(3680),
+                attachment = JemsFileMetadata(dummyAttachment.id, dummyAttachment.name, dummyAttachment.uploaded),
+                partOfSample = false,
+                certifiedAmount = BigDecimal.ZERO,
+                deductedAmount = BigDecimal.ZERO,
+                typologyOfErrorId = 1L,
+                verificationComment = "dummy comment",
+                parked = false
+            )
 
         private val dummyExpectedExpenditureUpdate = ExpenditureVerificationUpdate(
             id = EXPENDITURE_TO_UPDATE,
@@ -132,6 +136,7 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
             deductedAmount = BigDecimal.valueOf(10),
             typologyOfErrorId = 55L,
             verificationComment = "Some new text",
+            parked = false
         )
     }
 

@@ -297,9 +297,12 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     setTimeout(() => this.changeDetectorRef.detectChanges());
   }
 
-  removeItem(index: number): void {
-    this.items.removeAt(index);
-    this.availableCurrenciesPerRow.splice(index, 1);
+  removeItem(indexToBeRemoved: number): void {
+    this.items.removeAt(indexToBeRemoved);
+    this.availableCurrenciesPerRow.splice(indexToBeRemoved, 1);
+    this.items.controls.forEach((formGroup: FormGroup, index) => (
+      formGroup.controls.number.setValue(index + 1)
+    ));
     this.tableData = [...this.items.controls];
     this.formService.setDirty(true);
   }
@@ -307,6 +310,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   addNewItem(): void {
     const item = this.formBuilder.group({
       id: null,
+      number: this.tableData.length + 1,
       costOptions: null,
       costCategory: ['', Validators.required],
       investmentId: '',
@@ -493,6 +497,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       this.items.push(this.formBuilder.group(
         {
           id: this.formBuilder.control(reportExpenditureCost.id),
+          number: this.formBuilder.control(reportExpenditureCost.number),
           costOptions: this.formBuilder.control(costOption),
           costCategory: this.formBuilder.control(reportExpenditureCost.costCategory),
           investmentId: this.formBuilder.control(reportExpenditureCost.investmentId),

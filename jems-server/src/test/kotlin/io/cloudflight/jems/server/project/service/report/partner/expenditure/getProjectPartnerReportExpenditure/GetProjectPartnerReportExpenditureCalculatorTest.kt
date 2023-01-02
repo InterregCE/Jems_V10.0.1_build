@@ -36,6 +36,7 @@ internal class GetProjectPartnerReportExpenditureCalculatorTest : UnitTest() {
 
         private fun expenditure(id: Long) = ProjectPartnerReportExpenditureCost(
             id = id,
+            number = 1,
             lumpSumId = 45L,
             unitCostId = 46L,
             costCategory = ReportBudgetCategory.TravelAndAccommodationCosts,
@@ -56,6 +57,7 @@ internal class GetProjectPartnerReportExpenditureCalculatorTest : UnitTest() {
 
         private fun filledInExpenditure(id: Long) = ProjectPartnerReportExpenditureCost(
             id = id,
+            number = 1,
             lumpSumId = 45L,
             unitCostId = 46L,
             costCategory = ReportBudgetCategory.TravelAndAccommodationCosts,

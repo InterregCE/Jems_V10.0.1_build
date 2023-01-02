@@ -186,7 +186,8 @@ class SubmitProjectPartnerReport(
             certifiedAmount = it.declaredAmountAfterSubmission ?: BigDecimal.ZERO,
             deductedAmount = BigDecimal.ZERO,
             typologyOfErrorId = null,
-            verificationComment = null,
+            parked = false,
+            verificationComment = null
         )
     }
 

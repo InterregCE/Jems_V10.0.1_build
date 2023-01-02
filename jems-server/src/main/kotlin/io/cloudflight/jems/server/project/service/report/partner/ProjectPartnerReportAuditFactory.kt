@@ -112,3 +112,33 @@ fun partnerReportDeleted(
                 "] Draft partner report R.${partnerReport.reportNumber} deleted")
             .build()
     )
+
+fun partnerReportExpenditureParked(
+    context: Any,
+    projectId: Long,
+    partnerReport: ProjectPartnerReport,
+    isParked: Boolean,
+    expenditureIds: List<Int>
+): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(
+            if (isParked) AuditAction.PARTNER_EXPENDITURE_PARKED else AuditAction.PARTNER_EXPENDITURE_UNPARKED)
+            .project(
+                projectId = projectId,
+                customIdentifier = partnerReport.identification.projectIdentifier,
+                acronym = partnerReport.identification.projectAcronym,
+            )
+            .entityRelatedId(entityRelatedId = partnerReport.id)
+            .description("Controller " +
+                (if (isParked) "parked the following expenditures: " else "unparked the following expenditures: ") +
+                expenditureIds.joinToString(
+                    separator = ", ",
+                    prefix = "[", postfix = "]",
+                    transform = {"R" + partnerReport.reportNumber + "." + it.toString()}) +
+                " of partner " +
+                (if (partnerReport.identification.partnerRole == ProjectPartnerRole.LEAD_PARTNER) "LP" else "PP") +
+                " from report R.${partnerReport.reportNumber}"
+                )
+            .build()
+    )

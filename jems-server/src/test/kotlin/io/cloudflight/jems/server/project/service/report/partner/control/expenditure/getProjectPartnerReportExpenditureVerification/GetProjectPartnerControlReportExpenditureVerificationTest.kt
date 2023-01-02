@@ -21,6 +21,7 @@ internal class GetProjectPartnerControlReportExpenditureVerificationTest : UnitT
 
     private val expenditure = ProjectPartnerReportExpenditureVerification(
         id = 1L,
+        number = 1,
         lumpSumId = 45L,
         unitCostId = 46L,
         costCategory = ReportBudgetCategory.TravelAndAccommodationCosts,
@@ -41,7 +42,8 @@ internal class GetProjectPartnerControlReportExpenditureVerificationTest : UnitT
         certifiedAmount = BigDecimal.valueOf(3680),
         deductedAmount = BigDecimal.ZERO,
         typologyOfErrorId = null,
-        verificationComment = null
+        verificationComment = null,
+        parked = false
     )
 
     @MockK

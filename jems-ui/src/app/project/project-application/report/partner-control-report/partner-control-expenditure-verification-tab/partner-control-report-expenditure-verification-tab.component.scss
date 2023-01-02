@@ -1,3 +1,9 @@
+:host::ng-deep {
+  .mat-select-disabled .mat-select-value-text {
+    color: rgb(142, 142, 142) !important;
+  }
+}
+
 .end-flex-header-table {
   display: flex;
   justify-content: end;

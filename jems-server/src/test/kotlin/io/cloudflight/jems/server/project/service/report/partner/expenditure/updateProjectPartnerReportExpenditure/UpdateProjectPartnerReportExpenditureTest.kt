@@ -41,6 +41,7 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
 
     private val reportExpenditureCost = ProjectPartnerReportExpenditureCost(
         id = 780,
+        number = 1,
         lumpSumId = null,
         unitCostId = null,
         costCategory = ReportBudgetCategory.OfficeAndAdministrationCosts,
