@@ -93,6 +93,10 @@ class ProjectDataProviderImpl(
         projectVersionPersistence.getAllVersions().toDataModel()
 
     @Transactional(readOnly = true)
+    override fun getProjectVersions(callId: Long?): List<ProjectVersionData> =
+        projectVersionPersistence.getVersions(callId).toDataModel()
+
+    @Transactional(readOnly = true)
     override fun getProjectDataForProjectId(projectId: Long, version: String?): ProjectData {
         val project = projectPersistence.getProject(projectId, version)
         val isSpfCall = project.callSettings.callType == CallType.SPF

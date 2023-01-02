@@ -53,4 +53,11 @@ class ProjectVersionPersistenceProvider(
     @Transactional
     override fun updateTimestampForApprovedModification(projectId: Long) =
         optimizationProjectVersionRepository.updateOptimizationProjectVersion(projectId)
+        
+    @Transactional(readOnly = true)
+    override fun getVersions(callId: Long?): List<ProjectVersion> =
+        if (callId == null)
+            projectVersionRepository.findAllVersions().toProjectVersion()
+        else
+            projectVersionRepository.findVersions(callId!!).toProjectVersion()
 }

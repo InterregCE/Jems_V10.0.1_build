@@ -19,4 +19,5 @@ interface ProjectVersionPersistence {
 
     fun updateTimestampForApprovedModification(projectId: Long)
 
+    fun getVersions(callId: Long?): List<ProjectVersion>
 }
