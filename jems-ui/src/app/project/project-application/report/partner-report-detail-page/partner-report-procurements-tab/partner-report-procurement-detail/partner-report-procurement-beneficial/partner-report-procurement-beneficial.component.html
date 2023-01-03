@@ -92,7 +92,7 @@
                     {{ 'common.delete.entry' | translate }}
                 </mat-header-cell>
                 <mat-cell *matCellDef="let control; let i = index" class="border-cell-left text-center">
-                    <button *ngIf="control.value?.createdInThisReport" (click)="deleteBeneficial(i)"
+                    <button type="button" *ngIf="control.value?.createdInThisReport" (click)="deleteBeneficial(i)"
                             color="accent" mat-icon-button>
                         <mat-icon>delete</mat-icon>
                     </button>
@@ -104,7 +104,7 @@
 
         </mat-table>
 
-        <button mat-raised-button *ngIf="data.isReportEditable" jemsText class="mb-3 mt-3 mat-primary"
+        <button type="button" mat-raised-button *ngIf="data.isReportEditable" jemsText class="mb-3 mt-3 mat-primary"
                 [disabled]="beneficials.length >= 10" (click)="addBeneficial()">
             <mat-icon>add</mat-icon>{{ 'project.application.partner.report.procurements.beneficial.add' | translate }}
         </button>
