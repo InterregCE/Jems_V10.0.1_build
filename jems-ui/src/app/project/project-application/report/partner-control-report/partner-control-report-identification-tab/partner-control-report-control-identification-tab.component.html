@@ -189,7 +189,7 @@
                     <mat-label>{{'project.application.partner.control.report.phone.number' | translate}}</mat-label>
                     <input #telephoneNumber [formControlName]="constants.FORM_CONTROL_NAMES.telephone" matInput >
                     <mat-hint [jemsHintFor]="telephoneNumber">
-                        <jems-text-hint [currentLength]="telephoneNumber.value.length" [maxLength]="100"></jems-text-hint>
+                        <jems-text-hint [currentLength]="telephoneNumber.value.length" [maxLength]="25"></jems-text-hint>
                     </mat-hint>
                     <mat-error>
                         <jems-form-field-errors

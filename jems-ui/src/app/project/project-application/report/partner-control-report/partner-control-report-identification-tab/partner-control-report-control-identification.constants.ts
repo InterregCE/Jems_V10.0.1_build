@@ -33,7 +33,7 @@ export class PartnerControlReportControlIdentificationConstants {
   public static JOB_TITLE_MAX_LENGTH = 50;
   public static DIVISION_MAX_LENGTH = 100;
   public static ADDRESS_MAX_LENGTH = 100;
-  public static PHONE_MAX_LENGTH = 100;
+  public static PHONE_MAX_LENGTH = 25;
   public static SAMPLING_METHODOLOGY_MAX_LENGTH = 5000;
   public static FOCUS_MAX_LENGTH = 3000;
   public static telephoneErrors = {

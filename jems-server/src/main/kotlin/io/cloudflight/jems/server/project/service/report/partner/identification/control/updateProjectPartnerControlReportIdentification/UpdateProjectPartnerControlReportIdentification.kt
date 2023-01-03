@@ -96,7 +96,7 @@ class UpdateProjectPartnerControlReportIdentification(
             generalValidator.maxLength(data.jobTitle, 50, "jobTitle"),
             generalValidator.maxLength(data.divisionUnit, 100, "divisionUnit"),
             generalValidator.maxLength(data.address, 100, "address"),
-            generalValidator.maxLength(data.telephone, 100, "telephone"),
+            generalValidator.maxLength(data.telephone, 25, "telephone"),
             if (data.telephone.isNullOrBlank()) emptyMap () else
                 generalValidator.matches(
                     data.telephone,
