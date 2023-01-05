@@ -107,7 +107,8 @@
                     <mat-icon fontSet="material-icons-outlined">file_download</mat-icon>
                 </button>
 
-                <span [matTooltip]="((file.deletable ? 'file.table.action.delete.tooltip' : file.tooltipIfNotDeletable) | translate)">
+                <span *ngIf="file.deletable || (file.tooltipIfNotDeletable !== '' && file.iconIfNotDeletable !== '')"
+                      [matTooltip]="((file.deletable ? 'file.table.action.delete.tooltip' : file.tooltipIfNotDeletable) | translate)">
                     <button (click)="deleteFile(file)" [disabled]="!file.deletable || (deletingId$ | async) === file.id"
                             color="accent" mat-icon-button>
                         <mat-icon [class.icon-hidden]="!file.deletable && !file.iconIfNotDeletable"
