@@ -1,5 +1,5 @@
 <jems-form *ngIf="data$ | async as data" [formGroup]="overviewForm"
-           (discard)="resetForm(partnerControlReportOverview)"
+           (discard)="resetForm(data.controlReportOverview)"
            (save)="saveForm(data.partnerId, data.reportId)">
 
     <h3>{{'project.application.partner.report.control.tab.overviewAndFinalize.title' | translate}}</h3>
@@ -60,57 +60,59 @@
 
     <h3>{{'project.application.partner.report.control.tab.overviewAndFinalize.control.timing' | translate}}</h3>
     <p>{{'project.application.partner.report.control.tab.overviewAndFinalize.control.timing.info' | translate}}</p>
-    <div id="overview-and-finalize-control-timing" class="mb-5">
-        <div class="project-row">
-            <span class="header p-1 pr-3">{{'project.application.partner.report.control.tab.overviewAndFinalize.control.timing.start.date' | translate}}</span>
-            <span class="p-2">
-                    <input class="date-picker" formControlName="controlWorkStartDate" matInput [matDatepicker]="controlWorkStartDate">
-                    <mat-datepicker-toggle matSuffix [for]="controlWorkStartDate"></mat-datepicker-toggle>
-                    <mat-datepicker #controlWorkStartDate></mat-datepicker>
-            </span>
-        </div>
-        <div class="project-row">
-            <span class="header p-1 pr-3">{{'project.application.partner.report.control.tab.overviewAndFinalize.control.timing.clarification.requests.dates' | translate}}</span>
-            <span class="p-1 w-100">
-                <jems-expandable-textarea jemsMultiColumnRow
-                                          [control]="overviewForm?.controls?.requestsForClarifications"
-                                          [errors]="overviewForm?.controls?.requestsForClarifications.errors"
-                                          [characterLimit]="1000"
-                                          [minRows]="1"
-                                          [maxRows]="4">
-                </jems-expandable-textarea>
-            </span>
-        </div>
-        <div class="project-row">
-            <span class="header p-1 pr-3">{{'project.application.partner.report.control.tab.overviewAndFinalize.control.timing.satisfactory.answers.dates' | translate}}</span>
-            <span class="p-1 w-100">
-                <jems-expandable-textarea jemsMultiColumnRow
-                                          [control]="overviewForm?.controls?.receiptOfSatisfactoryAnswers"
-                                          [errors]="overviewForm?.controls?.receiptOfSatisfactoryAnswers.errors"
-                                          [characterLimit]="1000"
-                                          [minRows]="1"
-                                          [maxRows]="4">
-                </jems-expandable-textarea>
-            </span>
-        </div>
-        <div class="project-row">
-            <span class="header p-1 pr-3">{{'project.application.partner.report.control.tab.overviewAndFinalize.control.timing.end.date' | translate}}</span>
-            <span class="p-1 end-date">
-                    {{partnerControlReportOverview.endDate !== null ? getDateInfo(partnerControlReportOverview.endDate) : ''}}
-            </span>
-        </div>
+    <mat-form-field class="date" jemsFormFieldWidth="x-large">
+        <mat-label>{{'project.application.partner.report.control.tab.overviewAndFinalize.control.timing.start.date' | translate}}</mat-label>
+        <input class="date-picker" formControlName="controlWorkStartDate" matInput [matDatepicker]="controlWorkStartDate" required>
+        <mat-datepicker-toggle matSuffix [for]="controlWorkStartDate"></mat-datepicker-toggle>
+        <mat-datepicker #controlWorkStartDate></mat-datepicker>
+        <mat-error>
+            <jems-form-field-errors
+                    [errors]="overviewForm?.controls?.controlWorkStartDate?.errors" [condensed]="true">
+            </jems-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+
+    <div>
+        <br>
+        {{'project.application.partner.report.control.tab.overviewAndFinalize.control.timing.clarification.requests.dates' | translate}}
+        <jems-expandable-textarea jemsMultiColumnRow class="w-50"
+                                  [control]="overviewForm?.controls?.requestsForClarifications"
+                                  [errors]="overviewForm?.controls?.requestsForClarifications.errors"
+                                  [characterLimit]="1000"
+                                  [minRows]="1"
+                                  [maxRows]="15">
+        </jems-expandable-textarea>
     </div>
+
+    <div>
+        <br>
+        {{'project.application.partner.report.control.tab.overviewAndFinalize.control.timing.satisfactory.answers.dates' | translate}}
+        <jems-expandable-textarea jemsMultiColumnRow class="w-50"
+                                  [control]="overviewForm?.controls?.receiptOfSatisfactoryAnswers"
+                                  [errors]="overviewForm?.controls?.receiptOfSatisfactoryAnswers.errors"
+                                  [characterLimit]="1000"
+                                  [minRows]="1"
+                                  [maxRows]="15">
+
+        </jems-expandable-textarea>
+    </div>
+
+    <mat-form-field class="date" jemsFormFieldWidth="x-large">
+        <mat-label>{{'project.application.partner.report.control.tab.overviewAndFinalize.control.timing.end.date' | translate}}</mat-label>
+        <input class="date-picker" formControlName="controlWorkEndDate" matInput [matDatepicker]="controlWorkEndDate" disabled>
+        <mat-datepicker #controlWorkEndDate></mat-datepicker>
+    </mat-form-field>
 
     <h3>{{'project.application.partner.report.control.tab.overviewAndFinalize.findings.observations.limitations.title' | translate}}</h3>
     <p>{{'project.application.partner.report.control.tab.overviewAndFinalize.findings.observations.limitations.info' | translate}}</p>
-    <jems-expandable-textarea jemsMultiColumnRow
+    <jems-expandable-textarea jemsMultiColumnRow class="w-50"
                               [control]="overviewForm?.controls?.findingDescription"
                               [errors]="overviewForm?.controls?.findingDescription.errors"
                               [characterLimit]="5000"
                               [minRows]="1"
-                              [maxRows]="4">
+                              [maxRows]="15">
     </jems-expandable-textarea>
-
+    <br>
     <div *ngIf="!overviewForm.controls.lastCertifiedReportNumber.value">
         <h3>{{'project.application.partner.report.control.tab.overviewAndFinalize.followup.measures.title' | translate}}</h3>
     </div>
@@ -124,44 +126,45 @@
                     [type]="Alert.WARNING">
             <span>{{'project.application.partner.report.control.tab.overviewAndFinalize.followup.measures.previous.changed.info' | translate : { dateInfo: getDateInfo(overviewForm.controls.changedLastCertifiedReportEndDate.value)} }}</span>
         </jems-alert>
-        <jems-expandable-textarea jemsMultiColumnRow
+        <jems-expandable-textarea jemsMultiColumnRow class="w-50"
                                   [control]="overviewForm?.controls?.previousFollowUpMeasuresFromLastReport"
                                   [disabled] = "true"
                                   [characterLimit]="5000"
                                   [minRows]="1"
-                                  [maxRows]="4">
+                                  [maxRows]="15">
         </jems-expandable-textarea>
     </div>
+
     <jems-alert show="true" *ngIf="!overviewForm?.controls?.previousFollowUpMeasuresFromLastReport.value && !overviewForm.controls.controlWorkEndDate.value" [type]="Alert.WARNING" [closable]="true">
         <span>{{'project.application.partner.report.control.tab.overviewAndFinalize.followup.measures.no.previous.info' | translate}}</span>
     </jems-alert>
     <p>{{'project.application.partner.report.control.tab.overviewAndFinalize.followup.measures.info' | translate}}</p>
-    <jems-expandable-textarea jemsMultiColumnRow
+    <jems-expandable-textarea jemsMultiColumnRow class="w-50"
                               [control]="overviewForm?.controls?.followUpMeasuresFromLastReport"
                               [errors]="overviewForm?.controls?.followUpMeasuresFromLastReport.errors"
                               [characterLimit]="5000"
                               [minRows]="1"
-                              [maxRows]="1">
+                              [maxRows]="15">
     </jems-expandable-textarea>
 
     <h3>{{'project.application.partner.report.control.tab.overviewAndFinalize.conclusions.and.recommendations.title' | translate}}</h3>
     <p>{{'project.application.partner.report.control.tab.overviewAndFinalize.conclusions.and.recommendations.info' | translate}}</p>
-    <jems-expandable-textarea jemsMultiColumnRow
+    <jems-expandable-textarea jemsMultiColumnRow class="w-50"
                               [control]="overviewForm?.controls?.conclusion"
                               [errors]="overviewForm?.controls?.conclusion.errors"
                               [characterLimit]="5000"
                               [minRows]="1"
-                              [maxRows]="4">
+                              [maxRows]="15">
     </jems-expandable-textarea>
 
     <h3>{{'project.application.partner.report.control.tab.overviewAndFinalize.followup.partner.report.measures.title' | translate}}</h3>
     <p>{{'project.application.partner.report.control.tab.overviewAndFinalize.followup.partner.report.measures.info' | translate}}</p>
-    <jems-expandable-textarea jemsMultiColumnRow
+    <jems-expandable-textarea jemsMultiColumnRow class="w-50"
                               [control]="overviewForm?.controls?.followUpMeasuresForNextReport"
                               [errors]="overviewForm?.controls?.followUpMeasuresForNextReport.errors"
                               [characterLimit]="5000"
                               [minRows]="1"
-                              [maxRows]="4">
+                              [maxRows]="15">
     </jems-expandable-textarea>
 
     <jems-alert *ngIf="error$ | async as error" [show]="!!error.i18nMessage?.i18nKey" [type]="Alert.ERROR">
@@ -173,7 +176,7 @@
     <jems-alert show="true" *ngIf="!data.userCanEdit" [type]="Alert.INFO" [closable]="false">
         <span>{{ 'project.application.partner.report.finalize.no.edit.permission' | translate }}</span>
     </jems-alert>
-    <div jemsNoWidthLimit *ngIf="data.finalizationAllowed && data.userCanEdit" class="mt-3">
+    <div jemsNoWidthLimit *ngIf="data.finalizationAllowed && data.userCanEdit && !overviewForm.dirty" class="mt-3">
         <jems-pending-button
                 [confirm]="{ title: 'project.application.partner.report.button.finalize', message: 'project.application.partner.report.finalize.dialog.message' }"
                 [pending]="finalizationLoading"

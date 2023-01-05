@@ -36,7 +36,6 @@ export class PartnerControlReportOverviewAndFinalizeTabComponent {
   displayedColumns = ['declaredByPartner', 'inControlSample', 'parked', 'deductedByControl', 'eligibleAfterControl', 'eligibleAfterControlPercentage'];
   finalizationLoading = false;
   error$ = new BehaviorSubject<APIError | null>(null);
-  partnerControlReportOverview: ControlOverviewDTO;
 
   data$: Observable<{
     dataSource: MatTableDataSource<ControlWorkOverviewDTO>;
@@ -44,6 +43,7 @@ export class PartnerControlReportOverviewAndFinalizeTabComponent {
     reportId: number;
     partnerId: number;
     userCanEdit: boolean;
+    controlReportOverview: ControlOverviewDTO;
   }>;
 
   overviewForm: FormGroup = this.formBuilder.group({
@@ -72,25 +72,23 @@ export class PartnerControlReportOverviewAndFinalizeTabComponent {
     private projectPartnerReportControlOverviewService: ProjectPartnerReportControlOverviewService,
     private localeDatePipe: LocaleDatePipe
   ) {
-    store.partnerControlReportOverview$.pipe(
-      tap(data => this.partnerControlReportOverview = data)
-    ).subscribe();
-
     this.data$ = combineLatest([
       this.pageStore.controlWorkOverview$,
       this.reportDetailPageStore.partnerReport$,
       this.reportDetailPageStore.partnerId$.pipe(map(id => Number(id))),
-      this.reportPageStore.institutionUserCanEditControlReports$
+      this.reportPageStore.institutionUserCanEditControlReports$,
+      this.store.partnerControlReportOverview$
     ]).pipe(
-      map(([data, report, partnerId , userCanEdit]) => ({
+      map(([data, report, partnerId , userCanEdit, controlReportOverview]) => ({
         dataSource: new MatTableDataSource([data]),
         finalizationAllowed: report.status === ProjectPartnerReportDTO.StatusEnum.InControl,
         reportId: report.id,
         partnerId,
-        userCanEdit
+        userCanEdit,
+        controlReportOverview
       })),
       tap(() => this.initForm()),
-      tap(() => this.resetForm(this.partnerControlReportOverview)),
+      tap(data => this.resetForm(data.controlReportOverview)),
       tap(data => this.disableForms(data.userCanEdit))
     );
   }
@@ -98,6 +96,7 @@ export class PartnerControlReportOverviewAndFinalizeTabComponent {
   private initForm(): void {
     this.formService.init(this.overviewForm);
     this.overviewForm.controls.controlWorkEndDate.disable();
+    this.overviewForm.controls.previousFollowUpMeasuresFromLastReport.disable();
   }
 
   resetForm(partnerControlReport: ControlOverviewDTO): void {
@@ -123,7 +122,6 @@ export class PartnerControlReportOverviewAndFinalizeTabComponent {
   saveForm(partnerId: number, reportId: number): void {
     this.projectPartnerReportControlOverviewService.updateControlOverview(partnerId, reportId, this.convertFormToControlOverviewDTO())
       .pipe(
-        tap(data => this.partnerControlReportOverview = data),
         take(1),
         tap(() => this.formService.setSuccess('project.application.partner.report.control.tab.overviewAndFinalize.save.success')),
         catchError(error => this.formService.setError(error)),
