@@ -1,0 +1,123 @@
+<jems-form *ngIf="data$ | async as data"
+           (discard)="resetForm(data.projectReport)"
+           (save)="saveIdentification()">
+
+    <h3>{{'project.application.project.report.sub.title' | translate}}</h3>
+
+    <div id="report-info" class="mb-5">
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.detail.table.id.application' | translate}}</span>
+            <span class="p-1">{{data.projectReport?.projectIdentifier}} - {{data.projectReport?.projectAcronym}}</span>
+        </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.application.project.report.id' | translate}}</span>
+            <span class="p-1">R.{{data.projectReport.reportNumber}}</span>
+        </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.application.project.report.status' | translate}}</span>
+            <span class="p-1"><jems-project-report-status [status]="data.projectReport.status" [longVersion]="true"></jems-project-report-status></span>
+        </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.organization.original.name.label' | translate}}</span>
+            <span class="p-1">{{data.projectReport?.leadPartnerNameInOriginalLanguage}}</span>
+        </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.organization.english.name.label' | translate}}</span>
+            <span class="p-1">{{data.projectReport?.leadPartnerNameInEnglish}}</span>
+        </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.application.project.report.table.project.version' | translate}}</span>
+            <span class="p-1">{{data.projectReport?.linkedFormVersion}}</span>
+        </div>
+    </div>
+
+    <form [formGroup]="form" jemsFormLayout>
+        <div jemsMultiColumnRow>
+            <mat-form-field jemsFormFieldWidth="half">
+                <mat-label>{{'project.application.project.report.start.date' | translate | dateFormatInfo : false}}</mat-label>
+                <input [max]="form?.controls?.endDate?.value"
+                       formControlName="startDate"
+                       [matDatepicker]="start"
+                       matInput
+                       name="startDate">
+                <mat-datepicker-toggle [for]="start" matSuffix>
+                </mat-datepicker-toggle>
+                <mat-datepicker #start></mat-datepicker>
+                <mat-error>
+                    <jems-form-field-errors
+                            [args]="dateNameArgs"
+                            [errors]="form?.controls?.startDate?.errors"
+                            [messages]="inputErrorMessages"
+                    >
+                    </jems-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field jemsFormFieldWidth="half">
+                <mat-label>{{'project.application.project.report.end.date' | translate | dateFormatInfo : false}}</mat-label>
+                <input [min]="form?.controls?.startDate?.value"
+                       formControlName="endDate" matInput
+                       [matDatepicker]="end"
+                       name="endDate">
+                <mat-datepicker-toggle [for]="end" matSuffix>
+                </mat-datepicker-toggle>
+                <mat-datepicker #end ></mat-datepicker>
+                <mat-error>
+                    <jems-form-field-errors
+                            [args]="dateNameArgs"
+                            [errors]="form?.controls?.endDate?.errors"
+                            [messages]="inputErrorMessages"
+                    >
+                    </jems-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <div jemsMultiColumnRow>
+            <mat-form-field class="mt-4" jemsFormFieldWidth="one-quarter">
+                <mat-label>{{'project.application.project.report.deadline.placeholder' | translate}}</mat-label>
+                <mat-select
+                        formControlName="deadlineId"
+                        class="placeholder-required"
+                        placeholder="{{'project.application.project.report.deadline.placeholder' | translate}}">
+                    <mat-option [value]="0">{{'project.application.project.report.no.deadline' | translate}}</mat-option>
+                    <mat-option *ngFor="let deadline of availableDeadlines" [value]="deadline">{{deadline}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <div jemsFormFieldWidth="one-quarter">
+                <div>{{'project.application.partner.control.report.report.type' | translate}}</div>
+                <mat-button-toggle-group required formControlName="type">
+                    <mat-button-toggle [value]="ProjectReportDTO.TypeEnum.Content">{{'project.application.project.report.table.type.Content' | translate}}</mat-button-toggle>
+                    <mat-button-toggle [value]="ProjectReportDTO.TypeEnum.Finance">{{'project.application.project.report.table.type.Finance' | translate}}</mat-button-toggle>
+                    <mat-button-toggle [value]="ProjectReportDTO.TypeEnum.Both">{{'project.application.project.report.table.type.Both' | translate}}</mat-button-toggle>
+                </mat-button-toggle-group>
+            </div>
+            <div class="mt-4" jemsFormFieldWidth="one-quarter">
+                <jems-project-periods-select
+                        [periods]="data.periods"
+                        [required]="true"
+                        [control]="form?.controls?.periodNumber"
+                        label='project.application.project.report.reporting.period'
+                        (selectionChanged)="formService.setDirty(true)">
+                </jems-project-periods-select>
+            </div>
+            <mat-form-field class="mt-4" jemsFormFieldWidth="one-quarter">
+                <mat-label>{{'project.application.project.report.date' | translate | dateFormatInfo : false}}</mat-label>
+                <input formControlName="reportingDate" matInput
+                       [matDatepicker]="reportingDate"
+                       required
+                       name="reportingDate">
+                <mat-datepicker-toggle [for]="reportingDate" matSuffix>
+                </mat-datepicker-toggle>
+                <mat-datepicker #reportingDate ></mat-datepicker>
+                <mat-error>
+                    <jems-form-field-errors
+                            [args]="dateNameArgs"
+                            [errors]="form?.controls?.reportingDate?.errors"
+                            [messages]="inputErrorMessages"
+                    >
+                    </jems-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+        </div>
+    </form>
+</jems-form>

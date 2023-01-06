@@ -27,8 +27,8 @@ import {
 import {NutsStore} from '@common/services/nuts.store';
 import VerificationLocationsEnum = ReportOnTheSpotVerificationDTO.VerificationLocationsEnum;
 import GeneralMethodologiesEnum = ReportVerificationDTO.GeneralMethodologiesEnum;
-import {APIError} from "@common/models/APIError";
-import {TranslateService} from "@ngx-translate/core";
+import {APIError} from '@common/models/APIError';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'jems-partner-control-report-identification-tab',

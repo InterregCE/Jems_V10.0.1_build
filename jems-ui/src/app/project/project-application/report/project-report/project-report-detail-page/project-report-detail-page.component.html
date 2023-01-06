@@ -1,0 +1,16 @@
+<ng-container>
+        <jems-project-page-template *ngIf="pageStore.projectReport$ | async as partnerReport"
+                                    [titleText]="'project.application.project.reports.title.number' | translate : {reportNumber: partnerReport?.reportNumber}"
+                                    [subTitleText]=""
+                                    [isVersionedData]="false">
+            <nav mat-tab-nav-bar>
+                <a [active]="activeTab('identification')" mat-tab-link
+                   (click)="routeTo('identification')">
+                    <span jemsText maxWidth="230">
+                        {{'project.application.project.report.tab.report.identification' | translate}}
+                    </span>
+                </a>
+            </nav>
+            <router-outlet></router-outlet>
+        </jems-project-page-template>
+</ng-container>

@@ -221,6 +221,16 @@ import {
 import {
   PartnerControlReportOverviewAndFinalizeTabComponent
 } from '@project/project-application/report/partner-control-report/partner-control-report-overview-and-finalize-tab/partner-control-report-overview-and-finalize-tab.component';
+import {ProjectReportComponent} from '@project/project-application/report/project-report/project-report.component';
+import {
+  ProjectReportDetailPageBreadcrumbResolver
+} from '@project/project-application/report/project-report/project-report-detail-page/project-report-detail-page-breadcrumb-resolver.service';
+import {
+  ProjectReportDetailPageComponent
+} from '@project/project-application/report/project-report/project-report-detail-page/project-report-detail-page.component';
+import {
+  ProjectReportIdentificationTabComponent
+} from '@project/project-application/report/project-report/project-report-detail-page/project-report-identification-tab/project-report-identification-tab.component';
 
 export const routes: Routes = [
   {
@@ -349,6 +359,39 @@ export const routes: Routes = [
                         ],
                       }
                     ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            path: 'reports',
+            data: {
+              breadcrumb: 'project.breadcrumb.applicationForm.project.reports',
+            },
+            children: [
+              {
+                path: '',
+                component: ProjectReportComponent,
+              },
+              {
+                path: ':reportId',
+                redirectTo: ':reportId/identification',
+              },
+              {
+                path: ':reportId',
+                data: {dynamicBreadcrumb: true},
+                resolve: {breadcrumb$: ProjectReportDetailPageBreadcrumbResolver},
+                children: [
+                  {
+                    path: '',
+                    component: ProjectReportDetailPageComponent,
+                    children: [
+                      {
+                        path: 'identification',
+                        component: ProjectReportIdentificationTabComponent,
+                      }
+                    ],
                   }
                 ]
               }

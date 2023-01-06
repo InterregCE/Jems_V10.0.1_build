@@ -1,0 +1,26 @@
+:host {
+  min-width: 10rem;
+}
+mat-chip {
+  min-height: 1.75rem;
+  padding-left: .25rem;
+  margin: 0 .25rem !important;
+  pointer-events: none;
+}
+.status-Disabled {
+  border: 1px solid var(--table-border-color);
+  background: white !important;
+  opacity: 0.6;
+}
+.status-Draft {
+  background-color: var(--status-draft) !important;
+}
+.status-Submitted {
+  background-color: var(--status-submitted) !important;
+}
+.status-Verified {
+  background-color: var(--status-approved-with-conditions) !important;
+}
+.status-Paid {
+  background-color: var(--status-approved) !important;
+}

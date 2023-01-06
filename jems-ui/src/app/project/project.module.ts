@@ -448,6 +448,10 @@ import {
 import {
   PartnerControlReportOverviewAndFinalizeTabComponent
 } from '@project/project-application/report/partner-control-report/partner-control-report-overview-and-finalize-tab/partner-control-report-overview-and-finalize-tab.component';
+import { ProjectReportComponent } from './project-application/report/project-report/project-report.component';
+import { ProjectReportStatusComponent } from './project-application/report/project-report/project-report-status/project-report-status.component';
+import { ProjectReportDetailPageComponent } from './project-application/report/project-report/project-report-detail-page/project-report-detail-page.component';
+import { ProjectReportIdentificationTabComponent } from './project-application/report/project-report/project-report-detail-page/project-report-identification-tab/project-report-identification-tab.component';
 
 @NgModule({
   declarations: [
@@ -603,6 +607,10 @@ import {
     PartnerFilesComponent,
     ContractingChecklistPageComponent,
     PartnerControlReportOverviewAndFinalizeTabComponent,
+    ProjectReportComponent,
+    ProjectReportStatusComponent,
+    ProjectReportDetailPageComponent,
+    ProjectReportIdentificationTabComponent,
   ],
   imports: [
     SharedModule,
