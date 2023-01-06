@@ -9,13 +9,13 @@ import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.createTestCallEntity
-import io.cloudflight.jems.server.payments.service.regular.getPaymentDetail.GetPaymentDetailInteractor
-import io.cloudflight.jems.server.payments.service.regular.getPayments.GetPaymentsInteractor
 import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
 import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
+import io.cloudflight.jems.server.payments.service.regular.getPaymentDetail.GetPaymentDetailInteractor
+import io.cloudflight.jems.server.payments.service.regular.getPayments.GetPaymentsInteractor
 import io.cloudflight.jems.server.payments.service.regular.updatePaymentInstallments.UpdatePaymentInstallmentsInteractor
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
@@ -140,8 +140,10 @@ class PaymentsControllerTest : UnitTest() {
 
     @MockK
     lateinit var getPayments: GetPaymentsInteractor
+
     @MockK
     lateinit var getPaymentDetail: GetPaymentDetailInteractor
+
     @MockK
     lateinit var updatePaymentInstallments: UpdatePaymentInstallmentsInteractor
 
@@ -177,25 +179,26 @@ class PaymentsControllerTest : UnitTest() {
 
         assertThat(controller.getPaymentDetail(paymentId)).isEqualTo(
             PaymentDetailDTO(
-            id = paymentId,
-            paymentType = PaymentTypeDTO.FTLS,
-            projectCustomIdentifier = project.customIdentifier,
-            fundName = fund.type.name,
-            projectAcronym = project.acronym,
-            amountApprovedPerFund = BigDecimal.TEN,
-            dateOfLastPayment = null,
-            partnerPayments = listOf(
-                PaymentPartnerDTO(
-                id = 1L,
-                partnerId = partnerId,
-                partnerType = ProjectPartnerRoleDTO.LEAD_PARTNER,
-                partnerNumber = 1,
-                partnerAbbreviation = "partner",
-                amountApproved = BigDecimal.ONE,
-                installments = listOf(installmentFirstDTO)
+                id = paymentId,
+                paymentType = PaymentTypeDTO.FTLS,
+                projectId = project.id,
+                projectCustomIdentifier = project.customIdentifier,
+                fundName = fund.type.name,
+                projectAcronym = project.acronym,
+                amountApprovedPerFund = BigDecimal.TEN,
+                dateOfLastPayment = null,
+                partnerPayments = listOf(
+                    PaymentPartnerDTO(
+                        id = 1L,
+                        partnerId = partnerId,
+                        partnerType = ProjectPartnerRoleDTO.LEAD_PARTNER,
+                        partnerNumber = 1,
+                        partnerAbbreviation = "partner",
+                        amountApproved = BigDecimal.ONE,
+                        installments = listOf(installmentFirstDTO)
+                    )
+                )
             )
-            )
-        )
         )
     }
 

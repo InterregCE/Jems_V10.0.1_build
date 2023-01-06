@@ -15,11 +15,14 @@
             <h3 class="mb-4 put-icon-to-header-line">{{'payments.payment.to.project.detail.back.button' | translate}}</h3>
         </div>
 
-        <h3>{{'payments.payment.to.project.detail.header' | translate : {
-            paymentId: data.paymentDetail.id,
-            projectId: data.paymentDetail.projectCustomIdentifier,
-            fundName: data.paymentDetail.fundName
-        } }}</h3>
+        <h3 id="project-title">
+            {{'payments.payment.to.project.detail.header.1' | translate : {paymentId: data.paymentDetail.id} }}
+            <a [routerLink]="'/app/project/detail/'+ data.paymentDetail.projectId">
+                {{'payments.payment.to.project.detail.header.2' | translate : {projectId: data.paymentDetail.projectCustomIdentifier} }}
+            </a>
+            {{'payments.payment.to.project.detail.header.3' | translate : {fundName: data.paymentDetail.fundName} }}
+        </h3>
+
         <p>{{'payments.payment.to.project.detail.subtext' | translate}}</p>
         <jems-alert [show]="true"
                     [type]="Alert.WARNING">

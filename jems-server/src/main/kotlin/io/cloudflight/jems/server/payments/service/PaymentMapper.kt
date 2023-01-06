@@ -41,6 +41,7 @@ fun PaymentDetail.toDTO() = PaymentDetailDTO(
     id = id,
     paymentType = PaymentTypeDTO.valueOf(paymentType.name),
     fundName = fundName,
+    projectId = projectId,
     projectCustomIdentifier = projectCustomIdentifier,
     projectAcronym = projectAcronym,
     amountApprovedPerFund = amountApprovedPerFund,
