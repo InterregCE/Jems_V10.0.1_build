@@ -17,6 +17,7 @@ import io.cloudflight.jems.server.project.service.report.project.base.createProj
 import io.cloudflight.jems.server.project.service.report.project.base.deleteProjectReport.DeleteProjectReportInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.getProjectReport.GetProjectReportInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.getProjectReportList.GetProjectReportListInteractor
+import io.cloudflight.jems.server.project.service.report.project.base.submitProjectReport.SubmitProjectReportInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.updateProjectReport.UpdateProjectReportInteractor
 import io.mockk.clearMocks
 import io.mockk.every
@@ -124,6 +125,8 @@ internal class ProjectReportControllerTest : UnitTest() {
     private lateinit var updateReport: UpdateProjectReportInteractor
     @MockK
     private lateinit var deleteReport: DeleteProjectReportInteractor
+    @MockK
+    private lateinit var submitReport: SubmitProjectReportInteractor
 
     @InjectMockKs
     private lateinit var controller: ProjectReportController
@@ -202,4 +205,10 @@ internal class ProjectReportControllerTest : UnitTest() {
         verify(exactly = 1) { deleteReport.delete(21L, reportId = 10L) }
     }
 
+    @Test
+    fun submitProjectReport() {
+        every { submitReport.submit(21L, reportId = 10L) } returns ProjectReportStatus.Submitted
+        controller.submitProjectReport(21L, reportId = 10L)
+       assertThat(submitReport.submit(21L, reportId = 10L)).isEqualTo(ProjectReportStatus.Submitted)
+    }
 }

@@ -107,7 +107,7 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
         val projectId = 94L
         val deadline = ProjectContractingReportingEntity(804L, mockk(), ContractingDeadlineType.Finance, 5, MONTH_AGO, "")
         val report = reportEntity(45L, projectId, deadline)
-        every { projectReportRepository.getByProjectIdAndId(projectId, 22L) } returns report
+        every { projectReportRepository.getByIdAndProjectId(22L, projectId) } returns report
         assertThat(persistence.getReportById(projectId, 22L)).isEqualTo(
             report(45L, projectId).copy(
                 deadlineId = 804L,
@@ -139,7 +139,7 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
     fun updateReport() {
         val projectId = 92L
         val report = reportEntity(14L, projectId, deadline = null)
-        every { projectReportRepository.getByProjectIdAndId(projectId, 14L) } returns report
+        every { projectReportRepository.getByIdAndProjectId(14L, projectId) } returns report
 
         val deadlineEntity = ProjectContractingReportingEntity(84L, mockk(), ContractingDeadlineType.Finance, 5, MONTH_AGO, "")
         every { contractingDeadlineRepository.findByProjectIdAndId(projectId, 84L) } returns deadlineEntity

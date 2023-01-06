@@ -1,10 +1,12 @@
 package io.cloudflight.jems.server.project.service.report.project.base
 
+import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportDeadline
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import java.time.LocalDate
+import java.time.ZonedDateTime
 
 interface ProjectReportPersistence {
 
@@ -27,5 +29,7 @@ interface ProjectReportPersistence {
     fun getCurrentLatestReportFor(projectId: Long): ProjectReportModel?
 
     fun countForProject(projectId: Long): Int
+
+    fun submitReportByProjectId(projectId: Long, reportId: Long, submissionTime: ZonedDateTime): ProjectReportSubmissionSummary
 
 }

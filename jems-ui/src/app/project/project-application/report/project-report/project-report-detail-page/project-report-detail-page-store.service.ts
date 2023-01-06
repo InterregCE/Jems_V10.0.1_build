@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {
+  PreConditionCheckResultDTO,
   ProjectReportDTO,
   ProjectReportService,
   ProjectReportSummaryDTO, ProjectReportUpdateDTO,
@@ -95,6 +96,15 @@ export class ProjectReportDetailPageStore {
     ])
       .pipe(
         map(([canEdit, status]) => canEdit && status === ProjectReportSummaryDTO.StatusEnum.Draft)
+      );
+  }
+
+  submitReport(partnerId: number, reportId: number): Observable<ProjectReportSummaryDTO.StatusEnum> {
+    return this.projectReportService.submitProjectReport(partnerId, reportId)
+      .pipe(
+        map(status => status as ProjectReportSummaryDTO.StatusEnum),
+        tap(status => this.updatedReportStatus$.next(status)),
+        tap(status => Log.info('Changed status for report', reportId, status))
       );
   }
 }

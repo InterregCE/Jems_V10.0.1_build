@@ -1,7 +1,8 @@
 package io.cloudflight.jems.server.project.repository.report.project.base
 
 import io.cloudflight.jems.server.project.repository.contracting.reporting.ProjectContractingReportingRepository
-import io.cloudflight.jems.server.project.service.report.model.project.ProjectReport
+import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
+import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportDeadline
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
+import java.time.ZonedDateTime
 
 @Repository
 class ProjectReportPersistenceProvider(
@@ -23,7 +25,7 @@ class ProjectReportPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getReportById(projectId: Long, reportId: Long): ProjectReportModel =
-        projectReportRepository.getByProjectIdAndId(projectId = projectId, reportId).toModel()
+        projectReportRepository.getByIdAndProjectId(reportId, projectId = projectId).toModel()
 
     @Transactional
     override fun createReport(report: ProjectReportModel) =
@@ -39,7 +41,7 @@ class ProjectReportPersistenceProvider(
         endDate: LocalDate?,
         deadline: ProjectReportDeadline,
     ): ProjectReportModel {
-        val report = projectReportRepository.getByProjectIdAndId(projectId = projectId, reportId)
+        val report = projectReportRepository.getByIdAndProjectId(reportId, projectId = projectId)
 
         report.startDate = startDate
         report.endDate = endDate
@@ -62,5 +64,17 @@ class ProjectReportPersistenceProvider(
     @Transactional(readOnly = true)
     override fun countForProject(projectId: Long): Int =
         projectReportRepository.countAllByProjectId(projectId)
+
+    @Transactional
+    override fun submitReportByProjectId(
+        projectId: Long,
+        reportId: Long,
+        submissionTime: ZonedDateTime
+    ): ProjectReportSubmissionSummary =
+        projectReportRepository.getByIdAndProjectId(id = reportId, projectId = projectId)
+            .apply {
+                status = ProjectReportStatus.Submitted
+                firstSubmission = submissionTime
+            }.toSubmissionSummary()
 
 }

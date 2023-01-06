@@ -86,8 +86,8 @@ export class PartnerControlReportOverviewAndFinalizeTabComponent {
         finalizationAllowed: report.status === ProjectPartnerReportDTO.StatusEnum.InControl,
         reportId: report.id,
         partnerId,
-        userCanEdit: userCanEdit,
-        userCanView: userCanView,
+        userCanEdit,
+        userCanView,
         controlReportOverview
       })),
       tap(() => this.initForm()),

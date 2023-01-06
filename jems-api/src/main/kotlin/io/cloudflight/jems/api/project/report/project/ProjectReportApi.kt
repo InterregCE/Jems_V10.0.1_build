@@ -1,6 +1,7 @@
 package io.cloudflight.jems.api.project.report.project
 
 import io.cloudflight.jems.api.project.dto.report.project.ProjectReportDTO
+import io.cloudflight.jems.api.project.dto.report.project.ProjectReportStatusDTO
 import io.cloudflight.jems.api.project.dto.report.project.ProjectReportSummaryDTO
 import io.cloudflight.jems.api.project.dto.report.project.ProjectReportUpdateDTO
 import io.swagger.annotations.Api
@@ -62,4 +63,10 @@ interface ProjectReportApi {
     @DeleteMapping("$ENDPOINT_API_PROJECT_REPORT/byReportId/{reportId}")
     fun deleteProjectReport(@PathVariable projectId: Long, @PathVariable reportId: Long)
 
+    @ApiOperation("Submit and lock project report")
+    @PostMapping("$ENDPOINT_API_PROJECT_REPORT/submit/{projectId}/{reportId}")
+    fun submitProjectReport(
+        @PathVariable projectId: Long,
+        @PathVariable reportId: Long,
+    ): ProjectReportStatusDTO
 }

@@ -4,6 +4,9 @@ import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.project.service.model.ProjectFull
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
+import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 
 fun projectReportCreated(
@@ -34,5 +37,23 @@ fun projectReportDeleted(
             )
             .entityRelatedId(entityRelatedId = report.id)
             .description("[${report.projectIdentifier}] ${report.status} project report PR.${report.reportNumber} deleted")
+            .build()
+    )
+
+fun projectReportSubmitted(
+    context: Any,
+    projectId: Long,
+    report: ProjectReportSubmissionSummary,
+): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.PROJECT_REPORT_SUBMITTED)
+            .project(
+                projectId = projectId,
+                customIdentifier = report.projectIdentifier,
+                acronym = report.projectAcronym,
+            )
+            .entityRelatedId(entityRelatedId = report.id)
+            .description("[${report.projectIdentifier}]: Project report [${report.id}] submitted.")
             .build()
     )

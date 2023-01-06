@@ -232,7 +232,10 @@ import {
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-identification-tab/project-report-identification-tab.component';
 import {
   ProjectReportCreateComponent
-} from "@project/project-application/report/project-report/project-report-detail-page/project-report-create/project-report-create.component";
+} from '@project/project-application/report/project-report/project-report-detail-page/project-report-create/project-report-create.component';
+import {
+  ProjectReportSubmitTabComponent
+} from '@project/project-application/report/project-report/project-report-detail-page/project-report-submit-tab/project-report-submit-tab.component';
 
 export const routes: Routes = [
   {
@@ -392,6 +395,10 @@ export const routes: Routes = [
                       {
                         path: 'identification',
                         component: ProjectReportIdentificationTabComponent,
+                      },
+                      {
+                        path: 'submitReport',
+                        component: ProjectReportSubmitTabComponent,
                       }
                     ],
                   }

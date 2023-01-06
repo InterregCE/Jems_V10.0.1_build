@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.repository.report.project.base
 import io.cloudflight.jems.server.project.entity.contracting.reporting.ProjectContractingReportingEntity
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
-import io.cloudflight.jems.server.project.service.report.model.project.ProjectReport
+import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 
@@ -76,3 +76,16 @@ fun ProjectReportModel.toEntity(
     firstSubmission = firstSubmission,
     verificationDate = verificationDate,
 )
+
+fun ProjectReportEntity.toSubmissionSummary() =
+    ProjectReportSubmissionSummary(
+        id = id,
+        reportNumber = number,
+        status = status,
+        version = applicationFormVersion,
+        firstSubmission = firstSubmission,
+        createdAt = createdAt,
+        projectId = projectId,
+        projectIdentifier = projectIdentifier,
+        projectAcronym = projectAcronym,
+    )
