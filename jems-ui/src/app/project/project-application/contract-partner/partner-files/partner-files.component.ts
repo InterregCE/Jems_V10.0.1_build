@@ -152,8 +152,8 @@ export class PartnerFilesComponent implements OnInit {
       description: file.description,
       editable: isEditable && file.type === FileTypeEnum.ContractPartnerDoc,
       deletable: isEditable && file.type === FileTypeEnum.ContractPartnerDoc,
-      tooltipIfNotDeletable: 'file.table.action.delete.disabled.for.tab.tooltip',
-      iconIfNotDeletable: 'delete_forever',
+      tooltipIfNotDeletable: isEditable ? 'file.table.action.delete.disabled.for.tab.tooltip' : '',
+      iconIfNotDeletable: isEditable ? 'delete_forever' : '',
     }));
   }
 
