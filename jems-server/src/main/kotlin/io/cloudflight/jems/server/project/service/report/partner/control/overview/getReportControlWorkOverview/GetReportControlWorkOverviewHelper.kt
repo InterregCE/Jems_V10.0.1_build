@@ -13,3 +13,12 @@ fun Collection<ProjectPartnerReportExpenditureVerification>.calculateCertified(
         .mapValues { it.value.sumOf { it.certifiedAmount } }
     return calculateBudget(options, sums)
 }
+
+fun Collection<ProjectPartnerReportExpenditureVerification>.calculateParked(
+    options: ProjectPartnerBudgetOptions
+): BudgetCostsCalculationResultFull {
+    val sums = filter { !it.parked || it.declaredAmountAfterSubmission == null }
+        .groupBy { it.getCategory() }
+        .mapValues { it.value.sumOf { it.declaredAmountAfterSubmission!! } }
+    return calculateBudget(options, sums)
+}

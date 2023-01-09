@@ -30,13 +30,14 @@ class GetReportControlWorkOverview(
 
         val controlSample = currentExpenditures.onlySamplingOnes().sum()
         val eligibleAfterControl = currentExpenditures.calculateCertified(costCategories.options).sum
+        val parkedSum = currentExpenditures.calculateParked(costCategories.options).sum
 
         val currentReportSum = reportCoFinancingPersistence.getReportCurrentSum(partnerId, reportId = reportId)
 
         return ControlWorkOverview(
             declaredByPartner = currentReportSum,
             inControlSample = controlSample,
-            parked = BigDecimal.ZERO,
+            parked = parkedSum,
             deductedByControl = currentReportSum.minus(eligibleAfterControl),
             eligibleAfterControl = eligibleAfterControl,
             eligibleAfterControlPercentage = eligibleAfterControl.percentageOf(currentReportSum),

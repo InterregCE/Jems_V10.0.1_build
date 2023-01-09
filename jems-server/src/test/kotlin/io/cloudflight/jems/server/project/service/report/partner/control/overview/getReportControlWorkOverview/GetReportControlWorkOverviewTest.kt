@@ -44,9 +44,11 @@ internal class GetReportControlWorkOverviewTest : UnitTest() {
             partOfSample: Boolean,
             declaredAmount: BigDecimal?,
             certified: BigDecimal,
+            isParked: Boolean
         ): ProjectPartnerReportExpenditureVerification {
             val expenditure = mockk<ProjectPartnerReportExpenditureVerification>()
             every { expenditure.id } returns id
+            every { expenditure.parked } returns isParked
             every { expenditure.partOfSample } returns partOfSample
             every { expenditure.declaredAmountAfterSubmission } returns
                 (declaredAmount ?: BigDecimal.valueOf(99999) /* should be ignored */)
@@ -78,8 +80,20 @@ internal class GetReportControlWorkOverviewTest : UnitTest() {
         every { reportControlExpenditurePersistence
             .getPartnerControlReportExpenditureVerification(PARTNER_ID, reportId = 22L)
         } returns listOf(
-            expenditure(554L, partOfSample = true, BigDecimal.ONE, certified = BigDecimal.valueOf(9, 1)),
-            expenditure(555L, partOfSample = false, null, certified = BigDecimal.valueOf(5, 1)),
+            expenditure(
+                554L,
+                partOfSample = true,
+                declaredAmount = BigDecimal(20),
+                certified = BigDecimal.valueOf(9, 1),
+                isParked = true
+            ),
+            expenditure(
+                555L,
+                partOfSample = false,
+                declaredAmount = BigDecimal(85),
+                certified = BigDecimal.valueOf(5, 1),
+                isParked = false
+            ),
         )
 
         every { reportExpenditureCostCategoryPersistence.getCostCategories(PARTNER_ID, reportId = 22L) } returns costOptions
@@ -88,8 +102,8 @@ internal class GetReportControlWorkOverviewTest : UnitTest() {
         assertThat(interactor.get(PARTNER_ID, reportId = 22L)).isEqualTo(
             ControlWorkOverview(
                 declaredByPartner = BigDecimal.TEN,
-                inControlSample = BigDecimal.ONE,
-                parked = BigDecimal.ZERO,
+                inControlSample = BigDecimal(20),
+                parked = BigDecimal(97.75),
                 deductedByControl = BigDecimal.valueOf(839L, 2),
                 eligibleAfterControl = BigDecimal.valueOf(161L, 2),
                 eligibleAfterControlPercentage = BigDecimal.valueOf(1610L, 2),
