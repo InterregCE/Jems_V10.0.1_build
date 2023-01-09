@@ -210,7 +210,6 @@ import {ContractPartnerComponent} from '@project/project-application/contract-pa
 import {
   PartnerControlReportControlIdentificationTabComponent
 } from '@project/project-application/report/partner-control-report/partner-control-report-identification-tab/partner-control-report-control-identification-tab.component';
-import {ControlReportGuard} from '../security/controlReport.guard';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {
   PartnerControlReportExpenditureVerificationTabComponent
@@ -329,23 +328,19 @@ export const routes: Routes = [
                           {
                             path: 'identificationTab',
                             component: PartnerControlReportControlIdentificationTabComponent,
-                            canActivate: [ControlReportGuard],
                           },
                           {
                             path: 'controlChecklistsTab',
                             component: PartnerControlReportControlChecklistsTabComponent,
-                            canActivate: [ControlReportGuard],
                           },
                           {
                             path: 'expenditureVerificationTab',
                             component: PartnerControlReportExpenditureVerificationTabComponent,
-                            canActivate: [ControlReportGuard],
                           },
                           {
                             path: 'controlChecklistsTab/checklist/:checklistId',
                             component: PartnerControlReportControlChecklistPageComponent,
                             data: {breadcrumb: 'checklists.instance.title'},
-                            canActivate: [ControlReportGuard],
                           },
                           {
                             path: 'document',
@@ -354,7 +349,6 @@ export const routes: Routes = [
                           {
                             path: 'overviewAndFinalizeTab',
                             component: PartnerControlReportOverviewAndFinalizeTabComponent,
-                            canActivate: [ControlReportGuard],
                           },
                         ],
                       }

@@ -73,7 +73,7 @@ export class PartnerReportDetailPageStore {
         ? this.projectPartnerReportService.getProjectPartnerReport(Number(partnerId), Number(reportId))
           .pipe(
             catchError(() => {
-              this.routingService.navigate([ProjectPaths.PROJECT_DETAIL_PATH, projectId, 'reporting']);
+              this.routingService.navigate([ProjectPaths.PROJECT_DETAIL_PATH, projectId]);
               return of({} as ProjectPartnerReportDTO);
             })
           )

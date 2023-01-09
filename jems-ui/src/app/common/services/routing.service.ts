@@ -19,7 +19,8 @@ export class RoutingService {
       .pipe(
         filter(val => val instanceof ResolveEnd),
         tap(() => this.confirmLeaveMap.clear()),
-      ).subscribe();
+      )
+      .subscribe();
 
     this.router.events
       .pipe(
