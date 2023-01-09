@@ -53,6 +53,7 @@ internal class GetProjectPartnerReportExpenditureCalculatorTest : UnitTest() {
             currencyConversionRate = null,
             declaredAmountAfterSubmission = null,
             attachment = JemsFileMetadata(45L, "file.txt", MOMENT),
+            parkingMetadata = null,
         )
 
         private fun filledInExpenditure(id: Long) = ProjectPartnerReportExpenditureCost(
@@ -74,6 +75,7 @@ internal class GetProjectPartnerReportExpenditureCalculatorTest : UnitTest() {
             currencyConversionRate = BigDecimal.valueOf(24302, 4),
             declaredAmountAfterSubmission = BigDecimal.valueOf(1000, 2),
             attachment = JemsFileMetadata(45L, "file.txt", MOMENT),
+            parkingMetadata = null,
         )
 
         private val cstCurrency = CurrencyConversion(

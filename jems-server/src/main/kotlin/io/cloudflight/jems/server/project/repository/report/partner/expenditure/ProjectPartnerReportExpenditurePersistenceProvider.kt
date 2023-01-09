@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.repository.report.partner.expenditure
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.server.common.entity.TranslationId
+import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportExpenditureCostEntity
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportExpenditureCostTranslEntity
@@ -9,14 +10,17 @@ import io.cloudflight.jems.server.project.entity.report.partner.expenditure.Part
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportLumpSumEntity
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportUnitCostEntity
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
+import io.cloudflight.jems.server.project.repository.report.partner.control.expenditure.PartnerReportParkedExpenditureRepository
 import io.cloudflight.jems.server.project.repository.report.partner.financialOverview.costCategory.ReportProjectPartnerExpenditureCostCategoryRepository
 import io.cloudflight.jems.server.project.repository.report.partner.financialOverview.costCategory.toBudgetOptionsModel
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportInvestment
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportUnitCost
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import kotlin.collections.HashSet
@@ -25,6 +29,7 @@ import kotlin.collections.HashSet
 class ProjectPartnerReportExpenditurePersistenceProvider(
     private val reportRepository: ProjectPartnerReportRepository,
     private val reportExpenditureRepository: ProjectPartnerReportExpenditureRepository,
+    private val reportExpenditureParkedRepository: PartnerReportParkedExpenditureRepository,
     private val reportLumpSumRepository: ProjectPartnerReportLumpSumRepository,
     private val reportUnitCostRepository: ProjectPartnerReportUnitCostRepository,
     private val reportInvestmentRepository: ProjectPartnerReportInvestmentRepository,
@@ -42,11 +47,16 @@ class ProjectPartnerReportExpenditurePersistenceProvider(
             reportId = reportId,
         ).toModel()
 
+    @Transactional(readOnly = true)
+    override fun getPartnerReportExpenditureCosts(ids: Set<Long>, pageable: Pageable) =
+        reportExpenditureRepository.findAllByIdIn(ids, pageable).toModel()
+
     @Transactional
     override fun updatePartnerReportExpenditureCosts(
         partnerId: Long,
         reportId: Long,
         expenditureCosts: List<ProjectPartnerReportExpenditureCost>,
+        doNotRenumber: Boolean,
     ): List<ProjectPartnerReportExpenditureCost> {
         val reportEntity = reportRepository.findByIdAndPartnerId(partnerId = partnerId, id = reportId)
 
@@ -71,7 +81,7 @@ class ProjectPartnerReportExpenditurePersistenceProvider(
             existingIds[newData.id].let { existing ->
                 when {
                     existing != null -> existing.apply {
-                        updateWith(newData, lumpSumsById, unitCostsById, investmentsById, index + 1)
+                        updateWith(newData, lumpSumsById, unitCostsById, investmentsById, if (doNotRenumber) this.number else index + 1)
                     }
                     else -> reportExpenditureRepository.save(
                         newData.toEntity(reportEntity, lumpSumsById, unitCostsById, investmentsById, index + 1)
@@ -79,6 +89,31 @@ class ProjectPartnerReportExpenditurePersistenceProvider(
                 }
             }
         }.toModel()
+    }
+
+    @Transactional
+    override fun reIncludeParkedExpenditure(
+        partnerId: Long,
+        reportId: Long,
+        expenditureId: Long,
+    ): ProjectPartnerReportExpenditureCost {
+        val reportEntity = reportRepository.findByIdAndPartnerId(partnerId = partnerId, id = reportId)
+
+        val parkedExpenditure = reportExpenditureParkedRepository
+            .findByParkedFromPartnerReportPartnerIdAndParkedFromPartnerReportStatusAndParkedFromExpenditureId(
+                partnerId = partnerId,
+                status = ReportStatus.Certified,
+                id = expenditureId,
+            )
+
+        return reportExpenditureRepository.save(
+            parkedExpenditure.parkedFrom.clone(
+                newReportToBeLinked = reportEntity,
+                clonedAttachment = null,
+                comment = parkedExpenditure.parkedFrom.translatedValues.extractField { it.comment },
+                description = parkedExpenditure.parkedFrom.translatedValues.extractField { it.description },
+            )
+        ).toModel()
     }
 
     @Transactional(readOnly = true)

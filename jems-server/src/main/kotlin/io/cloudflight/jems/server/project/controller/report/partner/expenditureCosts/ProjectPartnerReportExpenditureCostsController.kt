@@ -12,10 +12,13 @@ import io.cloudflight.jems.server.project.controller.report.partner.toProjectFil
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.getAvailableBudgetOptionsForReport.GetAvailableBudgetOptionsForReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.getAvailableInvestmentsForReport.GetAvailableInvestmentsForReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.getAvailableLumpSumsForReport.GetAvailableLumpSumsForReportInteractor
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.getAvailableParkedExpenditureList.GetAvailableParkedExpenditureListInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.getAvailableUnitCostsForReport.GetAvailableUnitCostsForReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.getProjectPartnerReportExpenditure.GetProjectPartnerReportExpenditureInteractor
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.reincludeParkedExpenditure.ReIncludeParkedExpenditureInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.updateProjectPartnerReportExpenditure.UpdateProjectPartnerReportExpenditureInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.uploadFileToProjectPartnerReportExpenditure.UploadFileToProjectPartnerReportExpenditureInteractor
+import org.springframework.data.domain.Pageable
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 
@@ -28,6 +31,8 @@ class ProjectPartnerReportExpenditureCostsController(
     private val getAvailableUnitCostsForReportInteractor: GetAvailableUnitCostsForReportInteractor,
     private val getAvailableInvestmentsForReportInteractor: GetAvailableInvestmentsForReportInteractor,
     private val getAvailableBudgetOptionsForReportInteractor: GetAvailableBudgetOptionsForReportInteractor,
+    private val getAvailableParkedExpenditureListInteractor: GetAvailableParkedExpenditureListInteractor,
+    private val reIncludeParkedExpenditureInteractor: ReIncludeParkedExpenditureInteractor,
 ) : ProjectPartnerReportExpenditureCostsApi {
 
     override fun getProjectPartnerReports(
@@ -70,5 +75,11 @@ class ProjectPartnerReportExpenditureCostsController(
 
     override fun getAvailableBudgetOptions(partnerId: Long, reportId: Long): ProjectPartnerBudgetOptionsDto =
         getAvailableBudgetOptionsForReportInteractor.getBudgetOptions(partnerId, reportId).toProjectPartnerBudgetOptionsDto()
+
+    override fun getAvailableParkedExpenditures(partnerId: Long, pageable: Pageable) =
+        getAvailableParkedExpenditureListInteractor.getParked(partnerId = partnerId, pageable).toDto()
+
+    override fun reIncludeParkedExpenditure(partnerId: Long, reportId: Long, expenditureId: Long) =
+        reIncludeParkedExpenditureInteractor.reIncludeParkedExpenditure(partnerId = partnerId, reportId, expenditureId)
 
 }

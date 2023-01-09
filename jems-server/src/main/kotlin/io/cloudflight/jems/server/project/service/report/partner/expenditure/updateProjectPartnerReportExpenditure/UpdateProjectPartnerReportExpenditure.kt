@@ -11,6 +11,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.expenditu
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.clearConversions
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.clearParking
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.fillInLumpSum
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.fillInUnitCost
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.filterInvalidCurrencies
@@ -65,7 +66,7 @@ class UpdateProjectPartnerReportExpenditure(
         return reportExpenditurePersistence.updatePartnerReportExpenditureCosts(
             partnerId = partnerId,
             reportId = report.id,
-            expenditureCosts = expenditureCosts.clearConversions(),
+            expenditureCosts = expenditureCosts.clearConversions().clearParking(),
         )
     }
 

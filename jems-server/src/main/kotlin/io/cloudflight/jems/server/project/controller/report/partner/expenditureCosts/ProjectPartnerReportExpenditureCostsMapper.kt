@@ -10,6 +10,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.expenditu
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportUnitCost
 import org.mapstruct.Mapper
 import org.mapstruct.factory.Mappers
+import org.springframework.data.domain.Page
 
 private val mapper = Mappers.getMapper(ProjectPartnerReportMapper::class.java)
 
@@ -21,6 +22,7 @@ fun ProjectPartnerReportExpenditureCostDTO.toModel() =
 
 fun List<ProjectPartnerReportExpenditureCostDTO>.toModel() = map { mapper.map(it) }.toList()
 fun List<ProjectPartnerReportExpenditureCost>.toDto() = map { mapper.map(it) }.toList()
+fun Page<ProjectPartnerReportExpenditureCost>.toDto() = map { mapper.map(it) }
 fun List<ProjectPartnerReportLumpSum>.toLumpSumDto() = map { mapper.map(it) }.toList()
 fun List<ProjectPartnerReportUnitCost>.toUnitCostDto() = map { mapper.map(it) }
 fun List<ProjectPartnerReportInvestment>.toInvestmentDto() = map { mapper.map(it) }

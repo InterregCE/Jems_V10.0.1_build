@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.ReportSta
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectPartnerReportProcurementPersistence
 import io.mockk.clearMocks
@@ -62,6 +63,7 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
         currencyConversionRate = BigDecimal.valueOf(0.84),
         declaredAmountAfterSubmission = BigDecimal.valueOf(8.4),
         attachment = JemsFileMetadata(47L, "file.xlsx", UPLOADED),
+        parkingMetadata = ExpenditureParkingMetadata(reportOfOriginId = 14L, reportOfOriginNumber = 2, originalExpenditureNumber = 9),
     )
 
     private fun reportWithCurrency(id: Long, status: ReportStatus, version: String, currency: String?): ProjectPartnerReport {
@@ -127,6 +129,7 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
                 partnerId = PARTNER_ID,
                 reportId = 84L,
                 any(),
+                doNotRenumber = false,
             )
         } returnsArgument 2
 
@@ -138,7 +141,7 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
             )
         ).containsExactly(
             // calculations are not saved on update, but on report submission
-            reportExpenditureCost.copy(currencyConversionRate = null, declaredAmountAfterSubmission = null),
+            reportExpenditureCost.copy(currencyConversionRate = null, declaredAmountAfterSubmission = null, parkingMetadata = null),
         )
 
         assertThat(slotString).containsExactlyInAnyOrder("invoice", "irn")
@@ -164,6 +167,7 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
                 partnerId = PARTNER_ID,
                 reportId = 90L,
                 any(),
+                doNotRenumber = false,
             )
         } returnsArgument 2
 
@@ -238,6 +242,7 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
             // these next are always cleared
             currencyConversionRate = null,
             declaredAmountAfterSubmission = null,
+            parkingMetadata = null,
         ))
     }
 
@@ -269,6 +274,7 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
             // these next are always cleared
             currencyConversionRate = null,
             declaredAmountAfterSubmission = null,
+            parkingMetadata = null,
         ))
     }
 
@@ -301,6 +307,7 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
             // these next are always cleared, so nothing should be specifically extra removed now
             currencyConversionRate = null,
             declaredAmountAfterSubmission = null,
+            parkingMetadata = null,
         ))
     }
 
@@ -318,7 +325,7 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
         every { reportExpenditurePersistence.getAvailableUnitCosts(PARTNER_ID, reportId = reportId) } returns emptyList()
         every { reportExpenditurePersistence.getAvailableInvestments(PARTNER_ID, reportId = reportId) } returns emptyList()
 
-        every { reportExpenditurePersistence.updatePartnerReportExpenditureCosts(PARTNER_ID, reportId = reportId, any()) } returnsArgument 2
+        every { reportExpenditurePersistence.updatePartnerReportExpenditureCosts(PARTNER_ID, reportId = reportId, any(), false) } returnsArgument 2
     }
 
 }

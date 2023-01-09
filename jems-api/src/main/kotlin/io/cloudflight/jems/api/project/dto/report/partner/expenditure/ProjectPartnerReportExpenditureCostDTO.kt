@@ -2,6 +2,7 @@ package io.cloudflight.jems.api.project.dto.report.partner.expenditure
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
+import io.cloudflight.jems.api.project.dto.report.partner.expenditure.verification.ExpenditureParkingMetadataDTO
 import java.math.BigDecimal
 import java.time.LocalDate
 
@@ -28,4 +29,5 @@ data class ProjectPartnerReportExpenditureCostDTO(
     val currencyConversionRate: BigDecimal?,
     val declaredAmountAfterSubmission: BigDecimal?,
     val attachment: ProjectReportFileMetadataDTO?,
+    val parkingMetadata: ExpenditureParkingMetadataDTO?,
 )

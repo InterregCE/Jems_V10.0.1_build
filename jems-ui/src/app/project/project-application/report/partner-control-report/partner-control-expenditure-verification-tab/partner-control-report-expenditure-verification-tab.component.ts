@@ -321,7 +321,10 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
     this.items.push(this.formBuilder.group(
       {
         id: this.formBuilder.control(reportExpenditureControl.id),
-        number: this.formBuilder.control(reportExpenditureControl.number),
+        number: this.formBuilder.control((reportExpenditureControl.number === 0)
+          ? reportExpenditureControl.parkingMetadata.originalExpenditureNumber
+          : reportExpenditureControl.number
+        ),
         costOptions: this.formBuilder.control(costOption),
         costCategory: this.formBuilder.control(reportExpenditureControl.costCategory),
         investmentId: this.formBuilder.control(reportExpenditureControl.investmentId),

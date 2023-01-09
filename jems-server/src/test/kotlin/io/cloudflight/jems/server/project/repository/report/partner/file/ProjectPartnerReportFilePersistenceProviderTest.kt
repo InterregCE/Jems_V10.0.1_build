@@ -129,7 +129,10 @@ class ProjectPartnerReportFilePersistenceProviderTest : UnitTest() {
             deductedAmount = ZERO,
             typologyOfErrorId = null,
             verificationComment = null,
-            parked = false
+            parked = false,
+            unParkedFrom = null,
+            reportOfOrigin = null,
+            originalNumber = null,
         )
 
         private fun fileCreate(name: String = "new_file.txt", type: JemsFileType) = JemsFileCreate(

@@ -75,4 +75,16 @@ class PartnerReportExpenditureCostEntity(
     @ManyToOne
     @JoinColumn(name = "file_id")
     var attachment: JemsFileMetadataEntity?,
+
+
+    @OneToOne
+    @JoinColumn(name = "un_parked_from_expenditure_id")
+    val unParkedFrom: PartnerReportExpenditureCostEntity?,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "report_of_origin_id")
+    val reportOfOrigin: ProjectPartnerReportEntity?,
+
+    val originalNumber: Int?,
+
 )

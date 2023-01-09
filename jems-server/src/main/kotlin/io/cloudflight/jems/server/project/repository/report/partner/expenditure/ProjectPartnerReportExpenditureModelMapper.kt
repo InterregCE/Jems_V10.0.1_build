@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.entity.addTranslationEntities
 import io.cloudflight.jems.server.common.entity.extractTranslation
+import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportExpenditureCostEntity
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportExpenditureCostTranslEntity
@@ -11,34 +12,48 @@ import io.cloudflight.jems.server.project.entity.report.partner.expenditure.Part
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportLumpSumEntity
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportUnitCostEntity
 import io.cloudflight.jems.server.project.repository.report.partner.toModel
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
+import org.springframework.data.domain.Page
 import java.math.BigDecimal
 
-fun List<PartnerReportExpenditureCostEntity>.toModel() = map {
-    ProjectPartnerReportExpenditureCost(
-        id = it.id,
-        number = it.number,
-        lumpSumId = it.reportLumpSum?.id,
-        unitCostId = it.reportUnitCost?.id,
-        costCategory = it.costCategory,
-        investmentId = it.reportInvestment?.id,
-        contractId = it.procurementId,
-        internalReferenceNumber = it.internalReferenceNumber,
-        invoiceNumber = it.invoiceNumber,
-        invoiceDate = it.invoiceDate,
-        dateOfPayment = it.dateOfPayment,
-        totalValueInvoice = it.totalValueInvoice,
-        vat = it.vat,
-        numberOfUnits = it.numberOfUnits,
-        pricePerUnit = it.pricePerUnit,
-        declaredAmount = it.declaredAmount,
-        currencyCode = it.currencyCode,
-        currencyConversionRate = it.currencyConversionRate,
-        declaredAmountAfterSubmission = it.declaredAmountAfterSubmission,
-        attachment = it.attachment?.toModel(),
-        comment = it.translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.comment) },
-        description = it.translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.description) }
-    )
+fun List<PartnerReportExpenditureCostEntity>.toModel() = map { it.toModel() }
+fun Page<PartnerReportExpenditureCostEntity>.toModel() = map { it.toModel() }
+
+fun PartnerReportExpenditureCostEntity.toModel() = ProjectPartnerReportExpenditureCost(
+    id = id,
+    number = number,
+    lumpSumId = reportLumpSum?.id,
+    unitCostId = reportUnitCost?.id,
+    costCategory = costCategory,
+    investmentId = reportInvestment?.id,
+    contractId = procurementId,
+    internalReferenceNumber = internalReferenceNumber,
+    invoiceNumber = invoiceNumber,
+    invoiceDate = invoiceDate,
+    dateOfPayment = dateOfPayment,
+    totalValueInvoice = totalValueInvoice,
+    vat = vat,
+    numberOfUnits = numberOfUnits,
+    pricePerUnit = pricePerUnit,
+    declaredAmount = declaredAmount,
+    currencyCode = currencyCode,
+    currencyConversionRate = currencyConversionRate,
+    declaredAmountAfterSubmission = declaredAmountAfterSubmission,
+    attachment = attachment?.toModel(),
+    parkingMetadata = getParkingMetadata(),
+    comment = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.comment) },
+    description = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.description) }
+)
+
+fun PartnerReportExpenditureCostEntity.getParkingMetadata(): ExpenditureParkingMetadata? {
+    if (unParkedFrom != null && reportOfOrigin != null && originalNumber != null)
+        return ExpenditureParkingMetadata(
+            reportOfOriginId = reportOfOrigin!!.id,
+            reportOfOriginNumber = reportOfOrigin!!.number,
+            originalExpenditureNumber = originalNumber!!,
+        )
+    return null
 }
 
 fun ProjectPartnerReportExpenditureCost.toEntity(
@@ -76,7 +91,52 @@ fun ProjectPartnerReportExpenditureCost.toEntity(
         deductedAmount = BigDecimal.ZERO,
         typologyOfErrorId = null,
         parked = false,
-        verificationComment = null
+        verificationComment = null,
+        unParkedFrom = null,
+        reportOfOrigin = null,
+        originalNumber = null,
+    ).apply {
+        translatedValues.addTranslation(this, comment, description)
+    }
+
+fun PartnerReportExpenditureCostEntity.clone(
+    newReportToBeLinked: ProjectPartnerReportEntity,
+    clonedAttachment: JemsFileMetadataEntity?,
+    comment: Set<InputTranslation>,
+    description: Set<InputTranslation>,
+) =
+    PartnerReportExpenditureCostEntity(
+        id = 0L,
+        number = 0,
+        partnerReport = newReportToBeLinked,
+        reportLumpSum = reportLumpSum,
+        reportUnitCost = reportUnitCost,
+        costCategory = costCategory,
+        reportInvestment = reportInvestment,
+        procurementId = procurementId,
+        internalReferenceNumber = internalReferenceNumber,
+        invoiceNumber = invoiceNumber,
+        invoiceDate = invoiceDate,
+        dateOfPayment = dateOfPayment,
+        totalValueInvoice = totalValueInvoice,
+        vat = vat,
+        numberOfUnits = numberOfUnits,
+        pricePerUnit = pricePerUnit,
+        declaredAmount = declaredAmount,
+        currencyCode = currencyCode,
+        currencyConversionRate = currencyConversionRate,
+        declaredAmountAfterSubmission = declaredAmountAfterSubmission,
+        translatedValues = mutableSetOf(),
+        attachment = clonedAttachment,
+        partOfSample = false,
+        certifiedAmount = BigDecimal.ZERO,
+        deductedAmount = BigDecimal.ZERO,
+        typologyOfErrorId = null,
+        parked = false,
+        verificationComment = null,
+        unParkedFrom = this,
+        reportOfOrigin = reportOfOrigin ?: this.partnerReport,
+        originalNumber = number,
     ).apply {
         translatedValues.addTranslation(this, comment, description)
     }

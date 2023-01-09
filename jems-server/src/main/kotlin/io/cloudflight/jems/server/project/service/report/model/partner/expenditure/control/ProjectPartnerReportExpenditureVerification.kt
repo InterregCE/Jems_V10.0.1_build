@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.report.model.partner.expendit
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -37,4 +38,6 @@ data class ProjectPartnerReportExpenditureVerification(
     var typologyOfErrorId: Long?,
     var parked: Boolean,
     var verificationComment: String?,
+
+    val parkingMetadata: ExpenditureParkingMetadata?,
 ): ExpenditureCost

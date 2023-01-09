@@ -118,7 +118,8 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
             deductedAmount = BigDecimal.ZERO,
             typologyOfErrorId = null,
             verificationComment = null,
-            parked = false
+            parked = false,
+            parkingMetadata = null,
         )
 
         private val expenditure2 = ProjectPartnerReportExpenditureVerification(
@@ -145,7 +146,8 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
             deductedAmount = BigDecimal.ZERO,
             typologyOfErrorId = null,
             verificationComment = null,
-            parked = false
+            parked = false,
+            parkingMetadata = null,
         )
 
         private val controlOverview = ControlOverview(
@@ -224,89 +226,27 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
         every { reportPersistence.getPartnerReportById(PARTNER_ID, 42L) } returns report
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID, "5.6.1") } returns PROJECT_ID
 
-        every {
-            reportControlExpenditurePersistence.getPartnerControlReportExpenditureVerification(
-                PARTNER_ID,
-                reportId = 42L
-            )
-        } returns
+        every { reportControlExpenditurePersistence.getPartnerControlReportExpenditureVerification(PARTNER_ID, reportId = 42L) } returns
             listOf(expenditure1, expenditure2)
 
-        every {
-            reportExpenditureCostCategoryPersistence.getCostCategories(
-                PARTNER_ID,
-                reportId = 42L
-            )
-        } returns options
-        every {
-            controlOverviewPersistence.updatePartnerControlReportOverviewEndDate(
-                PARTNER_ID,
-                42L,
-                LocalDate.now()
-            )
-        } returns controlOverview
+        every { reportExpenditureCostCategoryPersistence.getCostCategories(PARTNER_ID,reportId = 42L) } returns options
+        every { controlOverviewPersistence.updatePartnerControlReportOverviewEndDate(PARTNER_ID, 42L, LocalDate.now()) } returns controlOverview
 
         val slotCostCategory = slot<BudgetCostsCalculationResultFull>()
-        every {
-            reportExpenditureCostCategoryPersistence.updateAfterControlValues(
-                PARTNER_ID,
-                reportId = 42L,
-                capture(slotCostCategory)
-            )
-        } answers { }
-        every {
-            reportDesignatedControllerPersistence.updateWithInstitutionName(
-                PARTNER_ID,
-                reportId = 42,
-                controllerInstitution.name
-            )
-        } returns Unit
-        every { controlInstitutionPersistence.getControllerInstitutions(setOf(PARTNER_ID)) } returns mapOf(
-            Pair(
-                PARTNER_ID,
-                controllerInstitution
-            )
-        )
+        every { reportExpenditureCostCategoryPersistence.updateAfterControlValues(PARTNER_ID, reportId = 42L, capture(slotCostCategory)) } answers { }
+        every { reportDesignatedControllerPersistence.updateWithInstitutionName(PARTNER_ID, reportId = 42, controllerInstitution.name) } returns Unit
+        every { controlInstitutionPersistence.getControllerInstitutions(setOf(PARTNER_ID)) } returns mapOf(Pair(PARTNER_ID, controllerInstitution))
 
         val slotCostCoFin = slot<ReportExpenditureCoFinancingColumn>()
-        every {
-            reportContributionPersistence.getPartnerReportContribution(
-                PARTNER_ID,
-                reportId = 42L
-            )
-        } returns partnerContribution()
-        every {
-            reportExpenditureCoFinancingPersistence.updateAfterControlValues(
-                PARTNER_ID,
-                reportId = 42L,
-                capture(slotCostCoFin)
-            )
-        } answers { }
+        every { reportContributionPersistence.getPartnerReportContribution(PARTNER_ID, reportId = 42L) } returns partnerContribution()
+        every { reportExpenditureCoFinancingPersistence.updateAfterControlValues(PARTNER_ID, reportId = 42L, capture(slotCostCoFin)) } answers { }
 
         val slotLumpSum = slot<Map<Long, BigDecimal>>()
-        every {
-            reportLumpSumPersistence.updateAfterControlValues(
-                PARTNER_ID,
-                reportId = 42L,
-                capture(slotLumpSum)
-            )
-        } answers { }
+        every { reportLumpSumPersistence.updateAfterControlValues(PARTNER_ID, reportId = 42L, capture(slotLumpSum)) } answers { }
         val slotUnitCost = slot<Map<Long, BigDecimal>>()
-        every {
-            reportUnitCostPersistence.updateAfterControlValues(
-                PARTNER_ID,
-                reportId = 42L,
-                capture(slotUnitCost)
-            )
-        } answers { }
+        every { reportUnitCostPersistence.updateAfterControlValues(PARTNER_ID, reportId = 42L, capture(slotUnitCost)) } answers { }
         val slotInvestment = slot<Map<Long, BigDecimal>>()
-        every {
-            reportInvestmentPersistence.updateAfterControlValues(
-                PARTNER_ID,
-                reportId = 42L,
-                capture(slotInvestment)
-            )
-        } answers { }
+        every { reportInvestmentPersistence.updateAfterControlValues(PARTNER_ID, reportId = 42L, capture(slotInvestment)) } answers { }
 
         every { reportPersistence.finalizeControlOnReportById(any(), any(), any()) } returns mockedResult
 

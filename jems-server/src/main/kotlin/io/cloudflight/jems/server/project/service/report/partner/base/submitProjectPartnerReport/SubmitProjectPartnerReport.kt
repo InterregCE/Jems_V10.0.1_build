@@ -114,6 +114,7 @@ class SubmitProjectPartnerReport(
             partnerId = partnerId,
             reportId = reportId,
             expenditureCosts = expenditures.fillCurrencyRates(rates),
+            doNotRenumber = true,
         )
 
         projectControlReportExpenditurePersistence.updatePartnerControlReportExpenditureVerification(

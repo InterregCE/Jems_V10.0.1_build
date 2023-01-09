@@ -5,9 +5,11 @@ import io.cloudflight.jems.server.programme.service.typologyerrors.ProgrammeTypo
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerControlReport
 import io.cloudflight.jems.server.project.repository.report.partner.model.ExpenditureVerificationUpdate
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
+import io.cloudflight.jems.server.project.service.report.model.partner.control.expenditure.ParkExpenditureData
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerificationUpdate
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.PartnerReportParkedExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.ProjectPartnerReportExpenditureVerificationPersistence
 import io.cloudflight.jems.server.project.service.report.partner.partnerReportExpenditureParked
 import org.springframework.context.ApplicationEventPublisher
@@ -18,6 +20,7 @@ import java.math.BigDecimal
 @Service
 class UpdateProjectPartnerControlReportExpenditureVerification(
     private val reportExpenditurePersistence: ProjectPartnerReportExpenditureVerificationPersistence,
+    private val reportParkedExpenditurePersistence: PartnerReportParkedExpenditurePersistence,
     private val typologyPersistence: ProgrammeTypologyErrorsPersistence,
     private val partnerPersistence: PartnerPersistence,
     private val reportPersistence: ProjectPartnerReportPersistence,
@@ -50,7 +53,7 @@ class UpdateProjectPartnerControlReportExpenditureVerification(
         return reportExpenditurePersistence.updatePartnerControlReportExpenditureVerification(
             partnerId = partnerId, reportId = reportId, valuesToBeUpdated.toUpdateModel()
         ).also {
-            logAuditForParkingIfNeeded(
+            updateParkedItems(
                 partnerId = partnerId,
                 reportId = reportId,
                 parkedOldIds = parkedOldIds,
@@ -60,7 +63,7 @@ class UpdateProjectPartnerControlReportExpenditureVerification(
         }
     }
 
-    private fun logAuditForParkingIfNeeded(
+    private fun updateParkedItems(
         partnerId: Long,
         reportId: Long,
         parkedOldIds: List<Long>,
@@ -69,8 +72,15 @@ class UpdateProjectPartnerControlReportExpenditureVerification(
     ) {
         val parkedNew = newVerifications.getParkedIds()
         val unparkedNew = newVerifications.getNotParkedIds()
+
         val newlyParked = parkedNew.minus(parkedOldIds)
         val newlyUnparked = unparkedNew.minus(unparkedOldIds)
+
+        reportParkedExpenditurePersistence.parkExpenditures(
+            newVerifications.filter { it.id in newlyParked }.toParkData(reportId)
+        )
+        reportParkedExpenditurePersistence.unParkExpenditures(newlyUnparked)
+
         if (newlyParked.isNotEmpty() || newlyUnparked.isNotEmpty())
             publishAuditLogs(
                 partnerId,
@@ -169,6 +179,14 @@ class UpdateProjectPartnerControlReportExpenditureVerification(
                 )
             )
         }
+    }
+
+    private fun Collection<ProjectPartnerReportExpenditureVerification>.toParkData(reportId: Long) = map {
+        ParkExpenditureData(
+            expenditureId = it.id,
+            originalReportId = it.parkingMetadata?.reportOfOriginId ?: reportId,
+            originalNumber = it.parkingMetadata?.originalExpenditureNumber ?: it.number
+        )
     }
 
 }

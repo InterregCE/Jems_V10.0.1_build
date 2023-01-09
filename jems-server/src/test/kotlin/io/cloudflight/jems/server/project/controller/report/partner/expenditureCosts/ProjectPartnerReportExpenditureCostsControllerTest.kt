@@ -9,6 +9,7 @@ import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPar
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportInvestmentDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportLumpSumDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportUnitCostDTO
+import io.cloudflight.jems.api.project.dto.report.partner.expenditure.verification.ExpenditureParkingMetadataDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
@@ -18,20 +19,28 @@ import io.cloudflight.jems.server.project.service.report.model.partner.expenditu
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportUnitCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.getAvailableBudgetOptionsForReport.GetAvailableBudgetOptionsForReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.getAvailableInvestmentsForReport.GetAvailableInvestmentsForReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.getAvailableLumpSumsForReport.GetAvailableLumpSumsForReportInteractor
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.getAvailableParkedExpenditureList.GetAvailableParkedExpenditureListInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.getAvailableUnitCostsForReport.GetAvailableUnitCostsForReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.getProjectPartnerReportExpenditure.GetProjectPartnerReportExpenditureInteractor
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.reincludeParkedExpenditure.ReIncludeParkedExpenditureInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.updateProjectPartnerReportExpenditure.UpdateProjectPartnerReportExpenditureInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.uploadFileToProjectPartnerReportExpenditure.UploadFileToProjectPartnerReportExpenditure
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
 import org.springframework.web.multipart.MultipartFile
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -66,6 +75,7 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
         currencyConversionRate = BigDecimal.valueOf(24),
         declaredAmountAfterSubmission = BigDecimal.valueOf(1.3),
         attachment = JemsFileMetadata(500L, "file.txt", UPLOADED),
+        parkingMetadata = ExpenditureParkingMetadata(reportOfOriginId = 14L, reportOfOriginNumber = 2, originalExpenditureNumber = 9),
     )
 
     private val reportExpenditureCostDto = ProjectPartnerReportExpenditureCostDTO(
@@ -91,6 +101,7 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
         currencyConversionRate = BigDecimal.valueOf(24),
         declaredAmountAfterSubmission = BigDecimal.valueOf(1.3),
         attachment = ProjectReportFileMetadataDTO(500L, "file.txt", UPLOADED),
+        parkingMetadata = ExpenditureParkingMetadataDTO(reportOfOriginId = 14L, reportOfOriginNumber = 2, originalExpenditureNumber = 9),
     )
 
     private val stream = ByteArray(5).inputStream()
@@ -183,28 +194,39 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
     )
 
     @MockK
-    lateinit var getProjectPartnerReportExpenditureInteractor: GetProjectPartnerReportExpenditureInteractor
+    private lateinit var getProjectPartnerReportExpenditureInteractor: GetProjectPartnerReportExpenditureInteractor
 
     @MockK
-    lateinit var updateProjectPartnerReportExpenditureInteractor: UpdateProjectPartnerReportExpenditureInteractor
+    private lateinit var updateProjectPartnerReportExpenditureInteractor: UpdateProjectPartnerReportExpenditureInteractor
 
     @MockK
-    lateinit var uploadFileToExpenditure: UploadFileToProjectPartnerReportExpenditure
+    private lateinit var uploadFileToExpenditure: UploadFileToProjectPartnerReportExpenditure
 
     @MockK
-    lateinit var getAvailableLumpSumsForReportInteractor: GetAvailableLumpSumsForReportInteractor
+    private lateinit var getAvailableLumpSumsForReportInteractor: GetAvailableLumpSumsForReportInteractor
 
     @MockK
-    lateinit var getAvailableUnitCostsForReportInteractor: GetAvailableUnitCostsForReportInteractor
+    private lateinit var getAvailableUnitCostsForReportInteractor: GetAvailableUnitCostsForReportInteractor
 
     @MockK
-    lateinit var getAvailableInvestmentsForReportInteractor: GetAvailableInvestmentsForReportInteractor
+    private lateinit var getAvailableInvestmentsForReportInteractor: GetAvailableInvestmentsForReportInteractor
 
     @MockK
-    lateinit var getAvailableBudgetOptionsForReportInteractor: GetAvailableBudgetOptionsForReportInteractor
+    private lateinit var getAvailableBudgetOptionsForReportInteractor: GetAvailableBudgetOptionsForReportInteractor
+
+    @MockK
+    private lateinit var getAvailableParkedExpenditureListInteractor: GetAvailableParkedExpenditureListInteractor
+
+    @MockK
+    private lateinit var reIncludeParkedExpenditureInteractor: ReIncludeParkedExpenditureInteractor
 
     @InjectMockKs
     private lateinit var controller: ProjectPartnerReportExpenditureCostsController
+
+    @BeforeEach
+    fun reset() {
+        clearMocks(reIncludeParkedExpenditureInteractor)
+    }
 
     @Test
     fun getProjectPartnerReports() {
@@ -265,6 +287,23 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
         every { getAvailableBudgetOptionsForReportInteractor.getBudgetOptions(PARTNER_ID, 38L) } returns
             dummyBudgetOptions
         assertThat(controller.getAvailableBudgetOptions(PARTNER_ID, reportId = 38L)).isEqualTo(dummyBudgetOptionsDto)
+    }
+
+    @Test
+    fun getAvailableParkedExpenditures() {
+        every { getAvailableParkedExpenditureListInteractor.getParked(PARTNER_ID, Pageable.unpaged()) } returns
+            PageImpl(listOf(reportExpenditureCost))
+        assertThat(controller.getAvailableParkedExpenditures(PARTNER_ID, Pageable.unpaged()))
+            .containsExactly(reportExpenditureCostDto)
+    }
+
+    @Test
+    fun reIncludeParkedExpenditure() {
+        every { reIncludeParkedExpenditureInteractor.reIncludeParkedExpenditure(
+            partnerId = PARTNER_ID, reportId = 39L, expenditureId = 150L
+        ) } answers { }
+        controller.reIncludeParkedExpenditure(partnerId = PARTNER_ID, reportId = 39L, expenditureId = 150L)
+        verify(exactly = 1) { reIncludeParkedExpenditureInteractor.reIncludeParkedExpenditure(PARTNER_ID, 39L, 150L) }
     }
 
 }

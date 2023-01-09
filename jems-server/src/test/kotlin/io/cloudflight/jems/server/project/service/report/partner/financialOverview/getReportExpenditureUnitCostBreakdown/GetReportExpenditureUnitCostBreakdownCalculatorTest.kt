@@ -86,6 +86,7 @@ internal class GetReportExpenditureUnitCostBreakdownCalculatorTest : UnitTest() 
             currencyConversionRate = null,
             declaredAmountAfterSubmission = null /* this value needs to be filled in */,
             attachment = null,
+            parkingMetadata = null,
         )
 
         private val expectedDraftBreakdown = ExpenditureUnitCostBreakdown(

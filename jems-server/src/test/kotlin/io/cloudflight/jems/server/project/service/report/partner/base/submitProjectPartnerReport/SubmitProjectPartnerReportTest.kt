@@ -98,6 +98,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             currencyConversionRate = null,
             declaredAmountAfterSubmission = null,
             attachment = null,
+            parkingMetadata = null,
         )
 
         private val expenditure2 = ProjectPartnerReportExpenditureCost(
@@ -119,6 +120,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             currencyConversionRate = null,
             declaredAmountAfterSubmission = null,
             attachment = null,
+            parkingMetadata = null,
         )
 
         private val expenditure3 = ProjectPartnerReportExpenditureCost(
@@ -140,6 +142,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             currencyConversionRate = null,
             declaredAmountAfterSubmission = null,
             attachment = null,
+            parkingMetadata = null,
         )
 
         private val expenditureVerification1 = ProjectPartnerReportExpenditureVerification(
@@ -166,7 +169,8 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             deductedAmount = BigDecimal.ZERO,
             typologyOfErrorId = null,
             verificationComment = null,
-            parked = false
+            parked = false,
+            parkingMetadata = null,
         )
 
         private val expenditureVerification2 = ProjectPartnerReportExpenditureVerification(
@@ -193,7 +197,8 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             deductedAmount = BigDecimal.ZERO,
             typologyOfErrorId = null,
             verificationComment = null,
-            parked = false
+            parked = false,
+            parkingMetadata = null,
         )
 
         private val expenditureVerification3 = ProjectPartnerReportExpenditureVerification(
@@ -220,7 +225,8 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             deductedAmount = BigDecimal.ZERO,
             typologyOfErrorId = null,
             verificationComment = null,
-            parked = false
+            parked = false,
+            parkingMetadata = null,
         )
 
         private val expenditureVerificationUpdate1 = ExpenditureVerificationUpdate(
@@ -397,7 +403,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             )
         val slotExpenditures = slot<List<ProjectPartnerReportExpenditureCost>>()
         every { reportExpenditurePersistence
-            .updatePartnerReportExpenditureCosts(PARTNER_ID, 35L, capture(slotExpenditures)) } returnsArgument 2
+            .updatePartnerReportExpenditureCosts(PARTNER_ID, 35L, capture(slotExpenditures), true) } returnsArgument 2
 
         every { reportExpenditureCostCategoryPersistence.getCostCategories(PARTNER_ID, reportId = 35L) } returns options
         val expenditureCcSlot = slot<BudgetCostsCalculationResultFull>()
@@ -486,7 +492,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         every { preSubmissionCheck.preCheck(PARTNER_ID, reportId = 44L) } returns PreConditionCheckResult(emptyList(), false)
 
         assertThrows<SubmissionNotAllowed> { submitReport.submit(PARTNER_ID, 44L) }
-        verify(exactly = 0) { reportExpenditurePersistence.updatePartnerReportExpenditureCosts(any(), any(), any()) }
+        verify(exactly = 0) { reportExpenditurePersistence.updatePartnerReportExpenditureCosts(any(), any(), any(), any()) }
     }
 
     @Test
@@ -501,7 +507,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         every { currencyPersistence.findAllByIdYearAndIdMonth(year = YEAR, month = MONTH) } returns emptyList()
 
         assertThrows<CurrencyRatesMissing> { submitReport.submit(PARTNER_ID, 40L) }
-        verify(exactly = 0) { reportExpenditurePersistence.updatePartnerReportExpenditureCosts(any(), any(), any()) }
+        verify(exactly = 0) { reportExpenditurePersistence.updatePartnerReportExpenditureCosts(any(), any(), any(), any()) }
     }
 
 }

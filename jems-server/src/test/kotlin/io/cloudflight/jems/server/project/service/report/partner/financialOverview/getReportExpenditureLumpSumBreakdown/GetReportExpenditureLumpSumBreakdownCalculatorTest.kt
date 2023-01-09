@@ -97,6 +97,7 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
             currencyConversionRate = null,
             declaredAmountAfterSubmission = null,
             attachment = null,
+            parkingMetadata = null,
         )
 
         private val expectedDraftBreakdown = ExpenditureLumpSumBreakdown(

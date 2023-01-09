@@ -22,6 +22,10 @@ fun List<ProjectPartnerReportExpenditureCost>.clearConversions() = map {
     it.apply { clearConversions() }
 }
 
+fun List<ProjectPartnerReportExpenditureCost>.clearParking() = map {
+    it.apply { it.parkingMetadata = null }
+}
+
 inline fun <T> Collection<T>.filterInvalidCurrencies(defaultCurrency: String?, extractFunction: (T) -> String) =
     if (defaultCurrency == "EUR")
         map { extractFunction.invoke(it) }.filterTo(HashSet()) { it != defaultCurrency }

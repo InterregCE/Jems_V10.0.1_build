@@ -88,6 +88,7 @@ class GetReportExpenditureInvestmentsBreakdownCalculatorTest : UnitTest() {
             currencyConversionRate = null,
             declaredAmountAfterSubmission = null,
             attachment = null,
+            parkingMetadata = null,
         )
 
         private val expectedDraftResult = ExpenditureInvestmentBreakdown(

@@ -7,7 +7,11 @@ import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPar
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportLumpSumDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportUnitCostDTO
 import io.swagger.annotations.Api
+import io.swagger.annotations.ApiImplicitParam
+import io.swagger.annotations.ApiImplicitParams
 import io.swagger.annotations.ApiOperation
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -76,4 +80,25 @@ interface ProjectPartnerReportExpenditureCostsApi {
         @PathVariable partnerId: Long,
         @PathVariable reportId: Long,
     ): ProjectPartnerBudgetOptionsDto
+
+    @ApiOperation("Returns all available parked expenditures for re-injection")
+    @ApiImplicitParams(
+        ApiImplicitParam(paramType = "query", name = "page", dataType = "integer"),
+        ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
+        ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
+    )
+    @GetMapping("${ProjectPartnerReportApi.ENDPOINT_API_PROJECT_PARTNER_REPORT}/expenditure/byPartnerId/{partnerId}/parked")
+    fun getAvailableParkedExpenditures(
+        @PathVariable partnerId: Long,
+        pageable: Pageable,
+    ): Page<ProjectPartnerReportExpenditureCostDTO>
+
+    @ApiOperation("Update partner report expenditure costs")
+    @PutMapping("$ENDPOINT_API_PARTNER_REPORT_EXPENDITURE_COSTS/reIncludeExpenditure/{expenditureId}")
+    fun reIncludeParkedExpenditure(
+        @PathVariable partnerId: Long,
+        @PathVariable reportId: Long,
+        @PathVariable expenditureId: Long,
+    )
+
 }

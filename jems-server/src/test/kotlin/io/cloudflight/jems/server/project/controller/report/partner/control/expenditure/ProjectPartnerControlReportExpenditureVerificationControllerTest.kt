@@ -2,10 +2,12 @@ package io.cloudflight.jems.server.project.controller.report.partner.control.exp
 
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.BudgetCategoryDTO
+import io.cloudflight.jems.api.project.dto.report.partner.expenditure.verification.ExpenditureParkingMetadataDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.verification.ProjectPartnerControlReportExpenditureVerificationDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.verification.ProjectPartnerControlReportExpenditureVerificationUpdateDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerificationUpdate
@@ -54,7 +56,8 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
         deductedAmount = BigDecimal.ZERO,
         typologyOfErrorId = 15L,
         verificationComment = "comment dummy",
-        parked = false
+        parked = false,
+        parkingMetadata = ExpenditureParkingMetadata(reportOfOriginId = 70L, reportOfOriginNumber = 5, originalExpenditureNumber = 3),
     )
 
     private val reportExpenditureVerificationUpdated = ProjectPartnerReportExpenditureVerification(
@@ -85,7 +88,8 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
         deductedAmount = BigDecimal.valueOf(0.3),
         typologyOfErrorId = 1,
         verificationComment = "test",
-        parked = false
+        parked = false,
+        parkingMetadata = ExpenditureParkingMetadata(reportOfOriginId = 72L, reportOfOriginNumber = 4, originalExpenditureNumber = 3),
     )
 
     private val reportExpenditureVerificationDto = ProjectPartnerControlReportExpenditureVerificationDTO(
@@ -116,7 +120,8 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
         deductedAmount = BigDecimal.ZERO,
         typologyOfErrorId = 15L,
         verificationComment = "comment dummy",
-        parked = false
+        parked = false,
+        parkingMetadata = ExpenditureParkingMetadataDTO(reportOfOriginId = 70L, reportOfOriginNumber = 5, originalExpenditureNumber = 3),
     )
 
     private val reportExpenditureVerificationDtoUpdated = ProjectPartnerControlReportExpenditureVerificationDTO(
@@ -147,7 +152,8 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
         deductedAmount = BigDecimal.valueOf(0.3),
         typologyOfErrorId = 1,
         verificationComment = "test",
-        parked = false
+        parked = false,
+        parkingMetadata = ExpenditureParkingMetadataDTO(reportOfOriginId = 72L, reportOfOriginNumber = 4, originalExpenditureNumber = 3),
     )
 
     private val toUpdateDto = ProjectPartnerControlReportExpenditureVerificationUpdateDTO(

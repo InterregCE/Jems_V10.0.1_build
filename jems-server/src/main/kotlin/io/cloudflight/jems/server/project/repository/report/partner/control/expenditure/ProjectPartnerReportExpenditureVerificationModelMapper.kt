@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.repository.report.partner.control.exp
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportExpenditureCostEntity
+import io.cloudflight.jems.server.project.repository.report.partner.expenditure.getParkingMetadata
 import io.cloudflight.jems.server.project.repository.report.partner.toModel
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
 
@@ -34,6 +35,7 @@ fun Collection<PartnerReportExpenditureCostEntity>.toExtendedModel() = map {
         deductedAmount = it.deductedAmount,
         typologyOfErrorId = it.typologyOfErrorId,
         parked = it.parked,
-        verificationComment = it.verificationComment
+        verificationComment = it.verificationComment,
+        parkingMetadata = it.getParkingMetadata(),
     )
 }

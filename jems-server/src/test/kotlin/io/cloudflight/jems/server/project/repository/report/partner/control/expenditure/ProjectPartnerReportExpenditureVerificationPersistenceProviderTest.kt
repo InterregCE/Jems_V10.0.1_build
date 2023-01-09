@@ -14,6 +14,7 @@ import io.cloudflight.jems.server.project.entity.report.partner.expenditure.Part
 import io.cloudflight.jems.server.project.repository.report.partner.expenditure.ProjectPartnerReportExpenditureRepository
 import io.cloudflight.jems.server.project.repository.report.partner.model.ExpenditureVerificationUpdate
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.mockk.clearMocks
@@ -55,9 +56,10 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
         private fun dummyExpenditure(
             id: Long,
             report: ProjectPartnerReportEntity,
-            lumpSum: PartnerReportLumpSumEntity?,
-            unitCost: PartnerReportUnitCostEntity?,
-            investment: PartnerReportInvestmentEntity?,
+            lumpSum: PartnerReportLumpSumEntity? = null,
+            unitCost: PartnerReportUnitCostEntity? = null,
+            investment: PartnerReportInvestmentEntity? = null,
+            unParkedFrom: PartnerReportExpenditureCostEntity? = null,
         ) = PartnerReportExpenditureCostEntity(
             id = id,
             number = 1,
@@ -86,7 +88,10 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
             deductedAmount = BigDecimal.ZERO,
             typologyOfErrorId = 1L,
             verificationComment = "dummy comment",
-            parked = false
+            parked = false,
+            unParkedFrom = unParkedFrom,
+            reportOfOrigin = report,
+            originalNumber = 12,
         ).apply {
             translatedValues.add(
                 PartnerReportExpenditureCostTranslEntity(
@@ -126,7 +131,8 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
                 deductedAmount = BigDecimal.ZERO,
                 typologyOfErrorId = 1L,
                 verificationComment = "dummy comment",
-                parked = false
+                parked = false,
+                parkingMetadata = ExpenditureParkingMetadata(reportOfOriginId = 600L, reportOfOriginNumber = 601, originalExpenditureNumber = 12),
             )
 
         private val dummyExpectedExpenditureUpdate = ExpenditureVerificationUpdate(
@@ -157,6 +163,8 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
         val unitCostId = 809L
         val investmentId = 810L
         val report = mockk<ProjectPartnerReportEntity>()
+        every { report.id } returns 600L
+        every { report.number } returns 601
         val lumpSum = mockk<PartnerReportLumpSumEntity>()
         val unitCost = mockk<PartnerReportUnitCostEntity>()
         val investment = mockk<PartnerReportInvestmentEntity>()
@@ -164,7 +172,7 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
         every { unitCost.id } returns unitCostId
         every { investment.id } returns investmentId
 
-        val expenditure = dummyExpenditure(id = 14L, report, lumpSum, unitCost, investment)
+        val expenditure = dummyExpenditure(id = 14L, report, lumpSum, unitCost, investment, dummyExpenditure(id = 2L, report))
         every { reportExpenditureRepository.findTop150ByPartnerReportIdAndPartnerReportPartnerIdOrderById(
             reportId = 44L,
             partnerId = PARTNER_ID,

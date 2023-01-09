@@ -120,6 +120,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
             currencyConversionRate = null,
             declaredAmountAfterSubmission = null,
             attachment = null,
+            parkingMetadata = null,
         )
 
         val expenditureUnitCost = ProjectPartnerReportExpenditureCost(
@@ -141,6 +142,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
             currencyConversionRate = null,
             declaredAmountAfterSubmission = null,
             attachment = null,
+            parkingMetadata = null,
         )
 
         val expenditureStaffCost = ProjectPartnerReportExpenditureCost(
@@ -162,6 +164,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
             currencyConversionRate = null,
             declaredAmountAfterSubmission = null,
             attachment = null,
+            parkingMetadata = null,
         )
 
         val expenditureExternalCost = ProjectPartnerReportExpenditureCost(
@@ -183,6 +186,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
             currencyConversionRate = null,
             declaredAmountAfterSubmission = null,
             attachment = null,
+            parkingMetadata = null,
         )
 
         val expenditureEquipmentCost = ProjectPartnerReportExpenditureCost(
@@ -204,6 +208,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
             currencyConversionRate = null,
             declaredAmountAfterSubmission = null,
             attachment = null,
+            parkingMetadata = null,
         )
 
         val expenditureInfrastructureCost = ProjectPartnerReportExpenditureCost(
@@ -225,6 +230,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
             currencyConversionRate = null,
             declaredAmountAfterSubmission = null,
             attachment = null,
+            parkingMetadata = null,
         )
 
         val expenditureMultipleCost = ProjectPartnerReportExpenditureCost(
@@ -246,6 +252,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
             currencyConversionRate = null,
             declaredAmountAfterSubmission = null,
             attachment = null,
+            parkingMetadata = null,
         )
 
         private val expectedOutput = ExpenditureCostCategoryBreakdown(

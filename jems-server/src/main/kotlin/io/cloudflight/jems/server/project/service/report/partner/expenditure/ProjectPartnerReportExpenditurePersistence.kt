@@ -5,16 +5,27 @@ import io.cloudflight.jems.server.project.service.report.model.partner.expenditu
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportInvestment
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportUnitCost
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 
 interface ProjectPartnerReportExpenditurePersistence {
 
     fun getPartnerReportExpenditureCosts(partnerId: Long, reportId: Long): List<ProjectPartnerReportExpenditureCost>
 
+    fun getPartnerReportExpenditureCosts(ids: Set<Long>, pageable: Pageable): Page<ProjectPartnerReportExpenditureCost>
+
     fun updatePartnerReportExpenditureCosts(
         partnerId: Long,
         reportId: Long,
         expenditureCosts: List<ProjectPartnerReportExpenditureCost>,
+        doNotRenumber: Boolean = false,
     ): List<ProjectPartnerReportExpenditureCost>
+
+    fun reIncludeParkedExpenditure(
+        partnerId: Long,
+        reportId: Long,
+        expenditureId: Long,
+    ): ProjectPartnerReportExpenditureCost
 
     fun existsByExpenditureId(partnerId: Long, reportId: Long, expenditureId: Long): Boolean
 

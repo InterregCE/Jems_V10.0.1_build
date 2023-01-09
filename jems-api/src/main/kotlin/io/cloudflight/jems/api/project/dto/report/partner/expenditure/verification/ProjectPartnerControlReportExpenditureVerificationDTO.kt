@@ -29,6 +29,7 @@ data class ProjectPartnerControlReportExpenditureVerificationDTO(
     val currencyConversionRate: BigDecimal?,
     val declaredAmountAfterSubmission: BigDecimal?,
     val attachment: ProjectReportFileMetadataDTO?,
+    val parkingMetadata: ExpenditureParkingMetadataDTO?,
 
     val partOfSample: Boolean,
     val certifiedAmount: BigDecimal,
