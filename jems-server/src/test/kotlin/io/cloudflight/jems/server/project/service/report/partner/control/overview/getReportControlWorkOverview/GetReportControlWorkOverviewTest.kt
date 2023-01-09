@@ -83,16 +83,23 @@ internal class GetReportControlWorkOverviewTest : UnitTest() {
             expenditure(
                 554L,
                 partOfSample = true,
-                declaredAmount = BigDecimal(20),
+                declaredAmount = BigDecimal.ONE,
                 certified = BigDecimal.valueOf(9, 1),
                 isParked = true
             ),
             expenditure(
                 555L,
                 partOfSample = false,
-                declaredAmount = BigDecimal(85),
+                declaredAmount = null,
                 certified = BigDecimal.valueOf(5, 1),
                 isParked = false
+            ),
+            expenditure(
+                556L,
+                partOfSample = false,
+                declaredAmount = BigDecimal.valueOf(33333),
+                certified = BigDecimal.ZERO,
+                isParked = false,
             ),
         )
 
@@ -102,8 +109,8 @@ internal class GetReportControlWorkOverviewTest : UnitTest() {
         assertThat(interactor.get(PARTNER_ID, reportId = 22L)).isEqualTo(
             ControlWorkOverview(
                 declaredByPartner = BigDecimal.TEN,
-                inControlSample = BigDecimal(20),
-                parked = BigDecimal(97.75),
+                inControlSample = BigDecimal.ONE,
+                parked = BigDecimal.valueOf(115, 2),
                 deductedByControl = BigDecimal.valueOf(839L, 2),
                 eligibleAfterControl = BigDecimal.valueOf(161L, 2),
                 eligibleAfterControlPercentage = BigDecimal.valueOf(1610L, 2),

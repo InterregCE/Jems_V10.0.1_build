@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.expenditu
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.ProjectPartnerReportExpenditureVerificationPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.calculateCurrent
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.percentageOf
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -29,8 +30,8 @@ class GetReportControlWorkOverview(
         val costCategories = reportExpenditureCostCategoryPersistence.getCostCategories(partnerId, reportId = reportId)
 
         val controlSample = currentExpenditures.onlySamplingOnes().sum()
+        val parkedSum = currentExpenditures.onlyParkedOnes().calculateCurrent(costCategories.options).sum
         val eligibleAfterControl = currentExpenditures.calculateCertified(costCategories.options).sum
-        val parkedSum = currentExpenditures.calculateParked(costCategories.options).sum
 
         val currentReportSum = reportCoFinancingPersistence.getReportCurrentSum(partnerId, reportId = reportId)
 
@@ -48,5 +49,8 @@ class GetReportControlWorkOverview(
 
     private fun Collection<ProjectPartnerReportExpenditureVerification>.onlySamplingOnes() =
         filter { it.partOfSample }.map { it.declaredAmountAfterSubmission }
+
+    private fun Collection<ProjectPartnerReportExpenditureVerification>.onlyParkedOnes() =
+        filter { it.parked }
 
 }
