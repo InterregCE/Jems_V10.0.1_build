@@ -127,7 +127,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
   }
 
   disableOnReset(control: FormGroup, index: number): void {
-    control.get(this.constants.FORM_CONTROL_NAMES.deductedAmount)?.disable();
+    control.get(this.constants.FORM_CONTROL_NAMES.certifiedAmount)?.disable();
   }
 
   resetForm(partnerReportExpenditures: ProjectPartnerControlReportExpenditureVerificationDTO[]): void {
@@ -238,8 +238,8 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
     columnsToDisplay = columnsToDisplay.concat(columnsToDisplayLastPart);
 
     columnsToDisplay.push('partOfSample');
-    columnsToDisplay.push('certifiedAmount');
     columnsToDisplay.push('deductedAmount');
+    columnsToDisplay.push('certifiedAmount');
     columnsToDisplay.push('typologyOfErrorId');
     columnsToDisplay.push('parked');
     columnsToDisplay.push('verificationComment');
@@ -410,17 +410,16 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
     return selectedValue;
   }
 
-  updateDeductedAmount(expenditureIndex: number, declaredAmountInEur: number, certifiedAmount: number) {
-    if(declaredAmountInEur - certifiedAmount !== 0) {
+  updateCertifiedAmount(expenditureIndex: number, declaredAmountInEur: number, deductedAmount: number) {
+    if(declaredAmountInEur - deductedAmount !== 0) {
       this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.setValidators([Validators.required]);
       this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.setErrors({required: true});
       this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.markAsDirty();
     }
     else {
       this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.clearValidators();
-
     }
-    this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.deductedAmount)?.setValue(declaredAmountInEur - certifiedAmount);
+    this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.certifiedAmount)?.setValue(declaredAmountInEur - deductedAmount);
     this.items.at(expenditureIndex)?.get(this.constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.updateValueAndValidity();
   }
 

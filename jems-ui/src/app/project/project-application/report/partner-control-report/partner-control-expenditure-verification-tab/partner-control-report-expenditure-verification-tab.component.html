@@ -327,25 +327,6 @@
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
 
-
-                        <ng-container matColumnDef="certifiedAmount">
-                            <mat-header-cell *matHeaderCellDef>{{'project.application.partner.report.control.expenditure.table.header.certified.amount.eur' | translate}}</mat-header-cell>
-                            <mat-cell class="justify-start" *matCellDef="let control;let expenditureIndex=index" [formGroupName]="expenditureIndex" >
-                                <mat-form-field  jemsFormFieldWidth="full">
-                                    <input [formControlName]="constants.FORM_CONTROL_NAMES.certifiedAmount"
-                                           [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
-                                           [readonly] = "control.get(constants.FORM_CONTROL_NAMES.parked).value"
-                                           [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}"
-                                           (keyup)="updateDeductedAmount(expenditureIndex,
-                                            data.expendituresCosts[expenditureIndex].declaredAmountAfterSubmission,
-                                            items.controls[expenditureIndex].get(constants.FORM_CONTROL_NAMES.certifiedAmount)?.value)"
-                                           currencyMask matInput
-                                           type="decimal">
-                                </mat-form-field>
-                            </mat-cell>
-                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
-                        </ng-container>
-
                         <ng-container matColumnDef="deductedAmount">
                             <mat-header-cell *matHeaderCellDef>{{'project.application.partner.report.control.expenditure.table.header.deducted.amount.eur' | translate}}</mat-header-cell>
                             <mat-cell class="justify-start" *matCellDef="let control;let expenditureIndex=index" [formGroupName]="expenditureIndex" >
@@ -353,7 +334,25 @@
                                     <input [formControlName]="constants.FORM_CONTROL_NAMES.deductedAmount"
                                            [disabled] = "control.get(constants.FORM_CONTROL_NAMES.parked).value"
                                            [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}"
-                                           [options]="{allowNegative: true, align: 'right'}"
+                                           [options]="{min: constants.MIN_VALUE, max: data.expendituresCosts[expenditureIndex].declaredAmountAfterSubmission, allowNegative: true, align: 'right'}"
+                                           (keyup)="updateCertifiedAmount(expenditureIndex,
+                                            data.expendituresCosts[expenditureIndex].declaredAmountAfterSubmission,
+                                            items.controls[expenditureIndex].get(constants.FORM_CONTROL_NAMES.deductedAmount)?.value)"
+                                           currencyMask matInput
+                                           type="decimal">
+                                </mat-form-field>
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="certifiedAmount">
+                            <mat-header-cell *matHeaderCellDef>{{'project.application.partner.report.control.expenditure.table.header.certified.amount.eur' | translate}}</mat-header-cell>
+                            <mat-cell class="justify-start" *matCellDef="let control;let expenditureIndex=index" [formGroupName]="expenditureIndex" >
+                                <mat-form-field  jemsFormFieldWidth="full">
+                                    <input [formControlName]="constants.FORM_CONTROL_NAMES.certifiedAmount"
+                                           [options]="{align: 'right'}"
+                                           [readonly] = "control.get(constants.FORM_CONTROL_NAMES.parked).value"
+                                           [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}"
                                            currencyMask matInput
                                            type="decimal">
                                 </mat-form-field>
