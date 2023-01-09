@@ -11,7 +11,7 @@
         </div>
         <div class="project-row">
             <span class="header p-1 pr-3">{{'project.application.project.report.id' | translate}}</span>
-            <span class="p-1">R.{{data.projectReport.reportNumber}}</span>
+            <span class="p-1">PR.{{data.projectReport.reportNumber}}</span>
         </div>
         <div class="project-row">
             <span class="header p-1 pr-3">{{'project.application.project.report.status' | translate}}</span>
@@ -83,12 +83,15 @@
                     <mat-option *ngFor="let deadline of availableDeadlines" [value]="deadline">{{deadline}}</mat-option>
                 </mat-select>
             </mat-form-field>
-            <div jemsFormFieldWidth="one-quarter">
-                <div>{{'project.application.partner.control.report.report.type' | translate}}</div>
+            <div jemsFormFieldWidth="one-quarter" class="small-toggle-group justify-center">
+                <div jemsLabel class="mat-required-marker"
+                     [ngClass]="{'empty': !toggleContent.checked && !toggleFinance.checked && !toggleBoth.checked}">
+                    {{'project.application.partner.control.report.report.type' | translate}}
+                </div>
                 <mat-button-toggle-group required formControlName="type">
-                    <mat-button-toggle [value]="ProjectReportDTO.TypeEnum.Content">{{'project.application.project.report.table.type.Content' | translate}}</mat-button-toggle>
-                    <mat-button-toggle [value]="ProjectReportDTO.TypeEnum.Finance">{{'project.application.project.report.table.type.Finance' | translate}}</mat-button-toggle>
-                    <mat-button-toggle [value]="ProjectReportDTO.TypeEnum.Both">{{'project.application.project.report.table.type.Both' | translate}}</mat-button-toggle>
+                    <mat-button-toggle #toggleContent [value]="ProjectReportDTO.TypeEnum.Content">{{'project.application.project.report.table.type.Content' | translate}}</mat-button-toggle>
+                    <mat-button-toggle #toggleFinance [value]="ProjectReportDTO.TypeEnum.Finance">{{'project.application.project.report.table.type.Finance' | translate}}</mat-button-toggle>
+                    <mat-button-toggle #toggleBoth [value]="ProjectReportDTO.TypeEnum.Both">{{'project.application.project.report.table.type.Both' | translate}}</mat-button-toggle>
                 </mat-button-toggle-group>
             </div>
             <div class="mt-4" jemsFormFieldWidth="one-quarter">

@@ -116,8 +116,8 @@ export class ProjectReportComponent {
   delete(projectReport: ProjectReportSummaryDTO): void {
     Forms.confirm(
       this.dialog, {
-        title: 'project.application.report.confirm.deletion.header',
-        message: {i18nKey: 'project.application.report.confirm.deletion.message', i18nArguments: {id: projectReport.reportNumber.toString()}}
+        title: 'project.application.project.report.confirm.deletion.header',
+        message: {i18nKey: 'project.application.project.report.confirm.deletion.message', i18nArguments: {id: projectReport.reportNumber.toString()}}
       })
       .pipe(
         take(1),
