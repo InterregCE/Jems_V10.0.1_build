@@ -39,7 +39,7 @@ class GetReportControlWorkOverview(
             declaredByPartner = currentReportSum,
             inControlSample = controlSample,
             parked = parkedSum,
-            deductedByControl = currentReportSum.minus(eligibleAfterControl),
+            deductedByControl = currentReportSum.minus(eligibleAfterControl).minus(parkedSum),
             eligibleAfterControl = eligibleAfterControl,
             eligibleAfterControlPercentage = eligibleAfterControl.percentageOf(currentReportSum),
         )
