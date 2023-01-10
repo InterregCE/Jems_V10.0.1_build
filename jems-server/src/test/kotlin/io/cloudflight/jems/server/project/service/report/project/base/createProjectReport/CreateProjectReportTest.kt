@@ -8,13 +8,16 @@ import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.model.ProjectFull
+import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReport
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
+import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportUpdate
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.mockk.clearMocks
@@ -30,11 +33,15 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
+import java.time.LocalDate
 import java.time.ZonedDateTime
 
 internal class CreateProjectReportTest : UnitTest() {
 
     companion object {
+        private val YESTERDAY = LocalDate.now().minusDays(1)
+        private val TOMORROW = LocalDate.now().plusDays(1)
+
         private fun project(id: Long, status: ApplicationStatus): ProjectFull {
             val statusMock = mockk<ProjectStatus>()
             every { statusMock.status } returns status
@@ -67,13 +74,13 @@ internal class CreateProjectReportTest : UnitTest() {
             reportNumber = 8,
             status = ProjectReportStatus.Draft,
             linkedFormVersion = "version",
-            startDate = null,
-            endDate = null,
+            startDate = YESTERDAY,
+            endDate = TOMORROW,
 
             deadlineId = null,
-            type = null,
-            periodDetail = null,
-            reportingDate = null,
+            type = ContractingDeadlineType.Both,
+            periodDetail = ProjectPeriod(4, 17, 22),
+            reportingDate = YESTERDAY.minusDays(1),
 
             projectId = projectId,
             projectIdentifier = "proj-custom-iden",
@@ -113,6 +120,7 @@ internal class CreateProjectReportTest : UnitTest() {
         every { reportPersistence.countForProject(projectId) } returns 1
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns "version"
         every { projectPersistence.getProject(projectId, "version") } returns project(projectId, status)
+        every { projectPersistence.getProjectPeriods(projectId, "version") } returns listOf(ProjectPeriod(4, 17, 22))
         every { reportPersistence.getCurrentLatestReportFor(projectId) } returns currentLatestReport(7)
         every { projectPartnerPersistence.findTop30ByProjectId(projectId, "version") } returns listOf(leadPartner())
 
@@ -122,7 +130,15 @@ internal class CreateProjectReportTest : UnitTest() {
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
 
-        val created = interactor.createReportFor(projectId)
+        val data = ProjectReportUpdate(
+            startDate = YESTERDAY,
+            endDate = TOMORROW,
+            deadlineId = null,
+            type = ContractingDeadlineType.Both,
+            periodNumber = 4,
+            reportingDate = YESTERDAY.minusDays(1),
+        )
+        val created = interactor.createReportFor(projectId, data)
         assertThat(created).isEqualTo(expectedProjectReport(projectId).copy(createdAt = reportStored.captured.createdAt))
 
         assertThat(auditSlot.captured.auditCandidate).isEqualTo(AuditCandidate(
@@ -145,14 +161,14 @@ internal class CreateProjectReportTest : UnitTest() {
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns "version"
         every { projectPersistence.getProject(projectId, "version") } returns project(projectId, status)
 
-        assertThrows<ReportCanBeCreatedOnlyWhenContractedException> { interactor.createReportFor(projectId) }
+        assertThrows<ReportCanBeCreatedOnlyWhenContractedException> { interactor.createReportFor(projectId, mockk()) }
     }
 
     @Test
     fun `createReportFor - max amounts of reports reached`() {
         val projectId = 254L
         every { reportPersistence.countForProject(projectId) } returns 25
-        assertThrows<MaxAmountOfReportsReachedException> { interactor.createReportFor(projectId) }
+        assertThrows<MaxAmountOfReportsReachedException> { interactor.createReportFor(projectId, mockk()) }
     }
 
 }

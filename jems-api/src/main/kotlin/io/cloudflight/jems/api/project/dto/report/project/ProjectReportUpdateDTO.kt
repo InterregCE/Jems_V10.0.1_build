@@ -7,7 +7,7 @@ data class ProjectReportUpdateDTO(
     val startDate: LocalDate?,
     val endDate: LocalDate?,
 
-    val scheduleId: Long?,
+    val deadlineId: Long?,
     val type: ContractingDeadlineTypeDTO?,
     val periodNumber: Int?,
     val reportingDate: LocalDate?,

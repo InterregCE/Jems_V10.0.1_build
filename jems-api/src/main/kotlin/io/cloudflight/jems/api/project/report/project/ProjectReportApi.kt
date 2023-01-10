@@ -44,9 +44,10 @@ interface ProjectReportApi {
     ): ProjectReportDTO
 
     @ApiOperation("Creates new project report")
-    @PostMapping(ENDPOINT_API_PROJECT_REPORT)
+    @PostMapping(ENDPOINT_API_PROJECT_REPORT, consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun createProjectReport(
         @PathVariable projectId: Long,
+        @RequestBody data: ProjectReportUpdateDTO,
     ): ProjectReportDTO
 
     @ApiOperation("Update base data of project report")

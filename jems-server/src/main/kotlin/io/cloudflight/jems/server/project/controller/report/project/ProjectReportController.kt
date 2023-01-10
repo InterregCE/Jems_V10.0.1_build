@@ -25,8 +25,8 @@ class ProjectReportController(
     override fun getProjectReport(projectId: Long, reportId: Long) =
         getReport.findById(projectId, reportId = reportId).toDto()
 
-    override fun createProjectReport(projectId: Long) =
-        createReport.createReportFor(projectId).toDto()
+    override fun createProjectReport(projectId: Long, data: ProjectReportUpdateDTO) =
+        createReport.createReportFor(projectId, data.toModel()).toDto()
 
     override fun updateProjectReport(projectId: Long, reportId: Long, data: ProjectReportUpdateDTO) =
         updateReport.updateReport(projectId, reportId = reportId, data.toModel()).toDto()

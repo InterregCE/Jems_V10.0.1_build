@@ -7,7 +7,7 @@ data class ProjectReportUpdate(
     val startDate: LocalDate?,
     val endDate: LocalDate?,
 
-    val scheduleId: Long?,
+    val deadlineId: Long?,
     val type: ContractingDeadlineType?,
     val periodNumber: Int?,
     val reportingDate: LocalDate?,

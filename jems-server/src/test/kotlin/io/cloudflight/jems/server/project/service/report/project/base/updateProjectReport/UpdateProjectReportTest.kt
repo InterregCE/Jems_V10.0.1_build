@@ -127,7 +127,7 @@ internal class UpdateProjectReportTest : UnitTest() {
         val data = ProjectReportUpdate(
             startDate = MONTH_AGO,
             endDate = TOMORROW,
-            scheduleId = 7L,
+            deadlineId = 7L,
             type = null,
             periodNumber = null,
             reportingDate = null,
@@ -160,7 +160,7 @@ internal class UpdateProjectReportTest : UnitTest() {
         val data = ProjectReportUpdate(
             startDate = MONTH_AGO,
             endDate = TOMORROW,
-            scheduleId = null,
+            deadlineId = null,
             type = ContractingDeadlineType.Content,
             periodNumber = 12,
             reportingDate = YESTERDAY,
@@ -185,7 +185,7 @@ internal class UpdateProjectReportTest : UnitTest() {
         val data = ProjectReportUpdate(
             startDate = MONTH_AGO,
             endDate = TOMORROW,
-            scheduleId = null,
+            deadlineId = null,
             type = ContractingDeadlineType.Content,
             periodNumber = -1,
             reportingDate = YESTERDAY,
@@ -202,7 +202,7 @@ internal class UpdateProjectReportTest : UnitTest() {
         val data = ProjectReportUpdate(
             startDate = MONTH_AGO,
             endDate = TOMORROW,
-            scheduleId = null,
+            deadlineId = null,
             type = ContractingDeadlineType.Content,
             periodNumber = 58,
             reportingDate = YESTERDAY,
@@ -227,7 +227,7 @@ internal class UpdateProjectReportTest : UnitTest() {
         val data = ProjectReportUpdate(
             startDate = MONTH_AGO,
             endDate = TOMORROW,
-            scheduleId = 7L,
+            deadlineId = 7L,
             type = null,
             periodNumber = null,
             reportingDate = null,

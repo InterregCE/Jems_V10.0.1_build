@@ -20,12 +20,6 @@ class UpdateProjectReport(
 ) : UpdateProjectReportInteractor {
 
     companion object {
-        private fun deadlineLink(deadlineId: Long) = ProjectReportDeadline(
-            deadlineId = deadlineId,
-            type = null,
-            periodNumber = null,
-            reportingDate = null,
-        )
 
         private fun ProjectReportUpdate.deadlineManual() = ProjectReportDeadline(
             deadlineId = null,
@@ -33,25 +27,83 @@ class UpdateProjectReport(
             periodNumber = periodNumber,
             reportingDate = reportingDate,
         )
+
+        fun ProjectReportUpdate.validateInput(
+            validPeriodNumbers: Set<Int>,
+            datesInvalidExceptionResolver: () -> Exception,
+            linkToDeadlineWithManualDataExceptionResolver: () -> Exception,
+            noLinkAndDataMissingExceptionResolver: () -> Exception,
+            periodNumberExceptionResolver: (Int) -> Exception,
+        ) {
+            validateDates(this, datesInvalidExceptionResolver)
+            when {
+                this.isLink() -> validateLink(this, linkToDeadlineWithManualDataExceptionResolver)
+                this.isManual() -> validateManual(data = this, validPeriodNumbers = validPeriodNumbers,
+                    noLinkAndDataMissingExceptionResolver = noLinkAndDataMissingExceptionResolver,
+                    periodNumberExceptionResolver = periodNumberExceptionResolver)
+            }
+        }
+
+        private fun validateDates(data: ProjectReportUpdate, datesInvalidExceptionResolver: () -> Exception) {
+            if (data.startDate != null && data.endDate != null && data.startDate.isAfter(data.endDate))
+                throw datesInvalidExceptionResolver.invoke()
+        }
+
+        private fun validateLink(data: ProjectReportUpdate, linkToDeadlineWithManualDataExceptionResolver: () -> Exception) {
+            if (data.containsManualValues())
+                throw linkToDeadlineWithManualDataExceptionResolver.invoke()
+        }
+
+        private fun validateManual(
+            data: ProjectReportUpdate,
+            validPeriodNumbers: Set<Int>,
+            noLinkAndDataMissingExceptionResolver: () -> Exception,
+            periodNumberExceptionResolver: (Int) -> Exception,
+        ) {
+            if (data.isMissingManualValues())
+                throw noLinkAndDataMissingExceptionResolver.invoke()
+
+            if (data.periodNumber!! !in validPeriodNumbers)
+                throw periodNumberExceptionResolver.invoke(data.periodNumber)
+        }
+
+        private fun ProjectReportUpdate.containsManualValues() =
+            type != null || periodNumber != null || reportingDate != null
+
+        private fun ProjectReportUpdate.isMissingManualValues() =
+            type == null || periodNumber == null || reportingDate == null
+
+        private fun ProjectReportUpdate.isLink() = deadlineId != null
+
+        private fun ProjectReportUpdate.isManual() = !isLink()
+
+        private fun ProjectReportUpdate.toDeadlineObject(validDeadlineIdResolver: (Long) -> Long) =
+            if (isManual())
+                deadlineManual()
+            else
+                ProjectReportDeadline(
+                    deadlineId = validDeadlineIdResolver.invoke(deadlineId!!),
+                    type = null,
+                    periodNumber = null,
+                    reportingDate = null,
+                )
+
     }
 
     @CanEditProjectReport
     @Transactional
     @ExceptionWrapper(UpdateProjectReportException::class)
     override fun updateReport(projectId: Long, reportId: Long, data: ProjectReportUpdate): ProjectReport {
-        validateDates(data)
         val version = reportPersistence.getReportById(projectId, reportId).linkedFormVersion
         val periods = projectPersistence.getProjectPeriods(projectId, version).associateBy { it.number }
 
-        when {
-            data.isLink() -> validateLink(data)
-            data.isManual() -> validateManual(data = data, validPeriodNumbers = periods.keys)
-        }
-
-        val deadline = if (data.isManual())
-            data.deadlineManual()
-        else
-            deadlineLink(deadlineId = getValidDeadlineId(projectId, data.scheduleId!!))
+        data.validateInput(validPeriodNumbers = periods.keys,
+            datesInvalidExceptionResolver = { StartDateIsAfterEndDate() },
+            linkToDeadlineWithManualDataExceptionResolver = { LinkToDeadlineProvidedWithManualDataOverride() },
+            noLinkAndDataMissingExceptionResolver = { LinkToDeadlineNotProvidedAndDataMissing() },
+            periodNumberExceptionResolver = { PeriodNumberInvalid(it) },
+        )
+        val deadline = data.toDeadlineObject(validDeadlineIdResolver = { getValidDeadlineId(projectId, it) })
 
         return reportPersistence.updateReport(
             projectId = projectId,
@@ -62,35 +114,7 @@ class UpdateProjectReport(
         ).toServiceModel(periodResolver = { periodNumber -> periods[periodNumber]!! })
     }
 
-    private fun validateDates(data: ProjectReportUpdate) {
-        if (data.startDate != null && data.endDate != null && data.startDate.isAfter(data.endDate))
-            throw StartDateIsAfterEndDate()
-    }
-
-    private fun validateLink(data: ProjectReportUpdate) {
-        if (data.containsManualValues())
-            throw LinkToDeadlineProvidedWithManualDataOverride()
-    }
-
-    private fun validateManual(data: ProjectReportUpdate, validPeriodNumbers: Set<Int>) {
-        if (data.isMissingManualValues())
-            throw LinkToDeadlineNotProvidedAndDataMissing()
-
-        if (data.periodNumber!! !in validPeriodNumbers)
-            throw PeriodNumberInvalid(data.periodNumber)
-    }
-
     private fun getValidDeadlineId(projectId: Long, deadlineId: Long) =
         deadlinePersistence.getContractingReportingDeadline(projectId, deadlineId).id
-
-    private fun ProjectReportUpdate.containsManualValues() =
-        type != null || periodNumber != null || reportingDate != null
-
-    private fun ProjectReportUpdate.isMissingManualValues() =
-        type == null || periodNumber == null || reportingDate == null
-
-    private fun ProjectReportUpdate.isLink() = scheduleId != null
-
-    private fun ProjectReportUpdate.isManual() = !isLink()
 
 }

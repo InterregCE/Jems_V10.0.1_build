@@ -22,3 +22,24 @@ class ReportCanBeCreatedOnlyWhenContractedException : ApplicationUnprocessableEx
     code = "$CREATE_PROJECT_REPORT_ERROR_CODE_PREFIX-002",
     i18nMessage = I18nMessage("$CREATE_PROJECT_REPORT_ERROR_KEY_PREFIX.wrong.status"),
 )
+
+class StartDateIsAfterEndDate : ApplicationUnprocessableException(
+    code = "$CREATE_PROJECT_REPORT_ERROR_CODE_PREFIX-003",
+    i18nMessage = I18nMessage("$CREATE_PROJECT_REPORT_ERROR_KEY_PREFIX.start.date.must.be.before.end.date"),
+)
+
+class LinkToDeadlineProvidedWithManualDataOverride : ApplicationUnprocessableException(
+    code = "$CREATE_PROJECT_REPORT_ERROR_CODE_PREFIX-004",
+    i18nMessage = I18nMessage("$CREATE_PROJECT_REPORT_ERROR_KEY_PREFIX.data.is.taken.from.deadline.do.not.provide.any.more.details"),
+)
+
+class LinkToDeadlineNotProvidedAndDataMissing : ApplicationUnprocessableException(
+    code = "$CREATE_PROJECT_REPORT_ERROR_CODE_PREFIX-005",
+    i18nMessage = I18nMessage("$CREATE_PROJECT_REPORT_ERROR_KEY_PREFIX.all.deadline.data.needs.to.be.specified.explicitly"),
+)
+
+class PeriodNumberInvalid(periodNumber: Int) : ApplicationUnprocessableException(
+    code = "$CREATE_PROJECT_REPORT_ERROR_CODE_PREFIX-006",
+    i18nMessage = I18nMessage("$CREATE_PROJECT_REPORT_ERROR_KEY_PREFIX.specified.period.is.not.available"),
+    message = "period number $periodNumber is not available",
+)

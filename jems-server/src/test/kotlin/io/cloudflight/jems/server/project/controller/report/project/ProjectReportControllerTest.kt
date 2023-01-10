@@ -149,8 +149,26 @@ internal class ProjectReportControllerTest : UnitTest() {
 
     @Test
     fun createProjectReport() {
-        every { createReport.createReportFor(19L) } returns report
-        assertThat(controller.createProjectReport(19L)).isEqualTo(expectedReport)
+        val createSlot = slot<ProjectReportUpdate>()
+        every { createReport.createReportFor(19L, capture(createSlot)) } returns report
+
+        val toCreate = ProjectReportUpdateDTO(
+            startDate = WEEK_AGO,
+            endDate = TOMORROW,
+            deadlineId = null,
+            type = ContractingDeadlineTypeDTO.Content,
+            periodNumber = null,
+            reportingDate = WEEK_AGO,
+        )
+        assertThat(controller.createProjectReport(19L, toCreate)).isEqualTo(expectedReport)
+        assertThat(createSlot.captured).isEqualTo(ProjectReportUpdate(
+            startDate = WEEK_AGO,
+            endDate = TOMORROW,
+            deadlineId = null,
+            type = ContractingDeadlineType.Content,
+            periodNumber = null,
+            reportingDate = WEEK_AGO,
+        ))
     }
 
     @Test
@@ -161,7 +179,7 @@ internal class ProjectReportControllerTest : UnitTest() {
         val toUpdate = ProjectReportUpdateDTO(
             startDate = TOMORROW,
             endDate = WEEK_AGO,
-            scheduleId = 4L,
+            deadlineId = 4L,
             type = ContractingDeadlineTypeDTO.Both,
             periodNumber = 12,
             reportingDate = TOMORROW,
@@ -170,7 +188,7 @@ internal class ProjectReportControllerTest : UnitTest() {
         assertThat(updateSlot.captured).isEqualTo(ProjectReportUpdate(
             startDate = TOMORROW,
             endDate = WEEK_AGO,
-            scheduleId = 4L,
+            deadlineId = 4L,
             type = ContractingDeadlineType.Both,
             periodNumber = 12,
             reportingDate = TOMORROW,
