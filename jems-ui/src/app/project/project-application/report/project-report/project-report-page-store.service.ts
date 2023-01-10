@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {
   PageProjectReportSummaryDTO, ProjectReportDTO,
-  ProjectReportService, ProjectReportSummaryDTO,
+  ProjectReportService, ProjectReportUpdateDTO,
   ProjectUserCollaboratorService, UserRoleDTO
 } from '@cat/api';
 import {Tables} from '@common/utils/tables';
@@ -18,7 +18,6 @@ import {
 
 @Injectable({providedIn: 'root'})
 export class ProjectReportPageStore {
-  public static PROJECT_REPORT_DETAIL_PATH = '/reporting/';
 
   projectReports$: Observable<PageProjectReportSummaryDTO>;
   userCanViewReport$: Observable<boolean>;
@@ -39,10 +38,10 @@ export class ProjectReportPageStore {
     this.userCanEditReport$ = this.userCanEditReports();
   }
 
-  createProjectReport(): Observable<ProjectReportDTO> {
+  createProjectReport(identification: ProjectReportUpdateDTO): Observable<ProjectReportDTO> {
     return this.projectStore.projectId$
       .pipe(
-        switchMap((projectId) => this.projectReportService.createProjectReport(projectId as any)),
+        switchMap((projectId) => this.projectReportService.createProjectReport(Number(projectId), identification)),
         tap(() => this.refreshReports$.next()),
         tap(created => Log.info('Created projectReport:', this, created)),
       );

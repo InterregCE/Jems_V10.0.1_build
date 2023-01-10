@@ -6,12 +6,11 @@
 
     <ng-container *ngIf="pageStore.userCanEditReport$ | async">
         <p>
-            <jems-pending-button jemsText class="mb-3"
-                                 icon="add"
-                                 (clicked)="createProjectReport()"
-                                 [pending]="actionPending">
-                {{'project.application.project.report.add' | translate}}
-            </jems-pending-button>
+            <button jemsText class="mb-3"
+                    mat-stroked-button color="primary"
+                    [routerLink]="'/app/project/detail/' + projectId + '/projectReports/create'">
+                + {{'project.application.project.report.add' | translate}}
+            </button>
         </p>
     </ng-container>
 
@@ -40,7 +39,7 @@
             </ng-container>
 
             <ng-container matColumnDef="status">
-                <mat-header-cell *matHeaderCellDef mat-sort-header="status">
+                <mat-header-cell *matHeaderCellDef>
                     <span jemsText maxLines="2">{{ 'project.application.project.report.table.status' | translate }}</span>
                 </mat-header-cell>
                 <mat-cell *matCellDef="let projectReport">
@@ -49,7 +48,7 @@
             </ng-container>
 
             <ng-container matColumnDef="linkedFormVersion">
-                <mat-header-cell *matHeaderCellDef mat-sort-header="linkedFormVersion">
+                <mat-header-cell *matHeaderCellDef>
                     <span jemsText maxLines="2">{{ 'project.application.project.report.table.project.version' | translate }}</span>
                 </mat-header-cell>
                 <mat-cell *matCellDef="let projectReport">
@@ -73,7 +72,7 @@
             </ng-container>
 
             <ng-container matColumnDef="type">
-                <mat-header-cell *matHeaderCellDef mat-sort-header="type">
+                <mat-header-cell *matHeaderCellDef>
                     <span jemsText maxLines="2">{{ 'project.application.project.report.table.type' | translate }}</span>
                 </mat-header-cell>
                 <mat-cell *matCellDef="let projectReport">
@@ -82,7 +81,7 @@
             </ng-container>
 
             <ng-container matColumnDef="createdAt">
-                <mat-header-cell *matHeaderCellDef mat-sort-header="createdAt" class="text-left">
+                <mat-header-cell *matHeaderCellDef class="text-left">
                     <span jemsText maxLines="2">{{ 'project.application.project.report.table.creation.date' | translate }}</span>
                 </mat-header-cell>
                 <mat-cell *matCellDef="let projectReport" class="text-left">
@@ -91,7 +90,7 @@
             </ng-container>
 
             <ng-container matColumnDef="firstSubmission">
-                <mat-header-cell *matHeaderCellDef mat-sort-header="firstSubmission" class="text-left">
+                <mat-header-cell *matHeaderCellDef class="text-left">
                     <span jemsText maxLines="2">{{ 'project.application.project.report.table.first.submission.date' | translate }}</span>
                 </mat-header-cell>
                 <mat-cell *matCellDef="let projectReport" class="text-left">
@@ -100,7 +99,7 @@
             </ng-container>
 
             <ng-container matColumnDef="verificationDate">
-                <mat-header-cell *matHeaderCellDef mat-sort-header="verificationDate" class="text-left">
+                <mat-header-cell *matHeaderCellDef class="text-left">
                     <span jemsText maxLines="2">{{ 'project.application.project.report.table.verification.date' | translate }}</span>
                 </mat-header-cell>
                 <mat-cell *matCellDef="let projectReport" class="text-left">

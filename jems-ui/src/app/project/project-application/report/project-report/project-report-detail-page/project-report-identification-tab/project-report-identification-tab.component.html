@@ -1,10 +1,10 @@
 <jems-form *ngIf="data$ | async as data"
-           (discard)="resetForm(data.projectReport)"
+           (discard)="discard(data.projectReport)"
            (save)="saveIdentification()">
 
     <h3>{{'project.application.project.report.sub.title' | translate}}</h3>
 
-    <div id="report-info" class="mb-5">
+    <div *ngIf="data?.projectReport?.id" id="report-info" class="mb-5">
         <div class="project-row">
             <span class="header p-1 pr-3">{{'project.detail.table.id.application' | translate}}</span>
             <span class="p-1">{{data.projectReport?.projectIdentifier}} - {{data.projectReport?.projectAcronym}}</span>
@@ -73,7 +73,7 @@
             </mat-form-field>
         </div>
         <div jemsMultiColumnRow>
-            <mat-form-field class="mt-4" jemsFormFieldWidth="one-quarter">
+            <mat-form-field class="mt-4" jemsFormFieldWidth="half">
                 <mat-label>{{'project.application.project.report.deadline.placeholder' | translate}}</mat-label>
                 <mat-select
                         formControlName="deadlineId"
@@ -83,18 +83,29 @@
                     <mat-option *ngFor="let deadline of availableDeadlines" [value]="deadline">{{deadline}}</mat-option>
                 </mat-select>
             </mat-form-field>
-            <div jemsFormFieldWidth="one-quarter" class="small-toggle-group justify-center">
+            <div jemsFormFieldWidth="half" class="small-toggle-group justify-center">
                 <div jemsLabel class="mat-required-marker"
                      [ngClass]="{'empty': !toggleContent.checked && !toggleFinance.checked && !toggleBoth.checked}">
                     {{'project.application.partner.control.report.report.type' | translate}}
                 </div>
                 <mat-button-toggle-group required formControlName="type">
-                    <mat-button-toggle #toggleContent [value]="ProjectReportDTO.TypeEnum.Content">{{'project.application.project.report.table.type.Content' | translate}}</mat-button-toggle>
-                    <mat-button-toggle #toggleFinance [value]="ProjectReportDTO.TypeEnum.Finance">{{'project.application.project.report.table.type.Finance' | translate}}</mat-button-toggle>
-                    <mat-button-toggle #toggleBoth [value]="ProjectReportDTO.TypeEnum.Both">{{'project.application.project.report.table.type.Both' | translate}}</mat-button-toggle>
+                    <mat-button-toggle #toggleContent [value]="ProjectReportDTO.TypeEnum.Content">
+                        <mat-icon>description</mat-icon>
+                        <span jemsText>{{'project.application.project.report.table.type.Content' | translate}}</span>
+                    </mat-button-toggle>
+                    <mat-button-toggle #toggleFinance [value]="ProjectReportDTO.TypeEnum.Finance">
+                        <mat-icon>savings</mat-icon>
+                        <span jemsText>{{'project.application.project.report.table.type.Finance' | translate}}</span>
+                    </mat-button-toggle>
+                    <mat-button-toggle #toggleBoth [value]="ProjectReportDTO.TypeEnum.Both">
+                        <mat-icon>description</mat-icon><mat-icon>savings</mat-icon>
+                        <span jemsText>{{'project.application.project.report.table.type.Both' | translate}}</span>
+                    </mat-button-toggle>
                 </mat-button-toggle-group>
             </div>
-            <div class="mt-4" jemsFormFieldWidth="one-quarter">
+        </div>
+        <div jemsMultiColumnRow>
+            <div class="mt-4" jemsFormFieldWidth="half">
                 <jems-project-periods-select
                         [periods]="data.periods"
                         [required]="true"
@@ -103,7 +114,7 @@
                         (selectionChanged)="formService.setDirty(true)">
                 </jems-project-periods-select>
             </div>
-            <mat-form-field class="mt-4" jemsFormFieldWidth="one-quarter">
+            <mat-form-field class="mt-4" jemsFormFieldWidth="half">
                 <mat-label>{{'project.application.project.report.date' | translate | dateFormatInfo : false}}</mat-label>
                 <input formControlName="reportingDate" matInput
                        [matDatepicker]="reportingDate"

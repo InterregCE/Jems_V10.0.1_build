@@ -452,6 +452,7 @@ import { ProjectReportComponent } from './project-application/report/project-rep
 import { ProjectReportStatusComponent } from './project-application/report/project-report/project-report-status/project-report-status.component';
 import { ProjectReportDetailPageComponent } from './project-application/report/project-report/project-report-detail-page/project-report-detail-page.component';
 import { ProjectReportIdentificationTabComponent } from './project-application/report/project-report/project-report-detail-page/project-report-identification-tab/project-report-identification-tab.component';
+import { ProjectReportCreateComponent } from './project-application/report/project-report/project-report-detail-page/project-report-create/project-report-create.component';
 
 @NgModule({
   declarations: [
@@ -611,6 +612,7 @@ import { ProjectReportIdentificationTabComponent } from './project-application/r
     ProjectReportStatusComponent,
     ProjectReportDetailPageComponent,
     ProjectReportIdentificationTabComponent,
+    ProjectReportCreateComponent,
   ],
   imports: [
     SharedModule,

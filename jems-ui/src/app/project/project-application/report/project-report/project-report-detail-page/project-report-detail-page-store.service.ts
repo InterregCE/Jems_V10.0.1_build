@@ -18,7 +18,7 @@ import {
 
 @Injectable({providedIn: 'root'})
 export class ProjectReportDetailPageStore {
-  public static REPORT_DETAIL_PATH = '/reports/';
+  public static REPORT_DETAIL_PATH = '/projectReports/';
 
   projectReport$: Observable<ProjectReportDTO>;
   projectReportId$: Observable<number>;

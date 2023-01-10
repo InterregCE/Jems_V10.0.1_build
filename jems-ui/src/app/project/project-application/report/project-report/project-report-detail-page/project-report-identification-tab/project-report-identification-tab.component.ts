@@ -14,6 +14,11 @@ import {
 import {catchError, filter, map, take, tap} from 'rxjs/operators';
 import { APPLICATION_FORM } from '@project/common/application-form-model';
 import { ProjectReportDetailPageStore } from '../project-report-detail-page-store.service';
+import {RoutingService} from '@common/services/routing.service';
+import {ActivatedRoute} from '@angular/router';
+import {
+  ProjectReportPageStore
+} from '@project/project-application/report/project-report/project-report-page-store.service';
 
 @Component({
   selector: 'jems-project-report-identification-tab',
@@ -25,6 +30,8 @@ import { ProjectReportDetailPageStore } from '../project-report-detail-page-stor
 export class ProjectReportIdentificationTabComponent {
   APPLICATION_FORM = APPLICATION_FORM;
   ProjectReportDTO = ProjectReportDTO;
+
+  reportId = this.router.getParameter(this.activatedRoute, 'reportId');
 
   data$: Observable<{
     projectReport: ProjectReportDTO;
@@ -59,7 +66,12 @@ export class ProjectReportIdentificationTabComponent {
               public formService: FormService,
               private formBuilder: FormBuilder,
               private projectStore: ProjectStore,
+              private router: RoutingService,
+              private activatedRoute: ActivatedRoute,
+              private projectReportPageStore: ProjectReportPageStore,
               private projectSidenavService: ProjectApplicationFormSidenavService) {
+    this.formService.init(this.form, this.reportId ? this.pageStore.reportEditable$ : this.projectReportPageStore.userCanEditReport$,);
+
     this.data$ = combineLatest([
       pageStore.projectReport$,
       this.projectStore.projectPeriods$,
@@ -79,28 +91,62 @@ export class ProjectReportIdentificationTabComponent {
       tap(periodNumber => this.selectedPeriod = this.availablePeriods.find(period => period.number === periodNumber)),
     ).subscribe();
 
-    this.formService.init(this.form, this.pageStore.reportEditable$);
+
   }
 
-  resetForm(identification: ProjectReportDTO) {
-    this.form.patchValue(identification);
+  resetForm(identification?: ProjectReportDTO) {
+    if (!this.reportId) {
+      this.formService.setCreation(true);
+    }
+    if (identification) {
+      this.form.patchValue(identification);
+    }
     this.form.patchValue({
       periodNumber: identification?.periodDetail?.number,
     });
-    this.formService.resetEditable();
-    if (identification.deadlineId === null){
+    if (identification?.deadlineId === null || !this.reportId){
       this.form.get('deadlineId')?.patchValue(0);
     }
   }
 
   saveIdentification(): void {
-    const data = {...this.form.value} as ProjectReportUpdateDTO;
-    this.pageStore.saveIdentification(data)
-      .pipe(
-        take(1),
-        tap(() => this.formService.setSuccess('project.application.project.report.identification.saved')),
-        catchError(err => this.formService.setError(err))
-      ).subscribe();
+    const data = {
+      ...this.form.value,
+      deadlineId: this.form.get('deadlineId')?.value < 1 ? null : this.form.get('deadlineId')?.value,
+    } as ProjectReportUpdateDTO;
+    if (!this.reportId) {
+      this.projectReportPageStore.createProjectReport(data)
+        .pipe(
+          take(1),
+          tap(created => this.redirectToProjectReportDetail(created)),
+          catchError(err => this.formService.setError(err))
+        ).subscribe();
+    } else {
+      this.pageStore.saveIdentification(data)
+        .pipe(
+          take(1),
+          tap(() => this.formService.setSuccess('project.application.project.report.identification.saved')),
+          catchError(err => this.formService.setError(err))
+        ).subscribe();
+    }
   }
 
+  discard(report?: ProjectReportDTO): void {
+    if (!this.reportId) {
+      this.redirectToProjectReportsOverview();
+    } else {
+      this.resetForm(report);
+    }
+  }
+
+  private redirectToProjectReportsOverview(): void {
+    this.router.navigate(['..'], {relativeTo: this.activatedRoute});
+  }
+
+  private redirectToProjectReportDetail(report: any): void {
+    this.router.navigate(
+      ['..', report.id, 'identification'],
+      {relativeTo: this.activatedRoute}
+    );
+  }
 }

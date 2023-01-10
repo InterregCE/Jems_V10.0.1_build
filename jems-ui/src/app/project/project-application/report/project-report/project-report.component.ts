@@ -1,8 +1,7 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
-import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {APIError} from '@common/models/APIError';
-import {catchError, filter, finalize, map, switchMap, take, tap} from 'rxjs/operators';
+import {catchError, filter, map, switchMap, take, tap} from 'rxjs/operators';
 import {
   PartnerControlReportStore
 } from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
@@ -36,8 +35,6 @@ export class ProjectReportComponent {
   ProjectReportSummaryDTO = ProjectReportSummaryDTO;
   successfulDeletionMessage: boolean;
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
-  tableConfiguration: TableConfiguration;
-  actionPending = false;
   controlActionMap = new Map<number, BehaviorSubject<boolean>>();
   error$ = new BehaviorSubject<APIError | null>(null);
   Alert = Alert;
@@ -85,16 +82,6 @@ export class ProjectReportComponent {
         });
       })
     );
-  }
-  createProjectReport(): void {
-    this.actionPending = true;
-    this.pageStore.createProjectReport()
-      .pipe(
-        take(1),
-        tap((report) => this.router.navigate([`../${report.id}/identification`], {relativeTo: this.activatedRoute, queryParamsHandling: 'merge'})),
-        catchError((error) => this.showErrorMessage(error.error)),
-        finalize(() => this.actionPending = false)
-      ).subscribe();
   }
 
   private showErrorMessage(error: APIError): Observable<null> {

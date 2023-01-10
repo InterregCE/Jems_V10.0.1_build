@@ -230,6 +230,9 @@ import {
 import {
   ProjectReportIdentificationTabComponent
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-identification-tab/project-report-identification-tab.component';
+import {
+  ProjectReportCreateComponent
+} from "@project/project-application/report/project-report/project-report-detail-page/project-report-create/project-report-create.component";
 
 export const routes: Routes = [
   {
@@ -359,7 +362,7 @@ export const routes: Routes = [
             ]
           },
           {
-            path: 'reports',
+            path: 'projectReports',
             data: {
               breadcrumb: 'project.breadcrumb.applicationForm.project.reports',
             },
@@ -367,6 +370,11 @@ export const routes: Routes = [
               {
                 path: '',
                 component: ProjectReportComponent,
+              },
+              {
+                path: 'create',
+                component: ProjectReportCreateComponent,
+                data: {breadcrumb: 'project.breadcrumb.applicationForm.project.reports.create'},
               },
               {
                 path: ':reportId',

@@ -381,7 +381,7 @@ export class ProjectApplicationFormSidenavService {
              ]: any) => {
           this.sideNavService.setHeadlines(ProjectPaths.PROJECT_DETAIL_PATH, [
             this.getProjectOverviewHeadline(project.id),
-            ...canSeeReporting ? this.getReportingHeadline(reportSectionPartners, project.id) : [],
+            ...canSeeReporting ? this.getReportingHeadline(reportSectionPartners, project.id, canSeeProjectReporting) : [],
             ...!canSeeReporting && canSeeProjectReporting ? this.getPartialReportingHeadline(project.id) : [],
             ...(canSeeProjectManagement || canSeeProjectContracts || canSeeContractMonitoring || canSeeContractReporting || canSeeContractPartner) ?
               this.getContractingHeadlines(project.id, canSeeContractMonitoring, canSeeProjectContracts, canSeeProjectManagement, canSeeContractReporting,
@@ -481,12 +481,12 @@ export class ProjectApplicationFormSidenavService {
   }
 
 
-  private getReportingHeadline(partners: HeadlineRoute[], projectId: number): HeadlineRoute[] {
+  private getReportingHeadline(partners: HeadlineRoute[], projectId: number, canSeeProjectReporting: boolean): HeadlineRoute[] {
     return [{
       headline: {i18nKey: 'project.application.reporting.title'},
       bullets: [
-        ...this.getPartnerReportingSections(partners),
-        ...this.getProjectReportingHeadline(projectId)
+        ...canSeeProjectReporting ? this.getProjectReportingHeadline(projectId) : [],
+        ...this.getPartnerReportingSections(partners)
       ]
     }];
   }
@@ -504,7 +504,7 @@ export class ProjectApplicationFormSidenavService {
       headline: {i18nKey: 'project.application.project.report.title'},
       bullets: [{
         headline: {i18nKey: 'project.application.project.report.title'},
-        route: `/app/project/detail/${projectId}/reports`
+        route: `/app/project/detail/${projectId}/projectReports`
       }]
     }];
   }
