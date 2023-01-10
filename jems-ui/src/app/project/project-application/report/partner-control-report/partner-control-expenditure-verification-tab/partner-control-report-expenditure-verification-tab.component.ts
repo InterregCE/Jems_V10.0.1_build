@@ -128,6 +128,11 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
 
   disableOnReset(control: FormGroup, index: number): void {
     control.get(this.constants.FORM_CONTROL_NAMES.certifiedAmount)?.disable();
+    if (control.get(this.constants.FORM_CONTROL_NAMES.parked)?.value) {
+      control.get(this.constants.FORM_CONTROL_NAMES.deductedAmount)?.disable();
+    } else {
+      control.get(this.constants.FORM_CONTROL_NAMES.deductedAmount)?.enable();
+    }
   }
 
   resetForm(partnerReportExpenditures: ProjectPartnerControlReportExpenditureVerificationDTO[]): void {
@@ -412,7 +417,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
 
   updateCertifiedAmount(expenditureIndex: number, declaredAmountInEur: number, deductedAmount: number) {
     if (deductedAmount === 0) {
-      this.clearTypologyOfError(expenditureIndex)
+      this.clearTypologyOfError(expenditureIndex);
     } else if (declaredAmountInEur - deductedAmount !== 0) {
       this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.setValidators([Validators.required]);
       this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.setErrors({required: true});
@@ -425,12 +430,14 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
 
   parkedChange(expenditureIndex: number, event: MatSlideToggleChange) {
     if (event.source.checked) {
+      this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.deductedAmount)?.disable();
       this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.deductedAmount)?.setValue(0);
       this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.certifiedAmount)?.setValue(0);
-      this.clearTypologyOfError(expenditureIndex)
+      this.clearTypologyOfError(expenditureIndex);
     } else {
       const declared = this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.declaredAmountInEur)?.value;
       this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.certifiedAmount)?.setValue(declared);
+      this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.deductedAmount)?.enable();
     }
   }
 
