@@ -335,7 +335,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
   }
 
   private getCertifiedAmount(reportExpenditureControl: ProjectPartnerControlReportExpenditureVerificationDTO) {
-    return reportExpenditureControl.parked ? 0 : reportExpenditureControl.certifiedAmount || reportExpenditureControl.declaredAmountAfterSubmission;
+    return reportExpenditureControl.parked ? 0 : reportExpenditureControl.certifiedAmount;
   }
 
   private getDeductedAmount(reportExpenditureControl: ProjectPartnerControlReportExpenditureVerificationDTO) {
@@ -411,14 +411,14 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
   }
 
   updateCertifiedAmount(expenditureIndex: number, declaredAmountInEur: number, deductedAmount: number) {
-    if(declaredAmountInEur - deductedAmount !== 0) {
+    if (deductedAmount === 0) {
+      this.clearTypologyOfError(expenditureIndex)
+    } else if (declaredAmountInEur - deductedAmount !== 0) {
       this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.setValidators([Validators.required]);
       this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.setErrors({required: true});
       this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.markAsDirty();
     }
-    else {
-      this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.clearValidators();
-    }
+
     this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.certifiedAmount)?.setValue(declaredAmountInEur - deductedAmount);
     this.items.at(expenditureIndex)?.get(this.constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.updateValueAndValidity();
   }
@@ -427,13 +427,17 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
     if (event.source.checked) {
       this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.deductedAmount)?.setValue(0);
       this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.certifiedAmount)?.setValue(0);
-      this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.setValue(null);
-      this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.setErrors(null);
-      this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.clearValidators();
-      this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.updateValueAndValidity();
+      this.clearTypologyOfError(expenditureIndex)
     } else {
       const declared = this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.declaredAmountInEur)?.value;
       this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.certifiedAmount)?.setValue(declared);
     }
+  }
+
+  clearTypologyOfError(expenditureIndex: number) {
+    this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.setValue(null);
+    this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.setErrors(null);
+    this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.clearValidators();
+    this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.updateValueAndValidity();
   }
 }
