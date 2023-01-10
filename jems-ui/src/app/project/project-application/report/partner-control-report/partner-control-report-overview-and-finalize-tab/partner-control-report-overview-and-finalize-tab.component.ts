@@ -77,14 +77,15 @@ export class PartnerControlReportOverviewAndFinalizeTabComponent {
       this.reportDetailPageStore.partnerReport$,
       this.reportDetailPageStore.partnerId$.pipe(map(id => Number(id))),
       this.reportPageStore.institutionUserCanEditControlReports$,
+      this.reportPageStore.institutionUserCanViewControlReports$,
       this.store.partnerControlReportOverview$
     ]).pipe(
-      map(([data, report, partnerId , userCanEdit, controlReportOverview]) => ({
+      map(([data, report, partnerId , userCanEdit, userCanView,  controlReportOverview]) => ({
         dataSource: new MatTableDataSource([data]),
         finalizationAllowed: report.status === ProjectPartnerReportDTO.StatusEnum.InControl,
         reportId: report.id,
         partnerId,
-        userCanEdit,
+        userCanEdit: userCanEdit && userCanView,
         controlReportOverview
       })),
       tap(() => this.initForm()),
