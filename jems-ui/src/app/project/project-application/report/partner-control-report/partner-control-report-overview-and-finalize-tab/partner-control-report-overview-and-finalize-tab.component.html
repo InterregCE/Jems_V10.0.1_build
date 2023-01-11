@@ -170,13 +170,13 @@
     <jems-alert *ngIf="error$ | async as error" [show]="!!error.i18nMessage?.i18nKey" [type]="Alert.ERROR">
         <jems-api-error-content [error]="error" [showId]="true"></jems-api-error-content>
     </jems-alert>
-    <jems-alert show="true" *ngIf="!data.finalizationAllowed && data.userCanEdit" [type]="Alert.INFO" [closable]="false">
-        <span>{{ 'project.application.partner.report.finalize.wrong.status' | translate }}</span>
-    </jems-alert>
-    <jems-alert show="true" *ngIf="!data.userCanEdit" [type]="Alert.INFO" [closable]="false">
+    <jems-alert show="true" *ngIf="data.userCanView && !data.userCanEdit && data.finalizationAllowed" [type]="Alert.INFO" [closable]="false">
         <span>{{ 'project.application.partner.report.finalize.no.edit.permission' | translate }}</span>
     </jems-alert>
-    <div jemsNoWidthLimit *ngIf="data.finalizationAllowed && data.userCanEdit && !overviewForm.dirty" class="mt-3">
+    <jems-alert show="true" *ngIf="data.userCanEdit && !data.finalizationAllowed" [type]="Alert.INFO" [closable]="false">
+        <span>{{ 'project.application.partner.report.finalize.wrong.status' | translate }}</span>
+    </jems-alert>
+    <div jemsNoWidthLimit *ngIf="data.userCanEdit && data.finalizationAllowed && !overviewForm.dirty" class="mt-3">
         <jems-pending-button
                 [confirm]="{ title: 'project.application.partner.report.button.finalize', message: 'project.application.partner.report.finalize.dialog.message' }"
                 [pending]="finalizationLoading"
