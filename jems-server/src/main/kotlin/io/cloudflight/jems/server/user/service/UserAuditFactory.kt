@@ -14,7 +14,7 @@ fun passwordChanged(changedUser: UserWithPassword, initiator: User? = null): Jem
             .description(
                 "Password of user ${
                     changedUser.getUser().auditString()
-                } has been changed by himself/herself"
+                } has been ${if (initiator == null) "changed by himself/herself" else "reset"}"
             ).build(),
         auditUser = initiator?.toAuditUser()
     )

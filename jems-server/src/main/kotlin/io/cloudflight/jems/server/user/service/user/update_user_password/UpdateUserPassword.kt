@@ -41,7 +41,7 @@ class UpdateUserPassword(
     override fun updateMyPassword(passwordData: Password) {
         validatePassword(generalValidator, passwordData.password)
 
-        val user = persistence.getById(securityService.currentUser!!.user.id)
+        val user = persistence.getById(securityService.getUserIdOrThrow())
 
         updatePasswordIfOldPasswordMatches(user, passwordData).also {
             auditPublisher.publishEvent(passwordChanged(user))
