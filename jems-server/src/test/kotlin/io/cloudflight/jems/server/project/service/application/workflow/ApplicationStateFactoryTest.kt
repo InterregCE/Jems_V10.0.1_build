@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.authorization.ProjectAuthorization
 import io.cloudflight.jems.server.project.service.ProjectAssessmentPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.application.workflow.states.ApprovedApplicationState
@@ -59,6 +60,9 @@ class ApplicationStateFactoryTest : UnitTest() {
 
     @RelaxedMockK
     lateinit var projectAssessmentPersistence: ProjectAssessmentPersistence
+
+    @RelaxedMockK
+    lateinit var projectVersionPersistence: ProjectVersionPersistence
 
     @InjectMockKs
     private lateinit var applicationStateFactory: ApplicationStateFactory

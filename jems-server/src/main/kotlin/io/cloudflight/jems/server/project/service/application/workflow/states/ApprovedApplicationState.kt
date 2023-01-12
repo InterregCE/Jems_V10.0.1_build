@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service.application.workflow.states
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationState
@@ -13,7 +14,8 @@ class ApprovedApplicationState(
     override val projectWorkflowPersistence: ProjectWorkflowPersistence,
     override val auditPublisher: ApplicationEventPublisher,
     override val securityService: SecurityService,
-    override val projectPersistence: ProjectPersistence
+    override val projectPersistence: ProjectPersistence,
+    private val projectVersionPersistence: ProjectVersionPersistence
 ) : ApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence) {
 
     private val canBeRevertTo = setOf(
@@ -34,6 +36,8 @@ class ApprovedApplicationState(
                     projectWorkflowPersistence.resetProjectFundingDecisionToCurrentStatus(projectSummary.id)
                 else -> Unit
             }
+            // also delete optimization if project was already approved before
+            projectVersionPersistence.deleteTimestampForApprovedModification(projectId = projectSummary.id)
         }
 
     override fun startModification(): ApplicationStatus {
