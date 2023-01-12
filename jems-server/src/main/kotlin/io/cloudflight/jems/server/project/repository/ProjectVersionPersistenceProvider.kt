@@ -53,4 +53,8 @@ class ProjectVersionPersistenceProvider(
     @Transactional
     override fun updateTimestampForApprovedModification(projectId: Long) =
         optimizationProjectVersionRepository.updateOptimizationProjectVersion(projectId)
+
+    @Transactional
+    override fun deleteTimestampForApprovedModification(projectId: Long) =
+        optimizationProjectVersionRepository.deleteById(projectId)
 }

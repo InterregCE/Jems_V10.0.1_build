@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.application.workflow.states
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.project.repository.ProjectVersionPersistenceProvider
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
@@ -59,6 +60,9 @@ class ApprovedApplicationStateTest {
     @MockK
     lateinit var projectPersistence: ProjectPersistence
 
+    @MockK
+    lateinit var projectVersionPersistenceProvider: ProjectVersionPersistenceProvider
+
     @InjectMockKs
     private lateinit var approvedApplicationState: ApprovedApplicationState
 
@@ -83,10 +87,12 @@ class ApprovedApplicationStateTest {
         every { projectWorkflowPersistence.getApplicationPreviousStatus(PROJECT_ID) } returns getStatusModelForStatus(status)
         every { projectWorkflowPersistence.revertCurrentStatusToPreviousStatus(PROJECT_ID) } returns status
         every { projectWorkflowPersistence.resetProjectFundingDecisionToCurrentStatus(PROJECT_ID) } returns status
+        every { projectVersionPersistenceProvider.deleteTimestampForApprovedModification(PROJECT_ID) } answers {}
 
         assertThat(approvedApplicationState.revertDecision()).isEqualTo(status)
-        verify(exactly = 1) { projectWorkflowPersistence.revertCurrentStatusToPreviousStatus(PROJECT_ID)  }
-        verify(exactly = 1) { projectWorkflowPersistence.resetProjectFundingDecisionToCurrentStatus(PROJECT_ID)  }
+        verify(exactly = 1) { projectWorkflowPersistence.revertCurrentStatusToPreviousStatus(PROJECT_ID) }
+        verify(exactly = 1) { projectWorkflowPersistence.resetProjectFundingDecisionToCurrentStatus(PROJECT_ID) }
+        verify(exactly = 1) { projectVersionPersistenceProvider.deleteTimestampForApprovedModification(PROJECT_ID) }
     }
 
     @Test
@@ -94,10 +100,12 @@ class ApprovedApplicationStateTest {
         every { projectWorkflowPersistence.getApplicationPreviousStatus(PROJECT_ID) } returns getStatusModelForStatus(ApplicationStatus.ELIGIBLE)
         every { projectWorkflowPersistence.revertCurrentStatusToPreviousStatus(PROJECT_ID) } returns ApplicationStatus.ELIGIBLE
         every { projectWorkflowPersistence.clearProjectFundingDecision(PROJECT_ID) } answers { }
+        every { projectVersionPersistenceProvider.deleteTimestampForApprovedModification(PROJECT_ID) } answers {}
 
         assertThat(approvedApplicationState.revertDecision()).isEqualTo(ApplicationStatus.ELIGIBLE)
-        verify(exactly = 1) { projectWorkflowPersistence.revertCurrentStatusToPreviousStatus(PROJECT_ID)  }
-        verify(exactly = 1) { projectWorkflowPersistence.clearProjectFundingDecision(PROJECT_ID)  }
+        verify(exactly = 1) { projectWorkflowPersistence.revertCurrentStatusToPreviousStatus(PROJECT_ID) }
+        verify(exactly = 1) { projectWorkflowPersistence.clearProjectFundingDecision(PROJECT_ID) }
+        verify(exactly = 1) { projectVersionPersistenceProvider.deleteTimestampForApprovedModification(PROJECT_ID) }
     }
 
     @ParameterizedTest(name = "revertDecision to {0} - invalid")
