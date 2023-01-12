@@ -55,6 +55,7 @@ export class ChecklistInstanceListComponent implements OnInit {
   private selectedChecklists$: Observable<ChecklistInstanceSelectionDTO[]>;
   private selectedChecklists: ChecklistInstanceSelectionDTO[];
   selectedChecklistsSorted$: Observable<ChecklistInstanceSelectionDTO[]>;
+  isInstantiationInProgress = false;
 
   instancesTableConfiguration: TableConfiguration;
   selectionTableConfiguration: TableConfiguration;
@@ -214,13 +215,15 @@ export class ChecklistInstanceListComponent implements OnInit {
   }
 
   createInstance(): void {
+    this.isInstantiationInProgress = true;
     this.pageStore.createInstance(this.relatedType, this.relatedId, this.selectedTemplate.id)
       .pipe(
         tap(instanceId => this.routingService.navigate(
           ['checklist', instanceId],
           {relativeTo: this.activatedRoute}
           )
-        )
+        ),
+        finalize(() => this.isInstantiationInProgress = false)
       ).subscribe();
   }
 

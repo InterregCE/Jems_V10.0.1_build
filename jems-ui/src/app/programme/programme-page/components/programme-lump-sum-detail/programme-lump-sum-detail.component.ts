@@ -40,11 +40,19 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditFormComponent imple
   programmeLumpSumId = this.activatedRoute?.snapshot?.params?.lumpSumId;
   MIN_VALUE = 0.01;
   MAX_VALUE =  999999999.99;
+  loading: boolean;
 
   @Input()
   lumpSum: ProgrammeLumpSumDTO;
   @Input()
   isCreate: boolean;
+  @Input()
+  set isSaveDone(value: boolean){
+    if (value) {
+      this.loading = false;
+    }
+  }
+
   @Output()
   createLumpSum: EventEmitter<ProgrammeLumpSumDTO> = new EventEmitter<ProgrammeLumpSumDTO>();
   @Output()
@@ -70,19 +78,6 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditFormComponent imple
     min: ProgrammeLumpSumDetailComponent.LUMP_SUM_OUT_OF_RANGE_ERROR,
     max: ProgrammeLumpSumDetailComponent.LUMP_SUM_OUT_OF_RANGE_ERROR
   };
-
-  allowSplittingErrors = {
-    required: 'lump.sum.splitting.should.not.be.empty'
-  };
-
-  phaseErrors = {
-    required: 'lump.sum.phase.should.not.be.empty'
-  };
-
-  categoriesErrors = {
-    required: 'lump.sum.categories.should.not.be.empty'
-  };
-
   previousSplitting = '';
   isFastTrack = '';
   previousPhase = '';
@@ -164,6 +159,7 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditFormComponent imple
       takeUntil(this.destroyed$),
       filter(yes => !!yes)
     ).subscribe(() => {
+      this.loading = true;
       if (this.isCreate) {
         this.createLumpSum.emit({
           name: this.lumpSumForm?.controls?.name?.value,
@@ -234,6 +230,7 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditFormComponent imple
   }
 
   protected enterEditMode(): void {
+    this.loading = false;
     if (this.lumpSum) {
       this.lumpSumForm.controls.name.setErrors(null);
       this.lumpSumForm.controls.description.setErrors(null);

@@ -13,9 +13,14 @@
         <div *ngIf="data.isReportEditable">
             <input #selectFile (change)="uploadFile($event?.target)" onclick="this.value=null;"
                    type="file" [accept]="acceptedFilesTypes" [hidden]="true">
-            <button mat-stroked-button (click)="selectFile.click()" [disabled]="data.attachments.length >= 30">
-                <mat-icon fontSet="material-icons-outlined" class="mr-1">file_upload</mat-icon>{{ 'file.upload.add.new' | translate }}
-            </button>
+            <jems-pending-button (clicked)="selectFile.click()"
+                                 type="secondary"
+                                 icon="file_upload"
+                                 [disabled]="data.attachments.length >= 30"
+                                 [buttonOptions]="{class: 'mr-1 font-size-medium', fontSet: 'material-icons-outlined'}"
+                                 [pending]="isUploadInProgress">
+                {{ 'file.upload.add.new' | translate }}
+            </jems-pending-button>
         </div>
 
         <jems-alert *ngIf="procurementStore.error$ | async as error"

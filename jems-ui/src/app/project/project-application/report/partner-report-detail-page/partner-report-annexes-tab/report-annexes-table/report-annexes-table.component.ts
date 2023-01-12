@@ -9,7 +9,7 @@ import {
 } from '@cat/api';
 import {combineLatest, Observable, Subject} from 'rxjs';
 import {CategoryInfo} from '@project/common/components/category-tree/categoryModels';
-import {map, switchMap, take} from 'rxjs/operators';
+import {finalize, map, switchMap, take} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {Alert} from '@common/components/forms/alert';
 import {
@@ -39,7 +39,7 @@ export class ReportAnnexesTableComponent {
   acceptedFilesTypes = AcceptedFileTypesConstants.acceptedFilesTypes;
   maximumAllowedFileSizeInMB: number;
   fileSizeOverLimitError$ = new Subject<boolean>();
-
+  isUploadInProgress = false;
   data$: Observable<{
     files: PageProjectReportFileDTO;
     fileList: FileListItem[];
@@ -87,12 +87,15 @@ export class ReportAnnexesTableComponent {
   }
 
   uploadFile(target: any): void {
+    this.isUploadInProgress = true;
     FileListComponent.doFileUploadWithValidation(
       target,
       this.fileSizeOverLimitError$,
       this.fileManagementStore.error$,
       this.maximumAllowedFileSizeInMB,
-      file => this.fileManagementStore.uploadFile(file),
+      file => this.fileManagementStore.uploadFile(file).pipe(
+        finalize(() => this.isUploadInProgress = false)
+      ),
     );
   }
 

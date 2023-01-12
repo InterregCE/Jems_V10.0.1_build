@@ -610,6 +610,7 @@
                                         *ngIf="control.get('id').value"
                                         [formControlName]="constants.FORM_CONTROL_NAMES.attachment"
                                         [isReportEditable]="isReportEditable$ | async"
+                                        [isUploadDone]="isUploadDone"
                                         (upload)="onUploadFileToExpenditure($event, control.get('id').value, expenditureIndex)"
                                         (download)="onDownloadFile($event)"
                                         (delete)="onDeleteFile($event, expenditureIndex)">

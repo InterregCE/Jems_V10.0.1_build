@@ -119,6 +119,7 @@
                                 *ngIf="control.get('id').value !== 0"
                                 [formControlName]="'attachment'"
                                 [isReportEditable]="partnerReportDetailPageStore.reportEditable$ | async"
+                                [isUploadDone]="isUploadDone"
                                 (upload)="onUploadFile($event, control.get('id').value, i)"
                                 (download)="onDownloadFile($event)"
                                 (delete)="onDeleteFile($event, i)">

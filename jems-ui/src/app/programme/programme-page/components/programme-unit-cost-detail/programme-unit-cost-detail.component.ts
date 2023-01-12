@@ -33,6 +33,7 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditFormComponent impl
 
   MIN_VALUE = 0.01;
   MAX_VALUE = 999999999.99;
+  loading: boolean;
 
   @Input()
   unitCost: ProgrammeUnitCostDTO;
@@ -40,6 +41,13 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditFormComponent impl
   currencies: CurrencyDTO[];
   @Input()
   isCreate: boolean;
+  @Input()
+  set isSaveDone(value: boolean){
+    if (value) {
+      this.loading = false;
+    }
+  }
+
   @Output()
   createUnitCost: EventEmitter<ProgrammeUnitCostDTO> = new EventEmitter<ProgrammeUnitCostDTO>();
   @Output()
@@ -78,18 +86,6 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditFormComponent impl
   costForeignCurrencyErrors = {
     min: ProgrammeUnitCostDetailComponent.PROGRAMME_UNIT_COST_INVALID,
     max: ProgrammeUnitCostDetailComponent.PROGRAMME_UNIT_COST_INVALID
-  };
-
-  categoriesErrorsMultiple = {
-    required: 'unit.cost.categories.should.not.be.empty.multiple'
-  };
-
-  categoriesErrorsSingle = {
-    required: 'unit.cost.categories.should.not.be.empty.single'
-  };
-
-  allowMultipleCostCategoriesErrors = {
-    required: 'unit.cost.categories.allow.multiple.should.not.be.empty'
   };
 
   selectionMultiple = new SelectionModel<ProgrammeUnitCostDTO.CategoriesEnum>(true, []);
@@ -185,6 +181,7 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditFormComponent impl
       takeUntil(this.destroyed$),
       filter(yes => !!yes)
     ).subscribe(() => {
+      this.loading = true;
       if (this.isCreate) {
         this.createUnitCost.emit({
           name: this.unitCostForm?.controls?.name?.value,
@@ -252,6 +249,7 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditFormComponent impl
   }
 
   protected enterEditMode(): void {
+    this.loading = false;
     if (this.unitCost) {
       this.unitCostForm.controls.name.setErrors(null);
       this.unitCostForm.controls.description.setErrors(null);

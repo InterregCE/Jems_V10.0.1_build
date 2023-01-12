@@ -32,9 +32,16 @@ import {CustomTranslatePipe} from '@common/pipe/custom-translate-pipe';
 export class PartnerActionsCellComponent implements ControlValueAccessor {
   acceptedFilesTypes = AcceptedFileTypesConstants.acceptedFilesTypes;
   fileMetadata: ProjectReportFileMetadataDTO;
+  isUploadInProgress = false;
 
   @Input()
   isReportEditable = true;
+  @Input()
+  set isUploadDone(value: boolean){
+    if (value) {
+      this.isUploadInProgress = false;
+    }
+  }
   @Output()
   upload = new EventEmitter<any>();
   @Output()
@@ -73,9 +80,10 @@ ${this.translatePipe
   }
 
   uploadFile(event: Event) {
-    if(this.fileMetadata?.name) {
+    this.isUploadInProgress = false;
+    if (this.fileMetadata?.name) {
       Forms.confirm(this.dialog, {
-        title:this.fileMetadata.name,
+        title: this.fileMetadata.name,
         message: {
           i18nKey: 'use.case.update.project.partner.report.workplan.upload.override.file',
           i18nArguments: {fileName: this.fileMetadata.name}
@@ -83,9 +91,14 @@ ${this.translatePipe
       }).pipe(
         take(1),
         filter(yes => yes),
-        tap(() => this.upload.emit(event))
+        tap(() => {
+            this.isUploadInProgress = true;
+            this.upload.emit(event);
+          }
+        )
       ).subscribe();
     } else {
+      this.isUploadInProgress = true;
       this.upload.emit(event);
     }
   }
