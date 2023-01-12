@@ -30,13 +30,6 @@ import io.cloudflight.jems.plugin.contract.models.programme.stateaid.ProgrammeSt
 import io.cloudflight.jems.plugin.contract.models.programme.stateaid.ProgrammeStateAidMeasureData
 import io.cloudflight.jems.plugin.contract.models.programme.strategy.ProgrammeStrategyData
 import io.cloudflight.jems.plugin.contract.models.programme.unitcost.BudgetCategoryData
-import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ApplicationStatusData
-import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectAssessmentEligibilityData
-import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectAssessmentEligibilityResultData
-import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectAssessmentQualityData
-import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectAssessmentQualityResultData
-import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectDecisionData
-import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectStatusData
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.ProjectDataSectionA
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA4.ProjectResultIndicatorOverview
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.associatedOrganisation.ProjectAssociatedOrganizationAddressData
@@ -63,7 +56,9 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budg
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.PartnerBudgetData
 import io.cloudflight.jems.plugin.contract.models.programme.fund.ProgrammeFundTypeData
 import io.cloudflight.jems.plugin.contract.models.programme.unitcost.ProgrammeUnitCostListData
+import io.cloudflight.jems.plugin.contract.models.project.ProjectIdentificationData
 import io.cloudflight.jems.plugin.contract.models.project.contracting.ContractingDimensionCodeData
+import io.cloudflight.jems.plugin.contract.models.project.lifecycle.*
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.ProjectCoFinancingCategoryOverviewData
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.ProjectCoFinancingOverviewData
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.ProjectCoFinancingByFundOverviewData
@@ -115,27 +110,7 @@ import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFin
 import io.cloudflight.jems.server.project.service.contracting.model.ContractingDimensionCode
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
-import io.cloudflight.jems.server.project.service.model.Address
-import io.cloudflight.jems.server.project.service.model.BudgetCostsDetail
-import io.cloudflight.jems.server.project.service.model.ProjectAssessment
-import io.cloudflight.jems.server.project.service.model.ProjectBudgetOverviewPerPartnerPerPeriod
-import io.cloudflight.jems.server.project.service.model.ProjectContactType
-import io.cloudflight.jems.server.project.service.model.ProjectCooperationCriteria
-import io.cloudflight.jems.server.project.service.model.ProjectDescription
-import io.cloudflight.jems.server.project.service.model.ProjectFull
-import io.cloudflight.jems.server.project.service.model.ProjectHorizontalPrinciples
-import io.cloudflight.jems.server.project.service.model.ProjectLongTermPlans
-import io.cloudflight.jems.server.project.service.model.ProjectManagement
-import io.cloudflight.jems.server.project.service.model.ProjectOverallObjective
-import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerFund
-import io.cloudflight.jems.server.project.service.model.ProjectPartnership
-import io.cloudflight.jems.server.project.service.model.ProjectRelevance
-import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
-import io.cloudflight.jems.server.project.service.model.ProjectRelevanceStrategy
-import io.cloudflight.jems.server.project.service.model.ProjectRelevanceSynergy
-import io.cloudflight.jems.server.project.service.model.ProjectStatus
-import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
-import io.cloudflight.jems.server.project.service.model.ProjectVersion
+import io.cloudflight.jems.server.project.service.model.*
 import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentEligibility
 import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentQuality
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
@@ -173,11 +148,32 @@ import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 import org.mapstruct.Mappings
 import org.mapstruct.factory.Mappers
+import java.time.LocalDate
 
 fun ProjectFull.toDataModel(
     tableA3data: ProjectCoFinancingOverview,
     tableA4data: ProjectResultIndicatorOverview
 ) = pluginDataMapper.map(this, tableA3data, tableA4data)
+
+fun ProjectFull.toIdentificationDataModel(
+    projectStartDate: LocalDate?,
+    projectEndDate: LocalDate?,
+    programmeTitle: String,
+    projectLifecycleData: ProjectLifecycleData
+) = ProjectIdentificationData(
+    id = id,
+    customIdentifier = customIdentifier,
+    acronym = acronym,
+    status = projectStatus.status.toDataModel(),
+    title = title.toDataModel(),
+    intro = intro.toDataModel(),
+    durationInMonths = duration,
+    projectStartDate = projectStartDate,
+    projectEndDate = projectEndDate,
+    programmeTitle = programmeTitle,
+    programmePriorityCode = programmePriority?.code,
+    lifecycleData = projectLifecycleData
+)
 
 fun OutputProgrammePriorityPolicySimpleDTO.toDataModel() = pluginDataMapper.map(this)
 
@@ -320,6 +316,21 @@ fun List<ProjectCoFinancingByFundOverview>.projectCoFinancingByFundOverviewListT
     }.toList()
 
 fun List<ContractingDimensionCode>.toContractingDimensionCodeDataList() = map { pluginDataMapper.map(it) }
+
+
+fun  ProjectPartnerDetail.toSummaryDataModel() = ProjectPartnerSummaryData(
+    id = this.id,
+    abbreviation = this.abbreviation,
+    active = this.active,
+    role = ProjectPartnerRoleData.valueOf(this.role.name),
+    sortNumber = this.sortNumber,
+    country = this.addresses.firstOrNull { it.type == ProjectPartnerAddressType.Organization }?.country,
+    nutsRegion2 = this.addresses.firstOrNull { it.type == ProjectPartnerAddressType.Organization }?.nutsRegion2,
+    vat = this.vat,
+    vatRecovery = this.vatRecovery?.let { ProjectPartnerVatRecoveryData.valueOf(it.name) },
+    otherIdentifierNumber = this.otherIdentifierNumber,
+    otherIdentifierDescription = this.otherIdentifierDescription.toDataModel()
+)
 
 private val pluginDataMapper = Mappers.getMapper(PluginDataMapper::class.java)
 

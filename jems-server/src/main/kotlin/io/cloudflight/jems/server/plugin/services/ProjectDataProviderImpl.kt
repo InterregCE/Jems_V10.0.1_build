@@ -2,11 +2,13 @@ package io.cloudflight.jems.server.plugin.services
 
 import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.plugin.contract.models.project.ProjectData
+import io.cloudflight.jems.plugin.contract.models.project.ProjectIdentificationData
 import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectLifecycleData
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA4.ProjectResultIndicatorOverview
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.ProjectDataSectionB
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.PartnerBudgetData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerSummaryData
 import io.cloudflight.jems.plugin.contract.models.project.sectionD.ProjectDataSectionD
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.ProjectDataSectionE
 import io.cloudflight.jems.plugin.contract.models.project.versions.ProjectVersionData
@@ -32,6 +34,7 @@ import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFin
 import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFinancingOverview
 import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
 import io.cloudflight.jems.server.project.service.common.PartnerBudgetPerFundCalculatorService
+import io.cloudflight.jems.server.project.service.contracting.fillEndDateWithDuration
 import io.cloudflight.jems.server.project.service.contracting.monitoring.ContractingMonitoringPersistence
 import io.cloudflight.jems.server.project.service.customCostOptions.ProjectUnitCostPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
@@ -236,6 +239,34 @@ class ProjectDataProviderImpl(
             dimensionCodes = contractingMonitoringPersistence.getContractingMonitoring(projectId).dimensionCodes.toContractingDimensionCodeDataList()
         )
     }
+
+
+    @Transactional(readOnly = true)
+    override fun getProjectIdentificationData(projectId: Long): ProjectIdentificationData {
+        val project = projectPersistence.getProject(projectId, projectVersionPersistence.getLatestApprovedOrCurrent(projectId))
+        val contractMonitoring = contractingMonitoringPersistence.getContractingMonitoring(projectId)
+            .fillEndDateWithDuration(resolveDuration = { project.duration })
+        val programmeTitle = programmeDataRepository.findById(1)
+            .orElseThrow { ResourceNotFoundException("programmeData") }.title ?: ""
+        return project.toIdentificationDataModel(
+            projectStartDate =  contractMonitoring.startDate,
+            projectEndDate = contractMonitoring.endDate,
+            programmeTitle = programmeTitle,
+            projectLifecycleData = ProjectLifecycleData(
+                status = project.projectStatus.status.toDataModel(),
+                submissionDateStepOne = project.firstSubmissionStep1?.updated,
+                firstSubmissionDate = project.firstSubmission?.updated,
+                lastResubmissionDate = project.lastResubmission?.updated,
+                contractedDate = project.contractedDecision?.updated,
+                assessmentStep1 = project.assessmentStep1?.toDataModel(),
+                assessmentStep2 = project.assessmentStep2?.toDataModel()
+            ),
+        )
+    }
+
+    override fun getProjectPartnerSummaryData(partnerId: Long): ProjectPartnerSummaryData =
+        partnerPersistence.getById(partnerId).toSummaryDataModel()
+
 
     private fun getSpfPartnerBudgetPerPeriod(
         partnerSummary: ProjectPartnerSummary?,
