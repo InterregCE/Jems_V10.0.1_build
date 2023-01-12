@@ -7,6 +7,7 @@ import partnerReportExpenditures from '../../../fixtures/api/partnerReport/partn
 import {faker} from "@faker-js/faker";
 
 context('Control report tests', () => {
+
   it('TB-767 Control report creation', () => {
     cy.fixture('project/application-form/control-reports/TB-767.json').then(testData => {
       cy.loginByRequest(user.programmeUser.email);
@@ -141,4 +142,131 @@ context('Control report tests', () => {
       });
     });
   });
+
+  it('TB-768 Control report checklist instantiation', () => {
+    cy.fixture('project/application-form/control-reports/TB-768.json').then(testData => {
+
+      cy.loginByRequest(user.programmeUser.email);
+
+      cy.createCall(call).then(callId => {
+        application.details.projectCallId = callId;
+        cy.publishCall(callId);
+        cy.loginByRequest(user.applicantUser.email);
+        cy.createContractedApplication(application, user.programmeUser.email).then(function (applicationId) {
+          const partnerId = this[application.partners[0].details.abbreviation];
+
+          // create controller role/user + assignment
+          cy.loginByRequest(user.admin.email);
+          testData.controllerRole.name = `controllerRole_${faker.random.alphaNumeric(5)}`;
+          testData.controllerUser1.email = faker.internet.email();
+          testData.controllerUser2.email = faker.internet.email();
+          cy.createRole(testData.controllerRole).then(roleId => {
+            testData.controllerUser1.userRoleId = roleId;
+            testData.controllerUser2.userRoleId = roleId;
+            cy.createUser(testData.controllerUser1);
+            cy.createUser(testData.controllerUser2);
+            testData.controllerInstitution.name = `${faker.word.adjective()} ${faker.word.noun()}`;
+            testData.controllerInstitution.institutionUsers[0].userEmail = testData.controllerUser1.email;
+            testData.controllerInstitution.institutionUsers[1].userEmail = testData.controllerUser2.email;
+            cy.createInstitution(testData.controllerInstitution).then(institutionId => {
+              testData.controllerAssignment.assignmentsToAdd[0].partnerId = partnerId;
+              testData.controllerAssignment.assignmentsToAdd[0].institutionId = institutionId;
+              cy.assignInstitution(testData.controllerAssignment);
+            });
+          });
+
+          // create checklist
+          testData.controlChecklist.name = `control_checklist_${faker.random.alphaNumeric(5)}`;
+          cy.createChecklist(testData.controlChecklist);
+
+          // create partner report
+          cy.loginByRequest(user.applicantUser.email);
+          cy.assignPartnerCollaborators(applicationId, partnerId, testData.partnerCollaborator);
+          cy.addPartnerReport(partnerId).then(reportId => {
+            cy.wrap(reportId).as('reportId');
+            cy.updatePartnerReportIdentification(partnerId, reportId, partnerReportIdentification);
+            cy.updatePartnerReportExpenditures(partnerId, reportId, partnerReportExpenditures);
+            cy.runPreSubmissionPartnerReportCheck(partnerId, reportId);
+            cy.submitPartnerReport(partnerId, reportId);
+
+            // start control work
+            cy.loginByRequest(testData.controllerUser1.email);
+            cy.startControlWork(partnerId, reportId);
+
+            // RTM Group 1
+            // instantiate control checklist
+            instantiateEmptyChecklist(applicationId, partnerId, reportId, testData.controlChecklist.name);
+            // fill form
+            fillChecklistForm();
+            // save form
+            cy.contains('button', 'Save changes').should('be.enabled').click();
+            // assert Checklist is in Draft
+            cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/controlReport/controlChecklistsTab`, {failOnStatusCode: false});
+            cy.get('table mat-row').then(row => {
+              expect(row).has.length.of.at.least(1);
+              expect(row.get(0).childNodes[1]).to.contain('Draft');
+              expect(row.get(0).childNodes[2]).to.contain(testData.controlChecklist.name);
+              expect(row.get(0).childNodes[3]).to.contain(testData.controllerUser1.email);
+            });
+
+            // RTM Group 2
+            // instantiate control checklist
+            cy.loginByRequest(testData.controllerUser2.email);
+            instantiateEmptyChecklist(applicationId, partnerId, reportId, testData.controlChecklist.name);
+            // fill form
+            fillChecklistForm();
+            // save form
+            cy.contains('button', 'Save changes').should('be.enabled').click();
+            // finish control checklist
+            cy.contains('button', 'Finish checklist').scrollIntoView().should('be.enabled').click();
+            cy.get('jems-confirm-dialog').should('be.visible');
+            cy.get('jems-confirm-dialog').find('.mat-dialog-actions').contains('Confirm').click();
+            // assert Checklist is Finished
+            cy.get('table mat-row').then(row => {
+              expect(row).has.length.of.at.least(1);
+              expect(row.get(0).childNodes[1]).to.contain('Finished');
+              expect(row.get(0).childNodes[2]).to.contain(testData.controlChecklist.name);
+              expect(row.get(0).childNodes[3]).to.contain(testData.controllerUser2.email);
+            });
+            cy.get('table mat-row').eq(1).then(row => {
+              expect(row).has.length.of.at.least(1);
+              expect(row.get(0).childNodes[1]).to.contain('Draft');
+              expect(row.get(0).childNodes[2]).to.contain(testData.controlChecklist.name);
+              expect(row.get(0).childNodes[3]).to.contain(testData.controllerUser1.email);
+            });
+
+            // RTM Group 3
+            // create Draft checklist
+            instantiateEmptyChecklist(applicationId, partnerId, reportId, testData.controlChecklist.name);
+            // -- Controller can delete only own checklist instances in status Draft
+            cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/controlReport/controlChecklistsTab`, {failOnStatusCode: false});
+            cy.get('mat-row mat-icon').eq(0).scrollIntoView();
+            cy.get('mat-row').contains('button', 'delete').should('be.enabled').click();
+            cy.contains('Confirm').should('be.enabled').click();
+            // -- Controller can't delete checklist instances in status Finished
+            cy.contains('button', 'delete').should('be.disabled');
+            // -- Controller can't delete checklists instantiated by other users
+            cy.get('button:contains("delete")').eq(1).should('be.disabled');
+          });
+        });
+      });
+    });
+  });
 });
+
+function instantiateEmptyChecklist(applicationId, partnerId, reportId, checklistName) {
+  cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/controlReport/controlChecklistsTab`, {failOnStatusCode: false});
+  cy.contains('Control checklists').should('be.visible').click();
+  cy.contains('Select checklist template').should('be.visible').click()
+  cy.contains('span', checklistName).should('be.visible').click();
+  cy.contains('instantiate new checklist').should('be.enabled').click();
+}
+
+function fillChecklistForm() {
+  cy.get('mat-slider').scrollIntoView().should('be.visible').focus().type('{rightarrow}'.repeat(Number(faker.random.numeric())));
+  cy.contains('Did I change this question?').should('be.visible')
+  cy.contains('mat-form-field', 'Justification').find('textarea').clear().type(faker.random.words(5));
+  cy.get('mat-button-toggle-group').scrollIntoView().should('be.visible');
+  cy.contains('mat-button-toggle', 'Why not').click()
+  cy.contains('mat-form-field', 'Pls just enter something').find('textarea').clear().type(faker.random.words(5));
+}
