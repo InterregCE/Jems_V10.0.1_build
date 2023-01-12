@@ -140,7 +140,6 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
     this.items.clear();
     partnerReportExpenditures.forEach((partnerReportExpenditure, expenditureIndex) => this.addExpenditure(partnerReportExpenditure, expenditureIndex));
     this.tableData = [...this.items.controls];
-    this.formService.init(this.reportExpendituresForm, this.pageStore.isEditable$);
 
     this.items.controls.forEach((formGroup: FormGroup, index) => (
       this.disableOnReset(formGroup, index)));
@@ -158,6 +157,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
     this.reportExpendituresForm = this.formBuilder.group({
       items: this.formBuilder.array([], Validators.maxLength(this.constants.MAX_NUMBER_OF_ITEMS))
     });
+    this.formService.init(this.reportExpendituresForm, this.pageStore.isEditable$);
   }
 
   private dataAsObservable(): void {
@@ -418,7 +418,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
   updateCertifiedAmount(expenditureIndex: number, declaredAmountInEur: number, deductedAmount: number) {
     if (deductedAmount === 0) {
       this.clearTypologyOfError(expenditureIndex);
-    } else if (declaredAmountInEur - deductedAmount !== 0) {
+    } else {
       this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.setValidators([Validators.required]);
       this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.setErrors({required: true});
       this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.markAsDirty();
