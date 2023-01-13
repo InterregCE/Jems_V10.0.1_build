@@ -46,6 +46,7 @@ export class PartnerControlReportFileExpenditureVerificationStore {
 
   partnerId$: Observable<string | number | null>;
   isEditable$: Observable<boolean>;
+  isFinalized$: Observable<boolean>;
   costCategories$: Observable<string[]>;
   contractIDs$: Observable<IdNamePairDTO[]>;
   investmentsSummary$: Observable<InvestmentSummary[]>;
@@ -73,6 +74,7 @@ export class PartnerControlReportFileExpenditureVerificationStore {
     this.typologyOfErrors$ = this.typologyOfErrorsService.getTypologyErrors();
     this.costCategories$ = this.costCategories();
     this.isEditable$ = this.partnerControlReportStore.controlReportEditable$;
+    this.isFinalized$ = this.partnerControlReportStore.controlReportFinalized$;
     this.contractIDs$ = this.reportProcurementPageStore.getProcurementList();
     this.investmentsSummary$ = this.investmentSummariesForReport();
     this.currencies$ = this.currencyStore.currencies$;

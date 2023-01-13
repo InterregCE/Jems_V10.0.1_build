@@ -54,6 +54,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
   currencies: CurrencyDTO[];
   currentReport: ProjectPartnerReportDTO;
   isReportEditable$: Observable<boolean>;
+  isReportFinalized: boolean;
   data$: Observable<{
     expendituresCosts: ProjectPartnerReportExpenditureCostDTO[];
     costCategories: string[];
@@ -101,11 +102,13 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
     combineLatest([
       this.pageStore.investmentsSummary$,
       this.pageStore.reportLumpSums$,
-      this.pageStore.reportUnitCosts$
+      this.pageStore.reportUnitCosts$,
+      this.pageStore.isFinalized$
     ]).pipe(
-      map(([investments, lumpSums, unitCosts]) => {
+      map(([investments, lumpSums, unitCosts, isFinalized]) => {
           this.setColumnsToDisplay(investments, lumpSums.length > 0 || unitCosts.length > 0);
           this.setColumnsWidths(investments, lumpSums.length > 0 || unitCosts.length > 0);
+          this.isReportFinalized = isFinalized;
         }
       ),
       untilDestroyed(this)
@@ -126,9 +129,9 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
     }
   }
 
-  disableOnReset(control: FormGroup, index: number): void {
+  disableOnReset(control: FormGroup): void {
     control.get(this.constants.FORM_CONTROL_NAMES.certifiedAmount)?.disable();
-    if (control.get(this.constants.FORM_CONTROL_NAMES.parked)?.value) {
+    if (this.isReportFinalized || control.get(this.constants.FORM_CONTROL_NAMES.parked)?.value) {
       control.get(this.constants.FORM_CONTROL_NAMES.deductedAmount)?.disable();
     } else {
       control.get(this.constants.FORM_CONTROL_NAMES.deductedAmount)?.enable();
@@ -140,9 +143,9 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
     this.items.clear();
     partnerReportExpenditures.forEach((partnerReportExpenditure, expenditureIndex) => this.addExpenditure(partnerReportExpenditure, expenditureIndex));
     this.tableData = [...this.items.controls];
+    this.formService.setEditable(!this.isReportFinalized);
 
-    this.items.controls.forEach((formGroup: FormGroup, index) => (
-      this.disableOnReset(formGroup, index)));
+    this.items.controls.forEach((formGroup: FormGroup) => (this.disableOnReset(formGroup)));
   }
 
   updateReportExpendituresControl(): void {
@@ -197,12 +200,11 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
       tap(data => this.contractIDs = data.contractIDs),
       tap(data => this.investmentsSummary = data.investmentsSummary),
     );
-
   }
 
   private setColumnsToDisplay(investments: InvestmentSummary[], isCostOptionsAvailable: boolean){
 
-    let columnsToDisplay = [];
+    let columnsToDisplay: any[];
     const columnsToDisplayFirstPart = [
       'costItemID',
       'costCategory',

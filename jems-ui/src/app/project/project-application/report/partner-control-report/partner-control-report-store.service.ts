@@ -2,15 +2,17 @@ import {Injectable} from '@angular/core';
 import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
 import {
   ControllerInstitutionsApiService,
-  UserSimpleDTO,
+  ControlOverviewDTO,
   PartnerUserCollaboratorDTO,
   ProjectPartnerControlReportChangeDTO,
   ProjectPartnerControlReportDTO,
   ProjectPartnerDetailDTO,
+  ProjectPartnerReportControlOverviewService,
   ProjectPartnerReportIdentificationService,
   ProjectPartnerReportSummaryDTO,
   ProjectPartnerService,
-  ProjectPartnerUserCollaboratorService, ControlOverviewDTO, ProjectPartnerReportControlOverviewService,
+  ProjectPartnerUserCollaboratorService,
+  UserSimpleDTO,
 } from '@cat/api';
 import {RoutingService} from '@common/services/routing.service';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
@@ -29,6 +31,7 @@ export class PartnerControlReportStore {
 
   partnerControlReport$: Observable<ProjectPartnerControlReportDTO>;
   controlReportEditable$: Observable<boolean>;
+  controlReportFinalized$: Observable<boolean>;
   partner$: Observable<ProjectPartnerDetailDTO>;
   controlInstitutionUsers$: Observable<UserSimpleDTO[]>;
   partnerControlReportOverview$: Observable<ControlOverviewDTO>;
@@ -83,6 +86,7 @@ export class PartnerControlReportStore {
   ) {
     this.partnerControlReport$ = this.partnerControlReport();
     this.controlReportEditable$ = this.controlReportEditable();
+    this.controlReportFinalized$ = this.controlReportFinalized();
     this.partner$ = this.partner();
     this.partnerId$ = this.partnerId();
     this.reportId$ = this.reportId();
@@ -98,6 +102,12 @@ export class PartnerControlReportStore {
       .pipe(
         map(([canEdit, status]) => canEdit && status === ProjectPartnerReportSummaryDTO.StatusEnum.InControl)
       );
+  }
+
+  private controlReportFinalized(): Observable<boolean> {
+    return this.partnerReportDetailPageStore.reportStatus$.pipe(
+            map(status => status === ProjectPartnerReportSummaryDTO.StatusEnum.Certified)
+        );
   }
 
   private partnerReportLevel(): Observable<PartnerUserCollaboratorDTO.LevelEnum | undefined> {
