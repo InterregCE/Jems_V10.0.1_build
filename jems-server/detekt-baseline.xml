@@ -553,6 +553,7 @@
     <ID>ReturnCount:ProjectDescriptionMapper.kt$fun getMappedStrategy(strategy: ProgrammeStrategy?): ProgrammeStrategy?</ID>
     <ID>ReturnCount:UserAuthorization.kt$UserAuthorization$private fun hasView(projectId: Long): Boolean</ID>
     <ID>ReturnCount:UserRoleAuditFactory.kt$private fun getAuditPermissionState(node: UserRolePermissionNode, permissions: Set&lt;UserRolePermission&gt;): String</ID>
+    <ID>ReturnCount:ProjectContractingPartnerAuthorization.kt$ProjectContractingPartnerAuthorization$fun hasPartnersPermission(projectId: Long): Boolean</ID>
     <ID>ThrowsCount:BudgetCostValidator.kt$BudgetCostValidator$final fun validateBaseEntries(budgetEntries: List&lt;BaseBudgetEntry&gt;)</ID>
     <ID>ThrowsCount:ControlReportFileAuthorizationService.kt$ControlReportFileAuthorizationService$fun validateChangeToFileAllowed(partnerId: Long, reportId: Long, fileId: Long)</ID>
     <ID>ThrowsCount:CreateOutputIndicator.kt$CreateOutputIndicator$private fun validateOutputIndicatorDetail(outputIndicator: OutputIndicator)</ID>

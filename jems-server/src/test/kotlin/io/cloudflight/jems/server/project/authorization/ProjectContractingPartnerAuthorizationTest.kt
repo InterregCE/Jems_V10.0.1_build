@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.authorization
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.model.CurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.service.model.UserInstitutionAccessLevel
 import io.cloudflight.jems.server.project.entity.partneruser.PartnerCollaboratorLevel
 import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel
@@ -13,12 +14,14 @@ import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaboratorPersistence
 import io.cloudflight.jems.server.project.service.projectuser.UserProjectCollaboratorPersistence
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
+import io.cloudflight.jems.server.user.service.model.assignment.CollaboratorAssignedToProject
+import io.cloudflight.jems.server.user.service.model.assignment.PartnerCollaborator
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -49,6 +52,19 @@ internal class ProjectContractingPartnerAuthorizationTest: UnitTest() {
             collaboratorManageIds = setOf(PROJECT_COLLABORATOR_MANAGE_USER_ID),
             projectStatus = ApplicationStatus.CONTRACTED
         )
+
+        private val partnerCollaborator =  PartnerCollaborator(
+            userId = 1L,
+            partnerId = 99L,
+            userEmail = "collaborator@test.com",
+            level = PartnerCollaboratorLevel.VIEW
+        )
+
+        private val collaboratorAssignedToProject = CollaboratorAssignedToProject(
+            userId = 1L,
+            userEmail = "collaborator@test.com",
+            level = ProjectCollaboratorLevel.VIEW
+        )
     }
 
     @MockK
@@ -75,16 +91,23 @@ internal class ProjectContractingPartnerAuthorizationTest: UnitTest() {
     @MockK
     lateinit var currentUser: CurrentUser
 
+    @MockK
+    lateinit var institutionPersistence: ControllerInstitutionPersistence
+
     @InjectMockKs
     lateinit var authorization: ProjectContractingPartnerAuthorization
 
 
     @BeforeEach
     fun resetMocks() {
-        clearMocks(currentUser)
-        clearMocks(securityService)
-        clearMocks(partnerCollaboratorPersistence)
-        clearMocks(projectReportAuthorization, projectCollaboratorPersistence)
+        clearMocks(
+            currentUser,
+            securityService,
+            partnerCollaboratorPersistence,
+            projectReportAuthorization,
+            projectCollaboratorPersistence,
+            institutionPersistence
+        )
         every { securityService.currentUser } returns currentUser
     }
 
@@ -99,7 +122,7 @@ internal class ProjectContractingPartnerAuthorizationTest: UnitTest() {
         every { projectAuthorization.hasPermission(UserRolePermission.ProjectContractingPartnerView, any()) } returns false
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID) } returns PROJECT_ID
 
-        Assertions.assertThat(authorization.hasEditPermission(PARTNER_ID)).isTrue
+        assertThat(authorization.hasEditPermission(PARTNER_ID)).isTrue
     }
 
     @Test
@@ -113,7 +136,7 @@ internal class ProjectContractingPartnerAuthorizationTest: UnitTest() {
         every { projectAuthorization.hasPermission(UserRolePermission.ProjectContractingPartnerView, any()) } returns false
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID) } returns PROJECT_ID
 
-        Assertions.assertThat(authorization.hasEditPermission(PARTNER_ID)).isFalse
+        assertThat(authorization.hasEditPermission(PARTNER_ID)).isFalse
     }
 
     @Test
@@ -127,7 +150,7 @@ internal class ProjectContractingPartnerAuthorizationTest: UnitTest() {
         every { projectAuthorization.hasPermission(UserRolePermission.ProjectContractingPartnerView, any()) } returns false
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID) } returns PROJECT_ID
 
-        Assertions.assertThat(authorization.hasEditPermission(PARTNER_ID)).isFalse
+        assertThat(authorization.hasEditPermission(PARTNER_ID)).isFalse
     }
 
 
@@ -220,8 +243,8 @@ internal class ProjectContractingPartnerAuthorizationTest: UnitTest() {
         every { projectAuthorization.hasPermission(UserRolePermission.ProjectContractingPartnerView, any()) } returns true
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID) } returns PROJECT_ID
 
-        Assertions.assertThat(authorization.hasEditPermission(PARTNER_ID)).isFalse
-        Assertions.assertThat(authorization.hasViewPermission(PARTNER_ID)).isTrue
+        assertThat(authorization.hasEditPermission(PARTNER_ID)).isFalse
+        assertThat(authorization.hasViewPermission(PARTNER_ID)).isTrue
     }
 
     @Test
@@ -235,7 +258,63 @@ internal class ProjectContractingPartnerAuthorizationTest: UnitTest() {
         every { projectAuthorization.hasPermission(UserRolePermission.ProjectContractingPartnerView, any()) } returns true
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID) } returns PROJECT_ID
 
-        Assertions.assertThat(authorization.hasEditPermission(PARTNER_ID)).isTrue
-        Assertions.assertThat(authorization.hasViewPermission(PARTNER_ID)).isTrue
+        assertThat(authorization.hasEditPermission(PARTNER_ID)).isTrue
+        assertThat(authorization.hasViewPermission(PARTNER_ID)).isTrue
+    }
+
+    @Test
+    fun `has contracting partners permission - user with monitor permission`() {
+        every { currentUser.hasPermission(UserRolePermission.ProjectContractingPartnerView) } returns true
+        every { currentUser.hasPermission(UserRolePermission.ProjectRetrieve) } returns true
+        every { projectAuthorization.hasPermission(UserRolePermission.ProjectContractingPartnerView, any()) } returns true
+        every { currentUser.user } returns mockk()
+        every { currentUser.user.assignedProjects } returns setOf(1L)
+
+        assertThat(authorization.hasPartnersPermission(1L)).isTrue
+    }
+
+    @Test
+    fun `has contracting partners permission - user with partner collaborator`() {
+        every { currentUser.hasPermission(UserRolePermission.ProjectContractingPartnerView) } returns false
+        every { currentUser.hasPermission(UserRolePermission.ProjectRetrieve) } returns true
+        every { projectAuthorization.hasPermission(UserRolePermission.ProjectContractingPartnerView, any()) } returns false
+        every { currentUser.user } returns mockk()
+        every { securityService.getUserIdOrThrow() } returns 1L
+        every { currentUser.user.assignedProjects } returns setOf(1L)
+        every { partnerCollaboratorPersistence.findPartnerCollaboratorsByProjectId(1L) } returns setOf(partnerCollaborator)
+        every { projectCollaboratorPersistence.getUserIdsForProject(1L) } returns listOf(collaboratorAssignedToProject)
+        every { institutionPersistence.getRelatedUserIdsForProject(1L) } returns setOf(100L)
+
+        assertThat(authorization.hasPartnersPermission(1L)).isTrue
+    }
+
+    @Test
+    fun `has contracting partners permission - user with controller`() {
+        every { currentUser.hasPermission(UserRolePermission.ProjectContractingPartnerView) } returns true
+        every { currentUser.hasPermission(UserRolePermission.ProjectRetrieve) } returns false
+        every { projectAuthorization.hasPermission(UserRolePermission.ProjectContractingPartnerView, any()) } returns false
+        every { currentUser.user } returns mockk()
+        every { securityService.getUserIdOrThrow() } returns 100L
+        every { currentUser.user.assignedProjects } returns setOf()
+        every { partnerCollaboratorPersistence.findPartnerCollaboratorsByProjectId(1L) } returns setOf(partnerCollaborator)
+        every { projectCollaboratorPersistence.getUserIdsForProject(1L) } returns listOf(collaboratorAssignedToProject)
+        every { institutionPersistence.getRelatedUserIdsForProject(1L) } returns setOf(100L)
+
+        assertThat(authorization.hasPartnersPermission(1L)).isTrue
+    }
+
+    @Test
+    fun `has no contracting partners permission`() {
+        every { currentUser.hasPermission(UserRolePermission.ProjectContractingPartnerView) } returns false
+        every { currentUser.hasPermission(UserRolePermission.ProjectRetrieve) } returns false
+        every { projectAuthorization.hasPermission(UserRolePermission.ProjectContractingPartnerView, any()) } returns false
+        every { currentUser.user } returns mockk()
+        every { securityService.getUserIdOrThrow() } returns 101L
+        every { currentUser.user.assignedProjects } returns setOf()
+        every { partnerCollaboratorPersistence.findPartnerCollaboratorsByProjectId(1L) } returns setOf(partnerCollaborator)
+        every { projectCollaboratorPersistence.getUserIdsForProject(1L) } returns listOf(collaboratorAssignedToProject)
+        every { institutionPersistence.getRelatedUserIdsForProject(1L) } returns setOf(100L)
+
+        assertThat(authorization.hasPartnersPermission(1L)).isFalse
     }
 }

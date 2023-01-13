@@ -67,7 +67,7 @@ internal class GetContractingPartnerBankingDetailsTest : UnitTest() {
     @MockK
     lateinit var bankingDetailsPersistence: ContractingPartnerBankingDetailsPersistence
 
-    @InjectMockKs
+    @MockK
     lateinit var authorization: ProjectContractingPartnerAuthorization
 
     @InjectMockKs
