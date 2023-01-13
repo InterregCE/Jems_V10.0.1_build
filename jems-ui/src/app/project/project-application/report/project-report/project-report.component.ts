@@ -39,7 +39,7 @@ export class ProjectReportComponent {
   error$ = new BehaviorSubject<APIError | null>(null);
   Alert = Alert;
   deletableReportId: number | null = null;
-  displayedColumns = ['reportNumber', 'status', 'linkedFormVersion', 'reportingPeriod', 'type', 'createdAt', 'firstSubmission', 'verificationDate', 'delete'];
+  displayedColumns = ['reportNumber', 'status', 'linkedFormVersion', 'reportingPeriod', 'type', 'createdAt', 'firstSubmission', 'delete'];
   dataSource: MatTableDataSource<ProjectReportSummaryDTO> = new MatTableDataSource([]);
 
   data$: Observable<{

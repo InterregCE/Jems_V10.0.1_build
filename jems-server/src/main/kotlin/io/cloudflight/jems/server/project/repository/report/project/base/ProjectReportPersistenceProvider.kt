@@ -66,7 +66,7 @@ class ProjectReportPersistenceProvider(
         projectReportRepository.countAllByProjectId(projectId)
 
     @Transactional
-    override fun submitReportByProjectId(
+    override fun submitReport(
         projectId: Long,
         reportId: Long,
         submissionTime: ZonedDateTime

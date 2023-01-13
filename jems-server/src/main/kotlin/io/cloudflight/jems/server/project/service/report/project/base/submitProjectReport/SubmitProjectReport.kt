@@ -21,12 +21,12 @@ class SubmitProjectReport(
 
     @CanEditProjectReport
     @Transactional
-    @ExceptionWrapper(SubmitProjectPartnerReportException::class)
+    @ExceptionWrapper(SubmitProjectReportException::class)
     override fun submit(projectId: Long, reportId: Long): ProjectReportStatus {
         val report = reportPersistence.getReportById(projectId, reportId)
         validateReportIsStillDraft(report)
 
-        return reportPersistence.submitReportByProjectId(
+        return reportPersistence.submitReport(
             projectId = projectId,
             reportId = reportId,
             submissionTime = ZonedDateTime.now()
@@ -43,6 +43,6 @@ class SubmitProjectReport(
 
     private fun validateReportIsStillDraft(report: ProjectReportModel) {
         if (report.status.isClosed())
-            throw ReportAlreadyClosed()
+            throw ProjectReportAlreadyClosed()
     }
 }

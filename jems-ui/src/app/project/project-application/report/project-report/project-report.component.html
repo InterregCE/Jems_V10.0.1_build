@@ -6,11 +6,11 @@
 
     <ng-container *ngIf="pageStore.userCanEditReport$ | async">
         <p>
-            <button jemsText class="mb-3"
-                    mat-stroked-button color="primary"
-                    [routerLink]="'/app/project/detail/' + projectId + '/projectReports/create'">
-                + {{'project.application.project.report.add' | translate}}
-            </button>
+            <jems-pending-button jemsText class="mb-3"
+                                 icon="add"
+                                 [routerLink]="'/app/project/detail/' + projectId + '/projectReports/create'">
+                {{'project.application.project.report.add' | translate}}
+            </jems-pending-button>
         </p>
     </ng-container>
 
@@ -85,7 +85,7 @@
                     <span jemsText maxLines="2">{{ 'project.application.project.report.table.creation.date' | translate }}</span>
                 </mat-header-cell>
                 <mat-cell *matCellDef="let projectReport" class="text-left">
-                    {{ projectReport.createdAt | localeDate }}
+                    {{ projectReport.createdAt | localeDate: 'L' : 'LT' }}
                 </mat-cell>
             </ng-container>
 
@@ -94,16 +94,7 @@
                     <span jemsText maxLines="2">{{ 'project.application.project.report.table.first.submission.date' | translate }}</span>
                 </mat-header-cell>
                 <mat-cell *matCellDef="let projectReport" class="text-left">
-                    {{ projectReport.firstSubmission | localeDate }}
-                </mat-cell>
-            </ng-container>
-
-            <ng-container matColumnDef="verificationDate">
-                <mat-header-cell *matHeaderCellDef class="text-left">
-                    <span jemsText maxLines="2">{{ 'project.application.project.report.table.verification.date' | translate }}</span>
-                </mat-header-cell>
-                <mat-cell *matCellDef="let projectReport" class="text-left">
-                    {{ projectReport.verificationDate | localeDate }}
+                    {{ projectReport.firstSubmission | localeDate: 'L' : 'LT' }}
                 </mat-cell>
             </ng-container>
 

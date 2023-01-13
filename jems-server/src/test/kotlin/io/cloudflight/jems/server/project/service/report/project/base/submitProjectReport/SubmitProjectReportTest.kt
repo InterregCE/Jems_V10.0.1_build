@@ -6,7 +6,6 @@ import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
-import io.cloudflight.jems.server.project.service.report.partner.base.submitProjectPartnerReport.ReportAlreadyClosed
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.mockk.clearMocks
 import io.mockk.every
@@ -20,7 +19,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.context.ApplicationEventPublisher
-import java.time.LocalDate
 import java.time.ZonedDateTime
 
 internal class SubmitProjectReportTest : UnitTest() {
@@ -66,14 +64,14 @@ internal class SubmitProjectReportTest : UnitTest() {
         every { reportPersistence.getReportById(PROJECT_ID, REPORT_ID) } returns report
 
         val submissionTime = slot<ZonedDateTime>()
-        every { reportPersistence.submitReportByProjectId(any(), any(), capture(submissionTime)) } returns mockedResult
+        every { reportPersistence.submitReport(any(), any(), capture(submissionTime)) } returns mockedResult
 
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
 
         submitReport.submit(PROJECT_ID, REPORT_ID)
 
-        verify(exactly = 1) { reportPersistence.submitReportByProjectId(PROJECT_ID, REPORT_ID, any()) }
+        verify(exactly = 1) { reportPersistence.submitReport(PROJECT_ID, REPORT_ID, any()) }
         assertThat(submissionTime.captured).isAfter(ZonedDateTime.now().minusMinutes(1))
         assertThat(submissionTime.captured).isBefore(ZonedDateTime.now().plusMinutes(1))
         assertThat(auditSlot.captured.auditCandidate.action).isEqualTo(AuditAction.PROJECT_REPORT_SUBMITTED)
@@ -90,8 +88,8 @@ internal class SubmitProjectReportTest : UnitTest() {
         every { report.status } returns ProjectReportStatus.Submitted
         every { reportPersistence.getReportById(PROJECT_ID, REPORT_ID) } returns report
 
-        assertThrows<ReportAlreadyClosed> { submitReport.submit(PROJECT_ID, REPORT_ID) }
-        verify(exactly = 0) { reportPersistence.submitReportByProjectId(any(), any(), any()) }
+        assertThrows<ProjectReportAlreadyClosed> { submitReport.submit(PROJECT_ID, REPORT_ID) }
+        verify(exactly = 0) { reportPersistence.submitReport(any(), any(), any()) }
         verify(exactly = 0) { auditPublisher.publishEvent(any()) }
     }
 }

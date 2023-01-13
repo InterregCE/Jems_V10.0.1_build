@@ -30,6 +30,6 @@ interface ProjectReportPersistence {
 
     fun countForProject(projectId: Long): Int
 
-    fun submitReportByProjectId(projectId: Long, reportId: Long, submissionTime: ZonedDateTime): ProjectReportSubmissionSummary
+    fun submitReport(projectId: Long, reportId: Long, submissionTime: ZonedDateTime): ProjectReportSubmissionSummary
 
 }

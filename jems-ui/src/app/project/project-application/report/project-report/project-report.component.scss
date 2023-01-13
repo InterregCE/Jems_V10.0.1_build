@@ -7,3 +7,7 @@
 .row-link:hover {
   cursor: pointer;
 }
+
+.mat-column-createdAt, .mat-column-firstSubmission {
+  flex: 0 0 16%;
+}

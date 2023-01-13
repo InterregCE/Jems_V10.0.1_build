@@ -64,7 +64,7 @@ interface ProjectReportApi {
     fun deleteProjectReport(@PathVariable projectId: Long, @PathVariable reportId: Long)
 
     @ApiOperation("Submit and lock project report")
-    @PostMapping("$ENDPOINT_API_PROJECT_REPORT/submit/{projectId}/{reportId}")
+    @PostMapping("$ENDPOINT_API_PROJECT_REPORT/submit/{reportId}")
     fun submitProjectReport(
         @PathVariable projectId: Long,
         @PathVariable reportId: Long,
