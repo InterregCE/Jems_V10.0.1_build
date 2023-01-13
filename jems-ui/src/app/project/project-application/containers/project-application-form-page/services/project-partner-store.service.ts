@@ -8,7 +8,7 @@ import {
   ProjectPartnerMotivationDTO,
   ProjectPartnerService,
   ProjectReportService,
-  ProjectPartnerSummaryDTO, ProjectStatusDTO, ProjectVersionDTO
+  ProjectPartnerSummaryDTO, ProjectStatusDTO, ProjectVersionDTO, ProjectContractingPartnersService
 } from '@cat/api';
 import {BehaviorSubject, combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {catchError, filter, map, shareReplay, switchMap, tap} from 'rxjs/operators';
@@ -37,6 +37,7 @@ export class ProjectPartnerStore {
   leadPartner$: Observable<ProjectPartnerDetailDTO | null>;
   partnerSummaries$: Observable<ProjectPartnerSummaryDTO[]>;
   partnerSummariesOfLastApprovedProjectVersion$: Observable<ProjectPartnerSummaryDTO[]>;
+  partnerSummariesForContracting$: Observable<ProjectPartnerSummaryDTO[]>;
   partnerReportSummaries$: Observable<ProjectPartnerSummaryDTO[]>;
   latestPartnerSummaries$: Observable<ProjectPartnerSummaryDTO[]>;
   partnerSummariesOfLastApprovedVersion$: Observable<ProjectPartnerSummaryDTO[]>;
@@ -50,11 +51,13 @@ export class ProjectPartnerStore {
               private projectStore: ProjectStore,
               private routingService: RoutingService,
               private projectVersionStore: ProjectVersionStore,
-              private projectReportService: ProjectReportService) {
+              private projectReportService: ProjectReportService,
+              private projectContractingPartnersService: ProjectContractingPartnersService) {
     this.isProjectEditable$ = this.projectStore.projectEditable$;
     this.projectCallType$ = this.projectStore.projectCallType$;
     this.isProjectCallTypeSpf$ = this.projectCallType$.pipe(map(type => type === CallTypeEnum.SPF));
     this.partnerSummaries$ = this.partnerSummaries();
+    this.partnerSummariesForContracting$ = this.partnerSummariesForContracting();
     this.partnerSummariesOfLastApprovedProjectVersion$ = this.partnerSummariesOfLastApprovedVersion();
     this.latestPartnerSummaries$ = this.partnerSummariesFromVersion();
     this.partnerReportSummaries$ = this.partnerReportSummaries();
@@ -197,6 +200,17 @@ export class ProjectPartnerStore {
     return combineLatest([this.projectStore.projectId$, this.projectVersionStore.selectedVersionParam$, this.partnerUpdateEvent$])
       .pipe(
         switchMap(([projectId, version]) => this.partnerService.getProjectPartnersForDropdown(projectId, ['sortNumber'], version))
+      );
+  }
+
+  private partnerSummariesForContracting(): Observable<ProjectPartnerSummaryDTO[]> {
+    return combineLatest([
+      this.projectStore.projectId$,
+      this.projectVersionStore.lastApprovedOrContractedVersion$,
+      this.partnerUpdateEvent$
+    ])
+      .pipe(
+        switchMap(([projectId, version]) => this.projectContractingPartnersService.getProjectPartnersForContracting(projectId, ['sortNumber'], version?.version))
       );
   }
 

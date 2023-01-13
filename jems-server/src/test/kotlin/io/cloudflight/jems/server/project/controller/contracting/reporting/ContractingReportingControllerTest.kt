@@ -56,6 +56,7 @@ internal class ContractingReportingControllerTest: UnitTest() {
 
     @MockK
     lateinit var getContractingReportingInteractor: GetContractingReportingInteractor
+
     @MockK
     lateinit var updateContractingReportingInteractor: UpdateContractingReportingInteractor
 

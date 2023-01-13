@@ -2,7 +2,10 @@ package io.cloudflight.jems.server.project.authorization
 
 import io.cloudflight.jems.server.authentication.authorization.Authorization
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.project.entity.partneruser.PartnerCollaboratorLevel
+import io.cloudflight.jems.server.project.repository.partneruser.UserPartnerCollaboratorRepository
+import io.cloudflight.jems.server.project.repository.projectuser.UserProjectCollaboratorRepository
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaboratorPersistence
@@ -20,6 +23,10 @@ annotation class CanRetrieveProjectContractingPartner
 @PreAuthorize("@projectContractingPartnerAuthorization.hasEditPermission(#partnerId)")
 annotation class CanUpdateProjectContractingPartner
 
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@projectContractingPartnerAuthorization.hasPartnersPermission(#projectId)")
+annotation class CanRetrieveProjectContractingPartners
+
 @Component
 class ProjectContractingPartnerAuthorization(
     override val securityService: SecurityService,
@@ -28,8 +35,27 @@ class ProjectContractingPartnerAuthorization(
     val partnerCollaboratorPersistence: UserPartnerCollaboratorPersistence,
     private val projectCollaboratorPersistence: UserProjectCollaboratorPersistence,
     private val projectReportAuthorization: ProjectReportAuthorization,
+    private val institutionPersistence: ControllerInstitutionPersistence,
     val projectAuthorization: ProjectAuthorization,
 ): Authorization(securityService) {
+
+    fun hasPartnersPermission(projectId: Long): Boolean {
+        if (hasPermission(UserRolePermission.ProjectContractingPartnerView, projectId))
+            return true
+
+        val partnerCollaborators = partnerCollaboratorPersistence.findPartnerCollaboratorsByProjectId(projectId).map { it.userId }
+        val projectCollaborators = projectCollaboratorPersistence.getUserIdsForProject(projectId).map { it.userId }
+        val allCollaborators = partnerCollaborators union projectCollaborators
+
+        if (isActiveUserIdEqualToOneOf(allCollaborators))
+            return true
+
+        val partnerControllers = institutionPersistence.getRelatedUserIdsForProject(projectId)
+        if (isActiveUserIdEqualToOneOf(partnerControllers) && hasNonProjectAuthority(UserRolePermission.ProjectContractingPartnerView))
+            return true
+
+        return false
+    }
 
     fun hasViewPermission(partnerId: Long): Boolean {
         val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)

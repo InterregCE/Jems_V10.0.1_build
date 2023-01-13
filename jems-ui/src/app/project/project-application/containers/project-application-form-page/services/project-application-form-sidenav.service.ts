@@ -253,7 +253,7 @@ export class ProjectApplicationFormSidenavService {
       switchMap(([canSeeContractPartner, projectId, callType]) => {
         return (canSeeContractPartner) ?
           combineLatest([
-            this.partnerStore.partnerReportSummaries$,
+            this.partnerStore.partnerSummariesForContracting$,
             this.projectStore.userIsPartnerCollaborator$,
             this.projectStore.projectId$,
             this.partnerUserCollaboratorService.listCurrentUserPartnerCollaborations(projectId)
