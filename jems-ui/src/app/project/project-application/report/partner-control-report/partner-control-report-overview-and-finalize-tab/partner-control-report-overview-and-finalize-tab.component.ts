@@ -33,7 +33,7 @@ import {LocaleDatePipe} from '@common/pipe/locale-date.pipe';
 })
 export class PartnerControlReportOverviewAndFinalizeTabComponent {
   Alert = Alert;
-  displayedColumns = ['declaredByPartner', 'inControlSample', 'parked', 'deductedByControl', 'eligibleAfterControl', 'eligibleAfterControlPercentage'];
+  displayedColumns = ['declaredByPartner', 'inControlSample', 'inControlSamplePercentage', 'parked', 'deductedByControl', 'eligibleAfterControl', 'eligibleAfterControlPercentage'];
   finalizationLoading = false;
   error$ = new BehaviorSubject<APIError | null>(null);
 

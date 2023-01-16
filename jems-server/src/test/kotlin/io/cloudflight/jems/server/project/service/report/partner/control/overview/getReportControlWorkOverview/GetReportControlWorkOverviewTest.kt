@@ -110,6 +110,7 @@ internal class GetReportControlWorkOverviewTest : UnitTest() {
             ControlWorkOverview(
                 declaredByPartner = BigDecimal.TEN,
                 inControlSample = BigDecimal.ONE,
+                inControlSamplePercentage = BigDecimal.valueOf(1000L, 2),
                 parked = BigDecimal.valueOf(115, 2),
                 deductedByControl = BigDecimal.valueOf(724L, 2),
                 eligibleAfterControl = BigDecimal.valueOf(161L, 2),

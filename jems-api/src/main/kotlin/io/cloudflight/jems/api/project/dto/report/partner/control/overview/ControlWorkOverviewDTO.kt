@@ -5,6 +5,7 @@ import java.math.BigDecimal
 data class ControlWorkOverviewDTO(
     val declaredByPartner: BigDecimal,
     val inControlSample: BigDecimal,
+    val inControlSamplePercentage: BigDecimal,
     val parked: BigDecimal,
     val deductedByControl: BigDecimal,
     val eligibleAfterControl: BigDecimal,

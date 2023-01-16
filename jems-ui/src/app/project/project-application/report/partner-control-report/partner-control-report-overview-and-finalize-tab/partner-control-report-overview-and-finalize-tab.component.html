@@ -5,7 +5,7 @@
     <h3>{{'project.application.partner.report.control.tab.overviewAndFinalize.title' | translate}}</h3>
     <p>{{'project.application.partner.report.control.tab.overviewAndFinalize.info' | translate}}</p>
     <mat-table jemsNoWidthLimit
-               [jemsTableConfig]="[{minInRem: 8, maxInRem: 14}, {minInRem: 8, maxInRem: 14}, {minInRem: 8, maxInRem: 14}, {minInRem: 8, maxInRem: 14}, {minInRem: 8, maxInRem: 14}, {minInRem: 8, maxInRem: 13}]"
+               [jemsTableConfig]="[{minInRem: 8, maxInRem: 14}, {minInRem: 8, maxInRem: 14}, {minInRem: 8, maxInRem: 13}, {minInRem: 8, maxInRem: 14}, {minInRem: 8, maxInRem: 14}, {minInRem: 8, maxInRem: 14}, {minInRem: 8, maxInRem: 13}]"
                [dataSource]="data.dataSource">
         <ng-container matColumnDef="declaredByPartner">
             <mat-header-cell mat-header-cell *matHeaderCellDef>
@@ -19,6 +19,13 @@
                 <span jemsText>{{ 'project.application.partner.report.control.tab.overviewAndFinalize.total.included.control.sample' | translate }}</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let element"> {{element.inControlSample | asMoney }} </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="inControlSamplePercentage">
+            <mat-header-cell *matHeaderCellDef>
+                <span jemsText>{{ 'project.application.partner.report.control.tab.overviewAndFinalize.total.included.control.sample.percentage' | translate }}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.inControlSamplePercentage | asMoney}}%</mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="parked">
