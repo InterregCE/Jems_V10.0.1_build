@@ -57,28 +57,12 @@
                             {{ 'payments.detail.table.header.installment.comment' | translate }}
                         </div>
 
-                        <div class="column-checkbox justify-start" jemsNoWidthLimit jemsMultiColumnRow>
+                        <div class="column-checkbox justify-center" jemsNoWidthLimit jemsMultiColumnRow>
                             {{ 'payments.detail.table.header.installment.save.payment.info' | translate }}
                         </div>
 
-                        <div class="column-user-saving justify-start" jemsNoWidthLimit jemsMultiColumnRow>
-                            {{ 'payments.detail.table.header.installment.user.saving.payment.info' | translate }}
-                        </div>
-
-                        <div class="column-saving-date justify-start" jemsNoWidthLimit jemsMultiColumnRow>
-                            {{ 'payments.detail.table.header.installment.save.payment.date' | translate }}
-                        </div>
-
-                        <div class="column-checkbox justify-start" jemsNoWidthLimit jemsMultiColumnRow>
+                        <div class="column-checkbox justify-center" jemsNoWidthLimit jemsMultiColumnRow>
                             {{ 'payments.detail.table.header.installment.confirm.payment' | translate }}
-                        </div>
-
-                        <div class="column-user-saving justify-start" jemsNoWidthLimit jemsMultiColumnRow>
-                            {{ 'payments.detail.table.header.installment.user.confirming.payment' | translate }}
-                        </div>
-
-                        <div class="column-saving-date justify-start" jemsNoWidthLimit jemsMultiColumnRow>
-                            {{ 'payments.detail.table.header.installment.payment.confirmation.date' | translate }}
                         </div>
                     </div>
                     <ng-container>
@@ -200,26 +184,28 @@
                                 </mat-form-field>
                             </div>
 
-                            <div class="column-checkbox justify-center">
+                            <div class="column-checkbox justify-center display-row">
                                 <mat-checkbox
                                         [disabled]="isPaymentAuthorisationDisabled()"
                                         (change)="setPaymentAuthorised($event.checked)"
                                         [formControlName]="constants.FORM_CONTROL_NAMES.paymentAuthorized">
                                 </mat-checkbox>
+                                <div>
+                                    <span>{{getFormattedDate(advancePayment.get(constants.FORM_CONTROL_NAMES.paymentAuthorizedDate)?.value)}}</span>
+                                    <span  jemsText class="text-overflow-ellipsis">{{advancePayment.get(constants.FORM_CONTROL_NAMES.paymentAuthorizedUser)?.value?.email}}</span>
+                                </div>
                             </div>
 
-                            <div class="column-user-saving"><span  jemsText class="text-overflow-ellipsis">{{advancePayment.get(constants.FORM_CONTROL_NAMES.paymentAuthorizedUser)?.value?.email}}</span></div>
-
-                            <div class="column-saving-date">{{getFormattedDate(advancePayment.get(constants.FORM_CONTROL_NAMES.paymentAuthorizedDate)?.value)}}</div>
-
-                            <div  class="column-checkbox justify-center">
+                            <div  class="column-checkbox justify-center display-row">
                                 <mat-checkbox
                                         (change)="setConfirmPaymentDate($event.checked)"
                                         [formControlName]="constants.FORM_CONTROL_NAMES.paymentConfirmed">
                                 </mat-checkbox>
+                                <div>
+                                    <span>{{getFormattedDate(advancePayment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedDate)?.value)}}</span>
+                                    <span jemsText class="text-overflow-ellipsis">{{advancePayment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedUser)?.value?.email}}</span>
+                                </div>
                             </div>
-                            <div class="column-user-saving"><span jemsText class="text-overflow-ellipsis">{{advancePayment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedUser)?.value?.email}}</span></div>
-                            <div class="column-saving-date">{{getFormattedDate(advancePayment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedDate)?.value)}}</div>
                         </div>
                     </ng-container>
                 </div>

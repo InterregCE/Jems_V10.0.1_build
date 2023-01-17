@@ -100,8 +100,7 @@
                                                 infoText="{{ 'payments.detail.table.header.installment.user.saving.payment.contextinfo' | adaptTranslationKeyByCallType | async | translate }}">
                                         </jems-context-info>
                                     </div>
-                                    <div class="column-installment-authorise-user justify-start">{{ 'payments.detail.table.header.installment.user.saving.payment.info' | translate }}</div>
-                                    <div class="column-installment-authorise-date justify-start">{{ 'payments.detail.table.header.installment.save.payment.date' | translate }}</div>
+
                                     <div class="column-installment-confirm-checkbox justify-center">
                                         {{ 'payments.detail.table.header.installment.confirm.payment' | translate }}
                                         <jems-context-info
@@ -109,8 +108,7 @@
                                                 infoText="{{ 'payments.detail.table.header.installment.confirm.payment.contextinfo' | adaptTranslationKeyByCallType | async | translate }}">
                                         </jems-context-info>
                                     </div>
-                                    <div class="column-installment-confirm-user justify-start">{{ 'payments.detail.table.header.installment.user.confirming.payment' | translate }}</div>
-                                    <div class="column-installment-confirm-date justify-start">{{ 'payments.detail.table.header.installment.payment.confirmation.date' | translate }}</div>
+
                                     <div *ngIf="userCanEdit$ | async" class="column-installment-delete justify-center">{{ 'common.delete.entry' | translate }}</div>
                                 </div>
 
@@ -158,18 +156,23 @@
                                                               (change)="setSavePaymentDate($event.checked, index, installmentIndex)"
                                                               [formControlName]="constants.FORM_CONTROL_NAMES.savePaymentInfo">
                                                 </mat-checkbox>
+                                                <div class="display-column">
+                                                    <span>{{getFormattedDate(installment.get(constants.FORM_CONTROL_NAMES.savePaymentDate).value)}}</span>
+                                                    <span  jemsText class="text-overflow-ellipsis">{{installment.get(constants.FORM_CONTROL_NAMES.savePaymentInfoUser).value?.email}}</span>
+                                                </div>
                                             </div>
-                                            <div><span  jemsText class="text-overflow-ellipsis">{{installment.get(constants.FORM_CONTROL_NAMES.savePaymentInfoUser).value?.email}}</span></div>
-                                            <div>{{getFormattedDate(installment.get(constants.FORM_CONTROL_NAMES.savePaymentDate).value)}}</div>
                                             <div  class="justify-center">
                                                 <mat-checkbox
                                                               (change)="setConfirmPaymentDate($event.checked, index, installmentIndex)"
                                                               [disabled]="isPaymentConfirmationDisabled(index, installmentIndex)"
                                                               [formControlName]="constants.FORM_CONTROL_NAMES.paymentConfirmed">
                                                 </mat-checkbox>
+                                                <div class="display-column">
+                                                    <span>{{getFormattedDate(installment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedDate).value)}}</span>
+                                                    <span jemsText class="text-overflow-ellipsis">{{installment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedUser).value?.email}}</span>
+                                                </div>
+
                                             </div>
-                                            <div><span jemsText class="text-overflow-ellipsis">{{installment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedUser).value?.email}}</span></div>
-                                            <div>{{getFormattedDate(installment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedDate).value)}}</div>
                                             <div *ngIf="userCanEdit$ | async">
                                                 <button *ngIf="canInstallmentBeDeleted(index, installmentIndex)"
                                                         (click)="removeItem(index, installmentIndex)"

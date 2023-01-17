@@ -27,12 +27,8 @@ export class PaymentsToProjectDetailPageConstants {
     {minInRem: 9, maxInRem: 9}, //Amount paid
     {minInRem: 9, maxInRem: 9}, //Payment date
     {minInRem: 12},             //Comment
-    {minInRem: 5, maxInRem: 5}, //Authorise payment
-    {minInRem: 9},              //User authorising payment
-    {minInRem: 9, maxInRem: 9}, //Authorisation date
-    {minInRem: 5, maxInRem: 5}, //Confirm payment
-    {minInRem: 9},              //User confirming payment
-    {minInRem: 6, maxInRem: 6}, //Payment confirmation date
+    {minInRem: 10, maxInRem: 12}, //Authorise payment
+    {minInRem: 10, maxInRem: 12}, //Confirm payment
     {minInRem: 3, maxInRem: 3}  //Actions
   ];
 
