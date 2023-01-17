@@ -317,7 +317,6 @@ export class ContractMonitoringExtensionComponent {
 
   getPeriodLabel(periodId: number, periods: ProjectPeriodForMonitoringDTO[]): string {
     let period: any = periods.find(it => it.number === periodId);
-    period = {...period, periodNumber: period.number};
     if (!period && periodId !== 0 && periodId !== 255) {
       return '';
     }
@@ -328,6 +327,7 @@ export class ContractMonitoringExtensionComponent {
     if (periodId === 255) {
       return this.translateService.instant('project.application.form.section.part.e.period.closure');
     }
+    period = {...period, periodNumber: period.number};
     return this.translateService.instant('project.application.form.work.package.output.delivery.period.entry', period);
   }
 
