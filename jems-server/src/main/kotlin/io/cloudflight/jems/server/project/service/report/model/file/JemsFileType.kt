@@ -29,6 +29,7 @@ enum class JemsFileType(
 
           PartnerControlReport(Partner, true),
             ControlDocument(PartnerControlReport, false),
+                ControlCertificate(ControlDocument, false),
 
       Contracting(Project, false),
         ContractSupport(Contracting, false),

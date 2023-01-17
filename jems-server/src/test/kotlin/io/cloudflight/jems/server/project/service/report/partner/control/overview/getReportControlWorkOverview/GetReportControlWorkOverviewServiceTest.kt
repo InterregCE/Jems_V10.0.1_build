@@ -116,6 +116,7 @@ internal class GetReportControlWorkOverviewServiceTest: UnitTest() {
                 deductedByControl = BigDecimal.valueOf(724L, 2),
                 eligibleAfterControl = BigDecimal.valueOf(161L, 2),
                 eligibleAfterControlPercentage = BigDecimal.valueOf(1610L, 2),
+                inControlSamplePercentage = BigDecimal.valueOf(1000L, 2)
             )
         )
     }

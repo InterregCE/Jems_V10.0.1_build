@@ -26,6 +26,7 @@ import io.cloudflight.jems.plugin.contract.models.programme.lumpsum.ProgrammeLum
 import io.cloudflight.jems.plugin.contract.models.programme.strategy.ProgrammeStrategyData
 import io.cloudflight.jems.plugin.contract.models.programme.unitcost.BudgetCategoryData
 import io.cloudflight.jems.plugin.contract.models.programme.unitcost.ProgrammeUnitCostListData
+import io.cloudflight.jems.plugin.contract.models.project.ProjectIdentificationData
 import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ApplicationStatusData
 import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectAssessmentEligibilityData
 import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectAssessmentEligibilityResultData
@@ -123,6 +124,7 @@ import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalcul
 import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
 import io.cloudflight.jems.server.project.service.common.PartnerBudgetPerFundCalculatorService
 import io.cloudflight.jems.server.project.service.contracting.model.ContractingDimensionCode
+import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
 import io.cloudflight.jems.server.project.service.contracting.monitoring.ContractingMonitoringPersistence
 import io.cloudflight.jems.server.project.service.customCostOptions.ProjectUnitCostPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
@@ -196,6 +198,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
+import java.time.LocalDate
 import java.time.ZonedDateTime
 import java.util.Optional
 
@@ -1714,6 +1717,77 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         every { projectVersionPersistence.getAllVersions() } returns versions
 
         assertThat(projectDataProvider.getAllProjectVersions()).isEqualTo(versionsData)
+    }
+
+
+    @Test
+    fun getProjectIdentificationData() {
+        val projectId = 1L
+        val projectStartDate = LocalDate.of(2023, 1, 19)
+        val contractMonitoring = ProjectContractingMonitoring(
+            projectId = projectId,
+            startDate = projectStartDate,
+            endDate = null,
+            typologyProv94 = null,
+            typologyProv94Comment = null,
+            typologyProv95= null,
+            typologyProv95Comment= null,
+            typologyStrategic= null,
+            typologyStrategicComment= null,
+            typologyPartnership= null,
+            typologyPartnershipComment= null,
+            addDates= emptyList(),
+            dimensionCodes = emptyList(),
+            fastTrackLumpSums = emptyList()
+        )
+
+        every { projectVersionPersistence.getLatestApprovedOrCurrent(projectId)} returns "1.0"
+        every { projectPersistence.getProject(projectId,"1.0") } returns ProjectFull(
+            id = 1L,
+            customIdentifier = "identifier",
+            callSettings = callSettings,
+            acronym = "acronym",
+            applicant = user,
+            duration = 12,
+            programmePriority = null,
+            specificObjective = null,
+            projectStatus = projectStatus,
+            periods = emptyList(),
+            assessmentStep1 = null,
+            title = emptySet()
+        )
+
+        every { contractingMonitoringPersistence.getContractingMonitoring(1L) } returns contractMonitoring
+        val programmeData = mockk<ProgrammeDataEntity>()
+        every { programmeData.title } returns "programme title"
+        every { programmeDataRepository.findById(1L) } returns Optional.of(programmeData)
+
+
+        assertThat(projectDataProvider.getProjectIdentificationData(projectId)).isEqualTo(
+            ProjectIdentificationData(
+                id = projectId,
+                customIdentifier = "identifier",
+                acronym = "acronym",
+                status = ApplicationStatusData.APPROVED,
+                title = emptySet(),
+                intro = emptySet(),
+                durationInMonths = 12,
+                projectStartDate = projectStartDate,
+                projectEndDate = LocalDate.of(2024, 1, 18),
+                programmeTitle = "programme title",
+                programmePriorityCode = null,
+                lifecycleData = ProjectLifecycleData(
+                    status = project.projectStatus.status.toDataModel(),
+                    submissionDateStepOne = null,
+                    firstSubmissionDate = null,
+                    lastResubmissionDate = null,
+                    contractedDate = null,
+                    assessmentStep1 = null,
+                    assessmentStep2 = null
+                )
+            )
+        )
+
     }
 
     private fun ProjectStatus.toData() =
