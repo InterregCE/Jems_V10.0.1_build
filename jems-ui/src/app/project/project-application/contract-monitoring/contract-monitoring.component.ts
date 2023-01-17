@@ -41,7 +41,7 @@ export class ContractMonitoringComponent {
       map(([currentVersionOfProject, currentVersionOfProjectTitle, canSetToContracted, canSeeMonitoringExtension]) => ({
         currentVersionOfProject,
         currentVersionOfProjectTitle,
-        canSetToContracted,
+        canSetToContracted : currentVersionOfProject.projectStatus.status === this.STATUS.APPROVED && canSetToContracted,
         canSeeMonitoringExtension
       }))
     );
