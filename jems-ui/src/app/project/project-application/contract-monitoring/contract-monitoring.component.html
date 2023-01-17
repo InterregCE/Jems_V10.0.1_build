@@ -10,16 +10,18 @@
         <p>{{'project.application.set.to.contracted.intro.two' | translate}}</p>
         <div class="mt-2">
             <jems-pending-button class="mt-2"
-                    [disabled]="data.currentVersionOfProject.projectStatus.status !== STATUS.APPROVED || !data.canSetToContracted"
+                    *ngIf="data.canSetToContracted"
                     [pending]="actionPending"
                     icon="approval"
                     (clicked)="setToContracted(data.currentVersionOfProject.id, data.currentVersionOfProjectTitle)">
                 {{'project.application.set.to.contracted' | translate}}
             </jems-pending-button>
-            <jems-context-info *ngIf="data.currentVersionOfProject.projectStatus.status !== STATUS.APPROVED || !data.canSetToContracted"
-                    infoText="{{ 'project.application.set.to.contracted.info' | translate }}"
-                    infoPosition="right">
-            </jems-context-info>
+            <ng-container *ngIf="data.currentVersionOfProject.projectStatus.status !== STATUS.APPROVED">
+                <jems-alert [show]="true"
+                            [type]="Alert.INFO">
+                    <p>{{'project.application.set.to.contracted.status.message' | translate : {contractDate: data.currentVersionOfProject.contractedDecision.updated | localeDate} }}</p>
+                </jems-alert>
+            </ng-container>
 
             <jems-alert *ngIf="error$ | async as error"
                        [show]="!!error.i18nMessage?.i18nKey"
