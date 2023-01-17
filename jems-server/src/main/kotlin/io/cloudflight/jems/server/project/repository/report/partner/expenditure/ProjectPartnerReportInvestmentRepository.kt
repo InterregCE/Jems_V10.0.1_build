@@ -13,6 +13,8 @@ interface ProjectPartnerReportInvestmentRepository :
         reportId: Long,
     ): MutableList<PartnerReportInvestmentEntity>
 
+    fun findByReportEntityIdAndInvestmentId(reportId: Long, projectInvestmentId: Long): PartnerReportInvestmentEntity
+
     @Query("""
         SELECT new kotlin.Pair(
             investment.investmentId,

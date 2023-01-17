@@ -2,7 +2,6 @@ package io.cloudflight.jems.server.project.repository.report.partner.expenditure
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.server.common.entity.TranslationId
-import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportExpenditureCostEntity
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportExpenditureCostTranslEntity
@@ -81,10 +80,10 @@ class ProjectPartnerReportExpenditurePersistenceProvider(
             existingIds[newData.id].let { existing ->
                 when {
                     existing != null -> existing.apply {
-                        updateWith(newData, lumpSumsById, unitCostsById, investmentsById, if (doNotRenumber) this.number else index + 1)
+                        updateWith(newData, lumpSumsById, unitCostsById, investmentsById, if (doNotRenumber) this.number else newData.number)
                     }
                     else -> reportExpenditureRepository.save(
-                        newData.toEntity(reportEntity, lumpSumsById, unitCostsById, investmentsById, index + 1)
+                        newData.toEntity(reportEntity, lumpSumsById, unitCostsById, investmentsById)
                     )
                 }
             }
@@ -110,8 +109,9 @@ class ProjectPartnerReportExpenditurePersistenceProvider(
             parkedExpenditure.parkedFrom.clone(
                 newReportToBeLinked = reportEntity,
                 clonedAttachment = null,
-                comment = parkedExpenditure.parkedFrom.translatedValues.extractField { it.comment },
-                description = parkedExpenditure.parkedFrom.translatedValues.extractField { it.description },
+                lumpSumResolver = { reportLumpSumRepository.findByReportEntityIdAndProgrammeLumpSumId(reportId, programmeLumpSumId = it) },
+                unitCostResolver = { reportUnitCostRepository.findByReportEntityIdAndProgrammeUnitCostId(reportId, programmeUnitCostId = it) },
+                investmentResolver = { reportInvestmentRepository.findByReportEntityIdAndInvestmentId(reportId, projectInvestmentId = it) },
             )
         ).toModel()
     }

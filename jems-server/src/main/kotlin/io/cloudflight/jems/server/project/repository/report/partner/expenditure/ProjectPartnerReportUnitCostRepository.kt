@@ -8,10 +8,13 @@ import java.math.BigDecimal
 
 @Repository
 interface ProjectPartnerReportUnitCostRepository : JpaRepository<PartnerReportUnitCostEntity, Long> {
+
     fun findByReportEntityPartnerIdAndReportEntityIdOrderByIdAsc(
         partnerId: Long,
         reportId: Long,
     ): MutableList<PartnerReportUnitCostEntity>
+
+    fun findByReportEntityIdAndProgrammeUnitCostId(reportId: Long, programmeUnitCostId: Long): PartnerReportUnitCostEntity
 
     @Query("""
         SELECT new kotlin.Pair(

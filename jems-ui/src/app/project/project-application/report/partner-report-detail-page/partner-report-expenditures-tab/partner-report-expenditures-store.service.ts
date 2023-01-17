@@ -8,7 +8,7 @@ import {
   ProjectPartnerReportDTO,
   ProjectPartnerReportExpenditureCostDTO,
   ProjectPartnerReportExpenditureCostsService,
-  ProjectPartnerReportLumpSumDTO,
+  ProjectPartnerReportLumpSumDTO, ProjectPartnerReportParkedExpenditureDTO,
   ProjectPartnerReportUnitCostDTO,
   ProjectReportFileMetadataDTO
 } from '@cat/api';
@@ -38,6 +38,7 @@ export class PartnerReportExpendituresStore {
   contractIDs$: Observable<IdNamePairDTO[]>;
   investmentsSummary$: Observable<InvestmentSummary[]>;
   expendituresCosts$: Observable<ProjectPartnerReportExpenditureCostDTO[]>;
+  parkedExpenditures$: Observable<ProjectPartnerReportParkedExpenditureDTO[]>;
   currencies$: Observable<CurrencyDTO[]>;
   currentReport$: Observable<ProjectPartnerReportDTO>;
   refreshExpenditures$ = new BehaviorSubject<void>(undefined);
@@ -54,6 +55,7 @@ export class PartnerReportExpendituresStore {
               private routingService: RoutingService,
               private partnerReportPageStore: PartnerReportPageStore) {
     this.expendituresCosts$ = this.partnerReportExpenditureCosts();
+    this.parkedExpenditures$ = this.parkedExpenditures();
     this.costCategories$ = this.costCategories();
     this.isEditable$ = this.partnerReportDetailPageStore.reportEditable$;
     this.contractIDs$ = this.reportProcurementPageStore.getProcurementList();
@@ -78,6 +80,23 @@ export class PartnerReportExpendituresStore {
     );
   }
 
+  deleteParkedExpenditure(expenditureId: number): Observable<any> {
+    return this.partnerReportDetailPageStore.partnerId$.pipe(
+      switchMap(partnerId => this.partnerReportExpenditureCostsService.deleteParkedExpenditure(expenditureId, partnerId as number)),
+      tap(() => this.refreshExpenditures$.next(undefined)),
+    );
+  }
+
+  reIncludeParkedExpenditure(expenditureId: number): Observable<any> {
+    return combineLatest([
+      this.partnerReportDetailPageStore.partnerId$,
+      this.partnerReportDetailPageStore.partnerReportId$,
+    ]).pipe(
+      switchMap(([partnerId, reportId]) => this.partnerReportExpenditureCostsService.reIncludeParkedExpenditure(expenditureId, partnerId as number, reportId)),
+      tap(() => this.refreshExpenditures$.next(undefined)),
+    );
+  }
+
   private partnerReportExpenditureCosts(): Observable<ProjectPartnerReportExpenditureCostDTO[]> {
     const initialExpenditureCosts$ = combineLatest([
       this.partnerReportDetailPageStore.partnerId$,
@@ -91,6 +110,20 @@ export class PartnerReportExpendituresStore {
     );
 
     return merge(initialExpenditureCosts$, this.expendituresUpdated$);
+  }
+
+  private parkedExpenditures(): Observable<ProjectPartnerReportParkedExpenditureDTO[]> {
+     return combineLatest([
+      this.partnerReportDetailPageStore.partnerId$,
+       this.partnerReportDetailPageStore.partnerReportId$,
+      this.refreshExpenditures$,
+    ]).pipe(
+      switchMap(([partnerId, reportId, _]) =>
+        this.partnerReportExpenditureCostsService.getAvailableParkedExpenditures(partnerId as number, reportId, 0, 25, 'id,desc')
+      ),
+      tap(data => Log.info('Fetched list of expenditures for partner report', this, data)),
+      map(data => data.content),
+    );
   }
 
   private costCategories(): Observable<string[]> {

@@ -9,6 +9,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.ReportSta
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
 import io.mockk.clearMocks
 import io.mockk.every
@@ -121,24 +122,29 @@ internal class GetProjectPartnerReportExpenditureCalculatorTest : UnitTest() {
     }
 
     @Test
-    fun `getContribution and fill in, but empty rates`() {
+    fun `getContribution and fill in, but not parked ones`() {
         val report = mockk<ProjectPartnerReport>()
         every { report.status } returns ReportStatus.Draft
         every { reportPersistence.getPartnerReportById(PARTNER_ID, 76L) } returns report
 
-        every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, reportId = 76L) } returns
-            // those should be removed, if persisted by accident
-            listOf(expenditure(10L)
-                .copy(currencyConversionRate = BigDecimal.ONE, declaredAmountAfterSubmission = BigDecimal.TEN)
-            )
+        val parked_11 = mockk<ExpenditureParkingMetadata>()
+        every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, reportId = 76L) } returns listOf(
+            expenditure(10L)
+                .copy(currencyConversionRate = BigDecimal.ONE, declaredAmountAfterSubmission = BigDecimal.TEN),
+            expenditure(11L)
+                .copy(currencyConversionRate = BigDecimal.ONE, declaredAmountAfterSubmission = BigDecimal.TEN, parkingMetadata = parked_11)
+        )
 
         every { currencyPersistence.findAllByIdYearAndIdMonth(year = YEAR, month = MONTH) } returns emptyList()
 
-        assertThat(calculator.getExpenditureCosts(PARTNER_ID, reportId = 76L))
-            .containsExactly(filledInExpenditure(10L).copy(
-                currencyConversionRate = null,
-                declaredAmountAfterSubmission = null,
-            ))
+        assertThat(calculator.getExpenditureCosts(PARTNER_ID, reportId = 76L)).containsExactly(
+            filledInExpenditure(10L).copy(currencyConversionRate = null, declaredAmountAfterSubmission = null),
+            filledInExpenditure(11L).copy(
+                currencyConversionRate = BigDecimal.ONE,
+                declaredAmountAfterSubmission = BigDecimal.valueOf(2431L, 2),
+                parkingMetadata = parked_11,
+            ),
+        )
     }
 
     @ParameterizedTest(name = "getContribution and NOT fill in currencies (status {0})")
