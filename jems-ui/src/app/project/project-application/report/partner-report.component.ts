@@ -34,6 +34,7 @@ import {
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {ColumnWidth} from '@common/components/table/model/column-width';
 import StatusEnum = ProjectPartnerReportSummaryDTO.StatusEnum;
+import {ProjectVersionStore} from "@project/common/services/project-version-store.service";
 
 @UntilDestroy()
 @Component({
@@ -62,6 +63,9 @@ export class PartnerReportComponent {
   @ViewChild('deleteCell', {static: true})
   deleteCell: TemplateRef<any>;
 
+  @ViewChild('versionCell', {static: true})
+  versionCell: TemplateRef<any>;
+
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
   tableConfiguration: TableConfiguration;
   actionPending = false;
@@ -76,7 +80,10 @@ export class PartnerReportComponent {
     partnerReports: ProjectPartnerReportSummaryDTO[];
     partner: ProjectPartnerSummaryDTO;
     canEditReport: boolean;
+    currentApprovedVersion: string | undefined;
   }>;
+
+  currentApprovedVersion: string;
 
   readonly isControlButtonVisible$: Observable<boolean> = combineLatest([
     this.pageStore.institutionUserCanViewControlReports$,
@@ -94,6 +101,7 @@ export class PartnerReportComponent {
 
   constructor(
     public pageStore: PartnerReportPageStore,
+    public versionStore: ProjectVersionStore,
     public store: PartnerControlReportStore,
     public partnerReportDetail: PartnerReportDetailPageStore,
     private activatedRoute: ActivatedRoute,
@@ -109,8 +117,9 @@ export class PartnerReportComponent {
       pageStore.partnerSummary$,
       pageStore.userCanEditReport$,
       pageStore.institutionUserCanViewControlReports$,
+      versionStore.lastApprovedOrContractedVersion$
     ]).pipe(
-      map(([partnerReports, partner, canEditReport, isController]) => {
+      map(([partnerReports, partner, canEditReport, isController, approvedVersion]) => {
           return {
             totalElements: partnerReports.totalElements,
             partnerReports: partnerReports.content.map(report => ({
@@ -119,6 +128,7 @@ export class PartnerReportComponent {
             })),
             partner,
             canEditReport,
+            currentApprovedVersion: approvedVersion?.version
           };
         }
       ),
@@ -128,6 +138,7 @@ export class PartnerReportComponent {
           if (report.status === StatusEnum.Draft && report.reportNumber === data.totalElements) {
             this.deletableReportId = report.reportNumber;
           }
+          this.currentApprovedVersion = data.currentApprovedVersion ?? ''
           const someDraft = data.partnerReports
             .find((x) => x.status === ProjectPartnerReportSummaryDTO.StatusEnum.Draft);
           const someCertified = data.partnerReports
@@ -168,7 +179,8 @@ export class PartnerReportComponent {
         },
         {
           displayedColumn: 'project.application.partner.reports.table.version',
-          elementProperty: 'linkedFormVersion'
+          elementProperty: 'linkedFormVersion',
+          customCellTemplate: this.versionCell
         },
         {
           displayedColumn: 'project.application.partner.report.reporting.period',
@@ -308,5 +320,9 @@ export class PartnerReportComponent {
         tap(() => this.showSuccessMessageAfterDeletion()),
         catchError((error) => this.showErrorMessage(error.error)),
       ).subscribe();
+  }
+
+  isCurrentVersionLatestApproved(reportVersion: string): boolean {
+    return reportVersion !== this.currentApprovedVersion;
   }
 }
