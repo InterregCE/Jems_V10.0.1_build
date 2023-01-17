@@ -222,13 +222,13 @@ export class ContractMonitoringExtensionComponent {
     }
     this.tableData = [...this.additionalEntryIntoForceItems.controls];
 
-    if (status === ProjectStatusDTO.StatusEnum.MODIFICATIONPRECONTRACTING
+    if (!isEditable
+      || status === ProjectStatusDTO.StatusEnum.MODIFICATIONPRECONTRACTING
       || status === ProjectStatusDTO.StatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED
       || status === ProjectStatusDTO.StatusEnum.INMODIFICATION
       || status === ProjectStatusDTO.StatusEnum.MODIFICATIONSUBMITTED) {
       this.lumpSumsForm.disable();
     }
-
     this.formService.setError(null);
   }
 
@@ -316,7 +316,8 @@ export class ContractMonitoringExtensionComponent {
   }
 
   getPeriodLabel(periodId: number, periods: ProjectPeriodForMonitoringDTO[]): string {
-    const period = periods.find(it => it.number === periodId);
+    let period: any = periods.find(it => it.number === periodId);
+    period = {...period, periodNumber: period.number};
     if (!period && periodId !== 0 && periodId !== 255) {
       return '';
     }
