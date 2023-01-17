@@ -72,6 +72,6 @@ context('Partner reports tests', () => {
       .should('contain.text', reportInfo.coFinancingSourceAndRate1)
       .should('contain.text', reportInfo.coFinancingSourceAndRate2);
     cy.contains('Country').next().should('contain.text', reportInfo.country);
-    cy.contains('Local currency (accoridng to InforEuro)').next().should('contain.text', reportInfo.localCurrency);
+    cy.contains('Local currency (according to InforEuro)').next().should('contain.text', reportInfo.localCurrency);
   }
 });
