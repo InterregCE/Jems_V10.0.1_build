@@ -66,8 +66,8 @@ table {
 }
 
 .column-checkbox {
-  min-width: 5rem !important;
-  max-width: 5rem !important;
+  min-width: 10rem !important;
+  max-width: 10rem !important;
 }
 
 .column-comment {
@@ -156,4 +156,10 @@ jems-advance-payments-attachments {
   width: 100%;
   display: inline-block;
   padding-top: 1rem;
+}
+
+.display-row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
 }
