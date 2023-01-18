@@ -100,7 +100,7 @@ export class ProgrammeStateAidConstants {
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.GBERARTICLE18,
-      measureDisplayValue: 'GBER Aricle 18',
+      measureDisplayValue: 'GBER Article 18',
       name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Aid for consultancy in favour of SMEs'}],
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'GBER Article 18'}],
       maxIntensity: 50,
@@ -396,7 +396,7 @@ export class ProgrammeStateAidConstants {
     },
     {
       measure: ProgrammeStateAidDTO.MeasureEnum.GBERARTICLE38,
-      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Innvestment aid for energy efficiency measures'}],
+      name: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'Investment aid for energy efficiency measures'}],
       measureDisplayValue: 'GBER Article 38',
       abbreviatedName: [{language: DEFAULT_FALLBACK_LANGUAGE, translation: 'GBER Article 38'}],
       maxIntensity: 30,
