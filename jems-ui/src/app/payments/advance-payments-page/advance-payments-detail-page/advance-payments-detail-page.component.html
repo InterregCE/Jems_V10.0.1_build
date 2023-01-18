@@ -57,11 +57,11 @@
                             {{ 'payments.detail.table.header.installment.comment' | translate }}
                         </div>
 
-                        <div class="column-checkbox justify-center" jemsNoWidthLimit jemsMultiColumnRow>
+                        <div class="column-checkbox justify-start" jemsNoWidthLimit jemsMultiColumnRow>
                             {{ 'payments.detail.table.header.installment.save.payment.info' | translate }}
                         </div>
 
-                        <div class="column-checkbox justify-center" jemsNoWidthLimit jemsMultiColumnRow>
+                        <div class="column-checkbox justify-start" jemsNoWidthLimit jemsMultiColumnRow>
                             {{ 'payments.detail.table.header.installment.confirm.payment' | translate }}
                         </div>
                     </div>
@@ -184,26 +184,29 @@
                                 </mat-form-field>
                             </div>
 
-                            <div class="column-checkbox justify-center display-row">
-                                <mat-checkbox
-                                        [disabled]="isPaymentAuthorisationDisabled()"
-                                        (change)="setPaymentAuthorised($event.checked)"
-                                        [formControlName]="constants.FORM_CONTROL_NAMES.paymentAuthorized">
-                                </mat-checkbox>
-                                <div>
-                                    <span>{{getFormattedDate(advancePayment.get(constants.FORM_CONTROL_NAMES.paymentAuthorizedDate)?.value)}}</span>
-                                    <span  jemsText class="text-overflow-ellipsis">{{advancePayment.get(constants.FORM_CONTROL_NAMES.paymentAuthorizedUser)?.value?.email}}</span>
+                            <div class="column-checkbox justify-start">
+                                <div class="display-row">
+                                    <mat-checkbox
+                                            [disabled]="isPaymentAuthorisationDisabled()"
+                                            (change)="setPaymentAuthorised($event.checked)"
+                                            [formControlName]="constants.FORM_CONTROL_NAMES.paymentAuthorized">
+                                    </mat-checkbox>
+                                    <div class="column-checkbox-text-content">
+                                        <span>{{getFormattedDate(advancePayment.get(constants.FORM_CONTROL_NAMES.paymentAuthorizedDate)?.value)}}</span>
+                                        <span  jemsText class="text-overflow-ellipsis">{{advancePayment.get(constants.FORM_CONTROL_NAMES.paymentAuthorizedUser)?.value?.email}}</span>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div  class="column-checkbox justify-center display-row">
-                                <mat-checkbox
-                                        (change)="setConfirmPaymentDate($event.checked)"
-                                        [formControlName]="constants.FORM_CONTROL_NAMES.paymentConfirmed">
-                                </mat-checkbox>
-                                <div>
-                                    <span>{{getFormattedDate(advancePayment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedDate)?.value)}}</span>
-                                    <span jemsText class="text-overflow-ellipsis">{{advancePayment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedUser)?.value?.email}}</span>
+                            <div class="column-checkbox justify-start">
+                                <div class="display-row">
+                                    <mat-checkbox (change)="setConfirmPaymentDate($event.checked)"
+                                                  [formControlName]="constants.FORM_CONTROL_NAMES.paymentConfirmed">
+                                    </mat-checkbox>
+                                    <div class="column-checkbox-text-content">
+                                        <span>{{getFormattedDate(advancePayment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedDate)?.value)}}</span>
+                                        <span jemsText class="text-overflow-ellipsis">{{advancePayment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedUser)?.value?.email}}</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>

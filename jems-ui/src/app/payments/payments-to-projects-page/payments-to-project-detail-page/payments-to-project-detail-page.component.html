@@ -93,7 +93,7 @@
                                     <div class="column-installment-amount-paid justify-end" >{{ 'payments.detail.table.header.installment.amount.paid' | translate }}</div>
                                     <div class="column-installment-date justify-start">{{ 'payments.detail.table.header.installment.payment.date' | translate }}</div>
                                     <div class="column-installment-comment">{{ 'payments.detail.table.header.installment.comment' | translate }}</div>
-                                    <div class="column-installment-authorise-checkbox justify-center">
+                                    <div class="column-installment-authorise-checkbox justify-start">
                                         {{ 'payments.detail.table.header.installment.save.payment.info' | translate }}
                                         <jems-context-info
                                                 infoPosition="right"
@@ -101,7 +101,7 @@
                                         </jems-context-info>
                                     </div>
 
-                                    <div class="column-installment-confirm-checkbox justify-center">
+                                    <div class="column-installment-confirm-checkbox justify-start">
                                         {{ 'payments.detail.table.header.installment.confirm.payment' | translate }}
                                         <jems-context-info
                                                 infoPosition="right"
@@ -150,28 +150,31 @@
                                                     </mat-error>
                                                 </mat-form-field>
                                             </div>
-                                            <div class="justify-center">
-                                                <mat-checkbox
-                                                              [disabled]="isPaymentAuthorisationDisabled(index, installmentIndex)"
-                                                              (change)="setSavePaymentDate($event.checked, index, installmentIndex)"
-                                                              [formControlName]="constants.FORM_CONTROL_NAMES.savePaymentInfo">
-                                                </mat-checkbox>
-                                                <div class="display-column">
-                                                    <span>{{getFormattedDate(installment.get(constants.FORM_CONTROL_NAMES.savePaymentDate).value)}}</span>
-                                                    <span  jemsText class="text-overflow-ellipsis">{{installment.get(constants.FORM_CONTROL_NAMES.savePaymentInfoUser).value?.email}}</span>
+                                            <div class="justify-start">
+                                                <div class="display-row">
+                                                    <mat-checkbox
+                                                                  [disabled]="isPaymentAuthorisationDisabled(index, installmentIndex)"
+                                                                  (change)="setSavePaymentDate($event.checked, index, installmentIndex)"
+                                                                  [formControlName]="constants.FORM_CONTROL_NAMES.savePaymentInfo">
+                                                    </mat-checkbox>
+                                                    <div class="column-checkbox-text-content">
+                                                        <span>{{getFormattedDate(installment.get(constants.FORM_CONTROL_NAMES.savePaymentDate).value)}}</span>
+                                                        <span  jemsText class="text-overflow-ellipsis">{{installment.get(constants.FORM_CONTROL_NAMES.savePaymentInfoUser).value?.email}}</span>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div  class="justify-center">
-                                                <mat-checkbox
-                                                              (change)="setConfirmPaymentDate($event.checked, index, installmentIndex)"
-                                                              [disabled]="isPaymentConfirmationDisabled(index, installmentIndex)"
-                                                              [formControlName]="constants.FORM_CONTROL_NAMES.paymentConfirmed">
-                                                </mat-checkbox>
-                                                <div class="display-column">
-                                                    <span>{{getFormattedDate(installment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedDate).value)}}</span>
-                                                    <span jemsText class="text-overflow-ellipsis">{{installment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedUser).value?.email}}</span>
+                                            <div class="justify-start">
+                                                <div class="display-row">
+                                                    <mat-checkbox
+                                                                  (change)="setConfirmPaymentDate($event.checked, index, installmentIndex)"
+                                                                  [disabled]="isPaymentConfirmationDisabled(index, installmentIndex)"
+                                                                  [formControlName]="constants.FORM_CONTROL_NAMES.paymentConfirmed">
+                                                    </mat-checkbox>
+                                                    <div class="column-checkbox-text-content">
+                                                        <span>{{getFormattedDate(installment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedDate).value)}}</span>
+                                                        <span jemsText class="text-overflow-ellipsis">{{installment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedUser).value?.email}}</span>
+                                                    </div>
                                                 </div>
-
                                             </div>
                                             <div *ngIf="userCanEdit$ | async">
                                                 <button *ngIf="canInstallmentBeDeleted(index, installmentIndex)"
