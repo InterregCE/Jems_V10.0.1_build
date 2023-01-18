@@ -6,7 +6,7 @@ In this directory there are files, which are used to run Cypress continuous inte
 If you want to run cypress locally, do the following:
 - run `npm i` in this directory, which will download and install Cypress and all its dependencies
 - set the following environment variables:
-  - `CYPRESS_defaultPassword` to `Jems@2020admin@jems.eu`
+  - `CYPRESS_defaultPassword` to our default password
   (The password can be set by updating the corresponding field in `cypress.config.ts`)
 - run `npm run open` to start Cypress
   - if that will fail because `Cypress verification timed out`, run the command again or run `npx cypress verify`
