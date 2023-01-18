@@ -16,6 +16,7 @@ import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackag
 import io.cloudflight.jems.server.project.repository.ApplicationVersionNotFoundException
 import io.cloudflight.jems.server.project.repository.ProjectNotFoundException
 import io.cloudflight.jems.server.project.repository.ProjectRepository
+import io.cloudflight.jems.server.project.repository.ProjectVersionPersistenceProvider
 import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityRepository
@@ -23,7 +24,13 @@ import io.cloudflight.jems.server.project.service.associatedorganization.Project
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionSpf
-import io.cloudflight.jems.server.project.service.partner.model.*
+import io.cloudflight.jems.server.project.service.partner.model.NaceGroupLevel
+import io.cloudflight.jems.server.project.service.partner.model.PartnerSubType
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerPaymentSummary
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
 import io.cloudflight.jems.server.utils.partner.CREATED_AT_TIMESTAMP
 import io.cloudflight.jems.server.utils.partner.PARTNER_ID
 import io.cloudflight.jems.server.utils.partner.PROJECT_ID
@@ -42,12 +49,13 @@ import io.cloudflight.jems.server.utils.partner.stateAid
 import io.cloudflight.jems.server.utils.partner.stateAidActivity
 import io.cloudflight.jems.server.utils.partner.stateAidEmpty
 import io.cloudflight.jems.server.utils.partner.stateAidEntity
-import io.mockk.every
 import io.mockk.MockKAnnotations
-import io.mockk.mockk
-import io.mockk.verify
-import io.mockk.slot
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.mockk
+import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -86,6 +94,9 @@ class PartnerPersistenceProviderTest {
     @MockK
     lateinit var programmeStateAidRepository: ProgrammeStateAidRepository
 
+    @RelaxedMockK
+    lateinit var projectVersionPersistenceProvider: ProjectVersionPersistenceProvider
+
     @MockK
     lateinit var projectVersionRepo: ProjectVersionRepository
 
@@ -106,7 +117,9 @@ class PartnerPersistenceProviderTest {
             projectPartnerStateAidRepository,
             projectAssociatedOrganizationService,
             workPackageActivityRepository,
-            programmeStateAidRepository
+            programmeStateAidRepository,
+            projectVersionPersistenceProvider,
+            projectVersionRepo
         )
         //for all delete tests
         every { projectAssociatedOrganizationService.refreshSortNumbers(any()) } answers {}
@@ -493,6 +506,8 @@ class PartnerPersistenceProviderTest {
     @Test
     fun findAllByProjectIdWithContributionsForDropdown() {
         val partnerWithContributionsRow1: PartnerWithContributionsRow = mockk()
+        val timestamp = Timestamp.valueOf(LocalDateTime.now())
+        val version = "1.0"
         every { partnerWithContributionsRow1.partnerId } returns 1L
         every { partnerWithContributionsRow1.partnerAbbreviation } returns "A"
         every { partnerWithContributionsRow1.partnerRole } returns ProjectPartnerRole.PARTNER
@@ -528,12 +543,15 @@ class PartnerPersistenceProviderTest {
         every { partnerWithContributionsRow2.partnerContributionSpfStatus } returns ProjectPartnerContributionStatusDTO.Public
         every { partnerWithContributionsRow2.partnerContributionSpfAmount } returns BigDecimal(150)
 
-        every { projectPartnerRepository.findAllByProjectIdWithContributionsForDropdown(1L) } returns listOf(
+        every { projectVersionPersistenceProvider.getLatestVersionOrNull(PROJECT_ID)} returns version
+        every { projectVersionRepo.findTimestampByVersion(PROJECT_ID, version) } returns timestamp
+
+        every { projectPartnerRepository.findAllByProjectIdWithContributionsForDropdownAsOfTimestamp(1L, any()) } returns listOf(
             partnerWithContributionsRow1,
             partnerWithContributionsRow2
         )
 
-        assertThat(persistence.findAllByProjectIdWithContributionsForDropdown(1L)).containsExactly(
+        assertThat(persistence.findAllByProjectIdWithContributionsForDropdown(1L, null)).containsExactly(
             ProjectPartnerPaymentSummary(
                 partnerSummary = ProjectPartnerSummary(
                     id = 1L,

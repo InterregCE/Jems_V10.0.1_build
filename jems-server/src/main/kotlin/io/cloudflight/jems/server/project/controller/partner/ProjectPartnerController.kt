@@ -38,8 +38,8 @@ class ProjectPartnerController(
     override fun getProjectPartnersForDropdown(projectId: Long, pageable: Pageable, version: String?): List<ProjectPartnerSummaryDTO> =
         getProjectPartner.findAllByProjectIdForDropdown(projectId, pageable.sort, version).toDto()
 
-    override fun getProjectPartnersAndContributions(projectId: Long): List<ProjectPartnerPaymentSummaryDTO> =
-        getProjectPartner.findAllByProjectIdWithContributionsForDropdown(projectId).toDtoList()
+    override fun getProjectPartnersAndContributions(projectId: Long, version: String?): List<ProjectPartnerPaymentSummaryDTO> =
+        getProjectPartner.findAllByProjectIdWithContributionsForDropdown(projectId, version).toDtoList()
 
     override fun getProjectPartnerById(partnerId: Long, version: String?): ProjectPartnerDetailDTO =
         getProjectPartner.getById(partnerId, version).toDto()

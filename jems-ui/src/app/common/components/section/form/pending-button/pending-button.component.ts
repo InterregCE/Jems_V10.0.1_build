@@ -26,12 +26,12 @@ export class PendingButtonComponent {
   isIconButton = false;
   @Input()
   buttonOptions: {
-    class: string,
-    fontSet: string
+    class: string;
+    fontSet: string;
   } = {
     class: '',
     fontSet: ''
-  }
+  };
 
   @Output()
   clicked = new EventEmitter<void>();

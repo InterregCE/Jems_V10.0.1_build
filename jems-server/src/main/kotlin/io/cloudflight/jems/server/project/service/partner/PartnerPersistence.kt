@@ -33,7 +33,7 @@ interface PartnerPersistence {
 
     fun findAllByProjectIdForDropdown(projectId: Long, sort: Sort, version: String? = null): List<ProjectPartnerSummary>
 
-    fun findAllByProjectIdWithContributionsForDropdown(projectId: Long): List<ProjectPartnerPaymentSummary>
+    fun findAllByProjectIdWithContributionsForDropdown(projectId: Long, version: String?): List<ProjectPartnerPaymentSummary>
 
     // used for authorization
     fun getProjectIdForPartnerId(id: Long, version: String? = null): Long

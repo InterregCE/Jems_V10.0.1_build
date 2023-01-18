@@ -199,6 +199,7 @@ fun AdvancePaymentEntity.toDetailModel() = AdvancePaymentDetail(
     projectId = projectId,
     projectCustomIdentifier = projectCustomIdentifier,
     projectAcronym = projectAcronym ?: "",
+    projectVersion = projectVersion,
     partnerId = partnerId,
     partnerType = partnerRole,
     partnerNumber = partnerSortNumber,

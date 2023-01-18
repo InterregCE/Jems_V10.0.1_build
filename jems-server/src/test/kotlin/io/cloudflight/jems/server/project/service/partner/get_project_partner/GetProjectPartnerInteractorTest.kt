@@ -146,10 +146,10 @@ internal class GetProjectPartnerInteractorTest : UnitTest() {
 
     @Test
     fun findAllByProjectIdWithContributionsForDropdown() {
-        every { persistence.findAllByProjectIdWithContributionsForDropdown(1) } returns listOf(
+        every { persistence.findAllByProjectIdWithContributionsForDropdown(1, null) } returns listOf(
             projectPartnerPaymentSummary
         )
-        Assertions.assertThat(interactor.findAllByProjectIdWithContributionsForDropdown(1))
+        Assertions.assertThat(interactor.findAllByProjectIdWithContributionsForDropdown(1, null))
             .containsExactly(projectPartnerPaymentSummary)
     }
 

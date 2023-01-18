@@ -579,13 +579,13 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
             partnerContributionSpf.status AS partnerContributionSpfStatus,
             partnerContributionSpf.amount AS partnerContributionSpfAmount
         FROM optimization_project_version AS opv
-            INNER JOIN project_partner FOR SYSTEM_TIME AS OF TIMESTAMP opv.last_approved_version AS partner
+            INNER JOIN project_partner FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS partner
                 ON partner.project_id = opv.project_id
-            INNER JOIN project_partner_contribution FOR SYSTEM_TIME AS OF TIMESTAMP opv.last_approved_version AS partnerContribution
+            INNER JOIN project_partner_contribution FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS partnerContribution
                 ON partner.id = partnerContribution.partner_id
-            LEFT OUTER JOIN project_partner_contribution_spf FOR SYSTEM_TIME AS OF TIMESTAMP opv.last_approved_version AS partnerContributionSpf
+            LEFT OUTER JOIN project_partner_contribution_spf FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS partnerContributionSpf
                 ON partner.id = partnerContributionSpf.partner_id
-            INNER JOIN project_partner_co_financing FOR SYSTEM_TIME AS OF TIMESTAMP opv.last_approved_version AS partnerCoFinancing
+            INNER JOIN project_partner_co_financing FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS partnerCoFinancing
                 ON partner.id = partnerCoFinancing.partner_id
             INNER JOIN programme_fund AS programmeFund
                 ON partnerCoFinancing.programme_fund_id = programmeFund.id
@@ -594,5 +594,5 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
         WHERE partner.project_id = :projectId
     """, nativeQuery = true
     )
-    fun findAllByProjectIdWithContributionsForDropdown(projectId: Long): List<PartnerWithContributionsRow>
+    fun findAllByProjectIdWithContributionsForDropdownAsOfTimestamp(projectId: Long, timestamp: Timestamp): List<PartnerWithContributionsRow>
 }

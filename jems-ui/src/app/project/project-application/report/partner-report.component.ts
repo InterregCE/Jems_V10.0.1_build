@@ -34,7 +34,7 @@ import {
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {ColumnWidth} from '@common/components/table/model/column-width';
 import StatusEnum = ProjectPartnerReportSummaryDTO.StatusEnum;
-import {ProjectVersionStore} from "@project/common/services/project-version-store.service";
+import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 
 @UntilDestroy()
 @Component({
@@ -138,7 +138,7 @@ export class PartnerReportComponent {
           if (report.status === StatusEnum.Draft && report.reportNumber === data.totalElements) {
             this.deletableReportId = report.reportNumber;
           }
-          this.currentApprovedVersion = data.currentApprovedVersion ?? ''
+          this.currentApprovedVersion = data.currentApprovedVersion ?? '';
           const someDraft = data.partnerReports
             .find((x) => x.status === ProjectPartnerReportSummaryDTO.StatusEnum.Draft);
           const someCertified = data.partnerReports

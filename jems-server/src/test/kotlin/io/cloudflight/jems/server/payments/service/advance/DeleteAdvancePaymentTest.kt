@@ -49,6 +49,7 @@ class DeleteAdvancePaymentTest: UnitTest() {
         private const val projectId = 2L
         private const val partnerId = 3L
         private const val fundId = 4L
+        private const val version = "1.0"
 
         private val fund = ProgrammeFund(
             id = fundId,
@@ -99,6 +100,7 @@ class DeleteAdvancePaymentTest: UnitTest() {
             projectId = projectId,
             projectCustomIdentifier = project.customIdentifier,
             projectAcronym = project.acronym,
+            projectVersion = version,
             partnerId = partnerId,
             partnerType = ProjectPartnerRole.PARTNER,
             partnerNumber = partnerDetail.sortNumber,
