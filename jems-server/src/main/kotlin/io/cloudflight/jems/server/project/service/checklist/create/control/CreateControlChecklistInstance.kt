@@ -6,7 +6,6 @@ import io.cloudflight.jems.server.project.authorization.CanEditPartnerControlRep
 import io.cloudflight.jems.server.project.service.checklist.ControlChecklistInstancePersistence
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.project.service.checklist.model.CreateChecklistInstanceModel
-import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -24,7 +23,7 @@ class CreateControlChecklistInstance(
     override fun create(partnerId: Long, reportId: Long, createCheckList: CreateChecklistInstanceModel): ChecklistInstanceDetail {
         val reportStatus = this.projectPartnerReportPersistence.getPartnerReportStatusAndVersion(partnerId, reportId).status
 
-        if(reportStatus.controlNotOpenAnymore())
+        if (reportStatus.controlNotOpenAnymore())
             throw CreateControlChecklistInstanceStatusNotAllowedException()
 
         return persistence.create(

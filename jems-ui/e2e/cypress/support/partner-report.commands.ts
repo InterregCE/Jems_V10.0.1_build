@@ -11,6 +11,8 @@ declare global {
       runPreSubmissionPartnerReportCheck(partnerId: number, reportId: number);
 
       submitPartnerReport(partnerId: number, reportId: number);
+
+      startControlWork(partnerId: number, reportId: number);
     }
   }
 }
@@ -52,6 +54,13 @@ Cypress.Commands.add('submitPartnerReport', (partnerId: number, reportId: number
     method: 'POST',
     url: `api/project/report/partner/submit/${partnerId}/${reportId}`,
   });
+});
+
+Cypress.Commands.add('startControlWork', (partnerId: number, reportId: number) => {
+  cy.request({
+    method: 'POST',
+    url: `api/project/report/partner/startControl/${partnerId}/${reportId}`,
+  })
 });
 
 export {}
