@@ -39,6 +39,7 @@ export class PartnerReportProcurementAttachmentComponent implements OnChanges {
   acceptedFilesTypes = AcceptedFileTypesConstants.acceptedFilesTypes;
   maximumAllowedFileSizeInMB: number;
   fileSizeOverLimitError$ = new Subject<boolean>();
+  isUploadInProgress = false;
 
   data$: Observable<{
     attachments: FileListItem[];
@@ -87,12 +88,13 @@ export class PartnerReportProcurementAttachmentComponent implements OnChanges {
   }
 
   uploadFile(target: any): void {
+    this.isUploadInProgress = true;
     FileListComponent.doFileUploadWithValidation(
       target,
       this.fileSizeOverLimitError$,
       this.procurementStore.error$,
       this.maximumAllowedFileSizeInMB,
-      file => this.procurementStore.uploadProcurementFile(file),
+      file => this.procurementStore.uploadProcurementFile(file).pipe(finalize(() => this.isUploadInProgress = false)),
     );
   }
 

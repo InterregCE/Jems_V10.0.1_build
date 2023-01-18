@@ -8,7 +8,7 @@ import {
   ReportFileManagementStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-annexes-tab/report-file-management-store';
 import {PaymentAdvanceAttachmentService, ProjectReportFileDTO, UserRoleDTO} from '@cat/api';
-import {map, take} from 'rxjs/operators';
+import {finalize, map, take} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {FileListComponent} from '@common/components/file-list/file-list.component';
 import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
@@ -35,6 +35,7 @@ export class AdvancePaymentsAttachmentsComponent implements OnChanges {
   acceptedFilesTypes = AcceptedFileTypesConstants.acceptedFilesTypes;
   maximumAllowedFileSizeInMB: number;
   fileSizeOverLimitError$ = new Subject<boolean>();
+  isUploadInProgress = false;
 
   data$: Observable<{
     attachments: PageFileList;
@@ -85,12 +86,13 @@ export class AdvancePaymentsAttachmentsComponent implements OnChanges {
   }
 
   uploadFile(target: any): void {
+    this.isUploadInProgress = true;
     FileListComponent.doFileUploadWithValidation(
       target,
       this.fileSizeOverLimitError$,
       this.advancePaymentAttachmentsStore.error$,
       this.maximumAllowedFileSizeInMB,
-      file => this.advancePaymentAttachmentsStore.uploadPaymentFile(file),
+      file => this.advancePaymentAttachmentsStore.uploadPaymentFile(file).pipe(finalize(() => this.isUploadInProgress = false)),
     );
   }
 

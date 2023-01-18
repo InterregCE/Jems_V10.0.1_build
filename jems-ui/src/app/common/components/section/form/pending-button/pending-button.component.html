@@ -1,15 +1,25 @@
-<button jemsText class="action-button" type="button" mat-raised-button
+<button *ngIf="!isIconButton" jemsText class="action-button" type="button" mat-raised-button
         [class.mat-raised-button]="type === 'primary'"
         [class.mat-stroked-button]="type === 'secondary'"
         [color]="type === 'primary' && 'primary'"
         [disabled]="disabled || pending"
         (click)="click()">
     <span>
-        <mat-icon *ngIf="icon && !pending">{{icon}}</mat-icon>
+        <mat-icon *ngIf="icon && !pending" [fontSet]="buttonOptions?.fontSet" [class]="buttonOptions?.class">{{icon}}</mat-icon>
         <mat-spinner *ngIf="pending" class="spinner mr-4" color="primary"
                      [diameter]="17">
         </mat-spinner>
         <ng-content></ng-content>
     </span>
+</button>
+
+<button *ngIf="isIconButton" jemsText type="button" mat-icon-button
+        [color]="type === 'primary' && 'primary'"
+        [disabled]="disabled || pending"
+        (click)="click()">
+        <mat-icon  [fontSet]="buttonOptions?.fontSet" [class]="buttonOptions?.class" *ngIf="icon && !pending">{{icon}}</mat-icon>
+        <mat-spinner *ngIf="pending" class="spinner mr-4" color="primary"
+                     [diameter]="17">
+        </mat-spinner>
 </button>
 

@@ -8,12 +8,13 @@
             </mat-option>
         </mat-select>
     </mat-form-field>
-    <button [disabled]="!selectedTemplate"
-            jemsText mat-raised-button color="primary" class="mb-3 mt-3"
-            (click)="createInstance()">
-        <mat-icon>add</mat-icon>
+    <jems-pending-button [disabled]="!selectedTemplate"
+                         jemsText class="mb-3 mt-3"
+                         icon="add"
+                         [pending]="isInstantiationInProgress"
+                         (clicked)="createInstance()">
         {{'checklists.instances.list.new.button' | translate}}
-    </button>
+    </jems-pending-button>
 </span>
 
 <jems-alert *ngFor="let alert of alerts$ | async" [show]="true" [type]="alert.type"

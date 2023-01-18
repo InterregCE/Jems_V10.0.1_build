@@ -8,7 +8,7 @@ import {
   ViewChildren
 } from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {catchError, map, take, tap} from 'rxjs/operators';
+import {catchError, finalize, map, take, tap} from 'rxjs/operators';
 import {HttpErrorResponse} from '@angular/common/http';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {FormService} from '@common/components/section/form/form.service';
@@ -97,6 +97,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   availableCurrenciesPerRow: CurrencyDTO[][] = [];
   contractIDs: IdNamePairDTO[] = [];
   investmentsSummary: InvestmentSummary[] = [];
+  isUploadDone = false;
 
   readonly PERIOD_PREPARATION: number = 0;
   readonly PERIOD_CLOSURE: number = 255;
@@ -587,13 +588,14 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     if (!target || expenditureId === 0) {
       return;
     }
-
+    this.isUploadDone = false;
     const serviceId = uuid();
     this.router.confirmLeaveMap.set(serviceId, true);
     this.pageStore.uploadFile(target?.files[0], expenditureId)
       .pipe(
         take(1),
-        catchError(err => this.formService.setError(err))
+        catchError(err => this.formService.setError(err)),
+        finalize(() => this.isUploadDone = true)
       )
       .subscribe(value => {
         this.attachment(expenditureIndex)?.patchValue(value);

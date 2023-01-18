@@ -40,6 +40,7 @@ export class ControlChecklistInstanceListComponent implements OnInit {
   Status = ChecklistInstanceDTO.StatusEnum;
   projectId: number;
   currentUser: UserDTO | null;
+  isInstantiationInProgress = false;
 
   @Input()
   relatedType: ProgrammeChecklistDetailDTO.TypeEnum;
@@ -153,13 +154,15 @@ export class ControlChecklistInstanceListComponent implements OnInit {
   }
 
   createInstance(): void {
+    this.isInstantiationInProgress = true;
     this.pageStore.createInstance(this.partnerId, this.reportId, this.relatedId, this.selectedTemplate.id)
       .pipe(
         tap(instanceId => this.routingService.navigate(
             ['checklist', instanceId],
             {relativeTo: this.activatedRoute}
           )
-        )
+        ),
+        finalize(() => this.isInstantiationInProgress = false)
       ).subscribe();
   }
 

@@ -8,7 +8,7 @@ import {I18nMessage} from '@common/models/I18nMessage';
 import {Alert} from '@common/components/forms/alert';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {FileListItem} from '@common/components/file-list/file-list-item';
-import {catchError, map, take} from 'rxjs/operators';
+import {catchError, finalize, map, take} from 'rxjs/operators';
 import {PageFileList} from '@common/components/file-list/page-file-list';
 import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
 import FileTypeEnum = ProjectReportFileDTO.TypeEnum;
@@ -32,6 +32,7 @@ export class ContractFilesComponent implements OnInit {
   maximumAllowedFileSizeInMB: number;
   fileSizeOverLimitError$ = new Subject<boolean>();
   acceptedFilesTypes = AcceptedFileTypesConstants.acceptedFilesTypes;
+  isUploadInProgress = false;
 
   selectedCategoryPath$: Observable<I18nMessage[]>;
 
@@ -86,9 +87,12 @@ export class ContractFilesComponent implements OnInit {
       return;
     }
 
+    this.isUploadInProgress = true;
     this.store.uploadFile(target?.files[0])
-      .pipe(take(1))
-      .subscribe();
+      .pipe(
+        take(1),
+        finalize(() => this.isUploadInProgress = false)
+      ).subscribe();
   }
 
   private fileCategories(): Observable<CategoryNode> {

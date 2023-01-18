@@ -1,10 +1,12 @@
 <input hidden #selectFile (change)="uploadFile($event?.target)" onclick="this.value=null;"
        type="file" [accept]="acceptedFilesTypes">
-<button *ngIf="isReportEditable" (click)="selectFile.click()" class="justify-start"
-        mat-icon-button color="primary"
-        matTooltip="{{ (fileMetadata?.name ? 'file.table.action.upload.overwrite.tooltip' : 'file.table.action.upload.tooltip') | translate}}">
-    <mat-icon fontSet="material-icons-outlined" class="mb-2">file_upload</mat-icon>
-</button>
+<jems-pending-button *ngIf="isReportEditable" (clicked)="selectFile.click()"
+                     [pending]="isUploadInProgress"
+                     [isIconButton]="true"
+                     [buttonOptions]="{class: 'mb-2', fontSet:'material-icons-outlined'}"
+                     icon="file_upload"
+                     matTooltip="{{ (fileMetadata?.name ? 'file.table.action.upload.overwrite.tooltip' : 'file.table.action.upload.tooltip') | translate}}">
+</jems-pending-button>
 <mat-chip-list *ngIf="fileMetadata?.name" class="file-name-chip">
     <mat-chip (click)="download.emit(fileMetadata.id)" (removed)="deleteFile(fileMetadata.id)">
         <mat-icon fontSet="material-icons-outlined" class="mr-1">insert_drive_file</mat-icon>

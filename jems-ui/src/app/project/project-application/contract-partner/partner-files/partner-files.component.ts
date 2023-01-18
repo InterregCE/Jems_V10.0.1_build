@@ -18,7 +18,7 @@ import {
   ProjectPartnerSummaryDTO,
   ProjectReportFileDTO
 } from '@cat/api';
-import {catchError, map, take, tap, withLatestFrom} from 'rxjs/operators';
+import {catchError, finalize, map, take, tap, withLatestFrom} from 'rxjs/operators';
 import {CategoryInfo, CategoryNode} from '@project/common/components/category-tree/categoryModels';
 import FileTypeEnum = ProjectReportFileDTO.TypeEnum;
 import {FileListItem} from '@common/components/file-list/file-list-item';
@@ -40,6 +40,7 @@ export class PartnerFilesComponent implements OnInit {
   selectedCategoryPath$: Observable<I18nMessage[]>;
   files$: Observable<PageFileList>;
   fileCategories$: Observable<CategoryNode>;
+  isUploadInProgress = false;
   data$: Observable<{
     canEdit: boolean;
     canView: boolean;
@@ -114,9 +115,12 @@ export class PartnerFilesComponent implements OnInit {
       return;
     }
 
+    this.isUploadInProgress = true;
     this.contractingFilesStoreService.uploadFile(target?.files[0])
-      .pipe(take(1))
-      .subscribe();
+      .pipe(
+        take(1),
+        finalize(() => this.isUploadInProgress = false)
+      ).subscribe();
   }
 
   setDescriptionCallback = (data: FileDescriptionChange): Observable<any> => {

@@ -13,7 +13,7 @@ import {
   ProjectPartnerReportContributionDTO,
   ProjectPartnerReportContributionWrapperDTO
 } from '@cat/api';
-import {catchError, map, take, tap} from 'rxjs/operators';
+import {catchError, finalize, map, take, tap} from 'rxjs/operators';
 import {
   PartnerReportContributionStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-contribution-tab/partner-report-contribution-store.service';
@@ -84,6 +84,7 @@ export class PartnerReportContributionTabComponent {
       }),
     }),
   });
+  isUploadDone = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -205,13 +206,15 @@ export class PartnerReportContributionTabComponent {
 
   onUploadFile(target: any, procurementId: number, index: number): void {
     if (target && procurementId !== 0) {
+      this.isUploadDone = false;
       const serviceId = uuid();
       this.routingService.confirmLeaveMap.set(serviceId, true);
       this.pageStore.uploadFile(target?.files[0], procurementId)
         .pipe(
           take(1),
-          catchError(err => this.formService.setError(err))
-        )
+          catchError(err => this.formService.setError(err)),
+          finalize(() => this.isUploadDone = true)
+    )
         .subscribe(value => {
           this.attachment(index)?.patchValue(value);
           this.routingService.confirmLeaveMap.delete(serviceId);

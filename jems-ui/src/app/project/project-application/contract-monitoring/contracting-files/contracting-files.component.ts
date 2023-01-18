@@ -4,7 +4,7 @@ import {CategoryInfo, CategoryNode} from '@project/common/components/category-tr
 import {I18nMessage} from '@common/models/I18nMessage';
 import {ContractingFilesStoreService} from '@project/project-application/services/contracting-files-store.service';
 import {ProjectPartnerSummaryDTO, ProjectReportFileDTO, UserRoleCreateDTO} from '@cat/api';
-import {catchError, map, take, tap} from 'rxjs/operators';
+import {catchError, finalize, map, take, tap} from 'rxjs/operators';
 import {AcceptedFileTypesConstants} from '@project/common/components/file-management/accepted-file-types.constants';
 import {Alert} from '@common/components/forms/alert';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
@@ -34,6 +34,7 @@ export class ContractingFilesComponent implements OnInit{
   selectedCategoryPath$: Observable<I18nMessage[]>;
   files$: Observable<PageFileList>;
   canEdit: boolean;
+  isUploadInProgress = false;
 
   private contractsFileCategories: CategoryNode[] = [];
   fileCategories$: Observable<CategoryNode>;
@@ -97,9 +98,12 @@ export class ContractingFilesComponent implements OnInit{
       return;
     }
 
+    this.isUploadInProgress = true;
     this.store.uploadFile(target?.files[0])
-      .pipe(take(1))
-      .subscribe();
+      .pipe(
+        take(1),
+        finalize(() => this.isUploadInProgress = false)
+      ).subscribe();
   }
 
   setDescriptionCallback = (data: FileDescriptionChange): Observable<any> => {

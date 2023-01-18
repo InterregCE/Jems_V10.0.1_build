@@ -19,9 +19,12 @@
     <div *ngIf="fileManagementStore.canUpload$ | async">
         <input #selectFile (change)="uploadFile($event?.target)" onclick="this.value=null;"
                type="file" [accept]="acceptedFilesTypes">
-        <button (click)="selectFile.click()" mat-stroked-button>
-            <mat-icon fontSet="material-icons-outlined" class="mr-1">file_upload</mat-icon>{{ 'file.upload.add.new' | translate }}
-        </button>
+        <jems-pending-button (clicked)="selectFile.click()"
+                             type="secondary"
+                             icon="file_upload"
+                             [pending]="isUploadInProgress">
+            {{ 'file.upload.add.new' | translate }}
+        </jems-pending-button>
     </div>
 </ng-container>
 

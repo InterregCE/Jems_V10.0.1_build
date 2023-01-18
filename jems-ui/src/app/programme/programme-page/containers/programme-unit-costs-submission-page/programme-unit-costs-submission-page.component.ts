@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {BaseComponent} from '@common/components/base-component';
 import {of, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
-import {catchError, take, takeUntil, tap} from 'rxjs/operators';
+import {catchError, finalize, take, takeUntil, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {ActivatedRoute} from '@angular/router';
 import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav.service';
@@ -20,6 +20,7 @@ export class ProgrammeUnitCostsSubmissionPageComponent extends BaseComponent {
 
   unitCostId = this.activatedRoute?.snapshot?.params?.unitCostId;
   isCreate = !this.unitCostId;
+  isSaveDone = false;
 
   unitCostSaveError$ = new Subject<I18nValidationError | null>();
   unitCostSaveSuccess$ = new Subject<boolean>();
@@ -39,6 +40,7 @@ export class ProgrammeUnitCostsSubmissionPageComponent extends BaseComponent {
   }
 
   createUnitCost(unitCost: ProgrammeUnitCostDTO): void {
+    this.isSaveDone = false;
     this.programmeCostOptionService.createProgrammeUnitCost(unitCost)
       .pipe(
         take(1),
@@ -50,11 +52,13 @@ export class ProgrammeUnitCostsSubmissionPageComponent extends BaseComponent {
         catchError((error: HttpErrorResponse) => {
           this.unitCostSaveError$.next(error.error);
           throw error;
-        })
+        }),
+        finalize(() => this.isSaveDone = true)
       ).subscribe();
   }
 
   updateUnitCost(unitCost: ProgrammeUnitCostDTO): void {
+    this.isSaveDone = false;
     this.programmeCostOptionService.updateProgrammeUnitCost(unitCost)
       .pipe(
         take(1),
@@ -65,7 +69,8 @@ export class ProgrammeUnitCostsSubmissionPageComponent extends BaseComponent {
         catchError((error: HttpErrorResponse) => {
           this.unitCostSaveError$.next(error.error);
           throw error;
-        })
+        }),
+        finalize(() => this.isSaveDone = true)
       ).subscribe();
   }
 

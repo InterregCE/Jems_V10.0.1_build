@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {BaseComponent} from '@common/components/base-component';
 import {of, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
-import {catchError, take, takeUntil, tap} from 'rxjs/operators';
+import {catchError, finalize, take, takeUntil, tap} from 'rxjs/operators';
 import {Log} from '../../../../common/utils/log';
 import {ActivatedRoute} from '@angular/router';
 import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav.service';
@@ -19,6 +19,7 @@ export class ProgrammeLumpSumsSubmissionPageComponent extends BaseComponent {
 
   lumpSumId = this.activatedRoute?.snapshot?.params?.lumpSumId;
   isCreate = !this.lumpSumId;
+  isSaveDone = false;
 
   lumpSumSaveError$ = new Subject<I18nValidationError | null>();
   lumpSumSaveSuccess$ = new Subject<boolean>();
@@ -35,6 +36,7 @@ export class ProgrammeLumpSumsSubmissionPageComponent extends BaseComponent {
   }
 
   createLumpSum(lumpSum: ProgrammeLumpSumDTO): void {
+    this.isSaveDone = false;
     this.programmeCostOptionService.createProgrammeLumpSum(lumpSum)
       .pipe(
         take(1),
@@ -46,11 +48,13 @@ export class ProgrammeLumpSumsSubmissionPageComponent extends BaseComponent {
         catchError((error: HttpErrorResponse) => {
           this.lumpSumSaveError$.next(error.error);
           throw error;
-        })
+        }),
+        finalize(() => this.isSaveDone = true),
       ).subscribe();
   }
 
   updateLumpSum(lumpSum: ProgrammeLumpSumDTO): void {
+    this.isSaveDone = false;
     this.programmeCostOptionService.updateProgrammeLumpSum(lumpSum)
       .pipe(
         take(1),
@@ -61,7 +65,8 @@ export class ProgrammeLumpSumsSubmissionPageComponent extends BaseComponent {
         catchError((error: HttpErrorResponse) => {
           this.lumpSumSaveError$.next(error.error);
           throw error;
-        })
+        }),
+        finalize(() => this.isSaveDone = true),
       ).subscribe();
   }
 

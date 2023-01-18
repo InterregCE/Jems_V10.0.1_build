@@ -11,7 +11,7 @@ import {
   ProjectPartnerReportWorkPackageDTO,
   ProjectPartnerReportWorkPackageOutputDTO,
 } from '@cat/api';
-import {catchError, take, tap} from 'rxjs/operators';
+import {catchError, finalize, take, tap} from 'rxjs/operators';
 import {
   PartnerReportWorkPlanPageStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-work-plan-progress-tab/partner-report-work-plan-page-store.service';
@@ -39,6 +39,7 @@ export class PartnerReportWorkPlanProgressTabComponent {
   constants = PartnerReportWorkplanConstants;
   savedWorkPackages$: Observable<ProjectPartnerReportWorkPackageDTO[]>;
   isReportEditable$: Observable<boolean>;
+  isUploadDone = false;
 
   workPlanForm: FormGroup = this.formBuilder.group({
     workPackages: this.formBuilder.array([ this.formBuilder.group({
@@ -124,12 +125,14 @@ export class PartnerReportWorkPlanProgressTabComponent {
     if (!target) {
       return;
     }
+    this.isUploadDone = false;
     const serviceId = uuid();
     this.routingService.confirmLeaveMap.set(serviceId, true);
     this.pageStore.uploadDeliverableFile(target?.files[0], activityId, deliverableId, workPackageId)
       .pipe(
         take(1),
-        catchError(err => this.formService.setError(err))
+        catchError(err => this.formService.setError(err)),
+        finalize(() => this.isUploadDone = true)
       )
       .subscribe(value => {
         this.deliverableFileMetadata(workPackageIndex, activityIndex, deliverableIndex)?.patchValue(value);
@@ -148,10 +151,12 @@ export class PartnerReportWorkPlanProgressTabComponent {
     if (!target) {
       return;
     }
+    this.isUploadDone = false;
     this.pageStore.uploadActivityFile(target?.files[0], activityId, workPackageId)
       .pipe(
         take(1),
-        catchError(err => this.formService.setError(err))
+        catchError(err => this.formService.setError(err)),
+        finalize(() => this.isUploadDone = true)
       )
       .subscribe(value => {
         this.activityFileMetadata(workPackageIndex, activityIndex)?.patchValue(value);
@@ -168,10 +173,12 @@ export class PartnerReportWorkPlanProgressTabComponent {
     if (!target) {
       return;
     }
+    this.isUploadDone = false;
     this.pageStore.uploadOutputFile(target?.files[0], outputId, workPackageId)
       .pipe(
         take(1),
-        catchError(err => this.formService.setError(err))
+        catchError(err => this.formService.setError(err)),
+        finalize(() => this.isUploadDone = true)
       )
       .subscribe(value => {
         this.outputFileMetadata(workPackageIndex, outputIndex)?.patchValue(value);

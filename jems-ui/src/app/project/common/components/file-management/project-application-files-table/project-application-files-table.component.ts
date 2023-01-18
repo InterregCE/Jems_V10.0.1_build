@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {map, switchMap, take, tap} from 'rxjs/operators';
+import {finalize, map, switchMap, take, tap} from 'rxjs/operators';
 import {PageProjectFileMetadataDTO, ProjectFileMetadataDTO, ProjectFileService, ProjectVersionDTO} from '@cat/api';
 import {FileManagementStore} from '@project/common/components/file-management/file-management-store';
 import {Tables} from '@common/utils/tables';
@@ -32,6 +32,7 @@ export class ProjectApplicationFilesTableComponent {
   dataSource = new MatTableDataSource<ProjectFileMetadataDTO>();
   maximumAllowedFileSizeInMB: number;
   fileSizeOverLimitError$ = new Subject<boolean>();
+  isUploadInProgress = false;
 
   data$: Observable<{
     files: PageProjectFileMetadataDTO;
@@ -161,8 +162,12 @@ export class ProjectApplicationFilesTableComponent {
       return;
     }
 
+    this.isUploadInProgress = true;
     this.fileManagementStore.uploadFile(target?.files[0])
-      .pipe(take(1))
+      .pipe(
+        take(1),
+        finalize(() => this.isUploadInProgress = false)
+      )
       .subscribe();
   }
 

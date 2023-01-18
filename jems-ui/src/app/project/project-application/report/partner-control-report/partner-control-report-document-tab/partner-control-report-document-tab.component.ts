@@ -5,7 +5,7 @@ import {FileListItem} from '@common/components/file-list/file-list-item';
 import {
   PartnerControlReportFileManagementStore
 } from '@project/project-application/report/partner-control-report/partner-control-report-document-tab/partner-control-report-file-management-store';
-import {map, switchMap, take} from 'rxjs/operators';
+import {finalize, map, switchMap, take} from 'rxjs/operators';
 import {
   ProjectPartnerReportDTO,
   ProjectPartnerReportService,
@@ -37,6 +37,7 @@ export class PartnerControlReportDocumentTabComponent {
   acceptedFilesTypes = AcceptedFileTypesConstants.acceptedFilesTypes;
   maximumAllowedFileSizeInMB: number;
   fileSizeOverLimitError$ = new Subject<boolean>();
+  isUploadInProgress = false;
 
   selectedCategory: CategoryInfo = { id: 2, type: 'docs' };
 
@@ -101,12 +102,13 @@ export class PartnerControlReportDocumentTabComponent {
   }
 
   uploadFile(target: any): void {
+    this.isUploadInProgress = true;
     FileListComponent.doFileUploadWithValidation(
       target,
       this.fileSizeOverLimitError$,
       this.controlReportFileStore.error$,
       this.maximumAllowedFileSizeInMB,
-      file => this.controlReportFileStore.uploadFile(file),
+      file => this.controlReportFileStore.uploadFile(file).pipe(finalize(() => this.isUploadInProgress = false)),
     );
   }
 
