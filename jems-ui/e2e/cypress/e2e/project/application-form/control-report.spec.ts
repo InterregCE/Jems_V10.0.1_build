@@ -107,14 +107,14 @@ context('Control report tests', () => {
             cy.then(function () {
               cy.loginByRequest(testData.controllerUserEdit.email);
               cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId1}/reports/${this.reportId}/controlReport/identificationTab`, {failOnStatusCode: false});
+              
+              cy.contains('Project acronym').next().should('contain', application.identification.acronym);
+              cy.contains('Application Form version').next().should('contain', '1.0');
+              cy.contains('Name of partner organisation in English language').next().should('be.empty');
+              cy.contains('Name of partner organisation in original language').next().should('be.empty');
+              cy.contains('Partner number').next().should('contain', '1');
+              cy.contains('Partner role in the project').next().should('contain', 'Lead partner');
             });
-
-            cy.contains('Project acronym').next().should('contain', application.identification.acronym);
-            cy.contains('Application Form version').next().should('contain', '1.0');
-            cy.contains('Name of partner organisation in English language').next().should('be.empty');
-            cy.contains('Name of partner organisation in original language').next().should('be.empty');
-            cy.contains('Partner number').next().should('contain', '1');
-            cy.contains('Partner role in the project').next().should('contain', 'Lead partner');
 
             cy.loginByRequest(user.applicantUser.email);
             cy.addPartnerReport(partnerId1).then(reportId => {
