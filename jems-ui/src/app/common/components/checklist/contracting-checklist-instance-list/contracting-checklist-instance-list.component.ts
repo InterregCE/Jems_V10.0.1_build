@@ -44,6 +44,7 @@ import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 export class ContractingChecklistInstanceListComponent implements OnInit {
   Status = ChecklistInstanceDTO.StatusEnum;
   projectId: number;
+  isInstantiationInProgress = false;
 
   @Input()
   relatedType: ProgrammeChecklistDetailDTO.TypeEnum;
@@ -134,13 +135,15 @@ export class ContractingChecklistInstanceListComponent implements OnInit {
   }
 
   createInstance(): void {
+    this.isInstantiationInProgress = true;
     this.pageStore.createInstance(this.projectId, this.relatedId, this.selectedTemplate.id)
       .pipe(
         tap(instanceId => this.routingService.navigate(
             ['checklist', instanceId],
             {relativeTo: this.activatedRoute}
           )
-        )
+        ),
+        finalize(() => this.isInstantiationInProgress = false)
       ).subscribe();
   }
 
