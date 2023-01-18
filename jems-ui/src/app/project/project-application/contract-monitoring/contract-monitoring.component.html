@@ -18,7 +18,8 @@
             </jems-pending-button>
             <ng-container *ngIf="data.currentVersionOfProject.projectStatus.status !== STATUS.APPROVED">
                 <jems-alert [show]="true"
-                            [type]="Alert.INFO">
+                            [type]="Alert.INFO"
+                            [closable]="false">
                     <p>{{'project.application.set.to.contracted.status.message' | translate : {contractDate: data.currentVersionOfProject.contractedDecision.updated | localeDate} }}</p>
                 </jems-alert>
             </ng-container>
