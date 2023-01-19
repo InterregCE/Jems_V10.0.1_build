@@ -1,8 +1,8 @@
 <ng-container *ngIf="(numberOfItems$ | async) as numberOfItems; else addTableButton">
     <ng-container [formGroup]="budgetForm">
         <jems-alert [closable]="true"
-                   [show]="warnOpenForPeriods"
-                   [type]="Alert.WARNING">
+                    [show]="warnOpenForPeriods"
+                    [type]="Alert.WARNING">
             <p>{{'project.partner.budget.table.period.warning' | translate}}</p>
         </jems-alert>
         <ng-container [formGroup]="table">
@@ -173,14 +173,20 @@
                         <mat-header-cell *matHeaderCellDef class="justify-end">
                             <span jemsText maxLines="2">{{'project.partner.budget.table.price.per.unit' | translate}}</span>
                         </mat-header-cell>
-                        <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                            <mat-form-field *ngIf="fieldEnabled(control)"
-                                            jemsFormFieldWidth="full">
-                                <input [formControlName]="constants.FORM_CONTROL_NAMES.pricePerUnit"
-                                       [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
-                                       currencyMask matInput
-                                       type="decimal">
-                            </mat-form-field>
+                        <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i" class="justify-end">
+                            <ng-container *ngIf="fieldEnabled(control)">
+                                <div *ngIf="getUnitCost(control).value; let unitCostValue; else realCostField" class="text-overflow-ellipsis">
+                                    {{unitCostValue.costPerUnit | asMoney}}
+                                </div>
+                                <ng-template #realCostField>
+                                    <mat-form-field jemsFormFieldWidth="full">
+                                        <input [formControlName]="constants.FORM_CONTROL_NAMES.pricePerUnit"
+                                               [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
+                                               currencyMask matInput
+                                               type="decimal">
+                                    </mat-form-field>
+                                </ng-template>
+                            </ng-container>
                         </mat-cell>
                         <mat-footer-cell *matFooterCellDef>
                             <ng-container *ngIf="columnsToDisplay[0]==='pricePerUnit'">
