@@ -12,6 +12,7 @@
                          jemsText class="mb-3 mt-3"
                          icon="add"
                          [pending]="isInstantiationInProgress"
+                         [buttonOptions]="{class: 'font-size-medium', fontSet: ''}"
                          (clicked)="createInstance()">
         {{'checklists.instances.list.new.button' | translate}}
     </jems-pending-button>

@@ -1,20 +1,22 @@
 <span jemsMultiColumnRow *ngIf="(userCanEditContractingChecklists$ | async)">
-            <mat-form-field jemsFormFieldWidth="xx-large">
-                <mat-select placeholder="{{'checklists.instance.list.new.select' | translate}}"
-                            [(ngModel)]="selectedTemplate">
-                    <mat-option *ngFor="let template of checklistTemplates$ | async"
-                                [value]="template">
-                        <span jemsText>{{template.name}}</span>
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-            <button [disabled]="!selectedTemplate"
-                    jemsText mat-raised-button color="primary" class="mb-3 mt-3"
-                    (click)="createInstance()">
-                <mat-icon>add</mat-icon>
-                {{'checklists.instances.list.new.button' | translate}}
-            </button>
-        </span>
+    <mat-form-field jemsFormFieldWidth="xx-large">
+        <mat-select placeholder="{{'checklists.instance.list.new.select' | translate}}"
+                    [(ngModel)]="selectedTemplate">
+            <mat-option *ngFor="let template of checklistTemplates$ | async"
+                        [value]="template">
+                <span jemsText>{{template.name}}</span>
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+     <jems-pending-button [disabled]="!selectedTemplate"
+                          jemsText class="mb-3 mt-3"
+                          icon="add"
+                          [pending]="isInstantiationInProgress"
+                          [buttonOptions]="{class: 'font-size-medium', fontSet: ''}"
+                          (clicked)="createInstance()">
+        {{'checklists.instances.list.new.button' | translate}}
+    </jems-pending-button>
+</span>
 
 <jems-alert *ngFor="let alert of contractingChecklistAlerts$ | async" [show]="true" [type]="alert.type"
             (closed)="dismissContractingChecklistAlert(alert.id)" [disableMargins]="true" class="mb-2 block">
