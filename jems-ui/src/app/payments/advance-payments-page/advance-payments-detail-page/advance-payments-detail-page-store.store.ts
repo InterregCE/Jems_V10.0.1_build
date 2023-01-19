@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
+import {combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {
   AdvancePaymentDetailDTO,
   AdvancePaymentsService, AdvancePaymentUpdateDTO,
@@ -63,7 +63,6 @@ export class AdvancePaymentsDetailPageStoreStore {
     );
   }
 
-
   private userCanEdit(): Observable<boolean> {
     return  this.permissionService.hasPermission(PermissionsEnum.AdvancePaymentsUpdate)
       .pipe(
@@ -79,9 +78,11 @@ export class AdvancePaymentsDetailPageStoreStore {
   }
 
   getPartnerData(): Observable<ProjectPartnerPaymentSummaryDTO[]> {
-    return this.getProjectPartnersByProjectId$.pipe(
-      switchMap((projectId) =>
-        this.projectPartnerService.getProjectPartnersAndContributions(projectId)),
+    return combineLatest([
+      this.getProjectPartnersByProjectId$,
+      this.paymentDetail()
+    ]).pipe(
+      switchMap(([projectId, paymentDetail]) => this.projectPartnerService.getProjectPartnersAndContributions(projectId, paymentDetail.projectVersion)),
       tap(partnerList => Log.info('Fetched filtered partners for project:', this, partnerList)),
       untilDestroyed(this),
       shareReplay(1)

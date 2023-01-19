@@ -32,6 +32,7 @@ class AdvancePaymentValidatorTest : UnitTest() {
         private const val projectId = 2L
         private const val partnerId = 3L
         private const val userId = 4L
+        private const val version = "1.0"
 
         private val fund = ProgrammeFund(id = 5L, selected = true)
 
@@ -40,6 +41,7 @@ class AdvancePaymentValidatorTest : UnitTest() {
             projectId = projectId,
             projectCustomIdentifier = "dummyProj1",
             projectAcronym = "dummyAcronym",
+            projectVersion = version,
             partnerId = partnerId,
             partnerType = ProjectPartnerRole.LEAD_PARTNER,
             partnerNumber = null,

@@ -199,6 +199,7 @@ class AdvancePaymentPersistenceProviderTest: UnitTest() {
             projectId = projectId,
             projectCustomIdentifier = project.customIdentifier,
             projectAcronym = project.acronym,
+            projectVersion = "2.0",
             partnerId = partnerId,
             partnerType = ProjectPartnerRole.PARTNER,
             partnerNumber = partnerDetail.sortNumber,

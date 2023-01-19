@@ -12,6 +12,7 @@ data class AdvancePaymentDetailDTO(
     val projectId: Long,
     val projectCustomIdentifier: String,
     val projectAcronym: String,
+    val projectVersion: String,
 
     val partnerId: Long,
     val partnerType: ProjectPartnerRoleDTO,

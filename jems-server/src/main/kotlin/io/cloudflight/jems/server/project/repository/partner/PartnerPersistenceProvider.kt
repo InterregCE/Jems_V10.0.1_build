@@ -1,12 +1,15 @@
 package io.cloudflight.jems.server.project.repository.partner
 
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.payments.repository.advance.AdvancePaymentRepository
 import io.cloudflight.jems.server.programme.repository.legalstatus.ProgrammeLegalStatusRepository
 import io.cloudflight.jems.server.programme.repository.stateaid.ProgrammeStateAidRepository
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartnerStateAidEntity
 import io.cloudflight.jems.server.project.repository.ApplicationVersionNotFoundException
 import io.cloudflight.jems.server.project.repository.ProjectRepository
+import io.cloudflight.jems.server.project.repository.ProjectVersionPersistenceProvider
+import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityRepository
 import io.cloudflight.jems.server.project.repository.workpackage.activity.toActivityHistoricalData
@@ -40,7 +43,9 @@ class PartnerPersistenceProvider(
     private val projectPartnerStateAidRepository: ProjectPartnerStateAidRepository,
     private val projectAssociatedOrganizationService: ProjectAssociatedOrganizationService,
     private val workPackageActivityRepository: WorkPackageActivityRepository,
-    private val programmeStateAidRepository: ProgrammeStateAidRepository
+    private val programmeStateAidRepository: ProgrammeStateAidRepository,
+    private val projectVersionPersistenceProvider: ProjectVersionPersistenceProvider,
+    private val projectVersionRepository: ProjectVersionRepository
 ) : PartnerPersistence {
 
     @Transactional(readOnly = true)
@@ -99,8 +104,13 @@ class PartnerPersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun findAllByProjectIdWithContributionsForDropdown(projectId: Long): List<ProjectPartnerPaymentSummary> =
-        projectPartnerRepository.findAllByProjectIdWithContributionsForDropdown(projectId).toProjectPartnerPaymentSummaryList()
+    override fun findAllByProjectIdWithContributionsForDropdown(projectId: Long, version: String?): List<ProjectPartnerPaymentSummary> {
+        val lastVersion = projectVersionPersistenceProvider.getLatestVersionOrNull(projectId)
+        val timestamp =  projectVersionRepository.findTimestampByVersion(projectId, (version ?: lastVersion)!!)
+
+        return projectPartnerRepository.findAllByProjectIdWithContributionsForDropdownAsOfTimestamp(projectId, timestamp!!)
+            .toProjectPartnerPaymentSummaryList()
+    }
 
     // used for authorization
     @Transactional(readOnly = true)

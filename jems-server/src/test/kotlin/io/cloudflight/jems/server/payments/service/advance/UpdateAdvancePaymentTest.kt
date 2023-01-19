@@ -41,6 +41,7 @@ class UpdateAdvancePaymentTest : UnitTest() {
         private const val currentUserId = 7L
         private const val fundId = 4L
         private const val userId = 6L
+        private const val version = "1.0"
 
         private val fund = ProgrammeFund(
             id = fundId,
@@ -64,6 +65,7 @@ class UpdateAdvancePaymentTest : UnitTest() {
             projectId = projectId,
             projectCustomIdentifier = "dummyProj1",
             projectAcronym = "dummyAcronym",
+            projectVersion = version,
             partnerId = partnerId,
             partnerType = ProjectPartnerRole.PARTNER,
             partnerNumber = 5,

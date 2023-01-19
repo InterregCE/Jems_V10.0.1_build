@@ -11,6 +11,7 @@ import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerContactEn
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerContactId
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
+import io.cloudflight.jems.server.project.repository.ProjectVersionPersistenceProvider
 import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityRepository
@@ -70,6 +71,9 @@ class PartnerPersistenceProviderUpdateTest {
     lateinit var programmeStateAidRepository: ProgrammeStateAidRepository
 
     @MockK
+    lateinit var projectVersionPersistenceProvider: ProjectVersionPersistenceProvider
+
+    @MockK
     lateinit var projectVersionRepo: ProjectVersionRepository
 
     @MockK
@@ -89,7 +93,9 @@ class PartnerPersistenceProviderUpdateTest {
             projectPartnerStateAidRepository,
             projectAssociatedOrganizationService,
             workPackageActivityRepository,
-            programmeStateAidRepository
+            programmeStateAidRepository,
+            projectVersionPersistenceProvider,
+            projectVersionRepo
         )
     }
 
@@ -199,7 +205,7 @@ class PartnerPersistenceProviderUpdateTest {
         assertThat(slotEntity.captured.partnerSubType).isEqualTo(updatedProjectPartner.partnerSubType)
         assertThat(slotEntity.captured.contacts).isEqualTo(setOf(projectPartnerContactUpdate))
     }
-    
+
     @Test
     fun `updatePartner changing partnerType to empty`() {
         val projectPartner = ProjectPartnerEntity(

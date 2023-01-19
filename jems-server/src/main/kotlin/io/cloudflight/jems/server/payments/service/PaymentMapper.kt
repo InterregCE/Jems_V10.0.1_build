@@ -92,6 +92,7 @@ fun AdvancePaymentDetail.toDTO() = AdvancePaymentDetailDTO(
     projectId = projectId,
     projectCustomIdentifier = projectCustomIdentifier,
     projectAcronym = projectAcronym,
+    projectVersion = projectVersion,
     partnerId = partnerId,
     partnerType = ProjectPartnerRoleDTO.valueOf(partnerType.name),
     partnerNumber = partnerNumber,

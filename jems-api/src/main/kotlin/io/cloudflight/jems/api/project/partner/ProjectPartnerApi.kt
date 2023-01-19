@@ -59,7 +59,8 @@ interface ProjectPartnerApi {
     @ApiOperation("Returns all project partners and funds by the latest approved version")
     @GetMapping("$ENDPOINT_API_PROJECT_PARTNER/byProjectId/{projectId}/withContributionSources")
     fun getProjectPartnersAndContributions(
-        @PathVariable projectId: Long
+        @PathVariable projectId: Long,
+        @RequestParam(required = false) version: String? = null
     ): List<ProjectPartnerPaymentSummaryDTO>
 
     @ApiOperation("Returns a project partner by id")
