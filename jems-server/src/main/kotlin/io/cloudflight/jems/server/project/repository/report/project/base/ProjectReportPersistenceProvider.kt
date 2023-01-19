@@ -1,6 +1,13 @@
 package io.cloudflight.jems.server.project.repository.report.project.base
 
+import io.cloudflight.jems.server.common.entity.TranslationId
+import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
+import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportIdentificationTargetGroupEntity
+import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportIdentificationTargetGroupTranslEntity
 import io.cloudflight.jems.server.project.repository.contracting.reporting.ProjectContractingReportingRepository
+import io.cloudflight.jems.server.project.repository.report.project.identification.ProjectReportIdentificationTargetGroupRepository
+import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
+import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportDeadline
@@ -17,6 +24,7 @@ import java.time.ZonedDateTime
 class ProjectReportPersistenceProvider(
     private val projectReportRepository: ProjectReportRepository,
     private val contractingDeadlineRepository: ProjectContractingReportingRepository,
+    private val reportIdentificationTargetGroupRepository: ProjectReportIdentificationTargetGroupRepository,
 ) : ProjectReportPersistence {
 
     @Transactional(readOnly = true)
@@ -28,10 +36,12 @@ class ProjectReportPersistenceProvider(
         projectReportRepository.getByIdAndProjectId(reportId, projectId = projectId).toModel()
 
     @Transactional
-    override fun createReport(report: ProjectReportModel) =
-        projectReportRepository
+    override fun createReport(report: ProjectReportModel, targetGroups: List<ProjectRelevanceBenefit>): ProjectReportModel {
+        val entity = projectReportRepository
             .save(report.toEntity(deadlineResolver = { contractingDeadlineRepository.findByProjectIdAndId(report.projectId, it) }))
-            .toModel()
+        createTargetGroups(targetGroups, entity)
+        return entity.toModel()
+    }
 
     @Transactional
     override fun updateReport(
@@ -77,4 +87,25 @@ class ProjectReportPersistenceProvider(
                 firstSubmission = submissionTime
             }.toSubmissionSummary()
 
+    private fun createTargetGroups(targetGroups: List<ProjectRelevanceBenefit>, reportEntity: ProjectReportEntity) {
+        reportIdentificationTargetGroupRepository.saveAll(
+            targetGroups.mapIndexed { index, targetGroup ->
+                ProjectReportIdentificationTargetGroupEntity(
+                    projectReportEntity = reportEntity,
+                    type = ProjectTargetGroup.valueOf(targetGroup.group.name),
+                    sortNumber = index.plus(1),
+                    translatedValues = mutableSetOf(),
+                ).apply {
+                    translatedValues.addAll(
+                        targetGroup.specification.map {
+                            ProjectReportIdentificationTargetGroupTranslEntity(
+                                translationId = TranslationId(this, it.language),
+                                description = null,
+                            )
+                        }
+                    )
+                }
+            }
+        )
+    }
 }

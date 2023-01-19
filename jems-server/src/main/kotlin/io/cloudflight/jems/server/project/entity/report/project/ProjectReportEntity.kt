@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.entity.report.project
 
 import io.cloudflight.jems.server.project.entity.contracting.reporting.ProjectContractingReportingEntity
+import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportIdentificationTranslEntity
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import java.time.LocalDate
@@ -12,9 +13,22 @@ import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.ManyToOne
+import javax.persistence.NamedEntityGraphs
+import javax.persistence.NamedEntityGraph
+import javax.persistence.NamedAttributeNode
+import javax.persistence.OneToMany
+import javax.persistence.CascadeType
 import javax.validation.constraints.NotNull
 
 @Entity(name = "report_project")
+@NamedEntityGraphs(
+    NamedEntityGraph(
+        name = "ProjectReportEntity.withTranslations",
+        attributeNodes = [
+            NamedAttributeNode(value = "translatedValues"),
+        ],
+    )
+)
 class ProjectReportEntity(
 
     @Id
@@ -60,4 +74,6 @@ class ProjectReportEntity(
 
     var verificationDate: ZonedDateTime?,
 
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
+    val translatedValues: MutableSet<ProjectReportIdentificationTranslEntity> = mutableSetOf(),
 )
