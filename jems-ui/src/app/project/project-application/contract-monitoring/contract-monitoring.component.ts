@@ -8,6 +8,7 @@ import {APIError} from '@common/models/APIError';
 import {Alert} from '@common/components/forms/alert';
 import {Forms} from '@common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
+import {ProjectUtil} from '@project/common/project-util';
 
 @Component({
   selector: 'jems-contract-monitoring',
@@ -19,6 +20,7 @@ export class ContractMonitoringComponent {
 
   STATUS = ProjectStatusDTO.StatusEnum;
   Alert = Alert;
+  ProjectUtil = ProjectUtil;
 
   data$: Observable<{
     currentVersionOfProject: ProjectDetailDTO;

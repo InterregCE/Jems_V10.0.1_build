@@ -9,18 +9,24 @@
         <p>{{'project.application.set.to.contracted.intro.one' | translate}}</p>
         <p>{{'project.application.set.to.contracted.intro.two' | translate}}</p>
         <div class="mt-2">
-            <jems-pending-button class="mt-2"
-                    *ngIf="data.canSetToContracted"
-                    [pending]="actionPending"
-                    icon="approval"
-                    (clicked)="setToContracted(data.currentVersionOfProject.id, data.currentVersionOfProjectTitle)">
-                {{'project.application.set.to.contracted' | translate}}
-            </jems-pending-button>
-            <ng-container *ngIf="data.currentVersionOfProject.projectStatus.status !== STATUS.APPROVED">
+            <ng-container *ngIf="!ProjectUtil.isContractedOrAnyStatusAfterContracted(data.currentVersionOfProject.projectStatus.status)" >
+                <jems-pending-button class="mt-2"
+                        [disabled] = "!data.canSetToContracted"
+                        [pending]="actionPending"
+                        icon="approval"
+                        (clicked)="setToContracted(data.currentVersionOfProject.id, data.currentVersionOfProjectTitle)">
+                    {{'project.application.set.to.contracted' | translate}}
+                </jems-pending-button>
+                <jems-context-info *ngIf="!data.canSetToContracted"
+                                   infoText="{{ 'project.application.set.to.contracted.info' | translate }}"
+                                   infoPosition="right">
+                </jems-context-info>
+            </ng-container>
+            <ng-container *ngIf="ProjectUtil.isContractedOrAnyStatusAfterContracted(data.currentVersionOfProject.projectStatus.status)">
                 <jems-alert [show]="true"
                             [type]="Alert.INFO"
                             [closable]="false">
-                    <p>{{'project.application.set.to.contracted.status.message' | translate : {contractDate: data.currentVersionOfProject.contractedDecision.updated | localeDate} }}</p>
+                    <p>{{'project.application.set.to.contracted.status.message' | translate : {contractDate: (data.currentVersionOfProject.contractedDecision.updated | localeDate) ?? ''} }}</p>
                 </jems-alert>
             </ng-container>
 
