@@ -36,7 +36,8 @@ annotation class CanViewProjectManagers
 annotation class CanEditProjectManagers
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectContractingManagementAuthorization.canViewReportingSchedule(#projectId)")
+@PreAuthorize("@projectContractingManagementAuthorization.canViewReportingSchedule(#projectId) || " +
+    "@projectMonitoringAuthorization.canViewProjectMonitoring(#projectId)")
 annotation class CanRetrieveProjectReportingSchedule
 
 @Retention(AnnotationRetention.RUNTIME)
@@ -51,7 +52,7 @@ class ProjectContractingManagementAuthorization(
     private val partnerCollaboratorRepository: UserPartnerCollaboratorRepository,
     private val projectCollaboratorRepository: UserProjectCollaboratorRepository,
     private val controllerInstitutionPersistence: ControllerInstitutionPersistence,
-): Authorization(securityService) {
+) : Authorization(securityService) {
 
     fun canViewContractsAndAgreements(projectId: Long) = canView(ContractingPermission.ViewContractsAgreements, projectId)
     fun canEditContractsAndAgreements(projectId: Long) = canEdit(ContractingPermission.EditContractsAgreements, projectId)

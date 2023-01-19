@@ -5,7 +5,7 @@ import {ProjectStore} from '@project/project-application/containers/project-appl
 import {catchError, filter, finalize, map, switchMap, take, tap} from 'rxjs/operators';
 import {ContractMonitoringStore} from '@project/project-application/contract-monitoring/contract-monitoring-store';
 import {APIError} from '@common/models/APIError';
-import { Alert } from '@common/components/forms/alert';
+import {Alert} from '@common/components/forms/alert';
 import {Forms} from '@common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
 
@@ -31,7 +31,9 @@ export class ContractMonitoringComponent {
   error$ = new BehaviorSubject<APIError | null>(null);
   actionPending = false;
 
-  constructor(public projectStore: ProjectStore, private contractMonitoringStore: ContractMonitoringStore, private dialog: MatDialog) {
+  constructor(public projectStore: ProjectStore,
+              private contractMonitoringStore: ContractMonitoringStore,
+              private dialog: MatDialog) {
     this.data$ = combineLatest([
       this.projectStore.currentVersionOfProject$,
       this.projectStore.currentVersionOfProjectTitle$,
@@ -41,7 +43,7 @@ export class ContractMonitoringComponent {
       map(([currentVersionOfProject, currentVersionOfProjectTitle, canSetToContracted, canSeeMonitoringExtension]) => ({
         currentVersionOfProject,
         currentVersionOfProjectTitle,
-        canSetToContracted : currentVersionOfProject.projectStatus.status === this.STATUS.APPROVED && canSetToContracted,
+        canSetToContracted: currentVersionOfProject.projectStatus.status === this.STATUS.APPROVED && canSetToContracted,
         canSeeMonitoringExtension
       }))
     );
@@ -77,7 +79,7 @@ export class ContractMonitoringComponent {
     this.error$.next(error);
     setTimeout(() => {
       this.error$.next(null);
-    },         4000);
+    }, 4000);
     return of(null);
   }
 }
