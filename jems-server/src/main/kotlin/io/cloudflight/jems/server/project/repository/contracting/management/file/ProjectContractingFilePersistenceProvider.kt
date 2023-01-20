@@ -10,35 +10,35 @@ import org.springframework.transaction.annotation.Transactional
 
 @Repository
 class ProjectContractingFilePersistenceProvider(
-    private val reportFileRepository: JemsFileMetadataRepository,
+    private val projectFileMetadataRepository: JemsFileMetadataRepository,
     private val minioStorage: MinioStorage,
     private val fileRepository: JemsProjectFileService,
 ) : ProjectContractingFilePersistence {
 
     @Transactional(readOnly = true)
     override fun downloadFile(projectId: Long, fileId: Long) =
-        reportFileRepository.findByProjectIdAndId(projectId = projectId, fileId = fileId)?.let { file ->
+        projectFileMetadataRepository.findByProjectIdAndId(projectId = projectId, fileId = fileId)?.let { file ->
             Pair(file.name, minioStorage.getFile(file.minioBucket, filePath = file.minioLocation))
         }
 
     @Transactional(readOnly = true)
     override fun downloadFileByPartnerId(partnerId: Long, fileId: Long) =
-        reportFileRepository.findByPartnerIdAndId(partnerId = partnerId, fileId = fileId)?.let { file ->
+        projectFileMetadataRepository.findByPartnerIdAndId(partnerId = partnerId, fileId = fileId)?.let { file ->
             Pair(file.name, minioStorage.getFile(file.minioBucket, filePath = file.minioLocation))
         }
 
     @Transactional(readOnly = true)
     override fun existsFile(projectId: Long, fileId: Long) =
-        reportFileRepository.existsByProjectIdAndId(projectId = projectId, fileId)
+        projectFileMetadataRepository.existsByProjectIdAndId(projectId = projectId, fileId)
 
     @Transactional
     override fun deleteFile(projectId: Long, fileId: Long) =
-        reportFileRepository.findByProjectIdAndId(projectId = projectId, fileId = fileId)
+        projectFileMetadataRepository.findByProjectIdAndId(projectId = projectId, fileId = fileId)
             .deleteIfPresent()
 
     @Transactional
     override fun deleteFileByPartnerId(partnerId: Long, fileId: Long) {
-        reportFileRepository.findByPartnerIdAndId(partnerId = partnerId, fileId = fileId)
+        projectFileMetadataRepository.findByPartnerIdAndId(partnerId = partnerId, fileId = fileId)
             .deleteIfPresent()
     }
 
