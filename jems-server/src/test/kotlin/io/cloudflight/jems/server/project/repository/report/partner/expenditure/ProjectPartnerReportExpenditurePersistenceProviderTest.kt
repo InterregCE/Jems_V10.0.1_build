@@ -22,16 +22,21 @@ import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartn
 import io.cloudflight.jems.server.project.repository.report.partner.control.expenditure.PartnerReportParkedExpenditureRepository
 import io.cloudflight.jems.server.project.repository.report.partner.financialOverview.costCategory.ReportProjectPartnerExpenditureCostCategoryRepository
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportInvestment
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportUnitCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportParkedExpenditure
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportParkedLinked
+import io.cloudflight.jems.server.user.entity.UserEntity
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -381,7 +386,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
             parkingMetadata = ExpenditureParkingMetadata(
                 reportOfOriginId = 11L,
                 reportOfOriginNumber = 111,
-                originalExpenditureNumber = 19,
+                originalExpenditureNumber = 4,
             ),
         )
     }
@@ -492,6 +497,59 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
         every { reportExpenditureRepository.existsByPartnerReportPartnerIdAndPartnerReportIdAndId(
             PARTNER_ID, reportId = 18L, 45L) } returns false
         assertThat(persistence.existsByExpenditureId(PARTNER_ID, reportId = 18L, 45L)).isFalse
+    }
+
+    @Test
+    fun getExpenditureAttachment() {
+        val time = ZonedDateTime.now()
+        val attachment = JemsFileMetadataEntity(
+            id = 248L,
+            projectId = 14L,
+            partnerId = 19L,
+            path = "path",
+            minioBucket = "file-bucket",
+            minioLocation = "/sample/location",
+            name = "powerpoint.pptx",
+            type = JemsFileType.Expenditure,
+            size = 324L,
+            user = UserEntity(id = 210L, "email", name = "name", surname = "surname", mockk(), "", UserStatus.ACTIVE),
+            uploaded = time,
+            description = "desc",
+        )
+        val parked = mockk<PartnerReportParkedExpenditureEntity>()
+        every { parked.parkedFrom.attachment } returns attachment
+
+        every { reportExpenditureParkedRepository
+            .findByParkedFromPartnerReportPartnerIdAndParkedFromPartnerReportStatusAndParkedFromExpenditureId(
+                PARTNER_ID, ReportStatus.Certified, 46L
+            )
+        } returns parked
+
+        assertThat(persistence.getExpenditureAttachment(PARTNER_ID,46L)).isEqualTo(
+            JemsFile(
+                id = 248L,
+                name = "powerpoint.pptx",
+                type = JemsFileType.Expenditure,
+                uploaded = time,
+                author = UserSimple(id = 210L, "email", name = "name", surname = "surname"),
+                size = 324L,
+                description = "desc",
+            )
+        )
+    }
+
+    @Test
+    fun `getExpenditureAttachment - empty`() {
+        val parked = mockk<PartnerReportParkedExpenditureEntity>()
+        every { parked.parkedFrom.attachment } returns null
+
+        every { reportExpenditureParkedRepository
+            .findByParkedFromPartnerReportPartnerIdAndParkedFromPartnerReportStatusAndParkedFromExpenditureId(
+                PARTNER_ID, ReportStatus.Certified, -1L
+            )
+        } returns parked
+
+        assertThat(persistence.getExpenditureAttachment(PARTNER_ID,-1L)).isNull()
     }
 
     @Test
@@ -727,7 +785,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
                 lumpSumId = 6500L,
                 unitCostId = 6900L,
                 investmentId = 7100L,
-                parkingMetadata = ExpenditureParkingMetadata(2L, 21, 19),
+                parkingMetadata = ExpenditureParkingMetadata(2L, 21, 4),
             ))
     }
 
@@ -768,7 +826,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
                 lumpSumId = null,
                 unitCostId = null,
                 investmentId = null,
-                parkingMetadata = ExpenditureParkingMetadata(2L, 21, 19),
+                parkingMetadata = ExpenditureParkingMetadata(2L, 21, 4),
             ))
     }
 

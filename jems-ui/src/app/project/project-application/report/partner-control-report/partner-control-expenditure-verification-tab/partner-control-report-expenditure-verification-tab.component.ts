@@ -325,6 +325,8 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
           ? reportExpenditureControl.parkingMetadata.originalExpenditureNumber
           : reportExpenditureControl.number
         ),
+        reportOfOriginNumber: this.formBuilder.control(reportExpenditureControl.parkingMetadata?.reportOfOriginNumber),
+        originalExpenditureNumber: this.formBuilder.control(reportExpenditureControl.parkingMetadata?.originalExpenditureNumber),
         costOptions: this.formBuilder.control(costOption),
         costCategory: this.formBuilder.control(reportExpenditureControl.costCategory),
         investmentId: this.formBuilder.control(reportExpenditureControl.investmentId),

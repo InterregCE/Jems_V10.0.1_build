@@ -27,17 +27,17 @@ fun JemsFileCreate.toEntity(
     description = "",
 )
 
-fun Page<JemsFileMetadataEntity>.toModel() = map {
-    JemsFile(
-        id = it.id,
-        name = it.name,
-        type = it.type,
-        uploaded = it.uploaded,
-        author = it.user.toModel(),
-        size = it.size,
-        description = it.description,
-    )
-}
+fun Page<JemsFileMetadataEntity>.toModel() = map { it.toFullModel() }
+
+fun JemsFileMetadataEntity.toFullModel() = JemsFile(
+    id = id,
+    name = name,
+    type = type,
+    uploaded = uploaded,
+    author = user.toModel(),
+    size = size,
+    description = description,
+)
 
 fun UserEntity.toModel() = UserSimple(
     id = id,

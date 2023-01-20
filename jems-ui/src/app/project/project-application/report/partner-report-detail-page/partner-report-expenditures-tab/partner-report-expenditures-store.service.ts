@@ -119,7 +119,7 @@ export class PartnerReportExpendituresStore {
       this.refreshExpenditures$,
     ]).pipe(
       switchMap(([partnerId, reportId, _]) =>
-        this.partnerReportExpenditureCostsService.getAvailableParkedExpenditures(partnerId as number, reportId, 0, 25, 'id,desc')
+        this.partnerReportExpenditureCostsService.getAvailableParkedExpenditures(partnerId as number, reportId, 0, 25, 'id,asc')
       ),
       tap(data => Log.info('Fetched list of expenditures for partner report', this, data)),
       map(data => data.content),

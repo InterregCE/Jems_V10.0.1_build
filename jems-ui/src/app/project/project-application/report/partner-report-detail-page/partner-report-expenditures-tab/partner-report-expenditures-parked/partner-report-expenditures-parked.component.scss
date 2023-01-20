@@ -13,7 +13,7 @@
   padding-left: 1rem;
   padding-right: 1rem;
 }
-.mat-column-action {
+.mat-column-actions {
   min-width: 5rem;
   max-width: 5rem;
   padding-left: .5rem;
@@ -26,6 +26,12 @@
 .mat-column-costCategory,
 .mat-column-investmentId,
 .mat-column-contractId,
+.mat-column-internalReferenceNumber,
+.mat-column-invoiceNumber,
+.mat-column-invoiceDate,
+.mat-column-dateOfPayment,
+.mat-column-description,
+.mat-column-comment,
 .mat-column-totalValueInvoice,
 .mat-column-numberOfUnits,
 .mat-column-pricePerUnit,
@@ -33,10 +39,11 @@
 .mat-column-declaredAmount,
 .mat-column-currencyCode,
 .mat-column-currencyConversionRate,
-.mat-column-declaredAmountAfterSubmission {
+.mat-column-declaredAmountInEur,
+.mat-column-uploadFunction {
   padding-left: .5rem;
 }
-.mat-column-declaredAmountAfterSubmission {
+.mat-column-uploadFunction {
   padding-right: 1rem;
 }
 
@@ -51,6 +58,18 @@
 }
 .mat-column-contractId {
   min-width: 10rem;
+}
+.mat-column-internalReferenceNumber,
+.mat-column-invoiceNumber {
+  min-width: 10rem;
+}
+.mat-column-invoiceDate,
+.mat-column-dateOfPayment {
+  min-width: 6rem;
+}
+.mat-column-description,
+.mat-column-comment {
+  min-width: 16rem;
 }
 .mat-column-totalValueInvoice {
   min-width: 10rem;
@@ -73,7 +92,10 @@
 .mat-column-currencyConversionRate {
   min-width: 4.5rem;
 }
-.mat-column-declaredAmountAfterSubmission {
+.mat-column-declaredAmountInEur {
+  min-width: 8rem;
+}
+.mat-column-uploadFunction {
   min-width: 8rem;
 }
 
