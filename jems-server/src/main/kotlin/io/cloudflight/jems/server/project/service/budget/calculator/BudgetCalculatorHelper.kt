@@ -5,30 +5,38 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBu
 import java.math.BigDecimal
 import java.math.RoundingMode
 
-fun calculateBudget(options: ProjectPartnerBudgetOptions, byCategory: Map<BudgetCostCategory, BigDecimal>): BudgetCostsCalculationResultFull {
+fun calculateBudget(
+    options: ProjectPartnerBudgetOptions,
+    byCategory: Map<BudgetCostCategory, BigDecimal>,
+    roundingMode: RoundingMode = RoundingMode.DOWN
+): BudgetCostsCalculationResultFull {
     val sums = byCategory.toMutableMap()
 
     getStaffCosts(
         staffFlatRate = options.staffCostsFlatRate,
         travelFlatRate = options.travelAndAccommodationOnStaffCostsFlatRate,
         sums = sums,
+        roundingMode
     ).also { sums[BudgetCostCategory.Staff] = it }
 
     getTravelCosts(
         travelFlatRate = options.travelAndAccommodationOnStaffCostsFlatRate,
         sums = sums,
+        roundingMode
     ).also { sums[BudgetCostCategory.Travel] = it }
 
     getOfficeCosts(
         officeStaffFlatRate = options.officeAndAdministrationOnStaffCostsFlatRate,
         officeDirectFlatRate = options.officeAndAdministrationOnDirectCostsFlatRate,
         sums = sums,
+        roundingMode
     ).also { sums[BudgetCostCategory.Office] = it }
 
     getOtherCosts(
         staffFlatRate = options.staffCostsFlatRate,
         otherCostsFlatRate = options.otherCostsOnStaffCostsFlatRate,
         sums = sums,
+        roundingMode
     ).also { sums[BudgetCostCategory.Other] = it }
 
     return BudgetCostsCalculationResultFull(
@@ -45,7 +53,12 @@ fun calculateBudget(options: ProjectPartnerBudgetOptions, byCategory: Map<Budget
     )
 }
 
-private fun getStaffCosts(staffFlatRate: Int?, travelFlatRate: Int?, sums: Map<BudgetCostCategory, BigDecimal>): BigDecimal {
+private fun getStaffCosts(
+    staffFlatRate: Int?,
+    travelFlatRate: Int?,
+    sums: Map<BudgetCostCategory, BigDecimal>,
+    roundingMode: RoundingMode
+): BigDecimal {
     if (staffFlatRate == null)
         return sums.giveMe(BudgetCostCategory.Staff)
 
@@ -54,18 +67,27 @@ private fun getStaffCosts(staffFlatRate: Int?, travelFlatRate: Int?, sums: Map<B
         .plus(sums.giveMe(BudgetCostCategory.External))
         .plus(sums.giveMe(BudgetCostCategory.Equipment))
         .plus(sums.giveMe(BudgetCostCategory.Infrastructure))
-        .applyFlatRate(staffFlatRate)
+        .applyFlatRate(staffFlatRate, roundingMode)
 }
 
-private fun getTravelCosts(travelFlatRate: Int?, sums: Map<BudgetCostCategory, BigDecimal>): BigDecimal {
+private fun getTravelCosts(
+    travelFlatRate: Int?,
+    sums: Map<BudgetCostCategory, BigDecimal>,
+    roundingMode: RoundingMode
+): BigDecimal {
     if (travelFlatRate == null)
         return sums.giveMe(BudgetCostCategory.Travel)
 
     return sums.giveMe(BudgetCostCategory.Staff)
-        .applyFlatRate(travelFlatRate)
+        .applyFlatRate(travelFlatRate, roundingMode)
 }
 
-private fun getOfficeCosts(officeStaffFlatRate: Int?, officeDirectFlatRate: Int?, sums: Map<BudgetCostCategory, BigDecimal>): BigDecimal {
+private fun getOfficeCosts(
+    officeStaffFlatRate: Int?,
+    officeDirectFlatRate: Int?,
+    sums: Map<BudgetCostCategory, BigDecimal>,
+    roundingMode: RoundingMode
+): BigDecimal {
     if (officeStaffFlatRate == null && officeDirectFlatRate == null)
         return BigDecimal.ZERO
 
@@ -82,19 +104,24 @@ private fun getOfficeCosts(officeStaffFlatRate: Int?, officeDirectFlatRate: Int?
             sums.giveMe(BudgetCostCategory.Infrastructure),
         ).sumOf { it }
 
-    return base.applyFlatRate(flatRate)
+    return base.applyFlatRate(flatRate, roundingMode)
 }
 
-private fun getOtherCosts(staffFlatRate: Int?, otherCostsFlatRate: Int?, sums: Map<BudgetCostCategory, BigDecimal>) =
+private fun getOtherCosts(
+    staffFlatRate: Int?,
+    otherCostsFlatRate: Int?,
+    sums: Map<BudgetCostCategory, BigDecimal>,
+    roundingMode: RoundingMode
+) =
     if (staffFlatRate != null || otherCostsFlatRate == null)
         BigDecimal.ZERO
     else
-        sums.giveMe(BudgetCostCategory.Staff).applyFlatRate(otherCostsFlatRate)
+        sums.giveMe(BudgetCostCategory.Staff).applyFlatRate(otherCostsFlatRate, roundingMode)
 
 private fun Map<BudgetCostCategory, BigDecimal>.giveMe(cat: BudgetCostCategory): BigDecimal {
     return getOrDefault(cat, BigDecimal.ZERO)
 }
 
-private fun BigDecimal.applyFlatRate(flatRate: Int) = this.multiply(
+private fun BigDecimal.applyFlatRate(flatRate: Int, roundingMode: RoundingMode) = this.multiply(
     flatRate.toBigDecimal().divide(BigDecimal.valueOf(100))
-).setScale(2, RoundingMode.DOWN)
+).setScale(2, roundingMode)

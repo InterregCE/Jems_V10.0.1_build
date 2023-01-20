@@ -48,3 +48,16 @@
     padding-top: 0 !important;
   }
 }
+
+.header-flat-rate-container {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.flat-rate-percentage {
+  font-weight: bold;
+  color: black;
+  min-height: 1rem;
+}

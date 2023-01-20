@@ -12,7 +12,6 @@ import io.cloudflight.jems.server.project.service.common.PartnerBudgetPerFundCal
 import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerFund
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost.GetBudgetTotalCost
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

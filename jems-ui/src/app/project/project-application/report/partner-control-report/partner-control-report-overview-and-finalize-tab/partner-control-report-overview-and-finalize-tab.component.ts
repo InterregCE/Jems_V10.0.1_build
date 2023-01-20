@@ -1,9 +1,11 @@
-import {Component} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnChanges, SimpleChanges} from '@angular/core';
 import {
+  ControlDeductionOverviewDTO,
+  ControlDeductionOverviewRowDTO,
   ControlOverviewDTO,
   ControlWorkOverviewDTO,
   ProjectPartnerReportControlOverviewService,
-  ProjectPartnerReportDTO
+  ProjectPartnerReportDTO, ProjectPartnerReportUnitCostDTO
 } from '@cat/api';
 import {MatTableDataSource} from '@angular/material/table';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
@@ -24,16 +26,26 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {Alert} from '@common/components/forms/alert';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
 import {LocaleDatePipe} from '@common/pipe/locale-date.pipe';
+import CategoryEnum = ProjectPartnerReportUnitCostDTO.CategoryEnum;
+import {
+  PartnerReportFinancialOverviewStoreService
+} from '@project/project-application/report/partner-report-detail-page/partner-report-financial-overview-tab/partner-report-financial-overview-store.service';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Component({
   selector: 'jems-partner-control-report-overview-and-finalize-tab',
   templateUrl: './partner-control-report-overview-and-finalize-tab.component.html',
   styleUrls: ['./partner-control-report-overview-and-finalize-tab.component.scss'],
-  providers: [FormService]
+  providers: [FormService],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PartnerControlReportOverviewAndFinalizeTabComponent {
+export class PartnerControlReportOverviewAndFinalizeTabComponent{
   Alert = Alert;
   displayedColumns = ['declaredByPartner', 'inControlSample', 'inControlSamplePercentage', 'parked', 'deductedByControl', 'eligibleAfterControl', 'eligibleAfterControlPercentage'];
+  deductionOverviewDisplayedColumns = ['typeOfErrors', 'staffCosts', 'officeAndAdministration', 'travelAndAccommodation', 'externalExpertise', 'equipment', 'infrastructure', 'lumpSums', 'unitCosts', 'total'];
+  allowedCostCategories: Map<CategoryEnum | 'LumpSum' | 'UnitCost', boolean>;
+
   finalizationLoading = false;
   error$ = new BehaviorSubject<APIError | null>(null);
 
@@ -46,7 +58,10 @@ export class PartnerControlReportOverviewAndFinalizeTabComponent {
     userCanView: boolean;
     controlReportOverview: ControlOverviewDTO;
   }>;
-
+  deductionOverview$: Observable<{
+    dataSource: MatTableDataSource<ControlDeductionOverviewRowDTO>;
+    data: ControlDeductionOverviewDTO;
+  }>;
   overviewForm: FormGroup = this.formBuilder.group({
     controlWorkStartDate: [''],
     controlWorkEndDate: [''],
@@ -71,8 +86,26 @@ export class PartnerControlReportOverviewAndFinalizeTabComponent {
     private route: ActivatedRoute,
     public store: PartnerControlReportStore,
     private projectPartnerReportControlOverviewService: ProjectPartnerReportControlOverviewService,
-    private localeDatePipe: LocaleDatePipe
+    private localeDatePipe: LocaleDatePipe,
+    private financialOverviewStore: PartnerReportFinancialOverviewStoreService
   ) {
+    financialOverviewStore.allowedCostCategories$.pipe(
+      tap(data => {
+          this.setTypeOfErrorsBreakdownTableColumns(data);
+          this.allowedCostCategories = data;
+        }
+      ),
+      untilDestroyed(this)
+    ).subscribe();
+
+    this.deductionOverview$ = combineLatest([
+      this.pageStore.controlDeductionOverview$
+    ]).pipe(
+      map(([overviewData]) => ({
+        dataSource: new MatTableDataSource(overviewData.deductionRows),
+        data: overviewData
+      })),
+    );
     this.data$ = combineLatest([
       this.pageStore.controlWorkOverview$,
       this.reportDetailPageStore.partnerReport$,
@@ -81,7 +114,7 @@ export class PartnerControlReportOverviewAndFinalizeTabComponent {
       this.reportPageStore.institutionUserCanViewControlReports$,
       this.store.partnerControlReportOverview$
     ]).pipe(
-      map(([data, report, partnerId , userCanEdit, userCanView,  controlReportOverview]) => ({
+      map(([data, report, partnerId, userCanEdit, userCanView, controlReportOverview]) => ({
         dataSource: new MatTableDataSource([data]),
         finalizationAllowed: report.status === ProjectPartnerReportDTO.StatusEnum.InControl,
         reportId: report.id,
@@ -94,6 +127,32 @@ export class PartnerControlReportOverviewAndFinalizeTabComponent {
       tap(data => this.resetForm(data.controlReportOverview)),
       tap(data => this.disableForms(data.userCanEdit))
     );
+  }
+
+  private setTypeOfErrorsBreakdownTableColumns(allowedCostCategories: Map<CategoryEnum | 'LumpSum' | 'UnitCost', boolean>) {
+    this.deductionOverviewDisplayedColumns = ['typeOfErrors'];
+    this.deductionOverviewDisplayedColumns.push(
+      ...(allowedCostCategories.get(CategoryEnum.StaffCosts) ?
+        ['staffCosts'] : []),
+      ...(allowedCostCategories.get(CategoryEnum.OfficeAndAdministrationCosts) ?
+        ['officeAndAdministration'] : []),
+      ...(allowedCostCategories.get(CategoryEnum.TravelAndAccommodationCosts) ?
+        ['travelAndAccommodation'] : []),
+      ...(allowedCostCategories.get(CategoryEnum.ExternalCosts) ?
+        ['externalExpertise'] : []),
+      ...(allowedCostCategories.get(CategoryEnum.EquipmentCosts) ?
+        ['equipment'] : []),
+      ...(allowedCostCategories.get(CategoryEnum.InfrastructureCosts) ?
+        ['infrastructure'] : []),
+      ...(allowedCostCategories.get('LumpSum') ?
+        ['lumpSums'] : []),
+      ...(allowedCostCategories.get('UnitCost') ?
+        ['unitCosts'] : []),
+      ...(allowedCostCategories.get(CategoryEnum.Multiple) ?
+        ['otherCosts'] : []),
+    );
+
+    this.deductionOverviewDisplayedColumns.push('total');
   }
 
   private initForm(): void {
@@ -118,8 +177,9 @@ export class PartnerControlReportOverviewAndFinalizeTabComponent {
   }
 
   private disableForms(userCanEdit: boolean): void {
-    if (this.overviewForm.controls.controlWorkEndDate.value != null || !userCanEdit)
-    {this.overviewForm.disable();}
+    if (this.overviewForm.controls.controlWorkEndDate.value != null || !userCanEdit) {
+      this.overviewForm.disable();
+    }
   }
 
   saveForm(partnerId: number, reportId: number): void {
@@ -170,10 +230,11 @@ export class PartnerControlReportOverviewAndFinalizeTabComponent {
   }
 
   private redirectToReportList(): void {
-    this.router.navigate(['../../..'], { relativeTo: this.route });
+    this.router.navigate(['../../..'], {relativeTo: this.route});
   }
 
   getDateInfo(value: string): any {
     return this.localeDatePipe.transform(value);
   }
 }
+
