@@ -54,12 +54,12 @@ fun validateContractFile(fileType:  JemsFileType?) {
 fun validateConfiguration(
     searchRequest: ProjectContractingFileSearchRequest,
     partnerId: Long?,
-    allowedFilers: Map<JemsFileType, Set<JemsFileType>>
+    allowedFilters: Map<JemsFileType, Set<JemsFileType>>
 ) {
     validateSearchConfiguration(
         treeNode = searchRequest.treeNode,
         filterSubtypes = searchRequest.filterSubtypes,
-        allowedFilters = allowedFilers,
+        allowedFilters = allowedFilters,
         { InvalidSearchConfiguration() },
         { invalidFilters -> InvalidSearchFilterConfiguration(invalidFilters) },
     )

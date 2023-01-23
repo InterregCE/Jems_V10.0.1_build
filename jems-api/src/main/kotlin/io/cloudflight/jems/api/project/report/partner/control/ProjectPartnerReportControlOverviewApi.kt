@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 
-
 @Api("Project Partner Report Control Overview")
 interface ProjectPartnerReportControlOverviewApi {
 
@@ -26,7 +25,6 @@ interface ProjectPartnerReportControlOverviewApi {
         @PathVariable partnerId: Long,
         @PathVariable reportId: Long,
     ): ControlWorkOverviewDTO
-
 
     @ApiOperation("Returns Partner Report Control Overview")
     @GetMapping(ENDPOINT_API_PROJECT_PARTNER_REPORT_CONTROL_OVERVIEW)

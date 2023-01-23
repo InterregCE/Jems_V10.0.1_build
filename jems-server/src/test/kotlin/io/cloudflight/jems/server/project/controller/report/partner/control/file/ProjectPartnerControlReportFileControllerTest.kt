@@ -1,7 +1,9 @@
 package io.cloudflight.jems.server.project.controller.report.partner.control.file
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.project.service.report.partner.control.file.downloadCertificate.DownloadReportControlCertificateInteractor
 import io.cloudflight.jems.server.project.service.report.partner.control.file.generateCertificate.GenerateReportControlCertificateInteractor
+import io.cloudflight.jems.server.project.service.report.partner.control.file.listCertificates.ListReportControlCertificatesInteractor
 import io.cloudflight.jems.server.project.service.report.partner.control.file.setDescriptionToCertificate.SetDescriptionToCertificateInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -16,6 +18,12 @@ open class ProjectPartnerControlReportFileControllerTest: UnitTest() {
 
     @MockK
     lateinit var  setCertificateFileDescription: SetDescriptionToCertificateInteractor
+
+    @MockK
+    lateinit var listReportControlCertificates: ListReportControlCertificatesInteractor
+
+    @MockK
+    lateinit var downloadReportControlCertificate: DownloadReportControlCertificateInteractor
 
     @InjectMockKs
     lateinit var controller: ProjectPartnerControlReportFileController

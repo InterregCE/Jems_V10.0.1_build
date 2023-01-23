@@ -99,5 +99,4 @@ class ProjectPartnerReportControlOverviewControllerTest : UnitTest() {
         every { updateReportControlOverview.update(partnerId = PARTNER_ID, reportId = REPORT_ID, dummyOverview) } returns dummyOverview
         assertThat(controller.updateControlOverview(partnerId = PARTNER_ID, reportId = REPORT_ID, dummyOverviewDTO)).isEqualTo(dummyOverviewDTO)
     }
-
 }
