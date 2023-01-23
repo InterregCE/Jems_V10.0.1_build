@@ -99,9 +99,10 @@
 </ng-template>
 
 <ng-template #versionCell let-partnerReport>
-    <span matTooltip="{{'project.application.partner.report.warning.tooltip' | translate }}">
-        <mat-icon class="warning-color" *ngIf="partnerReport.status === ProjectPartnerReportSummaryDTO.StatusEnum.Draft && isCurrentVersionLatestApproved(partnerReport.linkedFormVersion)">warning</mat-icon>
-    </span>
+    <mat-icon *ngIf="partnerReport.status === ProjectPartnerReportSummaryDTO.StatusEnum.Draft && isCurrentVersionLatestApproved(partnerReport.linkedFormVersion)"
+              matTooltip="{{'project.application.partner.report.warning.tooltip' | translate }}" color="accent" class="mr-1">
+        warning
+    </mat-icon>
     <span>
         {{partnerReport.linkedFormVersion}}
     </span>

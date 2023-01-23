@@ -27,7 +27,8 @@ import {
   ProjectPartnerReportDTO,
   ProjectPartnerReportExpenditureCostDTO,
   ProjectPartnerReportLumpSumDTO,
-  ProjectPartnerReportUnitCostDTO
+  ProjectPartnerReportUnitCostDTO,
+  ProjectPartnerReportParkedExpenditureDTO,
 } from '@cat/api';
 import {BudgetCostCategoryEnum} from '@project/model/lump-sums/BudgetCostCategoryEnum';
 import {
@@ -75,6 +76,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     withConfigs: TableConfig[];
     unitCosts: ProjectPartnerReportUnitCostDTO[];
     lumpSums: ProjectPartnerReportLumpSumDTO[];
+    parkedExpenditures: ProjectPartnerReportParkedExpenditureDTO[];
   }>;
   tableConfiguration$: Observable<{
     columnsToDisplay: string[];
@@ -105,7 +107,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   constructor(public pageStore: PartnerReportExpendituresStore,
               protected changeDetectorRef: ChangeDetectorRef,
               private formBuilder: FormBuilder,
-              private formService: FormService,
+              public formService: FormService,
               private partnerFileManagementStore: PartnerFileManagementStore,
               private partnerReportDetailPageStore: PartnerReportDetailPageStore,
               private router: RoutingService,
@@ -312,6 +314,8 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     const item = this.formBuilder.group({
       id: null,
       number: this.tableData.length + 1,
+      reportOfOriginNumber: null,
+      originalExpenditureNumber: null,
       costOptions: null,
       costCategory: ['', Validators.required],
       investmentId: '',
@@ -384,15 +388,24 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       this.pageStore.investmentsSummary$,
       this.pageStore.contractIDs$,
       this.tableConfiguration$,
-      this.reportCosts$
+      this.reportCosts$,
+      this.pageStore.parkedExpenditures$,
     ]).pipe(
-      map(([expendituresCosts, costCategories, investmentsSummary, contractIDs, tableConfiguration, reportCosts]) => ({
+      map(([expendituresCosts, costCategories, investmentsSummary, contractIDs, tableConfiguration, reportCosts, parkedExpenditures]: any) => ({
           expendituresCosts,
           costCategories,
           investmentsSummary,
           contractIDs,
           ...tableConfiguration,
-          ...reportCosts
+          ...reportCosts,
+          // parkedExpenditures,
+          parkedExpenditures: parkedExpenditures.map((exp: ProjectPartnerReportParkedExpenditureDTO) => ({
+            ...exp,
+            canBeReIncluded: (exp.lumpSum ? exp.lumpSum.entityStillAvailable : true)
+              && (exp.unitCost ? exp.unitCost.entityStillAvailable : true)
+              && (exp.investment ? exp.investment.entityStillAvailable : true),
+            contractName: (exp.expenditure.contractId ? contractIDs.find((c: IdNamePairDTO) => c.id === exp.expenditure.contractId)?.name : undefined)
+          })),
         })
       ),
       tap(data => this.resetForm(data.expendituresCosts)),
@@ -491,7 +504,10 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   }
 
   private addExpenditure(reportExpenditureCost: ProjectPartnerReportExpenditureCostDTO): void {
-      const conversionRate = this.getConversionRateByCode(reportExpenditureCost.currencyCode || '', reportExpenditureCost);
+      const isParked = !!reportExpenditureCost.parkingMetadata;
+      const conversionRate = isParked
+        ? reportExpenditureCost.currencyConversionRate
+        : this.getConversionRateByCode(reportExpenditureCost.currencyCode || '', reportExpenditureCost);
       const costOption = this.getUnitCostOrLumpSumObject(reportExpenditureCost);
       this.availableCurrenciesPerRow.push(this.getAvailableCurrenciesByType(this.getUnitCostType(reportExpenditureCost), costOption));
 
@@ -499,6 +515,8 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
         {
           id: this.formBuilder.control(reportExpenditureCost.id),
           number: this.formBuilder.control(reportExpenditureCost.number),
+          reportOfOriginNumber: this.formBuilder.control(reportExpenditureCost.parkingMetadata?.reportOfOriginNumber),
+          originalExpenditureNumber: this.formBuilder.control(reportExpenditureCost.parkingMetadata?.originalExpenditureNumber),
           costOptions: this.formBuilder.control(costOption),
           costCategory: this.formBuilder.control(reportExpenditureCost.costCategory),
           investmentId: this.formBuilder.control(reportExpenditureCost.investmentId),
@@ -645,6 +663,10 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     }
 
     if (selectionType == 'unitCost' && !this.isUnitCostForeignCurrencyAvailable(index)) {
+      control.get('currencyCode')?.disable();
+    }
+
+    if (control.get('reportOfOriginNumber')?.value) {
       control.get('currencyCode')?.disable();
     }
   }

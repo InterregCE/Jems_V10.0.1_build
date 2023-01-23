@@ -10,20 +10,42 @@ import java.math.RoundingMode
 
 fun List<ProjectPartnerReportExpenditureCost>.fillCurrencyRates(rates: Map<String, CurrencyConversion>) = map {
     it.apply {
-        if (it.currencyCode !in rates.keys) {
-            clearConversions()
+        val rate: BigDecimal? = if (it.parkingMetadata != null) it.currencyConversionRate!! else rates.getOrDefault(it.currencyCode, null)?.conversionRate
+        if (rate != null) {
+            fillInRate(rate)
         } else {
-            fillInRate(rate = rates[it.currencyCode]!!.conversionRate)
+            clearConversions()
         }
     }
 }
 
-fun List<ProjectPartnerReportExpenditureCost>.clearConversions() = map {
-    it.apply { clearConversions() }
+fun List<ProjectPartnerReportExpenditureCost>.clearConversions(exceptParked: Map<Long, ProjectPartnerReportExpenditureCost>) = map {
+    it.apply {
+        if (id in exceptParked.keys) {
+            currencyCode = exceptParked[id]!!.currencyCode
+            currencyConversionRate = exceptParked[id]!!.currencyConversionRate
+            declaredAmountAfterSubmission = null
+        } else {
+            clearConversions()
+        }
+    }
 }
 
 fun List<ProjectPartnerReportExpenditureCost>.clearParking() = map {
     it.apply { it.parkingMetadata = null }
+}
+
+fun List<ProjectPartnerReportExpenditureCost>.reNumber(parkedIds: Set<Long>): List<ProjectPartnerReportExpenditureCost> {
+    var skippedParked = 0
+    this.forEachIndexed { index, expenditure ->
+        if (expenditure.id !in parkedIds) {
+            expenditure.number = index.plus(1).minus(skippedParked)
+        } else {
+            expenditure.number = 0
+            skippedParked += 1
+        }
+    }
+    return this
 }
 
 inline fun <T> Collection<T>.filterInvalidCurrencies(defaultCurrency: String?, extractFunction: (T) -> String) =

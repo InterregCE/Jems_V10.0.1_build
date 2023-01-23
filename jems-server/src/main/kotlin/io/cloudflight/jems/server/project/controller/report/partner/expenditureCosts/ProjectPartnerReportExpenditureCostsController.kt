@@ -9,6 +9,7 @@ import io.cloudflight.jems.api.project.report.partner.ProjectPartnerReportExpend
 import io.cloudflight.jems.server.project.controller.partner.budget.toProjectPartnerBudgetOptionsDto
 import io.cloudflight.jems.server.project.controller.report.partner.toDto
 import io.cloudflight.jems.server.project.controller.report.partner.toProjectFile
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.deleteParkedExpenditure.DeleteParkedExpenditureInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.getAvailableBudgetOptionsForReport.GetAvailableBudgetOptionsForReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.getAvailableInvestmentsForReport.GetAvailableInvestmentsForReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.getAvailableLumpSumsForReport.GetAvailableLumpSumsForReportInteractor
@@ -33,6 +34,7 @@ class ProjectPartnerReportExpenditureCostsController(
     private val getAvailableBudgetOptionsForReportInteractor: GetAvailableBudgetOptionsForReportInteractor,
     private val getAvailableParkedExpenditureListInteractor: GetAvailableParkedExpenditureListInteractor,
     private val reIncludeParkedExpenditureInteractor: ReIncludeParkedExpenditureInteractor,
+    private val deleteParkedExpenditureInteractor: DeleteParkedExpenditureInteractor,
 ) : ProjectPartnerReportExpenditureCostsApi {
 
     override fun getProjectPartnerReports(
@@ -76,10 +78,13 @@ class ProjectPartnerReportExpenditureCostsController(
     override fun getAvailableBudgetOptions(partnerId: Long, reportId: Long): ProjectPartnerBudgetOptionsDto =
         getAvailableBudgetOptionsForReportInteractor.getBudgetOptions(partnerId, reportId).toProjectPartnerBudgetOptionsDto()
 
-    override fun getAvailableParkedExpenditures(partnerId: Long, pageable: Pageable) =
-        getAvailableParkedExpenditureListInteractor.getParked(partnerId = partnerId, pageable).toDto()
+    override fun getAvailableParkedExpenditures(partnerId: Long, reportId: Long, pageable: Pageable) =
+        getAvailableParkedExpenditureListInteractor.getParked(partnerId = partnerId, reportId, pageable).toDto()
 
     override fun reIncludeParkedExpenditure(partnerId: Long, reportId: Long, expenditureId: Long) =
         reIncludeParkedExpenditureInteractor.reIncludeParkedExpenditure(partnerId = partnerId, reportId, expenditureId)
+
+    override fun deleteParkedExpenditure(partnerId: Long, expenditureId: Long) =
+        deleteParkedExpenditureInteractor.deleteParkedExpenditure(partnerId = partnerId, expenditureId)
 
 }

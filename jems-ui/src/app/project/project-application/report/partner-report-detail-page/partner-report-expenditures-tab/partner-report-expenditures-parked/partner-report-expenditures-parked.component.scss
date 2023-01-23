@@ -1,0 +1,82 @@
+@use '../../../partner-report-detail-page/partner-report-financial-overview-tab/remove-custom-table-overrides';
+
+.border-cell-right {
+  border-right: .0625rem solid var(--table-border-color);
+}
+.border-cell-left {
+  border-left: .0625rem solid var(--table-border-color);
+}
+
+.mat-column-costItemID {
+  min-width: 2.5rem;
+  max-width: 2.5rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+.mat-column-action {
+  min-width: 5rem;
+  max-width: 5rem;
+  padding-left: .5rem;
+  padding-right: .5rem;
+}
+
+.mat-column-costOptions {
+  padding-left: 1rem;
+}
+.mat-column-costCategory,
+.mat-column-investmentId,
+.mat-column-contractId,
+.mat-column-totalValueInvoice,
+.mat-column-numberOfUnits,
+.mat-column-pricePerUnit,
+.mat-column-vat,
+.mat-column-declaredAmount,
+.mat-column-currencyCode,
+.mat-column-currencyConversionRate,
+.mat-column-declaredAmountAfterSubmission {
+  padding-left: .5rem;
+}
+.mat-column-declaredAmountAfterSubmission {
+  padding-right: 1rem;
+}
+
+.mat-column-costOptions {
+  min-width: 10rem;
+}
+.mat-column-costCategory {
+  min-width: 10rem;
+}
+.mat-column-investmentId {
+  min-width: 10rem;
+}
+.mat-column-contractId {
+  min-width: 10rem;
+}
+.mat-column-totalValueInvoice {
+  min-width: 10rem;
+}
+.mat-column-numberOfUnits {
+  min-width: 6rem;
+}
+.mat-column-pricePerUnit {
+  min-width: 8rem;
+}
+.mat-column-vat {
+  min-width: 6rem;
+}
+.mat-column-declaredAmount {
+  min-width: 8rem;
+}
+.mat-column-currencyCode {
+  min-width: 4rem;
+}
+.mat-column-currencyConversionRate {
+  min-width: 4.5rem;
+}
+.mat-column-declaredAmountAfterSubmission {
+  min-width: 8rem;
+}
+
+.grayed-out {
+  color: var(--font-color-secondary);
+}

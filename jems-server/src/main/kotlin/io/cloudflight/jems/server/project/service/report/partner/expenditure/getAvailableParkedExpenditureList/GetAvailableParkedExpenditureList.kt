@@ -4,7 +4,10 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanViewPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
-import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportInvestment
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportLumpSum
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportParkedExpenditure
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportUnitCost
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.PartnerReportParkedExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
 import org.springframework.data.domain.Page
@@ -21,20 +24,57 @@ class GetAvailableParkedExpenditureList(
     @CanViewPartnerReport
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetAvailableParkedExpenditureListException::class)
-    override fun getParked(partnerId: Long, pageable: Pageable): Page<ProjectPartnerReportExpenditureCost> {
+    override fun getParked(partnerId: Long, reportId: Long, pageable: Pageable): Page<ProjectPartnerReportParkedExpenditure> {
         val parkedExpendituresById = reportParkedExpenditurePersistence
             .getParkedExpendituresByIdForPartner(partnerId, ReportStatus.Certified)
 
-        return reportExpenditurePersistence.getPartnerReportExpenditureCosts(
+        val availableLumpSums = reportExpenditurePersistence.getAvailableLumpSums(partnerId, reportId = reportId)
+            .associateBy { it.lumpSumProgrammeId }
+        val availableUnitCosts = reportExpenditurePersistence.getAvailableUnitCosts(partnerId, reportId = reportId)
+            .associateBy { it.unitCostProgrammeId }
+        val availableInvestments = reportExpenditurePersistence.getAvailableInvestments(partnerId, reportId = reportId)
+            .associateBy { it.investmentId }
+
+        val result = reportExpenditurePersistence.getPartnerReportExpenditureCosts(
             ids = parkedExpendituresById.keys,
             pageable = pageable,
-        ).fillInParkingData(parkedExpendituresById)
+        )
+
+        return result
+            .fillInParkingData(parkedExpendituresById)
+            .fillInUnitCostAvailable(availableUnitCosts)
+            .fillInLumpSumAvailable(availableLumpSums)
+            .fillInInvestmentAvailable(availableInvestments)
     }
 
-    private fun Page<ProjectPartnerReportExpenditureCost>.fillInParkingData(
+    private fun Page<ProjectPartnerReportParkedExpenditure>.fillInParkingData(
         parkingById: Map<Long, ExpenditureParkingMetadata>,
-    ) = this.onEach { expenditure ->
-        expenditure.parkingMetadata = parkingById[expenditure.id]!!
+    ) = this.onEach { parked ->
+        parked.expenditure.parkingMetadata = parkingById[parked.expenditure.id]!!
+    }
+
+    private fun Page<ProjectPartnerReportParkedExpenditure>.fillInUnitCostAvailable(
+        availableUnitCosts: Map<Long, ProjectPartnerReportUnitCost>,
+    ) = this.onEach { parked ->
+        if (parked.unitCost != null) {
+            parked.unitCost.entityStillAvailable = parked.unitCost.projectRelatedId in availableUnitCosts.keys
+        }
+    }
+
+    private fun Page<ProjectPartnerReportParkedExpenditure>.fillInLumpSumAvailable(
+        availableLumpSums: Map<Long, ProjectPartnerReportLumpSum>,
+    ) = this.onEach { parked ->
+        if (parked.lumpSum != null) {
+            parked.lumpSum.entityStillAvailable = parked.lumpSum.projectRelatedId in availableLumpSums.keys
+        }
+    }
+
+    private fun Page<ProjectPartnerReportParkedExpenditure>.fillInInvestmentAvailable(
+        availableInvestments: Map<Long, ProjectPartnerReportInvestment>,
+    ) = this.onEach { parked ->
+        if (parked.investment != null) {
+            parked.investment.entityStillAvailable = parked.investment.projectRelatedId in availableInvestments.keys
+        }
     }
 
 }

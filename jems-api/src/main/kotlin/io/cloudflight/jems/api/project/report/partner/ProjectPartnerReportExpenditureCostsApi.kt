@@ -5,6 +5,7 @@ import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadata
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportExpenditureCostDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportInvestmentDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportLumpSumDTO
+import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportParkedExpenditureDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportUnitCostDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
@@ -13,6 +14,7 @@ import io.swagger.annotations.ApiOperation
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.MediaType
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -87,18 +89,23 @@ interface ProjectPartnerReportExpenditureCostsApi {
         ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
     )
-    @GetMapping("${ProjectPartnerReportApi.ENDPOINT_API_PROJECT_PARTNER_REPORT}/expenditure/byPartnerId/{partnerId}/parked")
+    @GetMapping("$ENDPOINT_API_PARTNER_REPORT_EXPENDITURE_COSTS/parked")
     fun getAvailableParkedExpenditures(
         @PathVariable partnerId: Long,
+        @PathVariable reportId: Long,
         pageable: Pageable,
-    ): Page<ProjectPartnerReportExpenditureCostDTO>
+    ): Page<ProjectPartnerReportParkedExpenditureDTO>
 
-    @ApiOperation("Update partner report expenditure costs")
+    @ApiOperation("Re-include parked expenditure")
     @PutMapping("$ENDPOINT_API_PARTNER_REPORT_EXPENDITURE_COSTS/reIncludeExpenditure/{expenditureId}")
     fun reIncludeParkedExpenditure(
         @PathVariable partnerId: Long,
         @PathVariable reportId: Long,
         @PathVariable expenditureId: Long,
     )
+
+    @ApiOperation("Delete parked expenditure")
+    @DeleteMapping("${ProjectPartnerReportApi.ENDPOINT_API_PROJECT_PARTNER_REPORT}/expenditure/byPartnerId/{partnerId}/deleteExpenditure/{expenditureId}")
+    fun deleteParkedExpenditure(@PathVariable partnerId: Long, @PathVariable expenditureId: Long)
 
 }

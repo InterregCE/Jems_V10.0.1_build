@@ -456,6 +456,9 @@ import { ProjectReportCreateComponent } from './project-application/report/proje
 import {
   ProjectReportSubmitTabComponent
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-submit-tab/project-report-submit-tab.component';
+import {
+  PartnerReportExpendituresParkedComponent
+} from '@project/project-application/report/partner-report-detail-page/partner-report-expenditures-tab/partner-report-expenditures-parked/partner-report-expenditures-parked.component';
 
 @NgModule({
   declarations: [
@@ -580,6 +583,7 @@ import {
     PartnerReportProcurementAttachmentComponent,
     PartnerReportContributionTabComponent,
     PartnerReportExpendituresTabComponent,
+    PartnerReportExpendituresParkedComponent,
     PartnerReportFinancialOverviewTabComponent,
     PartnerBreakdownCostCategoryComponent,
     PartnerBreakdownLumpSumComponent,

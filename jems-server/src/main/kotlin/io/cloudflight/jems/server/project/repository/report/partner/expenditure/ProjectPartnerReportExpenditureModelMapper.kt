@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.repository.report.partner.expenditure
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.entity.addTranslationEntities
+import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.common.entity.extractTranslation
 import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
@@ -14,11 +15,13 @@ import io.cloudflight.jems.server.project.entity.report.partner.expenditure.Part
 import io.cloudflight.jems.server.project.repository.report.partner.toModel
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportParkedExpenditure
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportParkedLinked
 import org.springframework.data.domain.Page
 import java.math.BigDecimal
 
 fun List<PartnerReportExpenditureCostEntity>.toModel() = map { it.toModel() }
-fun Page<PartnerReportExpenditureCostEntity>.toModel() = map { it.toModel() }
+fun Page<PartnerReportExpenditureCostEntity>.toModel() = map { it.toParkedModel() }
 
 fun PartnerReportExpenditureCostEntity.toModel() = ProjectPartnerReportExpenditureCost(
     id = id,
@@ -46,6 +49,17 @@ fun PartnerReportExpenditureCostEntity.toModel() = ProjectPartnerReportExpenditu
     description = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.description) }
 )
 
+fun PartnerReportExpenditureCostEntity.toParkedModel() = ProjectPartnerReportParkedExpenditure(
+    expenditure = this.toModel(),
+
+    lumpSum = reportLumpSum?.let { ProjectPartnerReportParkedLinked(it.id, it.programmeLumpSum.id, false) },
+    lumpSumName = reportLumpSum?.programmeLumpSum?.translatedValues?.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.name) },
+    unitCost = reportUnitCost?.let { ProjectPartnerReportParkedLinked(it.id, it.programmeUnitCost.id, false) },
+    unitCostName = reportUnitCost?.programmeUnitCost?.translatedValues?.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.name) },
+    investment = reportInvestment?.let { ProjectPartnerReportParkedLinked(it.id, it.investmentId, false) },
+    investmentName = reportInvestment?.let { "I${it.workPackageNumber}.${it.investmentNumber}" },
+)
+
 fun PartnerReportExpenditureCostEntity.getParkingMetadata(): ExpenditureParkingMetadata? {
     if (unParkedFrom != null && reportOfOrigin != null && originalNumber != null)
         return ExpenditureParkingMetadata(
@@ -61,7 +75,6 @@ fun ProjectPartnerReportExpenditureCost.toEntity(
     lumpSums: Map<Long, PartnerReportLumpSumEntity>,
     unitCosts: Map<Long, PartnerReportUnitCostEntity>,
     investments: Map<Long, PartnerReportInvestmentEntity>,
-    number: Int
 ) =
     PartnerReportExpenditureCostEntity(
         id = id ?: 0L,
@@ -102,17 +115,21 @@ fun ProjectPartnerReportExpenditureCost.toEntity(
 fun PartnerReportExpenditureCostEntity.clone(
     newReportToBeLinked: ProjectPartnerReportEntity,
     clonedAttachment: JemsFileMetadataEntity?,
-    comment: Set<InputTranslation>,
-    description: Set<InputTranslation>,
-) =
-    PartnerReportExpenditureCostEntity(
+    lumpSumResolver: (Long) -> PartnerReportLumpSumEntity,
+    unitCostResolver: (Long) -> PartnerReportUnitCostEntity,
+    investmentResolver: (Long) -> PartnerReportInvestmentEntity,
+): PartnerReportExpenditureCostEntity {
+    val comment = translatedValues.extractField { it.comment }
+    val description = translatedValues.extractField { it.description }
+
+    return PartnerReportExpenditureCostEntity(
         id = 0L,
         number = 0,
         partnerReport = newReportToBeLinked,
-        reportLumpSum = reportLumpSum,
-        reportUnitCost = reportUnitCost,
+        reportLumpSum = reportLumpSum?.programmeLumpSum?.id?.let { lumpSumResolver.invoke(it) },
+        reportUnitCost = reportUnitCost?.programmeUnitCost?.id?.let { unitCostResolver.invoke(it) },
         costCategory = costCategory,
-        reportInvestment = reportInvestment,
+        reportInvestment = reportInvestment?.investmentId?.let { investmentResolver.invoke(it) },
         procurementId = procurementId,
         internalReferenceNumber = internalReferenceNumber,
         invoiceNumber = invoiceNumber,
@@ -140,6 +157,7 @@ fun PartnerReportExpenditureCostEntity.clone(
     ).apply {
         translatedValues.addTranslation(this, comment, description)
     }
+}
 
 fun MutableSet<PartnerReportExpenditureCostTranslEntity>.addTranslation(
     sourceEntity: PartnerReportExpenditureCostEntity,

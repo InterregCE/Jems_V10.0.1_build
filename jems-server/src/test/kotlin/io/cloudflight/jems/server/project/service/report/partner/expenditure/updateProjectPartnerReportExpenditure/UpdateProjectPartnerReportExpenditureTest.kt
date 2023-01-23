@@ -30,6 +30,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import java.math.BigDecimal
 import java.math.BigDecimal.ONE
+import java.math.BigDecimal.valueOf
 import java.time.LocalDate
 import java.time.ZonedDateTime
 import java.util.Collections
@@ -65,6 +66,15 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
         attachment = JemsFileMetadata(47L, "file.xlsx", UPLOADED),
         parkingMetadata = ExpenditureParkingMetadata(reportOfOriginId = 14L, reportOfOriginNumber = 2, originalExpenditureNumber = 9),
     )
+
+    private fun parkedExpenditure(id: Long, code: String, rate: BigDecimal): ProjectPartnerReportExpenditureCost {
+        val result = mockk<ProjectPartnerReportExpenditureCost>()
+        every { result.id } returns id
+        every { result.parkingMetadata } returns mockk()
+        every { result.currencyCode } returns code
+        every { result.currencyConversionRate } returns rate
+        return result
+    }
 
     private fun reportWithCurrency(id: Long, status: ReportStatus, version: String, currency: String?): ProjectPartnerReport {
         val identification = mockk<PartnerReportIdentification>()
@@ -124,6 +134,8 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
         every { reportExpenditurePersistence.getAvailableUnitCosts(PARTNER_ID, reportId = 84L) } returns emptyList()
         every { reportExpenditurePersistence.getAvailableInvestments(PARTNER_ID, reportId = 84L) } returns emptyList()
 
+        every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, reportId = 84L) } returns emptyList()
+
         every {
             reportExpenditurePersistence.updatePartnerReportExpenditureCosts(
                 partnerId = PARTNER_ID,
@@ -151,6 +163,69 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
     }
 
     @Test
+    fun `update - successfully - not touching parked currency`() {
+        every { reportPersistence.getPartnerReportById(partnerId = PARTNER_ID, 85L) } returns
+            reportWithCurrency(id = 85L, ReportStatus.Draft, "0.8", "GBP")
+        every { reportPersistence.getReportIdsBefore(PARTNER_ID, 85L) } returns setOf(83L)
+
+        every { reportProcurementPersistence.getProcurementContractNamesForReportIds(setOf(83L, 85L)) } returns
+            setOf(Pair(26L, "contr-26"))
+
+        every { reportExpenditurePersistence.getAvailableLumpSums(PARTNER_ID, reportId = 85L) } returns emptyList()
+        every { reportExpenditurePersistence.getAvailableUnitCosts(PARTNER_ID, reportId = 85L) } returns emptyList()
+        every { reportExpenditurePersistence.getAvailableInvestments(PARTNER_ID, reportId = 85L) } returns emptyList()
+
+        val parked_14 = parkedExpenditure(14L, "GBP", BigDecimal.valueOf(1275, 3))
+        every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, reportId = 85L) } returns
+            listOf(parked_14)
+
+        every {
+            reportExpenditurePersistence.updatePartnerReportExpenditureCosts(
+                partnerId = PARTNER_ID,
+                reportId = 85L,
+                any(),
+                doNotRenumber = false,
+            )
+        } returnsArgument 2
+
+        assertThat(
+            updatePartnerReportExpenditureCosts.updatePartnerReportExpenditureCosts(
+                PARTNER_ID,
+                85L,
+                listOf(
+                    reportExpenditureCost.copy(id = 0L),
+                    reportExpenditureCost.copy(id = 14L),
+                    reportExpenditureCost.copy(id = 0L)),
+            )
+        ).containsExactly(
+            reportExpenditureCost.copy(
+                id = 0L,
+                number = 1 /* numbering is skipped for re-included ones */,
+                investmentId = null,
+                currencyConversionRate = null,
+                declaredAmountAfterSubmission = null,
+                parkingMetadata = null,
+            ),
+            reportExpenditureCost.copy(
+                id = 14L,
+                number = 0 /* numbering is skipped for re-included ones */,
+                investmentId = null,
+                currencyConversionRate = valueOf(1275, 3),
+                declaredAmountAfterSubmission = null,
+                parkingMetadata = null,
+            ),
+            reportExpenditureCost.copy(
+                id = 0L,
+                number = 2 /* numbering is skipped for re-included ones */,
+                investmentId = null,
+                currencyConversionRate = null,
+                declaredAmountAfterSubmission = null,
+                parkingMetadata = null,
+            ),
+        )
+    }
+
+    @Test
     fun `update - successfully - with not-existing procurement and not-existing investment`() {
         every { reportPersistence.getPartnerReportById(PARTNER_ID, 90L) } returns
             reportWithCurrency(90L, status = ReportStatus.Draft, version = "0.9", currency = "HUF")
@@ -161,6 +236,7 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
         every { reportExpenditurePersistence.getAvailableLumpSums(PARTNER_ID, reportId = 90L) } returns emptyList()
         every { reportExpenditurePersistence.getAvailableUnitCosts(PARTNER_ID, reportId = 90L) } returns emptyList()
         every { reportExpenditurePersistence.getAvailableInvestments(PARTNER_ID, reportId = 90L) } returns emptyList()
+        every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, reportId = 90L) } returns emptyList()
 
         every {
             reportExpenditurePersistence.updatePartnerReportExpenditureCosts(
@@ -324,6 +400,8 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
         every { reportExpenditurePersistence.getAvailableLumpSums(PARTNER_ID, reportId = reportId) } returns emptyList()
         every { reportExpenditurePersistence.getAvailableUnitCosts(PARTNER_ID, reportId = reportId) } returns emptyList()
         every { reportExpenditurePersistence.getAvailableInvestments(PARTNER_ID, reportId = reportId) } returns emptyList()
+
+        every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, reportId = reportId) } returns emptyList()
 
         every { reportExpenditurePersistence.updatePartnerReportExpenditureCosts(PARTNER_ID, reportId = reportId, any(), false) } returnsArgument 2
     }

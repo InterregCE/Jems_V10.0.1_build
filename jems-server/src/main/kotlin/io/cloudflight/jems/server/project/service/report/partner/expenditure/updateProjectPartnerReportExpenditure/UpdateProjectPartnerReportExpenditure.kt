@@ -15,6 +15,7 @@ import io.cloudflight.jems.server.project.service.report.partner.expenditure.cle
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.fillInLumpSum
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.fillInUnitCost
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.filterInvalidCurrencies
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.reNumber
 import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectPartnerReportProcurementPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -62,11 +63,16 @@ class UpdateProjectPartnerReportExpenditure(
             allowedLumpSums = reportExpenditurePersistence.getAvailableLumpSums(partnerId, reportId = reportId),
             allowedUnitCosts = reportExpenditurePersistence.getAvailableUnitCosts(partnerId, reportId = reportId),
         )
+        val parkedExpenditures = reportExpenditurePersistence.getPartnerReportExpenditureCosts(partnerId, reportId = reportId)
+            .filter { it.parkingMetadata != null }.associateBy { it.id!! }
 
         return reportExpenditurePersistence.updatePartnerReportExpenditureCosts(
             partnerId = partnerId,
             reportId = report.id,
-            expenditureCosts = expenditureCosts.clearConversions().clearParking(),
+            expenditureCosts = expenditureCosts
+                .clearConversions(exceptParked = parkedExpenditures)
+                .clearParking()
+                .reNumber(parkedIds = parkedExpenditures.keys),
         )
     }
 

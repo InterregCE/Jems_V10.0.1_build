@@ -8,6 +8,8 @@ import io.cloudflight.jems.api.project.dto.report.partner.expenditure.BudgetCate
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportExpenditureCostDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportInvestmentDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportLumpSumDTO
+import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportParkedExpenditureDTO
+import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportParkedLinkedDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportUnitCostDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.verification.ExpenditureParkingMetadataDTO
 import io.cloudflight.jems.server.UnitTest
@@ -20,6 +22,9 @@ import io.cloudflight.jems.server.project.service.report.model.partner.expenditu
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportParkedExpenditure
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportParkedLinked
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.deleteParkedExpenditure.DeleteParkedExpenditureInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.getAvailableBudgetOptionsForReport.GetAvailableBudgetOptionsForReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.getAvailableInvestmentsForReport.GetAvailableInvestmentsForReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.getAvailableLumpSumsForReport.GetAvailableLumpSumsForReportInteractor
@@ -78,6 +83,16 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
         parkingMetadata = ExpenditureParkingMetadata(reportOfOriginId = 14L, reportOfOriginNumber = 2, originalExpenditureNumber = 9),
     )
 
+    private val reportParkedExpenditure = ProjectPartnerReportParkedExpenditure(
+        expenditure = reportExpenditureCost,
+        lumpSum = ProjectPartnerReportParkedLinked(51L, 52L, true),
+        lumpSumName = setOf(InputTranslation(SystemLanguage.EN, "ls-name")),
+        unitCost = ProjectPartnerReportParkedLinked(61L, 62L, false),
+        unitCostName = setOf(InputTranslation(SystemLanguage.EN, "uc-name")),
+        investment = ProjectPartnerReportParkedLinked(71L, 72L, true),
+        investmentName = "investment-name",
+    )
+
     private val reportExpenditureCostDto = ProjectPartnerReportExpenditureCostDTO(
         id = 754,
         number = 1,
@@ -102,6 +117,16 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
         declaredAmountAfterSubmission = BigDecimal.valueOf(1.3),
         attachment = ProjectReportFileMetadataDTO(500L, "file.txt", UPLOADED),
         parkingMetadata = ExpenditureParkingMetadataDTO(reportOfOriginId = 14L, reportOfOriginNumber = 2, originalExpenditureNumber = 9),
+    )
+
+    private val reportParkedExpenditureDto = ProjectPartnerReportParkedExpenditureDTO(
+        expenditure = reportExpenditureCostDto,
+        lumpSum = ProjectPartnerReportParkedLinkedDTO(51L, 52L, true),
+        lumpSumName = setOf(InputTranslation(SystemLanguage.EN, "ls-name")),
+        unitCost = ProjectPartnerReportParkedLinkedDTO(61L, 62L, false),
+        unitCostName = setOf(InputTranslation(SystemLanguage.EN, "uc-name")),
+        investment = ProjectPartnerReportParkedLinkedDTO(71L, 72L, true),
+        investmentName = "investment-name",
     )
 
     private val stream = ByteArray(5).inputStream()
@@ -220,12 +245,15 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
     @MockK
     private lateinit var reIncludeParkedExpenditureInteractor: ReIncludeParkedExpenditureInteractor
 
+    @MockK
+    private lateinit var deleteParkedExpenditureInteractor: DeleteParkedExpenditureInteractor
+
     @InjectMockKs
     private lateinit var controller: ProjectPartnerReportExpenditureCostsController
 
     @BeforeEach
     fun reset() {
-        clearMocks(reIncludeParkedExpenditureInteractor)
+        clearMocks(reIncludeParkedExpenditureInteractor, deleteParkedExpenditureInteractor)
     }
 
     @Test
@@ -291,10 +319,10 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
 
     @Test
     fun getAvailableParkedExpenditures() {
-        every { getAvailableParkedExpenditureListInteractor.getParked(PARTNER_ID, Pageable.unpaged()) } returns
-            PageImpl(listOf(reportExpenditureCost))
-        assertThat(controller.getAvailableParkedExpenditures(PARTNER_ID, Pageable.unpaged()))
-            .containsExactly(reportExpenditureCostDto)
+        every { getAvailableParkedExpenditureListInteractor.getParked(PARTNER_ID, reportId = 41L, Pageable.unpaged()) } returns
+            PageImpl(listOf(reportParkedExpenditure))
+        assertThat(controller.getAvailableParkedExpenditures(PARTNER_ID, 41L, Pageable.unpaged()))
+            .containsExactly(reportParkedExpenditureDto)
     }
 
     @Test
@@ -304,6 +332,13 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
         ) } answers { }
         controller.reIncludeParkedExpenditure(partnerId = PARTNER_ID, reportId = 39L, expenditureId = 150L)
         verify(exactly = 1) { reIncludeParkedExpenditureInteractor.reIncludeParkedExpenditure(PARTNER_ID, 39L, 150L) }
+    }
+
+    @Test
+    fun deleteParkedExpenditure() {
+        every { deleteParkedExpenditureInteractor.deleteParkedExpenditure(partnerId = PARTNER_ID, expenditureId = 150L) } answers { }
+        controller.deleteParkedExpenditure(partnerId = PARTNER_ID, expenditureId = 150L)
+        verify(exactly = 1) { deleteParkedExpenditureInteractor.deleteParkedExpenditure(PARTNER_ID, 150L) }
     }
 
 }
