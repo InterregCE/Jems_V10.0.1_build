@@ -24,49 +24,20 @@
         <ng-container>
                 <div jemsNoWidthLimit id="advance-payment-table" class="mb-3 advance-payment-container">
 
-                    <div class="advance-payment-header table-row" jemsMultiColumnRow justifyContent="start">
-                        <div class="column-project-id justify-start">
-                            {{ 'payments.advance.payment.table.header.project.id' | translate }}
-                        </div>
-
-                        <div class="column-project-acronym justify-start">
-                            {{ 'payments.payment.to.project.table.column.project.acronym' | translate }}
-                        </div>
-
-                        <div class="column-partner-name justify-start" jemsNoWidthLimit jemsMultiColumnRow>
-                            {{ 'payments.advance.payment.table.header.partner.name' | translate }}
-                        </div>
-
-                        <div class="column-partner-role justify-start" jemsNoWidthLimit jemsMultiColumnRow>
-                            {{ 'payments.advance.payment.table.header.partner.number' | translate }}
-                        </div>
-
-                        <div class="column-advance-source justify-start" jemsNoWidthLimit jemsMultiColumnRow>
-                            {{ 'payments.advance.payment.table.header.source.advance.granted' | translate }}
-                        </div>
-
-                        <div class="column-advance-amount justify-start" jemsNoWidthLimit jemsMultiColumnRow>
-                            {{ 'payments.advance.payment.table.header.advance.amount' | translate }}
-                        </div>
-
-                        <div class="column-date justify-start" jemsNoWidthLimit jemsMultiColumnRow>
-                            {{ 'payments.advance.payment.table.header.date.advance.payment' | translate }}
-                        </div>
-
-                        <div class="column-comment justify-start" jemsNoWidthLimit jemsMultiColumnRow>
-                            {{ 'payments.detail.table.header.installment.comment' | translate }}
-                        </div>
-
-                        <div class="column-checkbox justify-start" jemsNoWidthLimit jemsMultiColumnRow>
-                            {{ 'payments.detail.table.header.installment.save.payment.info' | translate }}
-                        </div>
-
-                        <div class="column-checkbox justify-start" jemsNoWidthLimit jemsMultiColumnRow>
-                            {{ 'payments.detail.table.header.installment.confirm.payment' | translate }}
-                        </div>
+                    <div jemsNoWidthLimit jemsMultiColumnRow class="advance-payment-header table-row" justifyContent="start">
+                        <div class="column-project-id justify-start">{{ 'payments.advance.payment.table.header.project.id' | translate }}</div>
+                        <div class="column-project-acronym justify-start">{{ 'payments.payment.to.project.table.column.project.acronym' | translate }}</div>
+                        <div class="column-partner-name justify-start">{{ 'payments.advance.payment.table.header.partner.name' | translate }}</div>
+                        <div class="column-partner-role justify-start">{{ 'payments.advance.payment.table.header.partner.number' | translate }}</div>
+                        <div class="column-advance-source justify-start">{{ 'payments.advance.payment.table.header.source.advance.granted' | translate }}</div>
+                        <div class="column-advance-amount justify-start">{{ 'payments.advance.payment.table.header.advance.amount' | translate }}</div>
+                        <div class="column-date justify-start">{{ 'payments.advance.payment.table.header.date.advance.payment' | translate }}</div>
+                        <div class="column-comment justify-start">{{ 'payments.detail.table.header.installment.comment' | translate }}</div>
+                        <div class="column-checkbox justify-start">{{ 'payments.detail.table.header.installment.save.payment.info' | translate }}</div>
+                        <div class="column-checkbox justify-start">{{ 'payments.detail.table.header.installment.confirm.payment' | translate }}</div>
                     </div>
                     <ng-container>
-                        <div  jemsMultiColumnRow class="table-row full-payment-row">
+                        <div  jemsNoWidthLimit jemsMultiColumnRow class="table-row full-payment-row">
                             <div class="column-project-id">
                                 <mat-form-field class="w-100">
                                     <mat-select class="placeholder-required"
@@ -86,16 +57,18 @@
                                 </mat-form-field>
                             </div>
 
-                            <div class="column-project-acronym">
+                            <div class="column-project-acronym" #projectAcronym
+                                 [matTooltip]="advancePayment.get(constants.FORM_CONTROL_NAMES.projectAcronym)?.value">
                                 {{advancePayment.get(constants.FORM_CONTROL_NAMES.projectAcronym)?.value}}
                             </div>
 
                             <div class="column-partner-name">
                                 <mat-form-field class="w-100">
-                                    <mat-select class="placeholder-required"
+                                    <mat-select class="placeholder-required" #partnerSelect
                                                 [formControlName]="constants.FORM_CONTROL_NAMES.partnerAbbreviation"
                                                 (selectionChange)="setFundsAndContributionData($event.value)"
                                                 [compareWith]="getPartnerToDisplay"
+                                                [matTooltip]="partnerSelect.triggerValue"
                                                 placeholder="{{'payments.advance.payments.detail.partner.dropdown.placeholder' | translate}}" >
                                         <mat-option *ngFor="let partner of partnerData$ | async" [value]="partner">
                                             {{partner.partnerSummary.abbreviation}}
@@ -110,10 +83,11 @@
 
                             <div class="column-advance-source">
                                 <mat-form-field  class="w-100">
-                                    <mat-select
+                                    <mat-select #advanceSourceSelect
                                             class="placeholder-required"
                                             [formControlName]="constants.FORM_CONTROL_NAMES.sourceOrFundName"
                                             [compareWith]="getSourceToDisplay"
+                                            [matTooltip]="advanceSourceSelect.triggerValue"
                                             placeholder="{{'payments.advance.payments.detail.source.dropdown.placeholder' | translate}}">
 
                                             <mat-optgroup *ngIf="fundsAndContributions?.partnerCoFinancing?.length > 0"
