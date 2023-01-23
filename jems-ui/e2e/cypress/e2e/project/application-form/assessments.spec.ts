@@ -49,7 +49,7 @@ context('Assessments & decision tests', () => {
         cy.contains('Confirm').click();
         cy.contains('Eligibility decision:').next().should('contain.text', 'Eligible');
 
-        cy.contains('Enter funding decision').click();
+        cy.contains('Enter funding decision').should('be.visible').click();
         cy.contains(testData.funding.decision).click();
         cy.contains('div', 'Explanatory notes').find('textarea').type(testData.funding.explanatoryNotes);
         cy.contains('mat-form-field', 'Decision date').find('button').click();
@@ -61,7 +61,7 @@ context('Assessments & decision tests', () => {
         cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
         cy.contains('Approved with conditions').should('be.visible');
 
-        cy.contains('Assessment & Decision').click();
+        cy.visit(`/app/project/detail/${applicationId}/assessmentAndDecision`, {failOnStatusCode: false});
         cy.contains('Return to applicant').click();
         cy.contains('Confirm').should('be.visible').click();
         cy.contains('Project application has been returned to applicant successfully.').scrollIntoView().should('be.visible');
@@ -69,6 +69,24 @@ context('Assessments & decision tests', () => {
         cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
         cy.contains('Returned for conditions').should('be.visible');
         cy.contains('(current) V. 2.0').should('be.visible');
+        
+        cy.loginByRequest(user.applicantUser.email);
+        cy.runPreSubmissionCheck(applicationId);
+        cy.submitProjectApplication(applicationId);
+        
+        cy.loginByRequest(user.programmeUser.email);
+        cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
+        cy.contains('Conditions submitted').should('be.visible');
+        
+        cy.visit(`/app/project/detail/${applicationId}/assessmentAndDecision`, {failOnStatusCode: false});
+        cy.contains('Update funding decision').click();
+        cy.contains(testData.finaliseFunding.decision).click();
+        cy.contains('div', 'Explanatory notes').find('textarea').type(testData.finaliseFunding.explanatoryNotes);
+        cy.contains('mat-form-field', 'Decision date').find('button').click();
+        cy.get('.mat-calendar-body-today').click();
+        cy.contains('Finalise funding decision').click();
+        cy.contains('Confirm').should('be.visible').click();
+        cy.contains('Funding decision:').next().should('contain.text', 'Approved');
       });
     });
   });
@@ -89,8 +107,7 @@ context('Assessments & decision tests', () => {
         cy.enterEligibilityDecision(applicationId, application.assessments.eligibilityDecision);
         
         cy.loginByRequest(revertDecisionUser.email);
-        cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
-        cy.contains('Assessment & Decision').click();
+        cy.visit(`/app/project/detail/${applicationId}/assessmentAndDecision`, {failOnStatusCode: false});
         cy.contains('Enter eligibility decision').should('not.exist');
         cy.contains('Revert decision back to Submitted').click();
         cy.contains('Confirm').click();
@@ -100,7 +117,7 @@ context('Assessments & decision tests', () => {
         cy.visit(`/app/project/detail/${applicationId}`, {failOnStatusCode: false});
         cy.contains('Submitted').should('be.visible');
 
-        cy.contains('Assessment & Decision').click();
+        cy.visit(`/app/project/detail/${applicationId}/assessmentAndDecision`, {failOnStatusCode: false});
 
         cy.contains('Enter eligibility decision').click();
         cy.contains(testData.eligibility.decision).click();
@@ -143,8 +160,7 @@ context('Assessments & decision tests', () => {
     cy.loginByRequest(user.applicantUser.email);
     cy.createSubmittedApplication(application).then(applicationId => {
       cy.loginByRequest(user.programmeUser.email);
-      cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
-      cy.contains('Assessment & Decision').click();
+      cy.visit(`/app/project/detail/${applicationId}/assessmentAndDecision`, {failOnStatusCode: false});
       cy.contains('mat-select', 'Select checklist template').click();
       cy.get('mat-option:first-of-type').click();
       cy.contains('instantiate new assessment').click();
@@ -153,7 +169,7 @@ context('Assessments & decision tests', () => {
       cy.contains('button', 'Yes?').click();
       cy.contains('button', 'Save changes').click();
       cy.contains('Checklist instance saved successfully').should('be.visible');
-      cy.contains('Assessment & Decision').click();
+      cy.visit(`/app/project/detail/${applicationId}/assessmentAndDecision`, {failOnStatusCode: false});
       cy.get('jems-table').should('exist');
       cy.contains('mat-cell', 'Finished').should('not.exist');
       cy.contains('button', 'delete').click();
