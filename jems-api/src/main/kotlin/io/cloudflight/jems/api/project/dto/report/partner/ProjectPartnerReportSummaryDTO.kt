@@ -16,6 +16,11 @@ data class ProjectPartnerReportSummaryDTO(
     val startDate: LocalDate?,
     val endDate: LocalDate?,
     val periodDetail: ProjectPartnerReportPeriodDTO?,
+
+    // if certificate linked to project report
+    val projectReportId: Long?,
+    val projectReportNumber: Int?,
+
     val totalEligibleAfterControl: BigDecimal?,
     val deletable: Boolean,
 )

@@ -5,9 +5,12 @@ import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEnt
 import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportIdentificationTargetGroupEntity
 import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportIdentificationTargetGroupTranslEntity
 import io.cloudflight.jems.server.project.repository.contracting.reporting.ProjectContractingReportingRepository
+import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
+import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.project.identification.ProjectReportIdentificationTargetGroupRepository
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportDeadline
@@ -25,6 +28,8 @@ class ProjectReportPersistenceProvider(
     private val projectReportRepository: ProjectReportRepository,
     private val contractingDeadlineRepository: ProjectContractingReportingRepository,
     private val reportIdentificationTargetGroupRepository: ProjectReportIdentificationTargetGroupRepository,
+    private val partnerRepository: ProjectPartnerRepository,
+    private val partnerReportRepository: ProjectPartnerReportRepository,
 ) : ProjectReportPersistence {
 
     @Transactional(readOnly = true)
@@ -36,11 +41,14 @@ class ProjectReportPersistenceProvider(
         projectReportRepository.getByIdAndProjectId(reportId, projectId = projectId).toModel()
 
     @Transactional
-    override fun createReport(report: ProjectReportModel, targetGroups: List<ProjectRelevanceBenefit>): ProjectReportModel {
-        val entity = projectReportRepository
+    override fun createReportAndFillItToEmptyCertificates(report: ProjectReportModel, targetGroups: List<ProjectRelevanceBenefit>): ProjectReportModel {
+        val reportPersisted = projectReportRepository
             .save(report.toEntity(deadlineResolver = { contractingDeadlineRepository.findByProjectIdAndId(report.projectId, it) }))
-        createTargetGroups(targetGroups, entity)
-        return entity.toModel()
+
+        createTargetGroups(targetGroups, reportPersisted)
+        fillProjectReportToAllEmptyCertificates(projectId = report.projectId, reportPersisted)
+
+        return reportPersisted.toModel()
     }
 
     @Transactional
@@ -108,4 +116,13 @@ class ProjectReportPersistenceProvider(
             }
         )
     }
+
+    private fun fillProjectReportToAllEmptyCertificates(projectId: Long, report: ProjectReportEntity) {
+        val partnerIds = partnerRepository.findTop30ByProjectId(projectId).mapTo(HashSet()) { it.id }
+
+        partnerReportRepository.findAllByPartnerIdInAndProjectReportNullAndStatus(partnerIds, ReportStatus.Certified).forEach {
+            it.projectReport = report
+        }
+    }
+
 }

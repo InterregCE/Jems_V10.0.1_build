@@ -19,6 +19,7 @@ import io.cloudflight.jems.server.project.entity.report.partner.workPlan.Project
 import io.cloudflight.jems.server.project.entity.report.partner.workPlan.ProjectPartnerReportWorkPackageActivityEntity
 import io.cloudflight.jems.server.project.entity.report.partner.workPlan.ProjectPartnerReportWorkPackageEntity
 import io.cloudflight.jems.server.project.entity.report.partner.workPlan.ProjectPartnerReportWorkPackageOutputEntity
+import io.cloudflight.jems.server.project.repository.report.partner.model.CertificateSummary
 import io.cloudflight.jems.server.project.repository.report.partner.model.ReportSummary
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.partner.PartnerReportIdentification
@@ -34,7 +35,9 @@ import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackageActivity
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackageActivityDeliverable
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackageOutput
+import io.cloudflight.jems.server.project.service.report.model.project.certificate.PartnerReportCertificate
 import java.math.BigDecimal.ZERO
+import java.time.ZoneId
 
 fun ReportSummary.toModelSummary() =
     ProjectPartnerReportSummary(
@@ -48,8 +51,25 @@ fun ReportSummary.toModelSummary() =
         startDate = startDate,
         endDate = endDate,
         periodDetail = getPeriodData(),
+        projectReportId = projectReportId,
+        projectReportNumber = projectReportNumber,
         totalEligibleAfterControl = totalEligibleAfterControl,
         deletable = false,
+    )
+
+fun CertificateSummary.toModel() =
+    PartnerReportCertificate(
+        partnerReportId = partnerReportId,
+        partnerReportNumber = partnerReportNumber,
+
+        partnerId = partnerId,
+        partnerRole = partnerRole,
+        partnerNumber = partnerNumber,
+
+        controlEnd = controlEnd.atZone(ZoneId.systemDefault()),
+        totalEligibleAfterControl = totalEligibleAfterControl,
+        projectReportId = projectReportId,
+        projectReportNumber = projectReportNumber,
     )
 
 fun ProjectPartnerReportEntity.toModelSummaryAfterCreate() =
@@ -64,6 +84,8 @@ fun ProjectPartnerReportEntity.toModelSummaryAfterCreate() =
         startDate = null,
         endDate = null,
         periodDetail = null,
+        projectReportId = projectReport?.id,
+        projectReportNumber = projectReport?.number,
         totalEligibleAfterControl = null,
         deletable = false,
     )
@@ -156,6 +178,7 @@ fun ProjectPartnerReportCreate.toEntity(
         country = identification.country,
         currency = identification.currency
     ),
+    projectReport = null,
 )
 
 fun List<PreviouslyReportedFund>.toEntity(

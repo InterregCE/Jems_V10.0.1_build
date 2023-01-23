@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPa
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
+import io.cloudflight.jems.server.project.service.report.model.project.certificate.PartnerReportCertificate
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import java.time.ZonedDateTime
@@ -26,6 +27,8 @@ interface ProjectPartnerReportPersistence {
 
     fun listPartnerReports(partnerId: Long, pageable: Pageable): Page<ProjectPartnerReportSummary>
 
+    fun listCertificates(partnerIds: Set<Long>, pageable: Pageable): Page<PartnerReportCertificate>
+
     fun getSubmittedPartnerReportIds(partnerId: Long): Set<Long>
 
     fun getReportIdsBefore(partnerId: Long, beforeReportId: Long): Set<Long>
@@ -41,4 +44,5 @@ interface ProjectPartnerReportPersistence {
     fun isAnyReportCreated(): Boolean
 
     fun deletePartnerReportById(reportId: Long)
+
 }

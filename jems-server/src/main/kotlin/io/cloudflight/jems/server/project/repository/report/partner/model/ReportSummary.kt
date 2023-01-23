@@ -14,6 +14,8 @@ data class ReportSummary(
     val firstSubmission: ZonedDateTime?,
     val controlEnd: ZonedDateTime?,
     val createdAt: ZonedDateTime,
+    val projectReportId: Long?,
+    val projectReportNumber: Int?,
     val totalEligibleAfterControl: BigDecimal?,
     val periodNumber: Int?,
     val startDate: LocalDate?,

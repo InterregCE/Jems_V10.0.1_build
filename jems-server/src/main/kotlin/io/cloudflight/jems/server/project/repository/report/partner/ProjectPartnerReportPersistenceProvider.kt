@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPa
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.project.certificate.PartnerReportCertificate
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -67,6 +68,10 @@ class ProjectPartnerReportPersistenceProvider(
     override fun listPartnerReports(partnerId: Long, pageable: Pageable): Page<ProjectPartnerReportSummary> =
         partnerReportRepository.findAllByPartnerId(partnerId = partnerId, pageable = pageable)
             .map { it.toModelSummary() }
+
+    @Transactional(readOnly = true)
+    override fun listCertificates(partnerIds: Set<Long>, pageable: Pageable): Page<PartnerReportCertificate> =
+        partnerReportRepository.findAllCertificates(partnerIds, pageable).map { it.toModel() }
 
     @Transactional(readOnly = true)
     override fun getSubmittedPartnerReportIds(partnerId: Long): Set<Long> =

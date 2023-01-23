@@ -16,6 +16,11 @@ data class ProjectPartnerReportSummary(
     val startDate: LocalDate?,
     val endDate: LocalDate?,
     val periodDetail: ProjectPartnerReportPeriod?,
+
+    // if certificate linked to project report
+    val projectReportId: Long?,
+    val projectReportNumber: Int?,
+
     var totalEligibleAfterControl: BigDecimal?,
     var deletable: Boolean,
 )

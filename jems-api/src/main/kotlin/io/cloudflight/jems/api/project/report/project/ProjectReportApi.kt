@@ -22,7 +22,8 @@ import org.springframework.web.bind.annotation.RequestBody
 interface ProjectReportApi {
 
     companion object {
-        private const val ENDPOINT_API_PROJECT_REPORT = "/api/project/report/byProjectId/{projectId}"
+        private const val ENDPOINT_API_PROJECT_REPORT_PREFIX = "/api/project/report/byProjectId/{projectId}"
+        const val ENDPOINT_API_PROJECT_REPORT = "$ENDPOINT_API_PROJECT_REPORT_PREFIX/byReportId/{reportId}"
     }
 
     @ApiOperation("Returns all project report summaries by project id")
@@ -31,28 +32,28 @@ interface ProjectReportApi {
         ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
     )
-    @GetMapping(ENDPOINT_API_PROJECT_REPORT)
+    @GetMapping(ENDPOINT_API_PROJECT_REPORT_PREFIX)
     fun getProjectReportList(
         @PathVariable projectId: Long,
         pageable: Pageable,
     ): Page<ProjectReportSummaryDTO>
 
     @ApiOperation("Returns project report detail")
-    @GetMapping("$ENDPOINT_API_PROJECT_REPORT/byReportId/{reportId}")
+    @GetMapping(ENDPOINT_API_PROJECT_REPORT)
     fun getProjectReport(
         @PathVariable projectId: Long,
         @PathVariable reportId: Long,
     ): ProjectReportDTO
 
     @ApiOperation("Creates new project report")
-    @PostMapping(ENDPOINT_API_PROJECT_REPORT, consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping(ENDPOINT_API_PROJECT_REPORT_PREFIX, consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun createProjectReport(
         @PathVariable projectId: Long,
         @RequestBody data: ProjectReportUpdateDTO,
     ): ProjectReportDTO
 
     @ApiOperation("Update base data of project report")
-    @PutMapping("$ENDPOINT_API_PROJECT_REPORT/byReportId/{reportId}", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping(ENDPOINT_API_PROJECT_REPORT, consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateProjectReport(
         @PathVariable projectId: Long,
         @PathVariable reportId: Long,
@@ -60,11 +61,11 @@ interface ProjectReportApi {
     ): ProjectReportDTO
 
     @ApiOperation("Deletes project report")
-    @DeleteMapping("$ENDPOINT_API_PROJECT_REPORT/byReportId/{reportId}")
+    @DeleteMapping(ENDPOINT_API_PROJECT_REPORT)
     fun deleteProjectReport(@PathVariable projectId: Long, @PathVariable reportId: Long)
 
     @ApiOperation("Submit and lock project report")
-    @PostMapping("$ENDPOINT_API_PROJECT_REPORT/submit/{reportId}")
+    @PostMapping("$ENDPOINT_API_PROJECT_REPORT/submit")
     fun submitProjectReport(
         @PathVariable projectId: Long,
         @PathVariable reportId: Long,

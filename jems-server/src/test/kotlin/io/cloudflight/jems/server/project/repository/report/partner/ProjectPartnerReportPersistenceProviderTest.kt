@@ -12,6 +12,8 @@ import io.cloudflight.jems.server.project.entity.report.partner.PartnerReportIde
 import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportCoFinancingIdEntity
 import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
+import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
+import io.cloudflight.jems.server.project.repository.report.partner.model.CertificateSummary
 import io.cloudflight.jems.server.project.repository.report.partner.model.ReportSummary
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
@@ -24,16 +26,21 @@ import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPa
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
+import io.cloudflight.jems.server.project.service.report.model.project.certificate.PartnerReportCertificate
+import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.math.BigDecimal.*
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.ZonedDateTime
 
 class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
@@ -49,30 +56,36 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
             createdAt: ZonedDateTime = ZonedDateTime.now(),
             controlEnd: ZonedDateTime? = null,
             status: ReportStatus = ReportStatus.Draft,
-        ) = ProjectPartnerReportEntity(
-            id = id,
-            partnerId = PARTNER_ID,
-            number = 1,
-            status = status,
-            applicationFormVersion = "3.0",
-            firstSubmission = LAST_YEAR,
-            controlEnd = controlEnd,
-            identification = PartnerReportIdentificationEntity(
-                projectIdentifier = "projectIdentifier",
-                projectAcronym = "projectAcronym",
-                partnerNumber = 4,
-                partnerAbbreviation = "partnerAbbreviation",
-                partnerRole = ProjectPartnerRole.PARTNER,
-                nameInOriginalLanguage = "nameInOriginalLanguage",
-                nameInEnglish = "nameInEnglish",
-                legalStatus = legalStatusEntity,
-                partnerType = ProjectTargetGroup.SectoralAgency,
-                vatRecovery = ProjectPartnerVatRecovery.Yes,
-                country = "Österreich (AT)",
-                currency = "EUR",
-            ),
-            createdAt = createdAt,
-        )
+        ): ProjectPartnerReportEntity {
+            val projectReport = mockk<ProjectReportEntity>()
+            every { projectReport.id } returns 54L
+            every { projectReport.number } returns 540
+            return ProjectPartnerReportEntity(
+                id = id,
+                partnerId = PARTNER_ID,
+                number = 1,
+                status = status,
+                applicationFormVersion = "3.0",
+                firstSubmission = LAST_YEAR,
+                controlEnd = controlEnd,
+                identification = PartnerReportIdentificationEntity(
+                    projectIdentifier = "projectIdentifier",
+                    projectAcronym = "projectAcronym",
+                    partnerNumber = 4,
+                    partnerAbbreviation = "partnerAbbreviation",
+                    partnerRole = ProjectPartnerRole.PARTNER,
+                    nameInOriginalLanguage = "nameInOriginalLanguage",
+                    nameInEnglish = "nameInEnglish",
+                    legalStatus = legalStatusEntity,
+                    partnerType = ProjectTargetGroup.SectoralAgency,
+                    vatRecovery = ProjectPartnerVatRecovery.Yes,
+                    country = "Österreich (AT)",
+                    currency = "EUR",
+                ),
+                createdAt = createdAt,
+                projectReport = projectReport,
+            )
+        }
 
         private fun reportSummary(
             id: Long,
@@ -94,6 +107,8 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
             periodEnd = 6,
             periodBudget = ONE,
             periodBudgetCumulative = TEN,
+            projectReportId = 54L,
+            projectReportNumber = 540,
         )
 
         private fun draftReportSubmissionEntity(id: Long, createdAt: ZonedDateTime = ZonedDateTime.now()) = ProjectPartnerReportSubmissionSummary(
@@ -172,6 +187,8 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
                 start = 4,
                 end = 6,
             ),
+            projectReportId = 54L,
+            projectReportNumber = 540,
             totalEligibleAfterControl = TEN,
             deletable = false,
         )
@@ -298,6 +315,38 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
 
         assertThat(persistence.listPartnerReports(PARTNER_ID, Pageable.unpaged()).content)
             .containsExactly(draftReportSummary(id = 18L, createdAt = twoWeeksAgo))
+    }
+
+    @Test
+    fun listCertificates() {
+        val now = Instant.now()
+        val certificate = mockk<CertificateSummary>()
+        every { certificate.partnerReportId } returns 845L
+        every { certificate.partnerReportNumber } returns 22
+        every { certificate.partnerId } returns 252L
+        every { certificate.partnerRole } returns ProjectPartnerRole.LEAD_PARTNER
+        every { certificate.partnerNumber } returns 250
+        every { certificate.totalEligibleAfterControl } returns valueOf(7984L, 2)
+        every { certificate.controlEnd } returns now
+        every { certificate.projectReportId } returns 887L
+        every { certificate.projectReportNumber } returns 15
+
+        every { partnerReportRepository.findAllCertificates(partnerIds = setOf(PARTNER_ID), Pageable.unpaged()) } returns
+            PageImpl(listOf(certificate))
+
+        assertThat(persistence.listCertificates(setOf(PARTNER_ID), Pageable.unpaged())).containsExactly(
+            PartnerReportCertificate(
+                partnerReportId = 845L,
+                partnerReportNumber = 22,
+                partnerId = 252L,
+                partnerRole = ProjectPartnerRole.LEAD_PARTNER,
+                partnerNumber = 250,
+                totalEligibleAfterControl = valueOf(7984L, 2),
+                controlEnd = now.atZone(ZoneId.systemDefault()),
+                projectReportId = 887L,
+                projectReportNumber = 15,
+            ),
+        )
     }
 
     @Test
