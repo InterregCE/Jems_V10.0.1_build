@@ -26,5 +26,4 @@ class ProjectPartnerReportControlOverviewController(
         controlOverview: ControlOverviewDTO
     ): ControlOverviewDTO =
         updateReportControlOverview.update(partnerId, reportId, controlOverview.toModel()).toDto()
-
 }

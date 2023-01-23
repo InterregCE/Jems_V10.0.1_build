@@ -1,0 +1,9 @@
+package io.cloudflight.jems.server.project.service.report.partner.control.file.listCertificates
+
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+
+interface ListReportControlCertificatesInteractor {
+    fun list(partnerId: Long, reportId: Long, pageable: Pageable): Page<JemsFile>
+}

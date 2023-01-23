@@ -15,13 +15,11 @@ internal class GetReportControlWorkOverviewTest : UnitTest() {
         private const val PARTNER_ID = 592L
     }
 
-
     @MockK
     private lateinit var getReportControlWorkOverviewService: GetReportControlWorkOverviewService
 
     @InjectMockKs
     private lateinit var interactor: GetReportControlWorkOverview
-
 
     @Test
     fun get() {
@@ -48,5 +46,4 @@ internal class GetReportControlWorkOverviewTest : UnitTest() {
             )
         )
     }
-
 }

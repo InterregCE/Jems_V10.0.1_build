@@ -8,7 +8,6 @@ import io.cloudflight.jems.server.project.service.report.model.partner.ReportSta
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import org.springframework.stereotype.Service
 
-
 @Service
 class ControlReportFileAuthorizationService(
     private val reportPersistence: ProjectPartnerReportPersistence,
@@ -39,5 +38,4 @@ class ControlReportFileAuthorizationService(
             else -> if (status.controlNotStartedYet()) throw ReportControlNotStartedYet()
         }
     }
-
 }

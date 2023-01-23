@@ -86,7 +86,7 @@ class GenerateReportControlCertificate(
     private fun addIdentifierToFileName(fileName: String): String {
         val identifier = UUID.randomUUID().toString().split('-').first()
         val certificateFilePrefix = "Control Certificate"
-        return fileName.replace(certificateFilePrefix, "$certificateFilePrefix $identifier ")
+        return fileName.replace(certificateFilePrefix, "$certificateFilePrefix $identifier")
     }
 
     private fun getMediumSizedLogo(): String? {
