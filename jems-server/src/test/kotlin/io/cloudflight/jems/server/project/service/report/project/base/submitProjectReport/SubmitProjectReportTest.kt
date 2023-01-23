@@ -3,10 +3,16 @@ package io.cloudflight.jems.server.project.service.report.project.base.submitPro
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
+import io.cloudflight.jems.server.audit.model.AuditProject
+import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -39,11 +45,28 @@ internal class SubmitProjectReportTest : UnitTest() {
             projectIdentifier = "FG01_654",
             projectAcronym = "acronym",
         )
+
+
+        private val certificate = ProjectPartnerReportSubmissionSummary(
+            id = 42L,
+            reportNumber = 7,
+            status = ReportStatus.Certified,
+            version = "5.6.1",
+            firstSubmission = null,
+            controlEnd = null,
+            createdAt = ZonedDateTime.now(),
+            projectIdentifier = "not-needed",
+            projectAcronym = "not-needed-as-well",
+            partnerNumber = 5,
+            partnerRole = ProjectPartnerRole.LEAD_PARTNER,
+        )
+
     }
 
     @MockK
     lateinit var reportPersistence: ProjectReportPersistence
-
+    @MockK
+    lateinit var reportCertificatePersistence: ProjectReportCertificatePersistence
     @MockK
     lateinit var auditPublisher: ApplicationEventPublisher
 
@@ -66,6 +89,7 @@ internal class SubmitProjectReportTest : UnitTest() {
         val submissionTime = slot<ZonedDateTime>()
         every { reportPersistence.submitReport(any(), any(), capture(submissionTime)) } returns mockedResult
 
+        every { reportCertificatePersistence.listCertificatesOfProjectReport(REPORT_ID) } returns listOf(certificate)
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
 
@@ -74,12 +98,14 @@ internal class SubmitProjectReportTest : UnitTest() {
         verify(exactly = 1) { reportPersistence.submitReport(PROJECT_ID, REPORT_ID, any()) }
         assertThat(submissionTime.captured).isAfter(ZonedDateTime.now().minusMinutes(1))
         assertThat(submissionTime.captured).isBefore(ZonedDateTime.now().plusMinutes(1))
-        assertThat(auditSlot.captured.auditCandidate.action).isEqualTo(AuditAction.PROJECT_REPORT_SUBMITTED)
-        assertThat(auditSlot.captured.auditCandidate.project?.id).isEqualTo(PROJECT_ID.toString())
-        assertThat(auditSlot.captured.auditCandidate.project?.customIdentifier).isEqualTo("FG01_654")
-        assertThat(auditSlot.captured.auditCandidate.project?.name).isEqualTo("acronym")
-        assertThat(auditSlot.captured.auditCandidate.entityRelatedId).isEqualTo(REPORT_ID)
-        assertThat(auditSlot.captured.auditCandidate.description).isEqualTo("[FG01_654]: Project report [35] submitted.")
+        assertThat(auditSlot.captured.auditCandidate).isEqualTo(
+            AuditCandidate(
+                action = AuditAction.PROJECT_REPORT_SUBMITTED,
+                project = AuditProject("256", "FG01_654", "acronym"),
+                entityRelatedId = REPORT_ID,
+                description = "[FG01_654]: Project report PR.4 submitted, certificates included: LP5-R.7"
+            )
+        )
     }
 
     @Test

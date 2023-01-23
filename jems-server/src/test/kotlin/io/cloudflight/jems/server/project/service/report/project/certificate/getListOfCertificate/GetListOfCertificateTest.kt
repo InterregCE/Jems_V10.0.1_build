@@ -4,7 +4,7 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.report.model.project.certificate.PartnerReportCertificate
-import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
+import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -24,14 +24,14 @@ internal class GetListOfCertificateTest : UnitTest() {
     @MockK
     private lateinit var partnerPersistence: PartnerPersistence
     @MockK
-    private lateinit var projectPartnerReportPersistence: ProjectPartnerReportPersistence
+    private lateinit var projectReportCertificatePersistence: ProjectReportCertificatePersistence
 
     @InjectMockKs
     lateinit var interactor: GetListOfCertificate
 
     @BeforeEach
     fun reset() {
-        clearMocks(partnerPersistence, projectPartnerReportPersistence)
+        clearMocks(partnerPersistence, projectReportCertificatePersistence)
     }
 
     @Test
@@ -42,7 +42,7 @@ internal class GetListOfCertificateTest : UnitTest() {
 
         val mockResult = mockk<Page<PartnerReportCertificate>>()
         val slotPageable = slot<Pageable>()
-        every { projectPartnerReportPersistence.listCertificates(setOf(714L), capture(slotPageable)) } returns mockResult
+        every { projectReportCertificatePersistence.listCertificates(setOf(714L), capture(slotPageable)) } returns mockResult
 
         val pageable = PageRequest.of(0, 20)
         assertThat(interactor.listCertificates(18L, reportId = 250L, pageable)).isEqualTo(mockResult)
@@ -61,7 +61,7 @@ internal class GetListOfCertificateTest : UnitTest() {
 
         val mockResult = mockk<Page<PartnerReportCertificate>>()
         val slotPageable = slot<Pageable>()
-        every { projectPartnerReportPersistence.listCertificates(setOf(715L), capture(slotPageable)) } returns mockResult
+        every { projectReportCertificatePersistence.listCertificates(setOf(715L), capture(slotPageable)) } returns mockResult
 
         val pageable = PageRequest.of(0, 20, Sort.by("something else"))
         assertThat(interactor.listCertificates(19L, reportId = 251L, pageable)).isEqualTo(mockResult)
