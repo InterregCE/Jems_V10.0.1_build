@@ -102,6 +102,7 @@ class JemsProjectFileRepositoryTest : UnitTest() {
         "Contribution",
 
         "ControlDocument",
+        "ControlCertificate",
         "Contract",
         "ContractDoc",
         "ContractPartnerDoc",
@@ -162,6 +163,7 @@ class JemsProjectFileRepositoryTest : UnitTest() {
         "Contribution",
 
         "ControlDocument",
+        "ControlCertificate",
         "Contract",
         "ContractDoc",
         "ContractPartnerDoc",
