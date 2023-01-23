@@ -39,11 +39,12 @@ Cypress.Commands.add('createPartners', (applicationId: number, partners: []) => 
 });
 
 Cypress.Commands.add('updatePartner', (partnerId: number, partner) => {
-  partner.id = partnerId;
+  const tempPartner = JSON.parse(JSON.stringify(partner));
+  tempPartner.id = partnerId;
   cy.request({
     method: 'PUT',
     url: `api/project/partner`,
-    body: partner
+    body: tempPartner
   });
 });
 

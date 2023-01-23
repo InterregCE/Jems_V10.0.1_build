@@ -22,18 +22,15 @@ context('Application Audit log tests', () => {
           cy.loginByRequest(testData.auditUser.email);
 
           // go to AuditLog page
-          cy.visit('/', {failOnStatusCode: false});
+          cy.visit('/');
           cy.contains('System').click();
           cy.contains('Audit log').should('be.visible').click();
 
           // assert audit user logged in
-          cy.get('table mat-row').then(row => {
-            expect(row).has.length.of.at.least(1);
-            expect(row.get(0).childNodes[1]).to.contain(userId);
-            expect(row.get(0).childNodes[2]).to.contain(testData.auditUser.email);
-            expect(row.get(0).childNodes[3]).to.contain('USER_LOGGED_IN');
-            expect(row.get(0).childNodes[4]).to.contain('');
-            expect(row.get(0).childNodes[5]).to.contain(`user with email ${testData.auditUser.email} logged in`);
+          cy.contains('mat-row', testData.auditUser.email).within(() => {
+            cy.contains(userId).should('be.visible');
+            cy.contains('USER_LOGGED_IN').should('be.visible');
+            cy.contains(`user with email ${testData.auditUser.email} logged in`).scrollIntoView().should('be.visible');
           });
         });
       });
