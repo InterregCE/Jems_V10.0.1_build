@@ -11,5 +11,9 @@
   "funding": {
     "decision": "Project is approved with conditions.",
     "explanatoryNotes": "Some explanatory notes for funding decision with conditions"
+  },
+  "finaliseFunding": {
+    "decision": "Project is approved for funding",
+    "explanatoryNotes": "Some explanatory notes for finalizing funding decision"
   }
 }
