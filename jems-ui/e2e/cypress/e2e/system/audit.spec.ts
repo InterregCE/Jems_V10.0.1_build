@@ -18,8 +18,9 @@ context('Application Audit log tests', () => {
         testData.auditUser.email = faker.internet.email();
         testData.auditUser.name = faker.name.fullName();
         cy.createUser(testData.auditUser).then(userId => {
-          // login with audit user
+          // login with audit user and wait for audit log sync
           cy.loginByRequest(testData.auditUser.email);
+          cy.wait(2000);
 
           // go to AuditLog page
           cy.visit('/');
@@ -28,7 +29,7 @@ context('Application Audit log tests', () => {
 
           // assert audit user logged in
           cy.contains('mat-row', testData.auditUser.email).within(() => {
-            cy.contains(userId).should('be.visible');
+            cy.contains(userId).scrollIntoView().should('be.visible');
             cy.contains('USER_LOGGED_IN').should('be.visible');
             cy.contains(`user with email ${testData.auditUser.email} logged in`).scrollIntoView().should('be.visible');
           });

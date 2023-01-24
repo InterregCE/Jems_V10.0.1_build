@@ -508,7 +508,9 @@ context('Programme management tests', () => {
 
   context('Programme exports', () => {
 
-    it('TB-747 Data export in programme setup shall take the correct data version', () => {
+    it('TB-747 Data export in programme setup shall take the correct data version', {
+      retries: 0,
+    }, () => {
       cy.fixture('programme/TB-747.json').then(testData => {
         cy.fixture('api/application/application.json').then(application => {
           cy.fixture('api/application/spf.application.json').then(spfApplication => {
