@@ -224,7 +224,8 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   getAvailableCurrenciesByType(type: string | null, unitCost?: any) {
     switch(type) {
       case 'lumpSum': return this.currencies.filter((currency) => currency.code === CurrencyCodesEnum.EUR);
-      case 'unitCost': return this.currencies.filter((currency) => currency.code === CurrencyCodesEnum.EUR || currency.code === this.availableUnitCosts.filter(el => (el.id === unitCost?.value?.id || el.id === unitCost?.id) )[0].foreignCurrencyCode);
+      case 'unitCost': return this.currencies.filter((currency) => currency.code === CurrencyCodesEnum.EUR
+        || currency.code === this.availableUnitCosts.filter(el => (el.id === unitCost?.value?.id || el.id === unitCost?.id) )[0].foreignCurrencyCode);
       default: return this.currencies;
     }
   }
@@ -657,12 +658,12 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     control.get('declaredAmountInEur')?.disable();
     control.get('investmentId')?.disable();
 
-    if (selectionType == 'lumpSum') {
+    if (selectionType === 'lumpSum') {
       control.get('numberOfUnits')?.disable();
       control.get('currencyCode')?.disable();
     }
 
-    if (selectionType == 'unitCost' && !this.isUnitCostForeignCurrencyAvailable(index)) {
+    if (selectionType === 'unitCost' && !this.isUnitCostForeignCurrencyAvailable(index)) {
       control.get('currencyCode')?.disable();
     }
 
@@ -708,11 +709,11 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     } else {
       let postfix = '';
       if (costOption.period && costOption.period === this.PERIOD_PREPARATION) {
-        postfix = ' - ' + this.customTranslatePipe.transform('project.application.form.section.part.e.period.preparation');
+        postfix = ` - ${this.customTranslatePipe.transform('project.application.form.section.part.e.period.preparation')}`;
       } else if (costOption.period && costOption.period === this.PERIOD_CLOSURE) {
-        postfix = ' - ' + this.customTranslatePipe.transform('project.application.form.section.part.e.period.preparation');
+        postfix = ` - ${this.customTranslatePipe.transform('project.application.form.section.part.e.period.preparation')}`;
       } else if(costOption.period) {
-        postfix = ' - ' + this.customTranslatePipe.transform('project.partner.budget.table.period') + ' ' + costOption.period;
+        postfix = ` - ${this.customTranslatePipe.transform('project.partner.budget.table.period')} ${costOption.period}`;
       }
       return this.translateByInputLanguagePipe.transform(costOption.name).pipe(map(n => n + postfix));
     }
@@ -723,7 +724,10 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   }
 
   getAdditionalRowClass(index: number, controlName: string) {
-    if(this.items.at(index).get(controlName)?.disabled || (controlName === PartnerReportExpendituresTabConstants.FORM_CONTROL_NAMES.currencyCode && this.hasPartnerCurrencySetToEur())) {
+    if(this.items.at(index).get(controlName)?.disabled
+      || (controlName === PartnerReportExpendituresTabConstants.FORM_CONTROL_NAMES.currencyCode
+        && this.hasPartnerCurrencySetToEur())
+    ) {
       return controlName === PartnerReportExpendituresTabConstants.FORM_CONTROL_NAMES.contractId ? 'border-with-dotted disabled-text' : 'border-with-dotted';
     } else if (index % 2 === 0) {
       return 'blue-background';
@@ -763,7 +767,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     this.currencyCodeSelect.forEach(e => e.close());
   }
 
-  selectRow(index: number, column: String) {
+  selectRow(index: number, column: string) {
     this.expenditureFormIndex = index;
     this.descriptionInputPressed = false;
     this.commentInputPressed = false;

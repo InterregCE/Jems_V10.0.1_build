@@ -6,10 +6,10 @@ import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
 import io.swagger.annotations.ApiOperation
-import org.springframework.http.MediaType
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -31,7 +31,6 @@ interface ProjectPartnerControlReportFileApi {
         @PathVariable reportId: Long,
     )
 
-
     @ApiOperation("Update description of generated control report certificate file")
     @PutMapping(
         "${ENDPOINT_API_PROJECT_PARTNER_REPORT_CONTROL_FILE}/byFileId/{fileId}/description",
@@ -50,7 +49,7 @@ interface ProjectPartnerControlReportFileApi {
         ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
     )
-    @GetMapping(value = ["${ENDPOINT_API_PROJECT_PARTNER_REPORT_CONTROL_FILE}/list"])
+    @GetMapping("${ENDPOINT_API_PROJECT_PARTNER_REPORT_CONTROL_FILE}/list")
     fun listFiles(
         @PathVariable partnerId: Long,
         @PathVariable reportId: Long,
@@ -60,7 +59,8 @@ interface ProjectPartnerControlReportFileApi {
     @ApiOperation("Download control report certificate")
     @GetMapping(
         "${ENDPOINT_API_PROJECT_PARTNER_REPORT_CONTROL_FILE}/download/{fileId}",
-        produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE])
+        produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE]
+    )
     fun downloadControlReportCertificate(
         @PathVariable partnerId: Long,
         @PathVariable reportId: Long,

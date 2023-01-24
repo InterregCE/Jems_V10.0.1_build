@@ -34,6 +34,15 @@
             </mat-cell>
         </ng-container>
 
+        <ng-container matColumnDef="creationDate">
+            <mat-header-cell *matHeaderCellDef [mat-sort-header]="sortingEnabled ? 'uploaded' : null" [disabled]="!sortingEnabled">
+                <span jemsText maxLines="2">{{'file.table.column.name.creation.timestamp' | translate }}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let file">
+                {{ file?.uploaded | localeDate: 'L' : 'LT'}}
+            </mat-cell>
+        </ng-container>
+
         <ng-container matColumnDef="user">
             <mat-header-cell *matHeaderCellDef>
                 <span jemsText maxLines="2">{{'file.table.column.name.username' | translate }}</span>

@@ -1,0 +1,49 @@
+<div *ngIf="data$ | async as data" jemsFormLayout>
+
+    <form jemsFormLayout [formGroup]="exportForm">
+        <mat-form-field>
+            <mat-label>{{'project.application.partner.report.control.tab.overviewAndFinalize.certificate.export.label.plugins' | translate}}</mat-label>
+            <mat-select formControlName="pluginKey">
+                <mat-option *ngFor="let plugin of data.plugins" [value]="plugin.key" role="option">
+                    {{plugin.name}} - {{plugin.version}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+
+
+
+        <jems-pending-button jemsText
+                             (click)="exportData()">
+            {{'project.application.partner.report.control.tab.overviewAndFinalize.certificate.export.label.button' | translate}}
+        </jems-pending-button>
+    </form>
+
+    <div jemsNoWidthLimit id="control-report-files" class="overflow-auto">
+        <div id="report-files-table">
+            <div jemsNoWidthLimit>
+                <jems-file-list-table
+                        [fileList]="data.fileList"
+                        [displayedColumns]="displayedColumns"
+                        sortingEnabled="true"
+                        [setDescriptionCallback]="setDescriptionCallback"
+                        (onSortChange)="fileManagementStore.newSort$.next($event)"
+                        (onDownload)="downloadFile($event)"
+                        (refresh)="fileManagementStore.certificateFilesChanged$.next()">
+                </jems-file-list-table>
+
+                <jems-paginator (pageIndexChanged)="fileManagementStore.newPageIndex$.next($event)"
+                                (pageSizeChanged)="fileManagementStore.newPageSize$.next($event)"
+                                *ngIf="data.files.content?.length"
+                                [currentPageIndex]="fileManagementStore.newPageIndex$ | async"
+                                [currentPageSize]="fileManagementStore.newPageSize$ | async"
+                                [length]="data.files.totalElements">
+                </jems-paginator>
+            </div>
+
+            <jems-alert *ngIf="fileManagementStore.error$ | async as error"
+                        [show]="!!error"
+                        [type]="Alert.ERROR">
+                <jems-api-error-content [error]="error"></jems-api-error-content>
+            </jems-alert>
+        </div>
+    </div>
+</div>
