@@ -33,7 +33,7 @@ import {v4 as uuid} from 'uuid';
 })
 export class FileListTableComponent implements OnChanges, AfterViewInit {
   Alert = Alert;
-
+  @Input()
   displayedColumns: string[] = ['name', 'location', 'uploadDate', 'user', 'size', 'description', 'action'];
   dataSource = new MatTableDataSource<FileListItem>();
 

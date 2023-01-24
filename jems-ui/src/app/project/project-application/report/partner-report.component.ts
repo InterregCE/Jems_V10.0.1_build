@@ -322,7 +322,7 @@ export class PartnerReportComponent {
       ).subscribe();
   }
 
-  isCurrentVersionLatestApproved(reportVersion: string): boolean {
+  isReportVersionNotLatestApproved(reportVersion: string): boolean {
     return reportVersion !== this.currentApprovedVersion;
   }
 }

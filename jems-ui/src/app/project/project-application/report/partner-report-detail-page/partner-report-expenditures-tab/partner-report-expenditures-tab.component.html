@@ -416,7 +416,7 @@
                                      (click)="selectRow(i, 'totalValueInvoice')" class="custom-wrapper align-right"
                                      [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.totalValueInvoice)">
                                     <div class="custom-text-area">
-                                        {{(control.get(constants.FORM_CONTROL_NAMES.totalValueInvoice).value || 0) | number : '1.2-2' : 'de-DE'}}
+                                        {{(control.get(constants.FORM_CONTROL_NAMES.totalValueInvoice).value || 0) | asMoney}}
                                     </div>
                                 </div>
 
@@ -440,7 +440,7 @@
                                      (click)="selectRow(i, 'vat')" class="custom-wrapper align-right"
                                      [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.vat)">
                                     <div class="custom-text-area">
-                                        {{(control.get(constants.FORM_CONTROL_NAMES.vat).value || 0)  | number : '1.2-2' : 'de-DE'}}
+                                        {{(control.get(constants.FORM_CONTROL_NAMES.vat).value || 0)  | asMoney}}
                                     </div>
                                 </div>
 
@@ -464,7 +464,7 @@
                                      (click)="selectRow(i, 'numberOfUnits')" class="custom-wrapper"
                                      [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.numberOfUnits)">
                                     <div class="custom-text-area" >
-                                        {{control.get(constants.FORM_CONTROL_NAMES.numberOfUnits).value | number : '1.2-2' : 'de-DE'}}
+                                        {{control.get(constants.FORM_CONTROL_NAMES.numberOfUnits).value | asMoney}}
                                     </div>
                                 </div>
 
@@ -488,7 +488,7 @@
                                      (click)="selectRow(i, 'pricePerUnit')" class="custom-wrapper align-right"
                                      [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.pricePerUnit)">
                                     <div class="custom-text-area" >
-                                        {{control.get(constants.FORM_CONTROL_NAMES.pricePerUnit).value | number : '1.2-2' : 'de-DE'}}
+                                        {{control.get(constants.FORM_CONTROL_NAMES.pricePerUnit).value | asMoney}}
                                     </div>
                                 </div>
 
@@ -511,7 +511,7 @@
                                      (click)="selectRow(i, 'declaredAmount')" class="custom-wrapper align-right"
                                      [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.declaredAmount)">
                                     <div class="custom-text-area" >
-                                        {{control.get(constants.FORM_CONTROL_NAMES.declaredAmount).value | number : '1.2-2' : 'de-DE'}}
+                                        {{control.get(constants.FORM_CONTROL_NAMES.declaredAmount).value | asMoney}}
                                     </div>
                                 </div>
 
@@ -588,7 +588,7 @@
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <div *ngIf="expenditureFormIndex !== i" class="custom-wrapper align-right border-with-dotted">
                                     <div class="custom-text-area" >
-                                        {{control.get(constants.FORM_CONTROL_NAMES.declaredAmountInEur).value | number : '1.2-2' : 'de-DE'}}
+                                        {{control.get(constants.FORM_CONTROL_NAMES.declaredAmountInEur).value | asMoney}}
                                     </div>
                                 </div>
 
