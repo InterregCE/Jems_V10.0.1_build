@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.report.project.base
 
+import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportDeadline
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
@@ -14,7 +15,7 @@ interface ProjectReportPersistence {
 
     fun getReportById(projectId: Long, reportId: Long): ProjectReportModel
 
-    fun createReport(report: ProjectReportModel): ProjectReportModel
+    fun createReport(report: ProjectReportModel, targetGroups: List<ProjectRelevanceBenefit>): ProjectReportModel
 
     fun updateReport(
         projectId: Long,

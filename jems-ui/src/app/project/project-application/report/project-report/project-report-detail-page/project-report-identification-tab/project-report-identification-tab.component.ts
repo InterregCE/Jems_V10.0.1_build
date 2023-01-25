@@ -2,7 +2,8 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {FormService} from '@common/components/section/form/form.service';
 import {combineLatest, Observable} from 'rxjs';
 import {
-  ProjectPeriodDTO, ProjectReportDTO, ProjectReportUpdateDTO
+  InputTranslation,
+  ProjectPeriodDTO, ProjectReportDTO, ProjectReportIdentificationDTO, ProjectReportUpdateDTO
 } from '@cat/api';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {
@@ -19,6 +20,7 @@ import {ActivatedRoute} from '@angular/router';
 import {
   ProjectReportPageStore
 } from '@project/project-application/report/project-report/project-report-page-store.service';
+import {LanguageStore} from '@common/services/language-store.service';
 
 @Component({
   selector: 'jems-project-report-identification-tab',
@@ -31,7 +33,7 @@ export class ProjectReportIdentificationTabComponent {
   APPLICATION_FORM = APPLICATION_FORM;
   ProjectReportDTO = ProjectReportDTO;
 
-  reportId = this.router.getParameter(this.activatedRoute, 'reportId');
+  public reportId = this.router.getParameter(this.activatedRoute, 'reportId');
 
   data$: Observable<{
     projectReport: ProjectReportDTO;
@@ -44,7 +46,7 @@ export class ProjectReportIdentificationTabComponent {
     periodNumber: [null, Validators.required],
     deadlineId: [null, Validators.required],
     type:[null, Validators.required],
-    reportingDate: ['', Validators.required]
+    reportingDate: ['', Validators.required],
   });
 
   dateNameArgs = {
@@ -69,9 +71,9 @@ export class ProjectReportIdentificationTabComponent {
               private router: RoutingService,
               private activatedRoute: ActivatedRoute,
               private projectReportPageStore: ProjectReportPageStore,
-              private projectSidenavService: ProjectApplicationFormSidenavService) {
+              private projectSidenavService: ProjectApplicationFormSidenavService,
+              public languageStore: LanguageStore) {
     this.formService.init(this.form, this.reportId ? this.pageStore.reportEditable$ : this.projectReportPageStore.userCanEditReport$,);
-
     this.data$ = combineLatest([
       pageStore.projectReport$,
       this.projectStore.projectPeriods$,
@@ -90,8 +92,6 @@ export class ProjectReportIdentificationTabComponent {
       filter(period => !!period),
       tap(periodNumber => this.selectedPeriod = this.availablePeriods.find(period => period.number === periodNumber)),
     ).subscribe();
-
-
   }
 
   resetForm(identification?: ProjectReportDTO) {
@@ -109,7 +109,7 @@ export class ProjectReportIdentificationTabComponent {
     }
   }
 
-  saveIdentification(): void {
+  saveBaseInformation(): void {
     const data = {
       ...this.form.value,
       deadlineId: this.form.get('deadlineId')?.value < 1 ? null : this.form.get('deadlineId')?.value,
@@ -149,4 +149,5 @@ export class ProjectReportIdentificationTabComponent {
       {relativeTo: this.activatedRoute}
     );
   }
+
 }

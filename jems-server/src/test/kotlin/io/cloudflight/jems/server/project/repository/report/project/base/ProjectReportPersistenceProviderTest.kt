@@ -1,10 +1,16 @@
 package io.cloudflight.jems.server.project.repository.report.project.base
 
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.entity.contracting.reporting.ProjectContractingReportingEntity
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
+import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportIdentificationTargetGroupEntity
 import io.cloudflight.jems.server.project.repository.contracting.reporting.ProjectContractingReportingRepository
+import io.cloudflight.jems.server.project.repository.report.project.identification.ProjectReportIdentificationTargetGroupRepository
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
+import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportDeadline
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
@@ -79,12 +85,30 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
             verificationDate = null,
         )
 
+        private fun projectRelevanceBenefits() = listOf(
+            ProjectRelevanceBenefit(
+                group = ProjectTargetGroupDTO.Hospitals,
+                specification = setOf(
+                    InputTranslation(SystemLanguage.EN, "en"),
+                    InputTranslation(SystemLanguage.DE, "de")
+                )
+            ),
+            ProjectRelevanceBenefit(
+                group = ProjectTargetGroupDTO.CrossBorderLegalBody,
+                specification = setOf(
+                    InputTranslation(SystemLanguage.EN, "en 2"),
+                    InputTranslation(SystemLanguage.DE, "de 2")
+                )
+            )
+        )
     }
 
     @MockK
     private lateinit var projectReportRepository: ProjectReportRepository
     @MockK
     private lateinit var contractingDeadlineRepository: ProjectContractingReportingRepository
+    @MockK
+    private lateinit var reportIdentificationTargetGroupRepository: ProjectReportIdentificationTargetGroupRepository
 
     @InjectMockKs
     private lateinit var persistence: ProjectReportPersistenceProvider
@@ -126,11 +150,14 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
         every { deadline.id } returns 54L
         every { contractingDeadlineRepository.findTop50ByProjectIdOrderByDeadline(projectId) } returns mutableListOf(deadline)
 
+        val targetGroupsSlot = slot<Iterable<ProjectReportIdentificationTargetGroupEntity>>()
+
         val saveSlot = slot<ProjectReportEntity>()
         every { projectReportRepository.save(capture(saveSlot)) } returnsArgument 0
+        every { reportIdentificationTargetGroupRepository.saveAll(capture(targetGroupsSlot)) } returnsArgument 0
 
         val reportToCreate = report(0L, projectId).copy(periodNumber = null)
-        assertThat(persistence.createReport(reportToCreate))
+        assertThat(persistence.createReport(reportToCreate, projectRelevanceBenefits()))
             .isEqualTo(report(0L /* is changed by DB */, projectId).copy(periodNumber = null))
         assertThat(saveSlot.captured.projectId).isEqualTo(projectId)
     }

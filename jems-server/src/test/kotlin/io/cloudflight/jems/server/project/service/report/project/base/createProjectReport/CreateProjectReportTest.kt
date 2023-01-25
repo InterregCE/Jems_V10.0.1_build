@@ -1,16 +1,21 @@
 package io.cloudflight.jems.server.project.service.report.project.base.createProjectReport
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.project.service.ProjectDescriptionPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
+import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
@@ -92,6 +97,23 @@ internal class CreateProjectReportTest : UnitTest() {
             firstSubmission = null,
             verificationDate = null,
         )
+
+        private fun projectRelevanceBenefits() = listOf(
+            ProjectRelevanceBenefit(
+                group = ProjectTargetGroupDTO.Hospitals,
+                specification = setOf(
+                    InputTranslation(SystemLanguage.EN, "en"),
+                    InputTranslation(SystemLanguage.DE, "de")
+                )
+            ),
+            ProjectRelevanceBenefit(
+                group = ProjectTargetGroupDTO.CrossBorderLegalBody,
+                specification = setOf(
+                    InputTranslation(SystemLanguage.EN, "en 2"),
+                    InputTranslation(SystemLanguage.DE, "de 2")
+                )
+            )
+        )
     }
 
     @MockK
@@ -104,6 +126,8 @@ internal class CreateProjectReportTest : UnitTest() {
     private lateinit var reportPersistence: ProjectReportPersistence
     @MockK
     private lateinit var auditPublisher: ApplicationEventPublisher
+    @MockK
+    private lateinit var projectDescriptionPersistence: ProjectDescriptionPersistence
 
     @InjectMockKs
     lateinit var interactor: CreateProjectReport
@@ -123,9 +147,10 @@ internal class CreateProjectReportTest : UnitTest() {
         every { projectPersistence.getProjectPeriods(projectId, "version") } returns listOf(ProjectPeriod(4, 17, 22))
         every { reportPersistence.getCurrentLatestReportFor(projectId) } returns currentLatestReport(7)
         every { projectPartnerPersistence.findTop30ByProjectId(projectId, "version") } returns listOf(leadPartner())
+        every { projectDescriptionPersistence.getBenefits(projectId, "version") } returns projectRelevanceBenefits()
 
         val reportStored = slot<ProjectReportModel>()
-        every { reportPersistence.createReport(capture(reportStored)) } returnsArgument 0
+        every { reportPersistence.createReport(capture(reportStored), projectRelevanceBenefits()) } returnsArgument 0
 
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
