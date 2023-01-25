@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.common.entity.addTranslationEntities
 import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.common.entity.extractTranslation
 import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
+import io.cloudflight.jems.server.project.entity.report.control.expenditure.PartnerReportParkedExpenditureEntity
 import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportExpenditureCostEntity
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportExpenditureCostTranslEntity
@@ -112,37 +113,37 @@ fun ProjectPartnerReportExpenditureCost.toEntity(
         translatedValues.addTranslation(this, comment, description)
     }
 
-fun PartnerReportExpenditureCostEntity.clone(
+fun PartnerReportParkedExpenditureEntity.clone(
     newReportToBeLinked: ProjectPartnerReportEntity,
     clonedAttachment: JemsFileMetadataEntity?,
     lumpSumResolver: (Long) -> PartnerReportLumpSumEntity,
     unitCostResolver: (Long) -> PartnerReportUnitCostEntity,
     investmentResolver: (Long) -> PartnerReportInvestmentEntity,
 ): PartnerReportExpenditureCostEntity {
-    val comment = translatedValues.extractField { it.comment }
-    val description = translatedValues.extractField { it.description }
+    val comment = parkedFrom.translatedValues.extractField { it.comment }
+    val description = parkedFrom.translatedValues.extractField { it.description }
 
     return PartnerReportExpenditureCostEntity(
         id = 0L,
         number = 0,
         partnerReport = newReportToBeLinked,
-        reportLumpSum = reportLumpSum?.programmeLumpSum?.id?.let { lumpSumResolver.invoke(it) },
-        reportUnitCost = reportUnitCost?.programmeUnitCost?.id?.let { unitCostResolver.invoke(it) },
-        costCategory = costCategory,
-        reportInvestment = reportInvestment?.investmentId?.let { investmentResolver.invoke(it) },
-        procurementId = procurementId,
-        internalReferenceNumber = internalReferenceNumber,
-        invoiceNumber = invoiceNumber,
-        invoiceDate = invoiceDate,
-        dateOfPayment = dateOfPayment,
-        totalValueInvoice = totalValueInvoice,
-        vat = vat,
-        numberOfUnits = numberOfUnits,
-        pricePerUnit = pricePerUnit,
-        declaredAmount = declaredAmount,
-        currencyCode = currencyCode,
-        currencyConversionRate = currencyConversionRate,
-        declaredAmountAfterSubmission = declaredAmountAfterSubmission,
+        reportLumpSum = parkedFrom.reportLumpSum?.programmeLumpSum?.id?.let { lumpSumResolver.invoke(it) },
+        reportUnitCost = parkedFrom.reportUnitCost?.programmeUnitCost?.id?.let { unitCostResolver.invoke(it) },
+        costCategory = parkedFrom.costCategory,
+        reportInvestment = parkedFrom.reportInvestment?.investmentId?.let { investmentResolver.invoke(it) },
+        procurementId = parkedFrom.procurementId,
+        internalReferenceNumber = parkedFrom.internalReferenceNumber,
+        invoiceNumber = parkedFrom.invoiceNumber,
+        invoiceDate = parkedFrom.invoiceDate,
+        dateOfPayment = parkedFrom.dateOfPayment,
+        totalValueInvoice = parkedFrom.totalValueInvoice,
+        vat = parkedFrom.vat,
+        numberOfUnits = parkedFrom.numberOfUnits,
+        pricePerUnit = parkedFrom.pricePerUnit,
+        declaredAmount = parkedFrom.declaredAmount,
+        currencyCode = parkedFrom.currencyCode,
+        currencyConversionRate = parkedFrom.currencyConversionRate,
+        declaredAmountAfterSubmission = parkedFrom.declaredAmountAfterSubmission,
         translatedValues = mutableSetOf(),
         attachment = clonedAttachment,
         partOfSample = false,
@@ -151,9 +152,9 @@ fun PartnerReportExpenditureCostEntity.clone(
         typologyOfErrorId = null,
         parked = false,
         verificationComment = null,
-        unParkedFrom = this,
-        reportOfOrigin = reportOfOrigin ?: this.partnerReport,
-        originalNumber = number,
+        unParkedFrom = parkedFrom,
+        reportOfOrigin = parkedFrom.reportOfOrigin ?: parkedFrom.partnerReport,
+        originalNumber = originalNumber,
     ).apply {
         translatedValues.addTranslation(this, comment, description)
     }

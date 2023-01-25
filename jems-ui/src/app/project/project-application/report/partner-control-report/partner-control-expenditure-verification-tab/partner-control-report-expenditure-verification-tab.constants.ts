@@ -10,6 +10,8 @@ export class PartnerControlReportExpenditureConstants {
   public static FORM_CONTROL_NAMES = {
     rowId: 'rowId',
     number: 'number',
+    reportOfOriginNumber: 'reportOfOriginNumber',
+    originalExpenditureNumber: 'originalExpenditureNumber',
     costOptions: 'costOptions',
     costCategory: 'costCategory',
     investmentId: 'investmentId',

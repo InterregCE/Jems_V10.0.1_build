@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.partner.expenditure
 
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportInvestment
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportLumpSum
@@ -29,6 +30,8 @@ interface ProjectPartnerReportExpenditurePersistence {
     ): ProjectPartnerReportExpenditureCost
 
     fun existsByExpenditureId(partnerId: Long, reportId: Long, expenditureId: Long): Boolean
+
+    fun getExpenditureAttachment(partnerId: Long, expenditureId: Long): JemsFile?
 
     fun getAvailableLumpSums(partnerId: Long, reportId: Long): List<ProjectPartnerReportLumpSum>
 

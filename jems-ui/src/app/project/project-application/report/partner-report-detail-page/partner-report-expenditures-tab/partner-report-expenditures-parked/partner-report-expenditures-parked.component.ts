@@ -18,13 +18,14 @@ import { filter, switchMap, take } from 'rxjs/operators';
 })
 export class PartnerReportExpendituresParkedComponent {
 
-  displayedColumns = ['costItemID', 'costOptions', 'costCategory', 'investmentId', 'contractId', 'totalValueInvoice', 'numberOfUnits', 'pricePerUnit', 'vat', 'declaredAmount', 'currencyCode', 'currencyConversionRate', 'declaredAmountAfterSubmission', 'action'];
-
   @Input()
   listDirty$: Observable<boolean>;
 
   @Input()
   expenditures: ParkedExpenditure[] = [];
+
+  @Input()
+  columns: string[] = [];
 
   constructor(
     public pageStore: PartnerReportExpendituresStore,

@@ -273,6 +273,9 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     if((control?.get(this.constants.FORM_CONTROL_NAMES.costOptions) as FormControl)?.value !== null) {
       this.disableCostOptionSelectionRelatedFields(control, control.value?.costOptions?.type, index);
     }
+    if (control.get('reportOfOriginNumber')?.value) {
+      control.get('currencyCode')?.disable();
+    }
   }
 
   onInvestmentNumberChange(change: MatSelectChange, control: FormGroup): void {
@@ -399,7 +402,6 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
           contractIDs,
           ...tableConfiguration,
           ...reportCosts,
-          // parkedExpenditures,
           parkedExpenditures: parkedExpenditures.map((exp: ProjectPartnerReportParkedExpenditureDTO) => ({
             ...exp,
             canBeReIncluded: (exp.lumpSum ? exp.lumpSum.entityStillAvailable : true)
@@ -664,10 +666,6 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     }
 
     if (selectionType === 'unitCost' && !this.isUnitCostForeignCurrencyAvailable(index)) {
-      control.get('currencyCode')?.disable();
-    }
-
-    if (control.get('reportOfOriginNumber')?.value) {
       control.get('currencyCode')?.disable();
     }
   }

@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.repository.report.partner.expenditure
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
+import io.cloudflight.jems.server.common.file.service.toFullModel
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportExpenditureCostEntity
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportExpenditureCostTranslEntity
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportInvestmentEntity
@@ -13,6 +14,7 @@ import io.cloudflight.jems.server.project.repository.report.partner.control.expe
 import io.cloudflight.jems.server.project.repository.report.partner.financialOverview.costCategory.ReportProjectPartnerExpenditureCostCategoryRepository
 import io.cloudflight.jems.server.project.repository.report.partner.financialOverview.costCategory.toBudgetOptionsModel
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportInvestment
@@ -106,7 +108,7 @@ class ProjectPartnerReportExpenditurePersistenceProvider(
             )
 
         return reportExpenditureRepository.save(
-            parkedExpenditure.parkedFrom.clone(
+            parkedExpenditure.clone(
                 newReportToBeLinked = reportEntity,
                 clonedAttachment = null,
                 lumpSumResolver = { reportLumpSumRepository.findByReportEntityIdAndProgrammeLumpSumId(reportId, programmeLumpSumId = it) },
@@ -120,6 +122,15 @@ class ProjectPartnerReportExpenditurePersistenceProvider(
     override fun existsByExpenditureId(partnerId: Long, reportId: Long, expenditureId: Long) =
         reportExpenditureRepository
             .existsByPartnerReportPartnerIdAndPartnerReportIdAndId(partnerId, reportId = reportId, expenditureId = expenditureId)
+
+    @Transactional(readOnly = true)
+    override fun getExpenditureAttachment(partnerId: Long, expenditureId: Long): JemsFile? =
+        reportExpenditureParkedRepository
+            .findByParkedFromPartnerReportPartnerIdAndParkedFromPartnerReportStatusAndParkedFromExpenditureId(
+                partnerId = partnerId,
+                status = ReportStatus.Certified,
+                id = expenditureId,
+            ).parkedFrom.attachment?.toFullModel()
 
     @Transactional(readOnly = true)
     override fun getAvailableLumpSums(partnerId: Long, reportId: Long): List<ProjectPartnerReportLumpSum> =

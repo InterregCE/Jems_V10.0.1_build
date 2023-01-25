@@ -24,11 +24,14 @@
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.cost.ID' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <ng-container>
-                                    <div class="text-overflow-ellipsis" [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}">
-                                        {{'R' + currentReport.reportNumber + '.' + control.get(constants.FORM_CONTROL_NAMES.number).value}}
-                                    </div>
-                                </ng-container>
+                                <div class="text-overflow-ellipsis" *ngIf="!control.get(constants.FORM_CONTROL_NAMES.reportOfOriginNumber).value"
+                                     [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}">
+                                    {{'R' + currentReport.reportNumber + '.' + control.get(constants.FORM_CONTROL_NAMES.number).value}}
+                                </div>
+                                <div class="text-overflow-ellipsis" *ngIf="control.get(constants.FORM_CONTROL_NAMES.reportOfOriginNumber).value"
+                                     [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}">
+                                    {{'R' + control.get(constants.FORM_CONTROL_NAMES.reportOfOriginNumber).value + '.' + control.get(constants.FORM_CONTROL_NAMES.originalExpenditureNumber).value}}
+                                </div>
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>

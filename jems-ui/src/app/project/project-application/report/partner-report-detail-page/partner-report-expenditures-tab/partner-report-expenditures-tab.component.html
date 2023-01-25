@@ -19,7 +19,7 @@
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <div class="text-overflow-ellipsis" *ngIf="!control.get(constants.FORM_CONTROL_NAMES.reportOfOriginNumber).value">
-                                    {{'R' + currentReport.reportNumber + '.' + control.get(constants.FORM_CONTROL_NAMES.number).value}}
+                                    {{'R' + currentReport.reportNumber + '.' + (control.get('id').value ? control.get(constants.FORM_CONTROL_NAMES.number).value : '?')}}
                                 </div>
                                 <div class="text-overflow-ellipsis" *ngIf="control.get(constants.FORM_CONTROL_NAMES.reportOfOriginNumber).value">
                                     {{'R' + control.get(constants.FORM_CONTROL_NAMES.reportOfOriginNumber).value + '.' + control.get(constants.FORM_CONTROL_NAMES.originalExpenditureNumber).value}}
@@ -656,10 +656,11 @@
         </form>
 
         <jems-partner-report-expenditures-parked
+                *ngIf="data.parkedExpenditures.length"
                 [listDirty$]="formService.dirty$"
-                [expenditures]="data.parkedExpenditures">
+                [expenditures]="data.parkedExpenditures"
+                [columns]="data.columnsToDisplay">
         </jems-partner-report-expenditures-parked>
 
     </jems-form>
 </div>
-
