@@ -73,19 +73,22 @@ export class ContractMonitoringCodesOfInterventionTableComponent implements OnCh
           dimension: [dimensionCodeShare.programmeObjectiveDimension, Validators.required],
           dimensionCode: [dimensionCodeShare.dimensionCode, [this.dimensionCodeAlreadySelected(), Validators.required]],
           projectBudgetAmountShare: [dimensionCodeShare.projectBudgetAmountShare, [Validators.required, this.dimensionCodeAmountValidator()]],
-          projectBudgetPercentShare: [{value: NumberService.toLocale(this.calculateDimensionCodePercentShare(dimensionCodeShare.projectBudgetAmountShare)) +'%',  disabled:true}],
+          projectBudgetPercentShare: [{value: NumberService.toLocale(this.calculateDimensionCodePercentShare(dimensionCodeShare.projectBudgetAmountShare)) + '%', disabled: true}]
         });
         this.dimensionCodesFormItems.push(item);
       }
     );
-    this.dimensionCodesTableData = [... this.dimensionCodesFormItems.controls];
+    if (!this.editable) {
+      this.dimensionCodesFormItems.disable();
+    }
+    this.dimensionCodesTableData = [...this.dimensionCodesFormItems.controls];
   }
 
   addDimensionCodeData(): void {
     const item = this.formBuilder.group({
       id: 0,
       dimension: ['', Validators.required],
-      dimensionCode: ['', {validators: [this.dimensionCodeAlreadySelected()],  updateOn: 'blur'}],
+      dimensionCode: ['', {validators: [this.dimensionCodeAlreadySelected()], updateOn: 'blur'}],
       projectBudgetAmountShare: ['', [Validators.required, this.dimensionCodeAmountValidator()]],
       projectBudgetPercentShare: ['', Validators.max(100)]
     });
@@ -97,7 +100,7 @@ export class ContractMonitoringCodesOfInterventionTableComponent implements OnCh
   getCodesForDimension(dimension: ContractingDimensionCodeDTO.ProgrammeObjectiveDimensionEnum): string[] {
     switch (dimension) {
       case ContractingDimensionCodeDTO.ProgrammeObjectiveDimensionEnum.Location:
-        return [... this.projectPartnersNuts.map(nuts => nuts.nuts3Region ? nuts.nuts3Region : nuts.country)];
+        return [...this.projectPartnersNuts.map(nuts => nuts.nuts3Region ? nuts.nuts3Region : nuts.country)];
       default:
         return this.dimensionCodes ? this.dimensionCodes[dimension] : [];
     }
@@ -105,7 +108,7 @@ export class ContractMonitoringCodesOfInterventionTableComponent implements OnCh
 
   removeItem(controlIndex: number): void {
     this.dimensionCodesFormItems.removeAt(controlIndex);
-    this.dimensionCodesTableData = [... this.dimensionCodesFormItems.controls];
+    this.dimensionCodesTableData = [...this.dimensionCodesFormItems.controls];
     this.changed.emit();
     const projectBudgetAmountShareControl = this.dimensionCodesFormItems.at(controlIndex).get('projectBudgetAmountShare');
     projectBudgetAmountShareControl?.setValidators([Validators.required, this.dimensionCodeAmountValidator()]);
@@ -154,7 +157,7 @@ export class ContractMonitoringCodesOfInterventionTableComponent implements OnCh
       const parentFormGroup = (control.parent as FormGroup);
 
       let currentTotalAmountPerDimension = 0;
-      if (parentFormGroup){
+      if (parentFormGroup) {
         const otherDimensionCodes = this.dimensionCodesFormItems.controls
           .filter(dimensionControl => dimensionControl.value.dimension === parentFormGroup.value.dimension &&
             dimensionControl.value.dimensionCode !== parentFormGroup.value.dimensionCode);
@@ -194,4 +197,5 @@ export class ContractMonitoringCodesOfInterventionTableComponent implements OnCh
 
   private controlIsNew(control: FormGroup): boolean {
     return control.controls.id.value === 0;
-  }}
+  }
+}
