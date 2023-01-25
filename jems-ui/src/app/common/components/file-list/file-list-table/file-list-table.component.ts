@@ -33,7 +33,7 @@ import {v4 as uuid} from 'uuid';
 })
 export class FileListTableComponent implements OnChanges, AfterViewInit {
   Alert = Alert;
-  @Input()
+
   displayedColumns: string[] = ['name', 'location', 'uploadDate', 'user', 'size', 'description', 'action'];
   dataSource = new MatTableDataSource<FileListItem>();
 
@@ -45,6 +45,8 @@ export class FileListTableComponent implements OnChanges, AfterViewInit {
   fileList: FileListItem[];
   @Input()
   sortingEnabled = false;
+  @Input()
+  overrideUploadTranslation = 'file.table.column.name.timestamp';
 
   @Input()
   setDescriptionCallback: (data: FileDescriptionChange) => Observable<any>;

@@ -22,7 +22,7 @@
             <div jemsNoWidthLimit>
                 <jems-file-list-table
                         [fileList]="data.fileList"
-                        [displayedColumns]="displayedColumns"
+                        [overrideUploadTranslation]="'file.table.column.name.creation.timestamp'"
                         sortingEnabled="true"
                         [setDescriptionCallback]="setDescriptionCallback"
                         (onSortChange)="fileManagementStore.newSort$.next($event)"
