@@ -31,7 +31,6 @@ export class PartnerControlReportGenerateControlReportAndCertificateComponent {
   reportId: number;
 
   Alert = Alert;
-  displayedColumns: string[] = ['name', 'location', 'creationDate', 'user', 'description', 'action'];
   exportForm: FormGroup;
   data$: Observable<{
     plugins: PluginInfoDTO[];
