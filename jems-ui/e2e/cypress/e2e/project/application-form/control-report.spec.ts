@@ -252,7 +252,9 @@ context('Control report tests', () => {
 
 function instantiateEmptyChecklist(applicationId, partnerId, reportId, checklistName) {
   cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/controlReport/controlChecklistsTab`, {failOnStatusCode: false});
+  cy.intercept(`api/programme/checklist/byType/CONTROL`).as('checklistsLoaded');
   cy.contains('Control checklists').should('be.visible').click();
+  cy.wait('@checklistsLoaded');
   cy.contains('Select checklist template').should('be.visible').click()
   cy.contains('span', checklistName).should('be.visible').click();
   cy.contains('instantiate new checklist').should('be.enabled').click();
