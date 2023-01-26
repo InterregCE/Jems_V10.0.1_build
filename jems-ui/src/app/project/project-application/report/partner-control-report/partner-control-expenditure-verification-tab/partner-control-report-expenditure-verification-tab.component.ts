@@ -437,6 +437,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
 
   parkedChange(expenditureIndex: number, event: MatSlideToggleChange) {
     if (event.source.checked) {
+      this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.partOfSample)?.setValue(true);
       this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.deductedAmount)?.disable();
       this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.deductedAmount)?.setValue(0);
       this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.certifiedAmount)?.setValue(0);
