@@ -19,6 +19,7 @@ import io.cloudflight.jems.server.resources.service.get_logos.GetLogoFailed
 import io.cloudflight.jems.server.resources.service.get_logos.GetLogosInteractor
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -34,6 +35,7 @@ class GenerateReportControlCertificate(
 ) : GenerateReportControlCertificateInteractor {
 
     @CanViewPartnerControlReport
+    @Transactional
     @ExceptionWrapper(GenerateReportControlCertificateException::class)
     override fun generateCertificate(partnerId: Long, reportId: Long) {
 
