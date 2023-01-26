@@ -105,7 +105,7 @@ interface ProjectPartnerReportExpenditureCostsApi {
     )
 
     @ApiOperation("Delete parked expenditure")
-    @DeleteMapping("${ProjectPartnerReportApi.ENDPOINT_API_PROJECT_PARTNER_REPORT}/expenditure/byPartnerId/{partnerId}/deleteExpenditure/{expenditureId}")
-    fun deleteParkedExpenditure(@PathVariable partnerId: Long, @PathVariable expenditureId: Long)
+    @DeleteMapping("$ENDPOINT_API_PARTNER_REPORT_EXPENDITURE_COSTS/deleteExpenditure/{expenditureId}")
+    fun deleteParkedExpenditure(@PathVariable partnerId: Long, @PathVariable reportId: Long, @PathVariable expenditureId: Long)
 
 }

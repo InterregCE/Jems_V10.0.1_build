@@ -84,7 +84,7 @@ class ProjectPartnerReportExpenditureCostsController(
     override fun reIncludeParkedExpenditure(partnerId: Long, reportId: Long, expenditureId: Long) =
         reIncludeParkedExpenditureInteractor.reIncludeParkedExpenditure(partnerId = partnerId, reportId, expenditureId)
 
-    override fun deleteParkedExpenditure(partnerId: Long, expenditureId: Long) =
-        deleteParkedExpenditureInteractor.deleteParkedExpenditure(partnerId = partnerId, expenditureId)
+    override fun deleteParkedExpenditure(partnerId: Long,  reportId: Long, expenditureId: Long) =
+        deleteParkedExpenditureInteractor.deleteParkedExpenditure(partnerId = partnerId, reportId, expenditureId)
 
 }
