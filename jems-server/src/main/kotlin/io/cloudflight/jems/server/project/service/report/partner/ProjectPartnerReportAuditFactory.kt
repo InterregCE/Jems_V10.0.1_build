@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRo
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.ProjectPartnerReportCreate
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 
 fun partnerReportCreated(
     context: Any,
@@ -141,4 +142,48 @@ fun partnerReportExpenditureParked(
                 " from report R.${partnerReport.reportNumber}"
                 )
             .build()
+    )
+
+fun partnerReportExpenditureReIncluded(
+    context: Any,
+    projectId: Long,
+    partnerReport: ProjectPartnerReport,
+    expenditure: ExpenditureParkingMetadata,
+): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.PARKED_EXPENDITURE_REINCLUDED)
+            .project(
+                projectId = projectId,
+                customIdentifier = partnerReport.identification.projectIdentifier,
+                acronym = partnerReport.identification.projectAcronym,
+            )
+            .entityRelatedId(entityRelatedId = partnerReport.id)
+            .description("Parked expenditure R${expenditure.reportOfOriginNumber}.${expenditure.originalExpenditureNumber} " +
+                "was re-included in partner report R.${partnerReport.reportNumber} by partner " +
+                (if (partnerReport.identification.partnerRole == ProjectPartnerRole.LEAD_PARTNER) "LP" else "PP") +
+                partnerReport.identification.partnerNumber
+            ).build()
+    )
+
+fun partnerReportExpenditureDeleted(
+    context: Any,
+    projectId: Long,
+    partnerReport: ProjectPartnerReport,
+    expenditure: ExpenditureParkingMetadata,
+): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.PARKED_EXPENDITURE_DELETED)
+            .project(
+                projectId = projectId,
+                customIdentifier = partnerReport.identification.projectIdentifier,
+                acronym = partnerReport.identification.projectAcronym,
+            )
+            .entityRelatedId(entityRelatedId = partnerReport.id)
+            .description("Parked expenditure R${expenditure.reportOfOriginNumber}.${expenditure.originalExpenditureNumber} " +
+                "was deleted in partner report R.${partnerReport.reportNumber} by partner " +
+                (if (partnerReport.identification.partnerRole == ProjectPartnerRole.LEAD_PARTNER) "LP" else "PP") +
+                partnerReport.identification.partnerNumber
+            ).build()
     )

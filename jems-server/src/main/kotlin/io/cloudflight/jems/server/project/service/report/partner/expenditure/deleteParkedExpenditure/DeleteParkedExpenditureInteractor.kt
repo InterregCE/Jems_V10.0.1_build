@@ -2,6 +2,6 @@ package io.cloudflight.jems.server.project.service.report.partner.expenditure.de
 
 interface DeleteParkedExpenditureInteractor {
 
-    fun deleteParkedExpenditure(partnerId: Long, expenditureId: Long)
+    fun deleteParkedExpenditure(partnerId: Long, reportId: Long, expenditureId: Long)
 
 }

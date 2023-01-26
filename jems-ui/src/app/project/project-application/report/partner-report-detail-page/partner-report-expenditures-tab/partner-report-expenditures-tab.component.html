@@ -656,7 +656,7 @@
         </form>
 
         <jems-partner-report-expenditures-parked
-                *ngIf="data.parkedExpenditures.length"
+                *ngIf="data.parkedExpenditures.length && isReportEditable$ | async"
                 [listDirty$]="formService.dirty$"
                 [expenditures]="data.parkedExpenditures"
                 [columns]="data.columnsToDisplay">

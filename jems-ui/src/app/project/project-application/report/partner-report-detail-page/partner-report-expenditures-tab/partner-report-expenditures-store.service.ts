@@ -81,8 +81,13 @@ export class PartnerReportExpendituresStore {
   }
 
   deleteParkedExpenditure(expenditureId: number): Observable<any> {
-    return this.partnerReportDetailPageStore.partnerId$.pipe(
-      switchMap(partnerId => this.partnerReportExpenditureCostsService.deleteParkedExpenditure(expenditureId, partnerId as number)),
+    return combineLatest([
+      this.partnerReportDetailPageStore.partnerId$,
+      this.partnerReportDetailPageStore.partnerReportId$,
+    ]).pipe(
+      switchMap(([partnerId, reportId]) =>
+        this.partnerReportExpenditureCostsService.deleteParkedExpenditure(expenditureId, partnerId as number, reportId)
+      ),
       tap(() => this.refreshExpenditures$.next(undefined)),
     );
   }

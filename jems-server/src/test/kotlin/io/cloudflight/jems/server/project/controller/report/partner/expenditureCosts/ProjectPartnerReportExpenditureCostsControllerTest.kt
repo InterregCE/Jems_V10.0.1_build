@@ -336,9 +336,11 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
 
     @Test
     fun deleteParkedExpenditure() {
-        every { deleteParkedExpenditureInteractor.deleteParkedExpenditure(partnerId = PARTNER_ID, expenditureId = 150L) } answers { }
-        controller.deleteParkedExpenditure(partnerId = PARTNER_ID, expenditureId = 150L)
-        verify(exactly = 1) { deleteParkedExpenditureInteractor.deleteParkedExpenditure(PARTNER_ID, 150L) }
+        every { deleteParkedExpenditureInteractor.deleteParkedExpenditure(
+            partnerId = PARTNER_ID, reportId = 37L, expenditureId = 150L
+        ) } answers { }
+        controller.deleteParkedExpenditure(partnerId = PARTNER_ID,  reportId = 37L, expenditureId = 150L)
+        verify(exactly = 1) { deleteParkedExpenditureInteractor.deleteParkedExpenditure(PARTNER_ID, 37L, 150L) }
     }
 
 }
