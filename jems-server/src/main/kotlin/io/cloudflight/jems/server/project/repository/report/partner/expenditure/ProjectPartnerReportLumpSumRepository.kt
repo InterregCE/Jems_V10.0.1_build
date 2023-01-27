@@ -14,7 +14,11 @@ interface ProjectPartnerReportLumpSumRepository : JpaRepository<PartnerReportLum
         reportId: Long,
     ): MutableList<PartnerReportLumpSumEntity>
 
-    fun findByReportEntityIdAndProgrammeLumpSumId(reportId: Long, programmeLumpSumId: Long): PartnerReportLumpSumEntity
+    fun findByReportEntityIdAndProgrammeLumpSumIdAndOrderNr(
+        reportId: Long,
+        programmeLumpSumId: Long,
+        orderNr: Int,
+    ): PartnerReportLumpSumEntity
 
     @Query("""
         SELECT new kotlin.Pair(

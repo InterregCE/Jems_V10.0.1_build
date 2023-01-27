@@ -56,17 +56,18 @@ internal class GetAvailableParkedExpenditureListTest : UnitTest() {
                 attachment = JemsFileMetadata(47L, "file.xlsx", ZonedDateTime.now()),
                 parkingMetadata = ExpenditureParkingMetadata(reportOfOriginId = 75L, reportOfOriginNumber = 4, originalExpenditureNumber = 3),
             ),
-            lumpSum = ProjectPartnerReportParkedLinked(51L, 52L, true),
+            lumpSum = ProjectPartnerReportParkedLinked(51L, 52L, 15, true),
             lumpSumName = setOf(InputTranslation(SystemLanguage.EN, "ls-name")),
-            unitCost = ProjectPartnerReportParkedLinked(61L, 62L, false),
+            unitCost = ProjectPartnerReportParkedLinked(61L, 62L, null, false),
             unitCostName = setOf(InputTranslation(SystemLanguage.EN, "uc-name")),
-            investment = ProjectPartnerReportParkedLinked(71L, 72L, true),
+            investment = ProjectPartnerReportParkedLinked(71L, 72L, null, true),
             investmentName = "investment-name",
         )
 
         private fun lumpSum(id: Long): ProjectPartnerReportLumpSum {
             val result = mockk<ProjectPartnerReportLumpSum>()
             every { result.lumpSumProgrammeId } returns id
+            every { result.orderNr } returns 9
             return result
         }
         private fun unitCost(id: Long): ProjectPartnerReportUnitCost {

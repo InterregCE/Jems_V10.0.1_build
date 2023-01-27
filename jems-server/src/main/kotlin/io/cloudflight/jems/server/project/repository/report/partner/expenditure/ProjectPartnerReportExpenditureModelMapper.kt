@@ -53,11 +53,11 @@ fun PartnerReportExpenditureCostEntity.toModel() = ProjectPartnerReportExpenditu
 fun PartnerReportExpenditureCostEntity.toParkedModel() = ProjectPartnerReportParkedExpenditure(
     expenditure = this.toModel(),
 
-    lumpSum = reportLumpSum?.let { ProjectPartnerReportParkedLinked(it.id, it.programmeLumpSum.id, false) },
+    lumpSum = reportLumpSum?.let { ProjectPartnerReportParkedLinked(it.id, it.programmeLumpSum.id, it.orderNr, false) },
     lumpSumName = reportLumpSum?.programmeLumpSum?.translatedValues?.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.name) },
-    unitCost = reportUnitCost?.let { ProjectPartnerReportParkedLinked(it.id, it.programmeUnitCost.id, false) },
+    unitCost = reportUnitCost?.let { ProjectPartnerReportParkedLinked(it.id, it.programmeUnitCost.id, null, false) },
     unitCostName = reportUnitCost?.programmeUnitCost?.translatedValues?.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.name) },
-    investment = reportInvestment?.let { ProjectPartnerReportParkedLinked(it.id, it.investmentId, false) },
+    investment = reportInvestment?.let { ProjectPartnerReportParkedLinked(it.id, it.investmentId, null, false) },
     investmentName = reportInvestment?.let { "I${it.workPackageNumber}.${it.investmentNumber}" },
 )
 
@@ -116,7 +116,7 @@ fun ProjectPartnerReportExpenditureCost.toEntity(
 fun PartnerReportParkedExpenditureEntity.clone(
     newReportToBeLinked: ProjectPartnerReportEntity,
     clonedAttachment: JemsFileMetadataEntity?,
-    lumpSumResolver: (Long) -> PartnerReportLumpSumEntity,
+    lumpSumResolver: (Pair<Long, Int>) -> PartnerReportLumpSumEntity,
     unitCostResolver: (Long) -> PartnerReportUnitCostEntity,
     investmentResolver: (Long) -> PartnerReportInvestmentEntity,
 ): PartnerReportExpenditureCostEntity {
@@ -127,7 +127,7 @@ fun PartnerReportParkedExpenditureEntity.clone(
         id = 0L,
         number = 0,
         partnerReport = newReportToBeLinked,
-        reportLumpSum = parkedFrom.reportLumpSum?.programmeLumpSum?.id?.let { lumpSumResolver.invoke(it) },
+        reportLumpSum = parkedFrom.reportLumpSum?.let { lumpSumResolver.invoke(Pair(it.programmeLumpSum.id, it.orderNr)) },
         reportUnitCost = parkedFrom.reportUnitCost?.programmeUnitCost?.id?.let { unitCostResolver.invoke(it) },
         costCategory = parkedFrom.costCategory,
         reportInvestment = parkedFrom.reportInvestment?.investmentId?.let { investmentResolver.invoke(it) },

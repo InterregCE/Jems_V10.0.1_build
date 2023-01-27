@@ -166,11 +166,11 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
         private fun dummyExpectedParkedExpenditure() = ProjectPartnerReportParkedExpenditure(
             expenditure = dummyExpectedExpenditure(id = 14L, 828L, 829L, 830L, 1)
                 .copy(contractId = PROCUREMENT_ID, parkingMetadata = ExpenditureParkingMetadata(80L, 81, 14)),
-            lumpSum = ProjectPartnerReportParkedLinked(828L, 8281L, false),
+            lumpSum = ProjectPartnerReportParkedLinked(828L, 8281L, 4, false),
             lumpSumName = setOf(InputTranslation(SystemLanguage.EN, "name ls")),
-            unitCost = ProjectPartnerReportParkedLinked(829L, 8291L, false),
+            unitCost = ProjectPartnerReportParkedLinked(829L, 8291L, null, false),
             unitCostName = setOf(InputTranslation(SystemLanguage.EN, "name uc")),
-            investment = ProjectPartnerReportParkedLinked(830L, 8301L, false),
+            investment = ProjectPartnerReportParkedLinked(830L, 8301L, null, false),
             investmentName = "I14.11",
         )
 
@@ -282,6 +282,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
             id = 4L,
             lumpSumProgrammeId = 400L,
             fastTrack = false,
+            orderNr = 10,
             period = 2,
             cost = BigDecimal.ONE,
             name = setOf(InputTranslation(SystemLanguage.EN, "name EN"))
@@ -477,6 +478,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
         val unitCost = mockk<PartnerReportUnitCostEntity>()
         val investment = mockk<PartnerReportInvestmentEntity>()
         every { lumpSum.id } returns LUMP_SUM_ID
+        every { lumpSum.orderNr } returns 4
         every { lumpSum.programmeLumpSum } returns proLumpSum
         every { unitCost.id } returns UNIT_COST_ID
         every { unitCost.programmeUnitCost } returns proUnitCost
@@ -683,6 +685,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
         every { reportOfOrigin.number } returns 111
         val lumpSum = mockk<PartnerReportLumpSumEntity>()
         every { lumpSum.id } returns 65L
+        every { lumpSum.orderNr } returns 12
         every { lumpSum.programmeLumpSum.id } returns 636L
         val unitCost = mockk<PartnerReportUnitCostEntity>()
         every { unitCost.id } returns 69L
@@ -702,7 +705,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
         val report = mockk<ProjectPartnerReportEntity>()
         every { reportRepository.findByIdAndPartnerId(partnerId = partnerId, id = 600L) } returns report
 
-        every { reportLumpSumRepository.findByReportEntityIdAndProgrammeLumpSumId(reportId = 600L, 636L) } returns proLumpSum
+        every { reportLumpSumRepository.findByReportEntityIdAndProgrammeLumpSumIdAndOrderNr(reportId = 600L, 636L, 12) } returns proLumpSum
         every { reportUnitCostRepository.findByReportEntityIdAndProgrammeUnitCostId(reportId = 600L, 637L) } returns proUnitCost
         every { reportInvestmentRepository.findByReportEntityIdAndInvestmentId(reportId = 600L, 638L) } returns proInvestment
 
@@ -737,6 +740,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
         val reportOfOrigin = mockk<ProjectPartnerReportEntity>()
         val lumpSum = mockk<PartnerReportLumpSumEntity>()
         every { lumpSum.id } returns 65L
+        every { lumpSum.orderNr } returns 4
         every { lumpSum.programmeLumpSum.id } returns 650L
         val unitCost = mockk<PartnerReportUnitCostEntity>()
         every { unitCost.id } returns 69L
@@ -775,7 +779,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
         every { proUnitCost.id } returns 6900L
         val proInvestment = mockk<PartnerReportInvestmentEntity>()
         every { proInvestment.id } returns 7100L
-        every { reportLumpSumRepository.findByReportEntityIdAndProgrammeLumpSumId(600L, 650L) } returns proLumpSum
+        every { reportLumpSumRepository.findByReportEntityIdAndProgrammeLumpSumIdAndOrderNr(600L, 650L, 4) } returns proLumpSum
         every { reportUnitCostRepository.findByReportEntityIdAndProgrammeUnitCostId(600L, 690L) } returns proUnitCost
         every { reportInvestmentRepository.findByReportEntityIdAndInvestmentId(600L, 710L) } returns proInvestment
         every { reportExpenditureRepository.save(any()) } returnsArgument 0

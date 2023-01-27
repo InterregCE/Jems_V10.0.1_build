@@ -85,11 +85,11 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
 
     private val reportParkedExpenditure = ProjectPartnerReportParkedExpenditure(
         expenditure = reportExpenditureCost,
-        lumpSum = ProjectPartnerReportParkedLinked(51L, 52L, true),
+        lumpSum = ProjectPartnerReportParkedLinked(51L, 52L, 4, true),
         lumpSumName = setOf(InputTranslation(SystemLanguage.EN, "ls-name")),
-        unitCost = ProjectPartnerReportParkedLinked(61L, 62L, false),
+        unitCost = ProjectPartnerReportParkedLinked(61L, 62L, null, false),
         unitCostName = setOf(InputTranslation(SystemLanguage.EN, "uc-name")),
-        investment = ProjectPartnerReportParkedLinked(71L, 72L, true),
+        investment = ProjectPartnerReportParkedLinked(71L, 72L, null, true),
         investmentName = "investment-name",
     )
 
@@ -147,6 +147,7 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
         id = 18L,
         lumpSumProgrammeId = 140L,
         fastTrack = false,
+        orderNr = 8,
         period = 4,
         cost = BigDecimal.ONE,
         name = setOf(InputTranslation(SystemLanguage.EN, "EN lump sum"))
