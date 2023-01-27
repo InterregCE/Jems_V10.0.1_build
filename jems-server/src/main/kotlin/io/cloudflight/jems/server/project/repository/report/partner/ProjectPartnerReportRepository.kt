@@ -72,6 +72,8 @@ interface ProjectPartnerReportRepository : JpaRepository<ProjectPartnerReportEnt
     """, nativeQuery = true)
     fun findAllCertificates(partnerIds: Set<Long>, pageable: Pageable): Page<CertificateSummary>
 
+    fun findAllByProjectReportId(projectReportId: Long): List<ProjectPartnerReportEntity>
+
     fun findAllByPartnerIdInAndProjectReportNullAndStatus(partnerIds: Set<Long>, status: ReportStatus): List<ProjectPartnerReportEntity>
 
     fun existsByPartnerIdAndId(partnerId: Long, id: Long): Boolean

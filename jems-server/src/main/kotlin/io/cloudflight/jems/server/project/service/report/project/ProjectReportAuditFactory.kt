@@ -4,7 +4,9 @@ import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.project.service.model.ProjectFull
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 
@@ -43,6 +45,7 @@ fun projectReportSubmitted(
     context: Any,
     projectId: Long,
     report: ProjectReportSubmissionSummary,
+    certificates: List<ProjectPartnerReportSubmissionSummary>,
 ): AuditCandidateEvent =
     AuditCandidateEvent(
         context = context,
@@ -53,7 +56,10 @@ fun projectReportSubmitted(
                 acronym = report.projectAcronym,
             )
             .entityRelatedId(entityRelatedId = report.id)
-            .description("[${report.projectIdentifier}]: Project report [${report.id}] submitted.")
+            .description("[${report.projectIdentifier}]: Project report PR.${report.reportNumber} submitted, certificates included: " +
+                certificates.joinToString(separator = ", ", transform = {
+                    "${if (it.partnerRole == ProjectPartnerRole.LEAD_PARTNER) "LP" else "PP"}${it.partnerNumber}-R.${it.reportNumber}"
+                }))
             .build()
     )
 
