@@ -1,10 +1,12 @@
 import user from "../fixtures/users.json";
 import {faker} from "@faker-js/faker";
+import call from "../fixtures/api/call/1.step.call.json";
+import application from "../fixtures/api/application/application.json";
 
 context('Controller tests', () => {
+
   it('TB-810 Controller institutions can be created', () => {
     cy.fixture('controller/TB-810.json').then(testData => {
-
       cy.loginByRequest(user.admin.email);
       testData.controllerUser1.email = faker.internet.email();
       testData.controllerUser2.email = faker.internet.email();
@@ -59,6 +61,61 @@ context('Controller tests', () => {
       cy.contains('Institutions').click();
       cy.contains('mat-row', testData.institution.name).should('be.visible');
       cy.contains(testData.institution.nutsVerification).should('be.visible');
+    });
+  });
+
+  it('TB-935 Controller institutions can be assigned to project partner', () => {
+    cy.fixture('controller/TB-935.json').then(testData => {
+
+      cy.loginByRequest(user.admin.email);
+      testData.controllerRole.name = `controller_${faker.random.alphaNumeric(5)}`;
+      testData.controllerUser.email = faker.internet.email();
+      cy.createRole(testData.controllerRole).then(roleId => {
+        testData.controllerUser.userRoleId = roleId;
+        cy.createUser(testData.controllerUser);
+      });
+
+      testData.institution.name = `${faker.word.adjective()} ${faker.word.noun()}`;
+      cy.loginByRequest(testData.controllerUser.email);
+
+      cy.createInstitution(testData.institution).then(institutionId => {
+        cy.loginByRequest(user.programmeUser.email);
+        cy.createCall(call, user.programmeUser.email).then(callId => {
+          application.details.projectCallId = callId;
+          cy.publishCall(callId);
+          cy.loginByRequest(user.applicantUser.email);
+          cy.createApprovedApplication(application, user.programmeUser.email).then(applicationId => {
+            cy.loginByRequest(testData.controllerUser.email);
+            cy.visit('/');
+            cy.contains('Controllers').click();
+            cy.contains('Assignment').click();
+            cy.get('table mat-row').then(row => {
+              cy.contains('mat-header-cell', 'ProjectID').click().click();
+              cy.get(`mat-row:contains(${applicationId})`).filter(':contains("Project Partner")').contains('Select Institution').click();
+              cy.contains('mat-option', testData.institution.name).click();
+              cy.contains('Save changes').click();
+
+              cy.wait(2000);
+              cy.get(`mat-row:contains(${applicationId})`).filter(':contains("Lead Partner")').contains('Select Institution').click();
+              cy.contains('mat-option', testData.institution.name).should('not.exist');
+
+              cy.loginByRequest(user.applicantUser.email);
+              cy.visit(`/app/project/detail/${applicationId}/privileges`, {failOnStatusCode: false});
+              cy.contains('mat-panel-title', 'Lead Partner').parent().contains('No control institution assigned').should('be.visible');
+              cy.contains('mat-panel-title', 'Project Partner').parent().scrollIntoView().contains(`${testData.institution.name}`).should('be.visible');
+
+              cy.loginByRequest(testData.controllerUser.email);
+              cy.visit(`/app/controller/${institutionId}`, {failOnStatusCode: false});
+              cy.get('input').eq(0).clear().type('Updated institution name');
+              cy.contains('Save changes').click();
+
+              cy.loginByRequest(user.applicantUser.email);
+              cy.visit(`/app/project/detail/${applicationId}/privileges`, {failOnStatusCode: false});
+              cy.contains('mat-panel-title', 'Project Partner').parent().scrollIntoView().contains('Updated institution name').should('be.visible');
+            });
+          });
+        });
+      });
     });
   });
 });
