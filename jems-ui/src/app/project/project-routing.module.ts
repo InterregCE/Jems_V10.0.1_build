@@ -236,6 +236,9 @@ import {
 import {
   ProjectReportSubmitTabComponent
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-submit-tab/project-report-submit-tab.component';
+import {
+  ProjectReportCertificateTabComponent
+} from '@project/project-application/report/project-report/project-report-detail-page/project-report-certificate-tab/project-report-certificate-tab.component';
 
 export const routes: Routes = [
   {
@@ -395,6 +398,10 @@ export const routes: Routes = [
                       {
                         path: 'identification',
                         component: ProjectReportIdentificationTabComponent,
+                      },
+                      {
+                        path: 'certificate',
+                        component: ProjectReportCertificateTabComponent,
                       },
                       {
                         path: 'submitReport',

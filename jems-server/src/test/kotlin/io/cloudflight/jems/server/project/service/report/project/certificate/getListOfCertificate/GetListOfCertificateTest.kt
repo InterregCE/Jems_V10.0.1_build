@@ -49,6 +49,7 @@ internal class GetListOfCertificateTest : UnitTest() {
         assertThat(slotPageable.captured.sort.toList()).containsExactly(
             Sort.Order.desc("project_report_id IS NULL"),
             Sort.Order.desc("project_report_id = 250"),
+            Sort.Order.desc("control_end"),
             Sort.Order.desc("id"),
         )
     }

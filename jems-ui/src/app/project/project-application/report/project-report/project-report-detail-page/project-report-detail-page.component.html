@@ -1,23 +1,30 @@
 <ng-container>
-        <jems-project-page-template *ngIf="pageStore.projectReport$ | async as projectReport"
-                                    [titleText]="'project.application.project.reports.title.number' | translate : {reportNumber: projectReport?.reportNumber}"
-                                    [subTitleText]=""
-                                    [isVersionedData]="false">
-            <nav mat-tab-nav-bar>
-                <a [active]="activeTab('identification')" mat-tab-link
-                   (click)="routeTo('identification')">
+    <jems-project-page-template *ngIf="pageStore.projectReport$ | async as projectReport"
+                                [titleText]="'project.application.project.reports.title.number' | translate : {reportNumber: projectReport?.reportNumber}"
+                                [subTitleText]=""
+                                [isVersionedData]="false">
+        <nav mat-tab-nav-bar>
+            <a [active]="activeTab('identification')" mat-tab-link
+               (click)="routeTo('identification')">
                     <span jemsText maxWidth="230">
                         {{'project.application.project.report.tab.report.identification' | translate}}
                     </span>
-                </a>
+            </a>
 
-                <a [active]="activeTab('submitReport')" mat-tab-link
-                   (click)="routeTo('submitReport')">
+            <a [active]="activeTab('certificate')" mat-tab-link
+               (click)="routeTo('certificate')">
+                    <span jemsText maxWidth="230">
+                        {{'project.application.project.report.tab.partner.certificate.list' | translate}}
+                    </span>
+            </a>
+
+            <a [active]="activeTab('submitReport')" mat-tab-link
+               (click)="routeTo('submitReport')">
                     <span jemsText maxWidth="230">
                         {{'project.application.partner.report.tab.submission' | translate}}
                     </span>
-                </a>
-            </nav>
-            <router-outlet></router-outlet>
-        </jems-project-page-template>
+            </a>
+        </nav>
+        <router-outlet></router-outlet>
+    </jems-project-page-template>
 </ng-container>

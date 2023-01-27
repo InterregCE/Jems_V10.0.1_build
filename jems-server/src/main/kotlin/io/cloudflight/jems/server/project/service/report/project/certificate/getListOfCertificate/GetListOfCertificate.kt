@@ -21,7 +21,7 @@ class GetListOfCertificate(
 
     companion object {
         private fun defaultSort(id: Long): Sort = JpaSort.unsafe(Sort.Direction.DESC,
-            "project_report_id IS NULL","project_report_id = $id","id"
+            "project_report_id IS NULL","project_report_id = $id", "control_end", "id"
         )
     }
 

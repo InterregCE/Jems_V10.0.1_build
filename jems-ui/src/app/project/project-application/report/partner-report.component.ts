@@ -1,40 +1,27 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  TemplateRef,
-  ViewChild
-} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, TemplateRef, ViewChild} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {ProjectPartnerReportSummaryDTO, ProjectPartnerSummaryDTO, UserRoleDTO} from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {catchError, distinctUntilChanged, filter, finalize, map, switchMap, take, tap} from 'rxjs/operators';
-import {
-  ProjectApplicationFormSidenavService
-} from '../containers/project-application-form-page/services/project-application-form-sidenav.service';
+import {ProjectApplicationFormSidenavService} from '../containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {RoutingService} from '@common/services/routing.service';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
 import {APIError} from '@common/models/APIError';
 import {Alert} from '@common/components/forms/alert';
-import {
-  PartnerReportDetailPageStore
-} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
+import {PartnerReportDetailPageStore} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 import {TranslateService} from '@ngx-translate/core';
-import {
-  MultiLanguageGlobalService
-} from '@common/components/forms/multi-language-container/multi-language-global.service';
+import {MultiLanguageGlobalService} from '@common/components/forms/multi-language-container/multi-language-global.service';
 import {Forms} from '@common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
-import {
-  PartnerControlReportStore
-} from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
-import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import {PartnerControlReportStore} from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
 import {ColumnWidth} from '@common/components/table/model/column-width';
-import StatusEnum = ProjectPartnerReportSummaryDTO.StatusEnum;
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
+import {ProjectReportPageStore} from '@project/project-application/report/project-report/project-report-page-store.service';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import StatusEnum = ProjectPartnerReportSummaryDTO.StatusEnum;
 
 @UntilDestroy()
 @Component({
@@ -53,6 +40,8 @@ export class PartnerReportComponent {
 
   @ViewChild('statusCell', {static: true})
   statusCell: TemplateRef<any>;
+  @ViewChild('projectReportCell', {static: true})
+  projectReportCell: TemplateRef<any>;
 
   @ViewChild('periodCell', {static: true})
   periodCell: TemplateRef<any>;
@@ -81,9 +70,10 @@ export class PartnerReportComponent {
     partner: ProjectPartnerSummaryDTO;
     canEditReport: boolean;
     currentApprovedVersion: string | undefined;
+    canViewProjectReport: boolean;
   }>;
-
   currentApprovedVersion: string;
+  canViewProjectReport: boolean;
 
   readonly isControlButtonVisible$: Observable<boolean> = combineLatest([
     this.pageStore.institutionUserCanViewControlReports$,
@@ -110,16 +100,19 @@ export class PartnerReportComponent {
     private translateService: TranslateService,
     private multiLanguageGlobalService: MultiLanguageGlobalService,
     private dialog: MatDialog,
-    private changeDetectorRef: ChangeDetectorRef
+    private changeDetectorRef: ChangeDetectorRef,
+    private projectReportPageStore: ProjectReportPageStore,
   ) {
     this.data$ = combineLatest([
       pageStore.partnerReports$,
       pageStore.partnerSummary$,
       pageStore.userCanEditReport$,
       pageStore.institutionUserCanViewControlReports$,
-      versionStore.lastApprovedOrContractedVersion$
+      versionStore.lastApprovedOrContractedVersion$,
+      projectReportPageStore.userCanViewReport$,
+
     ]).pipe(
-      map(([partnerReports, partner, canEditReport, isController, approvedVersion]) => {
+      map(([partnerReports, partner, canEditReport, isController, approvedVersion, canViewProjectReport]) => {
           return {
             totalElements: partnerReports.totalElements,
             partnerReports: partnerReports.content.map(report => ({
@@ -128,7 +121,8 @@ export class PartnerReportComponent {
             })),
             partner,
             canEditReport,
-            currentApprovedVersion: approvedVersion?.version
+            currentApprovedVersion: approvedVersion?.version,
+            canViewProjectReport
           };
         }
       ),
@@ -139,6 +133,7 @@ export class PartnerReportComponent {
             this.deletableReportId = report.reportNumber;
           }
           this.currentApprovedVersion = data.currentApprovedVersion ?? '';
+          this.canViewProjectReport = data.canViewProjectReport ?? false;
           const someDraft = data.partnerReports
             .find((x) => x.status === ProjectPartnerReportSummaryDTO.StatusEnum.Draft);
           const someCertified = data.partnerReports
@@ -176,6 +171,11 @@ export class PartnerReportComponent {
           displayedColumn: 'project.application.partner.reports.table.status',
           columnType: ColumnType.CustomComponent,
           customCellTemplate: this.statusCell,
+        },
+        {
+          displayedColumn: 'project.application.partner.reports.table.included',
+          columnType: ColumnType.CustomComponent,
+          customCellTemplate: this.projectReportCell,
         },
         {
           displayedColumn: 'project.application.partner.reports.table.version',
@@ -281,7 +281,7 @@ export class PartnerReportComponent {
     this.error$.next(error);
     setTimeout(() => {
       this.error$.next(null);
-    },4000);
+    }, 4000);
     return of(null);
   }
 
@@ -301,7 +301,7 @@ export class PartnerReportComponent {
     this.partnerReportDetail.startControlOnPartnerReport(Number(partnerId), partnerReport.id)
       .pipe(
         take(1),
-        tap((report) => this.router.navigate([`../${partnerReport.id}/controlReport/identificationTab`], {relativeTo: this.activatedRoute, queryParamsHandling: 'merge'})),
+        tap(() => this.router.navigate([`../${partnerReport.id}/controlReport/identificationTab`], {relativeTo: this.activatedRoute, queryParamsHandling: 'merge'})),
         catchError((error) => this.showErrorMessage(error.error)),
         finalize(() => this.getPendingActionStatus(partnerReport.id).next(false))
       ).subscribe();
