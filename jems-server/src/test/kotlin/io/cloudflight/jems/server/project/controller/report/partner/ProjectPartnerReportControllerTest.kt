@@ -109,6 +109,8 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
                 start = 4,
                 end = 6,
             ),
+            projectReportId = 758L,
+            projectReportNumber = 759,
             totalEligibleAfterControl = BigDecimal.TEN,
             deletable = false,
         )
@@ -130,6 +132,8 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
                 start = 4,
                 end = 6,
             ),
+            projectReportId = 758L,
+            projectReportNumber = 759,
             totalEligibleAfterControl = BigDecimal.TEN,
             deletable = false,
         )

@@ -10,7 +10,6 @@ import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReport
-import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportUpdate
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
@@ -63,10 +62,11 @@ class CreateProjectReport(
 
         val targetGroups = projectDescriptionPersistence.getBenefits(projectId = projectId, version = version) ?: emptyList()
 
-        return reportPersistence.createReport(data.toCreateModel(latestReportNumber, version, project, leadPartner), targetGroups)
-            .also {
-                auditPublisher.publishEvent(projectReportCreated(this, project, it))
-            }.toServiceModel({ periodNumber -> periods[periodNumber]!! })
+        return reportPersistence.createReportAndFillItToEmptyCertificates(
+            data.toCreateModel(latestReportNumber, version, project, leadPartner), targetGroups
+        ).also {
+            auditPublisher.publishEvent(projectReportCreated(this, project, it))
+        }.toServiceModel({ periodNumber -> periods[periodNumber]!! })
     }
 
     private fun validateMaxAmountOfReports(currentAmount: Int) {

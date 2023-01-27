@@ -45,6 +45,8 @@ internal class GetProjectPartnerReportTest : UnitTest() {
                 start = 10,
                 end = 15,
             ),
+            projectReportId = 648L,
+            projectReportNumber = 649,
             totalEligibleAfterControl = BigDecimal.TEN,
             deletable = false,
         )

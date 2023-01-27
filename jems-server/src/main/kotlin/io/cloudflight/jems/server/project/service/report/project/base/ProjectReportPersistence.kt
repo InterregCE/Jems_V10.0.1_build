@@ -15,7 +15,7 @@ interface ProjectReportPersistence {
 
     fun getReportById(projectId: Long, reportId: Long): ProjectReportModel
 
-    fun createReport(report: ProjectReportModel, targetGroups: List<ProjectRelevanceBenefit>): ProjectReportModel
+    fun createReportAndFillItToEmptyCertificates(report: ProjectReportModel, targetGroups: List<ProjectRelevanceBenefit>): ProjectReportModel
 
     fun updateReport(
         projectId: Long,

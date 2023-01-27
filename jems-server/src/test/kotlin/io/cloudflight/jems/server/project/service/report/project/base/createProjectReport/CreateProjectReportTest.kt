@@ -150,7 +150,7 @@ internal class CreateProjectReportTest : UnitTest() {
         every { projectDescriptionPersistence.getBenefits(projectId, "version") } returns projectRelevanceBenefits()
 
         val reportStored = slot<ProjectReportModel>()
-        every { reportPersistence.createReport(capture(reportStored), projectRelevanceBenefits()) } returnsArgument 0
+        every { reportPersistence.createReportAndFillItToEmptyCertificates(capture(reportStored), projectRelevanceBenefits()) } returnsArgument 0
 
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}

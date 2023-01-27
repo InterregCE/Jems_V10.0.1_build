@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.repository.report.partner
 
 import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
+import io.cloudflight.jems.server.project.repository.report.partner.model.CertificateSummary
 import io.cloudflight.jems.server.project.repository.report.partner.model.ReportSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import org.springframework.data.domain.Page
@@ -22,6 +23,8 @@ interface ProjectPartnerReportRepository : JpaRepository<ProjectPartnerReportEnt
             report.firstSubmission,
             report.controlEnd,
             report.createdAt,
+            reportProject.id,
+            reportProject.number,
             report_co_fin.sumTotalEligibleAfterControl,
             report_identification.periodNumber,
             report_identification.startDate,
@@ -38,10 +41,38 @@ interface ProjectPartnerReportRepository : JpaRepository<ProjectPartnerReportEnt
             ON report.id = report_period.id.report.id AND report_identification.periodNumber = report_period.id.periodNumber
         LEFT JOIN #{#entityName}_expenditure_co_financing report_co_fin
             ON report.id = report_co_fin.reportEntity.id
+        LEFT JOIN report_project reportProject
+            ON report.projectReport.id = reportProject.id
         WHERE report.partnerId = :partnerId
     """
     )
     fun findAllByPartnerId(partnerId: Long, pageable: Pageable): Page<ReportSummary>
+
+    @Query("""
+         SELECT
+            report.id AS partnerReportId,
+            report.number AS partnerReportNumber,
+            report.partner_id AS partnerId,
+            report.partner_role AS partnerRole,
+            report.partner_number AS partnerNumber,
+            report_co_fin.sum_total_eligible_after_control AS totalEligibleAfterControl,
+            report.control_end AS controlEnd,
+            report_project.id AS projectReportId,
+            report_project.number AS projectReportNumber
+        FROM #{#entityName} AS report
+        LEFT JOIN #{#entityName}_expenditure_co_financing report_co_fin
+            ON report.id = report_co_fin.report_id
+        LEFT JOIN report_project
+            ON report.project_report_id = report_project.id
+        WHERE report.partner_id IN :partnerIds AND report.status = 'Certified'
+    """, countQuery = """
+        SELECT COUNT(*)
+        FROM #{#entityName} AS report
+        WHERE report.partner_id IN :partnerIds AND report.status = 'Certified'
+    """, nativeQuery = true)
+    fun findAllCertificates(partnerIds: Set<Long>, pageable: Pageable): Page<CertificateSummary>
+
+    fun findAllByPartnerIdInAndProjectReportNullAndStatus(partnerIds: Set<Long>, status: ReportStatus): List<ProjectPartnerReportEntity>
 
     fun existsByPartnerIdAndId(partnerId: Long, id: Long): Boolean
 

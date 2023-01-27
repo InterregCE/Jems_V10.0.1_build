@@ -31,7 +31,8 @@ internal class ProjectPartnerReportControlOverviewPersistenceProviderTest: UnitT
             applicationFormVersion = "v1.0",
             identification = mockk(),
             controlEnd = null,
-            firstSubmission = mockk()
+            firstSubmission = mockk(),
+            projectReport = mockk(),
         )
 
         private val entity = PartnerReportControlOverviewEntity(
