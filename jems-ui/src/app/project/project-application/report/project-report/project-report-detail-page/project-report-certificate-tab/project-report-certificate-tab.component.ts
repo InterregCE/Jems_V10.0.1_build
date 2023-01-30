@@ -31,10 +31,10 @@ export class ProjectReportCertificateTabComponent {
   displayedColumns: string[] = ['checked', 'partner', 'partnerReport', 'date', 'projectReport', 'amount'];
 
   data$: Observable<{
-    projectId: number,
-    projectReportId: number,
-    reportEditable: boolean,
-    partnerReportCertificates: PagePartnerReportCertificateDTO,
+    projectId: number;
+    projectReportId: number;
+    reportEditable: boolean;
+    partnerReportCertificates: PagePartnerReportCertificateDTO;
   }>;
   error$ = new BehaviorSubject<APIError | null>(null);
 

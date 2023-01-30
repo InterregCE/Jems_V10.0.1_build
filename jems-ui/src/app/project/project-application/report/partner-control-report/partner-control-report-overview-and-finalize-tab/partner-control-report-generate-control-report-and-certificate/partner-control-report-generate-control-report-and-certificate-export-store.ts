@@ -1,6 +1,11 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subject} from 'rxjs';
-import {PageProjectReportFileDTO, PluginInfoDTO, ProjectPartnerControlReportFileAPIService,} from '@cat/api';
+import {
+  PagePartnerReportControlFileDTO,
+  PageProjectReportFileDTO,
+  PluginInfoDTO,
+  ProjectPartnerControlReportFileAPIService,
+} from '@cat/api';
 import {PluginStore} from '@common/services/plugin-store.service';
 import {DownloadService} from '@common/services/download.service';
 import {catchError, distinctUntilChanged, filter, map, startWith, switchMap, take, tap} from 'rxjs/operators';
@@ -16,7 +21,7 @@ import TypeEnum = PluginInfoDTO.TypeEnum;
 export class PartnerControlReportGenerateControlReportAndCertificateExportStore {
   certificateExportPlugins$: Observable<PluginInfoDTO[]>;
 
-  certificateFileList$: Observable<PageProjectReportFileDTO>;
+  certificateFileList$: Observable<PagePartnerReportControlFileDTO>;
   fileCategories$: Observable<CategoryNode>;
   selectedCategory$ = new ReplaySubject<CategoryInfo | undefined>(1);
 
@@ -53,7 +58,7 @@ export class PartnerControlReportGenerateControlReportAndCertificateExportStore 
       );
   }
 
-  private certificateFileList(): Observable<PageProjectReportFileDTO> {
+  private certificateFileList(): Observable<PagePartnerReportControlFileDTO> {
     return combineLatest([
       this.partnerControlReportStore.partnerId$,
       this.partnerControlReportStore.reportId$,
@@ -61,7 +66,7 @@ export class PartnerControlReportGenerateControlReportAndCertificateExportStore 
       this.newPageSize$,
       this.newSort$.pipe(
         map(sort => sort?.direction ? sort : FileListTableConstants.DEFAULT_SORT),
-        map(sort => `${sort.active},${sort.direction}`),
+        map(sort => `generatedFile.${sort.active},${sort.direction}`),
         distinctUntilChanged(),
       ),
       this.certificateFilesChanged$.pipe(startWith(null)),
@@ -78,14 +83,14 @@ export class PartnerControlReportGenerateControlReportAndCertificateExportStore 
             sort
           )
         ),
-        tap((page: PageProjectReportFileDTO) => {
+        tap((page: PagePartnerReportControlFileDTO) => {
           if (page.totalPages > 0 && page.number >= page.totalPages) {
             this.newPageIndex$.next(page.totalPages - 1);
           }
         }),
         catchError(error => {
           this.error$.next(error.error);
-          return of({} as PageProjectReportFileDTO);
+          return of({} as PagePartnerReportControlFileDTO);
         })
       );
   }

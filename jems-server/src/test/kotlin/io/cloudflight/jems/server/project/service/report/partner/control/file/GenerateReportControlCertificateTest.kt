@@ -8,7 +8,6 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.plugin.JemsPluginRegistry
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
@@ -100,9 +99,6 @@ class GenerateReportControlCertificateTest: UnitTest() {
     lateinit var auditPublisher: ApplicationEventPublisher
 
     @MockK
-    lateinit var jemsProjectFileService: JemsProjectFileService
-
-    @MockK
     lateinit var reportPersistence: ProjectPartnerReportPersistence
 
     @MockK
@@ -110,6 +106,9 @@ class GenerateReportControlCertificateTest: UnitTest() {
 
     @MockK
     lateinit var partnerControlReportCertificatePlugin: PartnerControlReportCertificatePlugin
+
+    @MockK
+    lateinit var projectPartnerReportControlFilePersistence: ProjectPartnerReportControlFilePersistence
 
     @MockK
     lateinit var securityService: SecurityService
@@ -160,11 +159,11 @@ class GenerateReportControlCertificateTest: UnitTest() {
 
 
         val slot = slot<JemsFileCreate>()
-        every { jemsProjectFileService.persistProjectFile( capture(slot)) } returns mockk()
+        every { projectPartnerReportControlFilePersistence.saveReportControlFile(REPORT_ID, capture(slot)) } returns mockk()
 
         generateReportControlCertificate.generateCertificate(PARTNER_ID, REPORT_ID)
 
-        verify(exactly = 1) { jemsProjectFileService.persistProjectFile(slot.captured) }
+        verify(exactly = 1) { projectPartnerReportControlFilePersistence.saveReportControlFile(REPORT_ID, slot.captured) }
         verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }
         assertThat(slotAudit.captured.auditCandidate.action).isEqualTo(AuditAction.CONTROL_CERTIFICATE_GENERATED)
         assertThat(slotAudit.captured.auditCandidate.description).isEqualTo("A control certificate was generated for partner report R.3 of partner LP1")
