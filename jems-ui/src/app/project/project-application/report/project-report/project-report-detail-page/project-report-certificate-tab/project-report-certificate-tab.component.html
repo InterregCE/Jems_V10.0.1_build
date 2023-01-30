@@ -4,13 +4,12 @@
         <h3 class="mb-3">{{'project.application.project.report.certificates.title' | translate }}</h3>
         <p>{{'project.application.project.report.certificates.description' | translate }}</p>
 
-        <div jemsNoWidthLimit *ngIf="data.partnerReportCertificates.totalElements">
+        <div *ngIf="data.partnerReportCertificates.totalElements">
+            <mat-table [dataSource]="dataSource">
 
-            <mat-table [dataSource]="dataSource" [jemsTableConfig]="[{maxInRem: 2},{},{},{},{},{maxInRem: 16}]">
-
-                <ng-container matColumnDef="checked">
-                    <mat-header-cell *matHeaderCellDef ></mat-header-cell>
-                    <mat-cell *matCellDef="let certificate" class="checkbox-column fx-row" >
+                <ng-container matColumnDef="checked" sticky>
+                    <mat-header-cell *matHeaderCellDef class="border-cell-right"></mat-header-cell>
+                    <mat-cell *matCellDef="let certificate" class="text-center border-cell-right">
                         <mat-checkbox [checked]="certificate.projectReportId"
                                       [value]="certificate.checked"
                                       [disabled]="certificate.disabled || !data.reportEditable"
@@ -42,13 +41,13 @@
                         {{ 'project.application.project.report.certificates.date' | translate }}
                     </mat-header-cell>
                     <mat-cell *matCellDef="let certificate">
-                        {{ certificate.controlEnd | localeDate:'LLL' }}
+                        {{ certificate.controlEnd | localeDate:'L' : 'LT' }}
                     </mat-cell>
                 </ng-container>
 
                 <ng-container matColumnDef="projectReport">
                     <mat-header-cell *matHeaderCellDef>
-                        {{ 'project.application.project.report.certificates.project.report' | translate }}
+                        <span jemsText maxLines="2">{{ 'project.application.project.report.certificates.project.report' | translate }}</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let certificate">
                         <span *ngIf="certificate.projectReportNumber">PR.{{ certificate.projectReportNumber }}</span>
@@ -56,8 +55,8 @@
                 </ng-container>
 
                 <ng-container matColumnDef="amount">
-                    <mat-header-cell *matHeaderCellDef class="text-right">
-                        {{ 'project.application.project.report.certificates.amount' | translate }}
+                    <mat-header-cell *matHeaderCellDef class="text-right respect-line-break">
+                        <span jemsText maxLines="2">{{ 'project.application.project.report.certificates.amount' | translate }}</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let certificate" class="text-right">
                         {{ certificate.totalEligibleAfterControl | asMoney }}
