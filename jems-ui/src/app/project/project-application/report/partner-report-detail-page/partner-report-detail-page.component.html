@@ -47,6 +47,13 @@
                     </span>
                 </a>
 
+                <a [active]="activeTab('export')" mat-tab-link
+                   (click)="routeTo('export')">
+                    <span jemsText maxWidth="230">
+                        {{'project.application.partner.report.tab.export' | translate}}
+                    </span>
+                </a>
+
                 <a [active]="activeTab('financialOverview')" mat-tab-link
                    (click)="routeTo('financialOverview')">
                     <span jemsText maxWidth="230">

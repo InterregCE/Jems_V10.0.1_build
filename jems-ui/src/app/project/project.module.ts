@@ -354,6 +354,7 @@ import {
 import {
   ProjectReportCertificateTabComponent
 } from './project-application/report/project-report/project-report-detail-page/./project-report-certificate-tab/project-report-certificate-tab.component';
+import { PartnerReportExportTabComponent } from './project-application/report/partner-report-detail-page/partner-report-export-tab/partner-report-export-tab.component';
 
 @NgModule({
   declarations: [
@@ -515,11 +516,11 @@ import {
     ProjectReportDetailPageComponent,
     ProjectReportIdentificationTabComponent,
     ProjectReportCreateComponent,
-    ProjectReportSubmitTabComponent,
     PartnerControlReportGenerateControlReportAndCertificateComponent,
     ProjectReportSubmitTabComponent,
     ProjectReportIdentificationExtensionComponent,
     ProjectReportCertificateTabComponent,
+    PartnerReportExportTabComponent
   ],
   imports: [
     SharedModule,
