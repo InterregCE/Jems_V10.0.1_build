@@ -1,0 +1,87 @@
+<jems-form *ngIf="data$ | async as data">
+    <div jemsFormLayout>
+
+        <h3 class="mb-3">{{'project.application.project.report.certificates.title' | translate }}</h3>
+        <p>{{'project.application.project.report.certificates.description' | translate }}</p>
+
+        <div jemsNoWidthLimit *ngIf="data.partnerReportCertificates.totalElements">
+
+            <mat-table [dataSource]="dataSource" [jemsTableConfig]="[{maxInRem: 2},{},{},{},{},{maxInRem: 16}]">
+
+                <ng-container matColumnDef="checked">
+                    <mat-header-cell *matHeaderCellDef ></mat-header-cell>
+                    <mat-cell *matCellDef="let certificate" class="checkbox-column fx-row" >
+                        <mat-checkbox [checked]="certificate.projectReportId"
+                                      [value]="certificate.checked"
+                                      [disabled]="certificate.disabled || !data.reportEditable"
+                                      (change)="!certificate.disabled && certificateChanged(data.projectId, data.projectReportId, certificate.partnerReportId, certificate.checked, $event)">
+                        </mat-checkbox>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="partner">
+                    <mat-header-cell *matHeaderCellDef>
+                        {{ 'project.application.project.report.certificates.partner' | translate }}
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let certificate">
+                        {{ certificate.partnerRole === PartnerRole.LEADPARTNER ? 'LP' : 'PP' }}{{ certificate.partnerNumber }}
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="partnerReport">
+                    <mat-header-cell *matHeaderCellDef>
+                        {{ 'project.application.project.report.certificates.partner.report' | translate }}
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let certificate">
+                        R.{{ certificate.partnerNumber }}
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="date">
+                    <mat-header-cell *matHeaderCellDef>
+                        {{ 'project.application.project.report.certificates.date' | translate }}
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let certificate">
+                        {{ certificate.controlEnd | localeDate:'LLL' }}
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="projectReport">
+                    <mat-header-cell *matHeaderCellDef>
+                        {{ 'project.application.project.report.certificates.project.report' | translate }}
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let certificate">
+                        <span *ngIf="certificate.projectReportNumber">PR.{{ certificate.projectReportNumber }}</span>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="amount">
+                    <mat-header-cell *matHeaderCellDef class="text-right">
+                        {{ 'project.application.project.report.certificates.amount' | translate }}
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let certificate" class="text-right">
+                        {{ certificate.totalEligibleAfterControl | asMoney }}
+                    </mat-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumns" [class.disabled]="row.disabled"></mat-row>
+
+            </mat-table>
+
+            <jems-paginator
+                    [length]="data.partnerReportCertificates.totalElements"
+                    [currentPageIndex]="data.partnerReportCertificates.pageable.pageNumber"
+                    [currentPageSize]="data.partnerReportCertificates.pageable.pageSize"
+                    (pageIndexChanged)="pageStore.newPageIndex$.next($event)"
+                    (pageSizeChanged)="pageStore.newPageSize$.next($event)">
+            </jems-paginator>
+        </div>
+
+        <jems-alert *ngIf="error$ | async as error"
+                    [show]="!!error.i18nMessage?.i18nKey"
+                    [type]="Alert.ERROR">
+            <jems-api-error-content [error]="error" [showId]="true"></jems-api-error-content>
+        </jems-alert>
+    </div>
+</jems-form>

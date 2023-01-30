@@ -1,0 +1,7 @@
+.checkbox-column {
+  justify-content: center;
+}
+
+mat-row.disabled mat-cell {
+  color: var(--font-color-secondary);
+}

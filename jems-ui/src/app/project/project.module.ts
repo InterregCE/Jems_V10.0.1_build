@@ -351,6 +351,9 @@ import {
 import {
   ProjectReportIdentificationExtensionComponent
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-identification-tab/project-report-identification-extension/project-report-identification-extension.component';
+import {
+  ProjectReportCertificateTabComponent
+} from './project-application/report/project-report/project-report-detail-page/./project-report-certificate-tab/project-report-certificate-tab.component';
 
 @NgModule({
   declarations: [
@@ -515,7 +518,8 @@ import {
     ProjectReportSubmitTabComponent,
     PartnerControlReportGenerateControlReportAndCertificateComponent,
     ProjectReportSubmitTabComponent,
-    ProjectReportIdentificationExtensionComponent
+    ProjectReportIdentificationExtensionComponent,
+    ProjectReportCertificateTabComponent,
   ],
   imports: [
     SharedModule,
