@@ -7,10 +7,9 @@ import {FileDescriptionChange} from '@common/components/file-list/file-list-tabl
 import {combineLatest, Observable} from 'rxjs';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {
-  PageProjectReportFileDTO,
+  PagePartnerReportControlFileDTO, PartnerReportControlFileDTO,
   PluginInfoDTO,
   ProjectPartnerControlReportFileAPIService,
-  ProjectReportFileDTO
 } from '@cat/api';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {PartnerControlReportStore} from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
@@ -34,7 +33,7 @@ export class PartnerControlReportGenerateControlReportAndCertificateComponent {
   exportForm: FormGroup;
   data$: Observable<{
     plugins: PluginInfoDTO[];
-    files: PageProjectReportFileDTO;
+    files: PagePartnerReportControlFileDTO;
     fileList: FileListItem[];
   }>;
 
@@ -57,14 +56,14 @@ export class PartnerControlReportGenerateControlReportAndCertificateComponent {
       map(([plugins, files]) => ({
         plugins,
         files,
-        fileList: files.content ? files.content?.map((file: ProjectReportFileDTO) => ({
-          id: file.id,
-          name: file.name,
-          type: file.type,
-          uploaded: file.uploaded,
-          author: file.author,
-          sizeString: file.sizeString,
-          description: file.description,
+        fileList: files.content ? files.content?.map((file: PartnerReportControlFileDTO) => ({
+          id: file.generatedFile.id,
+          name: file.generatedFile.name,
+          type: file.generatedFile.type,
+          uploaded: file.generatedFile.uploaded,
+          author: file.generatedFile.author,
+          sizeString: file.generatedFile.sizeString,
+          description: file.generatedFile.description,
           editable: true,
           deletable: false,
           tooltipIfNotDeletable: '',

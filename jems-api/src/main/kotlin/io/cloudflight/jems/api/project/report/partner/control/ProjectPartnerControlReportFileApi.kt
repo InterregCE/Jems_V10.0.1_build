@@ -1,5 +1,6 @@
 package io.cloudflight.jems.api.project.report.partner.control
 
+import io.cloudflight.jems.api.project.dto.report.file.PartnerReportControlFileDTO
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileDTO
 import io.cloudflight.jems.api.project.report.partner.ProjectPartnerReportApi
 import io.swagger.annotations.Api
@@ -54,7 +55,7 @@ interface ProjectPartnerControlReportFileApi {
         @PathVariable partnerId: Long,
         @PathVariable reportId: Long,
         pageable: Pageable
-    ): Page<ProjectReportFileDTO>
+    ): Page<PartnerReportControlFileDTO>
 
     @ApiOperation("Download control report certificate")
     @GetMapping(

@@ -7,13 +7,13 @@ import io.cloudflight.jems.plugin.contract.models.common.UserSummaryData
 import io.cloudflight.jems.server.authentication.model.CurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.plugin.JemsPluginRegistry
 import io.cloudflight.jems.server.project.authorization.CanViewPartnerControlReport
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.control.file.ProjectPartnerReportControlFilePersistence
 import io.cloudflight.jems.server.project.service.report.project.controlCertificateCreated
 import io.cloudflight.jems.server.resources.service.get_logos.GetLogoFailed
 import io.cloudflight.jems.server.resources.service.get_logos.GetLogosInteractor
@@ -29,7 +29,7 @@ class GenerateReportControlCertificate(
     private val securityService: SecurityService,
     private val partnerPersistence: PartnerPersistence,
     private val reportPersistence: ProjectPartnerReportPersistence,
-    private val jemsProjectFileService: JemsProjectFileService,
+    private val projectPartnerReportControlFilePersistence: ProjectPartnerReportControlFilePersistence,
     private val getLogosInteractor: GetLogosInteractor,
     private val auditPublisher: ApplicationEventPublisher,
 ) : GenerateReportControlCertificateInteractor {
@@ -43,7 +43,7 @@ class GenerateReportControlCertificate(
         val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId, report.version)
 
         generateControlCertificateFileForReport(reportId, partnerId, projectId).also { certificate ->
-            saveReportControlCertificate(certificate)
+            projectPartnerReportControlFilePersistence.saveReportControlFile(report.id, certificate)
             auditPublisher.publishEvent(
                 controlCertificateCreated(
                     context = this,
@@ -53,7 +53,6 @@ class GenerateReportControlCertificate(
             )
         }
     }
-
 
     private fun generateControlCertificateFileForReport(
         reportId: Long,
@@ -71,10 +70,6 @@ class GenerateReportControlCertificate(
             logo = getMediumSizedLogo(),
             creationDate = LocalDateTime.now()
         ).toJemsFile(projectId, partnerId, reportId)
-    }
-
-    private fun saveReportControlCertificate(certificateFile: JemsFileCreate) {
-        jemsProjectFileService.persistProjectFile(certificateFile)
     }
 
     private fun getCurrentUserSummary(currentUser: CurrentUser?) = UserSummaryData(
