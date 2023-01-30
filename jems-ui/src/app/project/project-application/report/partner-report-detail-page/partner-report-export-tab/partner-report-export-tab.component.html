@@ -1,0 +1,40 @@
+<jems-form *ngIf="data$ | async as data">
+    <h3>{{'project.application.partner.report.tab.export.title' | translate}}</h3>
+
+    <form jemsFormLayout [formGroup]="exportForm">
+        <mat-form-field jemsFormFieldWidth="xx-large">
+            <mat-label>{{'export.label.plugin' | translate}}</mat-label>
+            <mat-select formControlName="plugin" required>
+                <mat-option *ngFor="let plugin of data.availablePlugins" [value]="plugin" role="option">
+                    {{plugin.name}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <mat-form-field jemsFormFieldWidth="xx-large">
+            <mat-label>{{'export.label.export.language' | translate}}</mat-label>
+            <mat-select formControlName="exportLanguage">
+                <mat-option *ngFor="let exportLanguage of data.exportLanguages" [value]="exportLanguage"
+                            role="option">
+                    <mat-label>{{'language.' + exportLanguage.toLowerCase() | translate}}</mat-label>
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <mat-form-field jemsFormFieldWidth="xx-large">
+            <mat-label>{{'export.label.input.language' | translate}}</mat-label>
+            <mat-select formControlName="inputLanguage">
+                <mat-option *ngFor="let inputLanguage of data.inputLanguages" [value]="inputLanguage"
+                            role="option">
+                    <mat-label>{{'language.' + inputLanguage.toLowerCase() | translate}}</mat-label>
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </form>
+    <jems-pending-button jemsText
+                         [disabled]="!exportForm.valid || !exportLanguage || !inputLanguage"
+                         (click)="exportData()"
+                         [pending]="isExportingInProgress$ | async">
+        {{'export.label.export.button' | translate}}
+    </jems-pending-button>
+</jems-form>
