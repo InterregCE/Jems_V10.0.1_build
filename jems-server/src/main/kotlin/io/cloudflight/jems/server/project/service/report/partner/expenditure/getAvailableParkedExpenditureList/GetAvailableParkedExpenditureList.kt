@@ -29,7 +29,7 @@ class GetAvailableParkedExpenditureList(
             .getParkedExpendituresByIdForPartner(partnerId, ReportStatus.Certified)
 
         val availableLumpSums = reportExpenditurePersistence.getAvailableLumpSums(partnerId, reportId = reportId)
-            .associateBy { it.lumpSumProgrammeId }
+            .associateBy { Pair(it.lumpSumProgrammeId, it.orderNr) }
         val availableUnitCosts = reportExpenditurePersistence.getAvailableUnitCosts(partnerId, reportId = reportId)
             .associateBy { it.unitCostProgrammeId }
         val availableInvestments = reportExpenditurePersistence.getAvailableInvestments(partnerId, reportId = reportId)
@@ -62,10 +62,12 @@ class GetAvailableParkedExpenditureList(
     }
 
     private fun Page<ProjectPartnerReportParkedExpenditure>.fillInLumpSumAvailable(
-        availableLumpSums: Map<Long, ProjectPartnerReportLumpSum>,
+        availableLumpSums: Map<Pair<Long, Int>, ProjectPartnerReportLumpSum>,
     ) = this.onEach { parked ->
         if (parked.lumpSum != null) {
-            parked.lumpSum.entityStillAvailable = parked.lumpSum.projectRelatedId in availableLumpSums.keys
+            // lump sums can be used multiple times in AF, so we need to consider also their order number
+            parked.lumpSum.entityStillAvailable =
+                Pair(parked.lumpSum.projectRelatedId, parked.lumpSum.lumpSumNumber!!) in availableLumpSums.keys
         }
     }
 

@@ -111,7 +111,9 @@ class ProjectPartnerReportExpenditurePersistenceProvider(
             parkedExpenditure.clone(
                 newReportToBeLinked = reportEntity,
                 clonedAttachment = null,
-                lumpSumResolver = { reportLumpSumRepository.findByReportEntityIdAndProgrammeLumpSumId(reportId, programmeLumpSumId = it) },
+                lumpSumResolver = {
+                    reportLumpSumRepository.findByReportEntityIdAndProgrammeLumpSumIdAndOrderNr(reportId, it.first, it.second)
+                },
                 unitCostResolver = { reportUnitCostRepository.findByReportEntityIdAndProgrammeUnitCostId(reportId, programmeUnitCostId = it) },
                 investmentResolver = { reportInvestmentRepository.findByReportEntityIdAndInvestmentId(reportId, projectInvestmentId = it) },
             )
