@@ -89,7 +89,8 @@ context('Control report tests', () => {
 
           cy.contains('h3', application.partners[0].details.abbreviation).should('be.visible');
           cy.contains('mat-row', 'Draft').should('not.contain', 'Start control');
-          cy.contains('mat-cell', 'Submitted').next().should('contain', '1.0');
+          cy.contains('mat-cell', 'Submitted').next().should('be.empty')
+            .next().should('contain', '1.0');
           cy.contains('Start control').should('be.enabled').click();
           cy.contains('Confirm').should('be.visible').click();
 
@@ -129,7 +130,8 @@ context('Control report tests', () => {
 
             cy.loginByRequest(testData.controllerUserEdit.email);
             cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId1}/reports`, {failOnStatusCode: false});
-            cy.contains('mat-cell', 'Submitted').next().should('contain', '2.0');
+            cy.contains('mat-cell', 'Submitted').next().should('be.empty')
+              .next().should('contain', '2.0');
             cy.contains('Start control').should('be.enabled').click();
             cy.contains('Confirm').should('be.visible').click();
 
