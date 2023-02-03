@@ -1,6 +1,5 @@
 <jems-multi-language-container *ngIf="dataSource.data.length">
 <mat-table jemsNoWidthLimit [dataSource]="dataSource">
-
     <ng-container matColumnDef="name" sticky>
         <mat-header-cell *matHeaderCellDef class="border-cell-right">
             <span jemsText maxLines="2">{{ 'unit.cost.title' | translate }}</span>

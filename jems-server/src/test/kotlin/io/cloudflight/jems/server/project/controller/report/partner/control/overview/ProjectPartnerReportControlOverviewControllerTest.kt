@@ -1,10 +1,15 @@
 package io.cloudflight.jems.server.project.controller.report.partner.control.overview
 
+import io.cloudflight.jems.api.project.dto.report.partner.control.overview.ControlDeductionOverviewDTO
+import io.cloudflight.jems.api.project.dto.report.partner.control.overview.ControlDeductionOverviewRowDTO
 import io.cloudflight.jems.api.project.dto.report.partner.control.overview.ControlOverviewDTO
 import io.cloudflight.jems.api.project.dto.report.partner.control.overview.ControlWorkOverviewDTO
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.project.service.report.model.partner.control.overview.ControlDeductionOverview
+import io.cloudflight.jems.server.project.service.report.model.partner.control.overview.ControlDeductionOverviewRow
 import io.cloudflight.jems.server.project.service.report.model.partner.control.overview.ControlOverview
 import io.cloudflight.jems.server.project.service.report.model.partner.control.overview.ControlWorkOverview
+import io.cloudflight.jems.server.project.service.report.partner.control.overview.getReportControlDeductionOverview.GetReportControlDeductionOverviewInteractor
 import io.cloudflight.jems.server.project.service.report.partner.control.overview.getReportControlOverview.GetReportControlOverviewInteractor
 import io.cloudflight.jems.server.project.service.report.partner.control.overview.getReportControlWorkOverview.GetReportControlWorkOverviewInteractor
 import io.cloudflight.jems.server.project.service.report.partner.control.overview.updateReportControlOverview.UpdateReportControlOverviewInteractor
@@ -40,6 +45,84 @@ class ProjectPartnerReportControlOverviewControllerTest : UnitTest() {
             deductedByControl = BigDecimal.valueOf(5L),
             eligibleAfterControl = BigDecimal.valueOf(6L),
             eligibleAfterControlPercentage = BigDecimal.valueOf(7L),
+        )
+
+        private val dummyDeductionOverviewRow = ControlDeductionOverviewRow(
+            typologyOfErrorId = 1L,
+            typologyOfErrorName = "Typology of error 1",
+            staffCost = BigDecimal.valueOf(1000),
+            officeAndAdministration = BigDecimal.valueOf(1000),
+            travelAndAccommodation = BigDecimal.valueOf(1000),
+            externalExpertise = BigDecimal.valueOf(1000),
+            equipment = BigDecimal.valueOf(1000),
+            infrastructureAndWorks = BigDecimal.valueOf(1000),
+            lumpSums = BigDecimal.ZERO,
+            unitCosts = BigDecimal.ZERO,
+            otherCosts = BigDecimal.ZERO,
+            total = BigDecimal.valueOf(6000)
+        )
+
+        private val dummyDeductionOverviewTotalRow = ControlDeductionOverviewRow(
+            typologyOfErrorId = null,
+            typologyOfErrorName = null,
+            staffCost = BigDecimal.valueOf(1000),
+            officeAndAdministration = BigDecimal.valueOf(1000),
+            travelAndAccommodation = BigDecimal.valueOf(1000),
+            externalExpertise = BigDecimal.valueOf(1000),
+            equipment = BigDecimal.valueOf(1000),
+            infrastructureAndWorks = BigDecimal.valueOf(1000),
+            lumpSums = BigDecimal.ZERO,
+            unitCosts = BigDecimal.ZERO,
+            otherCosts = BigDecimal.ZERO,
+            total = BigDecimal.valueOf(6000)
+        )
+
+        private val dummyDeductionOverview = ControlDeductionOverview(
+            deductionRows = mutableListOf(dummyDeductionOverviewRow),
+            staffCostsFlatRate = null,
+            officeAndAdministrationFlatRate = null,
+            travelAndAccommodationFlatRate = null,
+            otherCostsOnStaffCostsFlatRate = null,
+            total = dummyDeductionOverviewTotalRow
+        )
+
+        private val expectedDeductionOverviewRow = ControlDeductionOverviewRowDTO(
+            typologyOfErrorId = 1L,
+            typologyOfErrorName = "Typology of error 1",
+            staffCost = BigDecimal.valueOf(1000),
+            officeAndAdministration = BigDecimal.valueOf(1000),
+            travelAndAccommodation = BigDecimal.valueOf(1000),
+            externalExpertise = BigDecimal.valueOf(1000),
+            equipment = BigDecimal.valueOf(1000),
+            infrastructureAndWorks = BigDecimal.valueOf(1000),
+            lumpSums = BigDecimal.ZERO,
+            unitCosts = BigDecimal.ZERO,
+            otherCosts = BigDecimal.ZERO,
+            total = BigDecimal.valueOf(6000)
+        )
+
+        private val expectedDeductionOverviewTotalRow = ControlDeductionOverviewRowDTO(
+            typologyOfErrorId = null,
+            typologyOfErrorName = null,
+            staffCost = BigDecimal.valueOf(1000),
+            officeAndAdministration = BigDecimal.valueOf(1000),
+            travelAndAccommodation = BigDecimal.valueOf(1000),
+            externalExpertise = BigDecimal.valueOf(1000),
+            equipment = BigDecimal.valueOf(1000),
+            infrastructureAndWorks = BigDecimal.valueOf(1000),
+            lumpSums = BigDecimal.ZERO,
+            unitCosts = BigDecimal.ZERO,
+            otherCosts = BigDecimal.ZERO,
+            total = BigDecimal.valueOf(6000)
+        )
+
+        private val expectedDeductionOverview = ControlDeductionOverviewDTO(
+            deductionRows = mutableListOf(expectedDeductionOverviewRow),
+            staffCostsFlatRate = null,
+            officeAndAdministrationFlatRate = null,
+            travelAndAccommodationFlatRate = null,
+            otherCostsOnStaffCostsFlatRate = null,
+            total = expectedDeductionOverviewTotalRow
         )
 
         private val dummyOverview = ControlOverview(
@@ -79,6 +162,9 @@ class ProjectPartnerReportControlOverviewControllerTest : UnitTest() {
     @MockK
     lateinit var updateReportControlOverview: UpdateReportControlOverviewInteractor
 
+    @MockK
+    lateinit var getReportControlDeductionOverview: GetReportControlDeductionOverviewInteractor
+
     @InjectMockKs
     private lateinit var controller: ProjectPartnerReportControlOverviewController
 
@@ -86,6 +172,24 @@ class ProjectPartnerReportControlOverviewControllerTest : UnitTest() {
     fun getControlWorkOverview() {
         every { getReportControlWorkOverview.get(partnerId = PARTNER_ID, reportId = REPORT_ID) } returns dummyWorkOverview
         assertThat(controller.getControlWorkOverview(partnerId = PARTNER_ID, reportId = REPORT_ID)).isEqualTo(expectedWorkOverview)
+    }
+
+    @Test
+    fun getControlDeductionOverview() {
+        every {
+            getReportControlDeductionOverview.get(
+                partnerId = PARTNER_ID,
+                reportId = REPORT_ID,
+                "1.0"
+            )
+        } returns dummyDeductionOverview
+        assertThat(
+            controller.getControlDeductionByTypologyOfErrorsOverview(
+                partnerId = PARTNER_ID,
+                reportId = REPORT_ID,
+                "1.0"
+            )
+        ).isEqualTo(expectedDeductionOverview)
     }
 
     @Test
