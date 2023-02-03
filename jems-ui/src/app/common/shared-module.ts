@@ -92,6 +92,12 @@ import {
 } from '@common/components/checklist/contracting-checklist-instance-list/contracting-checklist-instance-list.component';
 import {ChecklistUtilsComponent} from '@common/components/checklist/checklist-utils/checklist-utils';
 import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
+import {
+  FileOperationsActionCellComponent
+} from '@common/components/file-list/file-list-table/file-operations-action-cell/file-operations-action-cell.component';
+import {
+  FileListTableWithFileLinkingComponent
+} from '@common/components/file-list/file-list-table-with-file-linking/file-list-table-with-file-linking.component';
 
 const modules = [
   CommonModule,
@@ -168,7 +174,9 @@ const declarations = [
   JemsRegionsTreeComponent,
   JemsSelectedRegionsComponent,
   ContractingChecklistInstanceListComponent,
-  ChecklistUtilsComponent
+  ChecklistUtilsComponent,
+  FileOperationsActionCellComponent,
+  FileListTableWithFileLinkingComponent,
 ];
 
 const providers = [

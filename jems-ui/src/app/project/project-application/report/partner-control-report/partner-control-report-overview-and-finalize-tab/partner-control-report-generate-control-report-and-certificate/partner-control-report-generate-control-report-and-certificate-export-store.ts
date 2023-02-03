@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {
   PagePartnerReportControlFileDTO,
-  PageProjectReportFileDTO,
   PluginInfoDTO,
   ProjectPartnerControlReportFileAPIService,
 } from '@cat/api';
@@ -58,6 +57,21 @@ export class PartnerControlReportGenerateControlReportAndCertificateExportStore 
       );
   }
 
+  downloadAttachmentFile(fileId: number): Observable<any> {
+    return combineLatest([
+      this.partnerControlReportStore.partnerId$,
+      this.partnerControlReportStore.reportId$,
+    ])
+      .pipe(
+        take(1),
+        filter(([partnerId, reportId]) => !!partnerId && !!reportId),
+        switchMap(([partnerId, reportId]) => {
+          this.downloadService.download(`/api/project/report/partner/control/file/byPartnerId/${partnerId}/byReportId/${reportId}/controlFile/${fileId}/downloadAttachment`, 'control-report-certificate');
+          return of(null);
+        })
+      );
+  }
+
   private certificateFileList(): Observable<PagePartnerReportControlFileDTO> {
     return combineLatest([
       this.partnerControlReportStore.partnerId$,
@@ -98,6 +112,25 @@ export class PartnerControlReportGenerateControlReportAndCertificateExportStore 
   exportData(partnerId: number, reportId: number): Observable<any> {
     return this.controlReportExportService.generateControlReportCertificate(partnerId, reportId).pipe(
       tap(() => this.exportTriggeredEvent$.next())
+    );
+  }
+
+  uploadAttachment(file: any, partnerId: number, reportId: number, fileId: number): Observable<any> {
+    return this.controlReportExportService.uploadReportCertificateSignedForm(file, fileId, partnerId, reportId).pipe(
+      tap(() => this.certificateFilesChanged$.next())
+    );
+  }
+
+  deleteFile(fileId: number, attachmentId: number): Observable<any> {
+    return combineLatest([
+      this.partnerControlReportStore.partnerId$,
+      this.partnerControlReportStore.reportId$,
+    ]).pipe(
+      take(1),
+      switchMap(([partnerId, reportId]) =>
+        this.controlReportExportService.deleteControlReportAttachment(attachmentId, fileId, partnerId, reportId)
+      ),
+      tap(() => this.certificateFilesChanged$.next())
     );
   }
 }

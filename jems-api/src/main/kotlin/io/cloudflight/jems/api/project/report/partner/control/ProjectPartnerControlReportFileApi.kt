@@ -1,7 +1,7 @@
 package io.cloudflight.jems.api.project.report.partner.control
 
 import io.cloudflight.jems.api.project.dto.report.file.PartnerReportControlFileDTO
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileDTO
+import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
 import io.cloudflight.jems.api.project.report.partner.ProjectPartnerReportApi
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
@@ -12,10 +12,14 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestPart
+import org.springframework.web.multipart.MultipartFile
 
 @Api("ProjectPartnerControl Report File API")
 interface ProjectPartnerControlReportFileApi {
@@ -67,4 +71,33 @@ interface ProjectPartnerControlReportFileApi {
         @PathVariable reportId: Long,
         @PathVariable fileId: Long
     ): ResponseEntity<ByteArrayResource>
+
+    @ApiOperation("Upload file to report control certificate")
+    @PostMapping("${ENDPOINT_API_PROJECT_PARTNER_REPORT_CONTROL_FILE}/{fileId}/uploadSigned",
+        consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    fun uploadReportCertificateSigned(
+        @PathVariable partnerId: Long,
+        @PathVariable reportId: Long,
+        @PathVariable fileId: Long,
+        @RequestPart("file") file: MultipartFile,
+    ): ProjectReportFileMetadataDTO
+
+    @ApiOperation("Download control report certificate attachment")
+    @GetMapping(
+        "${ENDPOINT_API_PROJECT_PARTNER_REPORT_CONTROL_FILE}/controlFile/{fileId}/downloadAttachment",
+        produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE]
+    )
+    fun downloadControlReportAttachment(
+        @PathVariable partnerId: Long,
+        @PathVariable reportId: Long,
+        @PathVariable fileId: Long
+    ): ResponseEntity<ByteArrayResource>
+
+    @ApiOperation("Delete attachment from partner control report file")
+    @DeleteMapping("${ENDPOINT_API_PROJECT_PARTNER_REPORT_CONTROL_FILE}/controlFile/{fileId}/delete/{attachmentId}")
+    fun deleteControlReportAttachment(
+        @PathVariable partnerId: Long,
+        @PathVariable reportId: Long,
+        @PathVariable fileId: Long,
+        @PathVariable attachmentId: Long)
 }

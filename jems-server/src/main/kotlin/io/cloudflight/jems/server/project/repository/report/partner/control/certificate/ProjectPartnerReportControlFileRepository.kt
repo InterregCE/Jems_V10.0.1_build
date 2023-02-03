@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository
 @Repository
 interface ProjectPartnerReportControlFileRepository : JpaRepository<PartnerReportControlFileEntity, Long> {
     fun findAllByReportId(reportId: Long, page: Pageable): Page<PartnerReportControlFileEntity>
+
+    fun findByReportIdAndId(reportId: Long, id: Long): PartnerReportControlFileEntity
 }

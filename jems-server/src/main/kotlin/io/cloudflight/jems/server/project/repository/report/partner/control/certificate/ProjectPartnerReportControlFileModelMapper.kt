@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.repository.report.partner.control.cer
 
 import io.cloudflight.jems.server.common.file.service.toFullModel
 import io.cloudflight.jems.server.project.entity.report.control.certificate.PartnerReportControlFileEntity
+import io.cloudflight.jems.server.project.repository.report.partner.toModel
 import io.cloudflight.jems.server.project.service.report.model.partner.control.file.PartnerReportControlFile
 import org.springframework.data.domain.Page
 
@@ -11,5 +12,5 @@ fun PartnerReportControlFileEntity.toModel() = PartnerReportControlFile(
     id = id,
     reportId = reportId,
     generatedFile = generatedFile.toFullModel(),
-    signedFile = signedFile?.toFullModel(),
+    signedFile = signedFile?.toModel(),
 )
