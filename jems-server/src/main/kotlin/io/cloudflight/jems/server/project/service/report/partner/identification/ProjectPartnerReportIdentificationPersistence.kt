@@ -23,5 +23,4 @@ interface ProjectPartnerReportIdentificationPersistence {
         reportId: Long,
         data: ProjectPartnerControlReportChange,
     ): ProjectPartnerReportIdentification
-
 }

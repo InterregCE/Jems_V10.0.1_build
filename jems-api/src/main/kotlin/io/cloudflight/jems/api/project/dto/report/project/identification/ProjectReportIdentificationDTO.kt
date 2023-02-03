@@ -7,4 +7,5 @@ data class ProjectReportIdentificationDTO(
     val highlights: Set<InputTranslation>,
     val partnerProblems: Set<InputTranslation>,
     val deviations: Set<InputTranslation>,
+    val spendingProfiles: List<ProjectReportSpendingProfileDTO>
 )

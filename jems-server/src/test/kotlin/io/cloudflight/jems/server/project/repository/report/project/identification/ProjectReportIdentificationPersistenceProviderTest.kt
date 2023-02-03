@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportIdentificationTargetGroupEntity
 import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportIdentificationTargetGroupTranslEntity
+import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.project.base.ProjectReportRepository
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
@@ -39,7 +40,8 @@ internal class ProjectReportIdentificationPersistenceProviderTest: UnitTest() {
             ),
             highlights = setOf(),
             partnerProblems = setOf(),
-            deviations = setOf()
+            deviations = setOf(),
+            spendingProfiles = listOf()
         )
 
         private val projectReportEntity = ProjectReportEntity(
@@ -99,13 +101,18 @@ internal class ProjectReportIdentificationPersistenceProviderTest: UnitTest() {
     private lateinit var projectReportRepository: ProjectReportRepository
     @MockK
     private lateinit var targetGroupRepository: ProjectReportIdentificationTargetGroupRepository
+    @MockK
+    private lateinit var reportSpendingProfileRepository: ProjectReportSpendingProfileRepository
+    @MockK
+    private lateinit var partnerReportRepository: ProjectPartnerReportRepository
+
 
     @InjectMockKs
     private lateinit var persistence: ProjectReportIdentificationPersistenceProvider
 
     @BeforeEach
     fun reset() {
-        clearMocks(projectReportRepository, targetGroupRepository)
+        clearMocks(projectReportRepository, targetGroupRepository, reportSpendingProfileRepository, partnerReportRepository)
     }
 
     @Test

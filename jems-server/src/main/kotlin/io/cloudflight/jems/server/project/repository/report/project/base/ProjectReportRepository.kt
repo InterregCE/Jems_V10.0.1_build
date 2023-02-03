@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEnt
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -19,4 +20,12 @@ interface ProjectReportRepository : JpaRepository<ProjectReportEntity, Long> {
 
     fun countAllByProjectId(projectId: Long): Int
 
+    @Query(
+        """
+            SELECT report.id
+            FROM #{#entityName} report
+            WHERE report.status = 'Submitted' AND report.projectId = :projectId
+        """
+    )
+    fun getSubmittedProjectReportIds(projectId: Long): Set<Long>
 }

@@ -40,7 +40,8 @@ internal class ProjectReportIdentificationControllerTest: UnitTest() {
                 InputTranslation(SystemLanguage.DE, "highlights DE")
             ),
             partnerProblems = setOf(),
-            deviations = setOf()
+            deviations = setOf(),
+            spendingProfiles = listOf()
         )
 
         private val identificationDTO = ProjectReportIdentificationDTO(
@@ -56,7 +57,8 @@ internal class ProjectReportIdentificationControllerTest: UnitTest() {
                 InputTranslation(SystemLanguage.DE, "highlights DE")
             ),
             partnerProblems = setOf(),
-            deviations = setOf()
+            deviations = setOf(),
+            spendingProfiles = listOf()
         )
 
         private val identificationUpdate = ProjectReportIdentificationUpdate(

@@ -13,6 +13,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.ProjectRe
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
+import io.cloudflight.jems.server.project.service.report.project.identification.ProjectReportIdentificationPersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -68,6 +69,8 @@ internal class SubmitProjectReportTest : UnitTest() {
     @MockK
     lateinit var reportCertificatePersistence: ProjectReportCertificatePersistence
     @MockK
+    lateinit var reportIdentificationPersistence: ProjectReportIdentificationPersistence
+    @MockK
     lateinit var auditPublisher: ApplicationEventPublisher
 
     @InjectMockKs
@@ -92,6 +95,9 @@ internal class SubmitProjectReportTest : UnitTest() {
         every { reportCertificatePersistence.listCertificatesOfProjectReport(REPORT_ID) } returns listOf(certificate)
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
+        every { reportIdentificationPersistence.getSpendingProfileCurrentValues(REPORT_ID) } returns mapOf()
+        every { reportIdentificationPersistence.updateSpendingProfile(REPORT_ID, mapOf()) } returnsArgument 0
+
 
         submitReport.submit(PROJECT_ID, REPORT_ID)
 

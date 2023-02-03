@@ -4,10 +4,13 @@ import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportIdentificationTargetGroupEntity
 import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportIdentificationTargetGroupTranslEntity
+import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportSpendingProfileEntity
+import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportSpendingProfileId
 import io.cloudflight.jems.server.project.repository.contracting.reporting.ProjectContractingReportingRepository
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.project.identification.ProjectReportIdentificationTargetGroupRepository
+import io.cloudflight.jems.server.project.repository.report.project.identification.ProjectReportSpendingProfileRepository
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
@@ -20,6 +23,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
 
@@ -30,6 +34,7 @@ class ProjectReportPersistenceProvider(
     private val reportIdentificationTargetGroupRepository: ProjectReportIdentificationTargetGroupRepository,
     private val partnerRepository: ProjectPartnerRepository,
     private val partnerReportRepository: ProjectPartnerReportRepository,
+    private val projectReportSpendingProfileRepository: ProjectReportSpendingProfileRepository
 ) : ProjectReportPersistence {
 
     @Transactional(readOnly = true)
@@ -41,11 +46,16 @@ class ProjectReportPersistenceProvider(
         projectReportRepository.getByIdAndProjectId(reportId, projectId = projectId).toModel()
 
     @Transactional
-    override fun createReportAndFillItToEmptyCertificates(report: ProjectReportModel, targetGroups: List<ProjectRelevanceBenefit>): ProjectReportModel {
+    override fun createReportAndFillItToEmptyCertificates(
+        report: ProjectReportModel,
+        targetGroups: List<ProjectRelevanceBenefit>,
+        previouslyReportedByPartner: Map<Long, BigDecimal>
+    ): ProjectReportModel {
         val reportPersisted = projectReportRepository
             .save(report.toEntity(deadlineResolver = { contractingDeadlineRepository.findByProjectIdAndId(report.projectId, it) }))
 
         createTargetGroups(targetGroups, reportPersisted)
+        createSpendingProfiles(previouslyReportedByPartner, reportPersisted)
         fillProjectReportToAllEmptyCertificates(projectId = report.projectId, reportPersisted)
 
         return reportPersisted.toModel()
@@ -71,6 +81,18 @@ class ProjectReportPersistenceProvider(
         return report.toModel()
     }
 
+    @Transactional(readOnly = true)
+    override fun getCurrentSpendingProfile(reportId: Long): Map<Long, BigDecimal> =
+        partnerReportRepository.findTotalAfterControlPerPartner(reportId).toMap()
+
+    @Transactional
+    override fun updateSpendingProfile(reportId: Long, currentValuesByPartnerId: Map<Long, BigDecimal>) {
+        val spendingProfiles = projectReportSpendingProfileRepository.findAllByIdProjectReportId(reportId)
+        spendingProfiles.forEach { sp ->
+            sp.currentlyReported = currentValuesByPartnerId.getOrDefault(sp.id.partnerId, BigDecimal.ZERO)
+        }
+    }
+
     @Transactional
     override fun deleteReport(projectId: Long, reportId: Long) =
         projectReportRepository.deleteByProjectIdAndId(projectId = projectId, reportId)
@@ -94,6 +116,10 @@ class ProjectReportPersistenceProvider(
                 status = ProjectReportStatus.Submitted
                 firstSubmission = submissionTime
             }.toSubmissionSummary()
+
+    @Transactional(readOnly = true)
+    override fun getSubmittedProjectReportIds(projectId: Long): Set<Long> =
+        projectReportRepository.getSubmittedProjectReportIds(projectId)
 
     private fun createTargetGroups(targetGroups: List<ProjectRelevanceBenefit>, reportEntity: ProjectReportEntity) {
         reportIdentificationTargetGroupRepository.saveAll(
@@ -123,6 +149,21 @@ class ProjectReportPersistenceProvider(
         partnerReportRepository.findAllByPartnerIdInAndProjectReportNullAndStatus(partnerIds, ReportStatus.Certified).forEach {
             it.projectReport = report
         }
+    }
+
+    private fun createSpendingProfiles(
+        previouslyReportedByPartner: Map<Long, BigDecimal>,
+        reportPersisted: ProjectReportEntity
+    ) {
+        projectReportSpendingProfileRepository.saveAll(
+            previouslyReportedByPartner.map {
+                ProjectReportSpendingProfileEntity(
+                    id = ProjectReportSpendingProfileId(reportPersisted, it.key),
+                    previouslyReported = it.value,
+                    currentlyReported = BigDecimal.ZERO
+                )
+            }
+        )
     }
 
 }

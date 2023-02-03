@@ -5,19 +5,28 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportIdentificationTargetGroupEntity
-import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportIdentificationTargetGroupTranslEntity
 import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportIdentificationTranslEntity
+import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportSpendingProfileEntity
+import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportSpendingProfileId
+import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportIdentificationTargetGroupTranslEntity
+import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.project.base.ProjectReportRepository
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportIdentificationUpdate
+import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportSpendingProfileReportedValues
 import io.cloudflight.jems.server.project.service.report.project.identification.ProjectReportIdentificationPersistence
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
+import java.util.Optional
+import kotlin.collections.HashSet
 
 @Repository
 class ProjectReportIdentificationPersistenceProvider(
     private val projectReportRepository: ProjectReportRepository,
-    private val targetGroupRepository: ProjectReportIdentificationTargetGroupRepository
+    private val targetGroupRepository: ProjectReportIdentificationTargetGroupRepository,
+    private val spendingProfileRepository: ProjectReportSpendingProfileRepository,
+    private val projectPartnerReportRepository: ProjectPartnerReportRepository
 ): ProjectReportIdentificationPersistence {
 
     @Transactional(readOnly = true)
@@ -27,6 +36,16 @@ class ProjectReportIdentificationPersistenceProvider(
             projectReport,
             targetGroupRepository.findAllByProjectReportEntityOrderBySortNumber(projectReport)
         )
+    }
+
+    @Transactional(readOnly = true)
+    override fun getSpendingProfileReportedValues(reportId: Long): List<ProjectReportSpendingProfileReportedValues> {
+        return spendingProfileRepository.findAllByIdProjectReportId(reportId).toReportedValuesModel()
+    }
+
+    @Transactional(readOnly = true)
+    override fun getSpendingProfileCumulative(reportIds: Set<Long>): Map<Long, BigDecimal> {
+        return spendingProfileRepository.findCumulativeForReportIds(reportIds).toMap()
     }
 
     @Transactional
@@ -42,8 +61,38 @@ class ProjectReportIdentificationPersistenceProvider(
             targetGroups = targetGroups.toModel(),
             highlights = translatedValues.map { InputTranslation(it.language(), it.highlights) }.toSet(),
             deviations = translatedValues.map { InputTranslation(it.language(), it.deviations) }.toSet(),
-            partnerProblems = translatedValues.map { InputTranslation(it.language(), it.partnerProblems) }.toSet()
+            partnerProblems = translatedValues.map { InputTranslation(it.language(), it.partnerProblems) }.toSet(),
+            spendingProfiles = listOf()
         )
+    }
+
+    @Transactional(readOnly = true)
+    override fun getSpendingProfileCurrentValues(reportId: Long): Map<Long, BigDecimal> =
+        projectPartnerReportRepository.findTotalAfterControlPerPartner(reportId).toMap()
+
+    @Transactional
+    override fun updateSpendingProfile(reportId: Long, currentValuesByPartnerId: Map<Long, BigDecimal>) {
+        val spendingProfilesById =
+            spendingProfileRepository.findAllByIdProjectReportId(reportId).associateBy { it.id.partnerId }
+        currentValuesByPartnerId.forEach { (partnerId, partnerCurrentValue) ->
+            spendingProfilesById.getById(partnerId).let {
+                when {
+                    it.isPresent -> it.get().currentlyReported = partnerCurrentValue
+                    else -> spendingProfileRepository.save(
+                        profile(
+                            reportId,
+                            partnerId = partnerId,
+                            currentValue = partnerCurrentValue
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    @Transactional
+    override fun deleteSpendingProfileReportedValues(reportId: Long, partnerId: Long) {
+        spendingProfileRepository.deleteByIdProjectReportIdAndIdPartnerId(reportId, partnerId)
     }
 
     private fun updateTranslations(
@@ -109,4 +158,22 @@ class ProjectReportIdentificationPersistenceProvider(
             )
         }
     }
+
+    private fun Map<Long, ProjectReportSpendingProfileEntity>.getById(id: Long): Optional<ProjectReportSpendingProfileEntity> {
+        val value = this[id]
+        return if (value != null)
+            Optional.of(value)
+        else
+            Optional.empty()
+    }
+
+    private fun profile(reportId: Long, partnerId: Long, currentValue: BigDecimal) = ProjectReportSpendingProfileEntity(
+        ProjectReportSpendingProfileId(
+            projectReport = projectReportRepository.getById(reportId),
+            partnerId = partnerId,
+        ),
+        previouslyReported = BigDecimal.ZERO,
+        currentlyReported = currentValue,
+    )
+
 }

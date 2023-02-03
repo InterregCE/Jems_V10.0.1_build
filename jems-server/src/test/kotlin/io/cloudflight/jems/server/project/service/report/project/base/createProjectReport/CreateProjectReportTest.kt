@@ -25,6 +25,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.ProjectRe
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportUpdate
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.project.identification.ProjectReportIdentificationPersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -38,6 +39,7 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
 
@@ -71,6 +73,7 @@ internal class CreateProjectReportTest : UnitTest() {
             every { mock.role } returns ProjectPartnerRole.LEAD_PARTNER
             every { mock.nameInEnglish } returns "lead-en"
             every { mock.nameInOriginalLanguage } returns "lead-orig"
+            every { mock.id } returns 1L
             return mock
         }
 
@@ -128,13 +131,22 @@ internal class CreateProjectReportTest : UnitTest() {
     private lateinit var auditPublisher: ApplicationEventPublisher
     @MockK
     private lateinit var projectDescriptionPersistence: ProjectDescriptionPersistence
+    @MockK
+    private lateinit var projectReportIdentificationPersistence: ProjectReportIdentificationPersistence
 
     @InjectMockKs
     lateinit var interactor: CreateProjectReport
 
     @BeforeEach
     fun reset() {
-        clearMocks(versionPersistence, projectPersistence, projectPartnerPersistence, reportPersistence, auditPublisher)
+        clearMocks(
+            versionPersistence,
+            projectPersistence,
+            projectPartnerPersistence,
+            reportPersistence,
+            auditPublisher,
+            projectReportIdentificationPersistence
+        )
     }
 
     @ParameterizedTest(name = "createReportFor {0}")
@@ -148,9 +160,16 @@ internal class CreateProjectReportTest : UnitTest() {
         every { reportPersistence.getCurrentLatestReportFor(projectId) } returns currentLatestReport(7)
         every { projectPartnerPersistence.findTop30ByProjectId(projectId, "version") } returns listOf(leadPartner())
         every { projectDescriptionPersistence.getBenefits(projectId, "version") } returns projectRelevanceBenefits()
+        every { reportPersistence.getSubmittedProjectReportIds(projectId) } returns setOf()
+        every { projectReportIdentificationPersistence.getSpendingProfileCumulative(any()) } returns mapOf()
+        every { projectReportIdentificationPersistence.getSpendingProfileCumulative(any()) } returns mapOf()
 
         val reportStored = slot<ProjectReportModel>()
-        every { reportPersistence.createReportAndFillItToEmptyCertificates(capture(reportStored), projectRelevanceBenefits()) } returnsArgument 0
+        every { reportPersistence.createReportAndFillItToEmptyCertificates(
+            capture(reportStored),
+            projectRelevanceBenefits(),
+            mapOf(1L to BigDecimal.ZERO)
+        )} returnsArgument 0
 
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}

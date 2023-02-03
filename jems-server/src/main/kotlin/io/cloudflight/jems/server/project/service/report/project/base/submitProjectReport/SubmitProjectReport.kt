@@ -2,11 +2,11 @@ package io.cloudflight.jems.server.project.service.report.project.base.submitPro
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanEditProjectReport
-import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
+import io.cloudflight.jems.server.project.service.report.project.identification.ProjectReportIdentificationPersistence
 import io.cloudflight.jems.server.project.service.report.project.projectReportSubmitted
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
@@ -17,6 +17,7 @@ import java.time.ZonedDateTime
 class SubmitProjectReport(
     private val reportPersistence: ProjectReportPersistence,
     private val reportCertificatePersistence: ProjectReportCertificatePersistence,
+    private val reportIdentificationPersistence: ProjectReportIdentificationPersistence,
     private val auditPublisher: ApplicationEventPublisher,
 ) : SubmitProjectReportInteractor {
 
@@ -26,6 +27,7 @@ class SubmitProjectReport(
     override fun submit(projectId: Long, reportId: Long): ProjectReportStatus {
         val report = reportPersistence.getReportById(projectId, reportId)
         validateReportIsStillDraft(report)
+        updateSpendingProfileReportedValues(reportId)
 
         return reportPersistence.submitReport(
             projectId = projectId,
@@ -41,6 +43,11 @@ class SubmitProjectReport(
                 )
             )
         }.status
+    }
+
+    private fun updateSpendingProfileReportedValues(reportId: Long) {
+        val currentSpendingProfile = reportIdentificationPersistence.getSpendingProfileCurrentValues(reportId)
+        reportIdentificationPersistence.updateSpendingProfile(reportId, currentValuesByPartnerId = currentSpendingProfile)
     }
 
     private fun validateReportIsStillDraft(report: ProjectReportModel) {

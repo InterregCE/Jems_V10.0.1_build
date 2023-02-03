@@ -3,12 +3,14 @@ package io.cloudflight.jems.server.project.repository.report.partner
 import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.repository.report.partner.model.CertificateSummary
 import io.cloudflight.jems.server.project.repository.report.partner.model.ReportSummary
+import io.cloudflight.jems.server.project.repository.report.partner.model.ReportIdentificationSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
+import java.math.BigDecimal
 
 @Repository
 interface ProjectPartnerReportRepository : JpaRepository<ProjectPartnerReportEntity, Long> {
@@ -74,6 +76,38 @@ interface ProjectPartnerReportRepository : JpaRepository<ProjectPartnerReportEnt
 
     fun findAllByProjectReportId(projectReportId: Long): List<ProjectPartnerReportEntity>
 
+    @Query(
+        """
+        SELECT new io.cloudflight.jems.server.project.repository.report.partner.model.ReportIdentificationSummary(
+            report.id,
+            report.number,
+            report_co_fin.sumTotalEligibleAfterControl,
+            report.partnerId,
+            report.identification.partnerNumber,
+            report.identification.partnerRole,
+            report_identification.startDate,
+            report_identification.endDate,
+            report_identification.periodNumber,
+            report_period.startMonth,
+            report_period.endMonth,
+            report_period.periodBudget,
+            report_period.periodBudgetCumulative,
+            report_identification.nextReportForecast
+        )
+        FROM #{#entityName} AS report
+        LEFT JOIN #{#entityName}_identification AS report_identification
+            ON report.id = report_identification.reportId
+        LEFT JOIN #{#entityName}_budget_per_period report_period
+            ON report.id = report_period.id.report.id AND report_identification.periodNumber = report_period.id.periodNumber
+        LEFT JOIN #{#entityName}_expenditure_co_financing report_co_fin
+            ON report.id = report_co_fin.reportEntity.id
+        LEFT JOIN report_project reportProject
+            ON report.projectReport.id = reportProject.id
+        WHERE report.projectReport.id = :projectReportId
+    """
+    )
+    fun findAllIdentificationSummariesByProjectReportId(projectReportId: Long): List<ReportIdentificationSummary>
+
     fun findAllByPartnerIdInAndProjectReportNullAndStatus(partnerIds: Set<Long>, status: ReportStatus): List<ProjectPartnerReportEntity>
 
     fun existsByPartnerIdAndId(partnerId: Long, id: Long): Boolean
@@ -91,5 +125,20 @@ interface ProjectPartnerReportRepository : JpaRepository<ProjectPartnerReportEnt
 
     @Query("SELECT report.id FROM #{#entityName} report WHERE report.partnerId = :partnerId AND report.id < :reportId")
     fun getReportIdsForPartnerBefore(partnerId: Long, reportId: Long): Set<Long>
+
+    @Query(
+        """
+        SELECT new kotlin.Pair(
+            report.partnerId,
+            COALESCE(SUM(report_co_fin.sumTotalEligibleAfterControl), 0)
+        )
+        FROM #{#entityName} AS report
+        LEFT JOIN #{#entityName}_expenditure_co_financing report_co_fin
+            ON report.id = report_co_fin.reportEntity.id
+        WHERE report.projectReport.id = :projectReportId
+        GROUP BY report.partnerId
+    """
+    )
+    fun findTotalAfterControlPerPartner(projectReportId: Long): List<Pair<Long, BigDecimal>>
 
 }

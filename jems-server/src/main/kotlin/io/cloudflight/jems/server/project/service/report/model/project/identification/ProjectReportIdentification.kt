@@ -7,5 +7,6 @@ data class ProjectReportIdentification(
     val highlights: Set<InputTranslation>,
     val partnerProblems: Set<InputTranslation>,
     val deviations: Set<InputTranslation>,
+    var spendingProfiles: List<ProjectReportSpendingProfile>
 )
 
