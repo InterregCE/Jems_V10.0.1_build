@@ -2,13 +2,13 @@ package io.cloudflight.jems.server.project.service.report.partner.control.file.g
 
 import io.cloudflight.jems.api.common.dto.LogoType
 import io.cloudflight.jems.plugin.contract.export.ExportResult
-import io.cloudflight.jems.plugin.contract.export.PartnerControlReportCertificatePlugin
+import io.cloudflight.jems.plugin.contract.export.partner.report.PartnerControlReportCertificatePlugin
 import io.cloudflight.jems.plugin.contract.models.common.UserSummaryData
 import io.cloudflight.jems.server.authentication.model.CurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.plugin.JemsPluginRegistry
-import io.cloudflight.jems.server.project.authorization.CanViewPartnerControlReport
+import io.cloudflight.jems.server.project.authorization.CanEditPartnerControlReport
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
@@ -34,7 +34,7 @@ class GenerateReportControlCertificate(
     private val auditPublisher: ApplicationEventPublisher,
 ) : GenerateReportControlCertificateInteractor {
 
-    @CanViewPartnerControlReport
+    @CanEditPartnerControlReport
     @Transactional
     @ExceptionWrapper(GenerateReportControlCertificateException::class)
     override fun generateCertificate(partnerId: Long, reportId: Long) {

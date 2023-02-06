@@ -1,8 +1,6 @@
-package io.cloudflight.jems.server.project.service.report.partner.control.file
-
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.plugin.contract.export.ExportResult
-import io.cloudflight.jems.plugin.contract.export.PartnerControlReportCertificatePlugin
+import io.cloudflight.jems.plugin.contract.export.partner.report.PartnerControlReportCertificatePlugin
 import io.cloudflight.jems.plugin.contract.models.common.UserSummaryData
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
@@ -17,12 +15,14 @@ import io.cloudflight.jems.server.project.service.report.model.partner.PartnerRe
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.control.file.ProjectPartnerReportControlFilePersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.file.generateCertificate.GenerateReportControlCertificate
 import io.cloudflight.jems.server.project.service.report.partner.control.file.generateCertificate.GenerateReportControlCertificateException
 import io.cloudflight.jems.server.resources.service.get_logos.GetLogosInteractor
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserRole
 import io.cloudflight.jems.server.user.service.model.UserStatus
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -38,8 +38,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 import java.io.IOException
 import java.time.ZonedDateTime
 
-class GenerateReportControlCertificateTest: UnitTest() {
-
+class GenerateReportControlCertificateTest : UnitTest() {
 
 
     companion object {
@@ -49,7 +48,7 @@ class GenerateReportControlCertificateTest: UnitTest() {
         const val REPORT_ID = 3L
         private val YESTERDAY = ZonedDateTime.now().minusDays(1)
 
-        val CONTROLER_ROLE= UserRole(id = 7, name = "controller", permissions = emptySet(), isDefault = false)
+        val CONTROLER_ROLE = UserRole(id = 7, name = "controller", permissions = emptySet(), isDefault = false)
         val userController = User(
             id = 3,
             email = "controller@jems.eu",
@@ -58,7 +57,7 @@ class GenerateReportControlCertificateTest: UnitTest() {
             userRole = CONTROLER_ROLE,
             userStatus = UserStatus.ACTIVE
         )
-        val localControllerUser  = LocalCurrentUser(
+        val localControllerUser = LocalCurrentUser(
             userController, "hash_pass", listOf(
                 SimpleGrantedAuthority("ROLE_" + CONTROLER_ROLE.name)
             )
@@ -117,16 +116,16 @@ class GenerateReportControlCertificateTest: UnitTest() {
     lateinit var generateReportControlCertificate: GenerateReportControlCertificate
 
 
-
     @BeforeEach
     fun setup() {
 
         every { securityService.currentUser } returns localControllerUser
         every { securityService.getUserIdOrThrow() } returns localControllerUser.user.id
+        clearMocks(auditPublisher)
     }
 
     @Test
-    fun `Should generate the control certificate`() {
+    fun `Should generate the control report certificate`() {
         val exportResult = ExportResult("pdf", "Control Certificate - CLF00001 - LP1 - R3.pdf", byteArrayOf())
         val currentUserSummaryData = UserSummaryData(
             id = userController.id,
@@ -134,7 +133,6 @@ class GenerateReportControlCertificateTest: UnitTest() {
             name = userController.name,
             surname = userController.surname
         )
-
 
         every { reportPersistence.getPartnerReportById(partnerId = PARTNER_ID, reportId = REPORT_ID) } returns partnerReport
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID, partnerReport.version) } returns PROJECT_ID
@@ -165,7 +163,7 @@ class GenerateReportControlCertificateTest: UnitTest() {
 
         verify(exactly = 1) { projectPartnerReportControlFilePersistence.saveReportControlFile(REPORT_ID, slot.captured) }
         verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }
-        assertThat(slotAudit.captured.auditCandidate.action).isEqualTo(AuditAction.CONTROL_CERTIFICATE_GENERATED)
+        assertThat(slotAudit.captured.auditCandidate.action).isEqualTo(AuditAction.CONTROL_REPORT_CERTIFICATE_GENERATED)
         assertThat(slotAudit.captured.auditCandidate.description).isEqualTo("A control certificate was generated for partner report R.3 of partner LP1")
 
         assertThat(slot.captured.type).isEqualTo(JemsFileType.ControlCertificate)
@@ -184,5 +182,6 @@ class GenerateReportControlCertificateTest: UnitTest() {
         }
 
     }
+
 
 }

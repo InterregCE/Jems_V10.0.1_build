@@ -38,7 +38,7 @@ export class PartnerControlReportGenerateControlReportAndCertificateExportStore 
     private pluginStore: PluginStore,
     private controlReportExportService: ProjectPartnerControlReportFileAPIService,
     private downloadService: DownloadService) {
-    this.certificateExportPlugins$ = this.pluginStore.getPluginListByType(TypeEnum.PARTNERCONTROLCERTIFICATEEXPORT);
+    this.certificateExportPlugins$ = this.pluginStore.getPluginListByType(TypeEnum.PARTNERCONTROLREPORTEXPORT);
     this.certificateFileList$ = this.certificateFileList();
   }
 

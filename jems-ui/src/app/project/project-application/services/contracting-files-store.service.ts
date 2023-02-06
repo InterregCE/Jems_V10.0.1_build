@@ -31,7 +31,7 @@ import {ProjectUtil} from '@project/common/project-util';
 import {RoutingService} from '@common/services/routing.service';
 import FileTypeEnum = ProjectReportFileDTO.TypeEnum;
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
-import {FileListItem} from "@common/components/file-list/file-list-item";
+import {FileListItem} from '@common/components/file-list/file-list-item';
 
 @Injectable({
   providedIn: 'root'
