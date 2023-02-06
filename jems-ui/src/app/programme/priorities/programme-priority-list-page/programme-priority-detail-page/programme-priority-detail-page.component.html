@@ -211,7 +211,6 @@
             <div>{{'programme.objective.dimension.' + dimension.toLowerCase() | translate}}</div>
             <div class="dimensions pt-2">
                 <jems-filter-autocomplete-input
-                        [required]=objectiveControl.get(constants.POLICY_SELECTED.name)?.value
                         [options]=getCodesByDimension(dimension)
                         [isDisabled]="isProgrammeSetupLocked && form.disabled"
                         [formControl]=objectiveControl.get(constants.DIMENSION_CODES.name).get(dimension)

@@ -16,18 +16,18 @@ import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.priority.ProgrammePriorityPersistence
+import io.cloudflight.jems.server.programme.service.priority.getStringOfLength
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeSpecificObjective
 import io.cloudflight.jems.server.programme.service.priority.testPriority
-import io.cloudflight.jems.server.programme.service.priority.getStringOfLength
-import io.cloudflight.jems.server.programme.service.priority.testPriorityWithWrongTypeOfIntervention
-import io.cloudflight.jems.server.programme.service.priority.testPriorityWithWrongTerritorialDeliveryMechanism
+import io.cloudflight.jems.server.programme.service.priority.testPriorityWithManyCodes
+import io.cloudflight.jems.server.programme.service.priority.testPriorityWithNoCode
+import io.cloudflight.jems.server.programme.service.priority.testPriorityWithTextCode
 import io.cloudflight.jems.server.programme.service.priority.testPriorityWithWrongEconomicActivity
 import io.cloudflight.jems.server.programme.service.priority.testPriorityWithWrongFormOfSupport
 import io.cloudflight.jems.server.programme.service.priority.testPriorityWithWrongGenderEquality
-import io.cloudflight.jems.server.programme.service.priority.testPriorityWithTextCode
+import io.cloudflight.jems.server.programme.service.priority.testPriorityWithWrongTerritorialDeliveryMechanism
+import io.cloudflight.jems.server.programme.service.priority.testPriorityWithWrongTypeOfIntervention
 import io.cloudflight.jems.server.programme.service.priority.testPriorityWithZeroCode
-import io.cloudflight.jems.server.programme.service.priority.testPriorityWithNoCode
-import io.cloudflight.jems.server.programme.service.priority.testPriorityWithManyCodes
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -84,6 +84,24 @@ class CreatePriorityInteractorTest {
                 "objective = PO2\n" +
                 "specificObjectives = GreenInfrastructure - Dimensions: EconomicActivity (001 002),\n" +
                 "RenewableEnergy - Dimensions: FormOfSupport (003 004) was created",
+        ))
+    }
+
+    @Test
+    fun `createPriority - valid (with no dimension codes added)`() {
+        every { persistence.getPriorityIdByCode(testPriorityWithNoCode.code) } returns null
+        every { persistence.getPriorityIdForPolicyIfExists(any()) } returns null
+        every { persistence.getSpecificObjectivesByCodes(setOf("GU")) } returns emptyList()
+        every { persistence.create(any()) } returnsArgument 0
+        val auditSlot = slot<AuditCandidate>()
+        every { auditService.logEvent(capture(auditSlot)) } answers {}
+
+        assertThat(createPriority.createPriority(testPriorityWithNoCode)).isEqualTo(testPriorityWithNoCode)
+        assertThat(auditSlot.captured).isEqualTo(AuditCandidate(
+            action = AuditAction.PROGRAMME_PRIORITY_ADDED,
+            description = "New programme priority 'PO-02' '[EN=PO-02 title]'\n" +
+                    "objective = PO2\n" +
+                    "specificObjectives = GreenInfrastructure - Dimensions: TypesOfIntervention () was created",
         ))
     }
 
@@ -302,16 +320,6 @@ class CreatePriorityInteractorTest {
     }
 
     @Test
-    fun `createPriority - priority code with wrong dimension code - no code`() {
-        every { persistence.getPriorityIdByCode(testPriorityWithNoCode.code) } returns null
-        every { persistence.getPriorityIdForPolicyIfExists(any()) } returns null
-        every { persistence.getSpecificObjectivesByCodes(setOf("GU")) } returns emptyList()
-        val ex = assertThrows<I18nValidationException>
-        { createPriority.createPriority(testPriorityWithNoCode) }
-        assertThat(ex.i18nKey).isEqualTo("programme.priority.dimension.codes.size.invalid")
-    }
-
-    @Test
     fun `createPriority - priority code with wrong dimension code - more then max number of codes`() {
         every { persistence.getPriorityIdByCode(testPriorityWithManyCodes.code) } returns null
         every { persistence.getPriorityIdForPolicyIfExists(any()) } returns null
@@ -358,5 +366,4 @@ class CreatePriorityInteractorTest {
             )
         )
     }
-
 }

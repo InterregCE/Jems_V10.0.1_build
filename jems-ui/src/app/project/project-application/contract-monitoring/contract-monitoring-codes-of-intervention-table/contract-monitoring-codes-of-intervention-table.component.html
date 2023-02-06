@@ -1,6 +1,4 @@
 <div jemsFormLayout [formGroup]="formGroup">
-
-
     <mat-table *ngIf="dimensionCodesTableData.length > 0" jemsNoWidthLimit
                class="table-condensed mt-3 mb-3"
                id="monitoring-dimension-codes-table"
@@ -17,7 +15,7 @@
                     <mat-select formControlName="dimension" class="placeholder-required" required
                                 placeholder="{{'project.contracting.monitoring.dimension.input.select' | translate}}">
                         <mat-option *ngFor="let dimension of dimensionsEnum" [value]="dimension"
-                                    (onSelectionChange)="resetDimensionControl($event, i)">
+                                    (onSelectionChange)="resetDimensionControl($event, i, dimension)">
                            {{'programme.objective.dimension.' + dimension.toLowerCase() | translate}}
                         </mat-option>
                     </mat-select>
@@ -45,7 +43,8 @@
                     <mat-error>
                         <jems-form-field-errors
                                 [errors]="control?.controls?.dimensionCode?.errors"
-                                [messages]="{dimensionCodeAmountAlreadyExists: 'project.application.contract.monitoring.project.dimension.code.warning'}"
+                                [messages]="{dimensionCodesNotSet: 'project.application.contract.monitoring.project.dimension.code.not.set.warning',
+                                dimensionCodeAlreadyInUse: 'project.application.contract.monitoring.project.dimension.code.already.in.use.warning'}"
                                 condensed="true">
                         </jems-form-field-errors>
                     </mat-error>
@@ -84,7 +83,7 @@
                           maxLines="2">{{'project.application.contract.monitoring.project.dimension.budget.share.percent' | translate}}</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                <mat-form-field class="w-100" class="mat-form-field-disabled">
+                <mat-form-field class="w-100 mat-form-field-disabled">
                     <input formControlName="projectBudgetPercentShare"
                            matInput
                            readonly>
