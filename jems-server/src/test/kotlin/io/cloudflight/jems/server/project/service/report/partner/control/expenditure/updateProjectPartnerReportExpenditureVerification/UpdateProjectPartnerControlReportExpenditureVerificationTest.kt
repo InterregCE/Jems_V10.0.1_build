@@ -14,22 +14,23 @@ import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPa
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.control.expenditure.ParkExpenditureData
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerificationUpdate
-import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.PartnerReportParkedExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.ProjectPartnerReportExpenditureVerificationPersistence
+import io.mockk.Runs
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.just
 import io.mockk.mockk
 import io.mockk.slot
-import io.mockk.Runs
-import io.mockk.clearMocks
-import io.mockk.just
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -41,7 +42,6 @@ import java.time.ZonedDateTime
 internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : UnitTest() {
 
     private val TODAY = LocalDate.now()
-
 
     private val verification = ProjectPartnerReportExpenditureVerification(
         id = 14L,
@@ -238,7 +238,9 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
         assertThat(updatePartnerReportExpenditureVerification
             .updatePartnerReportExpenditureVerification(partnerId = 17L, reportId = 55L, listOf(expenditureUpdateValidWithParking))
         ).containsExactly(verificationParked)
+
         assertThat(slotToUpdate.captured).containsExactly(expectedUpdateWithParking)
+        assertTrue(slotToUpdate.captured.first().partOfSample)
 
         assertThat(parkedItems.captured).containsExactly(
             ParkExpenditureData(expenditureId=14L, originalReportId=14L, originalNumber=9)
@@ -310,5 +312,4 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
                 .updatePartnerReportExpenditureVerification(partnerId = 11L, reportId = 4L, listOf(expenditureUpdateInvalid))
         }
     }
-
 }

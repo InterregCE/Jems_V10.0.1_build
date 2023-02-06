@@ -122,7 +122,7 @@ class UpdateProjectPartnerControlReportExpenditureVerification(
     ): List<ProjectPartnerReportExpenditureVerification> = map {
         it.apply {
             if (newValues.containsKey(it.id)) {
-                partOfSample = newValues[it.id]!!.partOfSample
+                partOfSample = newValues[it.id]!!.parked || newValues[it.id]!!.partOfSample
                 certifiedAmount = newValues[it.id]!!.certifiedAmount
                 deductedAmount = if (newValues[it.id]!!.parked) BigDecimal.ZERO else
                     (declaredAmountAfterSubmission ?: BigDecimal.ZERO).minus(certifiedAmount)
