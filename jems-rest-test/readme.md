@@ -16,6 +16,9 @@ To execute those tests, run:
 Running newman in CI/CD pipelines can also extract results for further processing. This feature is part of newman and
 is called Reporting, for detailed options see [newman-reporters](https://github.com/postmanlabs/newman#using-reporters-with-newman).
 
+##### Preconditions
+To achieve success on first run on clean database, log in with default admin user and _**download NUTS and Currencies before**_ starting tests.
+
 ### Running locally with Postman
 To implement new tests or run existing ones locally, there is a possibility to use Postman directly. Just use the _Import_ button
 in Postman and import _collection file_ & _environment files_ into Postman.

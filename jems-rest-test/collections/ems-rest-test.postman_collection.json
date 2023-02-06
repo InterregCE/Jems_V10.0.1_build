@@ -401,11 +401,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test('we can retrieve priorities and specific objectives', function() {\r",
-											"    pm.response.to.have.status(200);\r",
-											"});\r",
-											"\r",
-											"pm.test('we have programme priority or we need to create one', function() {\r",
+											"pm.test('we have controller user role or not (?)', function() {\r",
 											"    console.log(pm.response.status);\r",
 											"    console.log(pm.response.code);\r",
 											"    if (pm.response.status == 'OK') {\r",
