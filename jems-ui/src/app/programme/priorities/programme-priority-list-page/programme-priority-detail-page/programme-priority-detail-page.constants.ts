@@ -13,7 +13,7 @@ export class ProgrammePriorityDetailPageConstants {
 
   public static TITLE: AppControl = {
     name: 'title',
-    validators: [Validators.maxLength(300), Validators.required]
+    validators: [Validators.maxLength(300)]
   };
 
   public static OBJECTIVE: AppControl = {
@@ -69,9 +69,6 @@ export class ProgrammePriorityDetailPageConstants {
 
   public static dimensionCodesSize: (control: FormGroup) => ValidatorFn = (objective: FormGroup) => (valueControl: FormControl): ValidationErrors | null => {
     const selected = objective.get(ProgrammePriorityDetailPageConstants.POLICY_SELECTED.name)?.value;
-    if (selected && !valueControl?.value?.length) {
-      return {required: true} as any;
-    }
     if (selected && valueControl?.value?.length > 20) {
       return {maxSize: true} as any;
     }
@@ -87,5 +84,4 @@ export class ProgrammePriorityDetailPageConstants {
     }
     return {required: true} as any;
   }
-
 }

@@ -44,6 +44,8 @@ export class ContractMonitoringCodesOfInterventionTableComponent implements OnCh
 
   dimensionsEnum = Object.keys(ContractingDimensionCodeDTO.ProgrammeObjectiveDimensionEnum);
 
+  selectedDimension: string;
+
   dimensionCodesTableData: AbstractControl[] = [];
   dimensionCodesColumnsToDisplay = [
     'dimension',
@@ -97,10 +99,10 @@ export class ContractMonitoringCodesOfInterventionTableComponent implements OnCh
     this.changed.emit();
   }
 
-  getCodesForDimension(dimension: ContractingDimensionCodeDTO.ProgrammeObjectiveDimensionEnum): string[] {
+  getCodesForDimension(dimension: string): string[] {
     switch (dimension) {
       case ContractingDimensionCodeDTO.ProgrammeObjectiveDimensionEnum.Location:
-        return [...this.projectPartnersNuts.map(nuts => nuts.nuts3Region ? nuts.nuts3Region : nuts.country)];
+        return [...this.projectPartnersNuts.map(nuts => nuts.nuts3Region ? nuts.nuts3Region : nuts.country).filter(nuts => nuts != null)];
       default:
         return this.dimensionCodes ? this.dimensionCodes[dimension] : [];
     }
@@ -115,7 +117,7 @@ export class ContractMonitoringCodesOfInterventionTableComponent implements OnCh
     projectBudgetAmountShareControl?.updateValueAndValidity();
   }
 
-  resetDimensionControl(event: any, controlIndex: number): void {
+  resetDimensionControl(event: any, controlIndex: number, dimension: string): void {
     if (event.isUserInput) {
       this.dimensionCodesFormItems.at(controlIndex).setValue({
         id: 0,
@@ -128,7 +130,8 @@ export class ContractMonitoringCodesOfInterventionTableComponent implements OnCh
       const projectBudgetAmountShareControl = this.dimensionCodesFormItems.at(controlIndex).get('projectBudgetAmountShare');
       projectBudgetAmountShareControl?.setValidators([Validators.required, this.dimensionCodeAmountValidator()]);
       projectBudgetAmountShareControl?.updateValueAndValidity();
-      dimensionCodeControl?.setValidators([Validators.required, this.dimensionCodeAlreadySelected()]);
+      this.selectedDimension = dimension;
+      dimensionCodeControl?.setValidators([Validators.required, this.dimensionCodeAlreadySelected(), this.hasDimensionCodesSet()]);
       dimensionCodeControl?.updateValueAndValidity();
     }
   }
@@ -191,7 +194,13 @@ export class ContractMonitoringCodesOfInterventionTableComponent implements OnCh
           existingDimensionCodes = dimensionCodesControls.filter(existingControl => existingControl.value.id !== parentFormGroup.controls.id.value);
         }
       }
-      return existingDimensionCodes.length >= 1 ? {dimensionCodeAmountAlreadyExists: true} : null;
+      return existingDimensionCodes.length >= 1 ? {dimensionCodeAlreadyInUse: true} : null;
+    };
+  }
+
+  private hasDimensionCodesSet(): ValidatorFn {
+    return (): ValidationErrors | null => {
+      return this.getCodesForDimension(this.selectedDimension).length < 1 ? {dimensionCodesNotSet: true} : null;
     };
   }
 

@@ -190,14 +190,12 @@ class UpdatePriorityInteractorTest {
             )
         )
         every { persistence.getPriorityById(ID) } returns priority
-        var ex = assertThrows<I18nValidationException> { updatePriority.updatePriority(ID, priority) }
-        assertThat(ex.i18nKey).isEqualTo("programme.priority.dimension.codes.size.invalid")
 
         dimensionCodes[ProgrammeObjectiveDimension.EconomicActivity] = listOf(
             "001", "002", "003", "004", "005", "006", "007", "008", "009", "010", "011", "012", "013",
             "014", "015", "016", "017", "018", "019", "020", "021"
         )
-        ex = assertThrows { updatePriority.updatePriority(ID, priority) }
+        var ex = assertThrows<I18nValidationException> { updatePriority.updatePriority(ID, priority) }
         assertThat(ex.i18nKey).isEqualTo("programme.priority.dimension.codes.size.invalid")
 
         dimensionCodes[ProgrammeObjectiveDimension.EconomicActivity] = listOf("1d")
@@ -427,5 +425,4 @@ class UpdatePriorityInteractorTest {
         assertThat(ex.httpStatus).isEqualTo(HttpStatus.BAD_REQUEST)
         assertThat(ex.i18nMessage.i18nKey).isEqualTo("use.case.update.programme.priority.already.used.in.call")
     }
-
 }
