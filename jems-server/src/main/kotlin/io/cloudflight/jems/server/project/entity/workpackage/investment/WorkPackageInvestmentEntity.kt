@@ -35,7 +35,10 @@ data class WorkPackageInvestmentEntity(
     var expectedDeliveryPeriod: Int? = null,
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "investmentTranslation.investment")
-    val translatedValues: MutableSet<WorkPackageInvestmentTransl> = mutableSetOf()
+    val translatedValues: MutableSet<WorkPackageInvestmentTransl> = mutableSetOf(),
+
+    @field:NotNull
+    var deactivated: Boolean = false,
 ) {
 
     override fun equals(other: Any?) =

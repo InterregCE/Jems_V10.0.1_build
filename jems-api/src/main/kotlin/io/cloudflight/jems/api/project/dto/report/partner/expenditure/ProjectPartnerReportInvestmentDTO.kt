@@ -1,7 +1,6 @@
 package io.cloudflight.jems.api.project.dto.report.partner.expenditure
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import java.math.BigDecimal
 
 data class ProjectPartnerReportInvestmentDTO(
     val id: Long,
@@ -9,4 +8,5 @@ data class ProjectPartnerReportInvestmentDTO(
     val workPackageNumber: Int,
     val investmentNumber: Int,
     val title: Set<InputTranslation>,
+    val deactivated: Boolean,
 )

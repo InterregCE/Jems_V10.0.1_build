@@ -14,9 +14,6 @@ import io.cloudflight.jems.server.project.service.contracting.reporting.Contract
 import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectVersion
-import io.cloudflight.jems.server.user.entity.UserEntity
-import io.cloudflight.jems.server.user.entity.UserRoleEntity
-import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -29,7 +26,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
-import org.mockito.ArgumentMatchers.any
 import java.time.LocalDate
 import java.time.ZonedDateTime
 
@@ -77,7 +73,7 @@ class UpdateContractingReportingTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "updateReportingSchedule status {0}")
-    @EnumSource(value = ApplicationStatus::class, names = ["APPROVED", "CONTRACTED", "IN_MODIFICATION",
+    @EnumSource(value = ApplicationStatus::class, names = ["APPROVED", "MODIFICATION_PRECONTRACTING", "CONTRACTED", "IN_MODIFICATION",
         "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED"])
     fun updateReportingSchedule(status: ApplicationStatus) {
         val projectId = 100L + status.ordinal
@@ -115,7 +111,7 @@ class UpdateContractingReportingTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "updateReportingSchedule - wrong status {0}")
-    @EnumSource(value = ApplicationStatus::class, names = ["APPROVED", "CONTRACTED", "IN_MODIFICATION",
+    @EnumSource(value = ApplicationStatus::class, names = ["APPROVED", "MODIFICATION_PRECONTRACTING", "CONTRACTED", "IN_MODIFICATION",
         "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED"], mode = EnumSource.Mode.EXCLUDE)
     fun `updateReportingSchedule - wrong status`(status: ApplicationStatus) {
         val projectId = 200L + status.ordinal

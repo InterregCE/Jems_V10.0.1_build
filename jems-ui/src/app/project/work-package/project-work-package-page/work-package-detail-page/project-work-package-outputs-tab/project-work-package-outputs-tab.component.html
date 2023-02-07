@@ -9,14 +9,21 @@
                 <div class="output-container" jemsFormLayout [formGroupName]="i">
                     <div class="output-header" stretch="1" jemsNoWidthLimit jemsMultiColumnRow justifyContent="space-between">
                         <h4 class="mb-0 output-header-inner" stretch="1" jemsMultiColumnRow>
-                            <span>{{('project.application.form.work.package.output' | translate) + ' ' + data.workPackageNumber + '.' + (i + 1) }}</span>
+                            <span>
+                                <mat-icon *ngIf="output.get('deactivated').value" class="vertical-middle" matTooltip="{{ 'project.application.form.partner.table.status.inactive' | translate }}">hide_source</mat-icon>
+                                    {{('project.application.form.work.package.output' | translate) + ' ' + data.workPackageNumber + '.' +
+                            (output.get(constants.OUTPUT_NUMBER.name).value || '?')
+                                }}
+                            </span>
                             <span
                                   *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.TITLE">{{output.get(constants.TITLE.name).value | translateByInputLanguage | async}}</span>
                         </h4>
-                        <button *ngIf="form.enabled" type="button" mat-icon-button color="accent"
-                                matTooltip="{{'project.application.form.work.package.output.table.action.delete.tooltip' | translate}}"
-                                (click)="removeOutput(i)">
-                            <mat-icon>delete</mat-icon>
+                        <button *ngIf="form.enabled" type="button" mat-icon-button color="accent" [disabled]="output.get('deactivated').value"
+                                matTooltip="{{ 'project.application.form.work.package.output.table.action.' +
+                                 (data.isAlreadyApproved ? 'deactivate' : 'delete') + '.tooltip' | translate}}"
+                                (click)="removeOutput(i, data.isAlreadyApproved ? output.get(constants.OUTPUT_NUMBER.name).value : null)">
+                            <mat-icon *ngIf="output.get('deactivated').value">delete_forever</mat-icon>
+                            <mat-icon *ngIf="!output.get('deactivated').value">{{ data.isAlreadyApproved ? 'hide_source' : 'delete' }}</mat-icon>
                         </button>
                     </div>
 
@@ -83,6 +90,24 @@
                 </div>
             </ng-container>
         </div>
+
+        <div *ngFor="let number of rightNowDeactivated" jemsNoWidthLimit>
+            <div class="output-container pb-0" jemsFormLayout>
+                <div class="output-header" stretch="1" jemsNoWidthLimit jemsMultiColumnRow justifyContent="space-between">
+                    <h4 class="mb-0 output-header-inner" stretch="1" jemsMultiColumnRow>
+                    <span>
+                        <mat-icon class="vertical-middle" matTooltip="{{ 'project.application.form.partner.table.status.inactive' | translate }}">hide_source</mat-icon>
+                        {{ ('project.application.form.work.package.output' | translate) + ' ' + data.workPackageNumber + '.' + number }}
+                    </span>
+                    </h4>
+                    <button type="button" mat-icon-button color="accent" disabled
+                            matTooltip="{{ 'project.application.form.work.package.output.table.action.deactivate.tooltip' | translate }}">
+                        <mat-icon>delete_forever</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <button jemsText *ngIf="addOutputVisible()" mat-stroked-button color="primary"
                 (click)="addNewOutput()" type="button">
             + {{'project.application.form.workpackage.output.add' | translate}}

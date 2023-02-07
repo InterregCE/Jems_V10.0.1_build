@@ -81,6 +81,7 @@ class ProjectPartnerReportWorkPlanControllerTest {
                     contribution = true,
                     evidence = false,
                     attachment = null,
+                    deactivated = false,
                 )
             ),
         )
@@ -120,6 +121,7 @@ class ProjectPartnerReportWorkPlanControllerTest {
                     contribution = true,
                     evidence = false,
                     attachment = null,
+                    deactivated = false,
                 )
             ),
         )

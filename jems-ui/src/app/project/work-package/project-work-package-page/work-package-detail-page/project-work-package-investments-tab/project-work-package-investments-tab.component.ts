@@ -12,7 +12,10 @@ import {Log} from '@common/utils/log';
 import {ProjectApplicationFormSidenavService} from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {FormService} from '@common/components/section/form/form.service';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
-import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {
+  AFTER_APPROVED_STATUSES,
+  ProjectStore
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {ColumnWidth} from '@common/components/table/model/column-width';
@@ -39,19 +42,28 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
   investments$: Observable<WorkPackageInvestmentDTO[]>;
   projectEditable$: Observable<boolean>;
 
-  constructor(private activatedRoute: ActivatedRoute,
-              public workPackageStore: WorkPackagePageStore,
-              private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
-              private projectVersionStore: ProjectVersionStore,
-              public projectStore: ProjectStore,
-              private visibilityStatusService: FormVisibilityStatusService,
-              private dialog: MatDialog) {
-    this.investments$ = combineLatest([this.workPackageStore.investments$, this.workPackageStore.workPackage$])
+  constructor(
+    private activatedRoute: ActivatedRoute,
+    public workPackageStore: WorkPackagePageStore,
+    private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
+    private projectVersionStore: ProjectVersionStore,
+    private projectStore: ProjectStore,
+    private visibilityStatusService: FormVisibilityStatusService,
+    private dialog: MatDialog,
+  ) {
+    this.investments$ = combineLatest([
+      this.workPackageStore.investments$,
+      this.workPackageStore.workPackage$,
+      this.projectStore.projectStatus$,
+    ])
       .pipe(
-        tap(([investments, workPackage]) => {
+        tap(([, workPackage]) => {
           this.workPackageNumber = workPackage.number;
         }),
-        map(([investments]) => investments)
+        map(([investments, , status]) => investments.map((investment) => ({
+          ...investment,
+          isAlreadyApproved: AFTER_APPROVED_STATUSES.includes(status.status),
+        }))),
       );
     this.projectEditable$ = this.workPackageStore.isProjectEditable$;
   }

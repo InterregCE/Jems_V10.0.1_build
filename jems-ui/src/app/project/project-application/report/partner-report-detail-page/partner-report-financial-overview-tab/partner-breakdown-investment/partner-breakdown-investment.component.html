@@ -7,6 +7,7 @@
         </mat-header-cell>
         <mat-cell *matCellDef="let line" class="border-cell-right">
             <span jemsText maxLines="2">
+                <mat-icon *ngIf="line.deactivated" class="inactive-icon">hide_source</mat-icon>
                 <span>{{ 'I' + line.workPackageNumber + '.' + line.investmentNumber }}</span>
                 <span>&nbsp;{{ line.title | translateByInputLanguage | async }}</span>
             </span>
@@ -99,7 +100,7 @@
     </ng-container>
 
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+    <mat-row [class.grayed-out]="row.deactivated" *matRowDef="let row; columns: displayedColumns"></mat-row>
     <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
 
 </mat-table>

@@ -47,6 +47,9 @@ class ProjectPartnerReportWorkPackageOutputEntity(
     var attachment: JemsFileMetadataEntity?,
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
-    val translatedValues: MutableSet<ProjectPartnerReportWorkPackageOutputTranslEntity> = mutableSetOf()
+    val translatedValues: MutableSet<ProjectPartnerReportWorkPackageOutputTranslEntity> = mutableSetOf(),
+
+    @field:NotNull
+    val deactivated: Boolean,
 
 )

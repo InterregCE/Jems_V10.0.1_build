@@ -155,6 +155,7 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
                         CreateProjectPartnerReportWorkPackageOutput(
                             number = 7,
                             title = setOf(InputTranslation(EN, "7 output title")),
+                            deactivated = false,
                         )
                     ),
                 )
@@ -298,6 +299,7 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
                         total = valueOf(100L),
                         previouslyReported = valueOf(50L),
                         previouslyReportedParked = BigDecimal.valueOf(130),
+                        deactivated = false,
                     )
                 )
             ),

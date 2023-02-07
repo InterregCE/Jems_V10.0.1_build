@@ -2,6 +2,9 @@ package io.cloudflight.jems.server.project.repository.workpackage
 
 import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackage
 import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackageSimple
+import io.cloudflight.jems.server.common.entity.TranslationId
+import io.cloudflight.jems.server.common.entity.addTranslationEntities
+import io.cloudflight.jems.server.common.entity.extractTranslation
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.indicator.OutputIndicatorEntity
 import io.cloudflight.jems.server.programme.repository.indicator.OutputIndicatorRepository
@@ -45,8 +48,11 @@ import io.cloudflight.jems.server.project.service.workpackage.toWorkPackageOutpu
 import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel.EDIT
 import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel.MANAGE
 import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel.VIEW
+import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputTranslEntity
+import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputTranslationId
 import io.cloudflight.jems.server.project.repository.partneruser.UserPartnerCollaboratorRepository
 import io.cloudflight.jems.server.project.repository.projectuser.UserProjectCollaboratorRepository
+import io.cloudflight.jems.server.project.repository.workpackage.output.toEntity
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -166,6 +172,32 @@ class WorkPackagePersistenceProvider(
         return workPackageOutputRepository.saveAll(outputsToBeSaved).toModel()
     }
 
+    @Transactional
+    override fun updateWorkPackageOutputsAfterApproved(
+        workPackageId: Long,
+        workPackageOutputs: List<WorkPackageOutput>
+    ): List<WorkPackageOutput> {
+        val newByNumber = workPackageOutputs.associateBy { it.outputNumber }
+        val currentOutputs = workPackageOutputRepository.findAllByOutputIdWorkPackageIdOrderByOutputIdOutputNumber(workPackageId)
+
+        currentOutputs.forEach { entity ->
+            val newData = newByNumber[entity.outputId.outputNumber]!!
+            entity.periodNumber = newData.periodNumber
+            entity.translatedValues.updateWith(entity, newData.title, newData.description)
+            entity.programmeOutputIndicatorEntity = getIndicatorOrThrow(newData.programmeOutputIndicatorId)
+            entity.targetValue = newData.targetValue
+            entity.deactivated = newData.deactivated
+        }
+
+        val toSave = newByNumber.minus(currentOutputs.mapTo(HashSet()) { it.outputId.outputNumber }).values
+            .toEntity(
+                workPackageId = workPackageId,
+                resolveProgrammeIndicatorEntity = { getIndicatorOrThrow(it) },
+            )
+
+        return currentOutputs.plus(workPackageOutputRepository.saveAll(toSave)).toModel()
+    }
+
     @Transactional(readOnly = true)
     override fun getWorkPackageOutputsForWorkPackage(
         workPackageId: Long,
@@ -267,6 +299,13 @@ class WorkPackagePersistenceProvider(
     override fun deleteWorkPackageInvestment(workPackageId: Long, workPackageInvestmentId: Long) {
         workPackageInvestmentRepository.deleteById(workPackageInvestmentId)
         updateSortOnNumber(workPackageId)
+    }
+
+    @Transactional
+    override fun deactivateWorkPackageInvestment(workPackageId: Long, workPackageInvestmentId: Long) {
+        val investment = workPackageInvestmentRepository.findById(workPackageInvestmentId)
+        if (investment.isPresent)
+            investment.get().deactivated = true
     }
 
     @Transactional(readOnly = true)

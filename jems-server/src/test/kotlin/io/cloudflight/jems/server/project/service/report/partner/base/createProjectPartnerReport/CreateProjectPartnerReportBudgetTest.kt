@@ -105,6 +105,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
             investmentNumber = 5,
             workPackageNumber = 2,
             title = setOf(InputTranslation(SystemLanguage.EN, "investment title EN")),
+            deactivated = false,
         ),
     )
 
@@ -335,6 +336,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         total = BigDecimal.valueOf(32),
         previouslyReported = BigDecimal.valueOf(30),
         previouslyReportedParked = BigDecimal.valueOf(100),
+        deactivated = false,
     )
 
     private val expectedTotal = BudgetCostsCalculationResultFull(
@@ -456,14 +458,15 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         InvestmentSummary(
             id = 1L,
             investmentNumber = 1,
-            workPackageNumber = 1
+            workPackageNumber = 1,
+            deactivated = false,
         ),
         InvestmentSummary(
             id = 2L,
             investmentNumber = 2,
-            workPackageNumber = 1
-        )
-    )
+            workPackageNumber = 1,
+            deactivated = false,
+        ))
 
     @MockK
     lateinit var reportPersistence: ProjectPartnerReportPersistence

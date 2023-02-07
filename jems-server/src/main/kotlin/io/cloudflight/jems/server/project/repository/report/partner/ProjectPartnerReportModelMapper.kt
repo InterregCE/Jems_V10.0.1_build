@@ -292,6 +292,7 @@ fun List<ProjectPartnerReportWorkPackageOutputEntity>.toOutputsModel() = map {
         contribution = it.contribution,
         evidence = it.evidence,
         attachment = it.attachment?.toModel(),
+        deactivated = it.deactivated,
     )
 }
 

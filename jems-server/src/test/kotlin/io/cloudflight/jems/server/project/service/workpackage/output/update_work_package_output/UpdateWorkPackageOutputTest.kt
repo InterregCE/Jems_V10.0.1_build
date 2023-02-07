@@ -4,6 +4,8 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.exception.I18nValidationException
+import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
 import io.mockk.every
@@ -12,9 +14,11 @@ import io.mockk.impl.annotations.MockK
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import java.math.BigDecimal
 
-class UpdateWorkPackageOutputInteractorTest: UnitTest() {
+class UpdateWorkPackageOutputTest: UnitTest() {
 
     companion object {
         private val testOutput = WorkPackageOutput(
@@ -24,14 +28,14 @@ class UpdateWorkPackageOutputInteractorTest: UnitTest() {
             periodNumber = 10,
             programmeOutputIndicatorId = 7L,
             targetValue = BigDecimal.ONE,
+            deactivated = false,
         )
     }
 
-    @MockK
-    lateinit var mockedList: List<WorkPackageOutput>
+    @MockK lateinit var mockedList: List<WorkPackageOutput>
 
-    @MockK
-    lateinit var persistence: WorkPackagePersistence
+    @MockK lateinit var projectPersistence: ProjectPersistence
+    @MockK lateinit var persistence: WorkPackagePersistence
 
     @InjectMockKs
     private lateinit var updateOutputInteractor: UpdateWorkPackageOutput
@@ -42,11 +46,39 @@ class UpdateWorkPackageOutputInteractorTest: UnitTest() {
         assertThat(updateOutputInteractor.updateOutputsForWorkPackage(1L, 1L, emptyList())).isEmpty()
     }
 
-    @Test
-    fun `update - valid`() {
+    @ParameterizedTest(name = "update - valid {0}")
+    @EnumSource(value = ApplicationStatus::class, names = [
+        "APPROVED", "MODIFICATION_PRECONTRACTING", "CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED"
+    ], mode = EnumSource.Mode.EXCLUDE)
+    fun `update - valid`(status: ApplicationStatus) {
+        val projectId = status.ordinal.toLong()
+        every { projectPersistence.getApplicantAndStatusById(projectId).projectStatus } returns status
+
         every { persistence.updateWorkPackageOutputs(2L, any()) } returnsArgument 1
-        assertThat(updateOutputInteractor.updateOutputsForWorkPackage(1L, 2L, listOf(testOutput)))
+        assertThat(updateOutputInteractor.updateOutputsForWorkPackage(projectId, 2L, listOf(testOutput)))
             .containsExactly(testOutput)
+    }
+
+    @ParameterizedTest(name = "update after approved - valid {0}")
+    @EnumSource(value = ApplicationStatus::class, names = [
+        "APPROVED", "MODIFICATION_PRECONTRACTING", "CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED"
+    ])
+    fun `update after approved - valid`(status: ApplicationStatus) {
+        val projectId = status.ordinal.toLong()
+        every { projectPersistence.getApplicantAndStatusById(projectId).projectStatus } returns status
+
+        every { persistence.getWorkPackageOutputsForWorkPackage(3L, projectId = projectId) } returns
+            listOf(
+                testOutput.copy(workPackageId = 3, outputNumber = 1, deactivated = false)
+            )
+
+        every { persistence.updateWorkPackageOutputsAfterApproved(3L, any()) } returnsArgument 1
+        assertThat(updateOutputInteractor.updateOutputsForWorkPackage(projectId, 3L, listOf(
+            testOutput.copy(workPackageId = 3, outputNumber = 0, deactivated = false)
+        ))).containsExactly(
+            testOutput.copy(workPackageId = 3, outputNumber = 1, deactivated = true),
+            testOutput.copy(workPackageId = 3, outputNumber = 2, deactivated = false),
+        )
     }
 
     @Test

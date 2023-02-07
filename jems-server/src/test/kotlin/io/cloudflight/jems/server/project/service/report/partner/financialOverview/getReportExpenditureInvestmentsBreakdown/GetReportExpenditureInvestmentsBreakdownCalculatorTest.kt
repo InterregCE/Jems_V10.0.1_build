@@ -57,7 +57,8 @@ class GetReportExpenditureInvestmentsBreakdownCalculatorTest : UnitTest() {
             currentReport = BigDecimal.valueOf(100L),
             totalEligibleAfterControl = BigDecimal.ZERO,
             previouslyReportedParked = BigDecimal.ZERO,
-            currentReportReIncluded = BigDecimal.ZERO
+            currentReportReIncluded = BigDecimal.ZERO,
+            deactivated = false,
         )
 
         private val investment_2 = ExpenditureInvestmentBreakdownLine(
@@ -71,7 +72,8 @@ class GetReportExpenditureInvestmentsBreakdownCalculatorTest : UnitTest() {
             currentReport = BigDecimal.valueOf(20L),
             totalEligibleAfterControl = BigDecimal.ZERO,
             previouslyReportedParked = BigDecimal.ZERO,
-            currentReportReIncluded = BigDecimal.ZERO
+            currentReportReIncluded = BigDecimal.ZERO,
+            deactivated = true,
         )
 
         private val expenditureWithInvestment = ProjectPartnerReportExpenditureCost(
@@ -112,7 +114,8 @@ class GetReportExpenditureInvestmentsBreakdownCalculatorTest : UnitTest() {
                     totalReportedSoFarPercentage = BigDecimal.valueOf(16953, 2),
                     remainingBudget = BigDecimal.valueOf(-20858, 2),
                     previouslyReportedParked = BigDecimal.ZERO,
-                    currentReportReIncluded = BigDecimal.valueOf(154.29)
+                    currentReportReIncluded = BigDecimal.valueOf(154.29),
+                    deactivated = false,
                 ),
                 ExpenditureInvestmentBreakdownLine(
                     reportInvestmentId = 2L,
@@ -128,7 +131,8 @@ class GetReportExpenditureInvestmentsBreakdownCalculatorTest : UnitTest() {
                     totalReportedSoFarPercentage = BigDecimal.valueOf(6667, 2),
                     remainingBudget = BigDecimal.valueOf(20),
                     previouslyReportedParked = BigDecimal.valueOf(123),
-                    currentReportReIncluded = BigDecimal.ZERO
+                    currentReportReIncluded = BigDecimal.ZERO,
+                    deactivated = true,
                 ),
             ),
             total = ExpenditureInvestmentBreakdownLine(
@@ -145,7 +149,8 @@ class GetReportExpenditureInvestmentsBreakdownCalculatorTest : UnitTest() {
                 totalReportedSoFarPercentage = BigDecimal.valueOf(15238, 2),
                 remainingBudget = BigDecimal.valueOf(-18858, 2),
                 previouslyReportedParked = BigDecimal.valueOf(123),
-                currentReportReIncluded = BigDecimal.valueOf(154.29)
+                currentReportReIncluded = BigDecimal.valueOf(154.29),
+                deactivated = false,
             )
         )
 
@@ -165,7 +170,8 @@ class GetReportExpenditureInvestmentsBreakdownCalculatorTest : UnitTest() {
                     totalReportedSoFarPercentage = BigDecimal.valueOf(10000, 2),
                     remainingBudget = BigDecimal.ZERO,
                     previouslyReportedParked = BigDecimal.ZERO,
-                    currentReportReIncluded = BigDecimal.ZERO
+                    currentReportReIncluded = BigDecimal.ZERO,
+                    deactivated = false,
                 ),
                 ExpenditureInvestmentBreakdownLine(
                     reportInvestmentId = 2L,
@@ -181,7 +187,8 @@ class GetReportExpenditureInvestmentsBreakdownCalculatorTest : UnitTest() {
                     totalReportedSoFarPercentage = BigDecimal.valueOf(10000, 2),
                     remainingBudget = BigDecimal.ZERO,
                     previouslyReportedParked = BigDecimal.valueOf(120),
-                    currentReportReIncluded = BigDecimal.ZERO
+                    currentReportReIncluded = BigDecimal.ZERO,
+                    deactivated = true,
                 ),
             ),
             total = ExpenditureInvestmentBreakdownLine(
@@ -198,7 +205,8 @@ class GetReportExpenditureInvestmentsBreakdownCalculatorTest : UnitTest() {
                 totalReportedSoFarPercentage = BigDecimal.valueOf(10000, 2),
                 remainingBudget = BigDecimal.ZERO,
                 previouslyReportedParked = BigDecimal.valueOf(120),
-                currentReportReIncluded = BigDecimal.ZERO
+                currentReportReIncluded = BigDecimal.ZERO,
+                deactivated = false,
             ),
         )
 

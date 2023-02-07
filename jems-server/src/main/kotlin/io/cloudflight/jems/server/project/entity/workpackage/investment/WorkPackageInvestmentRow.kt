@@ -27,4 +27,5 @@ interface WorkPackageInvestmentRow: TranslationView {
     val houseNumber: String?
     val postalCode: String?
     val city: String?
+    val deactivated: Boolean?
 }

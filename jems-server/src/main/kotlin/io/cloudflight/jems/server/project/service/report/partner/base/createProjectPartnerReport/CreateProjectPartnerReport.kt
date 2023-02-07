@@ -179,12 +179,13 @@ class CreateProjectPartnerReport(
                     },
                 )
             },
-             outputs = wp.outputs.map { o ->
-                 CreateProjectPartnerReportWorkPackageOutput(
-                     number = o.outputNumber,
-                     title = o.title,
-                 )
-             },
+            outputs = wp.outputs.map { o ->
+                CreateProjectPartnerReportWorkPackageOutput(
+                    number = o.outputNumber,
+                    title = o.title,
+                    deactivated = o.deactivated,
+                )
+            },
         )
     }
 
@@ -195,6 +196,7 @@ class CreateProjectPartnerReport(
                 investmentNumber = it.investmentNumber,
                 workPackageNumber = wp.workPackageNumber,
                 title = it.title,
+                deactivated = it.deactivated,
             )
         }
     }.flatten()

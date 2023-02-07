@@ -67,6 +67,7 @@ internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
                     contribution = false,
                     evidence = null,
                     attachment = dummyFile,
+                    deactivated = false,
                 )
             )
         )
@@ -102,6 +103,7 @@ internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
                     contribution = null,
                     evidence = true,
                     attachment = dummyFile,
+                    deactivated = false,
                 )
             )
         )

@@ -39,6 +39,7 @@ interface WorkPackageDetailRow : TranslationView {
     val programmeOutputIndicatorMeasurementUnit: String?
     val targetValue: BigDecimal?
     val outputPeriodNumber: Int?
+    val outputDeactivated: Boolean?
     //output translation
     val outputTitle: String?
     val outputDescription: String?
@@ -57,6 +58,7 @@ interface WorkPackageDetailRow : TranslationView {
     val investmentPostalCode: String?
     val investmentCity: String?
     val investmentExpectedDeliveryPeriod: Int?
+    val investmentDeactivated: Boolean?
     //investment translation
     val investmentTitle: String?
     val justificationExplanation: String?

@@ -86,6 +86,7 @@ class ProjectPartnerReportFilePersistenceProviderTest : UnitTest() {
             contribution = true,
             evidence = false,
             attachment = attachment,
+            deactivated = false,
         )
 
         private fun contribution(id: Long, attachment: JemsFileMetadataEntity?) = ProjectPartnerReportContributionEntity(

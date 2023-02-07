@@ -41,7 +41,7 @@ enum class ApplicationStatus {
 
     fun isApproved() = this == APPROVED || this == CONTRACTED
 
-    fun isAlreadyApproved() = this == APPROVED || isAlreadyContracted()
+    fun isAlreadyApproved() = this == APPROVED || this == MODIFICATION_PRECONTRACTING || isAlreadyContracted()
 
     fun hasNotBeenApprovedYet() = !isAlreadyApproved()
 

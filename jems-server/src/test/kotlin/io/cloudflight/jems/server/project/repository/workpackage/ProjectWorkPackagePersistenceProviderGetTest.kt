@@ -231,7 +231,8 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
             outputNumber = 1,
             periodNumber = 1,
             programmeOutputIndicatorId = INDICATOR_ID,
-            programmeOutputIndicatorIdentifier = "ID.30"
+            programmeOutputIndicatorIdentifier = "ID.30",
+            deactivated = false,
         )
         val output2 = WorkPackageOutputEntity(
             outputId = outputId2,
@@ -241,6 +242,7 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
             workPackageId = 1L,
             outputNumber = 2,
             periodNumber = 2,
+            deactivated = false,
         )
 
         val workPackageWithActivities = WorkPackageEntity(
@@ -273,7 +275,8 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
             ),
             periodNumber = 3,
             programmeOutputIndicatorId = INDICATOR_ID,
-            targetValue = BigDecimal.TEN
+            targetValue = BigDecimal.TEN,
+            deactivated = false,
         )
 
         val workPackageWithOutputs = WorkPackageEntity(
@@ -415,6 +418,7 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
         every { mockWPORow.periodNumber } returns 1
         every { mockWPORow.title } returns "title"
         every { mockWPORow.description } returns "description"
+        every { mockWPORow.deactivated } returns false
 
         every { projectVersionRepo.findTimestampByVersion(id, version) } returns timestamp
         every { repository.findAllByProjectIdAsOfTimestamp(id, timestamp) } returns listOf(mockWPRow)
@@ -482,7 +486,8 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
                         targetValue = mockWPORow.targetValue,
                         periodNumber = mockWPORow.periodNumber,
                         title = setOf(InputTranslation(mockWPORow.language!!, mockWPORow.title)),
-                        description = setOf(InputTranslation(mockWPORow.language!!, mockWPORow.description))
+                        description = setOf(InputTranslation(mockWPORow.language!!, mockWPORow.description)),
+                        deactivated = false,
                     )
                 )
             )
@@ -805,6 +810,7 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
                 override val programmeOutputIndicatorIdentifier: String? = null
                 override val targetValue: BigDecimal? = null
                 override val outputPeriodNumber: Int? = null
+                override val outputDeactivated: Boolean = false
                 override val outputTitle: String? = null
                 override val outputDescription: String? = null
                 override val outputLanguage: SystemLanguage? = null
@@ -821,6 +827,7 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
                 override val investmentPostalCode: String? = null
                 override val investmentCity: String? = null
                 override val investmentTitle: String? = null
+                override val investmentDeactivated: Boolean = false
                 override val justificationExplanation: String? = null
                 override val justificationTransactionalRelevance: String? = null
                 override val justificationBenefits: String? = null

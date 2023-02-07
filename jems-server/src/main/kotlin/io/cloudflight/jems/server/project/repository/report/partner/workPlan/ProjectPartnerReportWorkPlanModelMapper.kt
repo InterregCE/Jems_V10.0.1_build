@@ -50,6 +50,7 @@ fun List<CreateProjectPartnerReportWorkPackageOutput>.toEntity(wp: ProjectPartne
             evidence = null,
             attachment = null,
             translatedValues = mutableSetOf(),
+            deactivated = it.deactivated,
         ).apply {
             translatedValues.addAll(
                 it.title.filter { !it.translation.isNullOrBlank() }

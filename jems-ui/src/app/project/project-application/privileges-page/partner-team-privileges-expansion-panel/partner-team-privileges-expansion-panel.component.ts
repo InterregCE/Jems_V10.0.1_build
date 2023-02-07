@@ -10,6 +10,7 @@ import {APIError} from '@common/models/APIError';
 import {of} from 'rxjs';
 import {Alert} from '@common/components/forms/alert';
 import {
+  AFTER_APPROVED_STATUSES,
   ProjectStore
 } from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
@@ -23,14 +24,6 @@ import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
 })
 export class PartnerTeamPrivilegesExpansionPanelComponent implements OnInit {
 
-  AFTER_APPROVED_STATUSES: ProjectStatusDTO.StatusEnum[] = [
-    ProjectStatusDTO.StatusEnum.APPROVED,
-    ProjectStatusDTO.StatusEnum.CONTRACTED,
-    ProjectStatusDTO.StatusEnum.INMODIFICATION,
-    ProjectStatusDTO.StatusEnum.MODIFICATIONSUBMITTED,
-    ProjectStatusDTO.StatusEnum.MODIFICATIONREJECTED,
-  ];
-
   @Input()
   partner: ProjectPartnerSummaryDTO;
   @Input()
@@ -40,7 +33,7 @@ export class PartnerTeamPrivilegesExpansionPanelComponent implements OnInit {
   Alert = Alert;
   isAfterApproved$ = this.projectStore.projectStatus$.pipe(
     map(status => status.status),
-    map(status => this.AFTER_APPROVED_STATUSES.includes(status))
+    map(status => AFTER_APPROVED_STATUSES.includes(status))
   );
   isCallSpf$ = this.projectStore.projectCallType$.pipe(map((type) => type === CallTypeEnum.SPF));
 

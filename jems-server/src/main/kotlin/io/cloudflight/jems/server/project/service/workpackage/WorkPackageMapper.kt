@@ -109,7 +109,8 @@ fun List<WorkPackageOutputRow>.toWorkPackageOutputsHistoricalData() =
             targetValue = groupedRows.value.first().targetValue,
             periodNumber = groupedRows.value.first().periodNumber,
             title = groupedRows.value.extractField { it.title },
-            description = groupedRows.value.extractField { it.description }
+            description = groupedRows.value.extractField { it.description },
+            deactivated = groupedRows.value.first().deactivated,
         )
     }
 
@@ -134,7 +135,8 @@ fun List<WorkPackageOutputRow>.toTimePlanWorkPackageOutputHistoricalData() =
             targetValue = groupedRows.value.first().targetValue,
             periodNumber = groupedRows.value.first().periodNumber,
             title = groupedRows.value.extractField { it.title },
-            description = groupedRows.value.extractField { it.description }
+            description = groupedRows.value.extractField { it.description },
+            deactivated = groupedRows.value.first().deactivated,
         )
     }
 fun List<WorkPackageDetailRow>.toModel(periods: List<ProjectPeriodRow>)=
@@ -182,7 +184,8 @@ fun List<WorkPackageDetailRow>.toModel(periods: List<ProjectPeriodRow>)=
                     periodStartMonth = periods.find { period -> period.periodNumber == groupedOutputRows.value.first().outputPeriodNumber }?.periodStart,
                     periodEndMonth = periods.find { period -> period.periodNumber == groupedOutputRows.value.first().outputPeriodNumber }?.periodEnd,
                     title = groupedOutputRows.value.extractField ({it.outputLanguage}){ it.outputTitle },
-                    description = groupedOutputRows.value.extractField ({it.outputLanguage}){ it.outputDescription }
+                    description = groupedOutputRows.value.extractField ({it.outputLanguage}){ it.outputDescription },
+                    deactivated = groupedOutputRows.value.first().outputDeactivated ?: false,
                 )
             },
             investments = groupedRows.value.filter { it.investmentId != null }.groupBy { it.investmentId }.map { groupedInvestmentRow ->
@@ -213,6 +216,7 @@ fun List<WorkPackageDetailRow>.toModel(periods: List<ProjectPeriodRow>)=
                     ownershipSiteLocation = groupedInvestmentRow.value.extractField ({it.investmentLanguage}) { it.ownershipSiteLocation },
                     ownershipRetain = groupedInvestmentRow.value.extractField ({it.investmentLanguage}) { it.ownershipRetain},
                     ownershipMaintenance = groupedInvestmentRow.value.extractField ({it.investmentLanguage}) { it.ownershipMaintenance},
+                    deactivated = groupedInvestmentRow.value.first().investmentDeactivated ?: false,
                 )
             }
         )

@@ -9,8 +9,9 @@ fun List<PartnerReportInvestmentEntity>.toModel() = map {
         id = it.id,
         investmentId = it.investmentId,
         workPackageNumber = it.workPackageNumber,
-        title = it.translatedValues.extractField { it.title },
         investmentNumber = it.investmentNumber,
+        title = it.translatedValues.extractField { it.title },
+        deactivated = it.deactivated,
         total = it.total,
     )
 }

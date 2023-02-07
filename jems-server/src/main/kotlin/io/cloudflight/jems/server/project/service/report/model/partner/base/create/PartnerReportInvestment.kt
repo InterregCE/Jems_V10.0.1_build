@@ -8,6 +8,7 @@ data class PartnerReportInvestment(
     val investmentNumber: Int,
     val workPackageNumber: Int,
     val title: Set<InputTranslation>,
+    val deactivated: Boolean,
     val total: BigDecimal,
     val previouslyReported: BigDecimal,
     val previouslyReportedParked: BigDecimal

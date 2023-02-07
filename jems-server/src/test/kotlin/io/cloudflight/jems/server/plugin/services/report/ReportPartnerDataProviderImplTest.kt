@@ -471,7 +471,8 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
             totalReportedSoFarPercentage = BigDecimal.valueOf(5),
             remainingBudget = BigDecimal.valueOf(6),
             previouslyReportedParked = BigDecimal.ZERO,
-            currentReportReIncluded = BigDecimal.ZERO
+            currentReportReIncluded = BigDecimal.ZERO,
+            deactivated = false,
         )
 
         private val investment = ExpenditureInvestmentBreakdown(
@@ -715,6 +716,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
                     contribution = true,
                     evidence = false,
                     attachment = null,
+                    deactivated = false,
                 ),
             ),
         )

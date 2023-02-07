@@ -9,6 +9,7 @@ data class ExpenditureInvestmentBreakdownLineDTO(
     val investmentNumber: Int,
     val workPackageNumber: Int,
     val title: Set<InputTranslation>,
+    val deactivated: Boolean,
     val totalEligibleBudget: BigDecimal,
     val previouslyReported: BigDecimal,
     val previouslyReportedParked: BigDecimal,

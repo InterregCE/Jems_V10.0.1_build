@@ -26,6 +26,7 @@ private fun emptyLine() = ExpenditureInvestmentBreakdownLine(
     investmentNumber = 0,
     workPackageNumber = 0,
     title = emptySet(),
+    deactivated = false,
     totalEligibleBudget = BigDecimal.ZERO,
     previouslyReported = BigDecimal.ZERO,
     previouslyReportedParked = BigDecimal.ZERO,

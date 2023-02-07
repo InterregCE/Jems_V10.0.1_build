@@ -177,7 +177,8 @@ fun workPackageOutput(workPackageId: Long, outputDTO: WorkPackageOutputDTO, vers
         ),
         targetValue = outputDTO.targetValue,
         periodNumber = outputDTO.periodNumber,
-        title = versionedInputTranslation("title", version)
+        title = versionedInputTranslation("title", version),
+        deactivated = false,
     )
 
 fun workPackageInvestment(investment: WorkPackageInvestmentDTO, version: String) =
@@ -198,7 +199,8 @@ fun workPackageInvestment(investment: WorkPackageInvestmentDTO, version: String)
         documentationExpectedImpacts = versionedInputTranslation("documentation expected impacts", version),
         ownershipSiteLocation = versionedInputTranslation("ownership site location", version),
         ownershipRetain = versionedInputTranslation("ownership retain", version),
-        ownershipMaintenance = versionedInputTranslation("ownership maintenance", version)
+        ownershipMaintenance = versionedInputTranslation("ownership maintenance", version),
+        deactivated = false,
     )
 
 fun projectPartnerDTO(

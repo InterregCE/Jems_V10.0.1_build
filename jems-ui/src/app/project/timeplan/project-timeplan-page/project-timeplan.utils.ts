@@ -200,8 +200,8 @@ export function getItems(workPackages: ProjectWorkPackageDTO[], results: Project
         start: getNestedStartDateFromPeriod(output.periodNumber),
         end: getNestedEndDateFromPeriod(output.periodNumber),
         type: 'range',
-        title: getOutputIndicatorTooltip(output.targetValue, translateService),
-        content: `O${wp.workPackageNumber}.${output.outputNumber}`,
+        title: getOutputIndicatorTooltip(output.targetValue, translateService, output.deactivated),
+        content: `O${wp.workPackageNumber}.${output.outputNumber}` + (output.deactivated ? ' !' : ''),
         className: getColor(indexWp),
       });
       if (minPeriod > output.periodNumber) {
@@ -249,7 +249,12 @@ function getResultIndicatorTooltip(targetValue: number, translateService: Transl
     : '';
 }
 
-function getOutputIndicatorTooltip(targetValue: number, translateService: TranslateService): string {
+function getOutputIndicatorTooltip(targetValue: number, translateService: TranslateService, deactivated: boolean): string {
+  if (deactivated) {
+    return `<span>${escapeHtml(
+      `${translateService.instant('project.application.form.partner.table.status')}: ${translateService.instant('project.application.form.partner.table.status.inactive')}`
+    )}</span>`;
+  }
   return targetValue
     ? `<span>${escapeHtml(
       `${translateService.instant('project.application.form.work.package.output.target.value')}: ${NumberService.toLocale(targetValue)}`
