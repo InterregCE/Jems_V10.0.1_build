@@ -122,10 +122,10 @@ class UpdateProjectPartnerControlReportExpenditureVerification(
     ): List<ProjectPartnerReportExpenditureVerification> = map {
         it.apply {
             if (newValues.containsKey(it.id)) {
-                partOfSample = newValues[it.id]!!.parked || newValues[it.id]!!.partOfSample
                 certifiedAmount = newValues[it.id]!!.certifiedAmount
                 deductedAmount = if (newValues[it.id]!!.parked) BigDecimal.ZERO else
                     (declaredAmountAfterSubmission ?: BigDecimal.ZERO).minus(certifiedAmount)
+                partOfSample = (deductedAmount.compareTo(BigDecimal.ZERO) != 0) || newValues[it.id]!!.parked || newValues[it.id]!!.partOfSample
                 typologyOfErrorId = with(newValues[it.id]!!.typologyOfErrorId) {
                     return@with if (this == null || allowedTypologyErrorIds.contains(this)) this else null
                 }
@@ -188,5 +188,4 @@ class UpdateProjectPartnerControlReportExpenditureVerification(
             originalNumber = it.parkingMetadata?.originalExpenditureNumber ?: it.number
         )
     }
-
 }

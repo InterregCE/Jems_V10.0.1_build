@@ -429,6 +429,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
       this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.setValidators([Validators.required]);
       this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.setErrors({required: true});
       this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.markAsDirty();
+      this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.partOfSample)?.setValue(true);
     }
 
     this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.certifiedAmount)?.setValue(declaredAmountInEur - deductedAmount);

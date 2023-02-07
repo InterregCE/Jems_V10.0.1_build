@@ -111,8 +111,8 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
     private val expectedUpdateWithoutParking = ExpenditureVerificationUpdate(
         id = 14L,
         partOfSample = true,
-        certifiedAmount = BigDecimal.TEN,
-        deductedAmount = BigDecimal.valueOf(-9),
+        certifiedAmount = BigDecimal.ZERO,
+        deductedAmount = BigDecimal.ONE,
         typologyOfErrorId = existingError.id,
         verificationComment = "new comment",
         parked = false
@@ -128,10 +128,20 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
         parked = true
     )
 
+    private val expectedUpdateWithDeduction = ExpenditureVerificationUpdate(
+        id = 14L,
+        partOfSample = true,
+        certifiedAmount = BigDecimal.valueOf(-199),
+        deductedAmount = BigDecimal.valueOf(200),
+        typologyOfErrorId = existingError.id,
+        verificationComment = "deduction included",
+        parked = false
+    )
+
     private val expenditureUpdateValidWithoutParking = ProjectPartnerReportExpenditureVerificationUpdate(
         id = 14L,
         partOfSample = true,
-        certifiedAmount = BigDecimal.TEN,
+        certifiedAmount = BigDecimal.ZERO,
         typologyOfErrorId = existingError.id,
         verificationComment = "new comment",
         parked = false
@@ -144,6 +154,15 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
         typologyOfErrorId = null,
         verificationComment = "parked expenditure",
         parked = true
+    )
+
+    private val expenditureUpdateValidWithDeduction = ProjectPartnerReportExpenditureVerificationUpdate(
+        id = 14L,
+        partOfSample = true,
+        certifiedAmount = BigDecimal.valueOf(-199),
+        typologyOfErrorId = existingError.id,
+        verificationComment = "deduction included",
+        parked = false
     )
 
     private val expenditureUpdateInvalid = ProjectPartnerReportExpenditureVerificationUpdate(
@@ -210,6 +229,30 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
         ).isEqualTo(listOf(verification.copy()))
 
         assertThat(slotToUpdate.captured).containsExactly(expectedUpdateWithoutParking)
+        assertTrue(slotToUpdate.captured.first().partOfSample)
+    }
+
+    @Test
+    fun `updatePartnerReportExpenditureVerification - with deduction`() {
+        every { reportExpenditurePersistence.getPartnerControlReportExpenditureVerification(partnerId = 17L, reportId = 55L) } returns
+                listOf(verification.copy())
+        every { typologyPersistence.getAllTypologyErrors() } returns listOf(existingError)
+
+        val slotToUpdate = slot<List<ExpenditureVerificationUpdate>>()
+        every { reportExpenditurePersistence
+            .updatePartnerControlReportExpenditureVerification(partnerId = 17L, reportId = 55, capture(slotToUpdate))
+        } returns listOf(verification.copy())
+
+        every { reportParkedExpenditurePersistence.parkExpenditures(emptyList()) } answers { }
+        every { reportParkedExpenditurePersistence.unParkExpenditures(emptyList()) } answers { }
+
+        assertThat(updatePartnerReportExpenditureVerification
+            .updatePartnerReportExpenditureVerification(partnerId = 17L, reportId = 55L, listOf(expenditureUpdateValidWithDeduction))
+        ).isEqualTo(listOf(verification.copy()))
+
+        assertThat(slotToUpdate.captured).containsExactly(expectedUpdateWithDeduction)
+        assertThat(slotToUpdate.captured.first().deductedAmount.equals(200L))
+        assertTrue(slotToUpdate.captured.first().partOfSample)
     }
 
     @Test
@@ -286,6 +329,7 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
             listOf(expenditureUpdateValidWithParking.copy(parked = false, certifiedAmount = BigDecimal.ONE)),
         )).containsExactly(verificationUnParked)
         assertThat(slotToUpdate.captured).containsExactly(expectedUpdateWithParking.copy(parked = false, certifiedAmount = BigDecimal.ONE))
+        assertTrue(slotToUpdate.captured.first().partOfSample)
 
         assertThat(parkedItems.captured).isEmpty()
         assertThat(unParkedIds.captured).containsExactly(14L)
