@@ -15,7 +15,7 @@
                     <mat-select formControlName="dimension" class="placeholder-required" required
                                 placeholder="{{'project.contracting.monitoring.dimension.input.select' | translate}}">
                         <mat-option *ngFor="let dimension of dimensionsEnum" [value]="dimension"
-                                    (onSelectionChange)="resetDimensionControl($event, i, dimension)">
+                                    (onSelectionChange)="resetDimensionControl($event, i)">
                            {{'programme.objective.dimension.' + dimension.toLowerCase() | translate}}
                         </mat-option>
                     </mat-select>

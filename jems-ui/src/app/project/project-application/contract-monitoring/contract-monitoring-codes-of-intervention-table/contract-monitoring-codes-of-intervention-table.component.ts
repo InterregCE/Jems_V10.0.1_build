@@ -44,7 +44,7 @@ export class ContractMonitoringCodesOfInterventionTableComponent implements OnCh
 
   dimensionsEnum = Object.keys(ContractingDimensionCodeDTO.ProgrammeObjectiveDimensionEnum);
 
-  selectedDimension: string;
+  dimensionControl: AbstractControl | null;
 
   dimensionCodesTableData: AbstractControl[] = [];
   dimensionCodesColumnsToDisplay = [
@@ -117,7 +117,7 @@ export class ContractMonitoringCodesOfInterventionTableComponent implements OnCh
     projectBudgetAmountShareControl?.updateValueAndValidity();
   }
 
-  resetDimensionControl(event: any, controlIndex: number, dimension: string): void {
+  resetDimensionControl(event: any, controlIndex: number): void {
     if (event.isUserInput) {
       this.dimensionCodesFormItems.at(controlIndex).setValue({
         id: 0,
@@ -126,11 +126,12 @@ export class ContractMonitoringCodesOfInterventionTableComponent implements OnCh
         projectBudgetAmountShare: '',
         projectBudgetPercentShare: '',
       });
+      this.dimensionControl = this.dimensionCodesFormItems.at(controlIndex).get('dimension');
       const dimensionCodeControl = this.dimensionCodesFormItems.at(controlIndex).get('dimensionCode');
+      dimensionCodeControl?.markAsPristine();
       const projectBudgetAmountShareControl = this.dimensionCodesFormItems.at(controlIndex).get('projectBudgetAmountShare');
       projectBudgetAmountShareControl?.setValidators([Validators.required, this.dimensionCodeAmountValidator()]);
       projectBudgetAmountShareControl?.updateValueAndValidity();
-      this.selectedDimension = dimension;
       dimensionCodeControl?.setValidators([Validators.required, this.dimensionCodeAlreadySelected(), this.hasDimensionCodesSet()]);
       dimensionCodeControl?.updateValueAndValidity();
     }
@@ -199,8 +200,17 @@ export class ContractMonitoringCodesOfInterventionTableComponent implements OnCh
   }
 
   private hasDimensionCodesSet(): ValidatorFn {
-    return (): ValidationErrors | null => {
-      return this.getCodesForDimension(this.selectedDimension).length < 1 ? {dimensionCodesNotSet: true} : null;
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!this.dimensionControl?.value) {
+        return null;
+      }
+
+      if (!this.getCodesForDimension(this.dimensionControl?.value)) {
+        control.markAsDirty();
+        return {dimensionCodesNotSet: true} as any;
+      } else {
+        return null;
+      }
     };
   }
 
