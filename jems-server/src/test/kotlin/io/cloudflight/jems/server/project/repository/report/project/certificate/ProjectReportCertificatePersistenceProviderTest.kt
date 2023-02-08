@@ -6,11 +6,13 @@ import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerRe
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.partner.model.CertificateSummary
+import io.cloudflight.jems.server.project.repository.report.partner.model.ReportIdentificationSummary
 import io.cloudflight.jems.server.project.repository.report.project.base.ProjectReportRepository
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.certificate.PartnerReportCertificate
+import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectPartnerReportIdentificationSummary
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -24,6 +26,7 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
@@ -50,6 +53,35 @@ class ProjectReportCertificatePersistenceProviderTest : UnitTest() {
                 projectReport = projectReport,
             )
         }
+
+        private val partnerReportIdentificationSummary = ProjectPartnerReportIdentificationSummary(
+            id = 1L,
+            reportNumber = 10,
+            partnerNumber = 1,
+            partnerRole = ProjectPartnerRole.LEAD_PARTNER,
+            partnerId = 99L,
+            sumTotalEligibleAfterControl = BigDecimal(800),
+            nextReportForecast = BigDecimal(75),
+            periodDetail = null
+        )
+
+        private val reportIdentificationSummary = ReportIdentificationSummary(
+            partnerReportId = 1L,
+            partnerReportNumber = 10,
+            partnerNumber = 1,
+            partnerRole = ProjectPartnerRole.LEAD_PARTNER,
+            partnerId = 99L,
+            totalEligibleAfterControl = BigDecimal(800),
+            nextReportForecast = BigDecimal(75),
+            periodNumber = null,
+            endDate = LocalDate.now(),
+            startDate = LocalDate.now().minusDays(1),
+            periodBudget = null,
+            periodBudgetCumulative = null,
+            periodEnd = null,
+            periodStart = null
+        )
+
     }
 
     @MockK
@@ -179,6 +211,15 @@ class ProjectReportCertificatePersistenceProviderTest : UnitTest() {
                 partnerNumber = 4,
                 partnerRole = ProjectPartnerRole.PARTNER,
             )
+        )
+    }
+
+    @Test
+    fun getIdentificationSummariesOfProjectReport() {
+        every { partnerReportRepository.findAllIdentificationSummariesByProjectReportId(10L) } returns
+            listOf(reportIdentificationSummary)
+        assertThat(persistence.getIdentificationSummariesOfProjectReport(10L)).containsExactly(
+            partnerReportIdentificationSummary
         )
     }
 

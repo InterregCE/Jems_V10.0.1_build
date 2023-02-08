@@ -47,10 +47,7 @@ export class ProjectReportIdentificationExtensionStore {
       tap(report => Log.info('Fetched project report identification:', this, report)),
     );
 
-    return merge(initialIdentification$, this.updatedReportIdentification$)
-      .pipe(
-        shareReplay(1)
-      );
+    return merge(initialIdentification$, this.updatedReportIdentification$);
   }
 
   public saveIdentificationExtension(identification: UpdateProjectReportIdentificationDTO): Observable<ProjectReportIdentificationDTO> {

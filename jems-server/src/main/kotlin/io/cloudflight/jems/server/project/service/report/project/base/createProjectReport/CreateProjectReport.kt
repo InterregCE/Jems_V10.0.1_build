@@ -16,10 +16,12 @@ import io.cloudflight.jems.server.project.service.report.model.project.base.Proj
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.toServiceModel
 import io.cloudflight.jems.server.project.service.report.project.base.updateProjectReport.UpdateProjectReport.Companion.validateInput
+import io.cloudflight.jems.server.project.service.report.project.identification.ProjectReportIdentificationPersistence
 import io.cloudflight.jems.server.project.service.report.project.projectReportCreated
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 import java.time.ZonedDateTime
 
 @Service
@@ -30,6 +32,7 @@ class CreateProjectReport(
     private val reportPersistence: ProjectReportPersistence,
     private val auditPublisher: ApplicationEventPublisher,
     private val projectDescriptionPersistence: ProjectDescriptionPersistence,
+    private val projectReportIdentificationPersistence: ProjectReportIdentificationPersistence,
 ) : CreateProjectReportInteractor {
 
     companion object {
@@ -55,18 +58,25 @@ class CreateProjectReport(
         )
 
         val latestReportNumber = reportPersistence.getCurrentLatestReportFor(projectId)?.reportNumber ?: 0
-
-        val leadPartner = projectPartnerPersistence
-            .findTop30ByProjectId(projectId, version)
-            .firstOrNull { it.role == ProjectPartnerRole.LEAD_PARTNER }
+        val partners = projectPartnerPersistence.findTop30ByProjectId(projectId, version).toSet()
+        val leadPartner = partners.firstOrNull { it.role == ProjectPartnerRole.LEAD_PARTNER }
 
         val targetGroups = projectDescriptionPersistence.getBenefits(projectId = projectId, version = version) ?: emptyList()
 
         return reportPersistence.createReportAndFillItToEmptyCertificates(
-            data.toCreateModel(latestReportNumber, version, project, leadPartner), targetGroups
+            report = data.toCreateModel(latestReportNumber, version, project, leadPartner),
+            targetGroups = targetGroups,
+            previouslyReportedByPartner = getPreviouslyReportedByPartners(projectId, partners)
         ).also {
             auditPublisher.publishEvent(projectReportCreated(this, project, it))
         }.toServiceModel({ periodNumber -> periods[periodNumber]!! })
+    }
+
+
+    private fun getPreviouslyReportedByPartners(projectId: Long, partners: Set<ProjectPartnerDetail>): Map<Long, BigDecimal> {
+        val submittedReportIds = reportPersistence.getSubmittedProjectReportIds(projectId)
+        val cumulative = projectReportIdentificationPersistence.getSpendingProfileCumulative(submittedReportIds)
+        return partners.associate { Pair(it.id, cumulative.getOrDefault(it.id, BigDecimal.ZERO)) }
     }
 
     private fun validateMaxAmountOfReports(currentAmount: Int) {

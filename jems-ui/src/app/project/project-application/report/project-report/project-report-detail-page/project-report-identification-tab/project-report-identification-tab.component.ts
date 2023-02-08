@@ -60,6 +60,7 @@ export class ProjectReportIdentificationTabComponent {
     matDatetimePickerMax: 'common.error.field.end.after.start'
   };
 
+  selectedType: ProjectReportDTO.TypeEnum;
   selectedPeriod: ProjectPeriodDTO | undefined = undefined;
   availablePeriods: ProjectPeriodDTO[] = [];
   availableDeadlines: string[] = [];
@@ -100,6 +101,7 @@ export class ProjectReportIdentificationTabComponent {
     }
     if (identification) {
       this.form.patchValue(identification);
+      this.selectedType = identification.type;
     }
     this.form.patchValue({
       periodNumber: identification?.periodDetail?.number,

@@ -21,6 +21,7 @@ import io.cloudflight.jems.server.project.entity.report.partner.workPlan.Project
 import io.cloudflight.jems.server.project.entity.report.partner.workPlan.ProjectPartnerReportWorkPackageOutputEntity
 import io.cloudflight.jems.server.project.repository.report.partner.model.CertificateSummary
 import io.cloudflight.jems.server.project.repository.report.partner.model.ReportSummary
+import io.cloudflight.jems.server.project.repository.report.partner.model.ReportIdentificationSummary
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.partner.PartnerReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
@@ -36,6 +37,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackageActivityDeliverable
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackageOutput
 import io.cloudflight.jems.server.project.service.report.model.project.certificate.PartnerReportCertificate
+import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectPartnerReportIdentificationSummary
 import java.math.BigDecimal.ZERO
 import java.time.ZoneId
 
@@ -104,6 +106,19 @@ fun ProjectPartnerReportEntity.toSubmissionSummary() =
         partnerNumber = identification.partnerNumber,
         partnerRole = identification.partnerRole,
     )
+
+fun List<ReportIdentificationSummary>.toIdentificationSummaries():List<ProjectPartnerReportIdentificationSummary> = map {
+    ProjectPartnerReportIdentificationSummary(
+        id = it.partnerReportId,
+        reportNumber = it.partnerReportNumber,
+        partnerNumber = it.partnerNumber,
+        partnerRole = it.partnerRole,
+        partnerId = it.partnerId,
+        nextReportForecast = it.nextReportForecast ?: ZERO,
+        periodDetail = it.getPeriodData(),
+        sumTotalEligibleAfterControl = it.totalEligibleAfterControl ?: ZERO,
+    )
+}
 
 fun ProjectPartnerReportEntity.toModel(coFinancing: List<ProjectPartnerReportCoFinancingEntity>) =
     ProjectPartnerReport(
