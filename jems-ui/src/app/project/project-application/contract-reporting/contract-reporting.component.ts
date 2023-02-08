@@ -34,7 +34,7 @@ export class ContractReportingComponent implements OnInit {
     canView: boolean;
     canEdit: boolean;
     projectStartDate: string;
-    canViewApplicationForm: boolean;
+    userCanViewTimeplan: boolean;
   }>;
 
   constructor(private formBuilder: FormBuilder,
@@ -51,16 +51,16 @@ export class ContractReportingComponent implements OnInit {
       this.contractReportingStore.userCanViewDeadlines$,
       this.contractReportingStore.userCanEditDeadlines$,
       this.contractReportingStore.contractingMonitoringStartDate$,
-      this.contractReportingStore.userCanViewApplicationForm$,
+      this.contractReportingStore.userCanViewTimeplan$,
     ])
       .pipe(
-        map(([availablePeriods, contractReportingDeadlines, userCanViewDeadlines, userCanEditDeadlines, contractingMonitoringStartDate, userCanViewAppForm]) => ({
+        map(([availablePeriods, contractReportingDeadlines, userCanViewDeadlines, userCanEditDeadlines, contractingMonitoringStartDate, userCanViewTimeplan]) => ({
             periods: availablePeriods,
             reportingDeadlines: contractReportingDeadlines,
             canView: userCanViewDeadlines,
             canEdit: userCanEditDeadlines,
             projectStartDate: contractingMonitoringStartDate,
-            canViewApplicationForm: userCanViewAppForm
+            userCanViewTimeplan
           })
         ),
         tap(data => this.initForm(data.canEdit)),

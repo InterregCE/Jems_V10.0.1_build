@@ -131,10 +131,10 @@
             </button>
         </form>
         <h4 id="timeplanHeader">{{'project.application.contract.reporting.timeplan' | translate}}</h4>
-        <jems-alert [show]="!data.canViewApplicationForm"
+        <jems-alert [show]="!data.userCanViewTimeplan"
                     [type]="Alert.WARNING">
             <span>{{'project.application.contract.reporting.application.form.hidden' | translate}}</span>
         </jems-alert>
-        <jems-project-timeplan-page *ngIf="data.canViewApplicationForm" [reportingDeadlines$]="contractReportingStore.contractReportingDeadlines$"></jems-project-timeplan-page>
+        <jems-project-timeplan-page *ngIf="data.userCanViewTimeplan" [reportingDeadlines$]="contractReportingStore.contractReportingDeadlines$"></jems-project-timeplan-page>
     </jems-form>
 </jems-project-page-template>

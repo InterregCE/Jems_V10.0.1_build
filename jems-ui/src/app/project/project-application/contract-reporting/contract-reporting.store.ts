@@ -26,7 +26,7 @@ export class ContractReportingStore {
   contractReportingDeadlines$: Observable<ProjectContractingReportingScheduleDTO[]>;
   userCanViewDeadlines$: Observable<boolean>;
   userCanEditDeadlines$: Observable<boolean>;
-  userCanViewApplicationForm$: Observable<boolean>;
+  userCanViewTimeplan$: Observable<boolean>;
   savedData$ = new Subject<ProjectContractingReportingScheduleDTO[]>();
   availablePeriods$: Observable<ProjectPeriodForMonitoringDTO[]>;
   contractingMonitoringStartDate$: Observable<string>;
@@ -39,7 +39,7 @@ export class ContractReportingStore {
     this.contractReportingDeadlines$ = this.contractReportingDeadlines();
     this.userCanViewDeadlines$ = this.userCanViewDeadlines();
     this.userCanEditDeadlines$ = this.userCanEditDeadlines();
-    this.userCanViewApplicationForm$ = this.permissionService.hasPermission(PermissionsEnum.ProjectFormRetrieve);
+    this.userCanViewTimeplan$ = this.userCanViewTimeplan();
     this.availablePeriods$ = this.contractReportingAvailablePeriods();
     this.contractingMonitoringStartDate$ = this.contractingMonitoringStartDate();
   }
@@ -84,6 +84,16 @@ export class ContractReportingStore {
     ])
       .pipe(
         map(([canEdit, canCreatorEdit, level]) => canEdit || (canCreatorEdit && (level === LevelEnum.EDIT || level === LevelEnum.MANAGE)))
+      );
+  }
+
+  private userCanViewTimeplan(): Observable<boolean> {
+    return combineLatest([
+      this.permissionService.hasPermission(PermissionsEnum.ProjectFormRetrieve),
+      this.projectStore.userIsProjectOwner$
+    ])
+      .pipe(
+        map(([canView, isOwner]) => canView || isOwner)
       );
   }
 
