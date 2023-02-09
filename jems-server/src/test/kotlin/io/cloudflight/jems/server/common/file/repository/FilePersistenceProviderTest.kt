@@ -53,7 +53,7 @@ class FilePersistenceProviderTest: UnitTest() {
             uploaded = LAST_WEEK,
             author = UserSimple(45L, email = "admin@cloudflight.io", name = "Admin", surname = "Big"),
             size = 47889L,
-            description = "desc",
+            description = "desc"
         )
 
         private val dummyFileMetadataEntity = JemsFileMetadataEntity(

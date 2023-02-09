@@ -14,16 +14,12 @@ import {I18nMessage} from '@common/models/I18nMessage';
 import {PageFileList} from '@common/components/file-list/page-file-list';
 import {Alert} from '@common/components/forms/alert';
 import {ContractPartnerStore} from '@project/project-application/contract-partner/contract-partner.store';
-import {
-  ProjectPartnerSummaryDTO,
-  ProjectReportFileDTO
-} from '@cat/api';
+import {ProjectPartnerSummaryDTO, ProjectReportFileDTO} from '@cat/api';
 import {catchError, finalize, map, take, tap, withLatestFrom} from 'rxjs/operators';
 import {CategoryInfo, CategoryNode} from '@project/common/components/category-tree/categoryModels';
-import FileTypeEnum = ProjectReportFileDTO.TypeEnum;
 import {FileListItem} from '@common/components/file-list/file-list-item';
 import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
-
+import FileTypeEnum = ProjectReportFileDTO.TypeEnum;
 
 @UntilDestroy()
 @Component({
@@ -157,8 +153,7 @@ export class PartnerFilesComponent implements OnInit {
       editable: isEditable && file.type === FileTypeEnum.ContractPartnerDoc,
       deletable: isEditable && file.type === FileTypeEnum.ContractPartnerDoc,
       tooltipIfNotDeletable: isEditable ? 'file.table.action.delete.disabled.for.tab.tooltip' : '',
-      iconIfNotDeletable: isEditable ? 'delete_forever' : '',
+      iconIfNotDeletable: isEditable ? 'delete_forever' : ''
     }));
   }
-
 }

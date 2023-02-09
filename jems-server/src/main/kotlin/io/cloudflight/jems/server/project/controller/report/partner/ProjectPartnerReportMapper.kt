@@ -3,25 +3,29 @@ package io.cloudflight.jems.server.project.controller.report.partner
 import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerVatRecoveryDTO
+import io.cloudflight.jems.api.project.dto.report.file.ProjectPartnerReportFileTypeDTO
+import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileDTO
+import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
+import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileSearchRequestDTO
+import io.cloudflight.jems.api.project.dto.report.file.UserSimpleDTO
+import io.cloudflight.jems.api.project.dto.report.partner.PartnerReportIdentificationCoFinancingDTO
+import io.cloudflight.jems.api.project.dto.report.partner.PartnerReportIdentificationDTO
 import io.cloudflight.jems.api.project.dto.report.partner.ProjectPartnerReportDTO
 import io.cloudflight.jems.api.project.dto.report.partner.ProjectPartnerReportSummaryDTO
 import io.cloudflight.jems.api.project.dto.report.partner.ReportStatusDTO
-import io.cloudflight.jems.api.project.dto.report.file.*
-import io.cloudflight.jems.api.project.dto.report.partner.PartnerReportIdentificationCoFinancingDTO
-import io.cloudflight.jems.api.project.dto.report.partner.PartnerReportIdentificationDTO
 import io.cloudflight.jems.api.project.dto.report.partner.identification.ProjectPartnerReportPeriodDTO
 import io.cloudflight.jems.server.programme.controller.fund.toDto
 import io.cloudflight.jems.server.programme.controller.legalstatus.toDto
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileSearchRequest
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import io.cloudflight.jems.server.project.service.report.model.partner.PartnerReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileSearchRequest
-import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
 import org.mapstruct.Mapper
 import org.mapstruct.factory.Mappers
@@ -98,7 +102,7 @@ fun JemsFile.toDto() = ProjectReportFileDTO(
     author = author.toDto(),
     size = size,
     sizeString = size.sizeToString(),
-    description = description,
+    description = description
 )
 
 private val sizeUnits = arrayOf("B", "kB", "MB", "GB", "TB")

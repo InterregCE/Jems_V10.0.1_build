@@ -33,14 +33,12 @@ class ProjectPartnerControlReportFileController(
     override fun generateControlReportCertificate(partnerId: Long, reportId: Long) =
         generateReportControlCertificate.generateCertificate(partnerId, reportId)
 
-
     override fun updateControlReportCertificateFileDescription(
         partnerId: Long,
         reportId: Long,
         fileId: Long,
         description: String?
     ) = setCertificateFileDescription.setDescription(partnerId, reportId, fileId, description ?: "")
-
 
     override fun listFiles(
         partnerId: Long,

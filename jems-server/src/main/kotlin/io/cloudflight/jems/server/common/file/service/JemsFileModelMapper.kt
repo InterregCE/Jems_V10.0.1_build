@@ -3,8 +3,8 @@ package io.cloudflight.jems.server.common.file.service
 import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
-import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
+import io.cloudflight.jems.server.user.entity.UserEntity
 import org.springframework.data.domain.Page
 import java.time.ZonedDateTime
 
@@ -36,7 +36,7 @@ fun JemsFileMetadataEntity.toFullModel() = JemsFile(
     uploaded = uploaded,
     author = user.toModel(),
     size = size,
-    description = description,
+    description = description
 )
 
 fun UserEntity.toModel() = UserSimple(

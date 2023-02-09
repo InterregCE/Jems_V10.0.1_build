@@ -46,7 +46,7 @@ class PaymentAdvanceAttachmentControllerTest : UnitTest() {
             uploaded = UPLOADED_DATE,
             author = UserSimple(9L, "dummy@email", name = "Dummy", surname = "Surname"),
             size = 653225L,
-            description = "desc $id",
+            description = "desc $id"
         )
 
         private fun expectedAttachment(id: Long) = ProjectReportFileDTO(
@@ -71,7 +71,6 @@ class PaymentAdvanceAttachmentControllerTest : UnitTest() {
             name = FILE_NAME,
             uploaded = UPLOADED_DATE,
         )
-
     }
 
     @MockK
@@ -148,5 +147,4 @@ class PaymentAdvanceAttachmentControllerTest : UnitTest() {
         assertThat(projectFileSlot.captured.size).isEqualTo(100)
 
     }
-
 }

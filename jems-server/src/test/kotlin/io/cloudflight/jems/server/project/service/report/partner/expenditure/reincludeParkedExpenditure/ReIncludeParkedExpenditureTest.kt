@@ -98,7 +98,7 @@ internal class ReIncludeParkedExpenditureTest : UnitTest() {
             uploaded = time,
             author = UserSimple(id = 318L, "email", name = "name", surname = "surname"),
             size = 324L,
-            description = "desc",
+            description = "desc"
         )
         every { reportExpenditurePersistence.getExpenditureAttachment(5L, 500L) } returns file
 
@@ -137,5 +137,4 @@ internal class ReIncludeParkedExpenditureTest : UnitTest() {
             assertThat(userId).isEqualTo(318L)
         }
     }
-
 }

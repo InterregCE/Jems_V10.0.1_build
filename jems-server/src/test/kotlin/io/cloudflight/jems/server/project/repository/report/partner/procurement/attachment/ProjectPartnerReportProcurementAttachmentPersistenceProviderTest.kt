@@ -9,9 +9,11 @@ import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectReportProcurementFile
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.service.model.UserStatus
-import io.mockk.*
+import io.mockk.clearMocks
+import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -63,9 +65,8 @@ class ProjectPartnerReportProcurementAttachmentPersistenceProviderTest : UnitTes
             uploaded = YEARS_AGO_20,
             author = UserSimple(45L, email = "admin@cloudflight.io", name = "Admin", surname = "Big"),
             size = 989656189L,
-            description = "dummy description",
+            description = "dummy description"
         )
-
     }
 
     @MockK
@@ -110,5 +111,4 @@ class ProjectPartnerReportProcurementAttachmentPersistenceProviderTest : UnitTes
         assertThat(persistence.countAttachmentsCreatedUpUntilNow(procurementId, reportId = reportId))
             .isEqualTo(222L)
     }
-
 }

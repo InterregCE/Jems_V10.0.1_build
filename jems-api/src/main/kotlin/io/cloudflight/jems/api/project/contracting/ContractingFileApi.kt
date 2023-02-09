@@ -12,13 +12,13 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestPart
-import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.multipart.MultipartFile
 
 @Api("Project Contracting File Management")
@@ -145,10 +145,10 @@ interface ContractingFileApi {
 
     @ApiOperation("Download partner file")
     @GetMapping(
-        "${ENDPOINT_API_CONTRACTING_FILE}/partnerDocument/{partnerId}/download/{fileId}",
+        "${ENDPOINT_API_CONTRACTING_FILE}/partnerDocument/download/{fileId}",
         produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE]
     )
-    fun downloadPartnerFile(@PathVariable projectId: Long, @PathVariable partnerId: Long, @PathVariable fileId: Long): ResponseEntity<ByteArrayResource>
+    fun downloadPartnerFile(@PathVariable projectId: Long, @PathVariable fileId: Long): ResponseEntity<ByteArrayResource>
 
     @ApiOperation("Delete contract file")
     @DeleteMapping("${ENDPOINT_API_CONTRACTING_FILE}/contract/delete/{fileId}")

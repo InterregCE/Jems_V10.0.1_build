@@ -15,7 +15,6 @@ class DownloadInternalFile(
     private val filePersistence: JemsFilePersistence
 ) : DownloadInternalFileInteractor {
 
-
     @CanViewProjectMonitoring
     @Transactional(readOnly = true)
     @ExceptionWrapper(DownloadInternalFileException::class)
@@ -24,5 +23,4 @@ class DownloadInternalFile(
         return contractingFilePersistence.downloadFile(projectId = projectId, fileId = fileId)
             ?: throw FileNotFound()
     }
-
 }

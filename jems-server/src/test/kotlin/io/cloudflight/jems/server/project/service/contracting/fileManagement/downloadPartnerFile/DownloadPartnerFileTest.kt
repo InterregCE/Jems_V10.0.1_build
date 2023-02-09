@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test
 internal class DownloadPartnerFileTest : UnitTest() {
 
     companion object {
-        private const val PARTNER_ID = 10L
+        private const val PROJECT_ID = 1L
         private const val FILE_ID = 20L
     }
 
@@ -38,10 +38,8 @@ internal class DownloadPartnerFileTest : UnitTest() {
     @Test
     fun `download partner file`() {
         val file = mockk<Pair<String, ByteArray>>()
-        every { filePersistence.getFileTypeByPartnerId(FILE_ID, PARTNER_ID) } returns JemsFileType.ContractPartnerDoc
-        every { contractingFilePersistence.downloadFileByPartnerId(PARTNER_ID, FILE_ID) } returns file
-        Assertions.assertThat(interactor.downloadPartnerFile(partnerId = PARTNER_ID, fileId = FILE_ID)).isEqualTo(file)
+        every { filePersistence.getFileType(FILE_ID, PROJECT_ID) } returns JemsFileType.ContractPartnerDoc
+        every { contractingFilePersistence.downloadFile(PROJECT_ID, FILE_ID) } returns file
+        Assertions.assertThat(interactor.downloadPartnerFile(projectId = PROJECT_ID, fileId = FILE_ID)).isEqualTo(file)
     }
-
 }
-

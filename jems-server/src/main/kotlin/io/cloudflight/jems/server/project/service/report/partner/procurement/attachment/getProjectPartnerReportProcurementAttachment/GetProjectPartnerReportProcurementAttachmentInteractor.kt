@@ -5,5 +5,4 @@ import io.cloudflight.jems.server.project.service.report.model.partner.procureme
 interface GetProjectPartnerReportProcurementAttachmentInteractor {
 
     fun getAttachment(partnerId: Long, reportId: Long, procurementId: Long): List<ProjectReportProcurementFile>
-
 }

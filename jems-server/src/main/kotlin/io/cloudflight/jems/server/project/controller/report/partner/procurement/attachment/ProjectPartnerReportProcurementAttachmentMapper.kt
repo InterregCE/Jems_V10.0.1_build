@@ -16,5 +16,5 @@ fun ProjectReportProcurementFile.toDto() = ProjectReportProcurementFileDTO(
     author = partnerReportMapper.map(author),
     size = size,
     sizeString = size.sizeToString(),
-    description = description,
+    description = description
 )

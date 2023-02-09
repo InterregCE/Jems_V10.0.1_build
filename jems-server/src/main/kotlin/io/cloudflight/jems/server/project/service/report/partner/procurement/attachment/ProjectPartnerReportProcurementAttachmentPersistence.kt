@@ -7,5 +7,4 @@ interface ProjectPartnerReportProcurementAttachmentPersistence {
     fun getAttachmentsBeforeAndIncludingReportId(procurementId: Long, reportId: Long): List<ProjectReportProcurementFile>
 
     fun countAttachmentsCreatedUpUntilNow(procurementId: Long, reportId: Long): Long
-
 }

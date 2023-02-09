@@ -21,9 +21,4 @@ class DeleteInternalFile(
         validateInternalFile(filePersistence.getFileType(fileId, projectId))
         contractingFilePersistence.deleteFile(projectId = projectId, fileId = fileId)
     }
-
-
 }
-
-
-

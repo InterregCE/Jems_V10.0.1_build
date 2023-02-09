@@ -6,8 +6,8 @@ import io.cloudflight.jems.api.project.dto.report.file.UserSimpleDTO
 import io.cloudflight.jems.api.project.dto.report.partner.procurement.attachment.ProjectReportProcurementFileDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectReportProcurementFile
 import io.cloudflight.jems.server.project.service.report.partner.procurement.attachment.getProjectPartnerReportProcurementAttachment.GetProjectPartnerReportProcurementAttachmentInteractor
@@ -37,7 +37,7 @@ class ProjectPartnerReportProcurementAttachmentControllerTest : UnitTest() {
             uploaded = YEARS_AGO_10,
             author = UserSimple(45L, "dummy@email", name = "Dummy", surname = "Surname"),
             size = 653245L,
-            description = "desc 270",
+            description = "desc 270"
         )
 
         private fun expectedAttachment(reportId: Long) = ProjectReportProcurementFileDTO(
@@ -50,7 +50,7 @@ class ProjectPartnerReportProcurementAttachmentControllerTest : UnitTest() {
             author = UserSimpleDTO(45L, "dummy@email", name = "Dummy", surname = "Surname"),
             size = 653245L,
             sizeString = "637.9 kB",
-            description = "desc 270",
+            description = "desc 270"
         )
 
         private val fileMetadata = JemsFileMetadata(
@@ -64,7 +64,6 @@ class ProjectPartnerReportProcurementAttachmentControllerTest : UnitTest() {
             name = FILE_NAME,
             uploaded = YEARS_AGO_10,
         )
-
     }
 
     @MockK
@@ -95,5 +94,4 @@ class ProjectPartnerReportProcurementAttachmentControllerTest : UnitTest() {
         assertThat(projectFileSlot.captured.name).isEqualTo(FILE_NAME)
         assertThat(projectFileSlot.captured.size).isEqualTo(100)
     }
-
 }

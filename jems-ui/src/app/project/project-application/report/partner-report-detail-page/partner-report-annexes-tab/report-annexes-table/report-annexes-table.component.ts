@@ -76,7 +76,7 @@ export class ReportAnnexesTableComponent {
               && reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Draft
               && canEdit,
             tooltipIfNotDeletable: canEdit ? 'file.table.action.delete.disabled.for.tab.tooltip' : '',
-            iconIfNotDeletable: canEdit ? 'delete_forever' : '',
+            iconIfNotDeletable: canEdit ? 'delete_forever' : ''
           })),
           reportStatus,
           selectedCategory,

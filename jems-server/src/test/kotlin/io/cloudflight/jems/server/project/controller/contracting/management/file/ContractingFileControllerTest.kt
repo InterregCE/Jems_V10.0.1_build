@@ -31,8 +31,8 @@ import io.cloudflight.jems.server.project.service.contracting.fileManagement.set
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.uploadFileToContracting.UploadFileToContractingInteractor
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingFileSearchRequest
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import io.mockk.clearMocks
 import io.mockk.every
@@ -65,7 +65,7 @@ class ContractingFileControllerTest : UnitTest() {
             uploaded = YESTERDAY,
             author = UserSimple(45L, email = "admin@cloudflight.io", name = "Admin", surname = "Big"),
             size = 47889L,
-            description = "example desc",
+            description = "example desc"
         )
 
         private val contractingFileDto = ProjectReportFileDTO(
@@ -86,7 +86,7 @@ class ContractingFileControllerTest : UnitTest() {
             uploaded = YESTERDAY,
             author = UserSimple(45L, email = "admin@cloudflight.io", name = "Admin", surname = "Big"),
             size = 47889L,
-            description = "example desc",
+            description = "example desc"
         )
 
         private val partnerFileDto = ProjectReportFileDTO(
@@ -101,7 +101,6 @@ class ContractingFileControllerTest : UnitTest() {
         )
 
     }
-
 
     @MockK
     lateinit var uploadToContracting: UploadFileToContractingInteractor
@@ -138,7 +137,6 @@ class ContractingFileControllerTest : UnitTest() {
 
     @MockK
     lateinit var deletePartnerFile: DeletePartnerFileInteractor
-
 
     @InjectMockKs
     private lateinit var controller: ContractingFileController
@@ -263,7 +261,6 @@ class ContractingFileControllerTest : UnitTest() {
         verify(exactly = 1) { deleteContractFile.delete(PROJECT_ID, fileId = 302L) }
     }
 
-
     @Test
     fun `delete contract attachment throws exception`() {
         every { deleteContractFile.delete(PROJECT_ID, fileId = -1L) } throws DeleteContractFileException(RuntimeException())
@@ -294,7 +291,6 @@ class ContractingFileControllerTest : UnitTest() {
         controller.updateContractFileDescription(1L, 1L, "description")
         verify(exactly = 1) { controller.updateContractFileDescription(1L, 1L, "description") }
     }
-
 
     @Test
     fun setInternalFileDescription() {
@@ -353,9 +349,9 @@ class ContractingFileControllerTest : UnitTest() {
     @Test
     fun `download partner file`() {
         val fileContentArray = ByteArray(5)
-        every { downloadPartnerFile.downloadPartnerFile(1L, fileId = 360L) } returns Pair("partnerFile.txt", fileContentArray)
+        every { downloadPartnerFile.downloadPartnerFile(PROJECT_ID, fileId = 360L) } returns Pair("partnerFile.txt", fileContentArray)
 
-        assertThat(controller.downloadPartnerFile(PROJECT_ID, 1L, fileId = 360L))
+        assertThat(controller.downloadPartnerFile(PROJECT_ID, fileId = 360L))
             .isEqualTo(
                 ResponseEntity.ok()
                     .contentLength(5)
@@ -378,5 +374,4 @@ class ContractingFileControllerTest : UnitTest() {
         val exception = assertThrows<DeleteContractingPartnerFileException> { deletePartnerFile.delete(1L, fileId = -1L) }
         assertThat(exception.i18nMessage.i18nKey).isEqualTo("use.case.delete.contracting.partner.file.failed")
     }
-
 }

@@ -33,7 +33,7 @@ internal class ListContractingPartnerFilesTest : UnitTest() {
             uploaded = ZonedDateTime.of(2020,1,30,15,10,10,10, ZoneId.systemDefault()),
             author = UserSimple(45L, "dummy@email", name = "Dummy", surname = "Surname"),
             size = 6281245L,
-            description = "Description",
+            description = "Description"
         )
     }
 
@@ -42,7 +42,6 @@ internal class ListContractingPartnerFilesTest : UnitTest() {
 
     @MockK
     lateinit var filePersistence: JemsFilePersistence
-
 
     @InjectMockKs
     lateinit var interactor: ListContractingPartnerFiles
@@ -68,5 +67,4 @@ internal class ListContractingPartnerFilesTest : UnitTest() {
         Assertions.assertThat(interactor.listPartner(PARTNER_ID, Pageable.unpaged(), searchRequest)).isEqualTo(result)
         Assertions.assertThat(indexPrefix.captured).isEqualTo("Project/000010/Contracting/ContractPartner/ContractPartnerDoc/000020/")
     }
-
 }

@@ -11,9 +11,9 @@ import io.cloudflight.jems.server.payments.service.regular.attachment.getPayment
 import io.cloudflight.jems.server.payments.service.regular.attachment.setDescriptionToPaymentAttachment.SetDescriptionToPaymentAttachmentInteractor
 import io.cloudflight.jems.server.payments.service.regular.attachment.uploadPaymentAttachment.UploadPaymentAttachmentInteractor
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import io.cloudflight.jems.server.utils.FILE_NAME
 import io.cloudflight.jems.server.utils.file
@@ -46,7 +46,7 @@ class PaymentAttachmentControllerTest : UnitTest() {
             uploaded = YEARS_AGO_10,
             author = UserSimple(45L, "dummy@email", name = "Dummy", surname = "Surname"),
             size = 653225L,
-            description = "desc $id",
+            description = "desc $id"
         )
 
         private fun expectedAttachment(id: Long) = ProjectReportFileDTO(
@@ -71,7 +71,6 @@ class PaymentAttachmentControllerTest : UnitTest() {
             name = FILE_NAME,
             uploaded = YEARS_AGO_10,
         )
-
     }
 
     @MockK
@@ -144,7 +143,5 @@ class PaymentAttachmentControllerTest : UnitTest() {
             .isEqualTo(expectedMetadata)
         assertThat(projectFileSlot.captured.name).isEqualTo(FILE_NAME)
         assertThat(projectFileSlot.captured.size).isEqualTo(100)
-
     }
-
 }

@@ -95,7 +95,6 @@ class ProjectPartnerReportControlFilePersistenceProviderTest : UnitTest() {
         clearMocks(fileRepository, reportControlFileRepository)
     }
 
-
     @Test
     fun getListOfControlReportFiles() {
         every { reportControlFileRepository.findAllByReportId(REPORT_ID, Pageable.unpaged()) } returns PageImpl(listOf(result))
