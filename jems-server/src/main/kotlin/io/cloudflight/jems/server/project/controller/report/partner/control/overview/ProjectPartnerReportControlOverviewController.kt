@@ -26,7 +26,7 @@ class ProjectPartnerReportControlOverviewController(
         reportId: Long,
         linkedFormVersion: String?
     ): ControlDeductionOverviewDTO =
-        getReportControlDeductionOverview.get(partnerId, reportId, linkedFormVersion).toDto()
+        getReportControlDeductionOverview.get(partnerId, reportId).toDto()
 
 
     override fun getControlOverview(partnerId: Long, reportId: Long) =

@@ -50,17 +50,14 @@ export class PartnerControlReportOverviewAndFinalizeTabComponent{
   error$ = new BehaviorSubject<APIError | null>(null);
 
   data$: Observable<{
-    dataSource: MatTableDataSource<ControlWorkOverviewDTO>;
+    overview: ControlWorkOverviewDTO;
+    deduction: ControlDeductionOverviewDTO;
     finalizationAllowed: boolean;
     reportId: number;
     partnerId: number;
     userCanEdit: boolean;
     userCanView: boolean;
     controlReportOverview: ControlOverviewDTO;
-  }>;
-  deductionOverview$: Observable<{
-    dataSource: MatTableDataSource<ControlDeductionOverviewRowDTO>;
-    data: ControlDeductionOverviewDTO;
   }>;
   overviewForm: FormGroup = this.formBuilder.group({
     controlWorkStartDate: [''],
@@ -98,24 +95,18 @@ export class PartnerControlReportOverviewAndFinalizeTabComponent{
       untilDestroyed(this)
     ).subscribe();
 
-    this.deductionOverview$ = combineLatest([
-      this.pageStore.controlDeductionOverview$
-    ]).pipe(
-      map(([overviewData]) => ({
-        dataSource: new MatTableDataSource(overviewData.deductionRows),
-        data: overviewData
-      })),
-    );
     this.data$ = combineLatest([
       this.pageStore.controlWorkOverview$,
+      this.pageStore.controlDeductionOverview$,
       this.reportDetailPageStore.partnerReport$,
       this.reportDetailPageStore.partnerId$.pipe(map(id => Number(id))),
       this.reportPageStore.institutionUserCanEditControlReports$,
       this.reportPageStore.institutionUserCanViewControlReports$,
       this.store.partnerControlReportOverview$
     ]).pipe(
-      map(([data, report, partnerId, userCanEdit, userCanView, controlReportOverview]) => ({
-        dataSource: new MatTableDataSource([data]),
+      map(([overview, deduction, report, partnerId, userCanEdit, userCanView, controlReportOverview]: any) => ({
+        overview,
+        deduction,
         finalizationAllowed: report.status === ProjectPartnerReportDTO.StatusEnum.InControl,
         reportId: report.id,
         partnerId,

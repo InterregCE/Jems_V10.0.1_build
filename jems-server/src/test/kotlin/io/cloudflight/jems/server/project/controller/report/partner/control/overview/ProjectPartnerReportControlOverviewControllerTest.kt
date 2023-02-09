@@ -180,7 +180,6 @@ class ProjectPartnerReportControlOverviewControllerTest : UnitTest() {
             getReportControlDeductionOverview.get(
                 partnerId = PARTNER_ID,
                 reportId = REPORT_ID,
-                "1.0"
             )
         } returns dummyDeductionOverview
         assertThat(

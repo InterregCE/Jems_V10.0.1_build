@@ -2,8 +2,8 @@ package io.cloudflight.jems.server.project.service.report.partner.control.overvi
 
 import io.cloudflight.jems.server.project.service.report.model.partner.control.overview.ControlWorkOverview
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.ProjectPartnerReportExpenditureVerificationPersistence
-import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.calculateCurrent
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.percentageOf
@@ -13,23 +13,30 @@ import java.math.BigDecimal
 
 @Service
 class GetReportControlWorkOverviewService(
-    private val reportCoFinancingPersistence: ProjectPartnerReportExpenditureCoFinancingPersistence,
+    private val reportPersistence: ProjectPartnerReportPersistence,
     private val reportControlExpenditurePersistence: ProjectPartnerReportExpenditureVerificationPersistence,
     private val reportExpenditureCostCategoryPersistence: ProjectPartnerReportExpenditureCostCategoryPersistence,
-) : GetReportControlWorkOverviewInteractor {
+) {
 
     @Transactional(readOnly = true)
-    override fun get(partnerId: Long, reportId: Long): ControlWorkOverview {
+    fun get(partnerId: Long, reportId: Long): ControlWorkOverview {
+        val isClosed = reportPersistence.getPartnerReportById(partnerId = partnerId, reportId = reportId).status.isFinalized()
+
         val currentExpenditures = reportControlExpenditurePersistence
             .getPartnerControlReportExpenditureVerification(partnerId, reportId = reportId)
 
         val costCategories = reportExpenditureCostCategoryPersistence.getCostCategories(partnerId, reportId = reportId)
 
         val controlSample = currentExpenditures.onlySamplingOnes().sum()
+        // this parked sum might not be needed when report finalized and after MP2-3099 is implemented
         val parkedSum = currentExpenditures.onlyParkedOnes().calculateCurrent(costCategories.options).sum
-        val eligibleAfterControl = currentExpenditures.calculateCertified(costCategories.options).sum
 
-        val currentReportSum = reportCoFinancingPersistence.getReportCurrentSum(partnerId, reportId = reportId)
+        val eligibleAfterControl = if
+            (isClosed) costCategories.totalEligibleAfterControl.sum
+        else
+            currentExpenditures.calculateCertified(costCategories.options).sum
+
+        val currentReportSum = costCategories.currentlyReported.sum
 
         return ControlWorkOverview(
             declaredByPartner = currentReportSum,
