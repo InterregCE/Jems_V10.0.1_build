@@ -91,7 +91,7 @@ export class PartnerFilesComponent implements OnInit {
   }
 
   downloadFile(file: FileListItem): void {
-    this.contractingFilesStoreService.downloadFile(file.id).pipe(take(1)).subscribe();
+    this.contractingFilesStoreService.downloadFile(file).pipe(take(1)).subscribe();
   }
 
   deleteFile(file: FileListItem): void {
