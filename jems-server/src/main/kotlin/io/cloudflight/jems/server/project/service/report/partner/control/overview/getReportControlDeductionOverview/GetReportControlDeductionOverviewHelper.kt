@@ -16,7 +16,7 @@ fun Collection<ProjectPartnerReportExpenditureVerification>.calculateTypology(
 ): BudgetCostsCalculationResultFull {
     val sums = groupBy { it.getCategory() }
         .mapValues { it.value.sumOf { v-> v.declaredAmountAfterSubmission ?: BigDecimal.ZERO }.minus(it.value.sumOf { it.certifiedAmount }) }
-    return calculateBudget(options, sums, RoundingMode.UP)
+    return calculateBudget(options, sums)
 }
 
 private val emptySumUp = ControlDeductionOverviewRow(

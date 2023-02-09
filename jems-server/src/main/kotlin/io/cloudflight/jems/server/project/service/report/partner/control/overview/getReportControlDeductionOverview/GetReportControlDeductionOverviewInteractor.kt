@@ -4,6 +4,6 @@ import io.cloudflight.jems.server.project.service.report.model.partner.control.o
 
 interface GetReportControlDeductionOverviewInteractor {
 
-    fun get(partnerId: Long, reportId: Long, linkedFormVersion: String?): ControlDeductionOverview
+    fun get(partnerId: Long, reportId: Long): ControlDeductionOverview
 
 }

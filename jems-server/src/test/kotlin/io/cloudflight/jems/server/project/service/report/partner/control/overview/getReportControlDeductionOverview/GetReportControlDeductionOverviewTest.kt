@@ -3,20 +3,25 @@ package io.cloudflight.jems.server.project.service.report.partner.control.overvi
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.service.typologyerrors.ProgrammeTypologyErrorsPersistence
 import io.cloudflight.jems.server.programme.service.typologyerrors.model.TypologyErrors
+import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.control.overview.ControlDeductionOverview
 import io.cloudflight.jems.server.project.service.report.model.partner.control.overview.ControlDeductionOverviewRow
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ReportExpenditureCostCategory
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.ProjectPartnerReportExpenditureVerificationPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
-import org.assertj.core.api.Assertions
-import org.junit.jupiter.api.Test
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import java.math.BigDecimal
 
 class GetReportControlDeductionOverviewTest : UnitTest() {
@@ -24,7 +29,6 @@ class GetReportControlDeductionOverviewTest : UnitTest() {
     companion object {
         private const val PARTNER_ID = 592L
         private const val REPORT_ID = 1L
-        private const val LUMP_SUM_ID = 2L
 
         private const val TYPOLOGY_ID = 600L
         private const val TYPOLOGY_DESCRIPTION = "Typology of error"
@@ -51,18 +55,31 @@ class GetReportControlDeductionOverviewTest : UnitTest() {
                 otherCostsOnStaffCostsFlatRate = null,
             )
             every { it.totalsFromAF.sum } returns BigDecimal.valueOf(500L)
-        }
 
-        val costOptionsNoFlatRate = mockk<ReportExpenditureCostCategory>().also {
-            every { it.options } returns ProjectPartnerBudgetOptions(
-                partnerId = PARTNER_ID,
-                officeAndAdministrationOnStaffCostsFlatRate = null,
-                officeAndAdministrationOnDirectCostsFlatRate = null,
-                travelAndAccommodationOnStaffCostsFlatRate = null,
-                staffCostsFlatRate = null,
-                otherCostsOnStaffCostsFlatRate = null,
+            every { it.currentlyReported } returns BudgetCostsCalculationResultFull(
+                staff = BigDecimal.valueOf(10),
+                office = BigDecimal.valueOf(11),
+                travel = BigDecimal.valueOf(12),
+                external = BigDecimal.valueOf(13),
+                equipment = BigDecimal.valueOf(14),
+                infrastructure = BigDecimal.valueOf(15),
+                other = BigDecimal.valueOf(16),
+                lumpSum = BigDecimal.valueOf(17),
+                unitCost = BigDecimal.valueOf(18),
+                sum = BigDecimal.valueOf(19),
             )
-            every { it.totalsFromAF.sum } returns BigDecimal.ZERO
+            every { it.totalEligibleAfterControl } returns BudgetCostsCalculationResultFull(
+                staff = BigDecimal.valueOf(9),
+                office = BigDecimal.valueOf(8),
+                travel = BigDecimal.valueOf(7),
+                external = BigDecimal.valueOf(6),
+                equipment = BigDecimal.valueOf(5),
+                infrastructure = BigDecimal.valueOf(4),
+                other = BigDecimal.valueOf(3),
+                lumpSum = BigDecimal.valueOf(2),
+                unitCost = BigDecimal.valueOf(1),
+                sum = BigDecimal.valueOf(0),
+            )
         }
 
         fun expenditure(
@@ -91,30 +108,7 @@ class GetReportControlDeductionOverviewTest : UnitTest() {
             return expenditure
         }
 
-    }
-
-
-    @MockK
-    lateinit var typologyOfErrorsPersistence: ProgrammeTypologyErrorsPersistence
-
-    @MockK
-    lateinit var reportExpenditurePersistence: ProjectPartnerReportExpenditureVerificationPersistence
-
-    @MockK
-    lateinit var reportExpenditureCostCategoryPersistence: ProjectPartnerReportExpenditureCostCategoryPersistence
-
-    @InjectMockKs
-    lateinit var getReportControlDeductionOverview: GetReportControlDeductionOverview
-
-    @Test
-    fun `get Overview for deductions when flat rates are applied`() {
-        every { typologyOfErrorsPersistence.getAllTypologyErrors() } returns typologyOfErrors
-        every {
-            reportExpenditurePersistence.getPartnerControlReportExpenditureVerification(
-                PARTNER_ID,
-                REPORT_ID
-            )
-        } returns listOf(
+        private val expenditureList = listOf(
             expenditure(
                 id = 554L,
                 costCategory = ReportBudgetCategory.StaffCosts,
@@ -157,69 +151,100 @@ class GetReportControlDeductionOverviewTest : UnitTest() {
             ),
         )
 
-        every {
-            reportExpenditureCostCategoryPersistence.getCostCategories(
-                PARTNER_ID,
-                REPORT_ID
-            )
-        } returns costOptionsWithFlatRate
+        private val expectedExpenditure_1 = ControlDeductionOverviewRow(
+            typologyOfErrorId = TYPOLOGY_ID,
+            typologyOfErrorName = TYPOLOGY_DESCRIPTION,
+            staffCost = BigDecimal.valueOf(500L),
+            officeAndAdministration = BigDecimal.ZERO,
+            travelAndAccommodation = BigDecimal.ZERO,
+            externalExpertise = BigDecimal.ZERO,
+            equipment = BigDecimal.valueOf(200L),
+            infrastructureAndWorks = BigDecimal.ZERO,
+            lumpSums = BigDecimal.ZERO,
+            unitCosts = BigDecimal.ZERO,
+            otherCosts = BigDecimal.ZERO,
+            total = BigDecimal.valueOf(700L)
+        )
+        private val expectedExpenditure_2 = ControlDeductionOverviewRow(
+            typologyOfErrorId = TYPOLOGY_ID_SECOND,
+            typologyOfErrorName = TYPOLOGY_DESCRIPTION_SECOND,
+            staffCost = BigDecimal.valueOf(350L),
+            officeAndAdministration = BigDecimal.ZERO,
+            travelAndAccommodation = BigDecimal.ZERO,
+            externalExpertise = BigDecimal.ZERO,
+            equipment = BigDecimal.ZERO,
+            infrastructureAndWorks = BigDecimal.ZERO,
+            lumpSums = BigDecimal.ZERO,
+            unitCosts = BigDecimal.ZERO,
+            otherCosts = BigDecimal.ZERO,
+            total = BigDecimal.valueOf(350L)
+        )
+        private val expectedExpenditure_3 = ControlDeductionOverviewRow(
+            typologyOfErrorId = TYPOLOGY_ID_THIRD,
+            typologyOfErrorName = TYPOLOGY_DESCRIPTION_THIRD,
+            staffCost = BigDecimal.ZERO,
+            officeAndAdministration = BigDecimal.ZERO,
+            travelAndAccommodation = BigDecimal.ZERO,
+            externalExpertise = BigDecimal.ZERO,
+            equipment = BigDecimal.ZERO,
+            infrastructureAndWorks = BigDecimal.ZERO,
+            lumpSums = BigDecimal.ZERO,
+            unitCosts = BigDecimal.ZERO,
+            otherCosts = BigDecimal.ZERO,
+            total = BigDecimal.ZERO
+        )
 
-        val expectedDeductionRows = mutableListOf(
-            ControlDeductionOverviewRow(
-                typologyOfErrorId = TYPOLOGY_ID,
-                typologyOfErrorName = TYPOLOGY_DESCRIPTION,
-                staffCost = BigDecimal.valueOf(500L),
-                officeAndAdministration = BigDecimal.ZERO,
-                travelAndAccommodation = BigDecimal.ZERO,
-                externalExpertise = BigDecimal.ZERO,
-                equipment = BigDecimal.valueOf(200L),
-                infrastructureAndWorks = BigDecimal.ZERO,
-                lumpSums = BigDecimal.ZERO,
-                unitCosts = BigDecimal.ZERO,
-                otherCosts = BigDecimal.ZERO,
-                total = BigDecimal.valueOf(700L)
-            ),
-            ControlDeductionOverviewRow(
-                typologyOfErrorId = TYPOLOGY_ID_SECOND,
-                typologyOfErrorName = TYPOLOGY_DESCRIPTION_SECOND,
-                staffCost = BigDecimal.valueOf(350L),
-                officeAndAdministration = BigDecimal.ZERO,
-                travelAndAccommodation = BigDecimal.ZERO,
-                externalExpertise = BigDecimal.ZERO,
-                equipment = BigDecimal.ZERO,
-                infrastructureAndWorks = BigDecimal.ZERO,
-                lumpSums = BigDecimal.ZERO,
-                unitCosts = BigDecimal.ZERO,
-                otherCosts = BigDecimal.ZERO,
-                total = BigDecimal.valueOf(350L)
-            ),
-            ControlDeductionOverviewRow(
-                typologyOfErrorId = TYPOLOGY_ID_THIRD,
-                typologyOfErrorName = TYPOLOGY_DESCRIPTION_THIRD,
-                staffCost = BigDecimal.ZERO,
-                officeAndAdministration = BigDecimal.ZERO,
-                travelAndAccommodation = BigDecimal.ZERO,
-                externalExpertise = BigDecimal.ZERO,
-                equipment = BigDecimal.ZERO,
-                infrastructureAndWorks = BigDecimal.ZERO,
-                lumpSums = BigDecimal.ZERO,
-                unitCosts = BigDecimal.ZERO,
-                otherCosts = BigDecimal.ZERO,
-                total = BigDecimal.ZERO
-            ),
-            ControlDeductionOverviewRow(
+    }
+
+
+    @MockK
+    lateinit var reportPersistence: ProjectPartnerReportPersistence
+
+    @MockK
+    lateinit var typologyOfErrorsPersistence: ProgrammeTypologyErrorsPersistence
+
+    @MockK
+    lateinit var reportExpenditurePersistence: ProjectPartnerReportExpenditureVerificationPersistence
+
+    @MockK
+    lateinit var reportExpenditureCostCategoryPersistence: ProjectPartnerReportExpenditureCostCategoryPersistence
+
+    @InjectMockKs
+    lateinit var getReportControlDeductionOverview: GetReportControlDeductionOverview
+
+    @ParameterizedTest(name = "get Overview for deductions when flat rates are applied (status {0})")
+    @EnumSource(value = ReportStatus::class, names = ["Certified"])
+    fun `get Overview for deductions when flat rates are applied - closed`(status: ReportStatus) {
+        val report = mockk<ProjectPartnerReport>()
+        every { report.status } returns status
+        every { reportPersistence.getPartnerReportById(PARTNER_ID, REPORT_ID) } returns report
+
+        every { reportExpenditurePersistence
+            .getPartnerControlReportExpenditureVerification(PARTNER_ID, REPORT_ID)
+        } returns expenditureList
+
+        every { reportExpenditureCostCategoryPersistence.getCostCategories(PARTNER_ID, REPORT_ID) } returns
+            costOptionsWithFlatRate
+
+        every { typologyOfErrorsPersistence.getAllTypologyErrors() } returns typologyOfErrors
+
+        val expectedDeductionRows = listOf(
+            expectedExpenditure_1,
+            expectedExpenditure_2,
+            expectedExpenditure_3,
+            /* flat rate row */ ControlDeductionOverviewRow(
                 typologyOfErrorId = null,
                 typologyOfErrorName = null,
-                staffCost = BigDecimal.ZERO,
-                officeAndAdministration = BigDecimal.valueOf(12750, 2),
-                travelAndAccommodation = BigDecimal.valueOf(12750, 2),
-                externalExpertise = BigDecimal.ZERO,
-                equipment = BigDecimal.ZERO,
-                infrastructureAndWorks = BigDecimal.ZERO,
-                lumpSums = BigDecimal.ZERO,
-                unitCosts = BigDecimal.ZERO,
-                otherCosts = BigDecimal.ZERO,
-                total = BigDecimal.valueOf(25500, 2)
+                staffCost = null,
+                officeAndAdministration = BigDecimal.valueOf(3L),
+                travelAndAccommodation = BigDecimal.valueOf(5L),
+                externalExpertise = null,
+                equipment = null,
+                infrastructureAndWorks = null,
+                lumpSums = null,
+                unitCosts = null,
+                otherCosts = null,
+                total = BigDecimal.valueOf(8L)
             )
         )
 
@@ -227,183 +252,90 @@ class GetReportControlDeductionOverviewTest : UnitTest() {
             typologyOfErrorId = null,
             typologyOfErrorName = null,
             staffCost = BigDecimal.valueOf(850L),
-            officeAndAdministration = BigDecimal.valueOf(12750, 2),
-            travelAndAccommodation = BigDecimal.valueOf(12750, 2),
+            officeAndAdministration = BigDecimal.valueOf(3L),
+            travelAndAccommodation = BigDecimal.valueOf(5L),
             externalExpertise = BigDecimal.ZERO,
             equipment =  BigDecimal.valueOf(200L),
             infrastructureAndWorks = BigDecimal.ZERO,
             lumpSums = BigDecimal.ZERO,
             unitCosts = BigDecimal.ZERO,
             otherCosts = BigDecimal.ZERO,
-            total = BigDecimal.valueOf(130500, 2)
+            total = BigDecimal.valueOf(1058L),
         )
 
-        Assertions.assertThat(getReportControlDeductionOverview.get(PARTNER_ID, REPORT_ID, "1.0")).isEqualTo(
+        assertThat(getReportControlDeductionOverview.get(PARTNER_ID, REPORT_ID)).isEqualTo(
             ControlDeductionOverview(
                 deductionRows = expectedDeductionRows,
                 staffCostsFlatRate = null,
                 officeAndAdministrationFlatRate = 15,
                 travelAndAccommodationFlatRate = 15,
                 otherCostsOnStaffCostsFlatRate = null,
-                total = expectedTotal
+                total = expectedTotal,
             )
         )
-
     }
 
-    @Test
-    fun `get Overview for deductions - no flat rates`() {
+    @ParameterizedTest(name = "get Overview for deductions when flat rates are applied (status {0})")
+    @EnumSource(value = ReportStatus::class, names = ["Certified"], mode = EnumSource.Mode.EXCLUDE)
+    fun `get Overview for deductions when flat rates are applied - open`(status: ReportStatus) {
+        val report = mockk<ProjectPartnerReport>()
+        every { report.status } returns status
+        every { reportPersistence.getPartnerReportById(PARTNER_ID, REPORT_ID) } returns report
+
+        every { reportExpenditurePersistence
+            .getPartnerControlReportExpenditureVerification(PARTNER_ID, REPORT_ID)
+        } returns expenditureList
+
+        every { reportExpenditureCostCategoryPersistence.getCostCategories(PARTNER_ID, REPORT_ID) } returns
+            costOptionsWithFlatRate
+
         every { typologyOfErrorsPersistence.getAllTypologyErrors() } returns typologyOfErrors
-        every {
-            reportExpenditurePersistence.getPartnerControlReportExpenditureVerification(
-                PARTNER_ID,
-                REPORT_ID
-            )
-        } returns listOf(
-            expenditure(
-                id = 554L,
-                costCategory = ReportBudgetCategory.StaffCosts,
-                typologyOfErrorId = TYPOLOGY_ID,
-                declaredAmount = BigDecimal.valueOf(2000),
-                deductedAmount = BigDecimal.valueOf(323),
-                certified = BigDecimal.valueOf(1677),
-                isParked = false,
-                partOfSample = false,
-            ),
-            expenditure(
-                id = 555L,
-                typologyOfErrorId = TYPOLOGY_ID,
-                costCategory = ReportBudgetCategory.Multiple,
-                declaredAmount = BigDecimal.valueOf(5555556, 2),
-                deductedAmount = BigDecimal.valueOf(5555),
-                certified = BigDecimal.valueOf(5000056, 2),
-                partOfSample = false,
-                isParked = false,
-                lumpSumId = LUMP_SUM_ID
-            ),
-            expenditure(
-                id = 556L,
-                typologyOfErrorId = null,
-                costCategory = ReportBudgetCategory.TravelAndAccommodationCosts,
-                declaredAmount = BigDecimal.valueOf(300),
-                deductedAmount = BigDecimal.ZERO,
-                certified = BigDecimal.ZERO,
-                partOfSample = true,
-                isParked = true
-            ),
-            expenditure(
-                id = 557L,
-                typologyOfErrorId = TYPOLOGY_ID_SECOND,
-                costCategory = ReportBudgetCategory.StaffCosts,
-                declaredAmount = BigDecimal.valueOf(100),
-                deductedAmount = BigDecimal.valueOf(2256, 2),
-                certified = BigDecimal.valueOf(7744, 2),
-                partOfSample = false,
-                isParked = false
-            ),
-            expenditure(
-                id = 558L,
-                typologyOfErrorId = TYPOLOGY_ID_SECOND,
-                costCategory = ReportBudgetCategory.TravelAndAccommodationCosts,
-                declaredAmount = BigDecimal.valueOf(150),
-                deductedAmount = BigDecimal.valueOf(10020, 2),
-                certified = BigDecimal.valueOf(4980, 2),
-                partOfSample = false,
-                isParked = false,
-            ),
-        )
 
-        every {
-            reportExpenditureCostCategoryPersistence.getCostCategories(
-                PARTNER_ID,
-                REPORT_ID
-            )
-        } returns costOptionsNoFlatRate
-
-
-        val expectedDeductionRows = mutableListOf(
-            ControlDeductionOverviewRow(
-                typologyOfErrorId = TYPOLOGY_ID,
-                typologyOfErrorName = TYPOLOGY_DESCRIPTION,
-                staffCost = BigDecimal.valueOf(323),
-                officeAndAdministration = BigDecimal.ZERO,
-                travelAndAccommodation = BigDecimal.ZERO,
-                externalExpertise = BigDecimal.ZERO,
-                equipment = BigDecimal.ZERO,
-                infrastructureAndWorks = BigDecimal.ZERO,
-                lumpSums = BigDecimal.valueOf(5555),
-                unitCosts = BigDecimal.ZERO,
-                otherCosts = BigDecimal.ZERO,
-                total = BigDecimal.valueOf(5878)
-            ),
-            ControlDeductionOverviewRow(
-                typologyOfErrorId = TYPOLOGY_ID_SECOND,
-                typologyOfErrorName = TYPOLOGY_DESCRIPTION_SECOND,
-                staffCost = BigDecimal.valueOf(2256, 2),
-                officeAndAdministration = BigDecimal.ZERO,
-                travelAndAccommodation = BigDecimal.valueOf(10020, 2),
-                externalExpertise = BigDecimal.ZERO,
-                equipment = BigDecimal.ZERO,
-                infrastructureAndWorks = BigDecimal.ZERO,
-                lumpSums = BigDecimal.ZERO,
-                unitCosts = BigDecimal.ZERO,
-                otherCosts = BigDecimal.ZERO,
-                total = BigDecimal.valueOf(12276, 2)
-            ),
-            ControlDeductionOverviewRow(
-                typologyOfErrorId = TYPOLOGY_ID_THIRD,
-                typologyOfErrorName = TYPOLOGY_DESCRIPTION_THIRD,
-                staffCost = BigDecimal.ZERO,
-                officeAndAdministration = BigDecimal.ZERO,
-                travelAndAccommodation = BigDecimal.ZERO,
-                externalExpertise = BigDecimal.ZERO,
-                equipment = BigDecimal.ZERO,
-                infrastructureAndWorks = BigDecimal.ZERO,
-                lumpSums = BigDecimal.ZERO,
-                unitCosts = BigDecimal.ZERO,
-                otherCosts = BigDecimal.ZERO,
-                total = BigDecimal.ZERO
-            ),
-            ControlDeductionOverviewRow(
+        val expectedDeductionRows = listOf(
+            expectedExpenditure_1,
+            expectedExpenditure_2,
+            expectedExpenditure_3,
+            /* flat rate row */ ControlDeductionOverviewRow(
                 typologyOfErrorId = null,
                 typologyOfErrorName = null,
-                staffCost = BigDecimal.ZERO,
-                officeAndAdministration = BigDecimal.ZERO,
-                travelAndAccommodation = BigDecimal.ZERO,
-                externalExpertise = BigDecimal.ZERO,
-                equipment = BigDecimal.ZERO,
-                infrastructureAndWorks = BigDecimal.ZERO,
-                lumpSums = BigDecimal.ZERO,
-                unitCosts = BigDecimal.ZERO,
-                otherCosts = BigDecimal.ZERO,
-                total = BigDecimal.ZERO
+                staffCost = null,
+                officeAndAdministration = BigDecimal.valueOf(-119650L, 2),
+                travelAndAccommodation = BigDecimal.valueOf(-119550L, 2),
+                externalExpertise = null,
+                equipment = null,
+                infrastructureAndWorks = null,
+                lumpSums = null,
+                unitCosts = null,
+                otherCosts = null,
+                total = BigDecimal.valueOf(-239200L, 2)
             )
         )
 
-        val expectedTotal =   ControlDeductionOverviewRow(
+        val expectedTotal = ControlDeductionOverviewRow(
             typologyOfErrorId = null,
             typologyOfErrorName = null,
-            staffCost = BigDecimal.valueOf(34556, 2),
-            officeAndAdministration = BigDecimal.ZERO,
-            travelAndAccommodation = BigDecimal.valueOf(10020, 2),
+            staffCost = BigDecimal.valueOf(850L),
+            officeAndAdministration = BigDecimal.valueOf(-119650L, 2),
+            travelAndAccommodation = BigDecimal.valueOf(-119550L, 2),
             externalExpertise = BigDecimal.ZERO,
-            equipment = BigDecimal.ZERO,
+            equipment =  BigDecimal.valueOf(200L),
             infrastructureAndWorks = BigDecimal.ZERO,
-            lumpSums = BigDecimal.valueOf(5555),
+            lumpSums = BigDecimal.ZERO,
             unitCosts = BigDecimal.ZERO,
             otherCosts = BigDecimal.ZERO,
-            total = BigDecimal.valueOf(600076, 2)
+            total = BigDecimal.valueOf(-134200L, 2),
         )
 
-        Assertions.assertThat(getReportControlDeductionOverview.get(PARTNER_ID, REPORT_ID, "1.0")).isEqualTo(
+        assertThat(getReportControlDeductionOverview.get(PARTNER_ID, REPORT_ID)).isEqualTo(
             ControlDeductionOverview(
                 deductionRows = expectedDeductionRows,
                 staffCostsFlatRate = null,
-                officeAndAdministrationFlatRate = null,
-                travelAndAccommodationFlatRate = null,
+                officeAndAdministrationFlatRate = 15,
+                travelAndAccommodationFlatRate = 15,
                 otherCostsOnStaffCostsFlatRate = null,
-                total = expectedTotal
+                total = expectedTotal,
             )
         )
     }
+
 }

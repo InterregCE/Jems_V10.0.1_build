@@ -355,6 +355,12 @@ import {
   ProjectReportCertificateTabComponent
 } from './project-application/report/project-report/project-report-detail-page/./project-report-certificate-tab/project-report-certificate-tab.component';
 import { PartnerReportExportTabComponent } from './project-application/report/partner-report-detail-page/partner-report-export-tab/partner-report-export-tab.component';
+import {
+  ControlReportWorkOverviewComponent
+} from '@project/project-application/report/partner-control-report/partner-control-report-overview-and-finalize-tab/control-report-work-overview/control-report-work-overview.component';
+import {
+  ControlReportDeductionOverviewComponent
+} from '@project/project-application/report/partner-control-report/partner-control-report-overview-and-finalize-tab/control-report-deduction-overview/control-report-deduction-overview.component';
 
 @NgModule({
   declarations: [
@@ -517,6 +523,8 @@ import { PartnerReportExportTabComponent } from './project-application/report/pa
     ProjectReportIdentificationTabComponent,
     ProjectReportCreateComponent,
     PartnerControlReportGenerateControlReportAndCertificateComponent,
+    ControlReportWorkOverviewComponent,
+    ControlReportDeductionOverviewComponent,
     ProjectReportSubmitTabComponent,
     ProjectReportIdentificationExtensionComponent,
     ProjectReportCertificateTabComponent,

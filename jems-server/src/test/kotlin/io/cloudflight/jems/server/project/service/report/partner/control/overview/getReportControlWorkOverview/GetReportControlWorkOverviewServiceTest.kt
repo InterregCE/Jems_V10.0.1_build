@@ -1,22 +1,26 @@
 package io.cloudflight.jems.server.project.service.report.partner.control.overview.getReportControlWorkOverview
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.control.overview.ControlWorkOverview
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ReportExpenditureCostCategory
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.ProjectPartnerReportExpenditureVerificationPersistence
-import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import java.math.BigDecimal
 
 internal class GetReportControlWorkOverviewServiceTest: UnitTest() {
@@ -34,8 +38,30 @@ internal class GetReportControlWorkOverviewServiceTest: UnitTest() {
                 otherCostsOnStaffCostsFlatRate = null,
             ),
             totalsFromAF = mockk(),
-            currentlyReported = mockk(),
-            totalEligibleAfterControl = mockk(),
+            currentlyReported = BudgetCostsCalculationResultFull(
+                staff = BigDecimal.valueOf(110),
+                office = BigDecimal.valueOf(111),
+                travel = BigDecimal.valueOf(112),
+                external = BigDecimal.valueOf(113),
+                equipment = BigDecimal.valueOf(114),
+                infrastructure = BigDecimal.valueOf(115),
+                other = BigDecimal.valueOf(116),
+                lumpSum = BigDecimal.valueOf(117),
+                unitCost = BigDecimal.valueOf(118),
+                sum = BigDecimal.valueOf(119),
+            ),
+            totalEligibleAfterControl = BudgetCostsCalculationResultFull(
+                staff = BigDecimal.valueOf(19),
+                office = BigDecimal.valueOf(18),
+                travel = BigDecimal.valueOf(17),
+                external = BigDecimal.valueOf(16),
+                equipment = BigDecimal.valueOf(15),
+                infrastructure = BigDecimal.valueOf(14),
+                other = BigDecimal.valueOf(13),
+                lumpSum = BigDecimal.valueOf(12),
+                unitCost = BigDecimal.valueOf(11),
+                sum = BigDecimal.valueOf(10),
+            ),
             previouslyReported = mockk(),
         )
 
@@ -58,37 +84,13 @@ internal class GetReportControlWorkOverviewServiceTest: UnitTest() {
             return expenditure
         }
 
-    }
-
-    @MockK
-    private lateinit var reportCoFinancingPersistence: ProjectPartnerReportExpenditureCoFinancingPersistence
-
-    @MockK
-    private lateinit var reportControlExpenditurePersistence: ProjectPartnerReportExpenditureVerificationPersistence
-
-    @MockK
-    private lateinit var reportExpenditureCostCategoryPersistence: ProjectPartnerReportExpenditureCostCategoryPersistence
-
-    @InjectMockKs
-    private lateinit var getReportControlWorkOverviewService: GetReportControlWorkOverviewService
-
-    @BeforeEach
-    fun setup() {
-        clearMocks(reportCoFinancingPersistence, reportControlExpenditurePersistence, reportExpenditureCostCategoryPersistence)
-    }
-
-    @Test
-    fun get() {
-        every { reportControlExpenditurePersistence
-            .getPartnerControlReportExpenditureVerification(PARTNER_ID, reportId = 22L)
-        } returns listOf(
-            expenditure(
-                554L,
-                partOfSample = true,
-                declaredAmount = BigDecimal.ONE,
-                certified = BigDecimal.valueOf(9, 1),
-                isParked = true
-            ),
+        private val listOfExpenditures = listOf(expenditure(
+            554L,
+            partOfSample = true,
+            declaredAmount = BigDecimal.ONE,
+            certified = BigDecimal.valueOf(9, 1),
+            isParked = true
+        ),
             expenditure(
                 555L,
                 partOfSample = false,
@@ -105,19 +107,75 @@ internal class GetReportControlWorkOverviewServiceTest: UnitTest() {
             ),
         )
 
-        every { reportExpenditureCostCategoryPersistence.getCostCategories(PARTNER_ID, reportId = 22L) } returns costOptions
-        every { reportCoFinancingPersistence.getReportCurrentSum(PARTNER_ID, reportId = 22L) } returns BigDecimal.TEN
+    }
 
-        Assertions.assertThat(getReportControlWorkOverviewService.get(PARTNER_ID, reportId = 22L)).isEqualTo(
+    @MockK
+    private lateinit var reportPersistence: ProjectPartnerReportPersistence
+
+    @MockK
+    private lateinit var reportControlExpenditurePersistence: ProjectPartnerReportExpenditureVerificationPersistence
+
+    @MockK
+    private lateinit var reportExpenditureCostCategoryPersistence: ProjectPartnerReportExpenditureCostCategoryPersistence
+
+    @InjectMockKs
+    private lateinit var getReportControlWorkOverviewService: GetReportControlWorkOverviewService
+
+    @BeforeEach
+    fun setup() {
+        clearMocks(reportPersistence, reportControlExpenditurePersistence, reportExpenditureCostCategoryPersistence)
+    }
+
+    @ParameterizedTest(name = "get (status {0})")
+    @EnumSource(value = ReportStatus::class, names = ["Certified"])
+    fun get(status: ReportStatus) {
+        val report = mockk<ProjectPartnerReport>()
+        every { report.status } returns status
+        every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = 22L) } returns report
+
+        every { reportControlExpenditurePersistence
+            .getPartnerControlReportExpenditureVerification(PARTNER_ID, reportId = 22L)
+        } returns listOfExpenditures
+
+        every { reportExpenditureCostCategoryPersistence.getCostCategories(PARTNER_ID, reportId = 22L) } returns costOptions
+
+        assertThat(getReportControlWorkOverviewService.get(PARTNER_ID, reportId = 22L)).isEqualTo(
             ControlWorkOverview(
-                declaredByPartner = BigDecimal.TEN,
-                inControlSample = BigDecimal.ONE,
+                declaredByPartner = BigDecimal.valueOf(119L),
+                inControlSample = BigDecimal.valueOf(1L),
+                inControlSamplePercentage = BigDecimal.valueOf(84L, 2),
                 parked = BigDecimal.valueOf(115, 2),
-                deductedByControl = BigDecimal.valueOf(724L, 2),
-                eligibleAfterControl = BigDecimal.valueOf(161L, 2),
-                eligibleAfterControlPercentage = BigDecimal.valueOf(1610L, 2),
-                inControlSamplePercentage = BigDecimal.valueOf(1000L, 2)
+                deductedByControl = BigDecimal.valueOf(10785L, 2),
+                eligibleAfterControl = BigDecimal.valueOf(10L),
+                eligibleAfterControlPercentage = BigDecimal.valueOf(840L, 2),
             )
         )
     }
+
+    @ParameterizedTest(name = "get (status {0})")
+    @EnumSource(value = ReportStatus::class, names = ["Certified"], mode = EnumSource.Mode.EXCLUDE)
+    fun `get - closed`(status: ReportStatus) {
+        val report = mockk<ProjectPartnerReport>()
+        every { report.status } returns status
+        every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = 22L) } returns report
+
+        every { reportControlExpenditurePersistence
+            .getPartnerControlReportExpenditureVerification(PARTNER_ID, reportId = 22L)
+        } returns listOfExpenditures
+
+        every { reportExpenditureCostCategoryPersistence.getCostCategories(PARTNER_ID, reportId = 22L) } returns costOptions
+
+        assertThat(getReportControlWorkOverviewService.get(PARTNER_ID, reportId = 22L)).isEqualTo(
+            ControlWorkOverview(
+                declaredByPartner = BigDecimal.valueOf(119L),
+                inControlSample = BigDecimal.valueOf(1L),
+                inControlSamplePercentage = BigDecimal.valueOf(84L, 2),
+                parked = BigDecimal.valueOf(115, 2),
+                deductedByControl = BigDecimal.valueOf(11624L, 2),
+                eligibleAfterControl = BigDecimal.valueOf(161L, 2),
+                eligibleAfterControlPercentage = BigDecimal.valueOf(135L, 2),
+            )
+        )
+    }
+
 }

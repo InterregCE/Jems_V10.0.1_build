@@ -63,7 +63,7 @@ fun List<ProjectPartnerReportIdentificationTargetGroupEntity>.toModel() = map {
 fun List<ProjectPartnerReportBudgetPerPeriodEntity>.toPeriodModel() = map { it.toModel() }
 
 fun ProjectPartnerReportDesignatedControllerEntity.toModel() = ReportDesignatedController(
-    controlInstitution = if (reportEntity.status.isCertified()) institutionName else controlInstitution.name,
+    controlInstitution = if (reportEntity.status.isFinalized()) institutionName else controlInstitution.name,
     controlInstitutionId = controlInstitution.id,
     controllingUserId = controllingUser?.id,
     jobTitle = jobTitle,

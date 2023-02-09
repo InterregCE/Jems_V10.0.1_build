@@ -1,0 +1,132 @@
+<mat-table jemsNoWidthLimit [dataSource]="dataSource">
+    <ng-container matColumnDef="typeOfError" sticky>
+        <mat-header-cell *matHeaderCellDef class="border-cell-right">
+            <span jemsText maxLines="2">
+                {{ 'project.application.partner.report.control.tab.overviewAndFinalize.deductions.by.type.table.type.header' | translate }}
+            </span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let line" class="border-cell-right">
+            <span jemsText maxLines="2" *ngIf="line.typologyOfErrorId">{{ line.typologyOfErrorName }}</span>
+            <span jemsText maxLines="2" *ngIf="line.typologyOfErrorId === null">{{ 'project.application.partner.report.control.tab.overviewAndFinalize.deductions.by.type.table.flat.rate.row' | translate }}</span>
+        </mat-cell>
+        <mat-footer-cell *matFooterCellDef class="border-cell-right">{{ 'project.partner.budget.table.total' | translate }}</mat-footer-cell>
+    </ng-container>
+    <ng-container matColumnDef="typeOfError-sub" sticky>
+        <mat-header-cell *matHeaderCellDef class="border-cell-right"></mat-header-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="staff">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{ 'project.application.partner.report.expenditures.cost.category.StaffCosts' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let line" class="text-right"><span>{{ line.staffCost | asMoney}}</span></mat-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right">{{ total.staffCost | asMoney }}</mat-footer-cell>
+    </ng-container>
+    <ng-container matColumnDef="staff-sub">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span class="flat-rate-percentage" *ngIf="staffCostsFlatRate">{{staffCostsFlatRate}}%</span>
+        </mat-header-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="officeAndAdministration">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{ 'project.application.partner.report.control.tab.overviewAndFinalize.deductions.by.type.table.office.administrative.header' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let line" class="text-right"><span>{{ line.officeAndAdministration | asMoney }}</span></mat-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right">{{total.officeAndAdministration | asMoney }}</mat-footer-cell>
+    </ng-container>
+    <ng-container matColumnDef="officeAndAdministration-sub">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span *ngIf="officeAndAdministrationFlatRate">{{officeAndAdministrationFlatRate}}%</span>
+        </mat-header-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="travelAndAccommodation">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{ 'project.application.partner.report.expenditures.cost.category.TravelAndAccommodationCosts' | translate }} </span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let line" class="text-right"><span>{{ line.travelAndAccommodation | asMoney }}</span></mat-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right">{{ total.travelAndAccommodation | asMoney }}</mat-footer-cell>
+    </ng-container>
+    <ng-container matColumnDef="travelAndAccommodation-sub">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span *ngIf="travelAndAccommodationFlatRate">{{ travelAndAccommodationFlatRate }}%</span>
+        </mat-header-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="external">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{ 'project.application.partner.report.expenditures.cost.category.ExternalCosts' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let line" class="text-right">{{ line.externalExpertise | asMoney }}</mat-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right">{{ total.externalExpertise | asMoney }}</mat-footer-cell>
+    </ng-container>
+    <ng-container matColumnDef="external-sub">
+        <mat-header-cell *matHeaderCellDef class="text-right"></mat-header-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="equipment">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{ 'project.application.partner.report.expenditures.cost.category.EquipmentCosts' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let line" class="text-right">{{ line.equipment | asMoney }}</mat-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right">{{ total.equipment | asMoney }}</mat-footer-cell>
+    </ng-container>
+    <ng-container matColumnDef="equipment-sub">
+        <mat-header-cell *matHeaderCellDef class="text-right"></mat-header-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="infrastructure">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{ 'project.application.partner.report.expenditures.cost.category.InfrastructureCosts' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let line" class="text-right">{{ line.infrastructureAndWorks | asMoney }}</mat-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right">{{ total.infrastructureAndWorks | asMoney }}</mat-footer-cell>
+    </ng-container>
+    <ng-container matColumnDef="infrastructure-sub">
+        <mat-header-cell *matHeaderCellDef class="text-right"></mat-header-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="lumpSum">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{ 'project.application.partner.report.control.tab.overviewAndFinalize.deductions.by.type.table.lump.sums.header' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let line" class="text-right">{{ line.lumpSums | asMoney }}</mat-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right">
+            {{ total.lumpSums | asMoney }}
+        </mat-footer-cell>
+    </ng-container>
+    <ng-container matColumnDef="lumpSum-sub">
+        <mat-header-cell *matHeaderCellDef class="text-right"></mat-header-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="other">
+        <mat-header-cell *matHeaderCellDef class="text-right border-cell-right">
+            <span jemsText maxLines="2">{{ 'project.partner.budget.other' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let line" class="text-right border-cell-right"><span>{{ line.otherCosts | asMoney }}</span></mat-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right border-cell-right">{{ total.otherCosts | asMoney }}</mat-footer-cell>
+    </ng-container>
+    <ng-container matColumnDef="other-sub">
+        <mat-header-cell *matHeaderCellDef class="text-right border-cell-right"></mat-header-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="total">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{ 'project.partner.budget.table.total' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let line" class="text-right">{{ line.total | asMoney }}</mat-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right">{{ total.total | asMoney }}</mat-footer-cell>
+    </ng-container>
+    <ng-container matColumnDef="total-sub">
+        <mat-header-cell *matHeaderCellDef class="text-right"></mat-header-cell>
+    </ng-container>
+
+    <mat-header-row [class.no-border-bottom]="showFlatRates" *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <ng-container *ngIf="showFlatRates">
+        <mat-header-row class="flat-rate-header" *matHeaderRowDef="displayedSubColumns"></mat-header-row>
+    </ng-container>
+    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+    <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
+
+</mat-table>
