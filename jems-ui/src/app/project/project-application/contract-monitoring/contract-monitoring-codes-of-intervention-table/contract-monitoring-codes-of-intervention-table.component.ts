@@ -201,7 +201,7 @@ export class ContractMonitoringCodesOfInterventionTableComponent implements OnCh
 
   private hasDimensionCodesSet(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
-      if (!this.dimensionControl?.value) {
+      if (!this.dimensionControl?.value || this.dimensionControl?.value == 'Location') {
         return null;
       }
 
