@@ -12,6 +12,8 @@ fun PartnerReportInvestmentEntity.toModel() = ExpenditureInvestmentBreakdownLine
     workPackageNumber = workPackageNumber,
     totalEligibleBudget = total,
     previouslyReported = previouslyReported,
+    previouslyReportedParked = previouslyReportedParked,
     currentReport = current,
-    totalEligibleAfterControl = totalEligibleAfterControl,
+    currentReportReIncluded = currentReIncluded,
+    totalEligibleAfterControl = totalEligibleAfterControl
 )

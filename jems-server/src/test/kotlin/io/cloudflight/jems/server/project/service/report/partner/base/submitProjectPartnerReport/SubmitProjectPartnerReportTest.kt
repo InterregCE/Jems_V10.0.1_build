@@ -24,11 +24,15 @@ import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPa
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ReportExpenditureCostCategory
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumCurrentWithReIncluded
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.unitCost.ExpenditureUnitCostCurrentWithReIncluded
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.investments.ExpenditureInvestmentCurrentWithReIncluded
 import io.cloudflight.jems.server.project.service.report.partner.base.runPreSubmissionCheck.RunPreSubmissionCheckService
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectPartnerReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.ProjectPartnerReportExpenditureVerificationPersistence
@@ -415,13 +419,13 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         val coFinSlot = slot<ReportExpenditureCoFinancingColumn>()
         every { reportExpenditureCoFinancingPersistence.updateCurrentlyReportedValues(PARTNER_ID, reportId = 35L, capture(coFinSlot)) } answers { }
 
-        val lumpSumSlot = slot<Map<Long, BigDecimal>>()
+        val lumpSumSlot = slot<Map<Long, ExpenditureLumpSumCurrentWithReIncluded>>()
         every { reportLumpSumPersistence.updateCurrentlyReportedValues(PARTNER_ID, reportId = 35L, capture(lumpSumSlot)) } answers { }
 
-        val unitCostSlot = slot<Map<Long, BigDecimal>>()
+        val unitCostSlot = slot<Map<Long, ExpenditureUnitCostCurrentWithReIncluded>>()
         every { reportUnitCostPersistence.updateCurrentlyReportedValues(PARTNER_ID, reportId = 35L, capture(unitCostSlot)) } answers { }
 
-        val investmentSlot = slot<Map<Long, BigDecimal>>()
+        val investmentSlot = slot<Map<Long, ExpenditureInvestmentCurrentWithReIncluded>>()
         every { reportInvestmentPersistence.updateCurrentlyReportedValues(PARTNER_ID, reportId = 35L, capture(investmentSlot)) } answers { }
 
         val submissionTime = slot<ZonedDateTime>()
@@ -466,9 +470,30 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         )
         assertThat(expenditureCcSlot.captured).isEqualTo(expectedPersistedExpenditureCostCategory)
         assertThat(coFinSlot.captured).isEqualTo(expectedCoFinancing)
-        assertThat(lumpSumSlot.captured).containsExactlyEntriesOf(mapOf(22L to BigDecimal.valueOf(485, 1)))
-        assertThat(unitCostSlot.captured).containsExactlyEntriesOf(mapOf(15L to BigDecimal.valueOf(1650, 2)))
-        assertThat(investmentSlot.captured).containsExactlyEntriesOf(mapOf(10L to BigDecimal.valueOf(999, 2)))
+        assertThat(lumpSumSlot.captured).containsExactlyEntriesOf(
+            mapOf(
+                22L to ExpenditureLumpSumCurrentWithReIncluded(
+                    BigDecimal.valueOf(485, 1),
+                    BigDecimal.ZERO
+                )
+            )
+        )
+        assertThat(unitCostSlot.captured).containsExactlyEntriesOf(
+            mapOf(
+                15L to ExpenditureUnitCostCurrentWithReIncluded(
+                    current = BigDecimal.valueOf(1650, 2),
+                    currentReIncluded = BigDecimal.ZERO
+                )
+            )
+        )
+        assertThat(investmentSlot.captured).containsExactlyEntriesOf(
+            mapOf(
+                10L to ExpenditureInvestmentCurrentWithReIncluded(
+                    current = BigDecimal.valueOf(999, 2),
+                    currentReIncluded = BigDecimal.ZERO
+                )
+            )
+        )
     }
 
     @Test

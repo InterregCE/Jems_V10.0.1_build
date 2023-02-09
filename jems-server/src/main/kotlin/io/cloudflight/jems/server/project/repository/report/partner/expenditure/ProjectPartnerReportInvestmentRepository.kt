@@ -16,14 +16,15 @@ interface ProjectPartnerReportInvestmentRepository :
     fun findByReportEntityIdAndInvestmentId(reportId: Long, projectInvestmentId: Long): PartnerReportInvestmentEntity
 
     @Query("""
-        SELECT new kotlin.Pair(
+        SELECT new kotlin.Triple(
             investment.investmentId,
-            COALESCE(SUM(investment.current), 0)
+            COALESCE(SUM(investment.current), 0),
+            COALESCE(SUM(investment.currentParked), 0)
         )
         FROM #{#entityName} investment
         WHERE investment.reportEntity.id IN :reportIds
         GROUP BY investment.investmentId
     """)
-    fun findCumulativeForReportIds(reportIds: Set<Long>): List<Pair<Long, BigDecimal>>
+    fun findCumulativeForReportIds(reportIds: Set<Long>): List<Triple<Long, BigDecimal, BigDecimal>>
 
 }

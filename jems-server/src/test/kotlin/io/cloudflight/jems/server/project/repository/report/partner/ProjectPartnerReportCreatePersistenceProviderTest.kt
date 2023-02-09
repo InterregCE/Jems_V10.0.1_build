@@ -194,6 +194,7 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
                         total = ONE,
                         previouslyReported = valueOf(7, 1),
                         previouslyPaid = valueOf(7, 1),
+                        previouslyReportedParked = valueOf(1000),
                     ),
                 ),
                 unitCosts = setOf(PartnerReportUnitCostBase(
@@ -201,10 +202,11 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
                     numberOfUnits = ONE,
                     totalCost = ONE,
                     previouslyReported = valueOf(5, 1),
+                    previouslyReportedParked = ZERO
                 )),
                 budgetPerPeriod = listOf(
                     ProjectPartnerReportPeriod(1, ONE, ONE, 1, 3),
-                    ProjectPartnerReportPeriod(2, TEN, BigDecimal.valueOf(11L), 4, 6),
+                    ProjectPartnerReportPeriod(2, TEN, valueOf(11L), 4, 6),
                 ),
                 expenditureSetup = ReportExpenditureCostCategory(
                     options = ProjectPartnerBudgetOptions(
@@ -216,74 +218,76 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
                         otherCostsOnStaffCostsFlatRate = 40,
                     ),
                     totalsFromAF = BudgetCostsCalculationResultFull(
-                        staff = BigDecimal.valueOf(10),
-                        office = BigDecimal.valueOf(11),
-                        travel = BigDecimal.valueOf(12),
-                        external = BigDecimal.valueOf(13),
-                        equipment = BigDecimal.valueOf(14),
-                        infrastructure = BigDecimal.valueOf(15),
-                        other = BigDecimal.valueOf(16),
-                        lumpSum = BigDecimal.valueOf(17),
-                        unitCost = BigDecimal.valueOf(18),
-                        sum = BigDecimal.valueOf(19),
+                        staff = valueOf(10),
+                        office = valueOf(11),
+                        travel = valueOf(12),
+                        external = valueOf(13),
+                        equipment = valueOf(14),
+                        infrastructure = valueOf(15),
+                        other = valueOf(16),
+                        lumpSum = valueOf(17),
+                        unitCost = valueOf(18),
+                        sum = valueOf(19),
                     ),
                     currentlyReported = BudgetCostsCalculationResultFull(
-                        staff = BigDecimal.valueOf(20),
-                        office = BigDecimal.valueOf(21),
-                        travel = BigDecimal.valueOf(22),
-                        external = BigDecimal.valueOf(23),
-                        equipment = BigDecimal.valueOf(24),
-                        infrastructure = BigDecimal.valueOf(25),
-                        other = BigDecimal.valueOf(26),
-                        lumpSum = BigDecimal.valueOf(27),
-                        unitCost = BigDecimal.valueOf(28),
-                        sum = BigDecimal.valueOf(29),
+                        staff = valueOf(20),
+                        office = valueOf(21),
+                        travel = valueOf(22),
+                        external = valueOf(23),
+                        equipment = valueOf(24),
+                        infrastructure = valueOf(25),
+                        other = valueOf(26),
+                        lumpSum = valueOf(27),
+                        unitCost = valueOf(28),
+                        sum = valueOf(29),
                     ),
                     totalEligibleAfterControl = BudgetCostsCalculationResultFull(
-                        staff = BigDecimal.valueOf(40),
-                        office = BigDecimal.valueOf(41),
-                        travel = BigDecimal.valueOf(42),
-                        external = BigDecimal.valueOf(43),
-                        equipment = BigDecimal.valueOf(44),
-                        infrastructure = BigDecimal.valueOf(45),
-                        other = BigDecimal.valueOf(46),
-                        lumpSum = BigDecimal.valueOf(47),
-                        unitCost = BigDecimal.valueOf(48),
-                        sum = BigDecimal.valueOf(49),
+                        staff = valueOf(40),
+                        office = valueOf(41),
+                        travel = valueOf(42),
+                        external = valueOf(43),
+                        equipment = valueOf(44),
+                        infrastructure = valueOf(45),
+                        other = valueOf(46),
+                        lumpSum = valueOf(47),
+                        unitCost = valueOf(48),
+                        sum = valueOf(49),
                     ),
                     previouslyReported = BudgetCostsCalculationResultFull(
-                        staff = BigDecimal.valueOf(30),
-                        office = BigDecimal.valueOf(31),
-                        travel = BigDecimal.valueOf(32),
-                        external = BigDecimal.valueOf(33),
-                        equipment = BigDecimal.valueOf(34),
-                        infrastructure = BigDecimal.valueOf(35),
-                        other = BigDecimal.valueOf(36),
-                        lumpSum = BigDecimal.valueOf(37),
-                        unitCost = BigDecimal.valueOf(38),
-                        sum = BigDecimal.valueOf(39),
+                        staff = valueOf(30),
+                        office = valueOf(31),
+                        travel = valueOf(32),
+                        external = valueOf(33),
+                        equipment = valueOf(34),
+                        infrastructure = valueOf(35),
+                        other = valueOf(36),
+                        lumpSum = valueOf(37),
+                        unitCost = valueOf(38),
+                        sum = valueOf(39),
                     ),
                 ),
                 previouslyReportedCoFinancing = PreviouslyReportedCoFinancing(
                     fundsSorted = listOf(
                         PreviouslyReportedFund(fundId = programmeFundEntity.id, percentage = TEN,
-                            total = BigDecimal.valueOf(100L), previouslyReported = BigDecimal.valueOf(25),
-                            previouslyPaid = BigDecimal.valueOf(35)),
-                        PreviouslyReportedFund(fundId = null, percentage = BigDecimal.valueOf(90),
-                            total = BigDecimal.valueOf(900L), previouslyReported = BigDecimal.valueOf(400),
-                            previouslyPaid = BigDecimal.valueOf(410)),
+                            total = valueOf(100L), previouslyReported = valueOf(25),
+                            previouslyPaid = valueOf(35)
+                        ),
+                        PreviouslyReportedFund(fundId = null, percentage = valueOf(90),
+                            total = valueOf(900L), previouslyReported = valueOf(400),
+                            previouslyPaid = valueOf(410)
+                        ),
                     ),
-                    totalPartner = BigDecimal.valueOf(900L),
-                    totalPublic = BigDecimal.valueOf(200L),
-                    totalAutoPublic = BigDecimal.valueOf(300L),
-                    totalPrivate = BigDecimal.valueOf(400L),
-                    totalSum = BigDecimal.valueOf(5000L),
+                    totalPartner = valueOf(900L),
+                    totalPublic = valueOf(200L),
+                    totalAutoPublic = valueOf(300L),
+                    totalPrivate = valueOf(400L),
+                    totalSum = valueOf(5000L),
 
-                    previouslyReportedPartner = BigDecimal.valueOf(400L),
-                    previouslyReportedPublic = BigDecimal.valueOf(100L),
-                    previouslyReportedAutoPublic = BigDecimal.valueOf(130L),
-                    previouslyReportedPrivate = BigDecimal.valueOf(170L),
-                    previouslyReportedSum = BigDecimal.valueOf(7500L),
+                    previouslyReportedPartner = valueOf(400L),
+                    previouslyReportedPublic = valueOf(100L),
+                    previouslyReportedAutoPublic = valueOf(130L),
+                    previouslyReportedPrivate = valueOf(170L),
+                    previouslyReportedSum = valueOf(7500L),
                 ),
                 investments = listOf(
                     PartnerReportInvestment(
@@ -291,8 +295,9 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
                         investmentNumber = 4,
                         workPackageNumber = 7,
                         title = setOf(InputTranslation(EN, "investment title EN")),
-                        total = BigDecimal.valueOf(100L),
-                        previouslyReported = BigDecimal.valueOf(50L),
+                        total = valueOf(100L),
+                        previouslyReported = valueOf(50L),
+                        previouslyReportedParked = BigDecimal.valueOf(130),
                     )
                 )
             ),
@@ -461,21 +466,21 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
         assertThat(reportCoFinancingSlot.captured).hasSize(2)
         with(reportCoFinancingSlot.captured.find { it.id.fundSortNumber == 1 }!!) {
             assertThat(programmeFund!!.equals(programmeFundEntity)).isTrue
-            assertThat(percentage).isEqualByComparingTo(BigDecimal.valueOf(10L))
-            assertThat(previouslyPaid).isEqualByComparingTo(BigDecimal.valueOf(35L))
+            assertThat(percentage).isEqualByComparingTo(valueOf(10L))
+            assertThat(previouslyPaid).isEqualByComparingTo(valueOf(35L))
         }
         with(reportCoFinancingSlot.captured.find { it.id.fundSortNumber == 2 }!!) {
             assertThat(programmeFund).isNull()
-            assertThat(percentage).isEqualTo(BigDecimal.valueOf(90L))
-            assertThat(previouslyPaid).isEqualByComparingTo(BigDecimal.valueOf(410L))
+            assertThat(percentage).isEqualTo(valueOf(90L))
+            assertThat(previouslyPaid).isEqualByComparingTo(valueOf(410L))
         }
 
         assertThat(investmentSlot.captured).hasSize(1)
         with(investmentSlot.captured.find { it.investmentId == 245L }!!) {
             assertThat(investmentNumber).isEqualTo(4)
             assertThat(workPackageNumber).isEqualTo(7)
-            assertThat(total).isEqualTo(BigDecimal.valueOf(100L))
-            assertThat(previouslyReported).isEqualByComparingTo(BigDecimal.valueOf(50L))
+            assertThat(total).isEqualTo(valueOf(100L))
+            assertThat(previouslyReported).isEqualByComparingTo(valueOf(50L))
         }
 
         assertExpenditureCoFinancing(reportExpenditureCoFinancingSlot)
@@ -495,11 +500,11 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
         expenditureCoFinancingSlot: CapturingSlot<ReportProjectPartnerExpenditureCoFinancingEntity>,
     ) {
         with(expenditureCoFinancingSlot.captured) {
-            assertThat(partnerContributionTotal).isEqualByComparingTo(BigDecimal.valueOf(900L))
-            assertThat(publicContributionTotal).isEqualByComparingTo(BigDecimal.valueOf(200L))
-            assertThat(automaticPublicContributionTotal).isEqualByComparingTo(BigDecimal.valueOf(300L))
-            assertThat(privateContributionTotal).isEqualByComparingTo(BigDecimal.valueOf(400L))
-            assertThat(sumTotal).isEqualByComparingTo(BigDecimal.valueOf(5000L))
+            assertThat(partnerContributionTotal).isEqualByComparingTo(valueOf(900L))
+            assertThat(publicContributionTotal).isEqualByComparingTo(valueOf(200L))
+            assertThat(automaticPublicContributionTotal).isEqualByComparingTo(valueOf(300L))
+            assertThat(privateContributionTotal).isEqualByComparingTo(valueOf(400L))
+            assertThat(sumTotal).isEqualByComparingTo(valueOf(5000L))
 
             assertThat(partnerContributionCurrent).isEqualByComparingTo(ZERO)
             assertThat(publicContributionCurrent).isEqualByComparingTo(ZERO)
@@ -507,11 +512,11 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
             assertThat(privateContributionCurrent).isEqualByComparingTo(ZERO)
             assertThat(sumCurrent).isEqualByComparingTo(ZERO)
 
-            assertThat(partnerContributionPreviouslyReported).isEqualByComparingTo(BigDecimal.valueOf(400L))
-            assertThat(publicContributionPreviouslyReported).isEqualByComparingTo(BigDecimal.valueOf(100L))
-            assertThat(automaticPublicContributionPreviouslyReported).isEqualByComparingTo(BigDecimal.valueOf(130L))
-            assertThat(privateContributionPreviouslyReported).isEqualByComparingTo(BigDecimal.valueOf(170L))
-            assertThat(sumPreviouslyReported).isEqualByComparingTo(BigDecimal.valueOf(7500L))
+            assertThat(partnerContributionPreviouslyReported).isEqualByComparingTo(valueOf(400L))
+            assertThat(publicContributionPreviouslyReported).isEqualByComparingTo(valueOf(100L))
+            assertThat(automaticPublicContributionPreviouslyReported).isEqualByComparingTo(valueOf(130L))
+            assertThat(privateContributionPreviouslyReported).isEqualByComparingTo(valueOf(170L))
+            assertThat(sumPreviouslyReported).isEqualByComparingTo(valueOf(7500L))
         }
     }
 
@@ -647,7 +652,7 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
         with(budgetSlot.captured.last()) {
             assertThat(id.periodNumber).isEqualTo(2)
             assertThat(periodBudget).isEqualByComparingTo(TEN)
-            assertThat(periodBudgetCumulative).isEqualByComparingTo(BigDecimal.valueOf(11))
+            assertThat(periodBudgetCumulative).isEqualByComparingTo(valueOf(11))
         }
     }
 
@@ -659,16 +664,16 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
             assertThat(staffCostsFlatRate).isNull()
             assertThat(otherCostsOnStaffCostsFlatRate).isEqualTo(40)
 
-            assertThat(staffTotal).isEqualTo(BigDecimal.valueOf(10))
-            assertThat(officeTotal).isEqualTo(BigDecimal.valueOf(11))
-            assertThat(travelTotal).isEqualTo(BigDecimal.valueOf(12))
-            assertThat(externalTotal).isEqualTo(BigDecimal.valueOf(13))
-            assertThat(equipmentTotal).isEqualTo(BigDecimal.valueOf(14))
-            assertThat(infrastructureTotal).isEqualTo(BigDecimal.valueOf(15))
-            assertThat(otherTotal).isEqualTo(BigDecimal.valueOf(16))
-            assertThat(lumpSumTotal).isEqualTo(BigDecimal.valueOf(17))
-            assertThat(unitCostTotal).isEqualTo(BigDecimal.valueOf(18))
-            assertThat(sumTotal).isEqualTo(BigDecimal.valueOf(19))
+            assertThat(staffTotal).isEqualTo(valueOf(10))
+            assertThat(officeTotal).isEqualTo(valueOf(11))
+            assertThat(travelTotal).isEqualTo(valueOf(12))
+            assertThat(externalTotal).isEqualTo(valueOf(13))
+            assertThat(equipmentTotal).isEqualTo(valueOf(14))
+            assertThat(infrastructureTotal).isEqualTo(valueOf(15))
+            assertThat(otherTotal).isEqualTo(valueOf(16))
+            assertThat(lumpSumTotal).isEqualTo(valueOf(17))
+            assertThat(unitCostTotal).isEqualTo(valueOf(18))
+            assertThat(sumTotal).isEqualTo(valueOf(19))
 
             assertThat(staffCurrent).isZero
             assertThat(officeCurrent).isZero
@@ -681,16 +686,16 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
             assertThat(unitCostCurrent).isZero
             assertThat(sumCurrent).isZero
 
-            assertThat(staffPreviouslyReported).isEqualTo(BigDecimal.valueOf(30))
-            assertThat(officePreviouslyReported).isEqualTo(BigDecimal.valueOf(31))
-            assertThat(travelPreviouslyReported).isEqualTo(BigDecimal.valueOf(32))
-            assertThat(externalPreviouslyReported).isEqualTo(BigDecimal.valueOf(33))
-            assertThat(equipmentPreviouslyReported).isEqualTo(BigDecimal.valueOf(34))
-            assertThat(infrastructurePreviouslyReported).isEqualTo(BigDecimal.valueOf(35))
-            assertThat(otherPreviouslyReported).isEqualTo(BigDecimal.valueOf(36))
-            assertThat(lumpSumPreviouslyReported).isEqualTo(BigDecimal.valueOf(37))
-            assertThat(unitCostPreviouslyReported).isEqualTo(BigDecimal.valueOf(38))
-            assertThat(sumPreviouslyReported).isEqualTo(BigDecimal.valueOf(39))
+            assertThat(staffPreviouslyReported).isEqualTo(valueOf(30))
+            assertThat(officePreviouslyReported).isEqualTo(valueOf(31))
+            assertThat(travelPreviouslyReported).isEqualTo(valueOf(32))
+            assertThat(externalPreviouslyReported).isEqualTo(valueOf(33))
+            assertThat(equipmentPreviouslyReported).isEqualTo(valueOf(34))
+            assertThat(infrastructurePreviouslyReported).isEqualTo(valueOf(35))
+            assertThat(otherPreviouslyReported).isEqualTo(valueOf(36))
+            assertThat(lumpSumPreviouslyReported).isEqualTo(valueOf(37))
+            assertThat(unitCostPreviouslyReported).isEqualTo(valueOf(38))
+            assertThat(sumPreviouslyReported).isEqualTo(valueOf(39))
         }
     }
 

@@ -10,4 +10,5 @@ data class PartnerReportInvestment(
     val title: Set<InputTranslation>,
     val total: BigDecimal,
     val previouslyReported: BigDecimal,
+    val previouslyReportedParked: BigDecimal
 )

@@ -10,6 +10,8 @@ import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerRe
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportUnitCostEntity
 import io.cloudflight.jems.server.project.repository.report.partner.expenditure.ProjectPartnerReportUnitCostRepository
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.unitCost.ExpenditureUnitCostBreakdownLine
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.unitCost.ExpenditureUnitCostCurrent
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.unitCost.ExpenditureUnitCostCurrentWithReIncluded
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -50,9 +52,10 @@ class ProjectPartnerReportUnitCostPersistenceProviderTest : UnitTest() {
             current = BigDecimal.valueOf(20),
             totalEligibleAfterControl = BigDecimal.valueOf(40),
             previouslyReported = BigDecimal.valueOf(30),
+            currentParked = BigDecimal.ZERO,
+            currentReIncluded = BigDecimal.ZERO,
+            previouslyReportedParked = BigDecimal.valueOf(50)
         )
-
-        private val newValues = mapOf(80L to BigDecimal.TEN)
 
         private fun expectedUnitCost(id: Long) = ExpenditureUnitCostBreakdownLine(
             reportUnitCostId = id,
@@ -65,6 +68,8 @@ class ProjectPartnerReportUnitCostPersistenceProviderTest : UnitTest() {
             totalReportedSoFar = BigDecimal.ZERO,
             totalReportedSoFarPercentage = BigDecimal.ZERO,
             remainingBudget = BigDecimal.ZERO,
+            currentReportReIncluded = BigDecimal.ZERO,
+            previouslyReportedParked = BigDecimal.valueOf(50)
         )
     }
 
@@ -89,10 +94,10 @@ class ProjectPartnerReportUnitCostPersistenceProviderTest : UnitTest() {
 
     @Test
     fun getUnitCostCumulative() {
-        every { repository.findCumulativeForReportIds(setOf(22L)) } returns listOf(Pair(337L, BigDecimal.TEN))
+        every { repository.findCumulativeForReportIds(setOf(22L)) } returns listOf(Triple(337L, BigDecimal.TEN, BigDecimal.valueOf(50)))
         val result = persistence.getUnitCostCumulative(setOf(22L))
         assertThat(result.keys).containsExactly(337L)
-        assertThat(result[337L]).isEqualByComparingTo(BigDecimal.TEN)
+        assertThat(result[337L]).isEqualTo(ExpenditureUnitCostCurrent(BigDecimal.TEN, BigDecimal.valueOf(50)))
     }
 
     @Test
@@ -102,7 +107,16 @@ class ProjectPartnerReportUnitCostPersistenceProviderTest : UnitTest() {
         val unitCost_81 = unitCostEntity(81L)
         every { repository.findByReportEntityPartnerIdAndReportEntityIdOrderByIdAsc(PARTNER_ID, reportId = 921L) } returns
             mutableListOf(unitCost_79, unitCost_80, unitCost_81)
-        persistence.updateCurrentlyReportedValues(PARTNER_ID, reportId = 921L, newValues)
+        persistence.updateCurrentlyReportedValues(
+            PARTNER_ID,
+            reportId = 921L,
+            mapOf(
+                80L to ExpenditureUnitCostCurrentWithReIncluded(
+                    current = BigDecimal.valueOf(10),
+                    currentReIncluded = BigDecimal.valueOf(100)
+                )
+            )
+        )
 
         assertThat(unitCost_79.current).isEqualByComparingTo(BigDecimal.valueOf(20))
         assertThat(unitCost_80.current).isEqualByComparingTo(BigDecimal.TEN)
@@ -116,7 +130,11 @@ class ProjectPartnerReportUnitCostPersistenceProviderTest : UnitTest() {
         val unitCost_81 = unitCostEntity(81L)
         every { repository.findByReportEntityPartnerIdAndReportEntityIdOrderByIdAsc(PARTNER_ID, reportId = 922L) } returns
             mutableListOf(unitCost_79, unitCost_80, unitCost_81)
-        persistence.updateAfterControlValues(PARTNER_ID, reportId = 922L, newValues)
+        persistence.updateAfterControlValues(
+            PARTNER_ID,
+            reportId = 922L,
+            mapOf(80L to ExpenditureUnitCostCurrent(current = BigDecimal.TEN, currentParked = BigDecimal.valueOf(100)))
+        )
 
         assertThat(unitCost_79.totalEligibleAfterControl).isEqualByComparingTo(BigDecimal.valueOf(40))
         assertThat(unitCost_80.totalEligibleAfterControl).isEqualByComparingTo(BigDecimal.TEN)

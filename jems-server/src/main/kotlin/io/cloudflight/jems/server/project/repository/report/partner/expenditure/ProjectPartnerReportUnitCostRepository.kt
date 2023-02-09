@@ -17,14 +17,15 @@ interface ProjectPartnerReportUnitCostRepository : JpaRepository<PartnerReportUn
     fun findByReportEntityIdAndProgrammeUnitCostId(reportId: Long, programmeUnitCostId: Long): PartnerReportUnitCostEntity
 
     @Query("""
-        SELECT new kotlin.Pair(
+        SELECT new kotlin.Triple(
             unitCost.programmeUnitCost.id,
-            COALESCE(SUM(unitCost.current), 0)
+            COALESCE(SUM(unitCost.current), 0),
+            COALESCE(SUM(unitCost.currentParked), 0)
         )
         FROM #{#entityName} unitCost
         WHERE unitCost.reportEntity.id IN :reportIds
         GROUP BY unitCost.programmeUnitCost.id
     """)
-    fun findCumulativeForReportIds(reportIds: Set<Long>): List<Pair<Long, BigDecimal>>
+    fun findCumulativeForReportIds(reportIds: Set<Long>): List<Triple<Long, BigDecimal, BigDecimal>>
 
 }

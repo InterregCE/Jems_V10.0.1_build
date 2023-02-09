@@ -7,6 +7,9 @@ import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalcul
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.investments.ExpenditureInvestmentCurrent
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.unitCost.ExpenditureUnitCostCurrent
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumCurrent
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectPartnerReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partner.contribution.extractOverview
@@ -121,7 +124,7 @@ class FinalizeControlPartnerReport(
         )
     }
 
-    private fun saveAfterControlLumpSums(afterControlLumpSums: Map<Long, BigDecimal>, partnerId: Long, reportId: Long) {
+    private fun saveAfterControlLumpSums(afterControlLumpSums: Map<Long, ExpenditureLumpSumCurrent>, partnerId: Long, reportId: Long) {
         reportLumpSumPersistence.updateAfterControlValues(
             partnerId = partnerId,
             reportId = reportId,
@@ -129,15 +132,15 @@ class FinalizeControlPartnerReport(
         )
     }
 
-    private fun saveAfterControlUnitCosts(afterControlUnitCosts: Map<Long, BigDecimal>, partnerId: Long, reportId: Long) {
+    private fun saveAfterControlUnitCosts(afterControlUnitCosts: Map<Long, ExpenditureUnitCostCurrent>, partnerId: Long, reportId: Long) {
         reportUnitCostPersistence.updateAfterControlValues(
             partnerId = partnerId,
             reportId = reportId,
-            afterControl = afterControlUnitCosts,
+            afterControl = afterControlUnitCosts
         )
     }
 
-    private fun saveAfterControlInvestments(afterControlInvestments: Map<Long, BigDecimal>, partnerId: Long, reportId: Long) {
+    private fun saveAfterControlInvestments(afterControlInvestments: Map<Long, ExpenditureInvestmentCurrent>, partnerId: Long, reportId: Long) {
         reportInvestmentPersistence.updateAfterControlValues(
             partnerId = partnerId,
             reportId = reportId,

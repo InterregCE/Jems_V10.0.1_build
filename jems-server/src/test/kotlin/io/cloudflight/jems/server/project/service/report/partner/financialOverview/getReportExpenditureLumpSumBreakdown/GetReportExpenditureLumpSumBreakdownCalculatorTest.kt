@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumBreakdown
@@ -50,6 +51,8 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
             previouslyPaid = BigDecimal.ZERO,
             currentReport = BigDecimal.valueOf(39, 1),
             totalEligibleAfterControl = BigDecimal.ZERO,
+            previouslyReportedParked = BigDecimal.ZERO,
+            currentReportReIncluded = BigDecimal.ZERO
         )
 
         private val lumpSum_2 = ExpenditureLumpSumBreakdownLine(
@@ -62,6 +65,8 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
             previouslyPaid = BigDecimal.ZERO,
             currentReport = BigDecimal.valueOf(11, 1),
             totalEligibleAfterControl = BigDecimal.ZERO,
+            previouslyReportedParked = BigDecimal.ZERO,
+            currentReportReIncluded = BigDecimal.ZERO
         )
 
         private val lumpSum_ft = ExpenditureLumpSumBreakdownLine(
@@ -74,6 +79,8 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
             previouslyPaid = BigDecimal.valueOf(12),
             currentReport = BigDecimal.ZERO,
             totalEligibleAfterControl = BigDecimal.ZERO,
+            previouslyReportedParked = BigDecimal.ZERO,
+            currentReportReIncluded = BigDecimal.ZERO
         )
 
         private val expenditureWithLumpSum = ProjectPartnerReportExpenditureCost(
@@ -110,11 +117,13 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
                     totalEligibleBudget = BigDecimal.valueOf(52),
                     previouslyReported = BigDecimal.valueOf(23),
                     previouslyPaid = BigDecimal.ZERO,
-                    currentReport = BigDecimal.valueOf(11),
+                    currentReport = BigDecimal.valueOf(22),
                     totalEligibleAfterControl = BigDecimal.ZERO,
-                    totalReportedSoFar = BigDecimal.valueOf(34),
-                    totalReportedSoFarPercentage = BigDecimal.valueOf(6538, 2),
-                    remainingBudget = BigDecimal.valueOf(18),
+                    totalReportedSoFar = BigDecimal.valueOf(45),
+                    totalReportedSoFarPercentage = BigDecimal.valueOf(8654, 2),
+                    remainingBudget = BigDecimal.valueOf(7),
+                    previouslyReportedParked = BigDecimal.ZERO,
+                    currentReportReIncluded = BigDecimal.valueOf(11)
                 ),
                 ExpenditureLumpSumBreakdownLine(
                     reportLumpSumId = 2L,
@@ -129,6 +138,8 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
                     totalReportedSoFar = BigDecimal.valueOf(7),
                     totalReportedSoFarPercentage = BigDecimal.valueOf(3889, 2),
                     remainingBudget = BigDecimal.valueOf(11),
+                    previouslyReportedParked = BigDecimal.valueOf(100),
+                    currentReportReIncluded = BigDecimal.ZERO
                 ),
                 ExpenditureLumpSumBreakdownLine(
                     reportLumpSumId = 3L,
@@ -143,6 +154,8 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
                     totalReportedSoFar = BigDecimal.ZERO,
                     totalReportedSoFarPercentage = BigDecimal.valueOf(0, 2),
                     remainingBudget = BigDecimal.valueOf(15),
+                    previouslyReportedParked = BigDecimal.ZERO,
+                    currentReportReIncluded = BigDecimal.ZERO
                 ),
             ),
             total = ExpenditureLumpSumBreakdownLine(
@@ -153,11 +166,13 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
                 totalEligibleBudget = BigDecimal.valueOf(85),
                 previouslyReported = BigDecimal.valueOf(30),
                 previouslyPaid = BigDecimal.valueOf(12),
-                currentReport = BigDecimal.valueOf(11),
+                currentReport = BigDecimal.valueOf(22),
                 totalEligibleAfterControl = BigDecimal.ZERO,
-                totalReportedSoFar = BigDecimal.valueOf(41),
-                totalReportedSoFarPercentage = BigDecimal.valueOf(4824, 2),
-                remainingBudget = BigDecimal.valueOf(44),
+                totalReportedSoFar = BigDecimal.valueOf(52),
+                totalReportedSoFarPercentage = BigDecimal.valueOf(6118, 2),
+                remainingBudget = BigDecimal.valueOf(33),
+                previouslyReportedParked = BigDecimal.valueOf(100),
+                currentReportReIncluded = BigDecimal.valueOf(11)
             ),
         )
 
@@ -176,6 +191,8 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
                     totalReportedSoFar = BigDecimal.valueOf(269, 1),
                     totalReportedSoFarPercentage = BigDecimal.valueOf(5173, 2),
                     remainingBudget = BigDecimal.valueOf(251, 1),
+                    previouslyReportedParked = BigDecimal.ZERO,
+                    currentReportReIncluded = BigDecimal.ZERO
                 ),
                 ExpenditureLumpSumBreakdownLine(
                     reportLumpSumId = 2L,
@@ -190,6 +207,8 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
                     totalReportedSoFar = BigDecimal.valueOf(81, 1),
                     totalReportedSoFarPercentage = BigDecimal.valueOf(4500, 2),
                     remainingBudget = BigDecimal.valueOf(99, 1),
+                    previouslyReportedParked = BigDecimal.valueOf(50),
+                    currentReportReIncluded = BigDecimal.ZERO
                 ),
                 ExpenditureLumpSumBreakdownLine(
                     reportLumpSumId = 3L,
@@ -204,6 +223,8 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
                     totalReportedSoFar = BigDecimal.ZERO,
                     totalReportedSoFarPercentage = BigDecimal.valueOf(0, 2),
                     remainingBudget = BigDecimal.valueOf(15),
+                    previouslyReportedParked = BigDecimal.valueOf(100),
+                    currentReportReIncluded = BigDecimal.ZERO
                 ),
             ),
             total = ExpenditureLumpSumBreakdownLine(
@@ -219,6 +240,8 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
                 totalReportedSoFar = BigDecimal.valueOf(350, 1),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(4118, 2),
                 remainingBudget = BigDecimal.valueOf(500, 1),
+                previouslyReportedParked = BigDecimal.valueOf(150),
+                currentReportReIncluded = BigDecimal.ZERO
             ),
         )
 
@@ -248,10 +271,28 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
         every { reportPersistence.getPartnerReportById(partnerId = PARTNER_ID, reportId) } returns
             report(reportId, status)
         every { reportLumpSumPersistence.getLumpSum(partnerId = PARTNER_ID, reportId = reportId) } returns
-            listOf(lumpSum_1.copy(currentReport = BigDecimal.ZERO), lumpSum_2.copy(currentReport = BigDecimal.ZERO), lumpSum_ft)
-        every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(partnerId = PARTNER_ID, reportId = reportId) } returns
-            listOf(expenditureWithLumpSum)
-        assertThat(calculator.get(PARTNER_ID, reportId = reportId)).isEqualTo(expectedDraftBreakdown.copy())
+            listOf(
+                lumpSum_1.copy(currentReport = BigDecimal.ZERO),
+                lumpSum_2.copy(currentReport = BigDecimal.ZERO, previouslyReportedParked = BigDecimal.valueOf(100)),
+                lumpSum_ft
+            )
+        every {
+            reportExpenditurePersistence.getPartnerReportExpenditureCosts(
+                partnerId = PARTNER_ID,
+                reportId = reportId
+            )
+        } returns
+            listOf(
+                expenditureWithLumpSum,
+                expenditureWithLumpSum.copy(
+                    parkingMetadata = ExpenditureParkingMetadata(
+                        reportOfOriginId = 70L,
+                        reportOfOriginNumber = 5,
+                        originalExpenditureNumber = 3
+                    )
+                )
+            )
+        assertThat(calculator.get(PARTNER_ID, reportId = reportId)).isEqualTo(expectedDraftBreakdown)
     }
 
     @ParameterizedTest(name = "get closed (status {0})")
@@ -263,8 +304,14 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
         every { reportLumpSumPersistence.getLumpSum(partnerId = PARTNER_ID, reportId = reportId) } returns
             listOf(
                 lumpSum_1.copy(totalEligibleAfterControl = BigDecimal.valueOf(38, 1)),
-                lumpSum_2.copy(totalEligibleAfterControl = BigDecimal.valueOf(10, 1)),
-                lumpSum_ft.copy(totalEligibleAfterControl = BigDecimal.valueOf(5, 1)),
+                lumpSum_2.copy(
+                    totalEligibleAfterControl = BigDecimal.valueOf(10, 1),
+                    previouslyReportedParked = BigDecimal.valueOf(50)
+                ),
+                lumpSum_ft.copy(
+                    totalEligibleAfterControl = BigDecimal.valueOf(5, 1),
+                    previouslyReportedParked = BigDecimal.valueOf(100)
+                )
             )
         assertThat(calculator.get(PARTNER_ID, reportId = reportId)).isEqualTo(expectedNonDraftBreakdown.copy())
     }

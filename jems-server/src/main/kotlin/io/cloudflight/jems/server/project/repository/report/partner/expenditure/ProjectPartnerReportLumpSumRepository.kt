@@ -21,14 +21,15 @@ interface ProjectPartnerReportLumpSumRepository : JpaRepository<PartnerReportLum
     ): PartnerReportLumpSumEntity
 
     @Query("""
-        SELECT new kotlin.Pair(
+        SELECT new kotlin.Triple(
             lumpSum.orderNr,
-            COALESCE(SUM(lumpSum.current), 0)
+            COALESCE(SUM(lumpSum.current), 0),
+            COALESCE(SUM(lumpSum.currentParked), 0)
         )
         FROM #{#entityName} lumpSum
         WHERE lumpSum.reportEntity.id IN :reportIds
         GROUP BY lumpSum.orderNr
     """)
-    fun findCumulativeForReportIds(reportIds: Set<Long>): List<Pair<Int, BigDecimal>>
+    fun findCumulativeForReportIds(reportIds: Set<Long>): List<Triple<Int, BigDecimal, BigDecimal>>
 
 }

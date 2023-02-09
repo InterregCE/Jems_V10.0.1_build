@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.currency.service.model.CurrencyConversion
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.unitCost.ExpenditureUnitCostBreakdown
@@ -53,6 +54,8 @@ internal class GetReportExpenditureUnitCostBreakdownCalculatorTest : UnitTest() 
             previouslyReported = BigDecimal.valueOf(23),
             currentReport = BigDecimal.valueOf(39, 1),
             totalEligibleAfterControl = BigDecimal.ZERO,
+            previouslyReportedParked = BigDecimal.ZERO,
+            currentReportReIncluded = BigDecimal.ZERO
         )
 
         private val unitCost_2 = ExpenditureUnitCostBreakdownLine(
@@ -63,6 +66,8 @@ internal class GetReportExpenditureUnitCostBreakdownCalculatorTest : UnitTest() 
             previouslyReported = BigDecimal.valueOf(7),
             currentReport = BigDecimal.valueOf(11, 1),
             totalEligibleAfterControl = BigDecimal.ZERO,
+            previouslyReportedParked = BigDecimal.ZERO,
+            currentReportReIncluded = BigDecimal.ZERO
         )
 
         private val expenditureWithUnitCost = ProjectPartnerReportExpenditureCost(
@@ -97,11 +102,13 @@ internal class GetReportExpenditureUnitCostBreakdownCalculatorTest : UnitTest() 
                     name = setOf(InputTranslation(SystemLanguage.GA, "name 1 GA")),
                     totalEligibleBudget = BigDecimal.valueOf(52),
                     previouslyReported = BigDecimal.valueOf(23),
-                    currentReport = BigDecimal.valueOf(1264, 2),
+                    currentReport = BigDecimal.valueOf(2528, 2),
                     totalEligibleAfterControl = BigDecimal.ZERO,
-                    totalReportedSoFar = BigDecimal.valueOf(3564, 2),
-                    totalReportedSoFarPercentage = BigDecimal.valueOf(6854, 2),
-                    remainingBudget = BigDecimal.valueOf(1636, 2),
+                    totalReportedSoFar = BigDecimal.valueOf(4828, 2),
+                    totalReportedSoFarPercentage = BigDecimal.valueOf(9285, 2),
+                    remainingBudget = BigDecimal.valueOf(372, 2),
+                    currentReportReIncluded = BigDecimal.valueOf(12.64),
+                    previouslyReportedParked = BigDecimal.ZERO
                 ),
                 ExpenditureUnitCostBreakdownLine(
                     reportUnitCostId = 2L,
@@ -114,6 +121,8 @@ internal class GetReportExpenditureUnitCostBreakdownCalculatorTest : UnitTest() 
                     totalReportedSoFar = BigDecimal.valueOf(7),
                     totalReportedSoFarPercentage = BigDecimal.valueOf(3889, 2),
                     remainingBudget = BigDecimal.valueOf(11),
+                    currentReportReIncluded = BigDecimal.ZERO,
+                    previouslyReportedParked = BigDecimal.valueOf(100)
                 ),
             ),
             total = ExpenditureUnitCostBreakdownLine(
@@ -122,11 +131,13 @@ internal class GetReportExpenditureUnitCostBreakdownCalculatorTest : UnitTest() 
                 name = emptySet(),
                 totalEligibleBudget = BigDecimal.valueOf(70),
                 previouslyReported = BigDecimal.valueOf(30),
-                currentReport = BigDecimal.valueOf(1264, 2),
+                currentReport = BigDecimal.valueOf(2528, 2),
                 totalEligibleAfterControl = BigDecimal.ZERO,
-                totalReportedSoFar = BigDecimal.valueOf(4264, 2),
-                totalReportedSoFarPercentage = BigDecimal.valueOf(6091, 2),
-                remainingBudget = BigDecimal.valueOf(2736, 2),
+                totalReportedSoFar = BigDecimal.valueOf(5528, 2),
+                totalReportedSoFarPercentage = BigDecimal.valueOf(7897, 2),
+                remainingBudget = BigDecimal.valueOf(1472, 2),
+                previouslyReportedParked = BigDecimal.valueOf(100),
+                currentReportReIncluded = BigDecimal.valueOf(12.64)
             ),
         )
 
@@ -143,6 +154,8 @@ internal class GetReportExpenditureUnitCostBreakdownCalculatorTest : UnitTest() 
                     totalReportedSoFar = BigDecimal.valueOf(269, 1),
                     totalReportedSoFarPercentage = BigDecimal.valueOf(5173, 2),
                     remainingBudget = BigDecimal.valueOf(251, 1),
+                    currentReportReIncluded = BigDecimal.ZERO,
+                    previouslyReportedParked = BigDecimal.valueOf(50)
                 ),
                 ExpenditureUnitCostBreakdownLine(
                     reportUnitCostId = 2L,
@@ -155,6 +168,8 @@ internal class GetReportExpenditureUnitCostBreakdownCalculatorTest : UnitTest() 
                     totalReportedSoFar = BigDecimal.valueOf(81, 1),
                     totalReportedSoFarPercentage = BigDecimal.valueOf(4500, 2),
                     remainingBudget = BigDecimal.valueOf(99, 1),
+                    currentReportReIncluded = BigDecimal.ZERO,
+                    previouslyReportedParked = BigDecimal.valueOf(100)
                 ),
             ),
             total = ExpenditureUnitCostBreakdownLine(
@@ -168,6 +183,8 @@ internal class GetReportExpenditureUnitCostBreakdownCalculatorTest : UnitTest() 
                 totalReportedSoFar = BigDecimal.valueOf(350, 1),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(5000, 2),
                 remainingBudget = BigDecimal.valueOf(350, 1),
+                currentReportReIncluded = BigDecimal.ZERO,
+                previouslyReportedParked = BigDecimal.valueOf(150)
             ),
         )
 
@@ -200,12 +217,31 @@ internal class GetReportExpenditureUnitCostBreakdownCalculatorTest : UnitTest() 
         every { reportPersistence.getPartnerReportById(partnerId = PARTNER_ID, reportId) } returns
             report(reportId, status)
         every { reportUnitCostPersistence.getUnitCost(partnerId = PARTNER_ID, reportId = reportId) } returns
-            listOf(unitCost_1.copy(currentReport = BigDecimal.ZERO), unitCost_2.copy(currentReport = BigDecimal.ZERO))
-        every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(partnerId = PARTNER_ID, reportId = reportId) } returns
-            listOf(expenditureWithUnitCost)
+            listOf(
+                unitCost_1.copy(currentReport = BigDecimal.ZERO),
+                unitCost_2.copy(currentReport = BigDecimal.ZERO, previouslyReportedParked = BigDecimal.valueOf(100))
+            )
         every { currencyPersistence.findAllByIdYearAndIdMonth(YEAR, MONTH) } returns
             listOf(CurrencyConversion("GBP", YEAR, MONTH, "", BigDecimal.valueOf(87, 2)))
-        assertThat(calculator.get(PARTNER_ID, reportId = reportId)).isEqualTo(expectedDraftBreakdown.copy())
+        every {
+            reportExpenditurePersistence.getPartnerReportExpenditureCosts(
+                partnerId = PARTNER_ID,
+                reportId = reportId
+            )
+        } returns
+            listOf(
+                expenditureWithUnitCost,
+                expenditureWithUnitCost.copy(
+                    parkingMetadata = ExpenditureParkingMetadata(
+                        reportOfOriginId = 70L,
+                        reportOfOriginNumber = 5,
+                        originalExpenditureNumber = 3
+                    ),
+                    currencyConversionRate = BigDecimal.valueOf(87, 2)
+                )
+            )
+
+        assertThat(calculator.get(PARTNER_ID, reportId = reportId)).isEqualTo(expectedDraftBreakdown)
     }
 
     @ParameterizedTest(name = "get closed (status {0})")
@@ -216,8 +252,14 @@ internal class GetReportExpenditureUnitCostBreakdownCalculatorTest : UnitTest() 
             report(reportId, status)
         every { reportUnitCostPersistence.getUnitCost(partnerId = PARTNER_ID, reportId = reportId) } returns
             listOf(
-                unitCost_1.copy(totalEligibleAfterControl = BigDecimal.valueOf(38, 1)),
-                unitCost_2.copy(totalEligibleAfterControl = BigDecimal.valueOf(10, 1)),
+                unitCost_1.copy(
+                    totalEligibleAfterControl = BigDecimal.valueOf(38, 1),
+                    previouslyReportedParked = BigDecimal(50)
+                ),
+                unitCost_2.copy(
+                    totalEligibleAfterControl = BigDecimal.valueOf(10, 1),
+                    previouslyReportedParked = BigDecimal(100)
+                ),
             )
         assertThat(calculator.get(PARTNER_ID, reportId = reportId)).isEqualTo(expectedNonDraftBreakdown.copy())
     }

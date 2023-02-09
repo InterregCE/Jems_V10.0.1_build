@@ -3,6 +3,8 @@ package io.cloudflight.jems.server.project.repository.report.partner.financialOv
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.project.repository.report.partner.expenditure.ProjectPartnerReportLumpSumRepository
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumBreakdownLine
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumCurrent
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumCurrentWithReIncluded
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportLumpSumPersistence
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -28,35 +30,44 @@ class ProjectPartnerReportLumpSumPersistenceProvider(
                 previouslyReported = it.previouslyReported,
                 previouslyPaid = it.previouslyPaid,
                 currentReport = it.current,
+                previouslyReportedParked = it.previouslyReportedParked,
+                currentReportReIncluded = it.currentReIncluded,
                 totalEligibleAfterControl = it.totalEligibleAfterControl,
             ) }
 
     @Transactional(readOnly = true)
     override fun getLumpSumCumulative(reportIds: Set<Long>) =
-        reportLumpSumRepository.findCumulativeForReportIds(reportIds).toMap()
+        reportLumpSumRepository.findCumulativeForReportIds(reportIds)
+            .associate { Pair(it.first, ExpenditureLumpSumCurrent(current = it.second, currentParked = it.third)) }
 
     @Transactional
     override fun updateCurrentlyReportedValues(
         partnerId: Long,
         reportId: Long,
-        currentlyReported: Map<Long, BigDecimal>,
+        currentlyReported: Map<Long, ExpenditureLumpSumCurrentWithReIncluded>,
     ) {
         reportLumpSumRepository
             .findByReportEntityPartnerIdAndReportEntityIdOrderByOrderNrAscIdAsc(partnerId = partnerId, reportId = reportId)
             .forEach {
                 if (currentlyReported.containsKey(it.id)) {
-                    it.current = currentlyReported.get(it.id)!!
+                    it.current = currentlyReported.get(it.id)!!.current
+                    it.currentReIncluded = currentlyReported.get(it.id)!!.currentReIncluded
                 }
             }
     }
 
     @Transactional
-    override fun updateAfterControlValues(partnerId: Long, reportId: Long, afterControl: Map<Long, BigDecimal>) {
+    override fun updateAfterControlValues(
+        partnerId: Long,
+        reportId: Long,
+        afterControl: Map<Long, ExpenditureLumpSumCurrent>,
+    ) {
         reportLumpSumRepository
             .findByReportEntityPartnerIdAndReportEntityIdOrderByOrderNrAscIdAsc(partnerId = partnerId, reportId = reportId)
             .forEach {
                 if (afterControl.containsKey(it.id)) {
-                    it.totalEligibleAfterControl = afterControl.get(it.id)!!
+                    it.totalEligibleAfterControl = afterControl.get(it.id)!!.current
+                    it.currentParked = afterControl.get(it.id)!!.currentParked
                 }
             }
     }
