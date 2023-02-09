@@ -9,20 +9,17 @@ import {
   PartnerReportDetailPageStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
-import {
-  ProjectPartnerReportService,
-  ProjectReportProcurementFileDTO, UserRoleDTO,
-} from '@cat/api';
+import {ProjectPartnerReportService, ProjectReportProcurementFileDTO, UserRoleDTO,} from '@cat/api';
 import {finalize, map, switchMap, take, tap} from 'rxjs/operators';
 import {Alert} from '@common/components/forms/alert';
 import {FileListItem} from '@common/components/file-list/file-list-item';
 import {
   ReportFileManagementStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-annexes-tab/report-file-management-store';
-import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {AcceptedFileTypesConstants} from '@project/common/components/file-management/accepted-file-types.constants';
 import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
 import {FileListComponent} from '@common/components/file-list/file-list.component';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @UntilDestroy()
 @Component({
@@ -72,7 +69,7 @@ export class PartnerReportProcurementAttachmentComponent implements OnChanges {
           editable: file.createdInThisReport && isReportEditable,
           deletable: file.createdInThisReport && isReportEditable,
           tooltipIfNotDeletable: '',
-          iconIfNotDeletable: '',
+          iconIfNotDeletable: ''
         })),
         isReportEditable,
       })),
@@ -141,5 +138,4 @@ export class PartnerReportProcurementAttachmentComponent implements OnChanges {
       ),
     );
   };
-
 }

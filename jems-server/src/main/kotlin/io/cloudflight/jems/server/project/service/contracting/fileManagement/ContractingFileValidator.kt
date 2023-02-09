@@ -39,14 +39,27 @@ val PARTNER_ALLOWED_FILE_TYPES = mapOf(
     JemsFileType.ContractPartnerDoc to setOf(JemsFileType.ContractPartnerDoc),
 )
 
-fun validateInternalFile(fileType:  JemsFileType?) {
-    if (fileType == null || fileType != JemsFileType.ContractInternal) {
+val INTERNAL_ALLOWED_FILE_TYPES = mapOf(
+    JemsFileType.Contract to setOf(JemsFileType.Contract),
+    JemsFileType.ContractDoc to setOf(JemsFileType.ContractDoc),
+    JemsFileType.ContractPartnerDoc to setOf(JemsFileType.ContractPartnerDoc),
+    JemsFileType.ContractInternal to setOf(JemsFileType.ContractInternal)
+)
+
+fun validateInternalFile(fileType: JemsFileType?) {
+    if (fileType == null || fileType !in INTERNAL_ALLOWED_FILE_TYPES) {
         throw FileNotFound()
     }
 }
 
 fun validateContractFile(fileType:  JemsFileType?) {
     if (fileType == null || fileType !in CONTRACT_ALLOWED_FILE_TYPES) {
+        throw FileNotFound()
+    }
+}
+
+fun validatePartnerFile(fileType: JemsFileType?) {
+    if (fileType == null || fileType !in PARTNER_ALLOWED_FILE_TYPES) {
         throw FileNotFound()
     }
 }

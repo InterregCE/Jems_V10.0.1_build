@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.repository.report.partner.procurement.attachment
 
-import io.cloudflight.jems.server.project.entity.report.partner.procurement.file.ProjectPartnerReportProcurementFileEntity
 import io.cloudflight.jems.server.common.file.service.toModel
+import io.cloudflight.jems.server.project.entity.report.partner.procurement.file.ProjectPartnerReportProcurementFileEntity
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectReportProcurementFile
 
 fun List<ProjectPartnerReportProcurementFileEntity>.toModel() = map {
@@ -13,6 +13,6 @@ fun List<ProjectPartnerReportProcurementFileEntity>.toModel() = map {
         uploaded = it.file.uploaded,
         author = it.file.user.toModel(),
         size = it.file.size,
-        description = it.file.description,
+        description = it.file.description
     )
 }

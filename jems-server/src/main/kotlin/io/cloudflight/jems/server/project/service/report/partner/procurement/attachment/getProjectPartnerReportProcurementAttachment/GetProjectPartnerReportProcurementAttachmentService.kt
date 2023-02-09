@@ -29,5 +29,4 @@ class GetProjectPartnerReportProcurementAttachmentService(
             .getAttachmentsBeforeAndIncludingReportId(procurement.id, reportId = report.id)
             .fillThisReportFlag(currentReportId = reportId)
     }
-
 }

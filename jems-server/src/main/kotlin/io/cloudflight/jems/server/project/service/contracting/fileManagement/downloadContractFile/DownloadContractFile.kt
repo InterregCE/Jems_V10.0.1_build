@@ -15,7 +15,6 @@ class DownloadContractFile(
     private val filePersistence: JemsFilePersistence,
 ) : DownloadContractFileInteractor {
 
-
     @CanViewContractsAndAgreements
     @Transactional(readOnly = true)
     @ExceptionWrapper(DownloadContractFileException::class)
@@ -24,6 +23,4 @@ class DownloadContractFile(
         return contractingFilePersistence.downloadFile(projectId = projectId, fileId = fileId)
             ?: throw FileNotFound()
     }
-
-
 }

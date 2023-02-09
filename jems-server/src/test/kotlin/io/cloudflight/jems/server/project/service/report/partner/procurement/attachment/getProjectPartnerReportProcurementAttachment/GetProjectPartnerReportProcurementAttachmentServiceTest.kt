@@ -1,12 +1,12 @@
 package io.cloudflight.jems.server.project.service.report.partner.procurement.attachment.getProjectPartnerReportProcurementAttachment
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
-import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
-import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectReportProcurementFile
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurement
+import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectReportProcurementFile
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectPartnerReportProcurementPersistence
 import io.cloudflight.jems.server.project.service.report.partner.procurement.attachment.ProjectPartnerReportProcurementAttachmentPersistence
 import io.mockk.clearMocks
@@ -34,7 +34,7 @@ internal class GetProjectPartnerReportProcurementAttachmentServiceTest : UnitTes
             uploaded = YEARS_AGO_50,
             author = UserSimple(45L, "dummy@email", name = "Dummy", surname = "Surname"),
             size = 6281245L,
-            description = "desc 270",
+            description = "desc 270"
         )
         private val attachment2 = ProjectReportProcurementFile(
             id = 271,
@@ -45,7 +45,7 @@ internal class GetProjectPartnerReportProcurementAttachmentServiceTest : UnitTes
             uploaded = YEARS_AGO_50,
             author = UserSimple(48L, "dummy@email48", name = "Dummy", surname = "Surname"),
             size = 2968954L,
-            description = "desc 271",
+            description = "desc 271"
         )
 
     }
@@ -89,5 +89,4 @@ internal class GetProjectPartnerReportProcurementAttachmentServiceTest : UnitTes
                 attachment2.copy(createdInThisReport = false),
             )
     }
-
 }

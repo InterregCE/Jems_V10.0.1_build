@@ -69,7 +69,7 @@ export class AdvancePaymentsAttachmentsComponent implements OnChanges {
             editable: isPaymentEditable,
             deletable: isPaymentEditable,
             tooltipIfNotDeletable: '',
-            iconIfNotDeletable: '',
+            iconIfNotDeletable: ''
           })),
         },
         isPaymentEditable,
@@ -109,5 +109,4 @@ export class AdvancePaymentsAttachmentsComponent implements OnChanges {
   deleteCallback = (file: FileListItem): Observable<void> => {
     return this.paymentAdvanceAttachmentService.deleteAttachment(file.id);
   };
-
 }

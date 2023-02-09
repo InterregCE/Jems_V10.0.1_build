@@ -58,7 +58,6 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.model.Proj
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
-import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
@@ -93,6 +92,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackageActivity
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackageActivityDeliverable
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackageOutput
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectPartnerReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.getProjectPartnerReportExpenditure.GetProjectPartnerReportExpenditureCalculator
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.GetReportExpenditureCoFinancingBreakdownCalculator
@@ -118,7 +118,7 @@ import org.springframework.data.domain.PageRequest
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
-import java.util.*
+import java.util.UUID
 
 internal class ReportPartnerDataProviderImplTest : UnitTest() {
 
@@ -205,7 +205,6 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
                 )
             ),
         )
-
 
         private val reportIdentification = ProjectPartnerReportIdentification(
             startDate = DATE_1,
@@ -616,7 +615,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
             uploaded = DATE_TIME_1,
             author = UserSimple(45L, "dummy@email", name = "Dummy", surname = "Surname"),
             size = 653245L,
-            description = "desc 270",
+            description = "desc 270"
         )
 
         private val attachmentData = ProjectReportProcurementFileData(
@@ -906,5 +905,4 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
         every { reportWorkPlanPersistence.getPartnerReportWorkPlanById(partnerId = 51L, reportId = 81L) } returns listOf(workPlan)
         assertThat(dataProvider.getWorkPlan(partnerId = 51L, reportId = 81L)).containsExactly(workPlanData)
     }
-
 }

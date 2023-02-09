@@ -16,10 +16,16 @@ import {CategoryInfo, CategoryNode} from '@project/common/components/category-tr
 import {APIError} from '@common/models/APIError';
 import {I18nMessage} from '@common/models/I18nMessage';
 import {DownloadService} from '@common/services/download.service';
-import {PartnerReportDetailPageStore} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
+import {
+  PartnerReportDetailPageStore
+} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 import {FileManagementStore} from '@project/common/components/file-management/file-management-store';
-import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
-import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {
+  ProjectPartnerStore
+} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
+import {
+  ProjectStore
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {PermissionService} from '../../../security/permissions/permission.service';
 import {ProjectUtil} from '@project/common/project-util';
 import {RoutingService} from '@common/services/routing.service';
@@ -119,7 +125,6 @@ export class ContractingFilesStoreService {
     );
   }
 
-
   deleteFile(fileId: number): Observable<void> {
     return this.selectedCategory$.pipe(
       withLatestFrom(this.projectStore.projectId$, this.routingService.routeParameterChanges('/', 'partnerId')),
@@ -148,8 +153,8 @@ export class ContractingFilesStoreService {
 
   downloadFile(fileId: number): Observable<any> {
     return this.selectedCategory$.pipe(
-      withLatestFrom(this.projectStore.projectId$, this.routingService.routeParameterChanges('/', 'partnerId')),
-      switchMap(([category, projectId, partnerIdInRoute]) => {
+      withLatestFrom(this.projectStore.projectId$),
+      switchMap(([category, projectId]) => {
         switch (category?.type) {
           case FileTypeEnum.Contract:
           case FileTypeEnum.ContractDoc:
@@ -157,7 +162,7 @@ export class ContractingFilesStoreService {
             return this.downloadService.download(`/api/project/${projectId}/contracting/file/contract/download/${fileId}`, 'contracting-file');
           case FileTypeEnum.ContractPartner:
           case FileTypeEnum.ContractPartnerDoc:
-            return this.downloadService.download(`/api/project/${projectId}/contracting/file/partnerDocument/${partnerIdInRoute}/download/${fileId}`, 'contracting-file');
+            return this.downloadService.download(`/api/project/${projectId}/contracting/file/partnerDocument/download/${fileId}`, 'contracting-file');
           case FileTypeEnum.ContractInternal:
           default:
             return this.downloadService.download(`/api/project/${projectId}/contracting/file/internal/download/${fileId}`, 'contracting-file');
@@ -264,5 +269,4 @@ export class ContractingFilesStoreService {
       ProjectUtil.isInApprovedOrAnyStatusAfterApproved(projectStatus)
     )
   );
-
 }

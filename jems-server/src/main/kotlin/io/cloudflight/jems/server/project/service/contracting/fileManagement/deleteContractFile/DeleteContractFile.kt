@@ -21,5 +21,4 @@ class DeleteContractFile(
         validateContractFile(filePersistence.getFileType(fileId, projectId))
         contractingFilePersistence.deleteFile(projectId = projectId, fileId = fileId)
     }
-
 }

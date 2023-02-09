@@ -14,5 +14,5 @@ data class ProjectReportProcurementFileDTO(
     val author: UserSimpleDTO,
     val size: Long,
     val sizeString: String,
-    val description: String,
+    val description: String
 )

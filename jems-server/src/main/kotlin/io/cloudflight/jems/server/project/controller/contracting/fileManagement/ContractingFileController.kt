@@ -96,10 +96,9 @@ class ContractingFileController(
 
     override fun downloadPartnerFile(
         projectId: Long,
-        partnerId: Long,
         fileId: Long
     ): ResponseEntity<ByteArrayResource> {
-        return with(downloadPartnerFile.downloadPartnerFile(partnerId = partnerId, fileId = fileId)) {
+        return with(downloadPartnerFile.downloadPartnerFile(projectId = projectId, fileId = fileId)) {
             ResponseEntity.ok()
                 .contentLength(this.second.size.toLong())
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)

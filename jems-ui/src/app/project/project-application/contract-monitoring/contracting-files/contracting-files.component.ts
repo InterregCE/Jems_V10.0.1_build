@@ -14,9 +14,9 @@ import {
 import {FileListItem} from '@common/components/file-list/file-list-item';
 import {PermissionService} from '../../../../security/permissions/permission.service';
 import {PageFileList} from '@common/components/file-list/page-file-list';
+import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
 import FileTypeEnum = ProjectReportFileDTO.TypeEnum;
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
-import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
 
 @UntilDestroy()
 @Component({
@@ -165,10 +165,9 @@ export class ContractingFilesComponent implements OnInit{
       editable: this.canEdit && file.type === FileTypeEnum.ContractInternal,
       deletable: this.canEdit && file.type === FileTypeEnum.ContractInternal,
       tooltipIfNotDeletable: 'file.table.action.delete.disabled.for.tab.tooltip',
-      iconIfNotDeletable: 'delete_forever',
+      iconIfNotDeletable: 'delete_forever'
     }));
   }
-
 
   private setContractCategories(){
     this.contractsFileCategories = [{
@@ -186,5 +185,4 @@ export class ContractingFilesComponent implements OnInit{
       ],
     }];
   }
-
 }

@@ -124,7 +124,7 @@ export class ContractFilesComponent implements OnInit {
       editable: this.isEditable && (file.type === FileTypeEnum.Contract || file.type === FileTypeEnum.ContractDoc),
       deletable: this.isEditable && (file.type === FileTypeEnum.Contract || file.type === FileTypeEnum.ContractDoc),
       tooltipIfNotDeletable: this.isEditable ? 'file.table.action.delete.disabled.for.tab.tooltip' : '',
-      iconIfNotDeletable: this.isEditable ? 'delete_forever' : '',
+      iconIfNotDeletable: this.isEditable ? 'delete_forever' : ''
     }));
   }
 
@@ -135,5 +135,4 @@ export class ContractFilesComponent implements OnInit {
   deleteCallback = (file: FileListItem): Observable<void> => {
     return this.store.deleteFile(file.id);
   };
-
 }

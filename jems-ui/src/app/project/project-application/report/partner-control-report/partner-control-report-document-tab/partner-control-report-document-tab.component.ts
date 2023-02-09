@@ -9,7 +9,8 @@ import {finalize, map, switchMap, take} from 'rxjs/operators';
 import {
   ProjectPartnerReportDTO,
   ProjectPartnerReportService,
-  ProjectPartnerReportSummaryDTO, ProjectReportFileDTO,
+  ProjectPartnerReportSummaryDTO,
+  ProjectReportFileDTO,
 } from '@cat/api';
 import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
 import {AcceptedFileTypesConstants} from '@project/common/components/file-management/accepted-file-types.constants';
@@ -72,7 +73,7 @@ export class PartnerControlReportDocumentTabComponent {
           editable: PartnerControlReportDocumentTabComponent.isEditable(report) && canEdit && file.author.id === currentUserId,
           deletable: PartnerControlReportDocumentTabComponent.isDeletable(report) && canEdit && file.author.id === currentUserId,
           tooltipIfNotDeletable: '',
-          iconIfNotDeletable: '',
+          iconIfNotDeletable: ''
         })),
         isControlReportEditable: PartnerControlReportDocumentTabComponent.isEditable(report) && canEdit,
         categories: {
@@ -139,5 +140,4 @@ export class PartnerControlReportDocumentTabComponent {
       ),
     );
   };
-
 }
