@@ -31,6 +31,7 @@ import {ProjectUtil} from '@project/common/project-util';
 import {RoutingService} from '@common/services/routing.service';
 import FileTypeEnum = ProjectReportFileDTO.TypeEnum;
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import {FileListItem} from "@common/components/file-list/file-list-item";
 
 @Injectable({
   providedIn: 'root'
@@ -151,21 +152,20 @@ export class ContractingFilesStoreService {
     );
   }
 
-  downloadFile(fileId: number): Observable<any> {
-    return this.selectedCategory$.pipe(
-      withLatestFrom(this.projectStore.projectId$),
-      switchMap(([category, projectId]) => {
-        switch (category?.type) {
+  downloadFile(file: FileListItem): Observable<any> {
+    return this.projectStore.projectId$.pipe(
+      switchMap((projectId) => {
+        switch (file.type) {
           case FileTypeEnum.Contract:
           case FileTypeEnum.ContractDoc:
           case FileTypeEnum.ContractSupport:
-            return this.downloadService.download(`/api/project/${projectId}/contracting/file/contract/download/${fileId}`, 'contracting-file');
+            return this.downloadService.download(`/api/project/${projectId}/contracting/file/contract/download/${file.id}`, 'contracting-file');
           case FileTypeEnum.ContractPartner:
           case FileTypeEnum.ContractPartnerDoc:
-            return this.downloadService.download(`/api/project/${projectId}/contracting/file/partnerDocument/download/${fileId}`, 'contracting-file');
+            return this.downloadService.download(`/api/project/${projectId}/contracting/file/partnerDocument/download/${file.id}`, 'contracting-file');
           case FileTypeEnum.ContractInternal:
           default:
-            return this.downloadService.download(`/api/project/${projectId}/contracting/file/internal/download/${fileId}`, 'contracting-file');
+            return this.downloadService.download(`/api/project/${projectId}/contracting/file/internal/download/${file.id}`, 'contracting-file');
         }
       }),
       catchError(error => {

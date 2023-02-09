@@ -82,7 +82,7 @@ export class ContractingFilesComponent implements OnInit{
   }
 
   downloadFile(file: FileListItem): void {
-    this.store.downloadFile(file.id).pipe(take(1)).subscribe();
+    this.store.downloadFile(file).pipe(take(1)).subscribe();
   }
 
   uploadFile(target: any): void {

@@ -69,7 +69,7 @@ export class ContractFilesComponent implements OnInit {
   }
 
   downloadFile(file: FileListItem): void {
-    this.store.downloadFile(file.id)
+    this.store.downloadFile(file)
       .pipe(take(1))
       .subscribe();
   }
