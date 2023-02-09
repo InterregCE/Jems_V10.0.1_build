@@ -15,7 +15,6 @@ import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.mockk
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -101,5 +100,11 @@ class ProjectPartnerReportControlFilePersistenceProviderTest : UnitTest() {
     fun getListOfControlReportFiles() {
         every { reportControlFileRepository.findAllByReportId(REPORT_ID, Pageable.unpaged()) } returns PageImpl(listOf(result))
         Assertions.assertThat(persistence.listReportFiles(REPORT_ID, Pageable.unpaged()).content).containsExactly(expectedResult)
+    }
+
+    @Test
+    fun existById() {
+        every { reportControlFileRepository.existsById(1L) } returns true
+        Assertions.assertThat(persistence.existsByFileId(1L)).isEqualTo(true)
     }
 }

@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.project.entity.report.control.certificate.PartnerReportControlFileEntity
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.control.file.PartnerReportControlFile
 import io.cloudflight.jems.server.project.service.report.partner.control.file.ProjectPartnerReportControlFilePersistence
 import org.springframework.data.domain.Page
@@ -20,6 +21,30 @@ class ProjectPartnerReportControlFilePersistenceProvider(
     @Transactional(readOnly = true)
     override fun listReportFiles(reportId: Long, pageable: Pageable): Page<PartnerReportControlFile> {
         return reportControlFileRepository.findAllByReportId(reportId, pageable).toModel()
+    }
+    @Transactional(readOnly = true)
+    override fun existsByFileId(fileId: Long): Boolean {
+        return reportControlFileRepository.existsById(fileId)
+    }
+    @Transactional
+    override fun updateCertificateAttachment(fileId: Long, file: JemsFileCreate): JemsFileMetadata {
+        val certificate = reportControlFileRepository.findById(fileId).get()
+        certificate.signedFile.deleteIfPresent()
+
+        return persistFileAndCreateLink(file = file) { certificate.signedFile = it }
+    }
+
+    @Transactional
+    override fun deleteCertificateAttachment(fileId: Long) {
+        val certificate = reportControlFileRepository.findById(fileId).get()
+        val file = certificate.signedFile
+        certificate.signedFile = null
+        file.deleteIfPresent()
+    }
+
+    @Transactional(readOnly = true)
+    override fun getByReportIdAndId(reportId: Long, fileId: Long): PartnerReportControlFile {
+        return reportControlFileRepository.findByReportIdAndId(reportId, fileId).toModel()
     }
 
     @Transactional
@@ -38,5 +63,11 @@ class ProjectPartnerReportControlFilePersistenceProvider(
             generatedFile = file,
             signedFile = null,
         )
+    }
+
+    private fun JemsFileMetadataEntity?.deleteIfPresent() {
+        if (this != null) {
+            fileRepository.delete(this)
+        }
     }
 }

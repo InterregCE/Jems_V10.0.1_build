@@ -1,10 +1,14 @@
 package io.cloudflight.jems.server.project.controller.report.partner.control.file
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
+import io.cloudflight.jems.server.project.service.report.partner.control.file.deleteReportControlCertificateAttachment.DeleteReportControlCertificateAttachmentInteractor
 import io.cloudflight.jems.server.project.service.report.partner.control.file.downloadCertificate.DownloadReportControlCertificateInteractor
+import io.cloudflight.jems.server.project.service.report.partner.control.file.downloadCertificateAttachment.DownloadReportControlCertificateAttachmentInteractor
 import io.cloudflight.jems.server.project.service.report.partner.control.file.generateCertificate.GenerateReportControlCertificateInteractor
 import io.cloudflight.jems.server.project.service.report.partner.control.file.listCertificates.ListReportControlCertificatesInteractor
 import io.cloudflight.jems.server.project.service.report.partner.control.file.setDescriptionToCertificate.SetDescriptionToCertificateInteractor
+import io.cloudflight.jems.server.project.service.report.partner.control.file.uploadFileToCertificate.UploadFileToCertificateInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -24,6 +28,15 @@ open class ProjectPartnerControlReportFileControllerTest: UnitTest() {
 
     @MockK
     lateinit var downloadReportControlCertificate: DownloadReportControlCertificateInteractor
+
+    @MockK
+    lateinit var deleteReportControlCertificateAttachment: DeleteReportControlCertificateAttachmentInteractor
+
+    @MockK
+    lateinit var downloadReportControlCertificateAttachment: DownloadReportControlCertificateAttachmentInteractor
+
+    @MockK
+    lateinit var uploadFileToCertificate: UploadFileToCertificateInteractor
 
     @InjectMockKs
     lateinit var controller: ProjectPartnerControlReportFileController
@@ -50,5 +63,21 @@ open class ProjectPartnerControlReportFileControllerTest: UnitTest() {
             )
         }
     }
+
+    @Test
+    fun deleteControlReportCertificateFiles() {
+        every { deleteReportControlCertificateAttachment
+            .deleteReportControlCertificateAttachment(8L, 26L, 1L, 2L) } answers { }
+        controller.deleteControlReportAttachment(8L, 26L, 1L, 2L)
+        verify(exactly = 1) {
+            controller.deleteControlReportAttachment(
+                8L,
+                26L,
+                1L,
+                2L
+            )
+        }
+    }
+
 
 }

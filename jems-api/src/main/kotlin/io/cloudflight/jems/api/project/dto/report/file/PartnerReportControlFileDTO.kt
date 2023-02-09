@@ -4,5 +4,5 @@ data class PartnerReportControlFileDTO(
     val id: Long,
     val reportId: Long,
     val generatedFile: ProjectReportFileDTO,
-    val signedFile: ProjectReportFileDTO?,
+    val signedFile: ProjectReportFileMetadataDTO?,
 )
