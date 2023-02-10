@@ -74,9 +74,9 @@ export class PartnerControlReportStore {
   );
 
   constructor(
+    public reportPageStore: PartnerReportPageStore,
+    public partnerReportDetailPageStore: PartnerReportDetailPageStore,
     private routingService: RoutingService,
-    private partnerReportDetailPageStore: PartnerReportDetailPageStore,
-    private reportPageStore: PartnerReportPageStore,
     private projectStore: ProjectStore,
     private reportIdentificationService: ProjectPartnerReportIdentificationService,
     private partnerService: ProjectPartnerService,

@@ -36,6 +36,7 @@ export class PartnerControlReportGenerateControlReportAndCertificateComponent {
     files: PagePartnerReportControlFileDTO;
     fileList: FileListItem[];
     isReportFinalized: boolean;
+    isReportEditable: boolean;
   }>;
 
   isUploadDone = false;
@@ -57,9 +58,10 @@ export class PartnerControlReportGenerateControlReportAndCertificateComponent {
     this.data$ = combineLatest([
       this.fileManagementStore.certificateExportPlugins$,
       this.fileManagementStore.certificateFileList$,
-      this.partnerControlReportStore.controlReportFinalized$
+      this.partnerControlReportStore.controlReportFinalized$,
+      this.partnerControlReportStore.controlReportEditable$
     ]).pipe(
-      map(([plugins, files, isReportFinalized]) => ({
+      map(([plugins, files, isReportFinalized, isReportEditable]) => ({
         plugins,
         files,
         fileList: files.content ? files.content?.map((file: PartnerReportControlFileDTO) => ({
@@ -77,7 +79,8 @@ export class PartnerControlReportGenerateControlReportAndCertificateComponent {
           parentEntityId: file.id,
           attachment: file.signedFile
         } as FileListItem)) : [],
-        isReportFinalized
+        isReportFinalized,
+        isReportEditable
       })),
     );
   }

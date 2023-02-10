@@ -20,11 +20,12 @@ import {MatDialog} from '@angular/material/dialog';
 import {SecurityService} from '../../../../security/security.service';
 import {FormService} from '@common/components/section/form/form.service';
 import {catchError, filter, finalize, take, tap} from 'rxjs/operators';
-import {untilDestroyed} from '@ngneat/until-destroy';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {Forms} from '@common/utils/forms';
 import {v4 as uuid} from 'uuid';
 import { Alert } from '@common/components/forms/alert';
 
+@UntilDestroy()
 @Component({
   selector: 'jems-file-list-table-with-file-linking',
   templateUrl: './file-list-table-with-file-linking.component.html',
