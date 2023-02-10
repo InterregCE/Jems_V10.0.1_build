@@ -3,7 +3,7 @@ import {BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subject} 
 import {
   PagePartnerReportControlFileDTO,
   PluginInfoDTO,
-  ProjectPartnerControlReportFileAPIService,
+  ProjectPartnerControlReportFileAPIService
 } from '@cat/api';
 import {PluginStore} from '@common/services/plugin-store.service';
 import {DownloadService} from '@common/services/download.service';
@@ -34,9 +34,9 @@ export class PartnerControlReportGenerateControlReportAndCertificateExportStore 
   private exportTriggeredEvent$ = new BehaviorSubject<void>(undefined);
 
   constructor(
+    public partnerControlReportStore: PartnerControlReportStore,
     private pluginStore: PluginStore,
     private controlReportExportService: ProjectPartnerControlReportFileAPIService,
-    private partnerControlReportStore: PartnerControlReportStore,
     private downloadService: DownloadService) {
     this.certificateExportPlugins$ = this.pluginStore.getPluginListByType(TypeEnum.PARTNERCONTROLCERTIFICATEEXPORT);
     this.certificateFileList$ = this.certificateFileList();

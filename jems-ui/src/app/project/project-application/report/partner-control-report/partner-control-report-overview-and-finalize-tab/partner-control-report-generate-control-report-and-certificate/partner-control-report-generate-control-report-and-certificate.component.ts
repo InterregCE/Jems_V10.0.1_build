@@ -9,7 +9,7 @@ import {FormBuilder, FormGroup} from '@angular/forms';
 import {
   PagePartnerReportControlFileDTO, PartnerReportControlFileDTO,
   PluginInfoDTO,
-  ProjectPartnerControlReportFileAPIService,
+  ProjectPartnerControlReportFileAPIService, ProjectPartnerReportSummaryDTO,
 } from '@cat/api';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {PartnerControlReportStore} from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
@@ -36,7 +36,8 @@ export class PartnerControlReportGenerateControlReportAndCertificateComponent {
     files: PagePartnerReportControlFileDTO;
     fileList: FileListItem[];
     isReportFinalized: boolean;
-    isReportEditable: boolean;
+    isUserAllowedToEditReport: boolean;
+    reportStatus: ProjectPartnerReportSummaryDTO.StatusEnum;
   }>;
 
   isUploadDone = false;
@@ -59,9 +60,10 @@ export class PartnerControlReportGenerateControlReportAndCertificateComponent {
       this.fileManagementStore.certificateExportPlugins$,
       this.fileManagementStore.certificateFileList$,
       this.partnerControlReportStore.controlReportFinalized$,
-      this.partnerControlReportStore.controlReportEditable$
+      this.partnerControlReportStore.canEditControlReport$,
+      this.fileManagementStore.partnerControlReportStore.partnerReportDetailPageStore.reportStatus$,
     ]).pipe(
-      map(([plugins, files, isReportFinalized, isReportEditable]) => ({
+      map(([plugins, files, isReportFinalized, isUserAllowedToEditReport, reportStatus]) => ({
         plugins,
         files,
         fileList: files.content ? files.content?.map((file: PartnerReportControlFileDTO) => ({
@@ -72,7 +74,7 @@ export class PartnerControlReportGenerateControlReportAndCertificateComponent {
           author: file.generatedFile.author,
           sizeString: file.generatedFile.sizeString,
           description: file.generatedFile.description,
-          editable: isReportEditable,
+          editable: isUserAllowedToEditReport,
           deletable: false,
           tooltipIfNotDeletable: '',
           iconIfNotDeletable: '',
@@ -80,7 +82,8 @@ export class PartnerControlReportGenerateControlReportAndCertificateComponent {
           attachment: file.signedFile
         } as FileListItem)) : [],
         isReportFinalized,
-        isReportEditable
+        isUserAllowedToEditReport,
+        reportStatus
       })),
     );
   }
