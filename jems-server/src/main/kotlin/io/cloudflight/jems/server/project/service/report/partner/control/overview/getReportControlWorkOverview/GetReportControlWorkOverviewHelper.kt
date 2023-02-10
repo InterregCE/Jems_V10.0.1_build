@@ -13,3 +13,6 @@ fun Collection<ProjectPartnerReportExpenditureVerification>.calculateCertified(
         .mapValues { it.value.sumOf { it.certifiedAmount } }
     return calculateBudget(options, sums)
 }
+
+fun Collection<ProjectPartnerReportExpenditureVerification>.onlyParkedOnes() =
+    filter { it.parked }
