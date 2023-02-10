@@ -72,7 +72,7 @@ export class PartnerControlReportGenerateControlReportAndCertificateComponent {
           author: file.generatedFile.author,
           sizeString: file.generatedFile.sizeString,
           description: file.generatedFile.description,
-          editable: true,
+          editable: isReportEditable,
           deletable: false,
           tooltipIfNotDeletable: '',
           iconIfNotDeletable: '',
