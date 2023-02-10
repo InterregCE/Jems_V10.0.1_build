@@ -24,6 +24,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {Forms} from '@common/utils/forms';
 import {v4 as uuid} from 'uuid';
 import { Alert } from '@common/components/forms/alert';
+import {ProjectPartnerReportSummaryDTO, ProjectReportFileMetadataDTO} from '@cat/api';
 
 @UntilDestroy()
 @Component({
@@ -55,10 +56,13 @@ export class FileListTableWithFileLinkingComponent implements OnInit, OnChanges,
   isUploadDone = false;
 
   @Input()
-  isUploadAccepted = true;
+  isFileDeletable = true;
 
   @Input()
-  isFileDeletable = true;
+  reportStatus: ProjectPartnerReportSummaryDTO.StatusEnum;
+
+  @Input()
+  isUserAllowedToEditReport = true;
 
   @Input()
   setDescriptionCallback: (data: FileDescriptionChange) => Observable<any>;
@@ -242,6 +246,16 @@ export class FileListTableWithFileLinkingComponent implements OnInit, OnChanges,
 
   attachment(index: number): FormControl {
     return this.attachmentForm.at(index).get('attachment') as FormControl;
+  }
+
+  isDescriptionEditAllowed(): boolean{
+    return (this.reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.InControl ||
+      this.reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Certified) && this.isUserAllowedToEditReport
+  }
+
+  areFileOperationsAllowed(file: ProjectReportFileMetadataDTO): boolean{
+    return (this.reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.InControl && this.isUserAllowedToEditReport) ||
+    (this.reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Certified && this.isUserAllowedToEditReport && file === null)
   }
 
 }
