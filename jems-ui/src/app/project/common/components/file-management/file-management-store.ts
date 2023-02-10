@@ -52,6 +52,7 @@ export class FileManagementStore {
 
   canUpload$: Observable<boolean>;
   currentVersion$: Observable<ProjectVersionDTO | undefined>;
+  currentProjectStatus$: Observable<ProjectStatusDTO | undefined>;
   canChangeAssessmentFile$: Observable<boolean>;
   canChangeApplicationFile$: Observable<boolean>;
   canChangeModificationFile$: Observable<boolean>;
@@ -79,6 +80,7 @@ export class FileManagementStore {
               private projectVersionStore: ProjectVersionStore
   ) {
     this.currentVersion$ = this.projectVersionStore.currentVersion$;
+    this.currentProjectStatus$ = this.projectStore.projectStatus$;
     this.userIsProjectOwnerOrEditCollaborator$ = this.projectStore.userIsProjectOwnerOrEditCollaborator$;
     this.canChangeAssessmentFile$ = this.permissionService.hasPermission(PermissionsEnum.ProjectFileAssessmentUpdate);
     this.canChangeApplicationFile$ = this.permissionService.hasPermission(PermissionsEnum.ProjectFileApplicationUpdate);
