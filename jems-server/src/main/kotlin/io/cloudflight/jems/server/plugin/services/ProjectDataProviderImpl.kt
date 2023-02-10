@@ -8,6 +8,7 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA4.Proje
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.ProjectDataSectionB
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.PartnerBudgetData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerBudgetOptionsData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerSummaryData
 import io.cloudflight.jems.plugin.contract.models.project.sectionD.ProjectDataSectionD
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.ProjectDataSectionE
@@ -263,6 +264,13 @@ class ProjectDataProviderImpl(
             ),
         )
     }
+
+    @Transactional(readOnly = true)
+    override fun getProjectPartnerBudgetOptions(
+        partnerId: Long,
+        version: String?
+    ): ProjectPartnerBudgetOptionsData? = budgetOptionsPersistence.getBudgetOptions(partnerId, version)?.toDataModel()
+
 
     override fun getProjectPartnerSummaryData(partnerId: Long): ProjectPartnerSummaryData =
         partnerPersistence.getById(partnerId).toSummaryDataModel()

@@ -69,7 +69,7 @@ fun controlCertificateCreated(
     report: ProjectPartnerReport
 ): AuditCandidateEvent = AuditCandidateEvent(
     context = context,
-    auditCandidate = AuditBuilder(AuditAction.CONTROL_CERTIFICATE_GENERATED).project(
+    auditCandidate = AuditBuilder(AuditAction.CONTROL_REPORT_CERTIFICATE_GENERATED).project(
         projectId = projectId,
         customIdentifier = report.identification.projectIdentifier,
         acronym = report.identification.projectAcronym
