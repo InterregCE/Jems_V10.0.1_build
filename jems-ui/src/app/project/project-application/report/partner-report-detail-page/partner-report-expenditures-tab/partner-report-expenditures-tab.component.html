@@ -61,7 +61,7 @@
                                             <mat-option *ngFor="let lumpSum of data.lumpSums"
                                                         [value]="lumpSum"
                                                         [matTooltip]="getCostOptionsDefinition(lumpSum) | async">
-                                                <span>{{ (lumpSum.name | translateBySystemLanguage | async) }}</span>
+                                                <span>{{ (lumpSum.name | translateByInputLanguage | async) }}</span>
                                                 <span *ngIf="lumpSum.period !== null && lumpSum.period !== undefined">
                                                     - {{ lumpSum.period === PERIOD_PREPARATION ? ('project.application.form.section.part.e.period.preparation' | translate) :
                                                     (lumpSum.period === PERIOD_CLOSURE ? ('project.application.form.section.part.e.period.closure' | translate) :
