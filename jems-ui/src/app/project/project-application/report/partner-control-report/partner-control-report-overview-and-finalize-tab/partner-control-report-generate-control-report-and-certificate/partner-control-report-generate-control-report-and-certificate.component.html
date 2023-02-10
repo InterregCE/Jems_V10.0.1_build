@@ -28,7 +28,7 @@
                 [downloadAttachmentCallback]="downloadAttachmentCallback"
                 [displayedColumns]="displayedColumns"
                 [isUploadDone]="isUploadDone"
-                [isUploadAccepted]="true"
+                [isUploadAccepted]="data.isReportEditable"
                 [isFileDeletable]="!data.isReportFinalized"
                 (onSortChange)="fileManagementStore.newSort$.next($event)"
                 (onDownload)="downloadFile($event)"
