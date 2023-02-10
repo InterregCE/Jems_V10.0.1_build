@@ -12,7 +12,9 @@ import io.cloudflight.jems.server.project.service.report.model.partner.control.o
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.ProjectPartnerReportExpenditureVerificationPersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.overview.getReportControlWorkOverview.calculateCertified
+import io.cloudflight.jems.server.project.service.report.partner.control.overview.getReportControlWorkOverview.onlyParkedOnes
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.calculateCurrent
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.getCategory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -37,9 +39,11 @@ class GetReportControlDeductionOverview(
         val options = costCategories.options
 
         val totalDeclared = costCategories.currentlyReported
+        // this parked sum might not be needed when report finalized and after MP2-3099 is implemented
+        val totalParked = expenditures.onlyParkedOnes().calculateCurrent(options)
         val totalEligibleAfterControl = if (isClosed) costCategories.totalEligibleAfterControl else expenditures.calculateCertified(options)
 
-        val totalDeductedSplit = totalDeclared.minus(totalEligibleAfterControl)
+        val totalDeductedSplit = totalDeclared.minus(totalParked).minus(totalEligibleAfterControl)
 
         val byTypologyError = expenditures.filter { it.typologyOfErrorId != null }
             .filter { it.typologyOfErrorId != null }

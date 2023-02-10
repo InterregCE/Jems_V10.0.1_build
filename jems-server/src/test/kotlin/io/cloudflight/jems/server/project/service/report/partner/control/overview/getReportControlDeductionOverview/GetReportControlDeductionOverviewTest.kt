@@ -48,26 +48,28 @@ class GetReportControlDeductionOverviewTest : UnitTest() {
         val costOptionsWithFlatRate = mockk<ReportExpenditureCostCategory>().also {
             every { it.options } returns ProjectPartnerBudgetOptions(
                 partnerId = PARTNER_ID,
-                officeAndAdministrationOnStaffCostsFlatRate = 15,
+                officeAndAdministrationOnStaffCostsFlatRate = 11,
                 officeAndAdministrationOnDirectCostsFlatRate = null,
-                travelAndAccommodationOnStaffCostsFlatRate = 15,
-                staffCostsFlatRate = null,
+                travelAndAccommodationOnStaffCostsFlatRate = 14,
+                staffCostsFlatRate = 20,
                 otherCostsOnStaffCostsFlatRate = null,
             )
             every { it.totalsFromAF.sum } returns BigDecimal.valueOf(500L)
 
             every { it.currentlyReported } returns BudgetCostsCalculationResultFull(
-                staff = BigDecimal.valueOf(10),
-                office = BigDecimal.valueOf(11),
-                travel = BigDecimal.valueOf(12),
-                external = BigDecimal.valueOf(13),
-                equipment = BigDecimal.valueOf(14),
-                infrastructure = BigDecimal.valueOf(15),
-                other = BigDecimal.valueOf(16),
-                lumpSum = BigDecimal.valueOf(17),
-                unitCost = BigDecimal.valueOf(18),
-                sum = BigDecimal.valueOf(19),
+                staff = BigDecimal.valueOf(153238L, 2),
+                office = BigDecimal.valueOf(16856L, 2),
+                travel = BigDecimal.valueOf(21453L, 2),
+                external = BigDecimal.valueOf(287891L, 2),
+                equipment = BigDecimal.valueOf(358300L, 2),
+                infrastructure = BigDecimal.valueOf(120000L, 2),
+                other = BigDecimal.valueOf(0L, 2),
+                lumpSum = BigDecimal.valueOf(0L, 2),
+                unitCost = BigDecimal.valueOf(0L, 2),
+                sum = BigDecimal.valueOf(957738L, 2),
             )
+
+            // used when call open
             every { it.totalEligibleAfterControl } returns BudgetCostsCalculationResultFull(
                 staff = BigDecimal.valueOf(9),
                 office = BigDecimal.valueOf(8),
@@ -78,7 +80,7 @@ class GetReportControlDeductionOverviewTest : UnitTest() {
                 other = BigDecimal.valueOf(3),
                 lumpSum = BigDecimal.valueOf(2),
                 unitCost = BigDecimal.valueOf(1),
-                sum = BigDecimal.valueOf(0),
+                sum = BigDecimal.valueOf(45),
             )
         }
 
@@ -110,11 +112,21 @@ class GetReportControlDeductionOverviewTest : UnitTest() {
 
         private val expenditureList = listOf(
             expenditure(
+                id = 553L,
+                costCategory = ReportBudgetCategory.ExternalCosts,
+                typologyOfErrorId = null,
+                partOfSample = false,
+                declaredAmount = BigDecimal.valueOf(50000L, 2),
+                deductedAmount = BigDecimal.ZERO,
+                certified = BigDecimal.valueOf(50000L, 2),
+                isParked = false,
+            ),
+            expenditure(
                 id = 554L,
-                costCategory = ReportBudgetCategory.StaffCosts,
+                costCategory = ReportBudgetCategory.ExternalCosts,
                 typologyOfErrorId = null,
                 partOfSample = true,
-                declaredAmount = BigDecimal.valueOf(500),
+                declaredAmount = BigDecimal.valueOf(237891L, 2),
                 deductedAmount = BigDecimal.ZERO,
                 certified = BigDecimal.ZERO,
                 isParked = true,
@@ -122,53 +134,39 @@ class GetReportControlDeductionOverviewTest : UnitTest() {
             expenditure(
                 id = 555L,
                 typologyOfErrorId = TYPOLOGY_ID_SECOND,
-                costCategory = ReportBudgetCategory.StaffCosts,
-                declaredAmount = BigDecimal.valueOf(2000),
-                deductedAmount = BigDecimal.valueOf(350),
-                certified = BigDecimal.valueOf(1650),
-                partOfSample = false,
+                costCategory = ReportBudgetCategory.EquipmentCosts,
+                declaredAmount = BigDecimal.valueOf(234900L, 2),
+                deductedAmount = BigDecimal.valueOf(100011L, 2),
+                certified = BigDecimal.valueOf(134889L, 2),
+                partOfSample = true,
                 isParked = false,
             ),
             expenditure(
                 id = 556L,
-                typologyOfErrorId = TYPOLOGY_ID,
+                typologyOfErrorId = null,
                 costCategory = ReportBudgetCategory.EquipmentCosts,
-                declaredAmount = BigDecimal.valueOf(1111),
-                deductedAmount = BigDecimal.valueOf(200),
-                certified = BigDecimal.valueOf(911),
+                declaredAmount = BigDecimal.valueOf(123400L, 2),
+                deductedAmount = BigDecimal.ZERO,
+                certified = BigDecimal.valueOf(123400L, 2),
                 partOfSample = false,
                 isParked = false
             ),
             expenditure(
                 id = 557L,
-                typologyOfErrorId = TYPOLOGY_ID,
-                costCategory = ReportBudgetCategory.StaffCosts,
-                declaredAmount = BigDecimal.valueOf(6900),
-                deductedAmount = BigDecimal.valueOf(500),
-                certified = BigDecimal.valueOf(6400),
+                typologyOfErrorId = null,
+                costCategory = ReportBudgetCategory.InfrastructureCosts,
+                declaredAmount = BigDecimal.valueOf(120000L, 2),
+                deductedAmount = BigDecimal.ZERO,
+                certified = BigDecimal.valueOf(120000L, 2),
                 partOfSample = false,
                 isParked = false
             ),
         )
 
-        private val expectedExpenditure_1 = ControlDeductionOverviewRow(
+        private val expectedTypo_1 = ControlDeductionOverviewRow(
             typologyOfErrorId = TYPOLOGY_ID,
             typologyOfErrorName = TYPOLOGY_DESCRIPTION,
-            staffCost = BigDecimal.valueOf(500L),
-            officeAndAdministration = BigDecimal.ZERO,
-            travelAndAccommodation = BigDecimal.ZERO,
-            externalExpertise = BigDecimal.ZERO,
-            equipment = BigDecimal.valueOf(200L),
-            infrastructureAndWorks = BigDecimal.ZERO,
-            lumpSums = BigDecimal.ZERO,
-            unitCosts = BigDecimal.ZERO,
-            otherCosts = BigDecimal.ZERO,
-            total = BigDecimal.valueOf(700L)
-        )
-        private val expectedExpenditure_2 = ControlDeductionOverviewRow(
-            typologyOfErrorId = TYPOLOGY_ID_SECOND,
-            typologyOfErrorName = TYPOLOGY_DESCRIPTION_SECOND,
-            staffCost = BigDecimal.valueOf(350L),
+            staffCost = BigDecimal.ZERO,
             officeAndAdministration = BigDecimal.ZERO,
             travelAndAccommodation = BigDecimal.ZERO,
             externalExpertise = BigDecimal.ZERO,
@@ -177,9 +175,23 @@ class GetReportControlDeductionOverviewTest : UnitTest() {
             lumpSums = BigDecimal.ZERO,
             unitCosts = BigDecimal.ZERO,
             otherCosts = BigDecimal.ZERO,
-            total = BigDecimal.valueOf(350L)
+            total = BigDecimal.ZERO,
         )
-        private val expectedExpenditure_3 = ControlDeductionOverviewRow(
+        private val expectedTypo_2 = ControlDeductionOverviewRow(
+            typologyOfErrorId = TYPOLOGY_ID_SECOND,
+            typologyOfErrorName = TYPOLOGY_DESCRIPTION_SECOND,
+            staffCost = BigDecimal.ZERO,
+            officeAndAdministration = BigDecimal.ZERO,
+            travelAndAccommodation = BigDecimal.ZERO,
+            externalExpertise = BigDecimal.ZERO,
+            equipment = BigDecimal.valueOf(100011L, 2),
+            infrastructureAndWorks = BigDecimal.ZERO,
+            lumpSums = BigDecimal.ZERO,
+            unitCosts = BigDecimal.ZERO,
+            otherCosts = BigDecimal.ZERO,
+            total = BigDecimal.valueOf(100011L, 2),
+        )
+        private val expectedTypo_3 = ControlDeductionOverviewRow(
             typologyOfErrorId = TYPOLOGY_ID_THIRD,
             typologyOfErrorName = TYPOLOGY_DESCRIPTION_THIRD,
             staffCost = BigDecimal.ZERO,
@@ -191,7 +203,7 @@ class GetReportControlDeductionOverviewTest : UnitTest() {
             lumpSums = BigDecimal.ZERO,
             unitCosts = BigDecimal.ZERO,
             otherCosts = BigDecimal.ZERO,
-            total = BigDecimal.ZERO
+            total = BigDecimal.ZERO,
         )
 
     }
@@ -229,46 +241,46 @@ class GetReportControlDeductionOverviewTest : UnitTest() {
         every { typologyOfErrorsPersistence.getAllTypologyErrors() } returns typologyOfErrors
 
         val expectedDeductionRows = listOf(
-            expectedExpenditure_1,
-            expectedExpenditure_2,
-            expectedExpenditure_3,
+            expectedTypo_1,
+            expectedTypo_2,
+            expectedTypo_3,
             /* flat rate row */ ControlDeductionOverviewRow(
                 typologyOfErrorId = null,
                 typologyOfErrorName = null,
-                staffCost = null,
-                officeAndAdministration = BigDecimal.valueOf(3L),
-                travelAndAccommodation = BigDecimal.valueOf(5L),
+                staffCost = BigDecimal.valueOf(104760L, 2),
+                officeAndAdministration = BigDecimal.valueOf(10823L, 2),
+                travelAndAccommodation = BigDecimal.valueOf(14093L, 2),
                 externalExpertise = null,
                 equipment = null,
                 infrastructureAndWorks = null,
                 lumpSums = null,
                 unitCosts = null,
                 otherCosts = null,
-                total = BigDecimal.valueOf(8L)
+                total = BigDecimal.valueOf(129676L, 2),
             )
         )
 
         val expectedTotal =   ControlDeductionOverviewRow(
             typologyOfErrorId = null,
             typologyOfErrorName = null,
-            staffCost = BigDecimal.valueOf(850L),
-            officeAndAdministration = BigDecimal.valueOf(3L),
-            travelAndAccommodation = BigDecimal.valueOf(5L),
+            staffCost = BigDecimal.valueOf(104760L, 2),
+            officeAndAdministration = BigDecimal.valueOf(10823L, 2),
+            travelAndAccommodation = BigDecimal.valueOf(14093L, 2),
             externalExpertise = BigDecimal.ZERO,
-            equipment =  BigDecimal.valueOf(200L),
+            equipment =  BigDecimal.valueOf(100011L, 2),
             infrastructureAndWorks = BigDecimal.ZERO,
             lumpSums = BigDecimal.ZERO,
             unitCosts = BigDecimal.ZERO,
             otherCosts = BigDecimal.ZERO,
-            total = BigDecimal.valueOf(1058L),
+            total = BigDecimal.valueOf(229687L, 2),
         )
 
         assertThat(getReportControlDeductionOverview.get(PARTNER_ID, REPORT_ID)).isEqualTo(
             ControlDeductionOverview(
                 deductionRows = expectedDeductionRows,
-                staffCostsFlatRate = null,
-                officeAndAdministrationFlatRate = 15,
-                travelAndAccommodationFlatRate = 15,
+                staffCostsFlatRate = 20,
+                officeAndAdministrationFlatRate = 11,
+                travelAndAccommodationFlatRate = 14,
                 otherCostsOnStaffCostsFlatRate = null,
                 total = expectedTotal,
             )
@@ -292,46 +304,46 @@ class GetReportControlDeductionOverviewTest : UnitTest() {
         every { typologyOfErrorsPersistence.getAllTypologyErrors() } returns typologyOfErrors
 
         val expectedDeductionRows = listOf(
-            expectedExpenditure_1,
-            expectedExpenditure_2,
-            expectedExpenditure_3,
+            expectedTypo_1,
+            expectedTypo_2,
+            expectedTypo_3,
             /* flat rate row */ ControlDeductionOverviewRow(
                 typologyOfErrorId = null,
                 typologyOfErrorName = null,
-                staffCost = null,
-                officeAndAdministration = BigDecimal.valueOf(-119650L, 2),
-                travelAndAccommodation = BigDecimal.valueOf(-119550L, 2),
+                staffCost = BigDecimal.valueOf(20003L, 2),
+                officeAndAdministration = BigDecimal.valueOf(2201L, 2),
+                travelAndAccommodation = BigDecimal.valueOf(2802L, 2),
                 externalExpertise = null,
                 equipment = null,
                 infrastructureAndWorks = null,
                 lumpSums = null,
                 unitCosts = null,
                 otherCosts = null,
-                total = BigDecimal.valueOf(-239200L, 2)
+                total = BigDecimal.valueOf(25006L, 2)
             )
         )
 
         val expectedTotal = ControlDeductionOverviewRow(
             typologyOfErrorId = null,
             typologyOfErrorName = null,
-            staffCost = BigDecimal.valueOf(850L),
-            officeAndAdministration = BigDecimal.valueOf(-119650L, 2),
-            travelAndAccommodation = BigDecimal.valueOf(-119550L, 2),
+            staffCost = BigDecimal.valueOf(20003L, 2),
+            officeAndAdministration = BigDecimal.valueOf(2201L, 2),
+            travelAndAccommodation = BigDecimal.valueOf(2802L, 2),
             externalExpertise = BigDecimal.ZERO,
-            equipment =  BigDecimal.valueOf(200L),
+            equipment =  BigDecimal.valueOf(100011L, 2),
             infrastructureAndWorks = BigDecimal.ZERO,
             lumpSums = BigDecimal.ZERO,
             unitCosts = BigDecimal.ZERO,
             otherCosts = BigDecimal.ZERO,
-            total = BigDecimal.valueOf(-134200L, 2),
+            total = BigDecimal.valueOf(125017L, 2),
         )
 
         assertThat(getReportControlDeductionOverview.get(PARTNER_ID, REPORT_ID)).isEqualTo(
             ControlDeductionOverview(
                 deductionRows = expectedDeductionRows,
-                staffCostsFlatRate = null,
-                officeAndAdministrationFlatRate = 15,
-                travelAndAccommodationFlatRate = 15,
+                staffCostsFlatRate = 20,
+                officeAndAdministrationFlatRate = 11,
+                travelAndAccommodationFlatRate = 14,
                 otherCostsOnStaffCostsFlatRate = null,
                 total = expectedTotal,
             )

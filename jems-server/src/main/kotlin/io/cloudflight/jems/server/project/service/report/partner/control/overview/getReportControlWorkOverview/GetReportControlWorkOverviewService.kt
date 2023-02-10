@@ -54,7 +54,4 @@ class GetReportControlWorkOverviewService(
     private fun Collection<ProjectPartnerReportExpenditureVerification>.onlySamplingOnes() =
         filter { it.partOfSample }.map { it.declaredAmountAfterSubmission }
 
-    private fun Collection<ProjectPartnerReportExpenditureVerification>.onlyParkedOnes() =
-        filter { it.parked }
-
 }

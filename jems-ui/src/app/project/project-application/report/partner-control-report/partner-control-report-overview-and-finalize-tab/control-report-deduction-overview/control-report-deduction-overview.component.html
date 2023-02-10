@@ -19,12 +19,12 @@
         <mat-header-cell *matHeaderCellDef class="text-right">
             <span jemsText maxLines="2">{{ 'project.application.partner.report.expenditures.cost.category.StaffCosts' | translate }}</span>
         </mat-header-cell>
-        <mat-cell *matCellDef="let line" class="text-right"><span>{{ line.staffCost | asMoney}}</span></mat-cell>
+        <mat-cell *matCellDef="let line" class="text-right" [class.grayed-out]="staffCostsFlatRate && line.typologyOfErrorId"><span>{{ line.staffCost | asMoney}}</span></mat-cell>
         <mat-footer-cell *matFooterCellDef class="text-right">{{ total.staffCost | asMoney }}</mat-footer-cell>
     </ng-container>
     <ng-container matColumnDef="staff-sub">
         <mat-header-cell *matHeaderCellDef class="text-right">
-            <span class="flat-rate-percentage" *ngIf="staffCostsFlatRate">{{staffCostsFlatRate}}%</span>
+            <span *ngIf="staffCostsFlatRate">{{staffCostsFlatRate}}%</span>
         </mat-header-cell>
     </ng-container>
 
@@ -32,7 +32,7 @@
         <mat-header-cell *matHeaderCellDef class="text-right">
             <span jemsText maxLines="2">{{ 'project.application.partner.report.control.tab.overviewAndFinalize.deductions.by.type.table.office.administrative.header' | translate }}</span>
         </mat-header-cell>
-        <mat-cell *matCellDef="let line" class="text-right"><span>{{ line.officeAndAdministration | asMoney }}</span></mat-cell>
+        <mat-cell *matCellDef="let line" class="text-right" [class.grayed-out]="officeAndAdministrationFlatRate && line.typologyOfErrorId"><span>{{ line.officeAndAdministration | asMoney }}</span></mat-cell>
         <mat-footer-cell *matFooterCellDef class="text-right">{{total.officeAndAdministration | asMoney }}</mat-footer-cell>
     </ng-container>
     <ng-container matColumnDef="officeAndAdministration-sub">
@@ -45,7 +45,7 @@
         <mat-header-cell *matHeaderCellDef class="text-right">
             <span jemsText maxLines="2">{{ 'project.application.partner.report.expenditures.cost.category.TravelAndAccommodationCosts' | translate }} </span>
         </mat-header-cell>
-        <mat-cell *matCellDef="let line" class="text-right"><span>{{ line.travelAndAccommodation | asMoney }}</span></mat-cell>
+        <mat-cell *matCellDef="let line" class="text-right" [class.grayed-out]="travelAndAccommodationFlatRate && line.typologyOfErrorId"><span>{{ line.travelAndAccommodation | asMoney }}</span></mat-cell>
         <mat-footer-cell *matFooterCellDef class="text-right">{{ total.travelAndAccommodation | asMoney }}</mat-footer-cell>
     </ng-container>
     <ng-container matColumnDef="travelAndAccommodation-sub">
