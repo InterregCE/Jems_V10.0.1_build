@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.multipart.MultipartFile
+import org.springframework.web.bind.annotation.RequestParam
 
 @Api("ProjectPartnerControl Report File API")
 interface ProjectPartnerControlReportFileApi {
@@ -30,10 +31,19 @@ interface ProjectPartnerControlReportFileApi {
     }
 
     @ApiOperation("Generate certificate file for report control")
-    @GetMapping("${ENDPOINT_API_PROJECT_PARTNER_REPORT_CONTROL_FILE}/generateCertificate")
+    @GetMapping("${ENDPOINT_API_PROJECT_PARTNER_REPORT_CONTROL_FILE}/certificate")
     fun generateControlReportCertificate(
         @PathVariable partnerId: Long,
         @PathVariable reportId: Long,
+        @RequestParam(required = true) pluginKey: String
+    )
+
+    @ApiOperation("Generate report file for report control")
+    @GetMapping("${ENDPOINT_API_PROJECT_PARTNER_REPORT_CONTROL_FILE}/export")
+    fun generateControlReportExport(
+        @PathVariable partnerId: Long,
+        @PathVariable reportId: Long,
+        @RequestParam(required = true) pluginKey: String
     )
 
     @ApiOperation("Update description of generated control report certificate file")
@@ -41,7 +51,7 @@ interface ProjectPartnerControlReportFileApi {
         "${ENDPOINT_API_PROJECT_PARTNER_REPORT_CONTROL_FILE}/byFileId/{fileId}/description",
         consumes = [MediaType.APPLICATION_JSON_VALUE],
     )
-    fun updateControlReportCertificateFileDescription(
+    fun updateControlReportFileDescription(
         @PathVariable partnerId: Long,
         @PathVariable reportId: Long,
         @PathVariable fileId: Long,
@@ -66,10 +76,10 @@ interface ProjectPartnerControlReportFileApi {
         "${ENDPOINT_API_PROJECT_PARTNER_REPORT_CONTROL_FILE}/download/{fileId}",
         produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE]
     )
-    fun downloadControlReportCertificate(
+    fun downloadControlReportFile(
         @PathVariable partnerId: Long,
         @PathVariable reportId: Long,
-        @PathVariable fileId: Long
+        @PathVariable fileId: Long,
     ): ResponseEntity<ByteArrayResource>
 
     @ApiOperation("Upload file to report control certificate")

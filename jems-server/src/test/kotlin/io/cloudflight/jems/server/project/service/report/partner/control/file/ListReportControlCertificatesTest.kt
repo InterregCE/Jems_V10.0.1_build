@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.service.report.partner.control.file
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.authorization.ProjectPartnerReportAuthorization
 import io.cloudflight.jems.server.project.service.report.model.partner.control.file.PartnerReportControlFile
-import io.cloudflight.jems.server.project.service.report.partner.control.file.listCertificates.ListReportControlCertificates
+import io.cloudflight.jems.server.project.service.report.partner.control.file.listFiles.ListReportControlFiles
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -29,7 +29,7 @@ class ListReportControlCertificatesTest : UnitTest() {
     lateinit var partnerReportAuth: ProjectPartnerReportAuthorization
 
     @InjectMockKs
-    lateinit var interactor: ListReportControlCertificates
+    lateinit var interactor: ListReportControlFiles
 
     @BeforeEach
     fun setup() {
@@ -40,7 +40,7 @@ class ListReportControlCertificatesTest : UnitTest() {
     fun `list report control certificates`() {
         val result = mockk<Page<PartnerReportControlFile>>()
         every { partnerReportAuth.canViewPartnerControlReport(PARTNER_ID, REPORT_ID)} returns true
-        every { projectPartnerReportControlFilePersistence.listReportFiles(REPORT_ID, Pageable.unpaged()) } returns result
+        every { projectPartnerReportControlFilePersistence.listReportControlFiles(REPORT_ID, Pageable.unpaged()) } returns result
 
         assertThat(interactor.list(PARTNER_ID, REPORT_ID, Pageable.unpaged())).isEqualTo(result)
     }

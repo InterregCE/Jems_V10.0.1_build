@@ -105,6 +105,7 @@ enum class AuditAction {
 
     // partner report control
     CONTROL_REPORT_CERTIFICATE_GENERATED,
+    CONTROL_REPORT_EXPORT_GENERATED,
 
     // Checklist
     ASSESSMENT_CHECKLIST_STATUS_CHANGE,

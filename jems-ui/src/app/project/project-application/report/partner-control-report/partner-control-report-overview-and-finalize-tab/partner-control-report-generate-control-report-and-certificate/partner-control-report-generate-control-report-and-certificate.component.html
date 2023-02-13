@@ -1,20 +1,18 @@
 <div *ngIf="data$ | async as data" jemsFormLayout>
 
-    <form jemsFormLayout [formGroup]="exportForm">
+    <form *ngIf="data.isUserAllowedToEditReport" jemsFormLayout [formGroup]="exportForm">
         <mat-form-field>
             <mat-label>{{'project.application.partner.report.control.tab.overviewAndFinalize.certificate.export.label.plugins' | translate}}</mat-label>
-            <mat-select formControlName="pluginKey">
-                <mat-option *ngFor="let plugin of data.plugins" [value]="plugin.key" role="option">
+            <mat-select formControlName="plugin">
+                <mat-option *ngFor="let plugin of data.plugins" [value]="plugin" role="option">
                     {{plugin.name}} - {{plugin.version}}</mat-option>
             </mat-select>
         </mat-form-field>
-
-
-
-        <jems-pending-button jemsText
-                             (click)="exportData()">
-            {{'project.application.partner.report.control.tab.overviewAndFinalize.certificate.export.label.button' | translate}}
-        </jems-pending-button>
+        <span>
+            <jems-pending-button (click)="exportData(plugin)">
+                {{'project.application.partner.report.control.tab.overviewAndFinalize.certificate.export.label.button' | translate}}
+            </jems-pending-button>
+        </span>
     </form>
 
     <div jemsNoWidthLimit id="control-report-files" class="overflow-auto">

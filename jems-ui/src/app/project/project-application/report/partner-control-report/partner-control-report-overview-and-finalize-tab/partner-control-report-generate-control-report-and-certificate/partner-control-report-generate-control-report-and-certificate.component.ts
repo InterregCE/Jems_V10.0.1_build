@@ -1,18 +1,17 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {Alert} from '@common/components/forms/alert';
-import {PartnerControlReportGenerateControlReportAndCertificateExportStore} from '@project/project-application/report/partner-control-report/partner-control-report-overview-and-finalize-tab/partner-control-report-generate-control-report-and-certificate/partner-control-report-generate-control-report-and-certificate-export-store';
+import {
+  PartnerControlReportGenerateControlReportAndCertificateExportStore
+} from '@project/project-application/report/partner-control-report/partner-control-report-overview-and-finalize-tab/partner-control-report-generate-control-report-and-certificate/partner-control-report-generate-control-report-and-certificate-export-store';
 import {FileListItem} from '@common/components/file-list/file-list-item';
 import {finalize, map, switchMap, take, tap} from 'rxjs/operators';
 import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
 import {combineLatest, Observable, of} from 'rxjs';
 import {FormBuilder, FormGroup} from '@angular/forms';
-import {
-  PagePartnerReportControlFileDTO, PartnerReportControlFileDTO,
-  PluginInfoDTO,
-  ProjectPartnerControlReportFileAPIService, ProjectPartnerReportSummaryDTO,
-} from '@cat/api';
+import {PagePartnerReportControlFileDTO, PartnerReportControlFileDTO, PluginInfoDTO, ProjectPartnerControlReportFileAPIService, ProjectPartnerReportSummaryDTO,} from '@cat/api';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {PartnerControlReportStore} from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
+import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
 
 @UntilDestroy()
 @Component({
@@ -47,17 +46,18 @@ export class PartnerControlReportGenerateControlReportAndCertificateComponent {
   constructor(
     public fileManagementStore: PartnerControlReportGenerateControlReportAndCertificateExportStore,
     private partnerControlReportStore: PartnerControlReportStore,
+    private reportPageStore: PartnerReportPageStore,
     private projectPartnerControlReportFileApiService: ProjectPartnerControlReportFileAPIService,
     private formBuilder: FormBuilder
   ) {
 
-    this.fileManagementStore.certificateExportPlugins$.pipe(
+    this.fileManagementStore.exportPlugins$.pipe(
       tap(plugins => this.initForm(plugins)),
       untilDestroyed(this)
     ).subscribe();
 
     this.data$ = combineLatest([
-      this.fileManagementStore.certificateExportPlugins$,
+      this.fileManagementStore.exportPlugins$,
       this.fileManagementStore.certificateFileList$,
       this.partnerControlReportStore.controlReportFinalized$,
       this.partnerControlReportStore.canEditControlReport$,
@@ -90,7 +90,7 @@ export class PartnerControlReportGenerateControlReportAndCertificateComponent {
 
   initForm(plugins: PluginInfoDTO[]): void {
     this.exportForm = this.formBuilder.group({
-      pluginKey: [plugins.length > 0 ? plugins[0].key : undefined],
+      plugin: [plugins.length > 0 ? plugins[0] : undefined],
     });
   }
 
@@ -106,17 +106,21 @@ export class PartnerControlReportGenerateControlReportAndCertificateComponent {
       this.partnerControlReportStore.reportId$.pipe(map(id => Number(id))),
     ]).pipe(
       switchMap(([partnerId, reportId]) =>
-        this.projectPartnerControlReportFileApiService.updateControlReportCertificateFileDescription(data.id, partnerId, reportId, data.description)
+        this.projectPartnerControlReportFileApiService.updateControlReportFileDescription(data.id, partnerId, reportId, data.description)
       ),
     );
   };
 
-  get pluginKey(): string {
-    return this.exportForm.get('pluginKey')?.value;
+  get plugin(): PluginInfoDTO {
+    return this.exportForm.get('plugin')?.value;
   }
 
-  exportData(): void {
-    this.fileManagementStore.exportData(this.partnerId, this.reportId).pipe(untilDestroyed(this)).subscribe();
+  exportData(plugin: PluginInfoDTO): void {
+    if (plugin.type === PluginInfoDTO.TypeEnum.PARTNERCONTROLREPORTEXPORT) {
+      this.fileManagementStore.generateControlReportExport(this.partnerId, this.reportId, plugin.key).pipe(untilDestroyed(this)).subscribe();
+    } else if (plugin.type === PluginInfoDTO.TypeEnum.PARTNERCONTROLREPORTCERTIFICATE) {
+      this.fileManagementStore.generateControlReportCertificate(this.partnerId, this.reportId, plugin.key).pipe(untilDestroyed(this)).subscribe();
+    }
   }
 
   uploadAttachmentCallback = (target: any, fileId: number): Observable<any> => {
