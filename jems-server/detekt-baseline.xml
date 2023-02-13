@@ -567,6 +567,7 @@
     <ID>TooGenericExceptionThrown:MockedMethodSignature.kt$MockedMethodSignature$throw Exception("sample exception!")</ID>
     <ID>TooManyFunctions:ApplicationState.kt$ApplicationState</ID>
     <ID>TooManyFunctions:CallPersistence.kt$CallPersistence</ID>
+    <ID>TooManyFunctions:WorkPackagePersistence.kt$WorkPackagePersistence</ID>
     <ID>TooManyFunctions:CallPersistenceProvider.kt$CallPersistenceProvider : CallPersistence</ID>
     <ID>TooManyFunctions:ControllerInstitutionPersistence.kt$ControllerInstitutionPersistence</ID>
     <ID>TooManyFunctions:ControllerInstitutionPersistenceProvider.kt$ControllerInstitutionPersistenceProvider : ControllerInstitutionPersistence</ID>

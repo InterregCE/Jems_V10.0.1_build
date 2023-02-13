@@ -77,6 +77,7 @@ class ProjectWorkPackagePersistenceProviderTest : UnitTest() {
             activityNumber = 1,
             startPeriod = 4,
             endPeriod = 6,
+            deactivated = false,
             partners = mutableSetOf(activityPartnerMock)
         )
         val activity2 = WorkPackageActivityEntity(
@@ -85,6 +86,7 @@ class ProjectWorkPackagePersistenceProviderTest : UnitTest() {
             activityNumber = 2,
             startPeriod = 1,
             endPeriod = 3,
+            deactivated = false,
             translatedValues = mutableSetOf(),
             deliverables = mutableSetOf()
         ).apply {
@@ -94,12 +96,14 @@ class ProjectWorkPackagePersistenceProviderTest : UnitTest() {
                         id = 1L,
                         deliverableNumber = 2,
                         startPeriod = 2,
+                        deactivated = false,
                         workPackageActivity = this
                     ),
                     WorkPackageActivityDeliverableEntity(
                         id = 2L,
                         deliverableNumber = 1,
                         startPeriod = 1,
+                        deactivated = false,
                         translatedValues = mutableSetOf(),
                         workPackageActivity = this
                     ).apply {
@@ -262,6 +266,7 @@ class ProjectWorkPackagePersistenceProviderTest : UnitTest() {
                     activityNumber = 2,
                     startPeriod = 1,
                     endPeriod = 3,
+                    deactivated = false,
                     translatedValues = mutableSetOf(),
                     deliverables = activity2.deliverables
                 ),
@@ -271,6 +276,7 @@ class ProjectWorkPackagePersistenceProviderTest : UnitTest() {
                     activityNumber = 1,
                     startPeriod = 4,
                     endPeriod = 6,
+                    deactivated = false,
                     partners = mutableSetOf(activityPartnerMock)
                 )
             ),
@@ -290,9 +296,10 @@ class ProjectWorkPackagePersistenceProviderTest : UnitTest() {
                 activityNumber = 99,
                 startPeriod = 4,
                 endPeriod = 6,
+                deactivated = false,
                 deliverables = listOf(
-                    WorkPackageActivityDeliverable(period = 4),
-                    WorkPackageActivityDeliverable(period = 6)
+                    WorkPackageActivityDeliverable(period = 4, deactivated = false),
+                    WorkPackageActivityDeliverable(period = 6, deactivated = false)
                 )
             ),
             WorkPackageActivity(
@@ -301,6 +308,7 @@ class ProjectWorkPackagePersistenceProviderTest : UnitTest() {
                 workPackageNumber = wpNr,
                 startPeriod = 2,
                 endPeriod = 3,
+                deactivated = false,
                 deliverables = emptyList()
             )
         )
@@ -315,9 +323,10 @@ class ProjectWorkPackagePersistenceProviderTest : UnitTest() {
                 activityNumber = 1,
                 startPeriod = 4,
                 endPeriod = 6,
+                deactivated = false,
                 deliverables = listOf(
-                    WorkPackageActivityDeliverable(period = 4, deliverableNumber = 1),
-                    WorkPackageActivityDeliverable(period = 6, deliverableNumber = 2)
+                    WorkPackageActivityDeliverable(period = 4, deliverableNumber = 1, deactivated = false),
+                    WorkPackageActivityDeliverable(period = 6, deliverableNumber = 2, deactivated = false)
                 )
             ),
             WorkPackageActivity(
@@ -327,6 +336,7 @@ class ProjectWorkPackagePersistenceProviderTest : UnitTest() {
                 activityNumber = 2,
                 startPeriod = 2,
                 endPeriod = 3,
+                deactivated = false,
                 deliverables = emptyList()
             )
         )

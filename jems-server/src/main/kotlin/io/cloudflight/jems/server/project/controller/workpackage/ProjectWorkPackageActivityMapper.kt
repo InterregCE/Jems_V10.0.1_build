@@ -15,7 +15,8 @@ fun WorkPackageActivityDTO.toModel(workPackageId: Long) = WorkPackageActivity(
     startPeriod = startPeriod,
     endPeriod = endPeriod,
     deliverables = deliverables.toDeliverableModel(),
-    partnerIds = partnerIds
+    partnerIds = partnerIds,
+    deactivated = deactivated
 )
 
 fun List<WorkPackageActivityDTO>.toModel(workPackageId: Long) = map { it.toModel(workPackageId) }
@@ -25,7 +26,8 @@ fun WorkPackageActivityDeliverableDTO.toDeliverableModel(number: Int) = WorkPack
     deliverableNumber = number,
     description = description,
     title = title,
-    period = period
+    period = period,
+    deactivated = deactivated
 )
 
 fun List<WorkPackageActivityDeliverableDTO>.toDeliverableModel() = mapIndexed { index, it -> it.toDeliverableModel(index.plus(1)) }
@@ -41,6 +43,7 @@ fun WorkPackageActivity.toDto() = WorkPackageActivityDTO(
     description = description,
     deliverables = deliverables.toDeliverableDto(id),
     partnerIds = partnerIds,
+    deactivated = deactivated
 )
 
 fun List<WorkPackageActivity>.toDto() = map { it.toDto() }
@@ -51,7 +54,8 @@ fun WorkPackageActivityDeliverable.toDeliverableDto(activityId: Long) = WorkPack
     deliverableNumber = deliverableNumber,
     description = description,
     title = title,
-    period = period
+    period = period,
+    deactivated = deactivated
 )
 
 fun List<WorkPackageActivityDeliverable>.toDeliverableDto(activityId: Long) = map { it.toDeliverableDto(activityId) }

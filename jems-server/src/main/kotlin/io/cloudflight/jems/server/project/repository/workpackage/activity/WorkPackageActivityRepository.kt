@@ -27,6 +27,7 @@ interface WorkPackageActivityRepository : JpaRepository<WorkPackageActivityEntit
                 entity.activity_number as activityNumber,
                 CONVERT(entity.start_period, INT) as startPeriod,
                 CONVERT(entity.end_period, INT) as endPeriod,
+                entity.deactivated as deactivated,
                 translation.*
                 FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
                 LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS translation
@@ -45,6 +46,7 @@ interface WorkPackageActivityRepository : JpaRepository<WorkPackageActivityEntit
                 entity.id,
                 entity.deliverable_number as deliverableNumber,
                 CONVERT(entity.start_period, INT) as startPeriod,
+                entity.deactivated as deactivated,
                 translation.*
                 FROM #{#entityName}_deliverable FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
                 LEFT JOIN #{#entityName}_deliverable_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS translation
@@ -63,6 +65,7 @@ interface WorkPackageActivityRepository : JpaRepository<WorkPackageActivityEntit
                 entity.activity_number as activityNumber,
                 CONVERT(entity.start_period, INT) as startPeriod,
                 CONVERT(entity.end_period, INT) as endPeriod,
+                entity.deactivated,
                 translation.*
                 FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
                 LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS translation
@@ -82,6 +85,7 @@ interface WorkPackageActivityRepository : JpaRepository<WorkPackageActivityEntit
                 entity.activity_number as activityNumber,
                 CONVERT(entity.start_period, INT) as startPeriod,
                 CONVERT(entity.end_period, INT) as endPeriod,
+                entity.deactivated,
                 translation.*
                 FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
                 LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS translation

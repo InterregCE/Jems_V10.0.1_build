@@ -28,6 +28,7 @@ fun CreateProjectPartnerReportWorkPackageActivity.toEntity(wp: ProjectPartnerRep
         activityId = activityId,
         attachment = null,
         translatedValues = mutableSetOf(),
+        deactivated = deactivated
     ).apply {
         translatedValues.addAll(
             title.filter { !it.translation.isNullOrBlank() }
@@ -75,6 +76,7 @@ fun List<CreateProjectPartnerReportWorkPackageActivityDeliverable>.toEntity(
         evidence = null,
         attachment = null,
         translatedValues = mutableSetOf(),
+        deactivated = it.deactivated
     ).apply {
         translatedValues.addAll(
             it.title.filter { !it.translation.isNullOrBlank() }

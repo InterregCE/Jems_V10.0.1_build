@@ -270,6 +270,7 @@ fun List<ProjectPartnerReportWorkPackageActivityEntity>.toActivitiesModel(
         progress = it.translatedValues.extractField { it.description },
         attachment = it.attachment?.toModel(),
         deliverables = retrieveDeliverables.invoke(it).toDeliverablesModel(),
+        deactivated = it.deactivated
     )
 }
 
@@ -281,6 +282,7 @@ fun List<ProjectPartnerReportWorkPackageActivityDeliverableEntity>.toDeliverable
         contribution = it.contribution,
         evidence = it.evidence,
         attachment = it.attachment?.toModel(),
+        deactivated = it.deactivated
     )
 }
 

@@ -587,7 +587,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             description = setOf(InputTranslation(SystemLanguage.EN, "description")),
             startPeriod = 3,
             endPeriod = 4,
-            deliverables = listOf(WorkPackageActivityDeliverable()),
+            deliverables = listOf(WorkPackageActivityDeliverable(deactivated = false)),
+            deactivated = false,
             partnerIds = setOf(5, 6)
         )
         private val workPackageOutput = WorkPackageOutput(
@@ -1241,10 +1242,12 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                                 deliverables = listOf(
                                     WorkPackageActivityDeliverableData(
                                         deliverableNumber = 0,
-                                        period = null
+                                        period = null,
+                                        deactivated = false
                                     )
                                 ),
-                                partnerIds = activity.partnerIds
+                                partnerIds = activity.partnerIds,
+                                deactivated = false
                             )
                         ),
                         outputs = listOf(

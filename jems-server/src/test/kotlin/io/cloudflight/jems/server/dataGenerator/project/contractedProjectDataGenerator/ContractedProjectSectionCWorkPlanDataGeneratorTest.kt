@@ -59,7 +59,7 @@ class ContractedProjectSectionCWorkPlanDataGeneratorTest(@LocalServerPort privat
 
     @Test
     @Order(4)
-    @ExpectSelect(33)
+    @ExpectSelect(34)
     @ExpectInsert(20)
     @ExpectUpdate(0)
     @ExpectDelete(1)
@@ -75,6 +75,7 @@ class ContractedProjectSectionCWorkPlanDataGeneratorTest(@LocalServerPort privat
                         startPeriod = 1,
                         endPeriod = 2,
                         description = versionedInputTranslation("description 1", FIRST_VERSION),
+                        deactivated = false,
                         deliverables = listOf(
                             WorkPackageActivityDeliverableDTO(
                                 deliverableId = 0,
@@ -82,7 +83,8 @@ class ContractedProjectSectionCWorkPlanDataGeneratorTest(@LocalServerPort privat
                                 deliverableNumber = 0,
                                 description = versionedInputTranslation("description 1-1", FIRST_VERSION),
                                 title = versionedInputTranslation("title 1-1", FIRST_VERSION),
-                                period = 1
+                                period = 1,
+                                deactivated = false
                             )
                         )
                     ),
@@ -94,6 +96,7 @@ class ContractedProjectSectionCWorkPlanDataGeneratorTest(@LocalServerPort privat
                         startPeriod = 2,
                         endPeriod = 3,
                         description = versionedInputTranslation("description 2", FIRST_VERSION),
+                        deactivated = false,
                         deliverables = listOf(
                             WorkPackageActivityDeliverableDTO(
                                 deliverableId = 0,
@@ -101,7 +104,8 @@ class ContractedProjectSectionCWorkPlanDataGeneratorTest(@LocalServerPort privat
                                 deliverableNumber = 0,
                                 description = versionedInputTranslation("description 2-1", FIRST_VERSION),
                                 title = versionedInputTranslation("title 2-1", FIRST_VERSION),
-                                period = 2
+                                period = 2,
+                                deactivated = false
                             )
                         )
                     )

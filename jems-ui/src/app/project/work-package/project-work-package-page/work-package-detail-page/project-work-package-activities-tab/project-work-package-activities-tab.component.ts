@@ -12,6 +12,10 @@ import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {ProjectPartner} from '@project/model/ProjectPartner';
 import {Alert} from '@common/components/forms/alert';
+import {
+  ProjectStore
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectUtil} from '@project/common/project-util';
 
 @UntilDestroy()
 @Component({
@@ -38,11 +42,13 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
     partners: ProjectPartner[];
     workPackageNumber: number;
     isEditable: boolean;
+    isAlreadyContracted: boolean;
   }>;
 
   constructor(public formService: FormService,
               private formBuilder: FormBuilder,
               private partnerStore: ProjectPartnerStore,
+              private projectStore: ProjectStore,
               private workPackageStore: WorkPackagePageStore) {
     this.formService.init(this.form, this.workPackageStore.isProjectEditable$);
   }
@@ -63,14 +69,16 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
       this.workPackageStore.workPackage$,
       this.workPackageStore.projectForm$,
       this.partnerStore.partners$,
-      this.workPackageStore.isProjectEditable$
+      this.workPackageStore.isProjectEditable$,
+      this.projectStore.currentVersionOfProjectStatus$
     ]).pipe(
-      map(([activities, workPackage, projectForm, partners, isEditable]) => ({
+      map(([activities, workPackage, projectForm, partners, isEditable, projectStatus]) => ({
           activities,
           periods: projectForm.periods,
           workPackageNumber: workPackage.number,
           partners,
-          isEditable
+          isEditable,
+          isAlreadyContracted: ProjectUtil.isContractedOrAnyStatusAfterContracted(projectStatus)
         })
       ));
   }
@@ -95,6 +103,14 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
     this.formService.setDirty(true);
   }
 
+  deactivateActivity(index: number): void {
+    this.activities.at(index).get('deactivated')?.setValue(true);
+    for (let i = 0; i < this.deliverables(index).length; i++) {
+      this.deliverables(index).at(i).get('deactivated')?.setValue(true);
+    }
+    this.formService.setDirty(true);
+  }
+
   get activities(): FormArray {
     return this.form.get(this.constants.ACTIVITIES.name) as FormArray;
   }
@@ -114,6 +130,11 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
 
   removeDeliverable(activityIndex: number, deliverableIndex: number): void {
     this.deliverables(activityIndex).removeAt(deliverableIndex);
+    this.formService.setDirty(true);
+  }
+
+  deactivateDeliverable(activityIndex: number, deliverableIndex: number): void {
+    this.deliverables(activityIndex).at(deliverableIndex).get('deactivated')?.setValue(true);
     this.formService.setDirty(true);
   }
 
@@ -175,6 +196,7 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
         endPeriod: this.formBuilder.control(existing?.endPeriod || ''),
         deliverables: this.formBuilder.array([]),
         partnerIds: this.formBuilder.array([]),
+        deactivated: this.formBuilder.control(existing?.deactivated || false),
       },
       {
         validators: this.constants.PERIODS.validators
@@ -188,6 +210,7 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
       title: this.formBuilder.control(existing?.title || [], this.constants.DELIVERABLE_TITLE.validators),
       description: this.formBuilder.control(existing?.description || [], this.constants.DELIVERABLE_DESCRIPTION.validators),
       period: this.formBuilder.control(existing?.period || ''),
+      deactivated: this.formBuilder.control(existing?.deactivated || false),
     }));
   }
 

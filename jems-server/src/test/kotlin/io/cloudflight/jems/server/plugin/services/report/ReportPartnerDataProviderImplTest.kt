@@ -694,6 +694,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
                     number = 1,
                     title = setOf(InputTranslation(SystemLanguage.EN, "A1.1")),
                     progress = setOf(InputTranslation(SystemLanguage.EN, "custom title")),
+                    deactivated = false,
                     deliverables = listOf(
                         ProjectPartnerReportWorkPackageActivityDeliverable(
                             id = 75013,
@@ -701,6 +702,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
                             title = setOf(InputTranslation(SystemLanguage.EN, "D1.1.3")),
                             contribution = true,
                             evidence = false,
+                            deactivated = false,
                             attachment = JemsFileMetadata(
                                 id = 980L,
                                 name = "cat.gif",
@@ -734,6 +736,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
                     number = 1,
                     title = setOf(InputTranslationData(SystemLanguageData.EN, "A1.1")),
                     progress = setOf(InputTranslationData(SystemLanguageData.EN, "custom title")),
+                    deactivated = false,
                     deliverables = listOf(
                         ProjectPartnerReportWorkPackageActivityDeliverableData(
                             id = 75013,
@@ -741,15 +744,14 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
                             title = setOf(InputTranslationData(SystemLanguageData.EN, "D1.1.3")),
                             contribution = true,
                             evidence = false,
+                            deactivated = false,
                             attachment = JemsFileMetadataData(
                                 id = 980L,
                                 name = "cat.gif",
                                 uploaded = DATE_TIME_1,
                             ),
-                            deactivated = null
                         ),
                     ),
-                    deactivated = null,
                     attachment = JemsFileMetadataData(id = 990L, name = "cat-2.docx", uploaded = DATE_TIME_1),
                 ),
             ),

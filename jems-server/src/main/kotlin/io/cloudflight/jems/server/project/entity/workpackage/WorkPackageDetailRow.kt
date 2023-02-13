@@ -18,6 +18,7 @@ interface WorkPackageDetailRow : TranslationView {
     val startPeriod: Int?
     val endPeriod: Int?
     val partnerId: Long?
+    val activityDeactivated: Boolean?
     //activity translation
     val activityTitle: String?
     val activityLanguage: SystemLanguage?
@@ -26,6 +27,7 @@ interface WorkPackageDetailRow : TranslationView {
     val deliverableId: Long?
     val deliverableNumber: Int?
     val deliverableStartPeriod: Int?
+    val deliverableDeactivated: Boolean?
     //deliverable translation
     val deliverableDescription: String?
     val deliverableTitle: String?

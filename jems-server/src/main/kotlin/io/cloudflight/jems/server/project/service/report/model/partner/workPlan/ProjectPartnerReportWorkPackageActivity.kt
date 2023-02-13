@@ -12,4 +12,5 @@ data class ProjectPartnerReportWorkPackageActivity(
     val attachment: JemsFileMetadata?,
 
     val deliverables: List<ProjectPartnerReportWorkPackageActivityDeliverable>,
+    val deactivated: Boolean
 )

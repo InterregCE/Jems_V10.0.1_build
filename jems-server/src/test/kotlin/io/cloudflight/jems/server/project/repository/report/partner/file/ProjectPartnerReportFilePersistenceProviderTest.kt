@@ -67,6 +67,7 @@ class ProjectPartnerReportFilePersistenceProviderTest : UnitTest() {
             number = 1,
             activityId = null,
             attachment = attachment,
+            deactivated = false,
         )
 
         private fun deliverable(id: Long, attachment: JemsFileMetadataEntity?) = ProjectPartnerReportWorkPackageActivityDeliverableEntity(
@@ -77,6 +78,7 @@ class ProjectPartnerReportFilePersistenceProviderTest : UnitTest() {
             contribution = true,
             evidence = false,
             attachment = attachment,
+            deactivated = false,
         )
 
         private fun output(id: Long, attachment: JemsFileMetadataEntity?) = ProjectPartnerReportWorkPackageOutputEntity(

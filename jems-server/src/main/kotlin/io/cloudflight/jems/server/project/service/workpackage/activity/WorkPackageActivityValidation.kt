@@ -4,7 +4,10 @@ import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfigu
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldSetting
 import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.common.exception.I18nValidationException
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
+import io.cloudflight.jems.server.project.service.workpackage.activity.update_activity.ActivityDeactivationNotAllowedException
+import io.cloudflight.jems.server.project.service.workpackage.activity.update_activity.ActivityDeletionNotAllowedException
 import io.cloudflight.jems.server.project.service.workpackage.activity.update_activity.PartnersNotFound
 
 const val ACTIVITY_MAX_ERROR_KEY = "workPackage.activity.max.allowed.reached"
@@ -57,5 +60,23 @@ fun validateWorkPackageActivityConfiguration(
     if (deliverables?.visibilityStatus == FieldVisibilityStatus.NONE
         && activities.any { it.deliverables.isNotEmpty() }) {
         throw I18nValidationException(i18nKey = DELIVERABLES_NOT_ENABLED_ERROR_KEY)
+    }
+}
+
+fun validateWorkPackageActivitiesWithProjectStatus(
+    projectStatus: ApplicationStatus,
+    activities: List<WorkPackageActivity>,
+    existingActivities: List<WorkPackageActivity>
+) {
+    if (projectStatus.isAlreadyContracted()) {
+        val deliverableIds = activities.flatMap { it.deliverables }.map { it.id }
+        val existingDeliverableIds = existingActivities.flatMap { it.deliverables }.map { it.id }
+        val deletedDeliverableIds = existingDeliverableIds.minus(deliverableIds.toSet())
+        val deletedActivityIds = existingActivities.map { it.id }.minus(activities.map { it.id }.toSet())
+
+        if (deletedActivityIds.isNotEmpty() || deletedDeliverableIds.isNotEmpty())
+            throw ActivityDeletionNotAllowedException()
+    } else if (activities.any { it.deactivated } || activities.any { it.deliverables.any { del -> del.deactivated} }) {
+        throw ActivityDeactivationNotAllowedException()
     }
 }

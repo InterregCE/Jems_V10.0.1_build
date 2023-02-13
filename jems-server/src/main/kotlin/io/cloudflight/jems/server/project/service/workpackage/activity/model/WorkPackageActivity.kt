@@ -7,6 +7,7 @@ data class WorkPackageActivity(
     val workPackageId: Long,
     val workPackageNumber: Int = 0,
     val activityNumber: Int = 0,
+    val deactivated : Boolean,
     val title: Set<InputTranslation> = emptySet(),
     val description: Set<InputTranslation> =  emptySet(),
     val startPeriod: Int? = null,

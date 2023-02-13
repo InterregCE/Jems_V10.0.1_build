@@ -175,8 +175,10 @@ class CreateProjectPartnerReport(
                             deliverableId = d.id,
                             number = d.deliverableNumber,
                             title = d.title,
+                            deactivated = d.deactivated
                         )
                     },
+                    deactivated = a.deactivated
                 )
             },
             outputs = wp.outputs.map { o ->

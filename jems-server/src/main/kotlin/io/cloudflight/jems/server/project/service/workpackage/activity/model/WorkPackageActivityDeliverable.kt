@@ -8,4 +8,5 @@ data class WorkPackageActivityDeliverable(
     val description : Set<InputTranslation> = emptySet(),
     val title : Set<InputTranslation> = emptySet(),
     val period: Int? = null,
+    val deactivated: Boolean,
 )

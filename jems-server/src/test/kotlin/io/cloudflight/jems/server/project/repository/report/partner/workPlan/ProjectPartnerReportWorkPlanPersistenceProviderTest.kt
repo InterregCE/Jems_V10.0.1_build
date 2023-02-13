@@ -70,6 +70,7 @@ class ProjectPartnerReportWorkPlanPersistenceProviderTest : UnitTest() {
             number = id.toInt(),
             activityId = null,
             attachment = dummyAttachment,
+            deactivated = false,
             translatedValues = mutableSetOf(),
         ).apply {
             translatedValues.add(
@@ -89,6 +90,7 @@ class ProjectPartnerReportWorkPlanPersistenceProviderTest : UnitTest() {
             contribution = true,
             evidence = false,
             attachment = null,
+            deactivated = false,
             translatedValues = mutableSetOf()
         ).apply {
             translatedValues.add(
@@ -128,6 +130,7 @@ class ProjectPartnerReportWorkPlanPersistenceProviderTest : UnitTest() {
                         number = activityId.toInt(),
                         title = setOf(InputTranslation(SystemLanguage.EN, "[$activityId] title")),
                         progress = setOf(InputTranslation(SystemLanguage.EN, "[$activityId] progress")),
+                        deactivated = false,
                         deliverables = listOf(
                             ProjectPartnerReportWorkPackageActivityDeliverable(
                                 id = deliverableId,
@@ -135,6 +138,7 @@ class ProjectPartnerReportWorkPlanPersistenceProviderTest : UnitTest() {
                                 title = setOf(InputTranslation(SystemLanguage.EN, "[$deliverableId] title")),
                                 contribution = true,
                                 evidence = false,
+                                deactivated = false,
                                 attachment = null,
                             )
                         ),

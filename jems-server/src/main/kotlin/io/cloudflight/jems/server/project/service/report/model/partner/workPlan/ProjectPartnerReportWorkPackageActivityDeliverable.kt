@@ -11,4 +11,5 @@ data class ProjectPartnerReportWorkPackageActivityDeliverable(
     val contribution: Boolean?,
     val evidence: Boolean?,
     val attachment: JemsFileMetadata?,
+    val deactivated: Boolean
 )
