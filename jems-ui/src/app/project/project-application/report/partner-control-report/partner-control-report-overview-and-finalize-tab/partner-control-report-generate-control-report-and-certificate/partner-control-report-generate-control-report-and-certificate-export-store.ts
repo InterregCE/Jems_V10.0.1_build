@@ -1,10 +1,6 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subject} from 'rxjs';
-import {
-  PagePartnerReportControlFileDTO,
-  PluginInfoDTO,
-  ProjectPartnerControlReportFileAPIService
-} from '@cat/api';
+import {PagePartnerReportControlFileDTO, PluginInfoDTO, ProjectPartnerControlReportFileAPIService} from '@cat/api';
 import {PluginStore} from '@common/services/plugin-store.service';
 import {DownloadService} from '@common/services/download.service';
 import {catchError, distinctUntilChanged, filter, map, startWith, switchMap, take, tap} from 'rxjs/operators';
@@ -18,7 +14,7 @@ import TypeEnum = PluginInfoDTO.TypeEnum;
 
 @Injectable({providedIn: 'root'})
 export class PartnerControlReportGenerateControlReportAndCertificateExportStore {
-  certificateExportPlugins$: Observable<PluginInfoDTO[]>;
+  exportPlugins$: Observable<PluginInfoDTO[]>;
 
   certificateFileList$: Observable<PagePartnerReportControlFileDTO>;
   fileCategories$: Observable<CategoryNode>;
@@ -38,7 +34,12 @@ export class PartnerControlReportGenerateControlReportAndCertificateExportStore 
     private pluginStore: PluginStore,
     private controlReportExportService: ProjectPartnerControlReportFileAPIService,
     private downloadService: DownloadService) {
-    this.certificateExportPlugins$ = this.pluginStore.getPluginListByType(TypeEnum.PARTNERCONTROLREPORTEXPORT);
+    this.exportPlugins$ = combineLatest([
+      this.pluginStore.getPluginListByType(TypeEnum.PARTNERCONTROLREPORTCERTIFICATE),
+      this.pluginStore.getPluginListByType(TypeEnum.PARTNERCONTROLREPORTEXPORT)
+    ]).pipe(
+      map(([certificatePlugins, exportPlugins]) => [...certificatePlugins, ...exportPlugins])
+    );
     this.certificateFileList$ = this.certificateFileList();
   }
 
@@ -109,8 +110,14 @@ export class PartnerControlReportGenerateControlReportAndCertificateExportStore 
       );
   }
 
-  exportData(partnerId: number, reportId: number): Observable<any> {
-    return this.controlReportExportService.generateControlReportCertificate(partnerId, reportId).pipe(
+  generateControlReportCertificate(partnerId: number, reportId: number, pluginKey: string): Observable<any> {
+    return this.controlReportExportService.generateControlReportCertificate(partnerId, pluginKey, reportId).pipe(
+      tap(() => this.exportTriggeredEvent$.next())
+    );
+  }
+
+  generateControlReportExport(partnerId: number, reportId: number, pluginKey: string): Observable<any> {
+    return this.controlReportExportService.generateControlReportExport(partnerId, pluginKey, reportId).pipe(
       tap(() => this.exportTriggeredEvent$.next())
     );
   }

@@ -73,7 +73,7 @@ class PartnerControlReportDataProviderImpl(
         reportExpenditurePersistence.getPartnerControlReportExpenditureVerification(partnerId, reportId)
             .toModelDataList()
 
-
+    @Transactional(readOnly = true)
     override fun getReportControlDeductionOverview(
         partnerId: Long,
         reportId: Long,

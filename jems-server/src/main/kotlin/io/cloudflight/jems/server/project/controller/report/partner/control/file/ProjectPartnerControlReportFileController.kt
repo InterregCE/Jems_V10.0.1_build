@@ -4,13 +4,14 @@ import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadata
 import io.cloudflight.jems.api.project.report.partner.control.ProjectPartnerControlReportFileApi
 import io.cloudflight.jems.server.project.controller.report.partner.toDto
 import io.cloudflight.jems.server.project.controller.report.partner.toProjectFile
-import io.cloudflight.jems.server.project.service.report.partner.control.file.deleteReportControlCertificateAttachment.DeleteReportControlCertificateAttachmentInteractor
-import io.cloudflight.jems.server.project.service.report.partner.control.file.downloadCertificate.DownloadReportControlCertificateInteractor
-import io.cloudflight.jems.server.project.service.report.partner.control.file.downloadCertificateAttachment.DownloadReportControlCertificateAttachmentInteractor
+import io.cloudflight.jems.server.project.service.report.partner.control.file.deleteFileAttachment.DeleteReportControlFileAttachmentInteractor
+import io.cloudflight.jems.server.project.service.report.partner.control.file.downloadFileAttachment.DownloadReportControlFileAttachmentInteractor
+import io.cloudflight.jems.server.project.service.report.partner.control.file.downloadFile.DownloadReportControlFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.control.file.generateCertificate.GenerateReportControlCertificateInteractor
-import io.cloudflight.jems.server.project.service.report.partner.control.file.listCertificates.ListReportControlCertificatesInteractor
-import io.cloudflight.jems.server.project.service.report.partner.control.file.setDescriptionToCertificate.SetDescriptionToCertificateInteractor
-import io.cloudflight.jems.server.project.service.report.partner.control.file.uploadFileToCertificate.UploadFileToCertificateInteractor
+import io.cloudflight.jems.server.project.service.report.partner.control.file.uploadAttachmentToFile.UploadAttachmentToFileInteractor
+import io.cloudflight.jems.server.project.service.report.partner.control.file.generateExport.GenerateReportControlExportInteractor
+import io.cloudflight.jems.server.project.service.report.partner.control.file.listFiles.ListReportControlFilesInteractor
+import io.cloudflight.jems.server.project.service.report.partner.control.file.setDescriptionToFile.SetDescriptionToFileInteractor
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpHeaders
@@ -22,40 +23,46 @@ import org.springframework.web.multipart.MultipartFile
 @RestController
 class ProjectPartnerControlReportFileController(
     private val generateReportControlCertificate: GenerateReportControlCertificateInteractor,
-    private val setCertificateFileDescription: SetDescriptionToCertificateInteractor,
-    private val listReportControlCertificates: ListReportControlCertificatesInteractor,
-    private val downloadReportControlCertificate: DownloadReportControlCertificateInteractor,
-    private val deleteReportControlCertificateAttachment: DeleteReportControlCertificateAttachmentInteractor,
-    private val downloadReportControlCertificateAttachment: DownloadReportControlCertificateAttachmentInteractor,
-    private val uploadFileToCertificate: UploadFileToCertificateInteractor
+    private val generateReportControlExport: GenerateReportControlExportInteractor,
+    private val setReportControlFileDescription: SetDescriptionToFileInteractor,
+    private val listReportControlFiles: ListReportControlFilesInteractor,
+    private val downloadReportControlFile: DownloadReportControlFileInteractor,
+    private val deleteReportControlFileAttachment: DeleteReportControlFileAttachmentInteractor,
+    private val downloadReportControlFileAttachment: DownloadReportControlFileAttachmentInteractor,
+    private val uploadFileToControlfile: UploadAttachmentToFileInteractor
 ): ProjectPartnerControlReportFileApi  {
 
-    override fun generateControlReportCertificate(partnerId: Long, reportId: Long) =
-        generateReportControlCertificate.generateCertificate(partnerId, reportId)
+    override fun generateControlReportCertificate(partnerId: Long, reportId: Long, pluginKey: String) =
+        generateReportControlCertificate.generateCertificate(partnerId, reportId, pluginKey)
 
-    override fun updateControlReportCertificateFileDescription(
+
+    override fun generateControlReportExport(partnerId: Long, reportId: Long, pluginKey: String) =
+        generateReportControlExport.export(partnerId, reportId, pluginKey)
+
+
+    override fun updateControlReportFileDescription(
         partnerId: Long,
         reportId: Long,
         fileId: Long,
         description: String?
-    ) = setCertificateFileDescription.setDescription(partnerId, reportId, fileId, description ?: "")
+    ) = setReportControlFileDescription.setDescription(partnerId, reportId, fileId, description ?: "")
 
     override fun listFiles(
         partnerId: Long,
         reportId: Long,
         pageable: Pageable
-    ) = listReportControlCertificates.list(
+    ) = listReportControlFiles.list(
         partnerId = partnerId,
         reportId = reportId,
         pageable = pageable
     ).map { it.toDto() }
 
-    override fun downloadControlReportCertificate(
+    override fun downloadControlReportFile(
         partnerId: Long,
         reportId: Long,
         fileId: Long
     ): ResponseEntity<ByteArrayResource> {
-        return with(downloadReportControlCertificate.downloadReportControlCertificate(partnerId = partnerId, reportId = reportId, fileId = fileId)) {
+        return with(downloadReportControlFile.download(partnerId = partnerId, reportId = reportId, fileId = fileId)) {
             ResponseEntity.ok()
                 .contentLength(this.second.size.toLong())
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
@@ -69,7 +76,7 @@ class ProjectPartnerControlReportFileController(
         reportId: Long,
         fileId: Long
     ): ResponseEntity<ByteArrayResource> {
-        return with(downloadReportControlCertificateAttachment.downloadReportControlCertificateAttachment(
+        return with(downloadReportControlFileAttachment.downloadReportControlCertificateAttachment(
             partnerId = partnerId,
             reportId = reportId,
             fileId = fileId
@@ -83,7 +90,7 @@ class ProjectPartnerControlReportFileController(
     }
 
     override fun deleteControlReportAttachment(partnerId: Long, reportId: Long, fileId: Long, attachmentId: Long) {
-        deleteReportControlCertificateAttachment.deleteReportControlCertificateAttachment(
+        deleteReportControlFileAttachment.deleteReportControlCertificateAttachment(
             partnerId = partnerId,
             reportId = reportId,
             fileId = fileId,
@@ -92,7 +99,7 @@ class ProjectPartnerControlReportFileController(
     }
 
     override fun uploadReportCertificateSigned(partnerId: Long, reportId: Long, fileId: Long, file: MultipartFile): ProjectReportFileMetadataDTO {
-        return uploadFileToCertificate
-            .uploadToCertificate(partnerId, reportId, fileId = fileId, file.toProjectFile()).toDto()
+        return uploadFileToControlfile
+            .uploadAttachment(partnerId, reportId, fileId = fileId, file.toProjectFile()).toDto()
     }
 }

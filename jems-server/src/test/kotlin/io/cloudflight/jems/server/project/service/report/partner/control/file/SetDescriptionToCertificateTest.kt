@@ -6,7 +6,7 @@ import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.partner.control.file.setDescriptionToCertificate.SetDescriptionToCertificate
+import io.cloudflight.jems.server.project.service.report.partner.control.file.setDescriptionToFile.SetDescriptionToFile
 import io.cloudflight.jems.server.project.service.report.partner.file.setDescriptionToFile.FileNotFound
 import io.mockk.clearMocks
 import io.mockk.every
@@ -32,7 +32,7 @@ open class SetDescriptionToCertificateTest: UnitTest() {
     lateinit var fileService: JemsProjectFileService
 
     @InjectMockKs
-    lateinit var setDescriptionToCertificate: SetDescriptionToCertificate
+    lateinit var setDescriptionToCertificate: SetDescriptionToFile
 
     companion object {
         private const val expectedPath = "Project/000061/Report/Partner/000008/PartnerControlReport/000067/ControlCertificate/"
@@ -53,6 +53,7 @@ open class SetDescriptionToCertificateTest: UnitTest() {
         val partnerId = 8L
         val projectId = 61L
         every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
+        every { filePersistence.existsFile(partnerId, any(), 315L) } returns false
         every { filePersistence.existsFile(partnerId, expectedPath, 315L) } returns true
         every { fileService.setDescription(315L, "new desc") } answers { }
 
@@ -65,9 +66,7 @@ open class SetDescriptionToCertificateTest: UnitTest() {
         val partnerId = 8L
         val projectId = 61L
         every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
-        every { filePersistence
-            .existsFile(partnerId, expectedPath, -1L)
-        } returns false
+        every { filePersistence.existsFile(partnerId, any(), -1L) } returns false
 
         assertThrows<FileNotFound> { setDescriptionToCertificate.setDescription(partnerId, reportId = 67L, fileId = -1L, "new desc") }
     }

@@ -78,3 +78,19 @@ fun controlCertificateCreated(
                 "${if (report.identification.partnerRole.isLead) "LP" else "PP"}${report.identification.partnerNumber}")
         .build()
 )
+
+fun controlReportCreated(
+    context: Any,
+    projectId: Long,
+    report: ProjectPartnerReport
+): AuditCandidateEvent = AuditCandidateEvent(
+    context = context,
+    auditCandidate = AuditBuilder(AuditAction.CONTROL_REPORT_EXPORT_GENERATED).project(
+        projectId = projectId,
+        customIdentifier = report.identification.projectIdentifier,
+        acronym = report.identification.projectAcronym
+    ).entityRelatedId(entityRelatedId = report.id)
+        .description("A control report was generated for partner report R.${report.reportNumber} of partner " +
+            "${if (report.identification.partnerRole.isLead) "LP" else "PP"}${report.identification.partnerNumber}")
+        .build()
+)

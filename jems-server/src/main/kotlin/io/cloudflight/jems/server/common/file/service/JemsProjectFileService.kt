@@ -41,6 +41,7 @@ class JemsProjectFileService(
 
             JemsFileType.ControlDocument,
             JemsFileType.ControlCertificate,
+            JemsFileType.ControlReport,
             JemsFileType.Contract,
             JemsFileType.ContractDoc,
             JemsFileType.ContractPartnerDoc,
