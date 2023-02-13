@@ -9,7 +9,8 @@
             </mat-select>
         </mat-form-field>
         <span>
-            <jems-pending-button (click)="exportData(plugin)">
+            <jems-pending-button [pending]="generateExportLoading"
+                                 (click)="exportData(plugin)">
                 {{'project.application.partner.report.control.tab.overviewAndFinalize.certificate.export.label.button' | translate}}
             </jems-pending-button>
         </span>
@@ -30,7 +31,7 @@
                 [reportStatus]="data.reportStatus"
                 [isFileDeletable]="!data.isReportFinalized"
                 (onSortChange)="fileManagementStore.newSort$.next($event)"
-                (onDownload)="downloadFile($event)"
+                (onDownload)="downloadFile($event.parentEntityId!!)"
                 (refresh)="fileManagementStore.certificateFilesChanged$.next()">
         </jems-file-list-table-with-file-linking>
 
@@ -42,10 +43,10 @@
                         [length]="data.files.totalElements">
         </jems-paginator>
 
-    <jems-alert *ngIf="fileManagementStore.error$ | async as error"
-                [show]="!!error"
-                [type]="Alert.ERROR">
-        <jems-api-error-content [error]="error"></jems-api-error-content>
-    </jems-alert>
+        <jems-alert *ngIf="fileManagementStore.error$ | async as error"
+                    [show]="!!error"
+                    [type]="Alert.ERROR">
+            <jems-api-error-content [error]="error"></jems-api-error-content>
+        </jems-alert>
     </div>
 </div>

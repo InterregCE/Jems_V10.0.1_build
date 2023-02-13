@@ -1,16 +1,5 @@
-import {
-  AfterViewInit, ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges,
-  ViewChild
-} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {MatTableDataSource} from '@angular/material/table';
-import {FileListItem} from '@common/components/file-list/file-list-item';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {AlertMessage} from '@common/components/file-list/file-list-table/alert-message';
 import {MatSort, MatSortable} from '@angular/material/sort';
@@ -23,8 +12,9 @@ import {catchError, filter, finalize, take, tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {Forms} from '@common/utils/forms';
 import {v4 as uuid} from 'uuid';
-import { Alert } from '@common/components/forms/alert';
-import {ProjectPartnerReportSummaryDTO, ProjectReportFileMetadataDTO} from '@cat/api';
+import {Alert} from '@common/components/forms/alert';
+import {ProjectPartnerReportSummaryDTO} from '@cat/api';
+import {ControlFileListItem} from './control-file-list-item';
 
 @UntilDestroy()
 @Component({
@@ -37,7 +27,7 @@ import {ProjectPartnerReportSummaryDTO, ProjectReportFileMetadataDTO} from '@cat
 export class FileListTableWithFileLinkingComponent implements OnInit, OnChanges, AfterViewInit {
   Alert = Alert;
 
-  dataSource = new MatTableDataSource<FileListItem>();
+  dataSource = new MatTableDataSource<ControlFileListItem>();
 
   alerts$ = new BehaviorSubject<AlertMessage[]>([]);
 
@@ -46,7 +36,7 @@ export class FileListTableWithFileLinkingComponent implements OnInit, OnChanges,
   @Input()
   displayedColumns: string[] = ['name', 'location', 'uploadDate', 'user', 'size', 'description', 'action'];
   @Input()
-  fileList: FileListItem[];
+  fileList: ControlFileListItem[];
   @Input()
   sortingEnabled = false;
   @Input()
@@ -67,7 +57,7 @@ export class FileListTableWithFileLinkingComponent implements OnInit, OnChanges,
   @Input()
   setDescriptionCallback: (data: FileDescriptionChange) => Observable<any>;
   @Input()
-  deleteCallback: (file: FileListItem) => Observable<void>;
+  deleteCallback: (file: ControlFileListItem) => Observable<void>;
 
   @Input()
   uploadAttachmentCallback: (target: any, fileId: number) => Observable<any>;
@@ -79,7 +69,7 @@ export class FileListTableWithFileLinkingComponent implements OnInit, OnChanges,
   @Output()
   onSortChange = new EventEmitter<Partial<MatSort>>();
   @Output()
-  onDownload = new EventEmitter<FileListItem>();
+  onDownload = new EventEmitter<ControlFileListItem>();
   @Output()
   refresh = new EventEmitter<any>();
 
@@ -110,7 +100,7 @@ export class FileListTableWithFileLinkingComponent implements OnInit, OnChanges,
         tap(() => this.onSortChange.emit(this.sort)),
         untilDestroyed(this),
       ).subscribe();
-    this.sort?.sort(({ id: 'uploaded', start: 'desc'}) as MatSortable);
+    this.sort?.sort(({id: 'uploaded', start: 'desc'}) as MatSortable);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -125,7 +115,7 @@ export class FileListTableWithFileLinkingComponent implements OnInit, OnChanges,
     this.descriptionForm.reset();
   }
 
-  resetAttachments(fileList: FileListItem[]): void {
+  resetAttachments(fileList: ControlFileListItem[]): void {
     this.attachmentForm.reset();
     this.attachmentForm.clear();
     fileList.forEach((item, index) => {
@@ -136,6 +126,7 @@ export class FileListTableWithFileLinkingComponent implements OnInit, OnChanges,
   }
 
   savingDescriptionId$ = new BehaviorSubject<number | null>(null);
+
   saveDescription() {
     this.savingDescriptionId$.next(this.descriptionForm.value.id);
     this.setDescriptionCallback(this.descriptionForm.value)
@@ -143,12 +134,12 @@ export class FileListTableWithFileLinkingComponent implements OnInit, OnChanges,
         take(1),
         tap(() => this.showAlert(FileListTableWithFileLinkingComponent.successAlert(
           'file.description.change.message.success',
-          { fileName: this.descriptionForm.value.fileName },
+          {fileName: this.descriptionForm.value.fileName},
         ))),
         catchError(error => {
           this.showAlert(FileListTableWithFileLinkingComponent.errorAlert(
             'file.description.change.message.failed',
-            { fileName: this.descriptionForm.value.fileName },
+            {fileName: this.descriptionForm.value.fileName},
           ));
           throw error;
         }),
@@ -158,15 +149,15 @@ export class FileListTableWithFileLinkingComponent implements OnInit, OnChanges,
       ).subscribe();
   }
 
-  editDescription(file: FileListItem) {
+  editDescription(file: ControlFileListItem) {
     this.descriptionForm.patchValue({
-      id: file.id,
+      id: file.parentEntityId,
       fileName: file.name,
       description: file.description,
     });
   }
 
-  deleteFile(file: FileListItem) {
+  deleteFile(file: ControlFileListItem) {
     Forms.confirm(
       this.dialog, {
         title: file.name,
@@ -179,21 +170,22 @@ export class FileListTableWithFileLinkingComponent implements OnInit, OnChanges,
       ).subscribe();
   }
 
-  deletingId$ = new BehaviorSubject<number | null>(null);
-  private performDeletion(file: FileListItem) {
-    this.deletingId$.next(file.id);
+  deletingId$ = new BehaviorSubject<number | undefined>(undefined);
+
+  private performDeletion(file: ControlFileListItem) {
+    this.deletingId$.next(file.parentEntityId);
     this.deleteCallback(file)
       .pipe(
         take(1),
         tap(() => this.showAlert(
-          FileListTableWithFileLinkingComponent.successAlert('file.delete.message.successful', { fileName: file.name })
+          FileListTableWithFileLinkingComponent.successAlert('file.delete.message.successful', {fileName: file.name})
         )),
         catchError(error => {
           this.showAlert(
-            FileListTableWithFileLinkingComponent.errorAlert('file.delete.message.failed', { fileName: file.name }));
+            FileListTableWithFileLinkingComponent.errorAlert('file.delete.message.failed', {fileName: file.name}));
           throw error;
         }),
-        finalize(() => this.deletingId$.next(null)),
+        finalize(() => this.deletingId$.next(undefined)),
         tap(() => this.refresh.emit()),
       ).subscribe();
   }
@@ -248,14 +240,14 @@ export class FileListTableWithFileLinkingComponent implements OnInit, OnChanges,
     return this.attachmentForm.at(index).get('attachment') as FormControl;
   }
 
-  isDescriptionEditAllowed(): boolean{
+  isDescriptionEditAllowed(): boolean {
     return (this.reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.InControl ||
-      this.reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Certified) && this.isUserAllowedToEditReport;
+      this.reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Certified) && this.isUserAllowedToEditReport
   }
 
-  areFileOperationsAllowed(file: ProjectReportFileMetadataDTO): boolean{
+  areFileOperationsAllowed(file: any): boolean {
     return (this.reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.InControl && this.isUserAllowedToEditReport) ||
-    (this.reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Certified && this.isUserAllowedToEditReport && file === null);
+    (this.reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Certified && this.isUserAllowedToEditReport && file === null)
   }
 
 }

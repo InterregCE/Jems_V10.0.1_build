@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
-class ListReportControlCertificatesTest : UnitTest() {
+class ListReportControlFilesTest : UnitTest() {
 
     companion object {
         private const val PARTNER_ID = 1L
@@ -37,7 +37,7 @@ class ListReportControlCertificatesTest : UnitTest() {
     }
 
     @Test
-    fun `list report control certificates`() {
+    fun `list report control files`() {
         val result = mockk<Page<PartnerReportControlFile>>()
         every { partnerReportAuth.canViewPartnerControlReport(PARTNER_ID, REPORT_ID)} returns true
         every { projectPartnerReportControlFilePersistence.listReportControlFiles(REPORT_ID, Pageable.unpaged()) } returns result

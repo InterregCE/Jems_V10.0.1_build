@@ -8,7 +8,13 @@ import {finalize, map, switchMap, take, tap} from 'rxjs/operators';
 import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
 import {combineLatest, Observable, of} from 'rxjs';
 import {FormBuilder, FormGroup} from '@angular/forms';
-import {PagePartnerReportControlFileDTO, PartnerReportControlFileDTO, PluginInfoDTO, ProjectPartnerControlReportFileAPIService, ProjectPartnerReportSummaryDTO,} from '@cat/api';
+import {
+  PagePartnerReportControlFileDTO,
+  PartnerReportControlFileDTO,
+  PluginInfoDTO,
+  ProjectPartnerControlReportFileAPIService,
+  ProjectPartnerReportSummaryDTO,
+} from '@cat/api';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {PartnerControlReportStore} from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
@@ -40,6 +46,7 @@ export class PartnerControlReportGenerateControlReportAndCertificateComponent {
   }>;
 
   isUploadDone = false;
+  generateExportLoading = false;
 
   displayedColumns: string[] = ['name', 'location', 'uploadDate', 'user', 'size', 'description', 'action', 'attachment'];
 
@@ -94,8 +101,8 @@ export class PartnerControlReportGenerateControlReportAndCertificateComponent {
     });
   }
 
-  downloadFile(file: FileListItem): void {
-    this.fileManagementStore.downloadFile(file.id)
+  downloadFile(fileId: number): void {
+    this.fileManagementStore.downloadFile(fileId)
       .pipe(take(1))
       .subscribe();
   }
@@ -116,10 +123,21 @@ export class PartnerControlReportGenerateControlReportAndCertificateComponent {
   }
 
   exportData(plugin: PluginInfoDTO): void {
+    this.generateExportLoading = true;
     if (plugin.type === PluginInfoDTO.TypeEnum.PARTNERCONTROLREPORTEXPORT) {
-      this.fileManagementStore.generateControlReportExport(this.partnerId, this.reportId, plugin.key).pipe(untilDestroyed(this)).subscribe();
+      this.fileManagementStore.generateControlReportExport(this.partnerId, this.reportId, plugin.key)
+        .pipe(
+          finalize(() => this.generateExportLoading = false),
+          untilDestroyed(this)
+        )
+        .subscribe();
     } else if (plugin.type === PluginInfoDTO.TypeEnum.PARTNERCONTROLREPORTCERTIFICATE) {
-      this.fileManagementStore.generateControlReportCertificate(this.partnerId, this.reportId, plugin.key).pipe(untilDestroyed(this)).subscribe();
+      this.fileManagementStore.generateControlReportCertificate(this.partnerId, this.reportId, plugin.key)
+        .pipe(
+          finalize(() => this.generateExportLoading = false),
+          untilDestroyed(this)
+        )
+        .subscribe();
     }
   }
 
