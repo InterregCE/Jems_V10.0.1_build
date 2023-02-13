@@ -34,6 +34,9 @@ import io.cloudflight.jems.server.project.service.report.model.partner.contribut
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.PartnerReportInvestmentSummary
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.unitCost.ExpenditureUnitCostCurrent
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumCurrent
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.investments.ExpenditureInvestmentCurrent
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectPartnerReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
@@ -331,6 +334,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         title = setOf(InputTranslation(SystemLanguage.EN, "investment title EN")),
         total = BigDecimal.valueOf(32),
         previouslyReported = BigDecimal.valueOf(30),
+        previouslyReportedParked = BigDecimal.valueOf(100),
     )
 
     private val expectedTotal = BudgetCostsCalculationResultFull(
@@ -361,9 +365,9 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
 
     private val previousReportedCoFinancing = ReportExpenditureCoFinancingColumn(
         funds = mapOf(
-            fund.id to BigDecimal.valueOf(14L) /* original fund */,
-            -1L to BigDecimal.TEN /* fund which has been removed in modification */,
-            null to BigDecimal.valueOf(25L) /* partner contribution */,
+            fund.id to BigDecimal.valueOf(14L), /* original fund */
+            -1L to BigDecimal.TEN, /* fund which has been removed in modification */
+            null to BigDecimal.valueOf(25L), /* partner contribution */
         ),
         partnerContribution = BigDecimal.valueOf(9),
         publicContribution = BigDecimal.valueOf(2),
@@ -380,22 +384,28 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         equipment = BigDecimal.valueOf(34),
         infrastructure = BigDecimal.valueOf(35),
         other = BigDecimal.valueOf(36),
-        lumpSum = BigDecimal.valueOf(4733, 2) /* +10.33 from ready FT lump sum */,
+        lumpSum = BigDecimal.valueOf(4733, 2), /* +10.33 from ready FT lump sum */
         unitCost = BigDecimal.valueOf(38),
-        sum = BigDecimal.valueOf(4933, 2) /* +10.33 from ready FT lump sum */,
+        sum = BigDecimal.valueOf(4933, 2), /* +10.33 from ready FT lump sum */
     )
 
     private val expectedPreviouslyReportedCoFinancing = PreviouslyReportedCoFinancing(
         fundsSorted = listOf(
-            PreviouslyReportedFund(fund.id, percentage = BigDecimal.valueOf(30),
+            PreviouslyReportedFund(
+                fund.id, percentage = BigDecimal.valueOf(30),
                 total = BigDecimal.valueOf(570, 2), previouslyReported = BigDecimal.valueOf(1709, 2),
-                previouslyPaid = BigDecimal.valueOf(11)),
-            PreviouslyReportedFund(-1L, percentage = BigDecimal.ZERO,
+                previouslyPaid = BigDecimal.valueOf(11)
+            ),
+            PreviouslyReportedFund(
+                -1L, percentage = BigDecimal.ZERO,
                 total = BigDecimal.ZERO, previouslyReported = BigDecimal.TEN,
-                previouslyPaid = BigDecimal.valueOf(0)),
-            PreviouslyReportedFund(null, percentage = BigDecimal.valueOf(70),
+                previouslyPaid = BigDecimal.valueOf(0)
+            ),
+            PreviouslyReportedFund(
+                null, percentage = BigDecimal.valueOf(70),
                 total = BigDecimal.valueOf(1330, 2), previouslyReported = BigDecimal.valueOf(3223, 2),
-                previouslyPaid = BigDecimal.valueOf(0)),
+                previouslyPaid = BigDecimal.valueOf(0)
+            ),
         ),
         totalPartner = BigDecimal.valueOf(1),
         totalPublic = BigDecimal.valueOf(0),
@@ -452,36 +462,51 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
             id = 2L,
             investmentNumber = 2,
             workPackageNumber = 1
-        ))
+        )
+    )
 
     @MockK
     lateinit var reportPersistence: ProjectPartnerReportPersistence
+
     @MockK
     lateinit var reportContributionPersistence: ProjectPartnerReportContributionPersistence
+
     @MockK
     lateinit var lumpSumPersistence: ProjectLumpSumPersistence
+
     @MockK
     lateinit var partnerBudgetCostsPersistence: ProjectPartnerBudgetCostsPersistence
+
     @MockK
     lateinit var getPartnerBudgetPerPeriod: GetPartnerBudgetPerPeriodInteractor
+
     @MockK
     lateinit var projectPartnerBudgetOptionsPersistence: ProjectPartnerBudgetOptionsPersistence
+
     @MockK
     lateinit var getProjectBudget: GetProjectBudget
+
     @MockK
     lateinit var reportExpenditureCostCategoryPersistence: ProjectPartnerReportExpenditureCostCategoryPersistence
+
     @MockK
     lateinit var reportExpenditureCoFinancingPersistence: ProjectPartnerReportExpenditureCoFinancingPersistence
+
     @MockK
     lateinit var paymentPersistence: PaymentRegularPersistence
+
     @MockK
     lateinit var reportLumpSumPersistence: ProjectPartnerReportLumpSumPersistence
+
     @MockK
     lateinit var reportInvestmentPersistence: ProjectPartnerReportInvestmentPersistence
+
     @MockK
     lateinit var reportExpenditurePersistence: ProjectPartnerReportExpenditurePersistence
+
     @MockK
     lateinit var projectWorkPackagePersistence: WorkPackagePersistence
+
     @MockK
     lateinit var reportUnitCostPersistence: ProjectPartnerReportUnitCostPersistence
 
@@ -496,22 +521,48 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         val budgetOptions = mockk<ProjectPartnerBudgetOptions>()
         val partner = mockInputsAndGetPartner(projectId, partnerId = partnerId, version, budgetOptions)
 
-        every { projectWorkPackagePersistence.getProjectInvestmentSummaries(projectId, version)} returns investmentSummaries
-        every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(partnerId, 408L)} returns emptyList()
+        every {
+            projectWorkPackagePersistence.getProjectInvestmentSummaries(
+                projectId,
+                version
+            )
+        } returns investmentSummaries
+        every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(partnerId, 408L) } returns emptyList()
 
         val result = service.retrieveBudgetDataFor(projectId, partner, version, coFinancing, investments)
 
         assertThat(result.contributions).hasSize(3)
         assertThat(result.availableLumpSums).containsExactly(
-            PartnerReportLumpSum(lumpSumId = 44L, orderNr = 14, period = 3,
-                total = BigDecimal.TEN, previouslyReported = BigDecimal.TEN, previouslyPaid = BigDecimal.ZERO),
-            PartnerReportLumpSum(lumpSumId = 45L, orderNr = 15, period = 4,
-                total = BigDecimal.valueOf(13), previouslyReported = BigDecimal.valueOf(100), previouslyPaid = BigDecimal.ZERO),
-            PartnerReportLumpSum(lumpSumId = 45L, orderNr = 16, period = 4,
+            PartnerReportLumpSum(
+                lumpSumId = 44L,
+                orderNr = 14,
+                period = 3,
+                total = BigDecimal.TEN,
+                previouslyReported = BigDecimal.TEN,
+                previouslyPaid = BigDecimal.ZERO,
+                previouslyReportedParked = BigDecimal.TEN
+            ),
+            PartnerReportLumpSum(
+                lumpSumId = 45L,
+                orderNr = 15,
+                period = 4,
+                total = BigDecimal.valueOf(13),
+                previouslyReported = BigDecimal.valueOf(100),
+                previouslyPaid = BigDecimal.ZERO,
+                previouslyReportedParked = BigDecimal.TEN
+            ),
+            PartnerReportLumpSum(
+                lumpSumId = 45L,
+                orderNr = 16,
+                period = 4,
                 // is getting 200 from previous reports and 10.33 from ready fast track
-                total = BigDecimal.valueOf(1033, 2), previouslyReported = BigDecimal.valueOf(21033, 2), previouslyPaid = BigDecimal.valueOf(11)),
+                total = BigDecimal.valueOf(1033, 2),
+                previouslyReported = BigDecimal.valueOf(21033, 2),
+                previouslyPaid = BigDecimal.valueOf(11),
+                previouslyReportedParked = BigDecimal.TEN
+            ),
         )
-        assertThat(result.unitCosts.map {it.unitCostId}).containsExactlyInAnyOrder(4, 5, 6, 7, 8, 9, 10)
+        assertThat(result.unitCosts.map { it.unitCostId }).containsExactlyInAnyOrder(4, 5, 6, 7, 8, 9, 10)
         assertThat(result.unitCosts.first { it.unitCostId == 6L }.previouslyReported).isEqualTo(BigDecimal.TEN)
         assertThat(result.unitCosts.first { it.unitCostId == 7L }.previouslyReported).isEqualTo(BigDecimal.valueOf(100))
         assertThat(result.investments).containsExactly(expectedInvestment)
@@ -541,11 +592,24 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         val budgetOptions = mockk<ProjectPartnerBudgetOptions>()
         val partner = mockInputsAndGetPartner(projectId, partnerId = partnerId, version, budgetOptions)
 
-        every { projectWorkPackagePersistence.getProjectInvestmentSummaries(projectId, version)} returns investmentSummaries
-        every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(partnerId, 408L)} returns emptyList()
-        every { reportExpenditureCoFinancingPersistence.getCoFinancingCumulative(setOf(408L)) } returns previousReportedCoFinancing.copy(funds = emptyMap())
+        every {
+            projectWorkPackagePersistence.getProjectInvestmentSummaries(
+                projectId,
+                version
+            )
+        } returns investmentSummaries
+        every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(partnerId, 408L) } returns emptyList()
+        every { reportExpenditureCoFinancingPersistence.getCoFinancingCumulative(setOf(408L)) } returns previousReportedCoFinancing.copy(
+            funds = emptyMap()
+        )
 
-        val result = service.retrieveBudgetDataFor(projectId, partner, version, coFinancing.copy(finances = emptyList()), emptyList())
+        val result = service.retrieveBudgetDataFor(
+            projectId,
+            partner,
+            version,
+            coFinancing.copy(finances = emptyList()),
+            emptyList()
+        )
 
         assertThat(result.previouslyReportedCoFinancing)
             .isEqualTo(
@@ -559,12 +623,17 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
                             previouslyPaid = BigDecimal.ZERO,
                         ),
                     ),
-                    previouslyReportedPartner = BigDecimal.valueOf(900, 2) /* should be no change on empty */,
+                    previouslyReportedPartner = BigDecimal.valueOf(900, 2), /* should be no change on empty */
                 )
             )
     }
 
-    private fun mockInputsAndGetPartner(projectId: Long, partnerId: Long, version: String, budgetOptions: ProjectPartnerBudgetOptions): ProjectPartnerSummary {
+    private fun mockInputsAndGetPartner(
+        projectId: Long,
+        partnerId: Long,
+        version: String,
+        budgetOptions: ProjectPartnerBudgetOptions
+    ): ProjectPartnerSummary {
         val partner = mockk<ProjectPartnerSummary>()
         every { partner.id } returns partnerId
         // contribution
@@ -573,25 +642,60 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         // lump sums
         every { lumpSumPersistence.getLumpSums(projectId, version) } returns lumpSums(partnerId)
         every { reportLumpSumPersistence.getLumpSumCumulative(setOf(408L)) } returns
-            mapOf(14 to BigDecimal.TEN, 15 to BigDecimal.valueOf(100), 16 to BigDecimal.valueOf(200))
+            mapOf(
+                14 to ExpenditureLumpSumCurrent(current = BigDecimal.TEN, currentParked = BigDecimal.TEN),
+                15 to ExpenditureLumpSumCurrent(current = BigDecimal.valueOf(100), currentParked = BigDecimal.TEN),
+                16 to ExpenditureLumpSumCurrent(current = BigDecimal.valueOf(200), currentParked = BigDecimal.TEN)
+            )
         // unit costs
         every { partnerBudgetCostsPersistence.getBudgetStaffCosts(partnerId, version) } returns staffCosts
-        every { partnerBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(partnerId, version) } returns travelCosts
-        every { partnerBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(partnerId, version) } returns externalCosts
+        every {
+            partnerBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(
+                partnerId,
+                version
+            )
+        } returns travelCosts
+        every {
+            partnerBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(
+                partnerId,
+                version
+            )
+        } returns externalCosts
         every { partnerBudgetCostsPersistence.getBudgetEquipmentCosts(partnerId, version) } returns equipmentCosts
-        every { partnerBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(partnerId, version) } returns infrastructureCosts
+        every {
+            partnerBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(
+                partnerId,
+                version
+            )
+        } returns infrastructureCosts
         every { partnerBudgetCostsPersistence.getBudgetUnitCosts(partnerId, version) } returns unitCosts
         every { reportUnitCostPersistence.getUnitCostCumulative(setOf(408L)) } returns
-            mapOf(6L to BigDecimal.TEN, 7L to BigDecimal.valueOf(100), 8L to BigDecimal.ZERO)
+            mapOf(
+                6L to ExpenditureUnitCostCurrent(current = BigDecimal.TEN, currentParked = BigDecimal.ZERO),
+                7L to ExpenditureUnitCostCurrent(current = BigDecimal.valueOf(100), currentParked = BigDecimal.ZERO),
+                8L to ExpenditureUnitCostCurrent(current = BigDecimal.ZERO, currentParked = BigDecimal.ZERO)
+            )
         // investments
-        every { reportInvestmentPersistence.getInvestmentsCumulative(setOf(408L)) } returns mapOf(485L to BigDecimal.valueOf(30))
+        every { reportInvestmentPersistence.getInvestmentsCumulative(setOf(408L)) } returns mapOf(
+            485L to ExpenditureInvestmentCurrent(
+                current = BigDecimal.valueOf(30),
+                currentParked = BigDecimal.valueOf(100)
+            )
+        )
         // budget per period
         every { getPartnerBudgetPerPeriod.getPartnerBudgetPerPeriod(projectId, version) } returns
-            ProjectBudgetOverviewPerPartnerPerPeriod(partnersBudgetPerPeriod = perPeriod(partnerId), totals = emptyList(), totalsPercentage = emptyList())
+            ProjectBudgetOverviewPerPartnerPerPeriod(
+                partnersBudgetPerPeriod = perPeriod(partnerId),
+                totals = emptyList(),
+                totalsPercentage = emptyList()
+            )
         // options
         every { projectPartnerBudgetOptionsPersistence.getBudgetOptions(partnerId, version) } returns budgetOptions
         every { getProjectBudget.getBudget(listOf(partner), projectId, version) } returns listOf(partnerBudget(partner))
-        every { paymentPersistence.findByPartnerId(partnerId) } returns listOf(paymentInstallment_1(), paymentInstallment_2())
+        every { paymentPersistence.findByPartnerId(partnerId) } returns listOf(
+            paymentInstallment_1(),
+            paymentInstallment_2()
+        )
         every { reportExpenditureCostCategoryPersistence.getCostCategoriesCumulative(setOf(408L)) } returns previousExpenditures
         // previouslyReportedCoFinancing
         every { reportExpenditureCoFinancingPersistence.getCoFinancingCumulative(setOf(408L)) } returns previousReportedCoFinancing

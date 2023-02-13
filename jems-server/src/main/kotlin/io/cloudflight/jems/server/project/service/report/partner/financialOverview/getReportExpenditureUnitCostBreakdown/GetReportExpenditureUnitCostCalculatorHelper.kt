@@ -3,12 +3,15 @@ package io.cloudflight.jems.server.project.service.report.partner.financialOverv
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.unitCost.ExpenditureUnitCostBreakdownLine
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.unitCost.ExpenditureUnitCostCurrent
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.unitCost.ExpenditureUnitCostCurrentWithReIncluded
 import java.math.BigDecimal
 import java.math.RoundingMode
 
-fun Collection<ExpenditureUnitCostBreakdownLine>.fillInCurrent(current: Map<Long, BigDecimal>) = apply {
+fun Collection<ExpenditureUnitCostBreakdownLine>.fillInCurrent(current: Map<Long, ExpenditureUnitCostCurrentWithReIncluded>) = apply {
     forEach {
-        it.currentReport = current.getOrDefault(it.reportUnitCostId, BigDecimal.ZERO)
+        it.currentReport = current.get(it.reportUnitCostId)?.current ?: BigDecimal.ZERO
+        it.currentReportReIncluded = current.get(it.reportUnitCostId)?.currentReIncluded ?: BigDecimal.ZERO
     }
 }
 
@@ -22,7 +25,9 @@ private fun emptyLine() = ExpenditureUnitCostBreakdownLine(
     name = emptySet(),
     totalEligibleBudget = BigDecimal.ZERO,
     previouslyReported = BigDecimal.ZERO,
+    previouslyReportedParked = BigDecimal.ZERO,
     currentReport = BigDecimal.ZERO,
+    currentReportReIncluded = BigDecimal.ZERO,
     totalEligibleAfterControl = BigDecimal.ZERO,
 )
 
@@ -32,6 +37,8 @@ fun List<ExpenditureUnitCostBreakdownLine>.sumUp() =
         resultingTotalLine.previouslyReported += unitCost.previouslyReported
         resultingTotalLine.currentReport += unitCost.currentReport
         resultingTotalLine.totalEligibleAfterControl += unitCost.totalEligibleAfterControl
+        resultingTotalLine.previouslyReportedParked += unitCost.previouslyReportedParked
+        resultingTotalLine.currentReportReIncluded += unitCost.currentReportReIncluded
         return@fold resultingTotalLine
     }.fillInOverviewFields()
 
@@ -45,9 +52,17 @@ private fun ExpenditureUnitCostBreakdownLine.fillInOverviewFields() = apply {
 fun Collection<ProjectPartnerReportExpenditureCost>.getCurrentForUnitCosts() =
     filter { it.unitCostId != null }
         .groupBy { it.unitCostId!! }
-        .mapValues { it.value.sumOf { it.declaredAmountAfterSubmission!! } }
+        .mapValues { ExpenditureUnitCostCurrentWithReIncluded(
+            current = it.value.sumOf { it.declaredAmountAfterSubmission!! },
+            currentReIncluded = it.value.filter { it.parkingMetadata != null }.sumOf { it.declaredAmountAfterSubmission!! }
+        ) }
 
 fun Collection<ProjectPartnerReportExpenditureVerification>.getAfterControlForUnitCosts() =
     filter { it.unitCostId != null }
         .groupBy { it.unitCostId!! }
-        .mapValues { it.value.sumOf { it.certifiedAmount } }
+        .mapValues {
+            ExpenditureUnitCostCurrent(
+                current = it.value.sumOf { it.certifiedAmount },
+                currentParked = it.value.filter { it.parked }.sumOf { it.declaredAmountAfterSubmission ?: BigDecimal.ZERO }
+            )
+        }

@@ -10,6 +10,8 @@ import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerRe
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportLumpSumEntity
 import io.cloudflight.jems.server.project.repository.report.partner.expenditure.ProjectPartnerReportLumpSumRepository
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumBreakdownLine
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumCurrent
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumCurrentWithReIncluded
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -52,9 +54,10 @@ class ProjectPartnerReportLumpSumPersistenceProviderTest : UnitTest() {
             totalEligibleAfterControl = BigDecimal.valueOf(50),
             previouslyReported = BigDecimal.valueOf(30),
             previouslyPaid = BigDecimal.valueOf(40),
+            previouslyReportedParked = BigDecimal.valueOf(1000),
+            currentReIncluded = BigDecimal.valueOf(100),
+            currentParked = BigDecimal.valueOf(100)
         )
-
-        private val newValues = mapOf(90L to BigDecimal.TEN)
 
         private fun expectedLumpSum(id: Long) = ExpenditureLumpSumBreakdownLine(
             reportLumpSumId = id,
@@ -69,6 +72,8 @@ class ProjectPartnerReportLumpSumPersistenceProviderTest : UnitTest() {
             totalReportedSoFar = BigDecimal.ZERO,
             totalReportedSoFarPercentage = BigDecimal.ZERO,
             remainingBudget = BigDecimal.ZERO,
+            previouslyReportedParked = BigDecimal.valueOf(1000),
+            currentReportReIncluded = BigDecimal.valueOf(100),
         )
     }
 
@@ -85,18 +90,25 @@ class ProjectPartnerReportLumpSumPersistenceProviderTest : UnitTest() {
 
     @Test
     fun getLumpSum() {
-        every { repository
-            .findByReportEntityPartnerIdAndReportEntityIdOrderByOrderNrAscIdAsc(partnerId = 15L, reportId = 988L)
+        every {
+            repository
+                .findByReportEntityPartnerIdAndReportEntityIdOrderByOrderNrAscIdAsc(partnerId = 15L, reportId = 988L)
         } returns mutableListOf(lumpSumEntity(14L))
         assertThat(persistence.getLumpSum(partnerId = 15L, reportId = 988L)).containsExactly(expectedLumpSum(14L))
     }
 
     @Test
     fun getLumpSumCumulative() {
-        every { repository.findCumulativeForReportIds(setOf(22L)) } returns listOf(Pair(4, BigDecimal.TEN))
+        every { repository.findCumulativeForReportIds(setOf(22L)) } returns listOf(
+            Triple(
+                4,
+                BigDecimal.TEN,
+                BigDecimal.valueOf(100)
+            )
+        )
         val result = persistence.getLumpSumCumulative(setOf(22L))
         assertThat(result.keys).containsExactly(4)
-        assertThat(result.get(4)).isEqualByComparingTo(BigDecimal.TEN)
+        assertThat(result.get(4)).isEqualTo(ExpenditureLumpSumCurrent(BigDecimal.TEN, BigDecimal.valueOf(100)))
     }
 
     @Test
@@ -104,12 +116,27 @@ class ProjectPartnerReportLumpSumPersistenceProviderTest : UnitTest() {
         val lumpSum_89 = lumpSumEntity(89L)
         val lumpSum_90 = lumpSumEntity(90L)
         val lumpSum_91 = lumpSumEntity(91L)
-        every { repository.findByReportEntityPartnerIdAndReportEntityIdOrderByOrderNrAscIdAsc(PARTNER_ID, reportId = 4L) } returns
+        every {
+            repository.findByReportEntityPartnerIdAndReportEntityIdOrderByOrderNrAscIdAsc(
+                PARTNER_ID,
+                reportId = 4L
+            )
+        } returns
             mutableListOf(lumpSum_89, lumpSum_90, lumpSum_91)
-        persistence.updateCurrentlyReportedValues(PARTNER_ID, reportId = 4L, newValues)
+        persistence.updateCurrentlyReportedValues(
+            PARTNER_ID,
+            reportId = 4L,
+            mapOf(
+                90L to ExpenditureLumpSumCurrentWithReIncluded(
+                    current = BigDecimal(10),
+                    currentReIncluded = BigDecimal(100)
+                )
+            )
+        )
 
         assertThat(lumpSum_89.current).isEqualByComparingTo(BigDecimal.valueOf(20))
         assertThat(lumpSum_90.current).isEqualByComparingTo(BigDecimal.TEN)
+        assertThat(lumpSum_90.currentReIncluded).isEqualByComparingTo(BigDecimal.valueOf(100))
         assertThat(lumpSum_91.current).isEqualByComparingTo(BigDecimal.valueOf(20))
     }
 
@@ -118,9 +145,18 @@ class ProjectPartnerReportLumpSumPersistenceProviderTest : UnitTest() {
         val lumpSum_89 = lumpSumEntity(89L)
         val lumpSum_90 = lumpSumEntity(90L)
         val lumpSum_91 = lumpSumEntity(91L)
-        every { repository.findByReportEntityPartnerIdAndReportEntityIdOrderByOrderNrAscIdAsc(PARTNER_ID, reportId = 5L) } returns
+        every {
+            repository.findByReportEntityPartnerIdAndReportEntityIdOrderByOrderNrAscIdAsc(
+                PARTNER_ID,
+                reportId = 5L
+            )
+        } returns
             mutableListOf(lumpSum_89, lumpSum_90, lumpSum_91)
-        persistence.updateAfterControlValues(PARTNER_ID, reportId = 5L, newValues)
+        persistence.updateAfterControlValues(
+            PARTNER_ID,
+            reportId = 5L,
+            mapOf(90L to ExpenditureLumpSumCurrent(current = BigDecimal.TEN, currentParked = BigDecimal.valueOf(100)))
+        )
 
         assertThat(lumpSum_89.totalEligibleAfterControl).isEqualByComparingTo(BigDecimal.valueOf(50))
         assertThat(lumpSum_90.totalEligibleAfterControl).isEqualByComparingTo(BigDecimal.TEN)

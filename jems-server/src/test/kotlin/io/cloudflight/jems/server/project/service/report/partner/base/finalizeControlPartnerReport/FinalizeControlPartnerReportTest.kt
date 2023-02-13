@@ -14,9 +14,13 @@ import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPa
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.control.overview.ControlOverview
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.investments.ExpenditureInvestmentCurrent
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumCurrent
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.unitCost.ExpenditureUnitCostCurrent
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.base.submitProjectPartnerReport.SubmitProjectPartnerReportTest.Companion.fund
 import io.cloudflight.jems.server.project.service.report.partner.base.submitProjectPartnerReport.SubmitProjectPartnerReportTest.Companion.options
@@ -226,8 +230,23 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
         every { reportPersistence.getPartnerReportById(PARTNER_ID, 42L) } returns report
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID, "5.6.1") } returns PROJECT_ID
 
-        every { reportControlExpenditurePersistence.getPartnerControlReportExpenditureVerification(PARTNER_ID, reportId = 42L) } returns
-            listOf(expenditure1, expenditure2)
+        every {
+            reportControlExpenditurePersistence.getPartnerControlReportExpenditureVerification(
+                PARTNER_ID,
+                reportId = 42L
+            )
+        } returns
+            listOf(
+                expenditure1, expenditure2.copy(
+                    declaredAmountAfterSubmission = BigDecimal.TEN,
+                    parkingMetadata = ExpenditureParkingMetadata(
+                        reportOfOriginId = 70L,
+                        reportOfOriginNumber = 5,
+                        originalExpenditureNumber = 3
+                    ),
+                    parked = true
+                )
+            )
 
         every { reportExpenditureCostCategoryPersistence.getCostCategories(PARTNER_ID,reportId = 42L) } returns options
         every { controlOverviewPersistence.updatePartnerControlReportOverviewEndDate(PARTNER_ID, 42L, LocalDate.now()) } returns controlOverview
@@ -241,12 +260,18 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
         every { reportContributionPersistence.getPartnerReportContribution(PARTNER_ID, reportId = 42L) } returns partnerContribution()
         every { reportExpenditureCoFinancingPersistence.updateAfterControlValues(PARTNER_ID, reportId = 42L, capture(slotCostCoFin)) } answers { }
 
-        val slotLumpSum = slot<Map<Long, BigDecimal>>()
+        val slotLumpSum = slot<Map<Long, ExpenditureLumpSumCurrent>>()
         every { reportLumpSumPersistence.updateAfterControlValues(PARTNER_ID, reportId = 42L, capture(slotLumpSum)) } answers { }
-        val slotUnitCost = slot<Map<Long, BigDecimal>>()
+        val slotUnitCost = slot<Map<Long, ExpenditureUnitCostCurrent>>()
         every { reportUnitCostPersistence.updateAfterControlValues(PARTNER_ID, reportId = 42L, capture(slotUnitCost)) } answers { }
-        val slotInvestment = slot<Map<Long, BigDecimal>>()
-        every { reportInvestmentPersistence.updateAfterControlValues(PARTNER_ID, reportId = 42L, capture(slotInvestment)) } answers { }
+        val slotInvestment = slot<Map<Long, ExpenditureInvestmentCurrent>>()
+        every {
+            reportInvestmentPersistence.updateAfterControlValues(
+                PARTNER_ID,
+                reportId = 42L,
+                capture(slotInvestment),
+            )
+        } answers { }
 
         every { reportPersistence.finalizeControlOnReportById(any(), any(), any()) } returns mockedResult
 
@@ -266,9 +291,33 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
 
         assertThat(slotCostCategory.captured).isEqualTo(expectedCostCategory)
         assertThat(slotCostCoFin.captured).isEqualTo(expectedCoFin)
-        assertThat(slotUnitCost.captured).containsExactlyEntriesOf(mapOf(Pair(18L, BigDecimal.valueOf(25448, 2))))
-        assertThat(slotLumpSum.captured).containsExactlyEntriesOf(mapOf(Pair(22L, BigDecimal.valueOf(485, 1))))
-        assertThat(slotInvestment.captured).containsExactlyEntriesOf(mapOf(Pair(10L, BigDecimal.valueOf(25448, 2))))
+        assertThat(slotUnitCost.captured).containsExactlyEntriesOf(
+            mapOf(
+                Pair(
+                    18L,
+                    ExpenditureUnitCostCurrent(current = BigDecimal.valueOf(25448, 2), currentParked = BigDecimal.ZERO)
+                )
+            )
+        )
+        assertThat(slotLumpSum.captured).containsExactlyEntriesOf(
+            mapOf(
+                Pair(
+                    22L,
+                    ExpenditureLumpSumCurrent(current = BigDecimal.valueOf(485, 1), currentParked = BigDecimal.TEN)
+                )
+            )
+        )
+        assertThat(slotInvestment.captured).containsExactlyEntriesOf(
+            mapOf(
+                Pair(
+                    10L,
+                    ExpenditureInvestmentCurrent(
+                        current = BigDecimal.valueOf(25448, 2),
+                        currentParked = BigDecimal.ZERO
+                    )
+                )
+            )
+        )
     }
 
     @ParameterizedTest(name = "finalizeControl - wrong status (status {0})")

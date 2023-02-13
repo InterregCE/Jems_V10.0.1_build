@@ -33,15 +33,15 @@ class PartnerReportLumpSumEntity(
 
     val period: Int?,
 
-    @field:NotNull
-    val total: BigDecimal,
-    @field:NotNull
-    var current: BigDecimal,
-    @field:NotNull
-    var totalEligibleAfterControl: BigDecimal,
-    @field:NotNull
-    val previouslyReported: BigDecimal,
-    @field:NotNull
-    val previouslyPaid: BigDecimal,
+    @field:NotNull val total: BigDecimal,
+    @field:NotNull var current: BigDecimal,
+    @field:NotNull var totalEligibleAfterControl: BigDecimal,
+    @field:NotNull val previouslyReported: BigDecimal,
+    @field:NotNull val previouslyPaid: BigDecimal,
+
+    // parking
+    @field:NotNull var currentParked: BigDecimal,
+    @field:NotNull var currentReIncluded: BigDecimal,
+    @field:NotNull val previouslyReportedParked: BigDecimal,
 
 )

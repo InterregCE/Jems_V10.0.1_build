@@ -9,6 +9,9 @@ import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumCurrentWithReIncluded
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.unitCost.ExpenditureUnitCostCurrentWithReIncluded
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.investments.ExpenditureInvestmentCurrentWithReIncluded
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.base.runPreSubmissionCheck.RunPreSubmissionCheckService
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectPartnerReportContributionPersistence
@@ -156,7 +159,7 @@ class SubmitProjectPartnerReport(
         )
     }
 
-    private fun saveCurrentLumpSums(currentLumpSums: Map<Long, BigDecimal>, partnerId: Long, reportId: Long) {
+    private fun saveCurrentLumpSums(currentLumpSums: Map<Long, ExpenditureLumpSumCurrentWithReIncluded>, partnerId: Long, reportId: Long) {
         reportLumpSumPersistence.updateCurrentlyReportedValues(
             partnerId = partnerId,
             reportId = reportId,
@@ -164,7 +167,7 @@ class SubmitProjectPartnerReport(
         )
     }
 
-    private fun saveCurrentUnitCosts(currentUnitCosts: Map<Long, BigDecimal>, partnerId: Long, reportId: Long) {
+    private fun saveCurrentUnitCosts(currentUnitCosts: Map<Long, ExpenditureUnitCostCurrentWithReIncluded>, partnerId: Long, reportId: Long) {
         reportUnitCostPersistence.updateCurrentlyReportedValues(
             partnerId = partnerId,
             reportId = reportId,
@@ -172,7 +175,7 @@ class SubmitProjectPartnerReport(
         )
     }
 
-    private fun saveCurrentInvestments(currentInvestments: Map<Long, BigDecimal>, partnerId: Long, reportId: Long) {
+    private fun saveCurrentInvestments(currentInvestments: Map<Long, ExpenditureInvestmentCurrentWithReIncluded>, partnerId: Long, reportId: Long) {
         reportInvestmentPersistence.updateCurrentlyReportedValues(
             partnerId = partnerId,
             reportId = reportId,

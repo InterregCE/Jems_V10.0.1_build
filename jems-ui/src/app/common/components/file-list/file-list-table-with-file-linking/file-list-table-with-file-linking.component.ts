@@ -250,12 +250,12 @@ export class FileListTableWithFileLinkingComponent implements OnInit, OnChanges,
 
   isDescriptionEditAllowed(): boolean{
     return (this.reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.InControl ||
-      this.reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Certified) && this.isUserAllowedToEditReport
+      this.reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Certified) && this.isUserAllowedToEditReport;
   }
 
   areFileOperationsAllowed(file: ProjectReportFileMetadataDTO): boolean{
     return (this.reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.InControl && this.isUserAllowedToEditReport) ||
-    (this.reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Certified && this.isUserAllowedToEditReport && file === null)
+    (this.reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Certified && this.isUserAllowedToEditReport && file === null);
   }
 
 }
