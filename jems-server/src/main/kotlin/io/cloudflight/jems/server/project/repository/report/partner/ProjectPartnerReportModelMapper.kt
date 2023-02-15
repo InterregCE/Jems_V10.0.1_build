@@ -354,4 +354,40 @@ fun ReportExpenditureCostCategory.toCreateEntity(report: ProjectPartnerReportEnt
         lumpSumPreviouslyReported = previouslyReported.lumpSum,
         unitCostPreviouslyReported = previouslyReported.unitCost,
         sumPreviouslyReported = previouslyReported.sum,
+
+        // Parking
+
+        staffCurrentParked = ZERO,
+        officeCurrentParked = ZERO,
+        travelCurrentParked = ZERO,
+        externalCurrentParked = ZERO,
+        equipmentCurrentParked = ZERO,
+        infrastructureCurrentParked = ZERO,
+        otherCurrentParked = ZERO,
+        lumpSumCurrentParked = ZERO,
+        unitCostCurrentParked = ZERO,
+        sumCurrentParked = ZERO,
+
+        staffCurrentReIncluded = ZERO,
+        officeCurrentReIncluded = ZERO,
+        travelCurrentReIncluded = ZERO,
+        externalCurrentReIncluded = ZERO,
+        equipmentCurrentReIncluded = ZERO,
+        infrastructureCurrentReIncluded = ZERO,
+        otherCurrentReIncluded = ZERO,
+        lumpSumCurrentReIncluded = ZERO,
+        unitCostCurrentReIncluded = ZERO,
+        sumCurrentReIncluded = ZERO,
+
+        staffPreviouslyReportedParked = previouslyReportedParked.staff,
+        officePreviouslyReportedParked = previouslyReportedParked.office,
+        travelPreviouslyReportedParked = previouslyReportedParked.travel,
+        externalPreviouslyReportedParked = previouslyReportedParked.external,
+        equipmentPreviouslyReportedParked = previouslyReportedParked.equipment,
+        infrastructurePreviouslyReportedParked = previouslyReportedParked.infrastructure,
+        otherPreviouslyReportedParked = previouslyReportedParked.other,
+        lumpSumPreviouslyReportedParked = previouslyReportedParked.lumpSum,
+        unitCostPreviouslyReportedParked = previouslyReportedParked.unitCost,
+        sumPreviouslyReportedParked = previouslyReportedParked.sum,
+
     )

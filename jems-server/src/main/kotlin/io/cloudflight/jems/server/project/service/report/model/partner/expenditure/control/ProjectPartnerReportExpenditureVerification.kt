@@ -39,5 +39,5 @@ data class ProjectPartnerReportExpenditureVerification(
     var parked: Boolean,
     var verificationComment: String?,
 
-    val parkingMetadata: ExpenditureParkingMetadata?,
+    override val parkingMetadata: ExpenditureParkingMetadata?,
 ): ExpenditureCost

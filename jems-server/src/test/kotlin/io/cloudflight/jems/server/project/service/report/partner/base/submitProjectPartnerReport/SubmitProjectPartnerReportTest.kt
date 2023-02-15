@@ -11,6 +11,7 @@ import io.cloudflight.jems.server.currency.service.model.CurrencyConversion
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.repository.report.partner.model.ExpenditureVerificationUpdate
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
+import io.cloudflight.jems.server.project.service.budget.model.ExpenditureCostCategoryCurrentlyReportedWithReIncluded
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
@@ -19,20 +20,19 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.model.Proj
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus.Public
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
-import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
-import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
-import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ReportExpenditureCostCategory
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.investments.ExpenditureInvestmentCurrentWithReIncluded
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumCurrentWithReIncluded
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.unitCost.ExpenditureUnitCostCurrentWithReIncluded
-import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.investments.ExpenditureInvestmentCurrentWithReIncluded
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.base.runPreSubmissionCheck.RunPreSubmissionCheckService
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectPartnerReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.ProjectPartnerReportExpenditureVerificationPersistence
@@ -99,10 +99,10 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             pricePerUnit = BigDecimal.ZERO,
             declaredAmount = BigDecimal.valueOf(25448, 2),
             currencyCode = "CZK",
-            currencyConversionRate = null,
+            currencyConversionRate = BigDecimal.valueOf(254855, 4),
             declaredAmountAfterSubmission = null,
             attachment = null,
-            parkingMetadata = null,
+            parkingMetadata = mockk(),
         )
 
         private val expenditure2 = ProjectPartnerReportExpenditureCost(
@@ -275,17 +275,31 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             every { it.totalsFromAF.sum } returns BigDecimal.valueOf(500L)
         }
 
-        private val expectedPersistedExpenditureCostCategory = BudgetCostsCalculationResultFull(
-            staff = BigDecimal.valueOf(999, 2),
-            office = BigDecimal.valueOf(279, 2),
-            travel = BigDecimal.valueOf(149, 2),
-            external = BigDecimal.ZERO,
-            equipment = BigDecimal.ZERO,
-            infrastructure = BigDecimal.valueOf(1650, 2),
-            other = BigDecimal.ZERO,
-            lumpSum = BigDecimal.valueOf(4850, 2),
-            unitCost = BigDecimal.ZERO,
-            sum = BigDecimal.valueOf(7927, 2),
+        private val expectedPersistedExpenditureCostCategory = ExpenditureCostCategoryCurrentlyReportedWithReIncluded(
+            currentlyReported = BudgetCostsCalculationResultFull(
+                staff = BigDecimal.valueOf(999, 2),
+                office = BigDecimal.valueOf(279, 2),
+                travel = BigDecimal.valueOf(149, 2),
+                external = BigDecimal.ZERO,
+                equipment = BigDecimal.ZERO,
+                infrastructure = BigDecimal.valueOf(1650, 2),
+                other = BigDecimal.ZERO,
+                lumpSum = BigDecimal.valueOf(4850, 2),
+                unitCost = BigDecimal.ZERO,
+                sum = BigDecimal.valueOf(7927, 2),
+            ),
+            currentlyReportedReIncluded = BudgetCostsCalculationResultFull(
+                staff = BigDecimal.valueOf(999, 2),
+                office = BigDecimal.valueOf(114, 2),
+                travel = BigDecimal.valueOf(149, 2),
+                external = BigDecimal.ZERO,
+                equipment = BigDecimal.ZERO,
+                infrastructure = BigDecimal.ZERO,
+                other = BigDecimal.ZERO,
+                lumpSum = BigDecimal.ZERO,
+                unitCost = BigDecimal.ZERO,
+                sum = BigDecimal.valueOf(1262, 2),
+            )
         )
 
         fun fund(id: Long): ProgrammeFund {
@@ -402,17 +416,20 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         every { currencyPersistence.findAllByIdYearAndIdMonth(year = YEAR, month = MONTH) } returns
             listOf(
                 CurrencyConversion("CZK", YEAR, MONTH, "", BigDecimal.valueOf(254855, 4)),
-                CurrencyConversion("PLN", YEAR, MONTH, "", BigDecimal.valueOf(195, 2)) /* not used */,
+                CurrencyConversion("PLN", YEAR, MONTH, "", BigDecimal.valueOf(195, 2)), /* not used */
                 CurrencyConversion("EUR", YEAR, MONTH, "", BigDecimal.ONE),
             )
         val slotExpenditures = slot<List<ProjectPartnerReportExpenditureCost>>()
-        every { reportExpenditurePersistence
-            .updatePartnerReportExpenditureCosts(PARTNER_ID, 35L, capture(slotExpenditures), true) } returnsArgument 2
+        every {
+            reportExpenditurePersistence
+                .updatePartnerReportExpenditureCosts(PARTNER_ID, 35L, capture(slotExpenditures), true)
+        } returnsArgument 2
 
         every { reportExpenditureCostCategoryPersistence.getCostCategories(PARTNER_ID, reportId = 35L) } returns options
-        val expenditureCcSlot = slot<BudgetCostsCalculationResultFull>()
-        every { reportExpenditureCostCategoryPersistence
-            .updateCurrentlyReportedValues(PARTNER_ID, reportId = 35L, capture(expenditureCcSlot))
+        val expenditureCcSlot = slot<ExpenditureCostCategoryCurrentlyReportedWithReIncluded>()
+        every {
+            reportExpenditureCostCategoryPersistence
+                .updateCurrentlyReportedValues(PARTNER_ID, reportId = 35L, capture(expenditureCcSlot))
         } answers { }
 
         every { reportContributionPersistence.getPartnerReportContribution(PARTNER_ID, reportId = 35L) } returns partnerContribution()
@@ -436,12 +453,14 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
 
         val slotExpenditureVerification = slot<List<ExpenditureVerificationUpdate>>()
-        every { projectControlReportExpenditurePersistence
-            .updatePartnerControlReportExpenditureVerification(
-                PARTNER_ID,
-                35L,
-                capture(slotExpenditureVerification)
-            ) } returns listOf(expenditureVerification1, expenditureVerification2, expenditureVerification3)
+        every {
+            projectControlReportExpenditurePersistence
+                .updatePartnerControlReportExpenditureVerification(
+                    PARTNER_ID,
+                    35L,
+                    capture(slotExpenditureVerification)
+                )
+        } returns listOf(expenditureVerification1, expenditureVerification2, expenditureVerification3)
 
         submitReport.submit(PARTNER_ID, 35L)
 
@@ -490,7 +509,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             mapOf(
                 10L to ExpenditureInvestmentCurrentWithReIncluded(
                     current = BigDecimal.valueOf(999, 2),
-                    currentReIncluded = BigDecimal.ZERO
+                    currentReIncluded = BigDecimal.valueOf(999, 2)
                 )
             )
         )

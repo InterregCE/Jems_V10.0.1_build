@@ -7,7 +7,9 @@ data class ExpenditureCostCategoryBreakdownLineDTO(
 
     val totalEligibleBudget: BigDecimal,
     val previouslyReported: BigDecimal,
+    var previouslyReportedParked: BigDecimal,
     val currentReport: BigDecimal,
+    var currentReportReIncluded: BigDecimal,
     val totalEligibleAfterControl: BigDecimal,
     val totalReportedSoFar: BigDecimal,
     val totalReportedSoFarPercentage: BigDecimal,

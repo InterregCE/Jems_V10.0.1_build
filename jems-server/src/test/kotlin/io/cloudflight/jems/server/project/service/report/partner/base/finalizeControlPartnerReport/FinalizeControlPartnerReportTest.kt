@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionList
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
+import io.cloudflight.jems.server.project.service.budget.model.ExpenditureCostCategoryCurrentlyReportedWithParked
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
@@ -72,17 +73,31 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
             partnerRole = ProjectPartnerRole.LEAD_PARTNER,
         )
 
-        private val expectedCostCategory = BudgetCostsCalculationResultFull(
-            staff = BigDecimal.valueOf(25448, 2),
-            office = BigDecimal.valueOf(2926, 2),
-            travel = BigDecimal.valueOf(3817, 2),
-            external = BigDecimal.ZERO,
-            equipment = BigDecimal.ZERO,
-            infrastructure = BigDecimal.ZERO,
-            other = BigDecimal.ZERO,
-            lumpSum = BigDecimal.valueOf(485, 1),
-            unitCost = BigDecimal.ZERO,
-            sum = BigDecimal.valueOf(37041, 2),
+        private val expectedCostCategoryWithParked = ExpenditureCostCategoryCurrentlyReportedWithParked(
+            currentlyReported = BudgetCostsCalculationResultFull(
+                staff = BigDecimal.valueOf(25448, 2),
+                office = BigDecimal.valueOf(2926, 2),
+                travel = BigDecimal.valueOf(3817, 2),
+                external = BigDecimal.ZERO,
+                equipment = BigDecimal.ZERO,
+                infrastructure = BigDecimal.ZERO,
+                other = BigDecimal.ZERO,
+                lumpSum = BigDecimal.valueOf(485, 1),
+                unitCost = BigDecimal.ZERO,
+                sum = BigDecimal.valueOf(37041, 2),
+            ),
+            currentlyReportedParked = BudgetCostsCalculationResultFull(
+                staff = BigDecimal.ZERO,
+                office = BigDecimal.valueOf(0, 2),
+                travel = BigDecimal.valueOf(0, 2),
+                external = BigDecimal.ZERO,
+                equipment = BigDecimal.ZERO,
+                infrastructure = BigDecimal.ZERO,
+                other = BigDecimal.ZERO,
+                lumpSum = BigDecimal.valueOf(10, 0),
+                unitCost = BigDecimal.ZERO,
+                sum = BigDecimal.valueOf(1000, 2),
+            )
         )
 
         private val expectedCoFin = ReportExpenditureCoFinancingColumn(
@@ -111,8 +126,8 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
             invoiceDate = LocalDate.of(2022, 1, 1),
             dateOfPayment = LocalDate.of(2022, 2, 1),
             numberOfUnits = BigDecimal.ZERO,
-            pricePerUnit = BigDecimal.TEN /* not needed */,
-            declaredAmount = BigDecimal.TEN /* not needed */,
+            pricePerUnit = BigDecimal.TEN, /* not needed */
+            declaredAmount = BigDecimal.TEN, /* not needed */
             currencyCode = "CZK",
             currencyConversionRate = null,
             declaredAmountAfterSubmission = null,
@@ -139,8 +154,8 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
             invoiceDate = null,
             dateOfPayment = null,
             numberOfUnits = BigDecimal.ONE,
-            pricePerUnit = BigDecimal.TEN /* not needed */,
-            declaredAmount = BigDecimal.TEN /* not needed */,
+            pricePerUnit = BigDecimal.TEN, /* not needed */
+            declaredAmount = BigDecimal.TEN, /* not needed */
             currencyCode = "EUR",
             currencyConversionRate = null,
             declaredAmountAfterSubmission = null,
@@ -248,10 +263,10 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
                 )
             )
 
-        every { reportExpenditureCostCategoryPersistence.getCostCategories(PARTNER_ID,reportId = 42L) } returns options
+        every { reportExpenditureCostCategoryPersistence.getCostCategories(PARTNER_ID, reportId = 42L) } returns options
         every { controlOverviewPersistence.updatePartnerControlReportOverviewEndDate(PARTNER_ID, 42L, LocalDate.now()) } returns controlOverview
 
-        val slotCostCategory = slot<BudgetCostsCalculationResultFull>()
+        val slotCostCategory = slot<ExpenditureCostCategoryCurrentlyReportedWithParked>()
         every { reportExpenditureCostCategoryPersistence.updateAfterControlValues(PARTNER_ID, reportId = 42L, capture(slotCostCategory)) } answers { }
         every { reportDesignatedControllerPersistence.updateWithInstitutionName(PARTNER_ID, reportId = 42, controllerInstitution.name) } returns Unit
         every { controlInstitutionPersistence.getControllerInstitutions(setOf(PARTNER_ID)) } returns mapOf(Pair(PARTNER_ID, controllerInstitution))
@@ -289,7 +304,7 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
         assertThat(auditSlot.captured.auditCandidate.entityRelatedId).isEqualTo(42L)
         assertThat(auditSlot.captured.auditCandidate.description).isEqualTo("Control work is finalised for partner report R.7 of partner LP1")
 
-        assertThat(slotCostCategory.captured).isEqualTo(expectedCostCategory)
+        assertThat(slotCostCategory.captured).isEqualTo(expectedCostCategoryWithParked)
         assertThat(slotCostCoFin.captured).isEqualTo(expectedCoFin)
         assertThat(slotUnitCost.captured).containsExactlyEntriesOf(
             mapOf(

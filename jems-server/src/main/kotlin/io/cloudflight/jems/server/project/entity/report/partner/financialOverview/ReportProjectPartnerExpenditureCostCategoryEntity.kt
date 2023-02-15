@@ -72,4 +72,39 @@ class ReportProjectPartnerExpenditureCostCategoryEntity(
     @field:NotNull val unitCostPreviouslyReported: BigDecimal,
     @field:NotNull val sumPreviouslyReported: BigDecimal,
 
+    // Parking
+
+    @field:NotNull var staffCurrentParked: BigDecimal,
+    @field:NotNull var officeCurrentParked: BigDecimal,
+    @field:NotNull var travelCurrentParked: BigDecimal,
+    @field:NotNull var externalCurrentParked: BigDecimal,
+    @field:NotNull var equipmentCurrentParked: BigDecimal,
+    @field:NotNull var infrastructureCurrentParked: BigDecimal,
+    @field:NotNull var otherCurrentParked: BigDecimal,
+    @field:NotNull var lumpSumCurrentParked: BigDecimal,
+    @field:NotNull var unitCostCurrentParked: BigDecimal,
+    @field:NotNull var sumCurrentParked: BigDecimal,
+
+    @field:NotNull var staffCurrentReIncluded: BigDecimal,
+    @field:NotNull var officeCurrentReIncluded: BigDecimal,
+    @field:NotNull var travelCurrentReIncluded: BigDecimal,
+    @field:NotNull var externalCurrentReIncluded: BigDecimal,
+    @field:NotNull var equipmentCurrentReIncluded: BigDecimal,
+    @field:NotNull var infrastructureCurrentReIncluded: BigDecimal,
+    @field:NotNull var otherCurrentReIncluded: BigDecimal,
+    @field:NotNull var lumpSumCurrentReIncluded: BigDecimal,
+    @field:NotNull var unitCostCurrentReIncluded: BigDecimal,
+    @field:NotNull var sumCurrentReIncluded: BigDecimal,
+
+    @field:NotNull val staffPreviouslyReportedParked: BigDecimal,
+    @field:NotNull val officePreviouslyReportedParked: BigDecimal,
+    @field:NotNull val travelPreviouslyReportedParked: BigDecimal,
+    @field:NotNull val externalPreviouslyReportedParked: BigDecimal,
+    @field:NotNull val equipmentPreviouslyReportedParked: BigDecimal,
+    @field:NotNull val infrastructurePreviouslyReportedParked: BigDecimal,
+    @field:NotNull val otherPreviouslyReportedParked: BigDecimal,
+    @field:NotNull val lumpSumPreviouslyReportedParked: BigDecimal,
+    @field:NotNull val unitCostPreviouslyReportedParked: BigDecimal,
+    @field:NotNull val sumPreviouslyReportedParked: BigDecimal,
+
 ) : Serializable

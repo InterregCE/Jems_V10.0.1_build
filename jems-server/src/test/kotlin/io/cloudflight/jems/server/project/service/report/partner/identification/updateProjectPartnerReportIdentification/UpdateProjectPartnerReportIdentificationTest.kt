@@ -107,7 +107,9 @@ internal class UpdateProjectPartnerReportIdentificationTest : UnitTest() {
             flatRate = null,
             totalEligibleBudget = BigDecimal.valueOf(1969, 2) /* not important */,
             previouslyReported = BigDecimal.valueOf(30),
+            previouslyReportedParked = BigDecimal.valueOf(20),
             currentReport = BigDecimal.ONE,
+            currentReportReIncluded = BigDecimal.ONE,
             totalEligibleAfterControl = BigDecimal.valueOf(4235, 2) /* not important */,
         )
 

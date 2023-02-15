@@ -26,7 +26,8 @@ import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.math.BigDecimal
+import java.math.BigDecimal.ZERO
+import java.math.BigDecimal.valueOf
 import java.time.ZonedDateTime
 
 internal class GetReportExpenditureCostCategoryCalculatorServiceSpecialTest : UnitTest() {
@@ -47,103 +48,123 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceSpecialTest : Un
         private val expectedOnDirect2Output = ExpenditureCostCategoryBreakdown(
             staff = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
-                totalEligibleBudget = BigDecimal.valueOf(100),
-                previouslyReported = BigDecimal.valueOf(300),
-                currentReport = BigDecimal.valueOf(20000, 2),
-                totalEligibleAfterControl = BigDecimal.valueOf(400),
-                totalReportedSoFar = BigDecimal.valueOf(50000, 2),
-                totalReportedSoFarPercentage = BigDecimal.valueOf(50000, 2),
-                remainingBudget = BigDecimal.valueOf(-40000, 2),
+                totalEligibleBudget = valueOf(100),
+                previouslyReported = valueOf(300),
+                previouslyReportedParked = valueOf(400),
+                currentReport = valueOf(40000, 2),
+                currentReportReIncluded = valueOf(40000, 2),
+                totalEligibleAfterControl = valueOf(400),
+                totalReportedSoFar = valueOf(70000, 2),
+                totalReportedSoFarPercentage = valueOf(70000, 2),
+                remainingBudget = valueOf(-60000, 2),
             ),
             office = ExpenditureCostCategoryBreakdownLine(
                 flatRate = 25,
-                totalEligibleBudget = BigDecimal.valueOf(110),
-                previouslyReported = BigDecimal.valueOf(310),
-                currentReport = BigDecimal.valueOf(20312, 2),
-                totalEligibleAfterControl = BigDecimal.valueOf(410),
-                totalReportedSoFar = BigDecimal.valueOf(51312, 2),
-                totalReportedSoFarPercentage = BigDecimal.valueOf(46647, 2),
-                remainingBudget = BigDecimal.valueOf(-40312, 2),
+                totalEligibleBudget = valueOf(110),
+                previouslyReported = valueOf(310),
+                previouslyReportedParked = valueOf(410),
+                currentReport = valueOf(26062, 2),
+                currentReportReIncluded = valueOf(11500, 2),
+                totalEligibleAfterControl = valueOf(410),
+                totalReportedSoFar = valueOf(57062, 2),
+                totalReportedSoFarPercentage = valueOf(51875, 2),
+                remainingBudget = valueOf(-46062, 2),
             ),
             travel = ExpenditureCostCategoryBreakdownLine(
                 flatRate = 15,
-                totalEligibleBudget = BigDecimal.valueOf(120),
-                previouslyReported = BigDecimal.valueOf(320),
-                currentReport = BigDecimal.valueOf(3000, 2),
-                totalEligibleAfterControl = BigDecimal.valueOf(420),
-                totalReportedSoFar = BigDecimal.valueOf(35000, 2),
-                totalReportedSoFarPercentage = BigDecimal.valueOf(29167, 2),
-                remainingBudget = BigDecimal.valueOf(-23000, 2),
+                totalEligibleBudget = valueOf(120),
+                previouslyReported = valueOf(320),
+                previouslyReportedParked = valueOf(420),
+                currentReport = valueOf(6000, 2),
+                currentReportReIncluded = valueOf(6000, 2),
+                totalEligibleAfterControl = valueOf(420),
+                totalReportedSoFar = valueOf(38000, 2),
+                totalReportedSoFarPercentage = valueOf(31667, 2),
+                remainingBudget = valueOf(-26000, 2),
             ),
             external = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
-                totalEligibleBudget = BigDecimal.valueOf(130),
-                previouslyReported = BigDecimal.valueOf(330),
-                currentReport = BigDecimal.valueOf(23000, 2),
-                totalEligibleAfterControl = BigDecimal.valueOf(430),
-                totalReportedSoFar = BigDecimal.valueOf(56000, 2),
-                totalReportedSoFarPercentage = BigDecimal.valueOf(43077, 2),
-                remainingBudget = BigDecimal.valueOf(-43000, 2),
+                totalEligibleBudget = valueOf(130),
+                previouslyReported = valueOf(330),
+                previouslyReportedParked = valueOf(430),
+                currentReport = valueOf(23000, 2),
+                currentReportReIncluded = ZERO,
+                totalEligibleAfterControl = valueOf(430),
+                totalReportedSoFar = valueOf(56000, 2),
+                totalReportedSoFarPercentage = valueOf(43077, 2),
+                remainingBudget = valueOf(-43000, 2),
             ),
             equipment = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
-                totalEligibleBudget = BigDecimal.valueOf(140),
-                previouslyReported = BigDecimal.valueOf(340),
-                currentReport = BigDecimal.valueOf(23000, 2),
-                totalEligibleAfterControl = BigDecimal.valueOf(440),
-                totalReportedSoFar = BigDecimal.valueOf(57000, 2),
-                totalReportedSoFarPercentage = BigDecimal.valueOf(40714, 2),
-                remainingBudget = BigDecimal.valueOf(-43000, 2),
+                totalEligibleBudget = valueOf(140),
+                previouslyReported = valueOf(340),
+                previouslyReportedParked = valueOf(440),
+                currentReport = valueOf(23000, 2),
+                currentReportReIncluded = ZERO,
+                totalEligibleAfterControl = valueOf(440),
+                totalReportedSoFar = valueOf(57000, 2),
+                totalReportedSoFarPercentage = valueOf(40714, 2),
+                remainingBudget = valueOf(-43000, 2),
             ),
             infrastructure = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
-                totalEligibleBudget = BigDecimal.valueOf(150),
-                previouslyReported = BigDecimal.valueOf(350),
-                currentReport = BigDecimal.valueOf(12250, 2),
-                totalEligibleAfterControl = BigDecimal.valueOf(450),
-                totalReportedSoFar = BigDecimal.valueOf(47250, 2),
-                totalReportedSoFarPercentage = BigDecimal.valueOf(31500, 2),
-                remainingBudget = BigDecimal.valueOf(-32250, 2),
+                totalEligibleBudget = valueOf(150),
+                previouslyReported = valueOf(350),
+                previouslyReportedParked = valueOf(450),
+                currentReport = valueOf(12250, 2),
+                currentReportReIncluded = ZERO,
+                totalEligibleAfterControl = valueOf(450),
+                totalReportedSoFar = valueOf(47250, 2),
+                totalReportedSoFarPercentage = valueOf(31500, 2),
+                remainingBudget = valueOf(-32250, 2),
             ),
             other = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
-                totalEligibleBudget = BigDecimal.ZERO,
-                previouslyReported = BigDecimal.ZERO,
-                currentReport = BigDecimal.ZERO,
-                totalEligibleAfterControl = BigDecimal.ZERO,
-                totalReportedSoFar = BigDecimal.ZERO,
-                totalReportedSoFarPercentage = BigDecimal.ZERO,
-                remainingBudget = BigDecimal.ZERO,
+                totalEligibleBudget = ZERO,
+                previouslyReported = ZERO,
+                previouslyReportedParked = valueOf(460),
+                currentReport = ZERO,
+                currentReportReIncluded = ZERO,
+                totalEligibleAfterControl = ZERO,
+                totalReportedSoFar = ZERO,
+                totalReportedSoFarPercentage = ZERO,
+                remainingBudget = ZERO,
             ),
             lumpSum = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
-                totalEligibleBudget = BigDecimal.valueOf(170),
-                previouslyReported = BigDecimal.valueOf(370),
-                currentReport = BigDecimal.valueOf(2431, 2),
-                totalEligibleAfterControl = BigDecimal.valueOf(470),
-                totalReportedSoFar = BigDecimal.valueOf(39431, 2),
-                totalReportedSoFarPercentage = BigDecimal.valueOf(23195, 2),
-                remainingBudget = BigDecimal.valueOf(-22431, 2),
+                totalEligibleBudget = valueOf(170),
+                previouslyReported = valueOf(370),
+                previouslyReportedParked = valueOf(470),
+                currentReport = valueOf(2431, 2),
+                currentReportReIncluded = ZERO,
+                totalEligibleAfterControl = valueOf(470),
+                totalReportedSoFar = valueOf(39431, 2),
+                totalReportedSoFarPercentage = valueOf(23195, 2),
+                remainingBudget = valueOf(-22431, 2),
             ),
             unitCost = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
-                totalEligibleBudget = BigDecimal.valueOf(180),
-                previouslyReported = BigDecimal.valueOf(380),
-                currentReport = BigDecimal.valueOf(12785, 2),
-                totalEligibleAfterControl = BigDecimal.valueOf(480),
-                totalReportedSoFar = BigDecimal.valueOf(50785, 2),
-                totalReportedSoFarPercentage = BigDecimal.valueOf(28214, 2),
-                remainingBudget = BigDecimal.valueOf(-32785, 2),
+                totalEligibleBudget = valueOf(180),
+                previouslyReported = valueOf(380),
+                previouslyReportedParked = valueOf(480),
+                currentReport = valueOf(14319, 2),
+                currentReportReIncluded = valueOf(3069, 2),
+                totalEligibleAfterControl = valueOf(480),
+                totalReportedSoFar = valueOf(52319, 2),
+                totalReportedSoFarPercentage = valueOf(29066, 2),
+                remainingBudget = valueOf(-34319, 2),
             ),
             total = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
-                totalEligibleBudget = BigDecimal.valueOf(1260),
-                previouslyReported = BigDecimal.valueOf(3060),
-                currentReport = BigDecimal.valueOf(116778, 2),
-                totalEligibleAfterControl = BigDecimal.valueOf(4160),
-                totalReportedSoFar = BigDecimal.valueOf(422778, 2),
-                totalReportedSoFarPercentage = BigDecimal.valueOf(33554, 2),
-                remainingBudget = BigDecimal.valueOf(-296778, 2),
+                totalEligibleBudget = valueOf(1260),
+                previouslyReported = valueOf(3060),
+                previouslyReportedParked = valueOf(490),
+                currentReport = valueOf(147062, 2),
+                currentReportReIncluded = valueOf(60569, 2),
+                totalEligibleAfterControl = valueOf(4160),
+                totalReportedSoFar = valueOf(453062, 2),
+                totalReportedSoFarPercentage = valueOf(35957, 2),
+                remainingBudget = valueOf(-327062, 2),
             ),
         )
 
@@ -151,10 +172,13 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceSpecialTest : Un
 
     @MockK
     lateinit var reportPersistence: ProjectPartnerReportPersistence
+
     @MockK
     lateinit var reportExpenditureCostCategoryPersistence: ProjectPartnerReportExpenditureCostCategoryPersistence
+
     @MockK
     lateinit var reportExpenditurePersistence: ProjectPartnerReportExpenditurePersistence
+
     @MockK
     lateinit var currencyPersistence: CurrencyPersistence
 
@@ -167,7 +191,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceSpecialTest : Un
         clearMocks(reportExpenditureCostCategoryPersistence)
         clearMocks(reportExpenditurePersistence)
         every { currencyPersistence.findAllByIdYearAndIdMonth(TODAY.year, TODAY.monthValue) } returns listOf(
-            CurrencyConversion("CST", TODAY.year, TODAY.monthValue, "Name not important", BigDecimal.valueOf(2)),
+            CurrencyConversion("CST", TODAY.year, TODAY.monthValue, "Name not important", valueOf(2)),
         )
 
     }
@@ -179,9 +203,9 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceSpecialTest : Un
         every { reportExpenditureCostCategoryPersistence.getCostCategories(PARTNER_ID, reportId = 28L) } returns data
             .copy(
                 options = data.options.copy(officeAndAdministrationOnDirectCostsFlatRate = 25),
-                totalsFromAF = data.totalsFromAF.copy(other = BigDecimal.ZERO),
-                previouslyReported = data.previouslyReported.copy(other = BigDecimal.ZERO),
-                totalEligibleAfterControl = data.totalEligibleAfterControl.copy(other = BigDecimal.ZERO),
+                totalsFromAF = data.totalsFromAF.copy(other = ZERO),
+                previouslyReported = data.previouslyReported.copy(other = ZERO),
+                totalEligibleAfterControl = data.totalEligibleAfterControl.copy(other = ZERO),
             )
         every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, reportId = 28L) } returns listOf(
             expenditureLumpSum,

@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.service.report.partner.base.finalizeC
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerControlReport
-import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
+import io.cloudflight.jems.server.project.service.budget.model.ExpenditureCostCategoryCurrentlyReportedWithParked
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
@@ -16,6 +16,8 @@ import io.cloudflight.jems.server.project.service.report.partner.contribution.ex
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.ProjectPartnerReportExpenditureVerificationPersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.overview.ProjectPartnerReportControlOverviewPersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.overview.getReportControlWorkOverview.calculateCertified
+import io.cloudflight.jems.server.project.service.report.partner.control.overview.getReportControlWorkOverview.calculateCertifiedForParked
+import io.cloudflight.jems.server.project.service.report.partner.control.overview.getReportControlWorkOverview.onlyParkedOnes
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportInvestmentPersistence
@@ -62,10 +64,14 @@ class FinalizeControlPartnerReport(
         val expenditures = reportControlExpenditurePersistence
             .getPartnerControlReportExpenditureVerification(partnerId, reportId = reportId)
         val costCategories = reportExpenditureCostCategoryPersistence.getCostCategories(partnerId, reportId = reportId)
-        val afterControlCostCategories = expenditures.calculateCertified(options = costCategories.options)
         val institution = controlInstitutionPersistence.getControllerInstitutions(setOf(partnerId)).values.first()
 
-        saveAfterControlCostCategories(afterControlCostCategories, partnerId = partnerId, reportId)
+        val afterControlCostCategories = expenditures.calculateCertified(options = costCategories.options)
+        val afterControlCostCategoriesParked = expenditures.onlyParkedOnes().calculateCertifiedForParked(options = costCategories.options)
+        val afterControlCostCategoriesWithParked =
+            ExpenditureCostCategoryCurrentlyReportedWithParked(afterControlCostCategories, afterControlCostCategoriesParked)
+
+        saveAfterControlCostCategories(afterControlCostCategoriesWithParked, partnerId = partnerId, reportId)
         saveAfterControlCoFinancing(
             afterControlExpenditure = afterControlCostCategories.sum,
             totalEligibleBudget = costCategories.totalsFromAF.sum,
@@ -94,11 +100,15 @@ class FinalizeControlPartnerReport(
             throw ReportNotInControl()
     }
 
-    private fun saveAfterControlCostCategories(afterControlCostCategories: BudgetCostsCalculationResultFull, partnerId: Long, reportId: Long) {
+    private fun saveAfterControlCostCategories(
+        afterControlCostCategoriesWithParked: ExpenditureCostCategoryCurrentlyReportedWithParked,
+        partnerId: Long,
+        reportId: Long
+    ) {
         reportExpenditureCostCategoryPersistence.updateAfterControlValues(
             partnerId = partnerId,
             reportId = reportId,
-            afterControl = afterControlCostCategories,
+            afterControlWithParked = afterControlCostCategoriesWithParked,
         )
     }
 

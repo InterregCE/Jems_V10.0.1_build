@@ -133,7 +133,9 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
             flatRate = -1 /* not important */,
             totalEligibleBudget = BigDecimal.valueOf(1000),
             previouslyReported = BigDecimal.valueOf(-1) /* not important */,
+            previouslyReportedParked = BigDecimal.valueOf(-1),
             currentReport = BigDecimal.valueOf(1000),
+            currentReportReIncluded = BigDecimal.valueOf(1000),
             totalEligibleAfterControl = BigDecimal.valueOf(950),
         )
 
@@ -602,7 +604,9 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
             flatRate = null,
             totalEligibleBudget = BigDecimal.valueOf(7_000_000_000L),
             previouslyReported = BigDecimal.ZERO,
+            previouslyReportedParked = BigDecimal.ZERO,
             currentReport = BigDecimal.valueOf(1_000_000_000_000_000_01L, 2),
+            currentReportReIncluded = BigDecimal.valueOf(2_000_000_000_000_000_02L, 2),
             totalEligibleAfterControl = BigDecimal.valueOf(333_333_333_333_333_33L, 2),
             totalReportedSoFar = BigDecimal.valueOf(1_000_000_000_000_000_01L, 2),
             totalReportedSoFarPercentage = BigDecimal.valueOf(14_285_714_29L, 2),

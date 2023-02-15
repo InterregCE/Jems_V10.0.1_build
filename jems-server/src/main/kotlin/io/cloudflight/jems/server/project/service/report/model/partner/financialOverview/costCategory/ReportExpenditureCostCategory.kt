@@ -9,4 +9,9 @@ data class ReportExpenditureCostCategory(
     val currentlyReported: BudgetCostsCalculationResultFull,
     val totalEligibleAfterControl: BudgetCostsCalculationResultFull,
     val previouslyReported: BudgetCostsCalculationResultFull,
+
+    // Parking
+    var currentlyReportedParked: BudgetCostsCalculationResultFull,
+    var currentlyReportedReIncluded: BudgetCostsCalculationResultFull,
+    var previouslyReportedParked: BudgetCostsCalculationResultFull,
 )

@@ -29,7 +29,7 @@ data class ProjectPartnerReportExpenditureCost(
     var currencyConversionRate: BigDecimal?,
     override var declaredAmountAfterSubmission: BigDecimal?,
     val attachment: JemsFileMetadata?,
-    var parkingMetadata: ExpenditureParkingMetadata?,
+    override var parkingMetadata: ExpenditureParkingMetadata?,
 ): ExpenditureCost {
     fun clearConversions() {
         currencyConversionRate = null
