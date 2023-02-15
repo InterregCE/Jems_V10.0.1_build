@@ -27,7 +27,7 @@ class ExportProgrammeDataService(private val programmeDataPersistence: Programme
                 programmeDataPersistence.saveExportFile(plugin.getKey(), result.content, true).also {
                     programmeDataPersistence.updateExportMetaData(
                         plugin.getKey(), result.fileName, result.contentType,
-                        result.startTime, result.endTime ?: ZonedDateTime.now()
+                        result.startTime, endTime = ZonedDateTime.now()
                     )
                 }
             }

@@ -9,7 +9,6 @@ import io.cloudflight.jems.server.programme.service.INPUT_LANGUAGE_DATA
 import io.cloudflight.jems.server.programme.service.PLUGIN_KEY
 import io.cloudflight.jems.server.programme.service.exportMetaData
 import io.cloudflight.jems.server.programme.service.exportResult
-import io.cloudflight.jems.server.programme.service.model.ProgrammeDataExportMetadata
 import io.cloudflight.jems.server.programme.service.userrole.ProgrammeDataPersistence
 import io.mockk.clearAllMocks
 import io.mockk.every
@@ -50,10 +49,11 @@ internal class ExportProgrammeDataServiceTest : UnitTest() {
             every { pluginMockk.export(EXPORT_LANGUAGE_DATA, INPUT_LANGUAGE_DATA) } returns exportResult
             every { pluginMockk.getKey() } returns PLUGIN_KEY
             every { programmeDataPersistence.saveExportFile(PLUGIN_KEY, exportResult.content, true) } returns Unit
+            val slotEnd = slot<ZonedDateTime>()
             every {
                 programmeDataPersistence.updateExportMetaData(
                     PLUGIN_KEY, exportResult.fileName, exportResult.contentType,
-                    exportResult.startTime, exportResult.endTime!!
+                    exportResult.startTime, capture(slotEnd)
                 )
             } returns exportMetaData()
 
@@ -64,7 +64,7 @@ internal class ExportProgrammeDataServiceTest : UnitTest() {
 
                 programmeDataPersistence.updateExportMetaData(
                     PLUGIN_KEY, exportResult.fileName, exportResult.contentType,
-                    exportResult.startTime, exportResult.endTime!!
+                    exportResult.startTime, slotEnd.captured
                 )
             }
             verify(exactly = 0) { programmeDataPersistence.deleteExportMetaData(PLUGIN_KEY) }
