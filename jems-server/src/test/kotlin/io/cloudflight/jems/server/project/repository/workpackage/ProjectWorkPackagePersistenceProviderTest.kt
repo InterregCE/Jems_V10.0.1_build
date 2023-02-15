@@ -183,13 +183,15 @@ class ProjectWorkPackagePersistenceProviderTest : UnitTest() {
             ),
             periodNumber = 3,
             programmeOutputIndicatorId = INDICATOR_ID,
-            targetValue = BigDecimal.TEN
+            targetValue = BigDecimal.TEN,
+            deactivated = false,
         )
 
         val workPackageInvestment = WorkPackageInvestment(
             id = null,
             investmentNumber = 3,
-            address = null
+            address = null,
+            deactivated = false,
         )
     }
 
@@ -346,6 +348,7 @@ class ProjectWorkPackagePersistenceProviderTest : UnitTest() {
                 workPackageId = 1L,
                 periodNumber = 7,
                 programmeOutputIndicatorId = null,
+                deactivated = false,
             )
         )
 

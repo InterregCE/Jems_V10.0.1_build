@@ -22,6 +22,7 @@
 
 <ng-template #numberingCell let-workPackageInvestment>
     <span *ngIf="workPackageInvestment.investmentNumber">
+        <mat-icon *ngIf="workPackageInvestment.deactivated" class="vertical-middle" matTooltip="{{ 'project.application.form.partner.table.status.inactive' | translate }}">hide_source</mat-icon>
         I{{workPackageNumber}}.{{workPackageInvestment.investmentNumber}}</span>
     <span *ngIf="!workPackageInvestment.investmentNumber"> {{'project.application.form.partner.number.info.auto' | translate}}</span>
 </ng-template>
@@ -31,12 +32,12 @@
 </ng-template>
 
 <ng-template #deletionCell let-workPackageInvestment>
-    <ng-container *ngIf="projectEditable$ | async" >
+    <ng-container *ngIf="(projectEditable$ | async) && !workPackageInvestment.deactivated">
         <button *ngIf="(workPackageInvestment.title | translateContainerLessInputsBySystemLanguage | async) as title; else noTitle"
                 mat-icon-button color="accent"
                 (click)="$event.stopPropagation();delete(workPackageInvestment, title)"
-                matTooltip="{{'project.application.form.workpackage.investment.table.action.delete.tooltip' | translate}}">
-            <mat-icon>delete</mat-icon>
+                matTooltip="{{ (workPackageInvestment.isAlreadyContracted ? 'project.application.form.workpackage.investment.table.action.deactivate.tooltip' : 'project.application.form.workpackage.investment.table.action.delete.tooltip') | translate}}">
+            <mat-icon>{{ workPackageInvestment.isAlreadyContracted ? 'hide_source' : 'delete' }}</mat-icon>
         </button>
         <ng-template #noTitle>
             <button mat-icon-button color="accent"

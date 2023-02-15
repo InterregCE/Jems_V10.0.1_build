@@ -10,7 +10,7 @@ import {
   ProjectPartnerControlReportExpenditureVerificationUpdateDTO,
   ProjectPartnerReportDTO,
   ProjectPartnerReportExpenditureCostsService,
-  ProjectPartnerReportExpenditureVerificationService,
+  ProjectPartnerReportExpenditureVerificationService, ProjectPartnerReportInvestmentDTO,
   ProjectPartnerReportLumpSumDTO,
   ProjectPartnerReportUnitCostDTO,
   TypologyErrorsDTO
@@ -130,8 +130,8 @@ export class PartnerControlReportFileExpenditureVerificationStore {
       .pipe(
         switchMap(([partnerId, changeEvent, partnerReport]) =>
           this.partnerReportExpenditureCostsService.getAvailableInvestments(partnerId as number, partnerReport.id)),
-        map((investmentSummaryDTOs: InvestmentSummaryDTO[]) => investmentSummaryDTOs
-          .map(it => new InvestmentSummary(it.id, it.investmentNumber, it.workPackageNumber))),
+        map((investmentSummaryDTOs: ProjectPartnerReportInvestmentDTO[]) => investmentSummaryDTOs
+          .map(it => new InvestmentSummary(it.id, it.investmentNumber, it.workPackageNumber, it.deactivated))),
         map((investmentSummaries: InvestmentSummary[]) => investmentSummaries),
         shareReplay(1)
       );

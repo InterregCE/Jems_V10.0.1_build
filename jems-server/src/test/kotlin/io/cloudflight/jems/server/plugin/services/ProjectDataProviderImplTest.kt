@@ -577,7 +577,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             documentation = setOf(InputTranslation(SystemLanguage.EN, "documentation")),
             ownershipSiteLocation = setOf(InputTranslation(SystemLanguage.EN, "ownershipSiteLocation")),
             ownershipRetain = setOf(InputTranslation(SystemLanguage.EN, "ownershipRetain")),
-            ownershipMaintenance = setOf(InputTranslation(SystemLanguage.EN, "ownershipMaintenance"))
+            ownershipMaintenance = setOf(InputTranslation(SystemLanguage.EN, "ownershipMaintenance")),
+            deactivated = false,
         )
         private val activity = WorkPackageActivity(
             workPackageId = 1L,
@@ -606,7 +607,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 )
             ),
             periodStartMonth = 1,
-            periodEndMonth = 2
+            periodEndMonth = 2,
+            deactivated = false,
         )
         private val projectResult = ProjectResult(
             resultNumber = 1,

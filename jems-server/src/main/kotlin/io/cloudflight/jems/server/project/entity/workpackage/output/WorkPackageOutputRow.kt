@@ -16,4 +16,5 @@ interface WorkPackageOutputRow: TranslationView {
     val periodNumber: Int?
     val title: String?
     val description: String?
+    val deactivated: Boolean
 }

@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.entity.workpackage.output
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.server.common.entity.TranslationId
+import java.util.Objects
 import javax.persistence.Embeddable
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
@@ -15,7 +16,7 @@ import javax.validation.constraints.NotNull
  * ID for the use to embed the PK for translation tables for WorkPackage Output relations.
  */
 @Embeddable
-data class WorkPackageOutputTranslationId(
+class WorkPackageOutputTranslationId(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumns(
@@ -29,4 +30,11 @@ data class WorkPackageOutputTranslationId(
     @field:NotNull
     override val language: SystemLanguage
 
-) : TranslationId<WorkPackageOutputEntity>(sourceEntity, language)
+) : TranslationId<WorkPackageOutputEntity>(sourceEntity, language) {
+
+    override fun equals(other: Any?) = this === other ||
+        other is WorkPackageOutputTranslationId && sourceEntity == other.sourceEntity && language == other.language
+
+    override fun hashCode() = Objects.hash(sourceEntity, language)
+
+}

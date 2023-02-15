@@ -12,4 +12,5 @@ data class WorkPackageOutputDTO(
     val periodNumber: Int? = null,
     val title: Set<InputTranslation> = emptySet(),
     val description: Set<InputTranslation> = emptySet(),
+    val deactivated: Boolean = false,
 )

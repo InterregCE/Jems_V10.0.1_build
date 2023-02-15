@@ -106,7 +106,8 @@ class ProjectPartnerReportWorkPlanPersistenceProviderTest : UnitTest() {
             contribution = false,
             evidence = null,
             attachment = dummyAttachment,
-            translatedValues = mutableSetOf()
+            translatedValues = mutableSetOf(),
+            deactivated = false,
         ).apply {
             translatedValues.add(
                 ProjectPartnerReportWorkPackageOutputTranslEntity(
@@ -156,6 +157,7 @@ class ProjectPartnerReportWorkPlanPersistenceProviderTest : UnitTest() {
                             dummyAttachment.name,
                             dummyAttachment.uploaded,
                         ),
+                        deactivated = false,
                     )
                 )
             )

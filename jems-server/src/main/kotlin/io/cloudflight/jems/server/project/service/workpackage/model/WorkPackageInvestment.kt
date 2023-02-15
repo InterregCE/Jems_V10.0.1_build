@@ -19,4 +19,5 @@ data class WorkPackageInvestment(
     val ownershipSiteLocation: Set<InputTranslation> = emptySet(),
     val ownershipRetain: Set<InputTranslation> = emptySet(),
     val ownershipMaintenance: Set<InputTranslation> = emptySet(),
+    val deactivated: Boolean,
 )

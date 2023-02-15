@@ -181,6 +181,7 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
         investmentNumber = 4,
         title = setOf(InputTranslation(SystemLanguage.EN, "EN investment")),
         total = BigDecimal.ONE,
+        deactivated = true,
     )
 
     private val dummyUnitCostDTO = ProjectPartnerReportUnitCostDTO(
@@ -202,6 +203,7 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
         workPackageNumber = 6,
         investmentNumber = 4,
         title = setOf(InputTranslation(SystemLanguage.EN, "EN investment")),
+        deactivated = true,
     )
 
     private val dummyBudgetOptions = ProjectPartnerBudgetOptions(

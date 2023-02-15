@@ -743,6 +743,10 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     const summary = this.investmentsSummary.find(s => s.id === investmentId);
     return summary?.toString() ?? '';
   }
+  getInvestmentInactive(investmentId: number): boolean {
+    const summary = this.investmentsSummary.find(s => s.id === investmentId);
+    return summary?.deactivated || false;
+  }
 
   clearRowSelections() {
     this.descriptionInputPressed = false;

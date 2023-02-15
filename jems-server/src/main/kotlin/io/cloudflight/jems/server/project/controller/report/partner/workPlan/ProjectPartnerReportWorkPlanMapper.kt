@@ -58,6 +58,7 @@ fun List<ProjectPartnerReportWorkPackageOutput>.toOutputsDto() = map {
         contribution = it.contribution,
         evidence = it.evidence,
         attachment = it.attachment?.toDto(),
+        deactivated = it.deactivated,
     )
 }
 

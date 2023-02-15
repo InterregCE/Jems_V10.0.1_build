@@ -148,7 +148,7 @@ class ContractedProjectSectionCWorkPlanDataGeneratorTest(@LocalServerPort privat
 
     @Test
     @Order(4)
-    @ExpectSelect(17)
+    @ExpectSelect(21)
     @ExpectInsert(5)
     @ExpectUpdate(0)
     @ExpectDelete(1)

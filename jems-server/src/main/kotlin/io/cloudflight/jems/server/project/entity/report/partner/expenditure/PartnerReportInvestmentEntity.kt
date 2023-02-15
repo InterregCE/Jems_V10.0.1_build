@@ -35,6 +35,8 @@ class PartnerReportInvestmentEntity (
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
     val translatedValues: MutableSet<PartnerReportInvestmentTranslEntity> = mutableSetOf(),
 
+    @field:NotNull
+    val deactivated: Boolean,
 
     @field:NotNull val total: BigDecimal,
     @field:NotNull var current: BigDecimal,

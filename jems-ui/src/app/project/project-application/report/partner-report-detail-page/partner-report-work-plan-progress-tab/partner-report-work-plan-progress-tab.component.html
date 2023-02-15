@@ -165,7 +165,9 @@
                                     <ng-container [formArrayName]="constants.OUTPUTS.name">
                                         <div *ngFor="let output of outputsData; let outputIndex = index"
                                              [formGroupName]="outputIndex">
-                                            <span>{{ 'project.application.partner.report.workplan.output.table.nr.entry' | translate: {
+                                            <span>
+                                                <mat-icon *ngIf="output.deactivated" class="inactive-icon" matTooltip="{{ 'project.application.form.partner.table.status.inactive' | translate }}">hide_source</mat-icon>
+                                                {{ 'project.application.partner.report.workplan.output.table.nr.entry' | translate: {
                                                 workPackageNr: workPackage.number,
                                                 outputNr: output.number
                                             } }}</span>

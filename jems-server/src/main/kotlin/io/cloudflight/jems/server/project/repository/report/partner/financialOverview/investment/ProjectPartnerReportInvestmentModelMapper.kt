@@ -9,6 +9,7 @@ fun PartnerReportInvestmentEntity.toModel() = ExpenditureInvestmentBreakdownLine
     investmentId = investmentId,
     investmentNumber = investmentNumber,
     title = translatedValues.extractField { it.title },
+    deactivated = deactivated,
     workPackageNumber = workPackageNumber,
     totalEligibleBudget = total,
     previouslyReported = previouslyReported,

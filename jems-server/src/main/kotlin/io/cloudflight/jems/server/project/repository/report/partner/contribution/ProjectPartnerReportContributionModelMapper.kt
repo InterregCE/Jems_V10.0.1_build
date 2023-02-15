@@ -80,6 +80,7 @@ fun PartnerReportInvestment.toEntity(
     investmentNumber = investmentNumber,
     workPackageNumber = workPackageNumber,
     translatedValues = mutableSetOf(),
+    deactivated = deactivated,
     total = total,
     current = BigDecimal.ZERO,
     totalEligibleAfterControl = BigDecimal.ZERO,

@@ -237,7 +237,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
             previouslyPaid = BigDecimal.valueOf(1111, 1),
             currentParked = BigDecimal.valueOf(200),
             currentReIncluded = BigDecimal.valueOf(1000),
-            previouslyReportedParked = BigDecimal.valueOf(1000)
+            previouslyReportedParked = BigDecimal.valueOf(1000),
         )
 
         private fun dummyUnitCostEntity(reportEntity: ProjectPartnerReportEntity) = PartnerReportUnitCostEntity(
@@ -270,7 +270,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
             previouslyReported = BigDecimal.ZERO,
             currentParked = BigDecimal.TEN,
             currentReIncluded = BigDecimal.valueOf(50),
-            previouslyReportedParked = BigDecimal.ZERO
+            previouslyReportedParked = BigDecimal.ZERO,
         )
 
         private fun dummyInvestmentEntity(reportEntity: ProjectPartnerReportEntity) = PartnerReportInvestmentEntity(
@@ -286,7 +286,8 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
             previouslyReported = BigDecimal.ZERO,
             currentParked = BigDecimal.valueOf(200),
             currentReIncluded = BigDecimal.valueOf(1000),
-            previouslyReportedParked = BigDecimal.valueOf(1000)
+            previouslyReportedParked = BigDecimal.valueOf(1000),
+            deactivated = false,
         ).apply {
             translatedValues.add(
                 PartnerReportInvestmentTranslEntity(TranslationId(this, SystemLanguage.EN), "inv title EN")
@@ -323,6 +324,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
             investmentNumber = 2,
             title = setOf(InputTranslation(SystemLanguage.EN, "inv title EN")),
             total = BigDecimal.ONE,
+            deactivated = false,
         )
 
         private val dummyBudgetOptions = ProjectPartnerBudgetOptions(

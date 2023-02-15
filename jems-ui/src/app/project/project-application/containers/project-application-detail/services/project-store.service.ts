@@ -43,6 +43,18 @@ import {NumberService} from '@common/services/number.service';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
 
+export const AFTER_CONTRACTED_STATUSES: ProjectStatusDTO.StatusEnum[] = [
+  ProjectStatusDTO.StatusEnum.CONTRACTED,
+  ProjectStatusDTO.StatusEnum.INMODIFICATION,
+  ProjectStatusDTO.StatusEnum.MODIFICATIONSUBMITTED,
+  ProjectStatusDTO.StatusEnum.MODIFICATIONREJECTED,
+];
+export const AFTER_APPROVED_STATUSES: ProjectStatusDTO.StatusEnum[] = [
+  ProjectStatusDTO.StatusEnum.APPROVED,
+  ProjectStatusDTO.StatusEnum.MODIFICATIONPRECONTRACTING,
+  ...AFTER_CONTRACTED_STATUSES,
+];
+
 /**
  * Stores project related information.
  */
@@ -369,7 +381,7 @@ export class ProjectStore {
       .pipe(
         switchMap(([project, selectedVersion]) => this.getProjectInvestmentSummaries(project, selectedVersion as string)),
         map((investmentSummeryDTOs: InvestmentSummaryDTO[]) => investmentSummeryDTOs
-          .map(it => new InvestmentSummary(it.id, it.investmentNumber, it.workPackageNumber))),
+          .map(it => new InvestmentSummary(it.id, it.investmentNumber, it.workPackageNumber, it.deactivated))),
         shareReplay(1)
       );
   }
@@ -384,7 +396,7 @@ export class ProjectStore {
       this.investmentChangeEvent$.pipe(startWith(null))])
       .pipe(
         switchMap(([project]) => this.projectService.getProjectInvestmentSummaries(project.id)),
-        map((investmentSummeryDTOs: InvestmentSummaryDTO[]) => investmentSummeryDTOs.map(it => new InvestmentSummary(it.id, it.investmentNumber, it.workPackageNumber)))
+        map((investmentSummeryDTOs: InvestmentSummaryDTO[]) => investmentSummeryDTOs.map(it => new InvestmentSummary(it.id, it.investmentNumber, it.workPackageNumber, it.deactivated)))
       );
   }
 

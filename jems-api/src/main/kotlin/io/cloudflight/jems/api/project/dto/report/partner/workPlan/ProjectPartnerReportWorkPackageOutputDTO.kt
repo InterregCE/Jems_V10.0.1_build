@@ -10,4 +10,5 @@ data class ProjectPartnerReportWorkPackageOutputDTO(
     val contribution: Boolean?,
     val evidence: Boolean?,
     val attachment: ProjectReportFileMetadataDTO?,
+    val deactivated: Boolean,
 )

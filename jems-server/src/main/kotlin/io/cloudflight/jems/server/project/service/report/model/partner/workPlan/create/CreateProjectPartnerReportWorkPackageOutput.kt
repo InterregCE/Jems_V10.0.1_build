@@ -5,4 +5,5 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 data class CreateProjectPartnerReportWorkPackageOutput(
     val number: Int,
     val title: Set<InputTranslation>,
+    val deactivated: Boolean,
 )

@@ -70,6 +70,7 @@ interface WorkPackageRepository: PagingAndSortingRepository<WorkPackageEntity, L
                 programmeOutputIndicatorIdentifierTransl.measurement_unit as programmeOutputIndicatorMeasurementUnit,
                 entity.target_value as targetValue,
                 CONVERT(entity.period_number, INT) as periodNumber,
+                entity.deactivated as deactivated,
                 workPackageOutputTransl.*
              FROM #{#entityName}_output FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
              LEFT JOIN #{#entityName}_output_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS workPackageOutputTransl ON entity.work_package_id = workPackageOutputTransl.work_package_id AND entity.output_number = workPackageOutputTransl.output_number
@@ -115,6 +116,7 @@ interface WorkPackageRepository: PagingAndSortingRepository<WorkPackageEntity, L
              output.indicator_output_id as programmeOutputIndicatorId,
              output.period_number as outputPeriodNumber,
              output.target_value as targetValue,
+             output.deactivated as outputDeactivated,
              outputTransl.language as outputLanguage,
              outputTransl.title as outputTitle,
              outputTransl.description as outputDescription,
@@ -136,6 +138,7 @@ interface WorkPackageRepository: PagingAndSortingRepository<WorkPackageEntity, L
              investment.postal_code as investmentPostalCode,
              investment.city as investmentCity,
              investment.expected_delivery_period as investmentExpectedDeliveryPeriod,
+             investment.deactivated as investmentDeactivated,
              investmentTransl.title as investmentTitle,
              investmentTransl.justification_explanation as justificationExplanation,
              investmentTransl.justification_transactional_relevance as justificationTransactionalRelevance,

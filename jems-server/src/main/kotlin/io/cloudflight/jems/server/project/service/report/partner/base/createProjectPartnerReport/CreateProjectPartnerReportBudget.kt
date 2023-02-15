@@ -219,6 +219,7 @@ class CreateProjectPartnerReportBudget(
                 investmentNumber = it.investmentNumber,
                 workPackageNumber = it.workPackageNumber,
                 title = it.title,
+                deactivated = it.deactivated,
                 total = byInvestment.getOrDefault(it.investmentId, ZERO),
                 previouslyReported = previouslyReported.get(it.investmentId)?.current ?: ZERO,
                 previouslyReportedParked = previouslyReported.get(it.investmentId)?.currentParked ?: ZERO

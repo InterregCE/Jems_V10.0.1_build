@@ -41,7 +41,8 @@ class ProjectWorkPackageInvestmentControllerTest {
             documentation = setOf(InputTranslation(SystemLanguage.EN, "documentation")),
             ownershipSiteLocation = setOf(InputTranslation(SystemLanguage.EN, "ownershipSiteLocation")),
             ownershipRetain = setOf(InputTranslation(SystemLanguage.EN, "ownershipRetain")),
-            ownershipMaintenance = setOf(InputTranslation(SystemLanguage.EN, "ownershipMaintenance"))
+            ownershipMaintenance = setOf(InputTranslation(SystemLanguage.EN, "ownershipMaintenance")),
+            deactivated = false,
         )
         val workPackageInvestmentDto = WorkPackageInvestmentDTO(
             id = investmentId,
