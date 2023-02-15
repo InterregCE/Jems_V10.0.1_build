@@ -24,9 +24,9 @@ class UpdateWorkPackageOutput(
         validateWorkPackageOutputs(outputs)
         val status = projectPersistence.getApplicantAndStatusById(projectId).projectStatus
 
-        if (status.isAlreadyApproved()) {
+        if (status.isAlreadyContracted()) {
             val previousOutputs = workPackagePersistence.getWorkPackageOutputsForWorkPackage(workPackageId, projectId = projectId)
-            return workPackagePersistence.updateWorkPackageOutputsAfterApproved(
+            return workPackagePersistence.updateWorkPackageOutputsAfterContracted(
                 workPackageId = workPackageId,
                 workPackageOutputs = outputs.prepareForUpdateWithoutDeletion(previousOutputs),
             )

@@ -13,7 +13,7 @@ import {ProjectApplicationFormSidenavService} from '@project/project-application
 import {FormService} from '@common/components/section/form/form.service';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import {
-  AFTER_APPROVED_STATUSES,
+  AFTER_CONTRACTED_STATUSES,
   ProjectStore
 } from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
@@ -62,7 +62,7 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
         }),
         map(([investments, , status]) => investments.map((investment) => ({
           ...investment,
-          isAlreadyApproved: AFTER_APPROVED_STATUSES.includes(status.status),
+          isAlreadyContracted: AFTER_CONTRACTED_STATUSES.includes(status.status),
         }))),
       );
     this.projectEditable$ = this.workPackageStore.isProjectEditable$;

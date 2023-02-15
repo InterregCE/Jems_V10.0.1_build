@@ -26,7 +26,7 @@ internal class DeleteWorkPackageInvestmentTest : UnitTestWorkPackageInvestmentBa
 
     @ParameterizedTest(name = "should delete the workPackageInvestment {0}")
     @EnumSource(value = ApplicationStatus::class, names = [
-        "APPROVED", "MODIFICATION_PRECONTRACTING", "CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED"
+        "CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED"
     ], mode = EnumSource.Mode.EXCLUDE)
     fun `should delete the workPackageInvestment`(status: ApplicationStatus) {
         every { projectPersistence.getApplicantAndStatusById(projectId).projectStatus } returns status
@@ -43,7 +43,7 @@ internal class DeleteWorkPackageInvestmentTest : UnitTestWorkPackageInvestmentBa
 
     @ParameterizedTest(name = "should deactivate the workPackageInvestment {0}")
     @EnumSource(value = ApplicationStatus::class, names = [
-        "APPROVED", "MODIFICATION_PRECONTRACTING", "CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED"
+        "CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED"
     ])
     fun `should deactivate the workPackageInvestment`(status: ApplicationStatus) {
         every { projectPersistence.getApplicantAndStatusById(projectId).projectStatus } returns status

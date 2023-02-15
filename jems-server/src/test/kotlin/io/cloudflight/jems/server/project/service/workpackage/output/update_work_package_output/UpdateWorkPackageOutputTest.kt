@@ -48,7 +48,7 @@ class UpdateWorkPackageOutputTest: UnitTest() {
 
     @ParameterizedTest(name = "update - valid {0}")
     @EnumSource(value = ApplicationStatus::class, names = [
-        "APPROVED", "MODIFICATION_PRECONTRACTING", "CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED"
+        "CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED"
     ], mode = EnumSource.Mode.EXCLUDE)
     fun `update - valid`(status: ApplicationStatus) {
         val projectId = status.ordinal.toLong()
@@ -59,11 +59,11 @@ class UpdateWorkPackageOutputTest: UnitTest() {
             .containsExactly(testOutput)
     }
 
-    @ParameterizedTest(name = "update after approved - valid {0}")
+    @ParameterizedTest(name = "update after contracted - valid {0}")
     @EnumSource(value = ApplicationStatus::class, names = [
-        "APPROVED", "MODIFICATION_PRECONTRACTING", "CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED"
+        "CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED"
     ])
-    fun `update after approved - valid`(status: ApplicationStatus) {
+    fun `update after contracted - valid`(status: ApplicationStatus) {
         val projectId = status.ordinal.toLong()
         every { projectPersistence.getApplicantAndStatusById(projectId).projectStatus } returns status
 
@@ -72,7 +72,7 @@ class UpdateWorkPackageOutputTest: UnitTest() {
                 testOutput.copy(workPackageId = 3, outputNumber = 1, deactivated = false)
             )
 
-        every { persistence.updateWorkPackageOutputsAfterApproved(3L, any()) } returnsArgument 1
+        every { persistence.updateWorkPackageOutputsAfterContracted(3L, any()) } returnsArgument 1
         assertThat(updateOutputInteractor.updateOutputsForWorkPackage(projectId, 3L, listOf(
             testOutput.copy(workPackageId = 3, outputNumber = 0, deactivated = false)
         ))).containsExactly(

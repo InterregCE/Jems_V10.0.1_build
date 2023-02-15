@@ -10,7 +10,7 @@ import {InputTranslation, OutputIndicatorSummaryDTO, ProjectPeriodDTO, WorkPacka
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {Alert} from '@common/components/forms/alert';
 import {
-  AFTER_APPROVED_STATUSES,
+  AFTER_CONTRACTED_STATUSES,
   ProjectStore
 } from '@project/project-application/containers/project-application-detail/services/project-store.service';
 
@@ -38,7 +38,7 @@ export class ProjectWorkPackageOutputsTabComponent implements OnInit {
     outputIndicators: OutputIndicatorSummaryDTO[];
     workPackageNumber: number;
     specificObjective: OutputProgrammePriorityPolicySimpleDTO;
-    isAlreadyApproved: boolean;
+    isAlreadyContracted: boolean;
   }>;
   Alert = Alert;
 
@@ -73,7 +73,7 @@ export class ProjectWorkPackageOutputsTabComponent implements OnInit {
           outputIndicators: indicators,
           workPackageNumber: workPackage.number,
           specificObjective: projectForm.specificObjective,
-          isAlreadyApproved: AFTER_APPROVED_STATUSES.includes(projectStatus.status),
+          isAlreadyContracted: AFTER_CONTRACTED_STATUSES.includes(projectStatus.status),
         })
       ));
   }

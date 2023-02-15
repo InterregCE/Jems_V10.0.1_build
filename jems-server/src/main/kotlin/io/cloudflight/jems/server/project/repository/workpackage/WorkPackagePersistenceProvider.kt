@@ -2,9 +2,6 @@ package io.cloudflight.jems.server.project.repository.workpackage
 
 import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackage
 import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackageSimple
-import io.cloudflight.jems.server.common.entity.TranslationId
-import io.cloudflight.jems.server.common.entity.addTranslationEntities
-import io.cloudflight.jems.server.common.entity.extractTranslation
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.indicator.OutputIndicatorEntity
 import io.cloudflight.jems.server.programme.repository.indicator.OutputIndicatorRepository
@@ -48,8 +45,6 @@ import io.cloudflight.jems.server.project.service.workpackage.toWorkPackageOutpu
 import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel.EDIT
 import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel.MANAGE
 import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel.VIEW
-import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputTranslEntity
-import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputTranslationId
 import io.cloudflight.jems.server.project.repository.partneruser.UserPartnerCollaboratorRepository
 import io.cloudflight.jems.server.project.repository.projectuser.UserProjectCollaboratorRepository
 import io.cloudflight.jems.server.project.repository.workpackage.output.toEntity
@@ -173,7 +168,7 @@ class WorkPackagePersistenceProvider(
     }
 
     @Transactional
-    override fun updateWorkPackageOutputsAfterApproved(
+    override fun updateWorkPackageOutputsAfterContracted(
         workPackageId: Long,
         workPackageOutputs: List<WorkPackageOutput>
     ): List<WorkPackageOutput> {

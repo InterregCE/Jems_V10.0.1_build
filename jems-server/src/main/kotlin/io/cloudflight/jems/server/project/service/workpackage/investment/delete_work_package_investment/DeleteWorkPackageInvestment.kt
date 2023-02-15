@@ -16,7 +16,7 @@ class DeleteWorkPackageInvestment(
     @Transactional
     override fun deleteWorkPackageInvestment(projectId: Long, workPackageId: Long, investmentId: Long) {
         val status = projectPersistence.getApplicantAndStatusById(projectId).projectStatus
-        if (status.isAlreadyApproved())
+        if (status.isAlreadyContracted())
             workPackagePersistence.deactivateWorkPackageInvestment(workPackageId, investmentId)
         else
             workPackagePersistence.deleteWorkPackageInvestment(workPackageId, investmentId)

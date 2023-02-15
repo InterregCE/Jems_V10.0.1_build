@@ -20,10 +20,10 @@
                         </h4>
                         <button *ngIf="form.enabled" type="button" mat-icon-button color="accent" [disabled]="output.get('deactivated').value"
                                 matTooltip="{{ 'project.application.form.work.package.output.table.action.' +
-                                 (data.isAlreadyApproved ? 'deactivate' : 'delete') + '.tooltip' | translate}}"
-                                (click)="removeOutput(i, data.isAlreadyApproved ? output.get(constants.OUTPUT_NUMBER.name).value : null)">
+                                 (data.isAlreadyContracted ? 'deactivate' : 'delete') + '.tooltip' | translate}}"
+                                (click)="removeOutput(i, data.isAlreadyContracted ? output.get(constants.OUTPUT_NUMBER.name).value : null)">
                             <mat-icon *ngIf="output.get('deactivated').value">delete_forever</mat-icon>
-                            <mat-icon *ngIf="!output.get('deactivated').value">{{ data.isAlreadyApproved ? 'hide_source' : 'delete' }}</mat-icon>
+                            <mat-icon *ngIf="!output.get('deactivated').value">{{ data.isAlreadyContracted ? 'hide_source' : 'delete' }}</mat-icon>
                         </button>
                     </div>
 
