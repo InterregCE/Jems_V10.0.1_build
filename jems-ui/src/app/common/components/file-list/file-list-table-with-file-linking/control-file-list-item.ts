@@ -1,6 +1,6 @@
-import {ProjectReportFileDTO, UserSimpleDTO} from '@cat/api';
+import {ProjectReportFileDTO, ProjectReportFileMetadataDTO, UserSimpleDTO} from '@cat/api';
 
-export interface FileListItem {
+export interface ControlFileListItem {
   id: number;
   name: string;
   type: ProjectReportFileDTO.TypeEnum;
@@ -12,4 +12,6 @@ export interface FileListItem {
   deletable: boolean;
   tooltipIfNotDeletable: string;
   iconIfNotDeletable: string;
+  parentEntityId?: number;
+  attachment?: ProjectReportFileMetadataDTO;
 }

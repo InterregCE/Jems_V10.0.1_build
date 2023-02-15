@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.partner.control.file.deleteFileAttachment
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.project.authorization.CanViewPartnerControlReport
+import io.cloudflight.jems.server.project.authorization.CanEditPartnerControlReportFile
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.file.ProjectPartnerReportControlFilePersistence
@@ -15,7 +15,7 @@ class DeleteReportControlFileAttachment(
     private val projectPartnerReportControlFilePersistence: ProjectPartnerReportControlFilePersistence
 ) : DeleteReportControlFileAttachmentInteractor {
 
-    @CanViewPartnerControlReport
+    @CanEditPartnerControlReportFile
     @Transactional()
     @ExceptionWrapper(DeleteReportControlFileAttachmentException::class)
     override fun deleteReportControlCertificateAttachment(partnerId: Long, reportId: Long, fileId: Long, attachmentId: Long) {

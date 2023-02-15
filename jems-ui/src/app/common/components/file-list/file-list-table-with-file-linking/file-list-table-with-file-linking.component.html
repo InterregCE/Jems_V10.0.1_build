@@ -59,17 +59,17 @@
                 </mat-header-cell>
                 <mat-cell *matCellDef="let file" class="justify-end">
 
-                    <ng-container *ngIf="descriptionForm.value.id !== file.id">
+                    <ng-container *ngIf="descriptionForm.value.id !== file.parentEntityId && areFileOperationsAllowed(file)">
                         <span *ngIf="file.description" jemsText maxLines="2"
                               class="mr-1 text-left fill-space-left-to-button" [matTooltip]="file.description">{{ file.description }}</span>
                         <button (click)="editDescription(file)" *ngIf="file.editable"
-                                [disabled]="descriptionForm.value.id && descriptionForm.value.id !== file.id"
+                                [disabled]="descriptionForm.value.id && descriptionForm.value.id !== file.parentEntityId"
                                 color="primary" mat-icon-button matTooltip="{{ 'file.table.action.description.tooltip' | translate }}" class="my-fab">
                             <mat-icon>edit</mat-icon>
                         </button>
                     </ng-container>
 
-                    <form [formGroup]="descriptionForm" *ngIf="descriptionForm.value.id === file.id && isDescriptionEditAllowed()" class="w-100">
+                    <form [formGroup]="descriptionForm" *ngIf="descriptionForm.value.id === file.parentEntityId && isDescriptionEditAllowed()" class="w-100">
                         <jems-expandable-textarea class="w-100"
                                                   label="file.table.column.name.description"
                                                   [control]="descriptionForm.controls.description"
@@ -78,14 +78,14 @@
                         </jems-expandable-textarea>
                         <div class="mb-2 mt-2">
                             <button (click)="resetDescription()" mat-stroked-button class="small-stroked-btn"
-                                    [disabled]="(savingDescriptionId$ | async) === file.id">
+                                    [disabled]="(savingDescriptionId$ | async) === file.parentEntityId">
                                 <mat-icon class="mr-1">close</mat-icon>{{'project.file.description.button.cancel' | translate}}
                             </button>
 
                             <button (click)="saveDescription()" mat-flat-button type="submit"
-                                    [disabled]="descriptionForm.invalid || (savingDescriptionId$ | async) === file.id" class="ml-2 small-flat-btn" color="primary">
-                                <mat-icon class="mr-1" *ngIf="(savingDescriptionId$ | async) !== file.id">check</mat-icon>
-                                <mat-spinner *ngIf="(savingDescriptionId$ | async) === file.id" class="mr-4" color="primary" [diameter]="17"></mat-spinner>
+                                    [disabled]="descriptionForm.invalid || (savingDescriptionId$ | async) === file.parentEntityId" class="ml-2 small-flat-btn" color="primary">
+                                <mat-icon class="mr-1" *ngIf="(savingDescriptionId$ | async) !== file.parentEntityId">check</mat-icon>
+                                <mat-spinner *ngIf="(savingDescriptionId$ | async) === file.parentEntityId" class="mr-4" color="primary" [diameter]="17"></mat-spinner>
                                 {{'project.file.description.button.save' | translate}}
                             </button>
                         </div>
