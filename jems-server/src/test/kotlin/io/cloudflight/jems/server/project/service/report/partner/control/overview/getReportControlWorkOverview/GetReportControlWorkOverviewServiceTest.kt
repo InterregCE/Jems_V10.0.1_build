@@ -23,7 +23,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import java.math.BigDecimal
 
-internal class GetReportControlWorkOverviewServiceTest: UnitTest() {
+internal class GetReportControlWorkOverviewServiceTest : UnitTest() {
 
     companion object {
         private const val PARTNER_ID = 592L
@@ -50,6 +50,30 @@ internal class GetReportControlWorkOverviewServiceTest: UnitTest() {
                 unitCost = BigDecimal.valueOf(118),
                 sum = BigDecimal.valueOf(119),
             ),
+            currentlyReportedParked = BudgetCostsCalculationResultFull(
+                staff = BigDecimal.valueOf(120),
+                office = BigDecimal.valueOf(121),
+                travel = BigDecimal.valueOf(122),
+                external = BigDecimal.valueOf(123),
+                equipment = BigDecimal.valueOf(124),
+                infrastructure = BigDecimal.valueOf(125),
+                other = BigDecimal.valueOf(126),
+                lumpSum = BigDecimal.valueOf(127),
+                unitCost = BigDecimal.valueOf(128),
+                sum = BigDecimal.valueOf(129),
+            ),
+            currentlyReportedReIncluded = BudgetCostsCalculationResultFull(
+                staff = BigDecimal.valueOf(130),
+                office = BigDecimal.valueOf(131),
+                travel = BigDecimal.valueOf(132),
+                external = BigDecimal.valueOf(133),
+                equipment = BigDecimal.valueOf(134),
+                infrastructure = BigDecimal.valueOf(135),
+                other = BigDecimal.valueOf(136),
+                lumpSum = BigDecimal.valueOf(137),
+                unitCost = BigDecimal.valueOf(138),
+                sum = BigDecimal.valueOf(139),
+            ),
             totalEligibleAfterControl = BudgetCostsCalculationResultFull(
                 staff = BigDecimal.valueOf(19),
                 office = BigDecimal.valueOf(18),
@@ -63,6 +87,7 @@ internal class GetReportControlWorkOverviewServiceTest: UnitTest() {
                 sum = BigDecimal.valueOf(10),
             ),
             previouslyReported = mockk(),
+            previouslyReportedParked = mockk(),
         )
 
         fun expenditure(
@@ -77,20 +102,21 @@ internal class GetReportControlWorkOverviewServiceTest: UnitTest() {
             every { expenditure.parked } returns isParked
             every { expenditure.partOfSample } returns partOfSample
             every { expenditure.declaredAmountAfterSubmission } returns
-                    (declaredAmount ?: BigDecimal.valueOf(99999) /* should be ignored */)
+                (declaredAmount ?: BigDecimal.valueOf(99999) /* should be ignored */)
             every { expenditure.certifiedAmount } returns certified
             every { expenditure.lumpSumId } returns null
             every { expenditure.costCategory } returns ReportBudgetCategory.StaffCosts
             return expenditure
         }
 
-        private val listOfExpenditures = listOf(expenditure(
-            554L,
-            partOfSample = true,
-            declaredAmount = BigDecimal.ONE,
-            certified = BigDecimal.valueOf(9, 1),
-            isParked = true
-        ),
+        private val listOfExpenditures = listOf(
+            expenditure(
+                554L,
+                partOfSample = true,
+                declaredAmount = BigDecimal.ONE,
+                certified = BigDecimal.valueOf(9, 1),
+                isParked = true
+            ),
             expenditure(
                 555L,
                 partOfSample = false,
@@ -133,8 +159,9 @@ internal class GetReportControlWorkOverviewServiceTest: UnitTest() {
         every { report.status } returns status
         every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = 22L) } returns report
 
-        every { reportControlExpenditurePersistence
-            .getPartnerControlReportExpenditureVerification(PARTNER_ID, reportId = 22L)
+        every {
+            reportControlExpenditurePersistence
+                .getPartnerControlReportExpenditureVerification(PARTNER_ID, reportId = 22L)
         } returns listOfExpenditures
 
         every { reportExpenditureCostCategoryPersistence.getCostCategories(PARTNER_ID, reportId = 22L) } returns costOptions
@@ -159,8 +186,9 @@ internal class GetReportControlWorkOverviewServiceTest: UnitTest() {
         every { report.status } returns status
         every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = 22L) } returns report
 
-        every { reportControlExpenditurePersistence
-            .getPartnerControlReportExpenditureVerification(PARTNER_ID, reportId = 22L)
+        every {
+            reportControlExpenditurePersistence
+                .getPartnerControlReportExpenditureVerification(PARTNER_ID, reportId = 22L)
         } returns listOfExpenditures
 
         every { reportExpenditureCostCategoryPersistence.getCostCategories(PARTNER_ID, reportId = 22L) } returns costOptions

@@ -1,11 +1,12 @@
 package io.cloudflight.jems.server.project.service.report.partner.base.createProjectPartnerReport
 
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO.MainFund
-import io.cloudflight.jems.server.payments.service.regular.PaymentRegularPersistence
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
+import io.cloudflight.jems.server.payments.service.regular.PaymentRegularPersistence
 import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_period.GetPartnerBudgetPerPeriodInteractor
 import io.cloudflight.jems.server.project.service.budget.get_project_budget.GetProjectBudget
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
+import io.cloudflight.jems.server.project.service.budget.model.ExpenditureCostCategoryPreviouslyReportedWithParked
 import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
@@ -15,14 +16,11 @@ import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerB
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
-import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus.AutomaticPublic
-import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus.Private
-import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus.Public
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus.*
 import io.cloudflight.jems.server.project.service.partner.model.BaseBudgetEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
-import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportBudget
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportInvestment
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportLumpSum
@@ -34,10 +32,11 @@ import io.cloudflight.jems.server.project.service.report.model.partner.contribut
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.PartnerReportInvestmentSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ReportExpenditureCostCategory
-import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.unitCost.ExpenditureUnitCostCurrent
-import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumCurrent
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.investments.ExpenditureInvestmentCurrent
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumCurrent
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.unitCost.ExpenditureUnitCostCurrent
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectPartnerReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
@@ -98,6 +97,9 @@ class CreateProjectPartnerReportBudget(
         val unitCosts = partnerBudgetCostsPersistence.getBudgetUnitCosts(partnerId, version)
 
         val installmentsPaid = paymentPersistence.findByPartnerId(partnerId).getOnlyPaid()
+        val previouslyReportedWithParked = reportExpenditureCostCategoryPersistence
+            .getCostCategoriesCumulative(submittedReportIds)
+            .addExtraPaymentReadyFastTrackLumpSums(sumOfPaymentReady)
 
         return PartnerReportBudget(
             contributions = contributions,
@@ -125,9 +127,7 @@ class CreateProjectPartnerReportBudget(
             expenditureSetup = expenditureSetup(
                 options = projectPartnerBudgetOptionsPersistence.getBudgetOptions(partnerId, version) ?: ProjectPartnerBudgetOptions(partnerId),
                 budget = budget,
-                previouslyReported = reportExpenditureCostCategoryPersistence
-                    .getCostCategoriesCumulative(submittedReportIds)
-                    .addExtraPaymentReadyFastTrackLumpSums(sumOfPaymentReady),
+                previouslyReportedWithParked = previouslyReportedWithParked
             ),
             previouslyReportedCoFinancing = reportExpenditureCoFinancingPersistence
                 .getCoFinancingCumulative(submittedReportIds)
@@ -184,7 +184,7 @@ class CreateProjectPartnerReportBudget(
                 historyIdentifier = uuid,
                 createdInThisReport = false,
                 amount = it.amount ?: ZERO,
-                previouslyReported = historicalContributions[uuid]?.sumOf { it } ?: BigDecimal.ZERO,
+                previouslyReported = historicalContributions[uuid]?.sumOf { it } ?: ZERO,
                 currentlyReported = ZERO,
             )
         }
@@ -256,15 +256,17 @@ class CreateProjectPartnerReportBudget(
         budgetEntries: List<BaseBudgetEntry>,
         previouslyReported: Map<Long, ExpenditureUnitCostCurrent>,
     ): Set<PartnerReportUnitCostBase> {
-        return budgetEntries.filter {it.unitCostId != null}
+        return budgetEntries.filter { it.unitCostId != null }
             .groupBy { it.unitCostId!! }.entries
-            .mapTo(HashSet()) { (unitCostId, budgetEntries) -> PartnerReportUnitCostBase(
-                unitCostId = unitCostId,
-                totalCost = budgetEntries.sumOf { it.rowSum!! },
-                numberOfUnits = budgetEntries.sumOf { it.numberOfUnits },
-                previouslyReported = previouslyReported.get(unitCostId)?.current ?: ZERO,
-                previouslyReportedParked = previouslyReported.get(unitCostId)?.currentParked ?: ZERO
-        ) }
+            .mapTo(HashSet()) { (unitCostId, budgetEntries) ->
+                PartnerReportUnitCostBase(
+                    unitCostId = unitCostId,
+                    totalCost = budgetEntries.sumOf { it.rowSum!! },
+                    numberOfUnits = budgetEntries.sumOf { it.numberOfUnits },
+                    previouslyReported = previouslyReported.get(unitCostId)?.current ?: ZERO,
+                    previouslyReportedParked = previouslyReported.get(unitCostId)?.currentParked ?: ZERO
+                )
+            }
     }
 
     private fun List<ProjectPeriodBudget>.getCumulative() = sortedBy { it.periodNumber }
@@ -284,7 +286,7 @@ class CreateProjectPartnerReportBudget(
     private fun expenditureSetup(
         options: ProjectPartnerBudgetOptions,
         budget: PartnerBudget,
-        previouslyReported: BudgetCostsCalculationResultFull,
+        previouslyReportedWithParked: ExpenditureCostCategoryPreviouslyReportedWithParked,
     ) = ReportExpenditureCostCategory(
         options = options,
         totalsFromAF = BudgetCostsCalculationResultFull(
@@ -301,7 +303,10 @@ class CreateProjectPartnerReportBudget(
         ),
         currentlyReported = fillZeros(),
         totalEligibleAfterControl = fillZeros(),
-        previouslyReported = previouslyReported,
+        previouslyReported = previouslyReportedWithParked.previouslyReported,
+        currentlyReportedParked = fillZeros(),
+        currentlyReportedReIncluded = fillZeros(),
+        previouslyReportedParked = previouslyReportedWithParked.previouslyReportedParked,
     )
 
     private fun fillZeros() = BudgetCostsCalculationResultFull(
@@ -410,12 +415,18 @@ class CreateProjectPartnerReportBudget(
     private fun List<PaymentPartnerInstallment>.getOnlyPaid() =
         filter { it.isPaymentConfirmed!! }
 
-    private fun BudgetCostsCalculationResultFull.addExtraPaymentReadyFastTrackLumpSums(
+    private fun ExpenditureCostCategoryPreviouslyReportedWithParked.addExtraPaymentReadyFastTrackLumpSums(
         paymentReadyFastTrackLumpSums: BigDecimal,
-    ): BudgetCostsCalculationResultFull {
+    ): ExpenditureCostCategoryPreviouslyReportedWithParked {
         return this.copy(
-            lumpSum = this.lumpSum.plus(paymentReadyFastTrackLumpSums),
-            sum = this.sum.plus(paymentReadyFastTrackLumpSums),
+            previouslyReported = previouslyReported.copy(
+                lumpSum = previouslyReported.lumpSum.plus(paymentReadyFastTrackLumpSums),
+                sum = previouslyReported.sum.plus(paymentReadyFastTrackLumpSums)
+            ),
+            previouslyReportedParked = previouslyReportedParked.copy(
+                lumpSum = previouslyReportedParked.lumpSum.plus(paymentReadyFastTrackLumpSums),
+                sum = previouslyReportedParked.sum.plus(paymentReadyFastTrackLumpSums)
+            )
         )
     }
 
@@ -444,6 +455,7 @@ class CreateProjectPartnerReportBudget(
         previouslyReportedFund.copy(
             previouslyReported = previouslyReportedFund.previouslyReported
                 .plus(otherFundSums.getOrDefault(previouslyReportedFund.fundId, ZERO))
-        ) }
+        )
+    }
 
 }

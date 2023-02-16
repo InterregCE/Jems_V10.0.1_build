@@ -6,13 +6,13 @@ import io.cloudflight.jems.api.project.dto.report.partner.financialOverview.Expe
 import io.cloudflight.jems.api.project.dto.report.partner.financialOverview.ExpenditureCoFinancingBreakdownLineDTO
 import io.cloudflight.jems.api.project.dto.report.partner.financialOverview.ExpenditureCostCategoryBreakdownDTO
 import io.cloudflight.jems.api.project.dto.report.partner.financialOverview.ExpenditureCostCategoryBreakdownLineDTO
+import io.cloudflight.jems.api.project.dto.report.partner.financialOverview.ExpenditureInvestmentBreakdownDTO
+import io.cloudflight.jems.api.project.dto.report.partner.financialOverview.ExpenditureInvestmentBreakdownLineDTO
 import io.cloudflight.jems.api.project.dto.report.partner.financialOverview.ExpenditureLumpSumBreakdownDTO
 import io.cloudflight.jems.api.project.dto.report.partner.financialOverview.ExpenditureLumpSumBreakdownLineDTO
-import io.cloudflight.jems.api.project.dto.report.partner.financialOverview.*
 import io.cloudflight.jems.api.project.dto.report.partner.financialOverview.ExpenditureUnitCostBreakdownDTO
 import io.cloudflight.jems.api.project.dto.report.partner.financialOverview.ExpenditureUnitCostBreakdownLineDTO
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.project.controller.workpackage.ProjectWorkPackageInvestmentControllerTest.Companion.investmentId
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ExpenditureCoFinancingBreakdown
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ExpenditureCoFinancingBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ExpenditureCostCategoryBreakdown
@@ -45,7 +45,9 @@ class ProjectPartnerReportFinancialOverviewControllerTest : UnitTest() {
             flatRate = 4,
             totalEligibleBudget = BigDecimal.ONE,
             previouslyReported = BigDecimal.TEN,
+            previouslyReportedParked = BigDecimal.ZERO,
             currentReport = BigDecimal.ZERO,
+            currentReportReIncluded = BigDecimal.ZERO,
             totalEligibleAfterControl = BigDecimal.ONE,
             totalReportedSoFar = BigDecimal.ONE,
             totalReportedSoFarPercentage = BigDecimal.TEN,
@@ -164,7 +166,9 @@ class ProjectPartnerReportFinancialOverviewControllerTest : UnitTest() {
             flatRate = 4,
             totalEligibleBudget = BigDecimal.ONE,
             previouslyReported = BigDecimal.TEN,
+            previouslyReportedParked = BigDecimal.ZERO,
             currentReport = BigDecimal.ZERO,
+            currentReportReIncluded = BigDecimal.ZERO,
             totalEligibleAfterControl = BigDecimal.ONE,
             totalReportedSoFar = BigDecimal.ONE,
             totalReportedSoFarPercentage = BigDecimal.TEN,

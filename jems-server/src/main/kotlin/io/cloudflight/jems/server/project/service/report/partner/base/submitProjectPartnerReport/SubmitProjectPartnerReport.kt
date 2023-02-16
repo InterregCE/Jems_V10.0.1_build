@@ -4,14 +4,14 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
 import io.cloudflight.jems.server.project.repository.report.partner.model.ExpenditureVerificationUpdate
-import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
+import io.cloudflight.jems.server.project.service.budget.model.ExpenditureCostCategoryCurrentlyReportedWithReIncluded
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.investments.ExpenditureInvestmentCurrentWithReIncluded
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumCurrentWithReIncluded
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.unitCost.ExpenditureUnitCostCurrentWithReIncluded
-import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.investments.ExpenditureInvestmentCurrentWithReIncluded
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.base.runPreSubmissionCheck.RunPreSubmissionCheckService
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectPartnerReportContributionPersistence
@@ -27,6 +27,7 @@ import io.cloudflight.jems.server.project.service.report.partner.financialOvervi
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.generateCoFinCalculationInputData
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.getCurrentFrom
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.calculateCurrent
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.onlyReIncluded
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureInvestementsBreakdown.getCurrentForInvestments
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureLumpSumBreakdown.getCurrentForLumpSums
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureUnitCostBreakdown.getCurrentForUnitCosts
@@ -68,9 +69,12 @@ class SubmitProjectPartnerReport(
 
         val expenditures = fillInVerificationForExpendituresAndSaveCurrencyRates(partnerId = partnerId, reportId = reportId)
         val costCategories = reportExpenditureCostCategoryPersistence.getCostCategories(partnerId = partnerId, reportId)
-        val currentCostCategories = expenditures.calculateCurrent(options = costCategories.options)
 
-        saveCurrentCostCategories(currentCostCategories, partnerId = partnerId, reportId)
+        val currentCostCategories = expenditures.calculateCurrent(options = costCategories.options)
+        val currentCostCategoriesReIncluded = expenditures.onlyReIncluded().calculateCurrent(options = costCategories.options)
+        val currentCostCategoriesWithReIncluded = ExpenditureCostCategoryCurrentlyReportedWithReIncluded(currentCostCategories, currentCostCategoriesReIncluded)
+
+        saveCurrentCostCategories(currentCostCategoriesWithReIncluded, partnerId = partnerId, reportId)
         saveCurrentCoFinancing(
             currentExpenditure = currentCostCategories.sum,
             totalEligibleBudget = costCategories.totalsFromAF.sum,
@@ -129,11 +133,15 @@ class SubmitProjectPartnerReport(
         return updatedExpenditures
     }
 
-    private fun saveCurrentCostCategories(currentCostCategories: BudgetCostsCalculationResultFull, partnerId: Long, reportId: Long) {
+    private fun saveCurrentCostCategories(
+        currentCostCategoriesWithReIncluded: ExpenditureCostCategoryCurrentlyReportedWithReIncluded,
+        partnerId: Long,
+        reportId: Long
+    ) {
         reportExpenditureCostCategoryPersistence.updateCurrentlyReportedValues(
             partnerId = partnerId,
             reportId = reportId,
-            currentlyReported = currentCostCategories,
+            currentlyReportedWithReIncluded = currentCostCategoriesWithReIncluded,
         )
     }
 

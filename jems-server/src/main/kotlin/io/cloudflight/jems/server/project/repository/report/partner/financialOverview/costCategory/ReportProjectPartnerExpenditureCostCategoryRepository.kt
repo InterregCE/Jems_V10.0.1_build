@@ -16,7 +16,8 @@ interface ReportProjectPartnerExpenditureCostCategoryRepository :
         reportId: Long,
     ): ReportProjectPartnerExpenditureCostCategoryEntity
 
-    @Query("""
+    @Query(
+        """
         SELECT new io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull(
             COALESCE(SUM(report.staffCurrent), 0),
             COALESCE(SUM(report.officeCurrent), 0),
@@ -31,7 +32,28 @@ interface ReportProjectPartnerExpenditureCostCategoryRepository :
         )
         FROM #{#entityName} report
         WHERE report.reportEntity.id IN :reportIds
-    """)
+    """
+    )
     fun findCumulativeForReportIds(reportIds: Set<Long>): BudgetCostsCalculationResultFull
+
+    @Query(
+        """
+        SELECT new io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull(
+            COALESCE(SUM(report.staffCurrentParked), 0),
+            COALESCE(SUM(report.officeCurrentParked), 0),
+            COALESCE(SUM(report.travelCurrentParked), 0),
+            COALESCE(SUM(report.externalCurrentParked), 0),
+            COALESCE(SUM(report.equipmentCurrentParked), 0),
+            COALESCE(SUM(report.infrastructureCurrentParked), 0),
+            COALESCE(SUM(report.otherCurrentParked), 0),
+            COALESCE(SUM(report.lumpSumCurrentParked), 0),
+            COALESCE(SUM(report.unitCostCurrentParked), 0),
+            COALESCE(SUM(report.sumCurrentParked), 0)
+        )
+        FROM #{#entityName} report
+        WHERE report.reportEntity.id IN :reportIds
+    """
+    )
+    fun findParkedCumulativeForReportIds(reportIds: Set<Long>): BudgetCostsCalculationResultFull
 
 }

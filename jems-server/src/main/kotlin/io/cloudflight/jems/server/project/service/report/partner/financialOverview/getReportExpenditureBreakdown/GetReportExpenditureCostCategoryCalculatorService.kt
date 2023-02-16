@@ -33,6 +33,7 @@ class GetReportExpenditureCostCategoryCalculatorService(
             val currentExpenditures = reportExpenditurePersistence.getPartnerReportExpenditureCosts(partnerId = partnerId, reportId = reportId)
             currentExpenditures.fillActualCurrencyRates(getActualCurrencyRates())
             costCategories.fillInCurrent(current = currentExpenditures.calculateCurrent(data.options))
+            costCategories.fillInCurrentReIncluded(currentReIncluded = currentExpenditures.onlyReIncluded().calculateCurrent(data.options))
         }
 
         return costCategories.fillInOverviewFields()

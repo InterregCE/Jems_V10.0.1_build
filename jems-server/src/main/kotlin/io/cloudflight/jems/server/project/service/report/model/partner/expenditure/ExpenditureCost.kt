@@ -7,4 +7,5 @@ interface ExpenditureCost {
     var lumpSumId: Long?
     val costCategory: ReportBudgetCategory
     var declaredAmountAfterSubmission: BigDecimal?
+    val parkingMetadata: ExpenditureParkingMetadata?
 }

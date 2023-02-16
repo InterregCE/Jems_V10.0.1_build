@@ -7,7 +7,9 @@ data class ExpenditureCostCategoryBreakdownLine(
 
     val totalEligibleBudget: BigDecimal,
     val previouslyReported: BigDecimal,
+    var previouslyReportedParked: BigDecimal,
     var currentReport: BigDecimal,
+    var currentReportReIncluded: BigDecimal,
     val totalEligibleAfterControl: BigDecimal,
     var totalReportedSoFar: BigDecimal = BigDecimal.ZERO,
     var totalReportedSoFarPercentage: BigDecimal = BigDecimal.ZERO,

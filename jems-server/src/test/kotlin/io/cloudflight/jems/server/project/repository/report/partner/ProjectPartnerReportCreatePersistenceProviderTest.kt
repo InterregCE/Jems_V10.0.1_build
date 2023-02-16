@@ -77,7 +77,6 @@ import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
-import java.math.BigDecimal
 import java.math.BigDecimal.ONE
 import java.math.BigDecimal.TEN
 import java.math.BigDecimal.ZERO
@@ -198,13 +197,15 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
                         previouslyReportedParked = valueOf(1000),
                     ),
                 ),
-                unitCosts = setOf(PartnerReportUnitCostBase(
-                    unitCostId = 5L,
-                    numberOfUnits = ONE,
-                    totalCost = ONE,
-                    previouslyReported = valueOf(5, 1),
-                    previouslyReportedParked = ZERO
-                )),
+                unitCosts = setOf(
+                    PartnerReportUnitCostBase(
+                        unitCostId = 5L,
+                        numberOfUnits = ONE,
+                        totalCost = ONE,
+                        previouslyReported = valueOf(5, 1),
+                        previouslyReportedParked = ZERO
+                    )
+                ),
                 budgetPerPeriod = listOf(
                     ProjectPartnerReportPeriod(1, ONE, ONE, 1, 3),
                     ProjectPartnerReportPeriod(2, TEN, valueOf(11L), 4, 6),
@@ -242,6 +243,30 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
                         unitCost = valueOf(28),
                         sum = valueOf(29),
                     ),
+                    currentlyReportedParked = BudgetCostsCalculationResultFull(
+                        staff = valueOf(70),
+                        office = valueOf(71),
+                        travel = valueOf(77),
+                        external = valueOf(77),
+                        equipment = valueOf(74),
+                        infrastructure = valueOf(77),
+                        other = valueOf(76),
+                        lumpSum = valueOf(77),
+                        unitCost = valueOf(78),
+                        sum = valueOf(79),
+                    ),
+                    currentlyReportedReIncluded = BudgetCostsCalculationResultFull(
+                        staff = valueOf(50),
+                        office = valueOf(51),
+                        travel = valueOf(55),
+                        external = valueOf(55),
+                        equipment = valueOf(54),
+                        infrastructure = valueOf(55),
+                        other = valueOf(56),
+                        lumpSum = valueOf(57),
+                        unitCost = valueOf(58),
+                        sum = valueOf(59),
+                    ),
                     totalEligibleAfterControl = BudgetCostsCalculationResultFull(
                         staff = valueOf(40),
                         office = valueOf(41),
@@ -266,14 +291,28 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
                         unitCost = valueOf(38),
                         sum = valueOf(39),
                     ),
+                    previouslyReportedParked = BudgetCostsCalculationResultFull(
+                        staff = valueOf(60),
+                        office = valueOf(61),
+                        travel = valueOf(62),
+                        external = valueOf(66),
+                        equipment = valueOf(64),
+                        infrastructure = valueOf(65),
+                        other = valueOf(66),
+                        lumpSum = valueOf(67),
+                        unitCost = valueOf(68),
+                        sum = valueOf(69),
+                    ),
                 ),
                 previouslyReportedCoFinancing = PreviouslyReportedCoFinancing(
                     fundsSorted = listOf(
-                        PreviouslyReportedFund(fundId = programmeFundEntity.id, percentage = TEN,
+                        PreviouslyReportedFund(
+                            fundId = programmeFundEntity.id, percentage = TEN,
                             total = valueOf(100L), previouslyReported = valueOf(25),
                             previouslyPaid = valueOf(35)
                         ),
-                        PreviouslyReportedFund(fundId = null, percentage = valueOf(90),
+                        PreviouslyReportedFund(
+                            fundId = null, percentage = valueOf(90),
                             total = valueOf(900L), previouslyReported = valueOf(400),
                             previouslyPaid = valueOf(410)
                         ),
@@ -298,7 +337,7 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
                         title = setOf(InputTranslation(EN, "investment title EN")),
                         total = valueOf(100L),
                         previouslyReported = valueOf(50L),
-                        previouslyReportedParked = BigDecimal.valueOf(130),
+                        previouslyReportedParked = valueOf(130),
                         deactivated = false,
                     )
                 )
@@ -430,9 +469,11 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
         val expenditureSlot = slot<ReportProjectPartnerExpenditureCostCategoryEntity>()
         every { reportBudgetExpenditureRepository.save(capture(expenditureSlot)) } returnsArgument 0
 
-        val createdReport = persistence.createPartnerReport(reportToBeCreated.copy(
-            identification = reportToBeCreated.identification.removeLegalStatusIf(withoutLegalStatus)
-        ))
+        val createdReport = persistence.createPartnerReport(
+            reportToBeCreated.copy(
+                identification = reportToBeCreated.identification.removeLegalStatusIf(withoutLegalStatus)
+            )
+        )
 
         assertThat(createdReport.createdAt).isNotNull
         assertThat(createdReport.reportNumber).isEqualTo(reportToBeCreated.baseData.reportNumber)
@@ -578,7 +619,7 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
             assertThat(translatedValues).isEmpty()
         }
         assertThat(idTargetGroupsSlot.captured).hasSize(3)
-        with(idTargetGroupsSlot.captured.first { it.sortNumber == 1}) {
+        with(idTargetGroupsSlot.captured.first { it.sortNumber == 1 }) {
             assertThat(translatedValues).hasSize(1)
             with(translatedValues.first()) {
                 assertThat(translationId.language).isEqualTo(io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN)
@@ -586,10 +627,10 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
                 assertThat(description).isNull()
             }
         }
-        with(idTargetGroupsSlot.captured.first { it.sortNumber == 2}) {
+        with(idTargetGroupsSlot.captured.first { it.sortNumber == 2 }) {
             assertThat(translatedValues).isEmpty()
         }
-        with(idTargetGroupsSlot.captured.first { it.sortNumber == 3}) {
+        with(idTargetGroupsSlot.captured.first { it.sortNumber == 3 }) {
             assertThat(translatedValues).hasSize(1)
             with(translatedValues.first()) {
                 assertThat(translationId.language).isEqualTo(io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN)
