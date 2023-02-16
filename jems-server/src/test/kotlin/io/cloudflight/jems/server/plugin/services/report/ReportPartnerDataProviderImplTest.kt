@@ -494,6 +494,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
             totalReportedSoFar = BigDecimal.valueOf(4),
             totalReportedSoFarPercentage = BigDecimal.valueOf(5),
             remainingBudget = BigDecimal.valueOf(6),
+            deactivated = false
         )
 
         private val expectedInvestment = ExpenditureInvestmentBreakdownData(
@@ -745,8 +746,10 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
                                 name = "cat.gif",
                                 uploaded = DATE_TIME_1,
                             ),
+                            deactivated = null
                         ),
                     ),
+                    deactivated = null,
                     attachment = JemsFileMetadataData(id = 990L, name = "cat-2.docx", uploaded = DATE_TIME_1),
                 ),
             ),
@@ -758,6 +761,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
                     contribution = true,
                     evidence = false,
                     attachment = null,
+                    deactivated = false
                 ),
             ),
         )
