@@ -46,9 +46,10 @@ export class PartnerControlReportGenerateControlReportAndCertificateComponent {
   }>;
 
   isUploadDone = false;
-  generateExportLoading = false;
 
   displayedColumns: string[] = ['name', 'location', 'uploadDate', 'user', 'size', 'description', 'action', 'attachment'];
+
+  exportInProgress = false;
 
   constructor(
     public fileManagementStore: PartnerControlReportGenerateControlReportAndCertificateExportStore,
@@ -97,7 +98,7 @@ export class PartnerControlReportGenerateControlReportAndCertificateComponent {
 
   initForm(plugins: PluginInfoDTO[]): void {
     this.exportForm = this.formBuilder.group({
-      plugin: [plugins.length > 0 ? plugins[0] : undefined],
+      plugin: [],
     });
   }
 
@@ -123,21 +124,16 @@ export class PartnerControlReportGenerateControlReportAndCertificateComponent {
   }
 
   exportData(plugin: PluginInfoDTO): void {
-    this.generateExportLoading = true;
+    this.exportInProgress = true
     if (plugin.type === PluginInfoDTO.TypeEnum.PARTNERCONTROLREPORTEXPORT) {
-      this.fileManagementStore.generateControlReportExport(this.partnerId, this.reportId, plugin.key)
-        .pipe(
-          finalize(() => this.generateExportLoading = false),
+      this.fileManagementStore.generateControlReportExport(this.partnerId, this.reportId, plugin.key).pipe(
+          finalize(() => this.exportInProgress = false),
           untilDestroyed(this)
-        )
-        .subscribe();
+      ).subscribe();
     } else if (plugin.type === PluginInfoDTO.TypeEnum.PARTNERCONTROLREPORTCERTIFICATE) {
-      this.fileManagementStore.generateControlReportCertificate(this.partnerId, this.reportId, plugin.key)
-        .pipe(
-          finalize(() => this.generateExportLoading = false),
-          untilDestroyed(this)
-        )
-        .subscribe();
+      this.fileManagementStore.generateControlReportCertificate(this.partnerId, this.reportId, plugin.key).pipe(
+          finalize(() => this.exportInProgress = false),
+          untilDestroyed(this)).subscribe();
     }
   }
 
