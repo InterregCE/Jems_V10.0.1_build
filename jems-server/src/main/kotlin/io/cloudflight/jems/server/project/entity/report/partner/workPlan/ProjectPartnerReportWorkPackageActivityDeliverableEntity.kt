@@ -38,6 +38,9 @@ class ProjectPartnerReportWorkPackageActivityDeliverableEntity(
     @field:NotNull
     val number: Int,
 
+    @field:NotNull
+    var deactivated: Boolean,
+
     // linked application form entity
     val deliverableId: Long?,
 

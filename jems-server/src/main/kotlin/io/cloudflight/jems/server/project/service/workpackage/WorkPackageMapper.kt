@@ -163,10 +163,12 @@ fun List<WorkPackageDetailRow>.toModel(periods: List<ProjectPeriodRow>)=
                             deliverableNumber = groupedDeliverableRows.value.first().deliverableNumber!!,
                             description = groupedDeliverableRows.value.extractField({it.deliverableLanguage}) { it.deliverableDescription },
                             title = groupedDeliverableRows.value.extractField({it.deliverableLanguage}) { it.deliverableTitle },
-                            period = groupedDeliverableRows.value.first().deliverableStartPeriod
+                            period = groupedDeliverableRows.value.first().deliverableStartPeriod,
+                            deactivated = groupedDeliverableRows.value.first().deliverableDeactivated ?: false
                         )
                     },
-                    partnerIds = groupedActivityRows.value.mapNotNullTo(hashSetOf()){it.partnerId}
+                    partnerIds = groupedActivityRows.value.mapNotNullTo(hashSetOf()){it.partnerId},
+                    deactivated = groupedActivityRows.value.first().activityDeactivated ?: false
                 )
             },
             outputs = groupedRows.value.filter { it.outputNumber != null }.groupBy { it.outputNumber }.map { groupedOutputRows ->

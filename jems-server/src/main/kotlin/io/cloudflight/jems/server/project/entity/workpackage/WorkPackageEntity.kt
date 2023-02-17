@@ -58,12 +58,15 @@ class WorkPackageEntity(
         this.activities.removeIf { activity -> !newActivities.map { it.id }.contains(activity.id) }
         this.activities.forEach { currentActivity ->
             val newActivity = newActivities.first { it.id==currentActivity.id }
+            if (newActivity.deactivated && !currentActivity.deactivated)
+                newActivity.deliverables.forEach { it.deactivated = true }
             currentActivity.activityNumber =  newActivity.activityNumber
             currentActivity.startPeriod = newActivity.startPeriod
             currentActivity.endPeriod = newActivity.endPeriod
             currentActivity.updateDeliverables(newActivity.deliverables)
             currentActivity.updateTranslations(newActivity.translatedValues)
             currentActivity.updatePartners(newActivity.partners)
+            currentActivity.deactivated = newActivity.deactivated
         }
         this.activities.addAll(newActivities.filter { it.id == 0L })
     }

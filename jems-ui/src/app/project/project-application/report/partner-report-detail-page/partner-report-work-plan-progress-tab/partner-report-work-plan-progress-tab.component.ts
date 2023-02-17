@@ -204,7 +204,8 @@ export class PartnerReportWorkPlanProgressTabComponent {
         title: this.formBuilder.control(existing?.title || []),
         progress: this.formBuilder.control(existing?.progress || [], this.constants.ACTIVITY_PROGRESS.validators),
         deliverables: this.formBuilder.array([]),
-        fileMetadata: this.formBuilder.control(existing?.attachment || '')
+        fileMetadata: this.formBuilder.control(existing?.attachment || ''),
+        deactivated: this.formBuilder.control(existing?.deactivated || false),
       })
     );
   }
@@ -214,7 +215,8 @@ export class PartnerReportWorkPlanProgressTabComponent {
       id: existing?.id,
       title: this.formBuilder.control(existing?.title || []),
       contribution: this.formBuilder.control(existing?.contribution || false),
-      fileMetadata: this.formBuilder.control(existing?.attachment || '')
+      fileMetadata: this.formBuilder.control(existing?.attachment || ''),
+      deactivated: this.formBuilder.control(existing?.deactivated || false),
     }));
   }
 

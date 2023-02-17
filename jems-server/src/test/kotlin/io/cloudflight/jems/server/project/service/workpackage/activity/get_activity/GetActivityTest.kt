@@ -16,6 +16,7 @@ internal class GetActivityTest : UnitTest() {
 
     private val activity1 = WorkPackageActivity(
         workPackageId = 1L,
+        deactivated = false,
         title = setOf(
             InputTranslation(language = SystemLanguage.EN, translation = null),
             InputTranslation(language = SystemLanguage.CS, translation = ""),
@@ -31,6 +32,7 @@ internal class GetActivityTest : UnitTest() {
         deliverables = listOf(
             WorkPackageActivityDeliverable(
                 period = 1,
+                deactivated = false,
                 description = setOf(
                     InputTranslation(
                         language = SystemLanguage.EN,

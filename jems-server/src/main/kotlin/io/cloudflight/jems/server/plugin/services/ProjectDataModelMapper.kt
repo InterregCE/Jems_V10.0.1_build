@@ -217,7 +217,8 @@ fun List<WorkPackageActivity>.toActivityDataModel() = map {
         startPeriod = it.startPeriod,
         endPeriod = it.endPeriod,
         deliverables = it.deliverables.toDeliverableDataModel(),
-        partnerIds = it.partnerIds
+        partnerIds = it.partnerIds,
+        deactivated = it.deactivated
     )
 }.toList()
 
@@ -226,7 +227,8 @@ fun List<WorkPackageActivityDeliverable>.toDeliverableDataModel() = map {
         deliverableNumber = it.deliverableNumber,
         description = it.description.toDataModel(),
         title = it.title.toDataModel(),
-        period = it.period
+        period = it.period,
+        deactivated = it.deactivated
     )
 }.toList()
 

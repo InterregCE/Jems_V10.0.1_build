@@ -98,7 +98,8 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
             activityNumber = 1,
             startPeriod = 4,
             endPeriod = 6,
-            partners = mutableSetOf(activityPartnerMock)
+            partners = mutableSetOf(activityPartnerMock),
+            deactivated = false,
         )
         val activity1Partner1 = WorkPackageActivityPartnerEntity(
             WorkPackageActivityPartnerId(
@@ -113,6 +114,7 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
             activityNumber = 1,
             startPeriod = 4,
             endPeriod = 6,
+            deactivated = false,
             partnerIds = setOf(activity1Partner1.id.projectPartnerId)
         )
         val activity2 = WorkPackageActivityEntity(
@@ -122,6 +124,7 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
             startPeriod = 1,
             endPeriod = 3,
             translatedValues = mutableSetOf(),
+            deactivated = false,
             deliverables = mutableSetOf()
         ).apply {
             deliverables.addAll(mutableSetOf(
@@ -129,12 +132,14 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
                     id = 1L,
                     deliverableNumber = 2,
                     startPeriod = 2,
+                    deactivated = false,
                     workPackageActivity = this
                 ),
                 WorkPackageActivityDeliverableEntity(
                     id = 2L,
                     deliverableNumber = 1,
                     startPeriod = 1,
+                    deactivated = false,
                     translatedValues = mutableSetOf(),
                     workPackageActivity = this
                 ).apply {
@@ -191,6 +196,7 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
             ),
             startPeriod = 1,
             endPeriod = 3,
+            deactivated = false,
             deliverables = listOf(
                 WorkPackageActivityDeliverable(
                     id = deliverable2_1_id,
@@ -201,12 +207,14 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
                             language = SK,
                             translation = "sk_deliverable_desc"
                         ),
-                    )
+                    ),
+                    deactivated = false
                 ),
                 WorkPackageActivityDeliverable(
                     id = deliverable2_2_id,
                     deliverableNumber = 2,
-                    period = 2
+                    period = 2,
+                    deactivated = false
                 )
             )
         )
@@ -397,6 +405,7 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
         every { mockWPARow.endPeriod } returns 2
         every { mockWPARow.title } returns "title"
         every { mockWPARow.description } returns "description"
+        every { mockWPARow.deactivated } returns false
         val mockWPAPRow: WorkPackageActivityPartnerRow = mockk()
         every { mockWPAPRow.activityId } returns activityId1
         every { mockWPAPRow.workPackageId } returns wpId
@@ -408,6 +417,7 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
         every { mockWPDRow.startPeriod } returns 1
         every { mockWPDRow.description } returns "description"
         every { mockWPDRow.title } returns "title"
+        every { mockWPDRow.deactivated } returns false
         val mockWPORow: WorkPackageOutputRow = mockk()
         every { mockWPORow.workPackageId } returns wpId
         every { mockWPORow.outputNumber } returns 5
@@ -419,6 +429,7 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
         every { mockWPORow.title } returns "title"
         every { mockWPORow.description } returns "description"
         every { mockWPORow.deactivated } returns false
+
 
         every { projectVersionRepo.findTimestampByVersion(id, version) } returns timestamp
         every { repository.findAllByProjectIdAsOfTimestamp(id, timestamp) } returns listOf(mockWPRow)
@@ -461,6 +472,7 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
                         description = setOf(InputTranslation(mockWPARow.language!!, mockWPARow.description)),
                         startPeriod = mockWPARow.startPeriod,
                         endPeriod = mockWPARow.endPeriod,
+                        deactivated = false,
                         deliverables = listOf(
                             WorkPackageActivityDeliverable(
                                 id = deliverable2_1_id,
@@ -471,7 +483,8 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
                                 title = setOf(
                                     InputTranslation(EN, mockWPDRow.title)
                                 ),
-                                period = mockWPDRow.startPeriod
+                                period = mockWPDRow.startPeriod,
+                                deactivated = false
                             )
                         ),
                         partnerIds = setOf(5)
@@ -543,7 +556,7 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
                 timestamp
             )
         } returns listOf(
-            WorkPackageActivityRowImpl(activityId1, null, WORK_PACKAGE_ID, 10,1, 1, 2, null, null)
+            WorkPackageActivityRowImpl(activityId1, null, WORK_PACKAGE_ID, 10,1, 1, 2, null, null, false)
         )
         every {
             repositoryActivity.findAllDeliverablesByActivityIdAsOfTimestamp(
@@ -585,6 +598,7 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
                 endPeriod = 2,
                 deliverables = emptyList(),
                 partnerIds = setOf(207L, 208L),
+                deactivated = false,
             )
         )
     }
@@ -623,6 +637,7 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
                     description = emptySet(),
                     startPeriod = 1,
                     endPeriod = 3,
+                    deactivated = false,
                     deliverables = emptyList()
                 )),
                 outputs = emptyList(),
@@ -696,6 +711,7 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
                     description = emptySet(),
                     startPeriod = 1,
                     endPeriod = 3,
+                    deactivated = false,
                     deliverables = emptyList()
                 )),
                 outputs = emptyList(),
@@ -843,6 +859,8 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
                 override val programmeOutputIndicatorName: String? = null
                 override val investmentDocumentationExpectedImpacts: String? = null
                 override val investmentExpectedDeliveryPeriod: Int? = null
+                override val activityDeactivated: Boolean? = null
+                override val deliverableDeactivated: Boolean? = null
             }
         )
     }
@@ -856,7 +874,8 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
         override val startPeriod: Int?,
         override val endPeriod: Int?,
         override val title: String?,
-        override val description: String?
+        override val description: String?,
+        override val deactivated: Boolean
     ) : WorkPackageActivityRow
 
     data class WorkPackageActivityPartnerRowImpl(

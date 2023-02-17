@@ -330,7 +330,8 @@ val activityEntity = WorkPackageActivityEntity(
     translatedValues = mutableSetOf(),
     startPeriod = 1,
     endPeriod = 3,
-    deliverables = mutableSetOf()
+    deliverables = mutableSetOf(),
+    deactivated = false
 )
 
 val activity = WorkPackageActivity(
@@ -341,9 +342,11 @@ val activity = WorkPackageActivity(
     description = setOf(InputTranslation(language = SystemLanguage.EN, translation = "description")),
     startPeriod = 1,
     endPeriod = 3,
+    deactivated = false,
     deliverables = listOf(
         WorkPackageActivityDeliverable(
             period = 1,
+            deactivated = false,
             description = setOf(InputTranslation(language = SystemLanguage.EN, translation = "description"))
         )
     )

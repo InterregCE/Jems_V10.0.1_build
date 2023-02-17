@@ -63,6 +63,7 @@ class ProjectPartnerReportWorkPlanControllerTest {
                             title = setOf(InputTranslation(SystemLanguage.EN, "D1.1.1")),
                             contribution = true,
                             evidence = false,
+                            deactivated = false,
                             attachment = JemsFileMetadata(
                                 id = 980L,
                                 name = "cat.gif",
@@ -71,6 +72,7 @@ class ProjectPartnerReportWorkPlanControllerTest {
                         )
                     ),
                     attachment = null,
+                    deactivated = false,
                 ),
             ),
             outputs = listOf(
@@ -103,6 +105,7 @@ class ProjectPartnerReportWorkPlanControllerTest {
                             title = setOf(InputTranslation(SystemLanguage.EN, "D1.1.1")),
                             contribution = true,
                             evidence = false,
+                            deactivated = false,
                             attachment = ProjectReportFileMetadataDTO(
                                 id = 980L,
                                 name = "cat.gif",
@@ -110,6 +113,7 @@ class ProjectPartnerReportWorkPlanControllerTest {
                             )
                         )
                     ),
+                    deactivated = false,
                     attachment = null,
                 ),
             ),

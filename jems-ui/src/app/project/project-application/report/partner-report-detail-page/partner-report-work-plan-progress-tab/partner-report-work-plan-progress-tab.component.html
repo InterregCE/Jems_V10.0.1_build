@@ -46,7 +46,9 @@
 
                                     <jems-multi-language-container>
                                         <div [formGroupName]="activityIndex" jemsMultiColumnRow class="activity-items">
-                                            <span>{{ 'project.application.partner.report.workplan.activity.table.nr.entry' | translate: {
+                                            <span>
+                                               <mat-icon *ngIf="activity.deactivated" class="vertical-middle" matTooltip="{{ 'project.application.form.partner.table.status.inactive' | translate }}">hide_source</mat-icon>
+                                                {{ 'project.application.partner.report.workplan.activity.table.nr.entry' | translate: {
                                                 workPackageNr: workPackage.number,
                                                 activityNr: activity.number
                                             } }}</span>
@@ -84,7 +86,9 @@
                                         <div id="deliverables-table" jemsNoWidthLimit
                                              [jemsTableConfig]="[{minInRem: 5, maxInRem: 8}, {minInRem:22, maxInRem: 25}, {minInRem: 7, maxInRem: 8}, {minInRem: 5, maxInRem: 6}, {minInRem: 25, maxInRem:30}]">
                                             <div class="">
-                                                <span>{{ 'project.application.partner.report.workplan.deliverable.table.nr' | translate }}</span>
+                                                <span>
+                                                    {{ 'project.application.partner.report.workplan.deliverable.table.nr' | translate }}
+                                                </span>
                                                 <span class="justify-start" >
                                                     {{ 'project.application.partner.report.workplan.deliverable.table.title' | translate }}
                                                 </span>
@@ -101,7 +105,9 @@
                                                         *ngFor="let deliverable of activity.deliverables; let deliverableIndex = index"
                                                         [formArrayName]="constants.DELIVERABLES.name">
                                                     <div [formGroupName]="deliverableIndex">
-                                                        <span>{{ 'project.application.partner.report.workplan.deliverable.table.nr.entry' | translate: {
+                                                        <span>
+                                                            <mat-icon *ngIf="deliverable.deactivated" class="vertical-middle" matTooltip="{{ 'project.application.form.partner.table.status.inactive' | translate }}">hide_source</mat-icon>
+                                                            {{ 'project.application.partner.report.workplan.deliverable.table.nr.entry' | translate: {
                                                             workPackageNr: workPackage.number,
                                                             activityNr: activity.number,
                                                             deliverableNr: deliverable.number

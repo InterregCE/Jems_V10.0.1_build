@@ -46,6 +46,7 @@ internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
                     number = 99,
                     title = setOf(InputTranslation(EN, "[99] title")),
                     progress = setOf(InputTranslation(EN, "[99] progress")),
+                    deactivated = false,
                     deliverables = listOf(
                         ProjectPartnerReportWorkPackageActivityDeliverable(
                             id = 87L,
@@ -53,6 +54,7 @@ internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
                             title = setOf(InputTranslation(EN, "[87] title")),
                             contribution = true,
                             evidence = false,
+                            deactivated = false,
                             attachment = dummyFile,
                         )
                     ),
@@ -82,6 +84,7 @@ internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
                     number = 99,
                     title = setOf(InputTranslation(EN, "[99] title")),
                     progress = setOf(InputTranslation(EN, "[99] progress new")),
+                    deactivated = false,
                     deliverables = listOf(
                         ProjectPartnerReportWorkPackageActivityDeliverable(
                             id = 87L,
@@ -89,6 +92,7 @@ internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
                             title = setOf(InputTranslation(EN, "[87] title")),
                             contribution = false,
                             evidence = false,
+                            deactivated = false,
                             attachment = dummyFile,
                         )
                     ),

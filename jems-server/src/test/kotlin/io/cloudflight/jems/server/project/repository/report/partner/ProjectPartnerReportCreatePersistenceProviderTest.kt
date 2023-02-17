@@ -141,10 +141,12 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
                             activityId = ACTIVITY_ID,
                             number = 1,
                             title = setOf(InputTranslation(EN, "4.1 activity title")),
+                            deactivated = false,
                             deliverables = listOf(
                                 CreateProjectPartnerReportWorkPackageActivityDeliverable(
                                     deliverableId = DELIVERABLE_ID,
                                     number = 1,
+                                    deactivated = false,
                                     title = setOf(InputTranslation(EN, "4.1.1 title")),
                                 )
                             ),

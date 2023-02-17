@@ -9,6 +9,7 @@ interface WorkPackageActivityRow: TranslationView {
     val activityNumber: Int
     val startPeriod: Int?
     val endPeriod: Int?
+    val deactivated: Boolean?
     val title: String?
     val description: String?
 }

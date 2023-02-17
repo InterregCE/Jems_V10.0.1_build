@@ -6,6 +6,7 @@ interface WorkPackageDeliverableRow: TranslationView {
     val id: Long
     val deliverableNumber: Int
     val startPeriod: Int?
+    val deactivated: Boolean?
     val description: String?
     val title: String?
 }

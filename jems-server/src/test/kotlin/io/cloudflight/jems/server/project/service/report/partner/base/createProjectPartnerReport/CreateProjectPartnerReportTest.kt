@@ -185,11 +185,13 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
                             activityId = ACTIVITY_ID,
                             number = 1,
                             title = setOf(InputTranslation(EN, "4.1 activity title")),
+                            deactivated = false,
                             deliverables = listOf(
                                 CreateProjectPartnerReportWorkPackageActivityDeliverable(
                                     deliverableId = DELIVERABLE_ID,
                                     number = 1,
                                     title = setOf(InputTranslation(EN, "4.1.1 deliverable title")),
+                                    deactivated = false,
                                 ),
                             ),
                         ),
@@ -249,11 +251,13 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
                         workPackageId = WORK_PACKAGE_ID,
                         activityNumber = 1,
                         title = setOf(InputTranslation(EN, "4.1 activity title")),
+                        deactivated = false,
                         deliverables = listOf(
                             WorkPackageActivityDeliverable(
                                 id = DELIVERABLE_ID,
                                 deliverableNumber = 1,
                                 title = setOf(InputTranslation(EN, "4.1.1 deliverable title")),
+                                deactivated = false
                             ),
                         )
                     )
@@ -271,8 +275,8 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
                         id = 18L,
                         investmentNumber = 4,
                         title = setOf(InputTranslation(EN, "18 investment EN")),
-                        address = null,
                         deactivated = false,
+                        address = null,
                     )
                 ),
             )
@@ -289,8 +293,8 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
             investmentId = 18L,
             workPackageNumber = 2,
             investmentNumber = 4,
-            title = setOf(InputTranslation(EN, "18 investment EN")),
             deactivated = false,
+            title = setOf(InputTranslation(EN, "18 investment EN")),
         )
     }
 

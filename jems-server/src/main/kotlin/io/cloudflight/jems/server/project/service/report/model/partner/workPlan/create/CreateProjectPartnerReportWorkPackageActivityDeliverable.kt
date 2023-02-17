@@ -6,4 +6,5 @@ data class CreateProjectPartnerReportWorkPackageActivityDeliverable(
     val deliverableId: Long,
     val number: Int,
     val title: Set<InputTranslation>,
+    val deactivated: Boolean
 )

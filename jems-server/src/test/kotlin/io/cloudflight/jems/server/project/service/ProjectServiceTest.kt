@@ -117,11 +117,13 @@ class ProjectServiceTest : UnitTest() {
                         activityNumber = 1,
                         startPeriod = activityStartPeriod,
                         endPeriod = activityEndPeriod,
+                        deactivated = false,
                     ).apply {
                         deliverables.add(
                             WorkPackageActivityDeliverableEntity(
                                 deliverableNumber = 1,
                                 startPeriod = deliverablePeriod,
+                                deactivated = false,
                                 workPackageActivity = this
                             )
                         )

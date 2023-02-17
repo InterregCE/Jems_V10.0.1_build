@@ -10,4 +10,5 @@ data class ProjectPartnerReportWorkPackageActivityDTO(
     val progress: Set<InputTranslation>,
     val deliverables: List<ProjectPartnerReportWorkPackageActivityDeliverableDTO>,
     val attachment: ProjectReportFileMetadataDTO?,
+    val deactivated: Boolean,
 )

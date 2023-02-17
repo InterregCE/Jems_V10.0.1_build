@@ -405,7 +405,7 @@ class PartnerPersistenceProviderTest {
         every {
             workPackageActivityRepository.findAllByActivityIdInAsOfTimestamp(listOf(3), timestamp)
         } returns listOf(
-            WorkPackageActivityRowImpl(3L, EN, 1L, 10, 3, null, null, null, null))
+            WorkPackageActivityRowImpl(3L, EN, 1L, 10, 3, null, null, null, null, false))
         every { programmeStateAidRepository.findById(2L) } returns Optional.of(programmeStateAidEntity)
 
         assertThat(persistence.getPartnerStateAid(PARTNER_ID, version))
@@ -421,7 +421,8 @@ class PartnerPersistenceProviderTest {
         override val startPeriod: Int?,
         override val endPeriod: Int?,
         override val title: String?,
-        override val description: String?
+        override val description: String?,
+        override val deactivated: Boolean
     ) : WorkPackageActivityRow
 
     @Test

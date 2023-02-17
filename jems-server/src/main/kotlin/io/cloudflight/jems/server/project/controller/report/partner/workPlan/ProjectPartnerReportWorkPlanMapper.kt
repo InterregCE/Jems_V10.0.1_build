@@ -36,6 +36,7 @@ fun List<ProjectPartnerReportWorkPackageActivity>.toActivitiesDto() = map {
         progress = it.progress,
         deliverables = it.deliverables.toDeliverablesDto(),
         attachment = it.attachment?.toDto(),
+        deactivated = it.deactivated
     )
 }
 
@@ -47,6 +48,7 @@ fun List<ProjectPartnerReportWorkPackageActivityDeliverable>.toDeliverablesDto()
         contribution = it.contribution,
         evidence = it.evidence,
         attachment = it.attachment?.toDto(),
+        deactivated = it.deactivated
     )
 }
 

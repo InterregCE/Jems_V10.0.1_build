@@ -28,7 +28,8 @@ fun WorkPackageActivity.toEntity(workPackage: WorkPackageEntity, index: Int): Wo
         startPeriod = startPeriod,
         endPeriod = endPeriod,
         deliverables = mutableSetOf(),
-        partners = mutableSetOf()
+        partners = mutableSetOf(),
+        deactivated = deactivated
     )
     val deliverablesEntity = deliverables.toIndexedEntity(workPackageActivityEntity)
     return workPackageActivityEntity.apply {
@@ -60,6 +61,7 @@ fun WorkPackageActivityDeliverable.toEntity(
         deliverableNumber = index,
         translatedValues = mutableSetOf(),
         startPeriod = period,
+        deactivated = deactivated,
         workPackageActivity = workPackageActivityEntity
     ).apply {
         translatedValues.addTranslationEntities(
@@ -88,7 +90,8 @@ fun WorkPackageActivityEntity.toModel() =
         startPeriod = startPeriod,
         endPeriod = endPeriod,
         deliverables = deliverables.sortedBy { it.deliverableNumber }.map { it.toModel() },
-        partnerIds = partners.map { it.id.projectPartnerId }.toSet()
+        partnerIds = partners.map { it.id.projectPartnerId }.toSet(),
+        deactivated = deactivated
     )
 
 fun Iterable<WorkPackageActivityEntity>.toModel() = sortedBy { it.activityNumber }.map { it.toModel() }
@@ -114,6 +117,7 @@ fun WorkPackageActivityDeliverableEntity.toModel() = WorkPackageActivityDelivera
     description = translatedValues.extractField { it.description },
     title = translatedValues.extractField { it.title },
     period = startPeriod,
+    deactivated = deactivated
 )
 
 fun Set<WorkPackageActivityTranslationEntity>.toModel() = mapTo(HashSet()) {
@@ -134,7 +138,8 @@ fun List<WorkPackageActivityRow>.toActivityHistoricalData() =
             startPeriod = groupedRows.value.first().startPeriod,
             endPeriod = groupedRows.value.first().endPeriod,
             title = groupedRows.value.extractField { it.title },
-            description = groupedRows.value.extractField { it.description }
+            description = groupedRows.value.extractField { it.description },
+            deactivated = groupedRows.value.first().deactivated ?: false,
         )
     }
 
@@ -145,7 +150,8 @@ fun List<WorkPackageDeliverableRow>.toDeliverableHistoricalData() =
             deliverableNumber = groupedRows.value.first().deliverableNumber,
             period = groupedRows.value.first().startPeriod,
             description = groupedRows.value.extractField { it.description },
-            title = groupedRows.value.extractField { it.title }
+            title = groupedRows.value.extractField { it.title },
+            deactivated = groupedRows.value.first().deactivated ?: false
         )
     }
 
@@ -158,7 +164,8 @@ fun List<WorkPackageActivityRow>.toTimePlanActivityHistoricalData() =
             startPeriod = groupedRows.value.first().startPeriod,
             endPeriod = groupedRows.value.first().endPeriod,
             title = groupedRows.value.extractField { it.title },
-            description = groupedRows.value.extractField { it.description }
+            description = groupedRows.value.extractField { it.description },
+            deactivated = groupedRows.value.first().deactivated ?: false
         )
     }
 

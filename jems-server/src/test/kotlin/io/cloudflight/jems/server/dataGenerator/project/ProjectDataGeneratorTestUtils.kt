@@ -154,12 +154,14 @@ fun workPackageActivity(workPackageActivityDto: WorkPackageActivityDTO, workPack
         startPeriod = workPackageActivityDto.startPeriod,
         endPeriod = workPackageActivityDto.endPeriod,
         partnerIds = workPackageActivityDto.partnerIds,
+        deactivated = false,
         deliverables = workPackageActivityDto.deliverables.map { deliverable ->
             WorkPackageActivityDeliverable(
                 deliverable.deliverableId, deliverable.deliverableNumber!!,
                 description = versionedInputTranslation("description", version),
                 title = versionedInputTranslation("title", version),
-                period = deliverable.period
+                period = deliverable.period,
+                deactivated = false
             )
         }
     )
