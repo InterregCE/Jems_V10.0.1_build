@@ -1268,6 +1268,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                                 investmentNumber = investment.investmentNumber,
                                 title = setOf(InputTranslationData(SystemLanguageData.EN, "title")),
                                 expectedDeliveryPeriod = investment.expectedDeliveryPeriod,
+                                deactivated = false,
                                 justificationExplanation = setOf(
                                     InputTranslationData(
                                         SystemLanguageData.EN,
