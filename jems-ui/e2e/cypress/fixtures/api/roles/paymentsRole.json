@@ -1,0 +1,7 @@
+{
+  "name": "paymentsRole",
+  "permissions": [
+    "ProjectSetToContracted", "ProjectContractingView", "ProjectFormRetrieve", "PaymentsUpdate", "PaymentsRetrieve",
+    "AdvancePaymentsUpdate", "AdvancePaymentsRetrieve", "ProjectRetrieve"
+  ]
+}

@@ -1,41 +1,4 @@
 {
-  "paymentsRole": {
-    "name": "paymentsRole",
-    "permissions": [
-      "ProjectSetToContracted", "ProjectContractingView", "ProjectFormRetrieve", "PaymentsUpdate", "PaymentsRetrieve",
-      "AdvancePaymentsUpdate", "AdvancePaymentsRetrieve", "ProjectRetrieve"
-    ]
-  },
-  "paymentsUser": {
-    "email": "randomize",
-    "name": "Payments",
-    "surname": "User",
-    "userRoleId": null,
-    "userStatus": "ACTIVE"
-  },
-  "programmeFund": {
-    "id": null,
-    "selected": true,
-    "type": "OTHER",
-    "abbreviation": [
-      {
-        "translation": "randomize DE",
-        "language": "DE"
-      }, {
-        "translation": "randomize EN",
-        "language": "EN"
-      }
-    ],
-    "description": [
-      {
-        "translation": "API generated programme fund DE",
-        "language": "DE"
-      }, {
-        "translation": "API generated programme fund EN",
-        "language": "EN"
-      }
-    ]
-  },
   "callFund": {
     "programmeFund": {
       "id": null

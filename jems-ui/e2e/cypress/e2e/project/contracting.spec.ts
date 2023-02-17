@@ -181,4 +181,93 @@ context('Application contracting tests', () => {
       });
     });
   });
+
+  it('TB-796 Contract monitoring behavior when both LS and FTLS are used in AF', function () {
+    cy.fixture('project/contracting/TB-796.json').then(testData => {
+      cy.fixture('api/call/1.step.call.json').then(call => {
+        cy.fixture('api/application/application.json').then(application => {
+
+          // customize the call
+          cy.loginByRequest(user.programmeUser.email);
+          cy.createCall(call).then(callId => {
+            application.details.projectCallId = callId;
+            cy.publishCall(callId);
+
+            application.details.projectCallId = callId;
+            application.partners[0].cofinancing.partnerContributions[0].amount = 5698.97;
+            application.partners[1].cofinancing.partnerContributions[2].amount = 6107.96;
+
+            // since default application has FTLS in first position, switch them
+            const fastTrackLumpSum = application.lumpSums[0];
+            application.lumpSums[0] = application.lumpSums[1];
+            application.lumpSums[1] = fastTrackLumpSum;
+            application.lumpSums.pop();
+
+            cy.loginByRequest(user.applicantUser.email);
+            cy.createContractedApplication(application, user.programmeUser.email).then(function (applicationId) {
+
+              cy.loginByRequest(user.programmeUser.email);
+              cy.visit(`app/project/detail/${applicationId}/contractMonitoring`, {failOnStatusCode: false});
+
+              cy.contains(testData.fastTrackLumpSumName).scrollIntoView().should('be.visible');
+              cy.contains(testData.regularLumpSumName).should('not.exist');
+
+              cy.get('div.jems-table-config').eq(1).children().eq(1).contains('Yes').click();
+              cy.contains('Save changes').should('be.visible').click();
+              cy.contains('Contract monitoring form saved successfully.').should('be.visible');
+
+              // remove regular lump sum
+              cy.startModification(applicationId, user.programmeUser.email);
+              cy.loginByRequest(user.applicantUser.email);
+              cy.visit(`app/project/detail/${applicationId}/applicationFormLumpSums`, {failOnStatusCode: false});
+              cy.contains('mat-row', testData.regularLumpSumName).contains('delete').click();
+              cy.contains('Save changes').click();
+              cy.contains('Project\'s LumpSums saved successfully').should('be.visible');
+              cy.contains('mat-row', testData.fastTrackLumpSumName).contains('delete').should('not.exist');
+
+              application.partners[0].cofinancing.partnerContributions[0].amount = 5192.17;
+              application.partners[1].cofinancing.partnerContributions[2].amount = 3974.63;
+              cy.updatePartnerCofinancing(this[application.partners[0].details.abbreviation], application.partners[0].cofinancing);
+              cy.updatePartnerCofinancing(this[application.partners[1].details.abbreviation], application.partners[1].cofinancing);
+              cy.runPreSubmissionCheck(applicationId);
+              cy.submitProjectApplication(applicationId);
+
+              cy.loginByRequest(user.programmeUser.email);
+              cy.approveModification(applicationId, approvalInfo);
+
+              cy.visit(`app/project/detail/${applicationId}/contractMonitoring`, {failOnStatusCode: false});
+
+              cy.contains(testData.fastTrackLumpSumName).scrollIntoView().should('be.visible');
+              cy.contains(testData.regularLumpSumName).should('not.exist');
+
+              cy.contains('div.jems-table-config', testData.fastTrackLumpSumName).children().should('have.length', 2);
+
+              // add regular lump sum back again
+              cy.startModification(applicationId);
+              cy.loginByRequest(user.applicantUser.email);
+              cy.updateLumpSums(applicationId, application.lumpSums);
+              cy.then(() => {
+                application.partners[0].cofinancing.partnerContributions[0].amount = 5698.97;
+                application.partners[1].cofinancing.partnerContributions[2].amount = 6107.96;
+                cy.updatePartnerCofinancing(this[application.partners[0].details.abbreviation], application.partners[0].cofinancing);
+                cy.updatePartnerCofinancing(this[application.partners[1].details.abbreviation], application.partners[1].cofinancing);
+              });
+              cy.runPreSubmissionCheck(applicationId);
+              cy.submitProjectApplication(applicationId);
+
+              cy.loginByRequest(user.programmeUser.email);
+              cy.approveModification(applicationId, approvalInfo);
+
+              cy.visit(`app/project/detail/${applicationId}/contractMonitoring`, {failOnStatusCode: false});
+
+              cy.contains(testData.fastTrackLumpSumName).scrollIntoView().should('be.visible');
+              cy.contains(testData.regularLumpSumName).should('not.exist');
+
+              cy.contains('div.jems-table-config', testData.fastTrackLumpSumName).children().should('have.length', 2);
+            });
+          });
+        });
+      });
+    });
+  });
 });

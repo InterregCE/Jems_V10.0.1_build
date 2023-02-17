@@ -1,0 +1,22 @@
+{
+  "selected": true,
+  "type": "OTHER",
+  "abbreviation": [
+    {
+      "translation": "randomize DE",
+      "language": "DE"
+    }, {
+      "translation": "randomize EN",
+      "language": "EN"
+    }
+  ],
+  "description": [
+    {
+      "translation": "API generated programme fund DE",
+      "language": "DE"
+    }, {
+      "translation": "API generated programme fund EN",
+      "language": "EN"
+    }
+  ]
+}

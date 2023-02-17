@@ -8,7 +8,7 @@ If you want to run cypress locally, do the following:
 - set the following environment variables:
   - `CYPRESS_defaultPassword` to our default password
   (The password can be set by updating the corresponding field in `cypress.config.ts`)
-- run `npm run open` to start Cypress
+- run `npm run open` to start Cypress TestRunner pr `npm run run` to start it in headless mode
   - if that will fail because `Cypress verification timed out`, run the command again or run `npx cypress verify`
 
 ### Environment setup

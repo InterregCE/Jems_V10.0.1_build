@@ -63,10 +63,8 @@ function createCall(call, creatingUserEmail?: string) {
       setCallApplicationFormConfiguration(callId, call.applicationFormConfiguration);
     if (call.preSubmissionCheckSettings)
       setCallPreSubmissionCheckSettings(callId, call.preSubmissionCheckSettings);
-    if (creatingUserEmail) {
-      cy.get('@currentUser').then((currentUser: any) => {
-        loginByRequest(currentUser.name);
-      });
+    if (creatingUserEmail && this.currentUser) {
+      loginByRequest(this.currentUser.name);
     }
     cy.wrap(callId).as('callId');
   });
