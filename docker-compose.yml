@@ -3,7 +3,7 @@ version: '3'
 services:
 
   jems-database:
-    image: mariadb/server:10.3.13
+    image: mariadb:10.6.12
     container_name: jems-database
 #    volumes:
 #      - [YOUR/PATH/HERE]:/var/lib/mysql
@@ -12,6 +12,7 @@ services:
     environment:
       MYSQL_DATABASE: jemsdb
       MYSQL_ROOT_PASSWORD: Mariadb@2020
+      MARIADB_AUTO_UPGRADE: 1
     command: [ 'mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci' ]
 
   jems-minio:
