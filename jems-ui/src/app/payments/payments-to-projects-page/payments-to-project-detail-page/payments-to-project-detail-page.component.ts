@@ -169,9 +169,13 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
     return this.partnerPayments.at(paymentIndex).get(this.constants.FORM_CONTROL_NAMES.installments) as FormArray;
   }
 
-  updatePaymentInstallments(paymentId: number, paymentDetail: PaymentDetailDTO) {
-    paymentDetail.partnerPayments.forEach((payment, index: number) => {
-      this.paymentsDetailPageStore.updatePaymentInstallmentsPerPartner(paymentId, payment.partnerId, payment.installments).pipe(
+  updatePaymentInstallments(paymentId: number, paymentDetail: PaymentDetailDTO, data: PaymentDetailDTO) {
+    paymentDetail.paymentType = data.paymentType;
+    paymentDetail.projectId = data.projectId;
+    paymentDetail.projectAcronym = data.projectAcronym;
+    paymentDetail.amountApprovedPerFund = data.amountApprovedPerFund;
+    paymentDetail.dateOfLastPayment = data.dateOfLastPayment;
+      this.paymentsDetailPageStore.updatePaymentInstallments(paymentId, paymentDetail).pipe(
         take(1),
         tap(() => this.updateInstallmentsSuccess$.next(true)),
         catchError(error => {
@@ -180,10 +184,11 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
           if (apiError?.formErrors) {
             Object.keys(apiError.formErrors).forEach(key => {
               const fieldAndIndexArr = key.split('-');
-              if(fieldAndIndexArr.length == 2) {
+              if(fieldAndIndexArr.length == 3) {
                 const field = fieldAndIndexArr[0];
-                const installmentIndex = Number(fieldAndIndexArr[1]);
-                const control = this.installmentsArray(index).at(installmentIndex).get(field);
+                const partnerIndex = Number(fieldAndIndexArr[1]);
+                const installmentIndex = Number(fieldAndIndexArr[2]);
+                const control = this.installmentsArray(partnerIndex).at(installmentIndex).get(field);
                 control?.setErrors({required: this.translateService.instant(apiError.formErrors[key].i18nKey)});
                 control?.markAsDirty();
               }
@@ -195,13 +200,7 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
         }),
         untilDestroyed(this)
       )
-      .subscribe(
-        (updatedInstallments) => {
-          paymentDetail.partnerPayments.filter(partnerPayment => partnerPayment.partnerId === payment.partnerId)[0].installments = updatedInstallments;
-          this.paymentsDetailPageStore.savedPaymentDetail$.next(paymentDetail);
-        }
-      );
-    });
+      .subscribe(updatedPaymentDetail => this.paymentsDetailPageStore.savedPaymentDetail$.next(updatedPaymentDetail));
   }
 
   computeAvailableSum(paymentIndex: number): number {

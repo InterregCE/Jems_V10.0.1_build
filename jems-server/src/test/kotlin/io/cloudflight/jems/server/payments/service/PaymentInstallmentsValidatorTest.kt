@@ -98,7 +98,6 @@ class PaymentInstallmentsValidatorTest : UnitTest() {
             ))
         }
         assertEquals(PaymentInstallmentsValidator.PAYMENT_PARTNER_INSTALLMENT_DELETION_ERROR_KEY, ex.i18nKey)
-
     }
 
     @Test
@@ -107,7 +106,8 @@ class PaymentInstallmentsValidatorTest : UnitTest() {
             validator.validateInstallments(
                 listOf(installmentNew, installmentUpdate.copy(comment = "t".repeat(501))),
                 emptyList(),
-                emptyList()
+                emptyList(),
+                1
             )
         }
         assertEquals(COMMON_INPUT_ERROR, ex.i18nMessage.i18nKey)
@@ -122,7 +122,8 @@ class PaymentInstallmentsValidatorTest : UnitTest() {
                     paymentDate = null
                 )),
                 emptyList(),
-                emptyList()
+                emptyList(),
+                1
             )
         }
     }
@@ -136,11 +137,12 @@ class PaymentInstallmentsValidatorTest : UnitTest() {
                     paymentDate = null
                 )),
                 emptyList(),
-                emptyList()
+                emptyList(),
+                1
             )
         }
         assertEquals(COMMON_INPUT_ERROR, ex.i18nMessage.i18nKey)
-        assertEquals(COMMON_ERROR_REQUIRED, ex.formErrors["paymentDate-1"]?.i18nKey)
+        assertEquals(COMMON_ERROR_REQUIRED, ex.formErrors["paymentDate-1-1"]?.i18nKey)
     }
 
     @Test
@@ -149,7 +151,8 @@ class PaymentInstallmentsValidatorTest : UnitTest() {
             validator.validateInstallments(
                 listOf(installmentUpdate.copy(isSavePaymentInfo = false, isPaymentConfirmed = false)),
                 listOf(installmentSaved),
-                emptyList()
+                emptyList(),
+                1
             )
         }
         assertEquals(PaymentInstallmentsValidator.PAYMENT_PARTNER_INSTALLMENT_DELETION_ERROR_KEY, ex.i18nKey)

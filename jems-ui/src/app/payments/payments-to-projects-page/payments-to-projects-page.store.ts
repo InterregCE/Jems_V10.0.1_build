@@ -1,16 +1,13 @@
 import {Injectable} from '@angular/core';
-import {
-  PagePaymentToProjectDTO, PaymentDetailDTO,
-  PaymentsApiService, UserRoleCreateDTO,
-} from '@cat/api';
+import {PagePaymentToProjectDTO, PaymentDetailDTO, PaymentsAPIService, UserRoleCreateDTO,} from '@cat/api';
 import {PermissionService} from '../../security/permissions/permission.service';
-import {Observable, combineLatest, Subject, of, merge} from 'rxjs';
+import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
 import {catchError, map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
 import {Tables} from '@common/utils/tables';
 import {Log} from '@common/utils/log';
 import {MatSort} from '@angular/material/sort';
-import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 import {RoutingService} from '@common/services/routing.service';
+import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
 @Injectable({
   providedIn: 'root'
@@ -30,7 +27,7 @@ export class PaymentsToProjectPageStore {
 
   private savedPayment$ = new Subject<PaymentDetailDTO>();
 
-  constructor(private paymentApiService: PaymentsApiService,
+  constructor(private paymentApiService: PaymentsAPIService,
               private permissionService: PermissionService,
               private routingService: RoutingService) {
     this.paymentToProjectDTO$ = this.paymentsToProjects();
@@ -100,7 +97,7 @@ export class PaymentsToProjectPageStore {
       );
   }
 
-  // Although these columns has sortable feature, they don't keep any value at the moment - so sort with default config
+  // Although these columns have a sortable feature, they don't keep any value at the moment - so sort with default config
   private isSortCapable(column: string | undefined): boolean {
     return (column !== 'paymentType' && column !== 'dateOfLastPayment');
   }

@@ -1,13 +1,12 @@
 package io.cloudflight.jems.server.payments.service.regular.updatePaymentInstallments
 
-import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
-import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallmentUpdate
+import io.cloudflight.jems.api.payments.dto.PaymentDetailDTO
+import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
 
 interface UpdatePaymentInstallmentsInteractor {
 
-    fun updatePaymentPartnerInstallments(
+    fun updatePaymentInstallments(
         paymentId: Long,
-        partnerId: Long,
-        installments: List<PaymentPartnerInstallmentUpdate>
-    ): List<PaymentPartnerInstallment>
+        paymentDetail: PaymentDetailDTO
+    ): PaymentDetail
 }
