@@ -21,29 +21,31 @@ class PaymentInstallmentsValidator(private val validator: GeneralValidatorServic
     fun validateInstallments(
         installments: Collection<PaymentPartnerInstallmentUpdate>,
         savedInstallments: Collection<PaymentPartnerInstallment>,
-        deleteInstallments: Collection<PaymentPartnerInstallment>
+        deleteInstallments: Collection<PaymentPartnerInstallment>,
+        index: Int
     ) {
         validateInstallmentDeletion(deleteInstallments)
         validateMaxInstallments(installments)
         validateCheckboxStates(installments)
         validator.throwIfAnyIsInvalid(
-            *validateInstallmentValues(installments, savedInstallments).toTypedArray()
+            *validateInstallmentValues(installments, savedInstallments, index).toTypedArray()
         )
     }
 
     fun validateInstallmentValues(
         installments: Collection<PaymentPartnerInstallmentUpdate>,
-        savedInstallments: Collection<PaymentPartnerInstallment>
+        savedInstallments: Collection<PaymentPartnerInstallment>,
+        index: Int
     ): List<Map<String, I18nMessage>> {
         val feedback = mutableListOf<Map<String, I18nMessage>>()
-        installments.forEachIndexed { index, installment ->
+        installments.forEachIndexed { listIndex, installment ->
             val savedInstallment = savedInstallments.find { installment.id == it.id }
             if (isInstallmentAuthorized(savedInstallment) && installment.isSavePaymentInfo == false) {
                 throw I18nValidationException(i18nKey = PAYMENT_PARTNER_INSTALLMENT_DELETION_ERROR_KEY)
             }
             if (installment.isPaymentConfirmed == true && installment.paymentDate == null) {
                 feedback.add(mutableMapOf<String, I18nMessage>().apply {
-                   this["paymentDate-$index"] = I18nMessage(COMMON_ERROR_REQUIRED)
+                   this["paymentDate-$index-$listIndex"] = I18nMessage(COMMON_ERROR_REQUIRED)
                 })
             }
             feedback.add(validator.maxLength(installment.comment, 500, "comment"))

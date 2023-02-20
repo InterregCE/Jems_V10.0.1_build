@@ -3,7 +3,7 @@
                          subTitleKey="">
 
     <jems-form (discard)="resetForm(data.paymentDetail)"
-               (save)="updatePaymentInstallments(paymentId, partnerPaymentsForm.getRawValue())"
+               (save)="updatePaymentInstallments(paymentId, partnerPaymentsForm.getRawValue(), data.paymentDetail)"
                [formGroup]="partnerPaymentsForm">
 
         <div jemsMultiColumnRow>

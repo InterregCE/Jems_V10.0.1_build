@@ -81,7 +81,11 @@ fun Iterable<PaymentPartnerInstallmentDTO>.toModelList() = map {
         paymentDate = it.paymentDate,
         comment = it.comment,
         isSavePaymentInfo = it.savePaymentInfo,
-        isPaymentConfirmed = it.paymentConfirmed
+        savePaymentInfoUserId = it.savePaymentInfoUser?.id,
+        savePaymentDate = it.savePaymentDate,
+        isPaymentConfirmed = it.paymentConfirmed,
+        paymentConfirmedUserId = it.paymentConfirmedUser?.id,
+        paymentConfirmedDate = it.paymentConfirmedDate
     )
 }
 

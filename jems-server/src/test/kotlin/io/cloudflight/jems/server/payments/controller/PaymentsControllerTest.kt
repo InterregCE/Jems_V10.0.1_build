@@ -136,6 +136,28 @@ class PaymentsControllerTest : UnitTest() {
                 )
             )
         )
+
+        private val paymentDetailDTO = PaymentDetailDTO(
+            id = paymentId,
+            paymentType = PaymentTypeDTO.FTLS,
+            fundName = fund.type.name,
+            projectId = projectId,
+            projectCustomIdentifier = project.customIdentifier,
+            projectAcronym = project.acronym,
+            amountApprovedPerFund = BigDecimal.TEN,
+            dateOfLastPayment = null,
+            partnerPayments = listOf(
+                PaymentPartnerDTO(
+                    id = 1L,
+                    partnerId = partnerId,
+                    partnerType = ProjectPartnerRoleDTO.LEAD_PARTNER,
+                    partnerNumber = 1,
+                    partnerAbbreviation = "partner",
+                    amountApproved = BigDecimal.ONE,
+                    installments = listOf(installmentFirstDTO)
+                )
+            )
+        )
     }
 
     @MockK
@@ -205,12 +227,11 @@ class PaymentsControllerTest : UnitTest() {
     @Test
     fun updatePaymentPartnerInstallments() {
         every {
-            updatePaymentInstallments.updatePaymentPartnerInstallments(paymentId, partnerId, any())
-        } returns listOf(installmentFirst)
+            updatePaymentInstallments.updatePaymentInstallments(paymentId, any())
+        } returns paymentDetail
 
         assertThat(
-            controller.updatePaymentPartnerInstallments(paymentId, partnerId, listOf(installmentFirstDTO))
-        ).containsExactly(installmentFirstDTO)
+            controller.updatePaymentInstallments(paymentId, paymentDetailDTO)
+        ).isEqualTo(paymentDetailDTO)
     }
-
 }
