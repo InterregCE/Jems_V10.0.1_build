@@ -1,7 +1,9 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {FormArray, FormBuilder} from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
-import {ProjectPartnerDetailPageStore} from '@project/partner/project-partner-detail-page/project-partner-detail-page.store';
+import {
+  ProjectPartnerDetailPageStore
+} from '@project/partner/project-partner-detail-page/project-partner-detail-page.store';
 import {ActivatedRoute} from '@angular/router';
 import {catchError, filter, map, switchMap, take, tap} from 'rxjs/operators';
 import {
@@ -13,14 +15,21 @@ import {
 } from '@cat/api';
 import {combineLatest, Observable} from 'rxjs';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
-import {WorkPackagePageStore} from '@project/work-package/project-work-package-page/work-package-detail-page/work-package-page-store.service';
+import {
+  WorkPackagePageStore
+} from '@project/work-package/project-work-package-page/work-package-detail-page/work-package-page-store.service';
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
-import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
-import {ProjectWorkPackagePageStore} from '@project/work-package/project-work-package-page/project-work-package-page-store.service';
+import {
+  ProjectStore
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {
+  ProjectWorkPackagePageStore
+} from '@project/work-package/project-work-package-page/project-work-package-page-store.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {RoutingService} from '@common/services/routing.service';
 import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
 import {Alert} from '@common/components/forms/alert';
+import {TranslateService} from '@ngx-translate/core';
 
 interface ActivityIdentificationInformation {
   workpackage: OutputWorkPackageSimple;
@@ -70,8 +79,9 @@ export class ProjectPartnerStateAidTabComponent {
               private workPackageProjectStore: ProjectWorkPackagePageStore,
               private projectStore: ProjectStore,
               private router: RoutingService,
-              private visibilityStatusService: FormVisibilityStatusService
-              ) {
+              private visibilityStatusService: FormVisibilityStatusService,
+              private translateService: TranslateService,
+  ) {
     visibilityStatusService.isVisible$((APPLICATION_FORM.SECTION_B.STATE_AID)).pipe(
       untilDestroyed(this),
       filter(isVisible => !isVisible),
@@ -155,11 +165,11 @@ export class ProjectPartnerStateAidTabComponent {
 
   getDisplayValueForActivityNumber(activities: WorkPackageActivitySummaryDTO[], activity: WorkPackageActivitySummaryDTO): string {
     const foundActivity = activities.find(a => a.activityId === activity.activityId) as WorkPackageActivitySummaryDTO;
-    return `ACTIVITY ${foundActivity?.workPackageNumber.toString() || ''}.${foundActivity?.activityNumber.toString() || ''}`;
+    return this.translateService.instant('project.partner.state.aid.relevant.activities.activity') + ` ${foundActivity?.workPackageNumber.toString() || ''}.${foundActivity?.activityNumber.toString() || ''}`;
   }
 
   getDisplayValueForWorkPackageNumber(workpackage: OutputWorkPackageSimple): string {
-    return `WORKPACKAGE ${(workpackage.number.toString() || '')} `;
+    return this.translateService.instant('project.partner.state.aid.relevant.activities.workpackage') + ` ${(workpackage.number.toString() || '')} `;
   }
 
   getStateAidCheck(): string {
@@ -193,7 +203,7 @@ export class ProjectPartnerStateAidTabComponent {
       return '';
     }
 
-    // if all are answered and it's not one fo the first two cases, there is no risk of state aid
+    // if all are answered and it's not one of the first two cases, there is no risk of state aid
     return 'project.partner.state.aid.no.risk.of.state.aid';
   }
 

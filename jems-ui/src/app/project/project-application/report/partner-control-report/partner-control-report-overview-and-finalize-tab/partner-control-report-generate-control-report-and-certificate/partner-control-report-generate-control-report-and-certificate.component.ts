@@ -16,7 +16,9 @@ import {
   ProjectPartnerReportSummaryDTO,
 } from '@cat/api';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {PartnerControlReportStore} from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
+import {
+  PartnerControlReportStore
+} from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
 
 @UntilDestroy()
@@ -124,7 +126,7 @@ export class PartnerControlReportGenerateControlReportAndCertificateComponent {
   }
 
   exportData(plugin: PluginInfoDTO): void {
-    this.exportInProgress = true
+    this.exportInProgress = true;
     if (plugin.type === PluginInfoDTO.TypeEnum.PARTNERCONTROLREPORTEXPORT) {
       this.fileManagementStore.generateControlReportExport(this.partnerId, this.reportId, plugin.key).pipe(
           finalize(() => this.exportInProgress = false),
