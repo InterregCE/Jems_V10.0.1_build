@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.common.entity.TranslationView
 interface WorkPackageRow: TranslationView {
     val id: Long
     val number: Int?
+    val deactivated: Boolean?
     val name: String?
     val specificObjective: String?
     val objectiveAndAudience: String?

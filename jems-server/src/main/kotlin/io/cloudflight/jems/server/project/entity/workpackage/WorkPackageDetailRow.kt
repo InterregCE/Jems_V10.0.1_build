@@ -8,6 +8,7 @@ interface WorkPackageDetailRow : TranslationView {
     //from workpackage
     val id: Long
     val number: Int
+    val deactivated: Boolean?
     val name: String?
     //workpackage translation
     val specificObjective: String?

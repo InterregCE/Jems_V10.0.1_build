@@ -38,6 +38,9 @@ class ProjectPartnerReportWorkPackageEntity(
     @field:NotNull
     val number: Int,
 
+    @field:NotNull
+    val deactivated: Boolean,
+
     // linked application form entity
     val workPackageId: Long?,
 

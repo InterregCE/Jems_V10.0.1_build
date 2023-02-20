@@ -26,6 +26,7 @@ interface WorkPackageRepository: PagingAndSortingRepository<WorkPackageEntity, L
              SELECT
              entity.id AS id,
              entity.number as number,
+             entity.deactivated as deactivated,
              workPackageTransl.*
              FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
              LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS workPackageTransl ON entity.id = workPackageTransl.source_entity_id
@@ -44,6 +45,7 @@ interface WorkPackageRepository: PagingAndSortingRepository<WorkPackageEntity, L
              SELECT
              entity.id AS id,
              entity.number as number,
+             entity.deactivated as deactivated,
              workPackageTransl.*,
              workPackageTransl.specific_objective as specificObjective,
              workPackageTransl.objective_and_audience as objectiveAndAudience
@@ -91,6 +93,7 @@ interface WorkPackageRepository: PagingAndSortingRepository<WorkPackageEntity, L
              SELECT
              entity.id,
              entity.number,
+             entity.deactivated,
 
              workPackageTransl.name,
              workPackageTransl.specific_objective AS specificObjective,

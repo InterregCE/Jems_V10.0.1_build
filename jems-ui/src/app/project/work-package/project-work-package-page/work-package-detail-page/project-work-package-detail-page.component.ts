@@ -7,6 +7,7 @@ import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {
   ProjectStore
 } from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {Alert} from '@common/components/forms/alert';
 
 @Component({
   selector: 'jems-project-work-package-detail-page',
@@ -16,6 +17,7 @@ import {
 })
 export class ProjectWorkPackageDetailPageComponent {
 
+  Alert = Alert;
   APPLICATION_FORM = APPLICATION_FORM;
   workPackageId = this.activatedRoute?.snapshot?.params?.workPackageId;
 

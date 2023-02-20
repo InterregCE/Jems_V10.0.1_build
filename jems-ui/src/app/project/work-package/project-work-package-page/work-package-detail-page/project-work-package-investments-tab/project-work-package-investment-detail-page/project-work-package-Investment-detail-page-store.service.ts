@@ -35,10 +35,11 @@ export class ProjectWorkPackageInvestmentDetailPageStore {
   createWorkPackageInvestment(workPackageInvestment: WorkPackageInvestmentDTO): Observable<number> {
     return combineLatest([
       this.projectStore.projectId$,
-      this.workPackagePageStore.workPackage$
+      this.workPackagePageStore.workPackage$,
     ])
       .pipe(
         take(1),
+        tap(data => workPackageInvestment.deactivated = data[1].deactivated),
         switchMap(([projectId, workPackage]) => this.workPackageInvestmentService.addWorkPackageInvestment(projectId, workPackage.id, workPackageInvestment)),
         tap(created => Log.info('Created work package investment:', this, created)),
         tap(() => this.projectStore.investmentChangeEvent$.next()),

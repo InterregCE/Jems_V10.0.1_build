@@ -19,6 +19,7 @@ fun CreateProjectPartnerReportWorkPackage.toEntity(report: ProjectPartnerReportE
         reportEntity = report,
         number = number,
         workPackageId = workPackageId,
+        deactivated = deactivated
     )
 
 fun CreateProjectPartnerReportWorkPackageActivity.toEntity(wp: ProjectPartnerReportWorkPackageEntity) =

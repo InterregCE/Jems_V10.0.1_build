@@ -74,7 +74,8 @@ class UpdateWorkPackageOutputTest: UnitTest() {
 
         every { persistence.updateWorkPackageOutputsAfterContracted(3L, any()) } returnsArgument 1
         assertThat(updateOutputInteractor.updateOutputsForWorkPackage(projectId, 3L, listOf(
-            testOutput.copy(workPackageId = 3, outputNumber = 0, deactivated = false)
+            testOutput.copy(workPackageId = 3, outputNumber = 1, deactivated = true),
+            testOutput.copy(workPackageId = 3, outputNumber = 2, deactivated = false)
         ))).containsExactly(
             testOutput.copy(workPackageId = 3, outputNumber = 1, deactivated = true),
             testOutput.copy(workPackageId = 3, outputNumber = 2, deactivated = false),

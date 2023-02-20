@@ -203,6 +203,7 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
                             deactivated = false,
                         ),
                     ),
+                    deactivated = false
                 ),
             ),
             targetGroups = listOf(
@@ -279,6 +280,7 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
                         address = null,
                     )
                 ),
+                deactivated = false
             )
         )
 

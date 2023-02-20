@@ -627,7 +627,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             periodNumber = 2,
             periodStartMonth = 4,
             periodEndMonth = 6,
-            description = setOf(InputTranslation(language = SystemLanguage.EN, translation = "description"))
+            description = setOf(InputTranslation(language = SystemLanguage.EN, translation = "description")),
+            deactivated = false
         )
         private val workPackage = ProjectWorkPackageFull(
             id = 1L,
@@ -643,7 +644,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             ),
             activities = listOf(activity),
             outputs = listOf(workPackageOutput),
-            investments = listOf(investment)
+            investments = listOf(investment),
+            deactivated = false
         )
         private val projectLumpSum = ProjectLumpSum(
             orderNr = 1,
@@ -748,6 +750,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 targetValue = BigDecimal.TEN,
                 periodNumber = 1,
                 description = setOf(InputTranslation(SystemLanguage.EN, "description")),
+                deactivated = false
             ), ProjectResult(
                 resultNumber = 5,
                 programmeResultIndicatorId = 3,
@@ -756,6 +759,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 targetValue = BigDecimal.TEN,
                 periodNumber = 1,
                 description = setOf(InputTranslation(SystemLanguage.EN, "description2")),
+                deactivated = false
             )
         )
 
@@ -1228,6 +1232,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 projectWorkPackages = listOf(
                     ProjectWorkPackageData(
                         id = workPackage.id,
+                        deactivated = false,
                         workPackageNumber = workPackage.workPackageNumber,
                         name = setOf(InputTranslationData(SystemLanguageData.EN, "name")),
                         specificObjective = setOf(InputTranslationData(SystemLanguageData.EN, "objective")),
@@ -1262,7 +1267,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                                 periodStartMonth = workPackageOutput.periodStartMonth,
                                 periodEndMonth = workPackageOutput.periodEndMonth,
                                 programmeOutputIndicatorName = workPackageOutput.programmeOutputIndicatorName.toDataModel(),
-                                programmeOutputIndicatorMeasurementUnit = workPackageOutput.programmeOutputIndicatorMeasurementUnit.toDataModel()
+                                programmeOutputIndicatorMeasurementUnit = workPackageOutput.programmeOutputIndicatorMeasurementUnit.toDataModel(),
+                                deactivated = workPackageOutput.deactivated
                             )
                         ),
                         investments = listOf(
@@ -1336,7 +1342,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                         periodNumber = projectResult.periodNumber,
                         periodStartMonth = projectResult.periodStartMonth,
                         periodEndMonth = projectResult.periodEndMonth,
-                        description = projectResult.description.toDataModel()
+                        description = projectResult.description.toDataModel(),
+                        deactivated = false
                     )
                 ),
                 projectManagement = ProjectManagementData(

@@ -22,7 +22,7 @@
 
 <ng-template #numberingCell let-workPackageInvestment>
     <span *ngIf="workPackageInvestment.investmentNumber">
-        <mat-icon *ngIf="workPackageInvestment.deactivated" class="vertical-middle" matTooltip="{{ 'project.application.form.partner.table.status.inactive' | translate }}">hide_source</mat-icon>
+        <mat-icon *ngIf="workPackageInvestment.deactivated" class="vertical-middle" matTooltip="{{ 'project.application.form.partner.table.status.inactive' | translate }}">do_not_disturb</mat-icon>
         I{{workPackageNumber}}.{{workPackageInvestment.investmentNumber}}</span>
     <span *ngIf="!workPackageInvestment.investmentNumber"> {{'project.application.form.partner.number.info.auto' | translate}}</span>
 </ng-template>
@@ -37,13 +37,13 @@
                 mat-icon-button color="accent"
                 (click)="$event.stopPropagation();delete(workPackageInvestment, workPackageInvestment.isAlreadyContracted, title)"
                 matTooltip="{{ (workPackageInvestment.isAlreadyContracted ? 'project.application.form.workpackage.investment.table.action.deactivate.tooltip' : 'project.application.form.workpackage.investment.table.action.delete.tooltip') | translate }}">
-            <mat-icon>{{ workPackageInvestment.isAlreadyContracted ? 'hide_source' : 'delete' }}</mat-icon>
+            <mat-icon>{{ workPackageInvestment.isAlreadyContracted ? 'do_not_disturb' : 'delete' }}</mat-icon>
         </button>
         <ng-template #noTitle>
             <button mat-icon-button color="accent"
                     (click)="$event.stopPropagation();delete(workPackageInvestment, workPackageInvestment.isAlreadyContracted)"
                     matTooltip="{{(workPackageInvestment.isAlreadyContracted ? 'project.application.form.workpackage.investment.table.action.deactivate.tooltip' : 'project.application.form.workpackage.investment.table.action.delete.tooltip') | translate }}">
-                <mat-icon>{{ workPackageInvestment.isAlreadyContracted ? 'hide_source' : 'delete' }}</mat-icon>
+                <mat-icon>{{ workPackageInvestment.isAlreadyContracted ? 'do_not_disturb' : 'delete' }}</mat-icon>
             </button>
         </ng-template>
     </ng-container>

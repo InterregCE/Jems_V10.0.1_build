@@ -51,7 +51,8 @@ fun WorkPackageEntity.toModelFull(
     objectiveAndAudience = translatedValues.extractField { it.objectiveAndAudience },
     activities = getActivitiesForWorkPackageId.invoke(id)?.toModel() ?: emptyList(),
     outputs = getOutputsForWorkPackageId.invoke(id)?.toModel(periods) ?: emptyList(),
-    investments = getInvestmentsForWorkPackageId.invoke(id)?.toModel() ?: emptyList()
+    investments = getInvestmentsForWorkPackageId.invoke(id)?.toModel() ?: emptyList(),
+    deactivated = deactivated
 )
 
 fun MutableSet<WorkPackageOutputTranslEntity>.updateWith(

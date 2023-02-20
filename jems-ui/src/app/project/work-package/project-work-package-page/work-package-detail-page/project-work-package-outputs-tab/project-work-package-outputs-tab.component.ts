@@ -26,7 +26,7 @@ export class ProjectWorkPackageOutputsTabComponent implements OnInit {
   constants = ProjectWorkPackageOutputsTabConstants;
   APPLICATION_FORM = APPLICATION_FORM;
 
-  rightNowDeactivated: number[] = [];
+  isParentWorkPackageDeactivated: boolean;
 
   form = this.formBuilder.group({
     outputs: this.formBuilder.array([])
@@ -64,14 +64,15 @@ export class ProjectWorkPackageOutputsTabComponent implements OnInit {
       ).subscribe();
 
     this.data$ = combineLatest([
-      this.workPackageStore.outputs$,
       this.workPackageStore.workPackage$,
+      this.workPackageStore.outputs$,
       this.workPackageStore.outputIndicators$,
       this.workPackageStore.projectForm$,
       this.workPackageStore.isProjectEditable$,
       this.projectStore.projectStatus$,
     ]).pipe(
-      map(([outputs, workPackage, indicators, projectForm, isEditable, projectStatus]) => ({
+      tap(data => this.isParentWorkPackageDeactivated = data[0].deactivated),
+      map(([workPackage, outputs, indicators, projectForm, isEditable, projectStatus]) => ({
           outputs,
           periods: projectForm.periods,
           outputIndicators: indicators,
@@ -97,12 +98,14 @@ export class ProjectWorkPackageOutputsTabComponent implements OnInit {
     this.formService.setDirty(true);
   }
 
-  removeOutput(index: number, toDeactivate: number | null): void {
+  deactivateOutput(index: number): void {
+    this.outputs.at(index).get('deactivated')?.setValue(true);
+    this.formService.setDirty(true);
+  }
+
+  removeOutput(index: number): void {
     this.outputs.removeAt(index);
     this.formService.setDirty(true);
-    if (toDeactivate) {
-      this.rightNowDeactivated = [...this.rightNowDeactivated, toDeactivate];
-    }
   }
 
   get outputs(): FormArray {
@@ -114,7 +117,6 @@ export class ProjectWorkPackageOutputsTabComponent implements OnInit {
   }
 
   private resetForm(outputs: WorkPackageOutputDTO[], isEditable: boolean): void {
-    this.rightNowDeactivated = [];
     this.outputs.clear();
 
     this.formService.setEditable(isEditable);
@@ -130,7 +132,7 @@ export class ProjectWorkPackageOutputsTabComponent implements OnInit {
         targetValue: this.formBuilder.control(existing?.targetValue || 1),
         periodNumber: this.formBuilder.control(existing?.periodNumber || ''),
         description: this.formBuilder.control(existing?.description || []),
-        deactivated: this.formBuilder.control(!!existing?.deactivated),
+        deactivated: this.isParentWorkPackageDeactivated ? true : this.formBuilder.control(!!existing?.deactivated),
       }
     );
     if (!this.formService.isEditable()) {

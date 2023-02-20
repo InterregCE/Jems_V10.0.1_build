@@ -28,7 +28,8 @@ import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkP
 fun WorkPackageEntity.toOutputWorkPackageSimple() = OutputWorkPackageSimple(
     id = id,
     number = number,
-    name = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.name) }
+    name = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.name) },
+    deactivated = deactivated
 )
 
 fun WorkPackageEntity.toOutputWorkPackage() = OutputWorkPackage(
@@ -46,12 +47,14 @@ fun WorkPackageEntity.toOutputWorkPackage() = OutputWorkPackage(
             it.translationId.language,
             it.objectiveAndAudience
         )
-    }
+    },
+    deactivated = deactivated
 )
 
 fun InputWorkPackageCreate.toEntity(project: ProjectEntity) = WorkPackageEntity(
     translatedValues = mutableSetOf(),
-    project = project
+    project = project,
+    deactivated = false
 ).apply {
     translatedValues.addTranslationEntities(
         { language ->
@@ -87,6 +90,7 @@ fun List<WorkPackageRow>.toOutputWorkPackageHistoricalData() =
             specificObjective = groupedRows.value.extractField { it.specificObjective },
             objectiveAndAudience = groupedRows.value.extractField { it.objectiveAndAudience },
             number = groupedRows.value.first().number,
+            deactivated = groupedRows.value.first().deactivated ?: false
         )
     }.firstOrNull()
 
@@ -96,6 +100,7 @@ fun List<WorkPackageRow>.toOutputWorkPackageSimpleHistoricalData() =
             id = groupedRows.value.first().id,
             name = groupedRows.value.extractField { it.name },
             number = groupedRows.value.first().number,
+            deactivated = groupedRows.value.first().deactivated ?: false,
         )
     }
 
@@ -145,6 +150,7 @@ fun List<WorkPackageDetailRow>.toModel(periods: List<ProjectPeriodRow>)=
             id = groupedRows.key,
             workPackageNumber = groupedRows.value.first().number,
             name = groupedRows.value.extractField { it.name },
+            deactivated = groupedRows.value.first().deactivated ?: false,
             specificObjective = groupedRows.value.extractField { it.specificObjective },
             objectiveAndAudience = groupedRows.value.extractField { it.objectiveAndAudience },
             activities = groupedRows.value.filter{it.activityId != null}.groupBy { it.activityId }.map { groupedActivityRows ->

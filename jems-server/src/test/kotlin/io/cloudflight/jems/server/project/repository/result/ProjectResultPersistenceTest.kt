@@ -79,7 +79,8 @@ class ProjectResultPersistenceTest: UnitTest() {
             periodEndMonth = 22,
             description = setOf(
                 InputTranslation(language = BE, translation = "BE desc")
-            )
+            ),
+            deactivated = false
         )
 
         val update1_model = ProjectResult(
@@ -94,12 +95,14 @@ class ProjectResultPersistenceTest: UnitTest() {
                 InputTranslation(language = NO, translation = ""),
                 InputTranslation(language = SK, translation = null)
             ),
+            deactivated = false
         )
 
         val result2_model = ProjectResult(
             baseline = BigDecimal.ZERO,
             resultNumber = 2,
             periodNumber = 20,
+            deactivated = false
         )
 
         val result1 = ProjectResultEntity(
@@ -113,12 +116,14 @@ class ProjectResultPersistenceTest: UnitTest() {
             programmeResultIndicatorEntity = indicatorResult,
             baseline = BigDecimal.ZERO,
             targetValue = BigDecimal.ONE,
+            deactivated = false
         )
 
         val result2 = ProjectResultEntity(
             baseline = BigDecimal.ZERO,
             resultId = resultId2,
             periodNumber = 20,
+            deactivated = false
         )
 
     }
@@ -186,6 +191,7 @@ class ProjectResultPersistenceTest: UnitTest() {
         every { mockPRRow.periodNumber } returns result1_model.periodNumber
         every { mockPRRow.language } returns BE
         every { mockPRRow.description } returns "BE desc"
+        every { mockPRRow.deactivated } returns false
 
         every { projectVersionRepo.findTimestampByVersion(projectId, version) } returns timestamp
         every { projectRepository.findPeriodsByProjectIdAsOfTimestamp(projectId, timestamp) } returns listOf(Period(10, 21, 22))

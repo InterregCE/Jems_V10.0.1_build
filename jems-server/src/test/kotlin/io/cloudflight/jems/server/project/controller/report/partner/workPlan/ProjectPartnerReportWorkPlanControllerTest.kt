@@ -86,6 +86,7 @@ class ProjectPartnerReportWorkPlanControllerTest {
                     deactivated = false,
                 )
             ),
+            deactivated = false
         )
 
         private val dummyWorkPlanDto = ProjectPartnerReportWorkPackageDTO(
@@ -128,6 +129,7 @@ class ProjectPartnerReportWorkPlanControllerTest {
                     deactivated = false,
                 )
             ),
+            deactivated = false
         )
 
         private val dummyWorkPlanUpdateDto = UpdateProjectPartnerReportWorkPackageDTO(

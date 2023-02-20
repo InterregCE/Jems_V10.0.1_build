@@ -25,6 +25,7 @@ fun List<ProjectPartnerReportWorkPackage>.toDto() = map {
         description = it.description,
         activities = it.activities.toActivitiesDto(),
         outputs = it.outputs.toOutputsDto(),
+        deactivated = it.deactivated
     )
 }
 

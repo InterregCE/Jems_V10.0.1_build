@@ -165,6 +165,7 @@ class CreateProjectPartnerReport(
         CreateProjectPartnerReportWorkPackage(
             workPackageId = wp.id,
             number = wp.workPackageNumber,
+            deactivated = wp.deactivated,
             activities = wp.activities.map { a ->
                 CreateProjectPartnerReportWorkPackageActivity(
                     activityId = a.id,

@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.workpackage
 import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageCreate
 import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageUpdate
 import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackage
+import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackageSimple
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectForm
@@ -17,6 +18,9 @@ import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaborator
 import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel.VIEW
 import io.cloudflight.jems.server.project.repository.partneruser.UserPartnerCollaboratorRepository
 import io.cloudflight.jems.server.project.repository.projectuser.UserProjectCollaboratorRepository
+import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityRepository
+import io.cloudflight.jems.server.project.repository.workpackage.investment.WorkPackageInvestmentRepository
+import io.cloudflight.jems.server.project.repository.workpackage.output.WorkPackageOutputRepository
 import org.springframework.data.domain.Sort
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
@@ -27,7 +31,10 @@ class WorkPackageServiceImpl(
     private val workPackageRepository: WorkPackageRepository,
     private val projectRepository: ProjectRepository,
     private val projectCollaboratorRepository: UserProjectCollaboratorRepository,
-    private val partnerCollaboratorRepository: UserPartnerCollaboratorRepository
+    private val partnerCollaboratorRepository: UserPartnerCollaboratorRepository,
+    private val workPackageActivityRepository: WorkPackageActivityRepository,
+    private val workPackageOutputRepository: WorkPackageOutputRepository,
+    private val workPackageInvestmentRepository: WorkPackageInvestmentRepository,
 ) : WorkPackageService {
 
     companion object {
@@ -76,6 +83,42 @@ class WorkPackageServiceImpl(
     override fun deleteWorkPackage(projectId: Long, workPackageId: Long) {
         workPackageRepository.deleteById(workPackageId)
         this.updateSortOnNumber(projectId)
+    }
+
+    @PreAuthorize("@projectWorkPackageAuthorization.canUpdateProjectWorkPackage(#workPackageId)")
+    @Transactional
+    override fun deactivateWorkPackage(projectId: Long, workPackageId: Long): OutputWorkPackageSimple {
+        val project = projectRepository.findById(projectId)
+            .orElseThrow { ResourceNotFoundException("project") }
+        if (!project.currentStatus.status.isAlreadyContracted())
+            throw WorkPackageDeactivationNotAllowedException()
+
+        val oldWorkPackage = getWorkPackageOrThrow(workPackageId)
+        oldWorkPackage.deactivated = true
+
+        deactivateActivities(workPackageId)
+        deactivateOutputs(workPackageId)
+        deactivateInvestments(workPackageId)
+
+        return oldWorkPackage.toOutputWorkPackageSimple()
+    }
+
+    private fun deactivateInvestments(workPackageId: Long) {
+        val investments = workPackageInvestmentRepository.findAllByWorkPackageId(workPackageId)
+        investments.forEach { it.deactivated = true }
+    }
+
+    private fun deactivateOutputs(workPackageId: Long) {
+        val outputs = workPackageOutputRepository.findAllByOutputIdWorkPackageIdIn(setOf(workPackageId))
+        outputs.forEach { it.deactivated = true }
+    }
+
+    private fun deactivateActivities(workPackageId: Long) {
+        val activities = workPackageActivityRepository.findAllByWorkPackageId(workPackageId)
+        activities.forEach { activity ->
+            activity.deliverables.forEach { deliverable -> deliverable.deactivated = true }
+            activity.deactivated = true
+        }
     }
 
     private fun updateSortOnNumber(projectId: Long) {

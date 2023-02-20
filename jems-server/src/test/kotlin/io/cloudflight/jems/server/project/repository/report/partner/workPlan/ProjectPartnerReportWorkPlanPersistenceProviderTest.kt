@@ -54,6 +54,7 @@ class ProjectPartnerReportWorkPlanPersistenceProviderTest : UnitTest() {
             reportEntity = report,
             number = id.toInt(),
             workPackageId = null,
+            deactivated = false,
             translatedValues = mutableSetOf()
         ).apply {
             translatedValues.add(
@@ -163,7 +164,8 @@ class ProjectPartnerReportWorkPlanPersistenceProviderTest : UnitTest() {
                         ),
                         deactivated = false,
                     )
-                )
+                ),
+                deactivated = false
             )
 
     }

@@ -39,11 +39,13 @@ class ProjectResultControllerTest: UnitTest() {
             baseline  = BigDecimal.ZERO,
             targetValue = BigDecimal.ONE,
             periodNumber = 4,
-            description = description
+            description = description,
+            deactivated = false
         )
         val result2 = ProjectResult(
             baseline  = BigDecimal.ZERO,
             resultNumber = 2,
+            deactivated = false
         )
     }
 
@@ -71,11 +73,13 @@ class ProjectResultControllerTest: UnitTest() {
                 baseline  = BigDecimal.ZERO,
                 targetValue = BigDecimal.ONE,
                 periodNumber = 4,
-                description = description
+                description = description,
+                deactivated = false
             ),
             ProjectResultDTO(
                 baseline  = BigDecimal.ZERO,
                 resultNumber = 2,
+                deactivated = false
             )
         )
     }
@@ -91,19 +95,23 @@ class ProjectResultControllerTest: UnitTest() {
             targetValue = BigDecimal.ONE,
             periodNumber = 7,
             description = setOf(InputTranslation(EN, "en desc"), InputTranslation(CS, ""), InputTranslation(SK, null)),
+            deactivated = false,
+            resultNumber = 1
         )
-        val resultDto2 = ProjectResultUpdateRequestDTO(baseline = BigDecimal.ZERO)
+        val resultDto2 = ProjectResultUpdateRequestDTO(baseline = BigDecimal.ZERO, deactivated = false, resultNumber = 2)
 
         controller.updateProjectResults(1L, listOf(resultDto1, resultDto2))
         assertThat(resultSlot.captured).containsExactly(
             ProjectResult(
+                resultNumber = 1,
                 programmeResultIndicatorId = 15L,
                 baseline = BigDecimal.ZERO,
                 targetValue = BigDecimal.ONE,
                 periodNumber = 7,
                 description = setOf(InputTranslation(EN, "en desc"), InputTranslation(CS, ""), InputTranslation(SK, null)),
+                deactivated = false
             ),
-            ProjectResult(baseline = BigDecimal.ZERO,)
+            ProjectResult(baseline = BigDecimal.ZERO, deactivated = false, resultNumber = 2)
         )
     }
 

@@ -70,16 +70,19 @@ class GetProjectResultIndicatorsOverviewTest: UnitTest() {
                 programmeResultIndicatorId = RESULT_2_ID,
                 baseline = BigDecimal.TEN,
                 targetValue = BigDecimal.TEN,
+                deactivated = false
             ),
             ProjectResult(
                 programmeResultIndicatorId = RESULT_2_ID,
                 baseline = BigDecimal.TEN,
                 targetValue = BigDecimal.TEN,
+                deactivated = false
             ),
             ProjectResult(
                 programmeResultIndicatorId = RESULT_2_ID,
                 baseline = BigDecimal.ONE,
                 targetValue = BigDecimal.ONE,
+                deactivated = false
             ),
         )
 

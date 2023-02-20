@@ -51,7 +51,6 @@ class UpdateWorkPackageOutput(
     private fun Collection<WorkPackageOutput>.updateWith(resolveNew: (Int) -> WorkPackageOutput?): List<WorkPackageOutput> = map {
         val newData = resolveNew.invoke(it.outputNumber)
         if (newData == null) {
-            it.deactivated = true
             return@map it
         } else {
             it.programmeOutputIndicatorId = newData.programmeOutputIndicatorId
@@ -59,7 +58,7 @@ class UpdateWorkPackageOutput(
             it.periodNumber = newData.periodNumber
             it.title = newData.title
             it.description = newData.description
-            it.deactivated = it.deactivated || newData.deactivated
+            it.deactivated = newData.deactivated
             return@map it
         }
     }

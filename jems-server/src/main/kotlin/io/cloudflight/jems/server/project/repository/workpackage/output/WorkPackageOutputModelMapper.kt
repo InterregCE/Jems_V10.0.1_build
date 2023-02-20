@@ -29,6 +29,7 @@ fun WorkPackageOutput.toEntity(
         translatedValues = mutableSetOf(),
         periodNumber = periodNumber,
         programmeOutputIndicatorEntity = resolveProgrammeIndicatorEntity.invoke(programmeOutputIndicatorId),
+        deactivated = deactivated,
         targetValue = targetValue
     ).apply {
         translatedValues.addTranslationEntities(

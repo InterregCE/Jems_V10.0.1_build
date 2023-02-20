@@ -124,7 +124,9 @@ fun projectResultUpdateRequestDTO(version: String) =
         baseline = BigDecimal.valueOf(34521, 2),
         targetValue = BigDecimal.valueOf(64234, 2),
         periodNumber = 1,
-        description = versionedInputTranslation("description", version)
+        description = versionedInputTranslation("description", version),
+        deactivated = false,
+        resultNumber = 1
     )
 
 fun inputWorkPackageCreate(version: String) =
@@ -139,7 +141,8 @@ fun inputWorkPackageUpdate(id: Long, version: String) =
         id = id,
         name = versionedInputTranslation("name", version),
         specificObjective = versionedInputTranslation("specific objective", version),
-        objectiveAndAudience = versionedInputTranslation("objective and audience", version)
+        objectiveAndAudience = versionedInputTranslation("objective and audience", version),
+        deactivated = false
     )
 
 

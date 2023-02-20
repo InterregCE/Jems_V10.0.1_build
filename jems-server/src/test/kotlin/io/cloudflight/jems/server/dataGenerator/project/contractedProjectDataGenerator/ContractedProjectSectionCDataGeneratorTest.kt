@@ -71,7 +71,7 @@ class ContractedProjectSectionCDataGeneratorTest(@LocalServerPort private val po
     }
 
     @Test
-    @ExpectSelect(18)
+    @ExpectSelect(21)
     @ExpectInsert(5)
     @ExpectUpdate(0)
     @ExpectDelete(1)

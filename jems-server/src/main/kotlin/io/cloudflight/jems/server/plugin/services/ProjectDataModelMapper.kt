@@ -244,7 +244,8 @@ fun List<WorkPackageOutput>.toOutputDataModel() = map {
         periodStartMonth = it.periodStartMonth,
         periodEndMonth = it.periodEndMonth,
         description = it.description.toDataModel(),
-        title = it.title.toDataModel()
+        title = it.title.toDataModel(),
+        deactivated = it.deactivated,
     )
 }.toList()
 
@@ -479,7 +480,8 @@ abstract class PluginDataMapper {
                 objectiveAndAudience = it.objectiveAndAudience.toDataModel(),
                 activities = it.activities.toActivityDataModel(),
                 outputs = it.outputs.toOutputDataModel(),
-                investments = pluginDataMapper.map(it.investments)
+                investments = pluginDataMapper.map(it.investments),
+                deactivated = it.deactivated,
             )
         }.toList()
 

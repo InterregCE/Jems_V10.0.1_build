@@ -94,7 +94,7 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
         val activityPartnerMock: WorkPackageActivityPartnerEntity = mockk()
         var activity1 = WorkPackageActivityEntity(
             id = activityId1,
-            workPackage = WorkPackageEntity(id = WORK_PACKAGE_ID, number = 10, project = project),
+            workPackage = WorkPackageEntity(id = WORK_PACKAGE_ID, number = 10, project = project, deactivated = false),
             activityNumber = 1,
             startPeriod = 4,
             endPeriod = 6,
@@ -119,7 +119,7 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
         )
         val activity2 = WorkPackageActivityEntity(
             id = activityId2,
-            workPackage = WorkPackageEntity(id = WORK_PACKAGE_ID, number = 10, project = project),
+            workPackage = WorkPackageEntity(id = WORK_PACKAGE_ID, number = 10, project = project, deactivated = false),
             activityNumber = 2,
             startPeriod = 1,
             endPeriod = 3,
@@ -257,6 +257,7 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
             id = WORK_PACKAGE_ID,
             project = project,
             number = 10,
+            deactivated = false,
             activities = mutableListOf(activity2, activity1), // for testing sorting
             translatedValues = mutableSetOf()
         ).apply {
@@ -287,10 +288,6 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
             deactivated = false,
         )
 
-        val workPackageWithOutputs = WorkPackageEntity(
-            id = WORK_PACKAGE_ID,
-            project = project,
-        )
     }
 
     @MockK
@@ -352,6 +349,7 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
             id = WORK_PACKAGE_ID_2,
             project = project,
             number = 2,
+            deactivated = false
         )
         every { repository.findAllByProjectId(eq(1)) } returns
             listOf(
@@ -641,7 +639,8 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
                     deliverables = emptyList()
                 )),
                 outputs = emptyList(),
-                investments = emptyList()
+                investments = emptyList(),
+                deactivated = false
             )
         )
     }
@@ -658,6 +657,7 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
             every { mockWPRow.language } returns EN
             every { mockWPRow.name } returns "name"
             every { mockWPRow.number } returns 3
+            every { mockWPRow.deactivated } returns false
             every { mockWPRow.specificObjective } returns ""
             every { mockWPRow.objectiveAndAudience } returns ""
             every { projectVersionRepo.findTimestampByVersion(PROJECT_ID, version) } returns timestamp
@@ -672,7 +672,8 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
                 OutputWorkPackageSimple(
                     id = wpId,
                     number = 3,
-                    name = setOf(InputTranslation(EN, "name"))
+                    name = setOf(InputTranslation(EN, "name")),
+                    deactivated = false
                 )
             )
         } else {
@@ -680,7 +681,8 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
                 OutputWorkPackageSimple(
                     id = workPackageWithActivities.id,
                     number = workPackageWithActivities.number,
-                    name = setOf(InputTranslation(CS, "WP CS name"))
+                    name = setOf(InputTranslation(CS, "WP CS name")),
+                    deactivated = false
                 )
             )
         }
@@ -715,7 +717,8 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
                     deliverables = emptyList()
                 )),
                 outputs = emptyList(),
-                investments = emptyList()
+                investments = emptyList(),
+                deactivated = false
             )
         )
     }
@@ -804,6 +807,7 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
                 override val id = WORK_PACKAGE_ID
                 override val number = workPackageWithActivities.number!!
                 override val name = "WP CS name"
+                override val deactivated = workPackageWithActivities.deactivated
                 override val specificObjective: String? = null
                 override val objectiveAndAudience: String? = null
                 override val language = CS

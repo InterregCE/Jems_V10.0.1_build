@@ -71,7 +71,8 @@ internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
                     attachment = dummyFile,
                     deactivated = false,
                 )
-            )
+            ),
+            deactivated = false
         )
 
         private val newWorkPlan = ProjectPartnerReportWorkPackage(
@@ -109,7 +110,8 @@ internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
                     attachment = dummyFile,
                     deactivated = false,
                 )
-            )
+            ),
+            deactivated = false
         )
 
         private val updateWorkPlanModel = UpdateProjectPartnerReportWorkPackage(

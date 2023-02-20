@@ -33,6 +33,16 @@ export class ProjectWorkPackagePageStore {
       );
   }
 
+  deactivateWorkPackage(workPackageId: number): Observable<OutputWorkPackageSimple> {
+    return this.projectStore.projectId$.pipe(
+      take(1),
+      switchMap(projectId => this.workPackageService.deactivateWorkPackage(projectId, workPackageId)),
+      tap(() => this.refreshPackages$.next()),
+      tap(() => this.projectStore.investmentChangeEvent$.next()),
+      tap(() => Log.info('Deactivated work package: ', this, workPackageId))
+    );
+  }
+
   createEmptyWorkPackage(projectId: number): Observable<OutputWorkPackage> {
     return this.workPackageService.createWorkPackage(projectId, {} as InputWorkPackageCreate)
       .pipe(
