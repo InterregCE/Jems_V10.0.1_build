@@ -1,0 +1,12 @@
+<jems-form *ngIf="data$ | async as data">
+
+    <h3 class="mb5">{{ 'project.application.partner.report.financial.tab.title' | translate}}</h3>
+    <p>{{ 'project.application.project.report.financial.breakdown.explanation' | translate}}</p>
+
+    <h3>{{ 'project.application.project.report.financial.breakdown.co.financing' | translate}}</h3>
+    <jems-project-breakdown-co-financing
+            [breakdown]="data.perCoFinancing"
+            [funds]="data.funds">
+    </jems-project-breakdown-co-financing>
+
+</jems-form>

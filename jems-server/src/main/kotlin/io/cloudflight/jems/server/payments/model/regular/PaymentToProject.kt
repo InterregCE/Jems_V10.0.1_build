@@ -12,6 +12,7 @@ data class PaymentToProject (
     val paymentClaimSubmissionDate: ZonedDateTime?,
     val paymentApprovalDate: ZonedDateTime?,
     val totalEligibleAmount: BigDecimal,
+    val fundId: Long,
     val fundName: String,
     val amountApprovedPerFund: BigDecimal,
     val amountPaidPerFund: BigDecimal,

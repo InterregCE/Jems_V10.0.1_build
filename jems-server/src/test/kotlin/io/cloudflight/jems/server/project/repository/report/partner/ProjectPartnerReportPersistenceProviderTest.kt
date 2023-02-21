@@ -123,6 +123,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
             projectAcronym = "projectAcronym",
             partnerNumber = 4,
             partnerRole = ProjectPartnerRole.PARTNER,
+            partnerId = PARTNER_ID
         )
 
         private val programmeFundEntity = ProgrammeFundEntity(
