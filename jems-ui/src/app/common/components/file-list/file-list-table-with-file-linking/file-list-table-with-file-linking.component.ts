@@ -1,4 +1,15 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges,
+  ViewChild
+} from '@angular/core';
 import {MatTableDataSource} from '@angular/material/table';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {AlertMessage} from '@common/components/file-list/file-list-table/alert-message';
@@ -242,12 +253,11 @@ export class FileListTableWithFileLinkingComponent implements OnInit, OnChanges,
 
   isDescriptionEditAllowed(): boolean {
     return (this.reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.InControl ||
-      this.reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Certified) && this.isUserAllowedToEditReport
+      this.reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Certified) && this.isUserAllowedToEditReport;
   }
 
   areFileOperationsAllowed(file: any): boolean {
     return (this.reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.InControl && this.isUserAllowedToEditReport) ||
-    (this.reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Certified && this.isUserAllowedToEditReport && file === null)
+    (this.reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Certified && this.isUserAllowedToEditReport && file === null);
   }
-
 }
