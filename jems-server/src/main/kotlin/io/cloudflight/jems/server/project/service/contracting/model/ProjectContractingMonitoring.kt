@@ -46,16 +46,6 @@ data class ProjectContractingMonitoring(
                 newAddDates.map { it }
             )
 
-        val oldFastTrackLumpSums = old?.fastTrackLumpSums?.sortedBy { it.programmeLumpSumId }?.map { it.readyForPayment }
-        val newFastTrackLumpSums = fastTrackLumpSums?.sortedBy { it.programmeLumpSumId }?.map { it.readyForPayment }
-
-        if (oldFastTrackLumpSums != newFastTrackLumpSums) {
-            changes["setReadyForPayment"] = Pair(
-                oldFastTrackLumpSums?.map { it },
-                newFastTrackLumpSums?.map { it }
-            )
-        }
-
         return changes
     }
 }
