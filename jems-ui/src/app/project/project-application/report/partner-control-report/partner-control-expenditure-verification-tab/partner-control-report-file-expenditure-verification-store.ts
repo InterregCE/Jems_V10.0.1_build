@@ -3,32 +3,26 @@ import {BehaviorSubject, combineLatest, merge, Observable, Subject} from 'rxjs';
 import {
   CurrencyDTO,
   IdNamePairDTO,
-  InvestmentSummaryDTO,
   ProgrammeTypologyOfErrorsService,
   ProjectPartnerBudgetOptionsDto,
   ProjectPartnerControlReportExpenditureVerificationDTO,
   ProjectPartnerControlReportExpenditureVerificationUpdateDTO,
   ProjectPartnerReportDTO,
   ProjectPartnerReportExpenditureCostsService,
-  ProjectPartnerReportExpenditureVerificationService, ProjectPartnerReportInvestmentDTO,
+  ProjectPartnerReportExpenditureVerificationService,
+  ProjectPartnerReportInvestmentDTO,
   ProjectPartnerReportLumpSumDTO,
   ProjectPartnerReportUnitCostDTO,
   TypologyErrorsDTO
 } from '@cat/api';
 
-import {
-  PartnerReportDetailPageStore
-} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
+import {PartnerReportDetailPageStore} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 import {filter, map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
-import {
-  ProjectStore
-} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {AllowedBudgetCategories} from '@project/model/allowed-budget-category';
 import {BudgetOptions} from '@project/model/budget/budget-options';
 import {BudgetCostCategoryEnum, BudgetCostCategoryEnumUtils} from '@project/model/lump-sums/BudgetCostCategoryEnum';
-import {
-  InvestmentSummary
-} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
+import {InvestmentSummary} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
 import {ProjectPartnerBudgetStore} from '@project/budget/services/project-partner-budget.store';
 import {
   PartnerReportProcurementsPageStore
@@ -37,9 +31,7 @@ import {CurrencyStore} from '@common/services/currency.store';
 import {RoutingService} from '@common/services/routing.service';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
 import {Log} from '@common/utils/log';
-import {
-  PartnerControlReportStore
-} from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
+import {PartnerControlReportStore} from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
 
 @Injectable({providedIn: 'root'})
 export class PartnerControlReportFileExpenditureVerificationStore {
@@ -99,25 +91,23 @@ export class PartnerControlReportFileExpenditureVerificationStore {
 
   private costCategories(): Observable<string[]> {
     return combineLatest([
-      this.partnerReportDetailPageStore.partnerId$,
       this.projectStore.allowedBudgetCategories$,
       this.budgetOptionsForReport()
-    ])
-      .pipe(
-        map(([partnerId, allowedCategories, budgetOptions]) =>
-          this.mapCategoryCosts(allowedCategories, budgetOptions))
-      );
+    ]).pipe(
+      map(([allowedCategories, budgetOptions]) =>
+        this.mapCategoryCosts(allowedCategories, budgetOptions))
+    );
   }
 
   private budgetOptionsForReport(): Observable<BudgetOptions> {
     return combineLatest([
       this.partnerReportDetailPageStore.partnerId$,
-      this.partnerReportDetailPageStore.partnerReport$
+      this.partnerReportDetailPageStore.partnerReportId$
     ])
       .pipe(
-        filter(([partnerId, partnerReport]) => partnerId !== null && partnerReport !== null),
-        switchMap(([partnerId, partnerReport]) => this.partnerReportExpenditureCostsService
-          .getAvailableBudgetOptions(partnerId as number, partnerReport.id)),
+        filter(([partnerId, partnerReportId]) => partnerId !== null && partnerReportId !== null),
+        switchMap(([partnerId, partnerReportId]) => this.partnerReportExpenditureCostsService
+          .getAvailableBudgetOptions(partnerId as number, partnerReportId)),
         map((it: ProjectPartnerBudgetOptionsDto) => BudgetOptions.fromDto(it)),
       );
   }
@@ -125,11 +115,12 @@ export class PartnerControlReportFileExpenditureVerificationStore {
   private investmentSummariesForReport(): Observable<InvestmentSummary[]> {
     return combineLatest([
       this.partnerReportDetailPageStore.partnerId$,
-      this.projectStore.investmentChangeEvent$.pipe(startWith(null)),
-      this.partnerReportDetailPageStore.partnerReport$])
+      this.partnerReportDetailPageStore.partnerReportId$,
+      this.projectStore.investmentChangeEvent$.pipe(startWith(null))])
       .pipe(
-        switchMap(([partnerId, changeEvent, partnerReport]) =>
-          this.partnerReportExpenditureCostsService.getAvailableInvestments(partnerId as number, partnerReport.id)),
+        filter(([partnerId, partnerReportId, changeEvent]) => partnerId !== null && partnerReportId !== null),
+        switchMap(([partnerId, partnerReportId, changeEvent]) =>
+          this.partnerReportExpenditureCostsService.getAvailableInvestments(partnerId as number, partnerReportId)),
         map((investmentSummaryDTOs: ProjectPartnerReportInvestmentDTO[]) => investmentSummaryDTOs
           .map(it => new InvestmentSummary(it.id, it.investmentNumber, it.workPackageNumber, it.deactivated))),
         map((investmentSummaries: InvestmentSummary[]) => investmentSummaries),
@@ -176,12 +167,12 @@ export class PartnerControlReportFileExpenditureVerificationStore {
   private reportLumpSums(): Observable<ProjectPartnerReportLumpSumDTO[]> {
     return combineLatest([
       this.partnerReportDetailPageStore.partnerId$,
-      this.partnerReportDetailPageStore.partnerReport$
+      this.partnerReportDetailPageStore.partnerReportId$
     ])
       .pipe(
-        filter(([partnerId, partnerReport]) => partnerId !== null && partnerReport !== null),
-        switchMap(([partnerId, partnerReport]) => this.partnerReportExpenditureCostsService
-          .getAvailableLumpSums(Number(partnerId), partnerReport.id)),
+        filter(([partnerId, reportId]) => partnerId !== null && reportId !== null),
+        switchMap(([partnerId, reportId]) => this.partnerReportExpenditureCostsService
+          .getAvailableLumpSums(Number(partnerId), reportId)),
         map((lumpSums: ProjectPartnerReportLumpSumDTO[]) => lumpSums),
         shareReplay(1)
       );
@@ -190,12 +181,12 @@ export class PartnerControlReportFileExpenditureVerificationStore {
   private reportUnitCosts(): Observable<ProjectPartnerReportUnitCostDTO[]> {
     return combineLatest([
       this.partnerReportDetailPageStore.partnerId$,
-      this.partnerReportDetailPageStore.partnerReport$
+      this.partnerReportDetailPageStore.partnerReportId$
     ])
       .pipe(
-        filter(([partnerId, partnerReport]) => partnerId !== null && partnerReport !== null),
-        switchMap(([partnerId, partnerReport]) => this.partnerReportExpenditureCostsService
-          .getAvailableUnitCosts(Number(partnerId), partnerReport.id)),
+        filter(([partnerId, reportId]) => partnerId !== null && reportId !== null),
+        switchMap(([partnerId, reportId]) => this.partnerReportExpenditureCostsService
+          .getAvailableUnitCosts(Number(partnerId), reportId)),
         map((unitCosts: ProjectPartnerReportUnitCostDTO[]) => unitCosts),
         shareReplay(1)
       );
