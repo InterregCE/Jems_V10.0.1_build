@@ -8,7 +8,7 @@ import {
   ControlWorkOverviewDTO,
   ProjectPartnerReportControlOverviewService
 } from '@cat/api';
-import {switchMap} from 'rxjs/operators';
+import {filter, switchMap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 
 @Injectable({ providedIn: 'root' })
@@ -42,7 +42,8 @@ export class PartnerControlReportOverviewAndFinalizeStore {
       this.controlReportFileStore.partnerId$,
       this.controlReportFileStore.partnerControlReport$
     ]).pipe(
-      switchMap(([partnerId,report]) => {
+      filter(([partnerId, report]) => !!partnerId && !!report?.id),
+      switchMap(([partnerId, report]) => {
           return this.service.getControlDeductionByTypologyOfErrorsOverview(partnerId, report?.id, report?.linkedFormVersion);
         }
       )

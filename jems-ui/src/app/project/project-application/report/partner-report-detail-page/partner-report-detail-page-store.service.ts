@@ -58,8 +58,9 @@ export class PartnerReportDetailPageStore {
     this.reportEditable$ = this.reportEditable();
   }
 
-  private partnerReportId(): Observable<any> {
-    return this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId');
+  private partnerReportId(): Observable<number> {
+    return this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')
+      .pipe(map(id => Number(id)));
   }
 
   private partnerReport(): Observable<ProjectPartnerReportDTO> {

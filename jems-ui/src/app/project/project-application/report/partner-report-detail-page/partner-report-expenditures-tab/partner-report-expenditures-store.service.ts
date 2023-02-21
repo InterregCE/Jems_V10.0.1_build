@@ -3,12 +3,13 @@ import {BehaviorSubject, combineLatest, merge, Observable, Subject} from 'rxjs';
 import {
   CurrencyDTO,
   IdNamePairDTO,
-  InvestmentSummaryDTO,
   ProjectPartnerBudgetOptionsDto,
   ProjectPartnerReportDTO,
   ProjectPartnerReportExpenditureCostDTO,
-  ProjectPartnerReportExpenditureCostsService, ProjectPartnerReportInvestmentDTO,
-  ProjectPartnerReportLumpSumDTO, ProjectPartnerReportParkedExpenditureDTO,
+  ProjectPartnerReportExpenditureCostsService,
+  ProjectPartnerReportInvestmentDTO,
+  ProjectPartnerReportLumpSumDTO,
+  ProjectPartnerReportParkedExpenditureDTO,
   ProjectPartnerReportUnitCostDTO,
   ProjectReportFileMetadataDTO
 } from '@cat/api';
@@ -118,9 +119,9 @@ export class PartnerReportExpendituresStore {
   }
 
   private parkedExpenditures(): Observable<ProjectPartnerReportParkedExpenditureDTO[]> {
-     return combineLatest([
+    return combineLatest([
       this.partnerReportDetailPageStore.partnerId$,
-       this.partnerReportDetailPageStore.partnerReportId$,
+      this.partnerReportDetailPageStore.partnerReportId$,
       this.refreshExpenditures$,
     ]).pipe(
       switchMap(([partnerId, reportId, _]) =>
@@ -133,14 +134,12 @@ export class PartnerReportExpendituresStore {
 
   private costCategories(): Observable<string[]> {
     return combineLatest([
-      this.partnerReportDetailPageStore.partnerId$,
       this.projectStore.allowedBudgetCategories$,
       this.budgetOptionsForReport()
-    ])
-      .pipe(
-        map(([partnerId, allowedCategories, budgetOptions]) =>
-          this.mapCategoryCosts(allowedCategories, budgetOptions))
-      );
+    ]).pipe(
+      map(([allowedCategories, budgetOptions]) =>
+        this.mapCategoryCosts(allowedCategories, budgetOptions))
+    );
   }
 
   private budgetOptionsForReport(): Observable<BudgetOptions> {
@@ -159,16 +158,16 @@ export class PartnerReportExpendituresStore {
   private investmentSummariesForReport(): Observable<InvestmentSummary[]> {
     return combineLatest([
       this.partnerReportDetailPageStore.partnerId$,
+      this.partnerReportDetailPageStore.partnerReport$,
       this.projectStore.investmentChangeEvent$.pipe(startWith(null)),
-      this.partnerReportDetailPageStore.partnerReport$])
-      .pipe(
-        switchMap(([partnerId, changeEvent, partnerReport]) =>
-          this.partnerReportExpenditureCostsService.getAvailableInvestments(partnerId as number, partnerReport.id)),
-        map((investmentSummaryDTOs: ProjectPartnerReportInvestmentDTO[]) => investmentSummaryDTOs
-          .map(it => new InvestmentSummary(it.id, it.investmentNumber, it.workPackageNumber, it.deactivated))),
-        map((investmentSummaries: InvestmentSummary[]) => investmentSummaries),
-        shareReplay(1)
-      );
+    ]).pipe(
+      switchMap(([partnerId, partnerReport, changeEvent]) =>
+        this.partnerReportExpenditureCostsService.getAvailableInvestments(partnerId as number, partnerReport.id)),
+      map((investmentSummaryDTOs: ProjectPartnerReportInvestmentDTO[]) => investmentSummaryDTOs
+        .map(it => new InvestmentSummary(it.id, it.investmentNumber, it.workPackageNumber, it.deactivated))),
+      map((investmentSummaries: InvestmentSummary[]) => investmentSummaries),
+      shareReplay(1)
+    );
   }
 
   private mapCategoryCosts(allowedBudgetCategories: AllowedBudgetCategories, budgetOptions: BudgetOptions):
@@ -236,12 +235,12 @@ export class PartnerReportExpendituresStore {
   private reportUnitCosts(): Observable<ProjectPartnerReportUnitCostDTO[]> {
     return combineLatest([
       this.partnerReportDetailPageStore.partnerId$,
-      this.partnerReportDetailPageStore.partnerReport$
+      this.partnerReportDetailPageStore.partnerReportId$
     ])
       .pipe(
-        filter(([partnerId, partnerReport]) => partnerId !== null && partnerReport !== null),
-        switchMap(([partnerId, partnerReport]) => this.partnerReportExpenditureCostsService
-          .getAvailableUnitCosts(Number(partnerId), partnerReport.id)),
+        filter(([partnerId, reportId]) => partnerId !== null && reportId !== null),
+        switchMap(([partnerId, reportId]) => this.partnerReportExpenditureCostsService
+          .getAvailableUnitCosts(Number(partnerId), reportId)),
         map((unitCosts: ProjectPartnerReportUnitCostDTO[]) => unitCosts),
         shareReplay(1)
       );
