@@ -92,11 +92,19 @@
             <span jemsText maxLines="2">{{ 'project.application.partner.report.control.tab.overviewAndFinalize.deductions.by.type.table.lump.sums.header' | translate }}</span>
         </mat-header-cell>
         <mat-cell *matCellDef="let line" class="text-right">{{ line.lumpSums | asMoney }}</mat-cell>
-        <mat-footer-cell *matFooterCellDef class="text-right">
-            {{ total.lumpSums | asMoney }}
-        </mat-footer-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right">{{ total.lumpSums | asMoney }}</mat-footer-cell>
     </ng-container>
     <ng-container matColumnDef="lumpSum-sub">
+        <mat-header-cell *matHeaderCellDef class="text-right"></mat-header-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="unitCost">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{ 'project.application.partner.report.control.tab.overviewAndFinalize.deductions.by.type.table.unit.costs.header' | translate }}</span>        </mat-header-cell>
+        <mat-cell *matCellDef="let line" class="text-right"><span>{{ line.unitCosts | asMoney }}</span></mat-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right">{{ total.unitCosts | asMoney }}</mat-footer-cell>
+    </ng-container>
+    <ng-container matColumnDef="unitCost-sub">
         <mat-header-cell *matHeaderCellDef class="text-right"></mat-header-cell>
     </ng-container>
 
