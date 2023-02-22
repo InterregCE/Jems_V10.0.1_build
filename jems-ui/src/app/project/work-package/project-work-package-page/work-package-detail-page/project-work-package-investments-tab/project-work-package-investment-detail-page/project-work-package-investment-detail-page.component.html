@@ -3,7 +3,7 @@
         titleKey="project.application.form.section.part.c"
         subTitleText="{{'project.application.form.workpackage.form.header' | translate}}{{data.workPackageNumber}}">
     <jems-form (save)="onSubmit()"
-              (discard)="discard(data.investment, data.workPackageNumber)">
+               (discard)="discard(data.investment, data.workPackageNumber)">
         <form jemsFormLayout [formGroup]="workPackageInvestmentForm">
             <span>
                 <a color="primary" class="mr-1" mat-icon-button *ngIf="(formService.dirty$ | async) === false"
@@ -14,9 +14,15 @@
                 <h3 class="put-icon-to-header-line">{{'project.application.form.workpackage.investment.form.title' | translate}}
                     <span *ngIf="data.investment.investmentNumber">
                         {{data.workPackageNumber}}.{{data.investment.investmentNumber}}
-                </span>
+                    </span>
                 </h3>
             </span>
+
+            <jems-alert [type]="Alert.WARNING"
+                        [closable]="false"
+                        [show]="data.investment.deactivated">
+                <div>{{'project.application.form.workpackage.investment.deactivated.warning' | translate}}</div>
+            </jems-alert>
 
             <mat-form-field>
                 <mat-label>{{'project.application.form.workpackage.investment.number' | translate}}</mat-label>

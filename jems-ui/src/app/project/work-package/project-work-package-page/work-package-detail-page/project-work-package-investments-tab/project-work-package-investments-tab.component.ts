@@ -9,13 +9,12 @@ import {MatDialog} from '@angular/material/dialog';
 import {Forms} from '@common/utils/forms';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {Log} from '@common/utils/log';
-import {ProjectApplicationFormSidenavService} from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
+import {
+  ProjectApplicationFormSidenavService
+} from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {FormService} from '@common/components/section/form/form.service';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
-import {
-  AFTER_CONTRACTED_STATUSES,
-  ProjectStore
-} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {AFTER_CONTRACTED_STATUSES, ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {ColumnWidth} from '@common/components/table/model/column-width';
@@ -101,18 +100,27 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
     });
   }
 
-  delete(workPackageInvestment: WorkPackageInvestmentDTO, title?: string | null): void {
-    const messageKey = title
-      ? 'project.application.form.workpackage.investment.table.action.delete.dialog.message'
-      : 'project.application.form.workpackage.investment.table.action.delete.dialog.message.no.name';
+  delete(workPackageInvestment: WorkPackageInvestmentDTO, isAlreadyContracted: boolean, title?: string | null): void {
+    const titleKey = isAlreadyContracted
+      ? 'project.application.form.workpackage.investment.table.action.deactivate.dialog.header'
+      : 'project.application.form.workpackage.investment.table.action.delete.dialog.header';
+
+    let messageKey = 'project.application.form.workpackage.investment.table.action.';
+    messageKey += isAlreadyContracted ? 'deactivate' : 'delete';
+    messageKey += '.dialog.message';
+    messageKey += title ? '' : '.no.name';
     const messageArguments = title ? title : '';
+
+    const warnKey = isAlreadyContracted
+      ? 'project.application.form.workpackage.investment.table.action.deactivate.dialog.warning'
+      : 'project.application.form.workpackage.investment.table.action.delete.dialog.warning';
 
     Forms.confirm(
       this.dialog,
       {
-        title: 'project.application.form.workpackage.table.action.delete.dialog.header',
+        title: titleKey,
         message: {i18nKey: messageKey, i18nArguments: {title: messageArguments}},
-        warnMessage: 'project.application.form.workpackage.investment.table.action.delete.dialog.warning'
+        warnMessage: warnKey,
       }).pipe(
       take(1),
       filter(answer => !!answer),

@@ -44,7 +44,7 @@ class UpdateWorkPackageOutput(
         val newValuesByNumber = groupBy { it.outputNumber }
         val toUpdate = previousOutputsByNr.values.updateWith { outputNr -> newValuesByNumber[outputNr]?.first() }
         val toCreate = newValuesByNumber.minus(previousOutputsByNr.keys).values.flatten()
-            .toCreate(shiftIndex = previousOutputsByNr.keys.maxOf { it })
+            .toCreate(shiftIndex = previousOutputsByNr.keys.maxOfOrNull { it } ?: 0)
         return toUpdate.plus(toCreate)
     }
 
