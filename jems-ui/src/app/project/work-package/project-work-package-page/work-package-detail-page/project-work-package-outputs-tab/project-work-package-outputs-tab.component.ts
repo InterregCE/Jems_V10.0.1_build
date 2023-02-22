@@ -38,6 +38,7 @@ export class ProjectWorkPackageOutputsTabComponent implements OnInit {
     outputIndicators: OutputIndicatorSummaryDTO[];
     workPackageNumber: number;
     specificObjective: OutputProgrammePriorityPolicySimpleDTO;
+    isEditable: boolean;
     isAlreadyContracted: boolean;
   }>;
   Alert = Alert;
@@ -48,15 +49,17 @@ export class ProjectWorkPackageOutputsTabComponent implements OnInit {
     private workPackageStore: WorkPackagePageStore,
     private projectStore: ProjectStore,
   ) {
-    this.formService.init(this.form, this.workPackageStore.isProjectEditable$);
+    this.formService.init(this.form);
   }
 
   ngOnInit(): void {
     combineLatest([
-      this.workPackageStore.outputs$, this.formService.reset$.pipe(startWith(null))
+      this.workPackageStore.outputs$,
+      this.workPackageStore.isProjectEditable$,
+      this.formService.reset$.pipe(startWith(null))
     ])
       .pipe(
-        map(([outputs]) => this.resetForm(outputs)),
+        map(([outputs, isEditable]) => this.resetForm(outputs, isEditable)),
         untilDestroyed(this)
       ).subscribe();
 
@@ -65,14 +68,16 @@ export class ProjectWorkPackageOutputsTabComponent implements OnInit {
       this.workPackageStore.workPackage$,
       this.workPackageStore.outputIndicators$,
       this.workPackageStore.projectForm$,
+      this.workPackageStore.isProjectEditable$,
       this.projectStore.projectStatus$,
     ]).pipe(
-      map(([outputs, workPackage, indicators, projectForm, projectStatus]) => ({
+      map(([outputs, workPackage, indicators, projectForm, isEditable, projectStatus]) => ({
           outputs,
           periods: projectForm.periods,
           outputIndicators: indicators,
           workPackageNumber: workPackage.number,
           specificObjective: projectForm.specificObjective,
+          isEditable,
           isAlreadyContracted: AFTER_CONTRACTED_STATUSES.includes(projectStatus.status),
         })
       ));
@@ -104,18 +109,15 @@ export class ProjectWorkPackageOutputsTabComponent implements OnInit {
     return this.form.get(this.constants.OUTPUTS.name) as FormArray;
   }
 
-  addOutputVisible(): boolean {
-    return this.form.enabled && this.outputs.length < 10;
-  }
-
   getMeasurementUnit(indicatorId: number, indicators: OutputIndicatorSummaryDTO[]): InputTranslation[] {
     return indicators.find(indicator => indicator.id === indicatorId)?.measurementUnit || [];
   }
 
-  private resetForm(outputs: WorkPackageOutputDTO[]): void {
+  private resetForm(outputs: WorkPackageOutputDTO[], isEditable: boolean): void {
     this.rightNowDeactivated = [];
     this.outputs.clear();
-    this.formService.resetEditable();
+
+    this.formService.setEditable(isEditable);
     this.formService.setDirty(false);
     outputs.forEach((activity) => this.addOutput(activity));
   }
@@ -131,12 +133,8 @@ export class ProjectWorkPackageOutputsTabComponent implements OnInit {
         deactivated: this.formBuilder.control(!!existing?.deactivated),
       }
     );
-    if (!this.formService.isEditable() || existing?.deactivated) {
-      item.get('programmeOutputIndicatorId')?.disable();
-      item.get('title')?.disable();
-      item.get('targetValue')?.disable();
-      item.get('periodNumber')?.disable();
-      item.get('description')?.disable();
+    if (!this.formService.isEditable()) {
+      item.disable();
     }
     this.outputs.push(item);
   }

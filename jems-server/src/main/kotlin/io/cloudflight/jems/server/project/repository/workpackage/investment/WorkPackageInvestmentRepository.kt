@@ -37,7 +37,6 @@ interface WorkPackageInvestmentRepository : PagingAndSortingRepository<WorkPacka
              entity.nuts_region3_code as nutsRegion3Code,
              entity.house_number as houseNumber,
              entity.postal_code as postalCode,
-             entity.deactivated as deactivated,
              workPackageInvestmentTransl.*,
              workPackageInvestmentTransl.justification_explanation as justificationExplanation,
              workPackageInvestmentTransl.justification_transactional_relevance as justificationTransactionalRelevance,
@@ -90,8 +89,7 @@ interface WorkPackageInvestmentRepository : PagingAndSortingRepository<WorkPacka
         value ="""
              SELECT
              entity.*,
-             entity.investment_number as investmentNumber,
-             entity.deactivated as deactivated
+             entity.investment_number as investmentNumber
              FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
              WHERE entity.work_package_id = :workPackageId
              """,
