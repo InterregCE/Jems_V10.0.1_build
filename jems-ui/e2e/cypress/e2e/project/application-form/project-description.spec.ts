@@ -344,7 +344,7 @@ context('Project description tests', () => {
       cy.wait(500);
       cy.contains('a', 'State Aid').click();
       cy.contains('mat-form-field', 'State aid relevant activities').click();
-      cy.contains('mat-option', 'ACTIVITY 1.1').should('be.visible');
+      cy.contains('mat-option', 'Activity 1.1').should('be.visible');
     });
   });
 
