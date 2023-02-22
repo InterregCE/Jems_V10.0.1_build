@@ -13,7 +13,7 @@ import {MatTableDataSource} from '@angular/material/table';
 })
 export class ControlReportDeductionOverviewComponent implements OnChanges {
 
-  displayedColumns = ['typeOfError', 'staff', 'officeAndAdministration', 'travelAndAccommodation', 'external', 'equipment', 'infrastructure', 'lumpSum', 'other', 'total'];
+  displayedColumns = ['typeOfError', 'staff', 'officeAndAdministration', 'travelAndAccommodation', 'external', 'equipment', 'infrastructure', 'lumpSum', 'unitCost', 'other', 'total'];
   displayedSubColumns = this.displayedColumns.map(col => `${col}-sub`);
 
   dataSource = new MatTableDataSource<ControlDeductionOverviewRowDTO>([]);
