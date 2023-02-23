@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="serve tunnel 8085" type="js.build_tools.npm">
+    <package-json value="$PROJECT_DIR$/jems-ui/package.json" />
+    <command value="run" />
+    <scripts>
+      <script value="serve:tunnel" />
+    </scripts>
+    <node-interpreter value="project" />
+    <envs>
+      <env name="NODE_OPTIONS" value="--openssl-legacy-provider" />
+    </envs>
+    <method v="2" />
+  </configuration>
+</component>
