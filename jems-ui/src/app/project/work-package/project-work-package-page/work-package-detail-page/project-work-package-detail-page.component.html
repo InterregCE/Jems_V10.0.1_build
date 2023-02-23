@@ -1,6 +1,13 @@
 <jems-project-page-template *ngIf="workPackageStore.workPackage$ | async as workPackage"
                            [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async}"
                            subTitleText="{{'project.application.form.workpackage.form.header' | translate}}{{workPackage.number}}">
+
+    <jems-alert [type]="Alert.WARNING"
+                [show]="workPackage.deactivated"
+                [closable]="false">
+        <span>{{'project.application.form.workpackage.deactivated' | translate}}</span>
+    </jems-alert>
+
     <nav mat-tab-nav-bar
          *ngIf="workPackageId">
         <a [active]="activeTab('objectives')" mat-tab-link

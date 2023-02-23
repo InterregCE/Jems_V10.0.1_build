@@ -687,6 +687,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
         private val workPlan = ProjectPartnerReportWorkPackage(
             id = 750,
             number = 3,
+            deactivated = false,
             description = setOf(InputTranslation(SystemLanguage.EN, "WP1")),
             activities = listOf(
                 ProjectPartnerReportWorkPackageActivity(
@@ -730,6 +731,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
             id = 750,
             number = 3,
             description = setOf(InputTranslationData(SystemLanguageData.EN, "WP1")),
+            deactivated = false,
             activities = listOf(
                 ProjectPartnerReportWorkPackageActivityData(
                     id = 7501,

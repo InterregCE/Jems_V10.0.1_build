@@ -9,7 +9,10 @@
                 <ng-container [formGroupName]="workPackageIndex">
                     <mat-expansion-panel class="mb-3 mt-3 work-package-panel" [expanded]="false">
                         <mat-expansion-panel-header>
-                            <mat-panel-title class="mt-2">
+                            <mat-panel-title>
+                                <span *ngIf="workPackage.deactivated">
+                                    <mat-icon class="vertical-middle" matTooltip="{{ 'project.application.form.partner.table.status.inactive' | translate }}">do_not_disturb</mat-icon>
+                                </span>
                                 {{'project.application.form.workpackage.form.header' | translate}}
                                 {{workPackage.number}}
                             </mat-panel-title>

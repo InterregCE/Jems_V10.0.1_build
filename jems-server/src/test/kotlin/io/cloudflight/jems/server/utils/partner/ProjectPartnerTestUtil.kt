@@ -326,7 +326,7 @@ val stateAidActivity = ProjectPartnerStateAid(
 val activityEntity = WorkPackageActivityEntity(
     id = activitySummary.activityId,
     activityNumber = activitySummary.activityNumber,
-    workPackage = WorkPackageEntity(id = 1L, number = 10, project = project),
+    workPackage = WorkPackageEntity(id = 1L, number = 10, project = project, deactivated = false),
     translatedValues = mutableSetOf(),
     startPeriod = 1,
     endPeriod = 3,

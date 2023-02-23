@@ -11,7 +11,7 @@
                         <h4 class="mb-0 output-header-inner" stretch="1" jemsMultiColumnRow>
                             <span>
                                 <mat-icon *ngIf="output.get('deactivated').value" class="vertical-middle"
-                                          matTooltip="{{ 'project.application.form.partner.table.status.inactive' | translate }}">hide_source</mat-icon>
+                                          matTooltip="{{ 'project.application.form.partner.table.status.inactive' | translate }}">do_not_disturb</mat-icon>
                                 {{('project.application.form.work.package.output' | translate) + ' ' + data.workPackageNumber + '.' + (output.get(constants.OUTPUT_NUMBER.name).value || '?')}}
                             </span>
                             <span *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.TITLE">
@@ -21,9 +21,9 @@
                         <button *ngIf="data.isEditable" type="button" mat-icon-button color="accent" [disabled]="output.get('deactivated').value"
                                 matTooltip="{{ 'project.application.form.work.package.output.table.action.' +
                                  (data.isAlreadyContracted ? 'deactivate' : 'delete') + '.tooltip' | translate}}"
-                                (click)="removeOutput(i, data.isAlreadyContracted ? output.get(constants.OUTPUT_NUMBER.name).value : null)">
+                                (click)="data.isAlreadyContracted ? deactivateOutput(i) : removeOutput(i)">
                             <mat-icon *ngIf="output.get('deactivated').value">delete_forever</mat-icon>
-                            <mat-icon *ngIf="!output.get('deactivated').value">{{ data.isAlreadyContracted ? 'hide_source' : 'delete' }}</mat-icon>
+                            <mat-icon *ngIf="!output.get('deactivated').value">{{ data.isAlreadyContracted ? 'do_not_disturb' : 'delete' }}</mat-icon>
                         </button>
                     </div>
 
@@ -90,24 +90,6 @@
                     </jems-multi-language-container>
                 </div>
             </ng-container>
-        </div>
-
-        <div *ngFor="let number of rightNowDeactivated" jemsNoWidthLimit>
-            <div class="output-container pb-0" jemsFormLayout>
-                <div class="output-header" stretch="1" jemsNoWidthLimit jemsMultiColumnRow justifyContent="space-between">
-                    <h4 class="mb-0 output-header-inner" stretch="1" jemsMultiColumnRow>
-                    <span>
-                        <mat-icon class="vertical-middle"
-                                  matTooltip="{{ 'project.application.form.partner.table.status.inactive' | translate }}">hide_source</mat-icon>
-                        {{ ('project.application.form.work.package.output' | translate) + ' ' + data.workPackageNumber + '.' + number }}
-                    </span>
-                    </h4>
-                    <button type="button" mat-icon-button color="accent" disabled
-                            matTooltip="{{ 'project.application.form.work.package.output.table.action.deactivate.tooltip' | translate }}">
-                        <mat-icon>delete_forever</mat-icon>
-                    </button>
-                </div>
-            </div>
         </div>
 
         <button jemsText *ngIf="data.isEditable && outputs.length < 10" mat-stroked-button color="primary"

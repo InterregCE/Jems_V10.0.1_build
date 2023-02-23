@@ -33,4 +33,8 @@ data class ProjectResultEntity (
     @Column
     val targetValue: BigDecimal? = null,
 
-    )
+    @Column
+    @field:NotNull
+    var deactivated: Boolean,
+
+)

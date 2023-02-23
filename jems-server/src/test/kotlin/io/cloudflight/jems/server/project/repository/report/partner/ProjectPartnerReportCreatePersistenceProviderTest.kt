@@ -159,6 +159,7 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
                             deactivated = false,
                         )
                     ),
+                    deactivated = false
                 )
             ),
             targetGroups = listOf(

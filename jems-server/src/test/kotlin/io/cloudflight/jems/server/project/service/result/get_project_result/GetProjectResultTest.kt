@@ -22,6 +22,7 @@ class GetProjectResultTest: UnitTest() {
         targetValue = BigDecimal.TEN,
         periodNumber = 4,
         description = setOf(InputTranslation(language = EN, translation = "EN desc")),
+        deactivated = false
     )
 
     @MockK

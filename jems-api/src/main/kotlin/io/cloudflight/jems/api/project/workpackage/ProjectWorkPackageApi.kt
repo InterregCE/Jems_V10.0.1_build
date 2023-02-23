@@ -63,4 +63,8 @@ interface ProjectWorkPackageApi {
     @DeleteMapping("$ENDPOINT_API_PROJECT_WORK_PACKAGE/{workPackageId}")
     fun deleteWorkPackage(@PathVariable projectId: Long, @PathVariable workPackageId: Long)
 
+    @ApiOperation("Deactivate a work package")
+    @PutMapping("$ENDPOINT_API_PROJECT_WORK_PACKAGE/{workPackageId}")
+    fun deactivateWorkPackage(@PathVariable projectId: Long, @PathVariable workPackageId: Long): OutputWorkPackageSimple
+
 }

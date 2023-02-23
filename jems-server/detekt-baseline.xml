@@ -563,11 +563,11 @@
     <ID>ThrowsCount:BudgetCostValidator.kt$BudgetCostValidator$final fun validateBaseEntries(budgetEntries: List&lt;BaseBudgetEntry&gt;)</ID>
     <ID>ThrowsCount:CreateOutputIndicator.kt$CreateOutputIndicator$private fun validateOutputIndicatorDetail(outputIndicator: OutputIndicator)</ID>
     <ID>ThrowsCount:CreateUser.kt$CreateUser$private fun validateUser(user: UserChange)</ID>
+    <ID>ThrowsCount:UpdateProjectResults.kt$UpdateProjectResults$private fun validateProjectResultsWithProjectStatus(projectId: Long, projectResults: List&lt;ProjectResult&gt;)</ID>
     <ID>ThrowsCount:WorkPackageActivityValidation.kt$fun validateWorkPackageActivities(workPackageActivities: Collection&lt;WorkPackageActivity&gt;)</ID>
     <ID>TooGenericExceptionThrown:MockedMethodSignature.kt$MockedMethodSignature$throw Exception("sample exception!")</ID>
     <ID>TooManyFunctions:ApplicationState.kt$ApplicationState</ID>
     <ID>TooManyFunctions:CallPersistence.kt$CallPersistence</ID>
-    <ID>TooManyFunctions:WorkPackagePersistence.kt$WorkPackagePersistence</ID>
     <ID>TooManyFunctions:CallPersistenceProvider.kt$CallPersistenceProvider : CallPersistence</ID>
     <ID>TooManyFunctions:ControllerInstitutionPersistence.kt$ControllerInstitutionPersistence</ID>
     <ID>TooManyFunctions:ControllerInstitutionPersistenceProvider.kt$ControllerInstitutionPersistenceProvider : ControllerInstitutionPersistence</ID>

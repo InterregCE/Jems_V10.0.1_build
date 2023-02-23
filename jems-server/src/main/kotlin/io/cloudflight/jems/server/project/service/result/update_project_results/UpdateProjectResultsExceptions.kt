@@ -22,3 +22,18 @@ class PeriodNotFoundException : ApplicationNotFoundException(
     code = "$UPDATE_PROJECT_RESULT_ERROR_CODE_PREFIX-002",
     i18nMessage = I18nMessage( "$CREATE_PROJECT_ERROR_KEY_PREFIX.period.not.found"),
 )
+
+class ProjectResultDeletionNotAllowedException : ApplicationUnprocessableException(
+    code = "$UPDATE_PROJECT_RESULT_ERROR_CODE_PREFIX-003",
+    i18nMessage = I18nMessage("$CREATE_PROJECT_ERROR_KEY_PREFIX.deletion.not.allowed.since.project.is.contracted"),
+)
+
+class ProjectResultDeactivationNotAllowedException : ApplicationUnprocessableException(
+    code = "$UPDATE_PROJECT_RESULT_ERROR_CODE_PREFIX-004",
+    i18nMessage = I18nMessage("$CREATE_PROJECT_ERROR_KEY_PREFIX.deactivation.not.allowed.since.project.is.not.contracted"),
+)
+
+class ProjectResultActivationNotAllowedException : ApplicationUnprocessableException(
+    code = "$UPDATE_PROJECT_RESULT_ERROR_CODE_PREFIX-005",
+    i18nMessage = I18nMessage("$CREATE_PROJECT_ERROR_KEY_PREFIX.activation.not.allowed"),
+)

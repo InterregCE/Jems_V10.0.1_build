@@ -8,4 +8,5 @@ data class ProjectPartnerReportWorkPackage(
     val description: Set<InputTranslation>,
     val activities: List<ProjectPartnerReportWorkPackageActivity>,
     val outputs: List<ProjectPartnerReportWorkPackageOutput>,
+    val deactivated: Boolean,
 )

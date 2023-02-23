@@ -73,7 +73,7 @@ class ProjectWorkPackagePersistenceProviderTest : UnitTest() {
         val activityPartnerMock: WorkPackageActivityPartnerEntity = mockk()
         var activity1 = WorkPackageActivityEntity(
             id = activityId1,
-            workPackage = WorkPackageEntity(id = WORK_PACKAGE_ID, number = 10, project = project),
+            workPackage = WorkPackageEntity(id = WORK_PACKAGE_ID, number = 10, project = project, deactivated = false),
             activityNumber = 1,
             startPeriod = 4,
             endPeriod = 6,
@@ -82,7 +82,7 @@ class ProjectWorkPackagePersistenceProviderTest : UnitTest() {
         )
         val activity2 = WorkPackageActivityEntity(
             id = activityId2,
-            workPackage = WorkPackageEntity(id = WORK_PACKAGE_ID, number = 10, project = project),
+            workPackage = WorkPackageEntity(id = WORK_PACKAGE_ID, number = 10, project = project, deactivated = false),
             activityNumber = 2,
             startPeriod = 1,
             endPeriod = 3,
@@ -161,6 +161,7 @@ class ProjectWorkPackagePersistenceProviderTest : UnitTest() {
             id = WORK_PACKAGE_ID,
             project = project,
             number = 10,
+            deactivated = false,
             activities = mutableListOf(activity2, activity1), // for testing sorting
             translatedValues = mutableSetOf()
         ).apply {
@@ -262,7 +263,7 @@ class ProjectWorkPackagePersistenceProviderTest : UnitTest() {
             activities = mutableListOf(
                 WorkPackageActivityEntity(
                     id = activityId2,
-                    workPackage = WorkPackageEntity(id = WORK_PACKAGE_ID, number = 10, project = project),
+                    workPackage = WorkPackageEntity(id = WORK_PACKAGE_ID, number = 10, project = project, deactivated = false),
                     activityNumber = 2,
                     startPeriod = 1,
                     endPeriod = 3,
@@ -272,7 +273,7 @@ class ProjectWorkPackagePersistenceProviderTest : UnitTest() {
                 ),
                 WorkPackageActivityEntity(
                     id = activityId1,
-                    workPackage = WorkPackageEntity(id = WORK_PACKAGE_ID, number = 10, project = project),
+                    workPackage = WorkPackageEntity(id = WORK_PACKAGE_ID, number = 10, project = project, deactivated = false),
                     activityNumber = 1,
                     startPeriod = 4,
                     endPeriod = 6,
@@ -280,7 +281,8 @@ class ProjectWorkPackagePersistenceProviderTest : UnitTest() {
                     partners = mutableSetOf(activityPartnerMock)
                 )
             ),
-            translatedValues = mutableSetOf()
+            translatedValues = mutableSetOf(),
+            deactivated = false
         ).apply {
             translatedValues.addAll(
                 setOf(WorkPackageTransl(translationId = TranslationId(this, EN), name = "name"))

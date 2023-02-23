@@ -109,7 +109,7 @@ class ProjectServiceTest : UnitTest() {
     )
 
     private fun wpWithActivity(id: Long, project: ProjectEntity, activityStartPeriod: Int, activityEndPeriod: Int, deliverablePeriod: Int) =
-        WorkPackageEntity(id = id, project = project)
+        WorkPackageEntity(id = id, project = project, deactivated = false)
             .apply {
                 activities.add(
                     WorkPackageActivityEntity(
@@ -160,8 +160,8 @@ class ProjectServiceTest : UnitTest() {
         applicant = account,
         currentStatus = status,
         results = setOf(
-            ProjectResultEntity(ProjectResultId(10, 1), periodNumber = resultPeriodNumber),
-            ProjectResultEntity(ProjectResultId(10, 2), periodNumber = 255),
+            ProjectResultEntity(ProjectResultId(10, 1), periodNumber = resultPeriodNumber, deactivated = false),
+            ProjectResultEntity(ProjectResultId(10, 2), periodNumber = 255, deactivated = false),
         ),
     )
 

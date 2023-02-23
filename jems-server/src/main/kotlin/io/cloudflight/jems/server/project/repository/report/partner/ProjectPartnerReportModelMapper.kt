@@ -257,6 +257,7 @@ fun List<ProjectPartnerReportWorkPackageEntity>.toModel(
         description = it.translatedValues.extractField { it.description },
         activities = retrieveActivities.invoke(it).toActivitiesModel(retrieveDeliverables),
         outputs = retrieveOutputs.invoke(it).toOutputsModel(),
+        deactivated = it.deactivated
     )
 }
 

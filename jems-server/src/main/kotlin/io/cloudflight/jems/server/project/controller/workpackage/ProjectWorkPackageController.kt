@@ -31,8 +31,10 @@ class ProjectWorkPackageController(
     override fun updateWorkPackage(projectId: Long, inputWorkPackageUpdate: InputWorkPackageUpdate): OutputWorkPackage =
         workPackageService.updateWorkPackage(projectId, inputWorkPackageUpdate)
 
-    override fun deleteWorkPackage(projectId: Long, workPackageId: Long) {
-        return workPackageService.deleteWorkPackage(projectId, workPackageId)
-    }
+    override fun deleteWorkPackage(projectId: Long, workPackageId: Long) =
+        workPackageService.deleteWorkPackage(projectId, workPackageId)
+
+    override fun deactivateWorkPackage(projectId: Long, workPackageId: Long): OutputWorkPackageSimple =
+        workPackageService.deactivateWorkPackage(projectId, workPackageId)
 
 }

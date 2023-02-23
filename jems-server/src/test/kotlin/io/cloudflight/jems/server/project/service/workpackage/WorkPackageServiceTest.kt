@@ -16,6 +16,10 @@ import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageTransl
+import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityEntity
+import io.cloudflight.jems.server.project.entity.workpackage.investment.WorkPackageInvestmentEntity
+import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputEntity
+import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputId
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.partneruser.UserPartnerCollaboratorRepository
 import io.cloudflight.jems.server.project.repository.workpackage.WorkPackageRepository
@@ -23,11 +27,15 @@ import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.project.repository.projectuser.UserProjectCollaboratorRepository
+import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityRepository
+import io.cloudflight.jems.server.project.repository.workpackage.investment.WorkPackageInvestmentRepository
+import io.cloudflight.jems.server.project.repository.workpackage.output.WorkPackageOutputRepository
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.mockk
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -95,7 +103,7 @@ class WorkPackageServiceTest {
         currentStatus = statusDraft,
     )
     private val mockWorkPackage = WorkPackageEntity(
-        1, project, 1, mutableSetOf()
+        1, project, 1, false, mutableSetOf()
     ).apply {
         translatedValues.add(WorkPackageTransl(TranslationId(this, SystemLanguage.EN), "Test"))
     }
@@ -112,7 +120,40 @@ class WorkPackageServiceTest {
         1,
         setOf(translatedNameInModel),
         setOf(translatedSpecificObjectiveInModel),
-        setOf()
+        setOf(),
+        false
+    )
+
+    private val projectEntityToDeactivate = ProjectEntity(
+        id = 1L,
+        call = call,
+        acronym = "test project",
+        applicant = mockk(),
+        currentStatus = mockk()
+    )
+
+    private val activity = WorkPackageActivityEntity(
+        id = 25L,
+        workPackage = mockWorkPackage,
+        activityNumber = 1,
+        deactivated = false
+    )
+
+    private val output = WorkPackageOutputEntity(
+        WorkPackageOutputId(
+            1L, 1
+        ),
+        periodNumber = 18,
+        programmeOutputIndicatorEntity = mockk(),
+        deactivated = false
+    )
+
+    private val investment = WorkPackageInvestmentEntity(
+        id = 55L,
+        workPackage = mockWorkPackage,
+        investmentNumber = 1,
+        address = mockk(),
+        deactivated = false
     )
 
     @MockK
@@ -120,6 +161,15 @@ class WorkPackageServiceTest {
 
     @MockK
     lateinit var projectRepository: ProjectRepository
+
+    @MockK
+    lateinit var workPackageActivityRepository: WorkPackageActivityRepository
+
+    @MockK
+    lateinit var workPackageOutputRepository: WorkPackageOutputRepository
+
+    @MockK
+    lateinit var workPackageInvestmentRepository: WorkPackageInvestmentRepository
 
     @RelaxedMockK
     lateinit var projectCollaboratorRepository: UserProjectCollaboratorRepository
@@ -136,7 +186,10 @@ class WorkPackageServiceTest {
             workPackageRepository,
             projectRepository,
             projectCollaboratorRepository,
-            partnerCollaboratorRepository
+            partnerCollaboratorRepository,
+            workPackageActivityRepository,
+            workPackageOutputRepository,
+            workPackageInvestmentRepository
         )
     }
 
@@ -145,7 +198,7 @@ class WorkPackageServiceTest {
         every { projectRepository.findById(1L) } returns Optional.of(project)
         every { workPackageRepository.countAllByProjectId(1L) } returns 7
         every { workPackageRepository.save(any()) } returns WorkPackageEntity(
-            2, project, 2, mutableSetOf()
+            2, project, 2, false, mutableSetOf()
         ).apply {
             translatedValues.add(WorkPackageTransl(TranslationId(this, SystemLanguage.EN), "Test"))
         }
@@ -170,7 +223,7 @@ class WorkPackageServiceTest {
     @Test
     fun updateWorkPackage() {
         val workPackageUpdated = WorkPackageEntity(
-            1, project, 1, mutableSetOf()
+            1, project, 1, false, mutableSetOf()
         ).apply {
             translatedValues.add(
                 WorkPackageTransl(TranslationId(this, SystemLanguage.EN), "Test", "Specific Objective")
@@ -185,7 +238,8 @@ class WorkPackageServiceTest {
             number = 1,
             name = setOf(InputTranslation(SystemLanguage.EN, "Test")),
             specificObjective = setOf(InputTranslation(SystemLanguage.EN, "Specific Objective")),
-            objectiveAndAudience = setOf()
+            objectiveAndAudience = setOf(),
+            deactivated = false
         )
 
         val result = workPackageService.updateWorkPackage(1L, mockWorkPackageToUpdate)
@@ -222,6 +276,31 @@ class WorkPackageServiceTest {
         verify { projectRepository.findById(project.id) }
         verify { partnerCollaboratorRepository.findAllByProjectId(project.id) }
         verify { projectCollaboratorRepository.findAllByIdProjectId(project.id) }
+    }
+
+    @Test
+    fun `deactivate work package`() {
+        every { workPackageRepository.findById(1L) } returns Optional.of(mockWorkPackage)
+        every { workPackageRepository.save(any()) } returnsArgument 0
+        every { projectRepository.findById(1L) } returns Optional.of(projectEntityToDeactivate)
+        every { projectEntityToDeactivate.currentStatus.status } returns ApplicationStatus.CONTRACTED
+        every { workPackageActivityRepository.findAllByWorkPackageId(1L) } returns listOf(activity)
+        every { workPackageOutputRepository.findAllByOutputIdWorkPackageIdIn(setOf(1L)) } returns listOf(output)
+        every { workPackageInvestmentRepository.findAllByWorkPackageId(1L) } returns listOf(investment)
+
+        val result = workPackageService.deactivateWorkPackage(1L, 1L)
+
+        assertThat(result).isNotNull
+        assertThat(result.deactivated).isEqualTo(true)
+        assertThat(activity.deactivated).isEqualTo(true)
+        assertThat(output.deactivated).isEqualTo(true)
+        assertThat(investment.deactivated).isEqualTo(true)
+    }
+
+    @Test
+    fun `try to deactivate when project is not contracted yet`() {
+        every { projectRepository.findById(1L) } returns Optional.of(project)
+        assertThrows<WorkPackageDeactivationNotAllowedException> { workPackageService.deactivateWorkPackage(1L, 1L) }
     }
 
 }

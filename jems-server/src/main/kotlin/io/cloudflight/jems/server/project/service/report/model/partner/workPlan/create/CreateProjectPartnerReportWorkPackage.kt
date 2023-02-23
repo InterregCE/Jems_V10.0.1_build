@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.report.model.partner.workPlan
 data class CreateProjectPartnerReportWorkPackage(
     val workPackageId: Long?,
     val number: Int,
+    val deactivated: Boolean,
 
     val activities: List<CreateProjectPartnerReportWorkPackageActivity>,
     val outputs: List<CreateProjectPartnerReportWorkPackageOutput>,

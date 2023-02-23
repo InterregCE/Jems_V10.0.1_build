@@ -13,6 +13,10 @@ import {TableConfiguration} from '@common/components/table/model/table.configura
 import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {ColumnWidth} from '@common/components/table/model/column-width';
+import {
+  ProjectStore
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectUtil} from '@project/common/project-util';
 
 @Component({
   selector: 'jems-project-work-package-page',
@@ -25,8 +29,10 @@ export class ProjectWorkPackagePageComponent implements OnInit {
 
   Permission = Permission;
 
-  @ViewChild('deletionCell', {static: true})
-  deletionCell: TemplateRef<any>;
+  @ViewChild('numberCell', {static: true})
+  numberCell: TemplateRef<any>;
+  @ViewChild('actionCell', {static: true})
+  actionCell: TemplateRef<any>;
   @ViewChild('titleCell', {static: true})
   titleCell: TemplateRef<any>;
 
@@ -38,19 +44,24 @@ export class ProjectWorkPackagePageComponent implements OnInit {
     projectTitle: string;
   }>;
   projectEditable$: Observable<boolean>;
+  isAlreadyContracted$: Observable<boolean>;
 
   constructor(private pageStore: ProjectWorkPackagePageStore,
               private activatedRoute: ActivatedRoute,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private visibilityStatusService: FormVisibilityStatusService,
-              private dialog: MatDialog) {
+              private dialog: MatDialog,
+              private projectStore: ProjectStore) {
     this.data$ = combineLatest([
       this.pageStore.workPackages$,
-      this.pageStore.projectTitle$
+      this.pageStore.projectTitle$,
     ]).pipe(
       map(([workPackages, projectTitle]) => ({workPackages, projectTitle}))
     );
     this.projectEditable$ = this.pageStore.projectEditable$;
+    this.isAlreadyContracted$= this.projectStore.currentVersionOfProjectStatus$.pipe(
+      map(projectStatus => ProjectUtil.isContractedOrAnyStatusAfterContracted(projectStatus))
+    );
   }
 
   ngOnInit(): void {
@@ -61,12 +72,8 @@ export class ProjectWorkPackagePageComponent implements OnInit {
       columns: [
         {
           displayedColumn: 'project.application.form.workpackage.number',
-          elementProperty: 'number',
-          alternativeValueCondition: (element: any) => {
-            return element === null;
-          },
-          alternativeValue: 'project.application.form.partner.number.info.auto',
-          sortProperty: 'number'
+          columnType: ColumnType.CustomComponent,
+          customCellTemplate: this.numberCell,
         },
         ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OBJECTIVES.TITLE) ?
           [{
@@ -75,9 +82,9 @@ export class ProjectWorkPackagePageComponent implements OnInit {
             customCellTemplate: this.titleCell
           }] : [],
         {
-          displayedColumn: ' ',
+          displayedColumn: 'project.application.form.workpackage.table.action',
           columnType: ColumnType.CustomComponent,
-          customCellTemplate: this.deletionCell,
+          customCellTemplate: this.actionCell,
           columnWidth: ColumnWidth.IdColumn
         },
       ]
@@ -107,6 +114,25 @@ export class ProjectWorkPackagePageComponent implements OnInit {
       take(1),
       filter(answer => !!answer),
       switchMap(() => this.pageStore.deleteWorkPackage(workPackage.id)),
+      tap(() => this.projectApplicationFormSidenavService.refreshPackages(this.projectId))
+    ).subscribe();
+  }
+
+  deactivate(workPackage: OutputWorkPackageSimple, name: string): void {
+    const i18nKey = name
+      ? 'project.application.form.workpackage.table.action.deactivate.dialog.message'
+      : 'project.application.form.workpackage.table.action.deactivate.dialog.message.no.name';
+
+    Forms.confirm(
+      this.dialog,
+      {
+        title: 'project.application.form.workpackage.table.action.deactivate.dialog.header',
+        message: {i18nKey, i18nArguments: {name}},
+        warnMessage: 'project.application.form.workpackage.table.action.deactivate.dialog.warning'
+      }).pipe(
+      take(1),
+      filter(answer => !!answer),
+      switchMap(() => this.pageStore.deactivateWorkPackage(workPackage.id)),
       tap(() => this.projectApplicationFormSidenavService.refreshPackages(this.projectId))
     ).subscribe();
   }

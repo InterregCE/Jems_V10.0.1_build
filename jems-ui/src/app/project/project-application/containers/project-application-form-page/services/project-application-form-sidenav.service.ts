@@ -310,6 +310,7 @@ export class ProjectApplicationFormSidenavService {
                     },
                     route: `/app/project/detail/${projectId}/applicationFormWorkPackage/${workPackage.id}/objectives`,
                     baseRoute: `/app/project/detail/${projectId}/applicationFormWorkPackage/${workPackage.id}`,
+                    icon: workPackage.deactivated ? 'do_not_disturb' : ''
                   }
                 ))
               )

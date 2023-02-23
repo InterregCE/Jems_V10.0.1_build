@@ -14,5 +14,6 @@ interface ProjectResultRow: TranslationView {
     val baseline: BigDecimal
     val targetValue: BigDecimal?
     val periodNumber: Int?
+    val deactivated: Boolean?
     val description: String?
 }

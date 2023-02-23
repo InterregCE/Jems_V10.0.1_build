@@ -38,6 +38,10 @@ class WorkPackageEntity(
     @Column
     var number: Int? = null,
 
+    @Column
+    @field:NotNull
+    var deactivated: Boolean,
+
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity", fetch = FetchType.EAGER)
     val translatedValues: MutableSet<WorkPackageTransl> = mutableSetOf(),
 
@@ -51,7 +55,8 @@ class WorkPackageEntity(
             project = this.project,
             number = this.number,
             translatedValues = translatedValues ?: this.translatedValues,
-            activities = this.activities
+            activities = this.activities,
+            deactivated = this.deactivated
         )
 
     fun updateActivities(newActivities: MutableList<WorkPackageActivityEntity>){

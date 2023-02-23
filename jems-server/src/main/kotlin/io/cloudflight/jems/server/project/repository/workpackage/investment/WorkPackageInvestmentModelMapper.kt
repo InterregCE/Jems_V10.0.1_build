@@ -75,6 +75,7 @@ fun WorkPackageInvestment.toWorkPackageInvestmentEntity(workPackageEntity: WorkP
         investmentNumber = investmentNumber,
         expectedDeliveryPeriod = expectedDeliveryPeriod,
         address = address?.toAddressEntity(),
+        deactivated = deactivated,
         id = id ?: 0L
     ).apply {
         translatedValues.addAll(

@@ -31,6 +31,7 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
   Alert = Alert;
 
   separatorKeysCodes: number[] = [ENTER, COMMA];
+  isParentWorkPackageDeactivated: boolean;
 
   form = this.formBuilder.group({
     activities: this.formBuilder.array([])
@@ -57,7 +58,7 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
     combineLatest([
       this.workPackageStore.activities$,
       this.partnerStore.partners$,
-      this.formService.reset$.pipe(startWith(null))
+      this.formService.reset$.pipe(startWith(null)),
     ])
       .pipe(
         map(([activities, partners]) => this.resetForm(activities, partners)),
@@ -65,22 +66,24 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
       ).subscribe();
 
     this.data$ = combineLatest([
-      this.workPackageStore.activities$,
       this.workPackageStore.workPackage$,
+      this.workPackageStore.activities$,
       this.workPackageStore.projectForm$,
       this.partnerStore.partners$,
       this.workPackageStore.isProjectEditable$,
-      this.projectStore.currentVersionOfProjectStatus$
+      this.projectStore.currentVersionOfProjectStatus$,
     ]).pipe(
-      map(([activities, workPackage, projectForm, partners, isEditable, projectStatus]) => ({
+      tap(data => this.isParentWorkPackageDeactivated = data[0].deactivated),
+      map(([workPackage, activities, projectForm, partners, isEditable, projectStatus]) => ({
           activities,
           periods: projectForm.periods,
           workPackageNumber: workPackage.number,
           partners,
           isEditable,
-          isAlreadyContracted: ProjectUtil.isContractedOrAnyStatusAfterContracted(projectStatus)
-        })
-      ));
+          isAlreadyContracted: ProjectUtil.isContractedOrAnyStatusAfterContracted(projectStatus),
+        }),
+      ),
+    );
   }
 
   updateActivities(): void {
@@ -196,7 +199,7 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
         endPeriod: this.formBuilder.control(existing?.endPeriod || ''),
         deliverables: this.formBuilder.array([]),
         partnerIds: this.formBuilder.array([]),
-        deactivated: this.formBuilder.control(existing?.deactivated || false),
+        deactivated: this.isParentWorkPackageDeactivated ? true : this.formBuilder.control(existing?.deactivated || false),
       },
       {
         validators: this.constants.PERIODS.validators
@@ -210,7 +213,7 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
       title: this.formBuilder.control(existing?.title || [], this.constants.DELIVERABLE_TITLE.validators),
       description: this.formBuilder.control(existing?.description || [], this.constants.DELIVERABLE_DESCRIPTION.validators),
       period: this.formBuilder.control(existing?.period || ''),
-      deactivated: this.formBuilder.control(existing?.deactivated || false),
+      deactivated: this.isParentWorkPackageDeactivated ? true : this.formBuilder.control(existing?.deactivated || false),
     }));
   }
 
