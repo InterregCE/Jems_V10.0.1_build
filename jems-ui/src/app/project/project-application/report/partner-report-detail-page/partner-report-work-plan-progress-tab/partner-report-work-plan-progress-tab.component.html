@@ -50,7 +50,7 @@
                                     <jems-multi-language-container>
                                         <div [formGroupName]="activityIndex" jemsMultiColumnRow class="activity-items">
                                             <span>
-                                               <mat-icon *ngIf="activity.deactivated" class="vertical-middle" matTooltip="{{ 'project.application.form.partner.table.status.inactive' | translate }}">hide_source</mat-icon>
+                                               <mat-icon *ngIf="activity.deactivated" class="vertical-middle" matTooltip="{{ 'project.application.form.partner.table.status.inactive' | translate }}">do_not_disturb</mat-icon>
                                                 {{ 'project.application.partner.report.workplan.activity.table.nr.entry' | translate: {
                                                 workPackageNr: workPackage.number,
                                                 activityNr: activity.number
@@ -109,7 +109,7 @@
                                                         [formArrayName]="constants.DELIVERABLES.name">
                                                     <div [formGroupName]="deliverableIndex">
                                                         <span>
-                                                            <mat-icon *ngIf="deliverable.deactivated" class="vertical-middle" matTooltip="{{ 'project.application.form.partner.table.status.inactive' | translate }}">hide_source</mat-icon>
+                                                            <mat-icon *ngIf="deliverable.deactivated" class="vertical-middle" matTooltip="{{ 'project.application.form.partner.table.status.inactive' | translate }}">do_not_disturb</mat-icon>
                                                             {{ 'project.application.partner.report.workplan.deliverable.table.nr.entry' | translate: {
                                                             workPackageNr: workPackage.number,
                                                             activityNr: activity.number,
@@ -175,7 +175,7 @@
                                         <div *ngFor="let output of outputsData; let outputIndex = index"
                                              [formGroupName]="outputIndex">
                                             <span>
-                                                <mat-icon *ngIf="output.deactivated" class="inactive-icon" matTooltip="{{ 'project.application.form.partner.table.status.inactive' | translate }}">hide_source</mat-icon>
+                                                <mat-icon *ngIf="output.deactivated" class="inactive-icon" matTooltip="{{ 'project.application.form.partner.table.status.inactive' | translate }}">do_not_disturb</mat-icon>
                                                 {{ 'project.application.partner.report.workplan.output.table.nr.entry' | translate: {
                                                 workPackageNr: workPackage.number,
                                                 outputNr: output.number
