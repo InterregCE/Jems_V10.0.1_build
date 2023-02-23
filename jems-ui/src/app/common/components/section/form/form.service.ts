@@ -44,7 +44,10 @@ export class FormService {
     }
     editable$
       .pipe(
-        tap(this.setEditable),
+        tap(editable => {
+          this.editable = editable;
+          this.setEditable(editable);
+        }),
         untilDestroyed(this)
       ).subscribe();
   }
