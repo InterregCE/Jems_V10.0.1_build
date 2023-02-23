@@ -142,8 +142,7 @@ Cypress.Commands.add('updateProjectPartnership', (applicationId: number, partner
 });
 
 Cypress.Commands.add('createProjectWorkPlan', (applicationId: number, workPlan: []) => {
-  const options = createWorkPlan(applicationId, workPlan);
-  cy.wrap(options).as('options');
+  createWorkPlan(applicationId, workPlan);
 });
 
 Cypress.Commands.add('createProjectResults', (applicationId: number, projectResults: []) => {
@@ -318,7 +317,7 @@ function updateApplicationSections(applicationId, application) {
   updateOverallObjective(applicationId, application.description.overallObjective);
   updateRelevanceAndContext(applicationId, application.description.relevanceAndContext);
   updatePartnership(applicationId, application.description.partnership);
-  const options = createWorkPlan(applicationId, application.description.workPlan);
+  createWorkPlan(applicationId, application.description.workPlan);
   createResults(applicationId, application.description.results);
   updateManagement(applicationId, application.description.management);
   updateLongTermPlans(applicationId, application.description.longTermPlans);
@@ -327,7 +326,7 @@ function updateApplicationSections(applicationId, application) {
   createProjectProposedUnitCosts(applicationId, application.projectProposedUnitCosts);
 
   // B
-  createPartners(applicationId, application.partners, options);
+  createPartners(applicationId, application.partners);
   createAssociatedOrganisations(applicationId, application.associatedOrganisations);
 
   // E
@@ -368,7 +367,6 @@ function updatePartnership(applicationId: number, partnership: []) {
 }
 
 function createWorkPlan(applicationId: number, workPlan: any[]) {
-  const options = {workPlanId: null, activityId: null};
   workPlan.forEach(workPackage => {
     cy.request({
       method: 'POST',
@@ -376,7 +374,6 @@ function createWorkPlan(applicationId: number, workPlan: any[]) {
       body: workPackage.details
     }).then(result => {
       cy.wrap(result.body.id).as('workPlanId');
-      options.workPlanId = result.body.id;
       if (workPackage.investment) {
         cy.request({
           method: 'POST',
@@ -391,8 +388,11 @@ function createWorkPlan(applicationId: number, workPlan: any[]) {
         url: `api/project/${applicationId}/workPackage/${result.body.id}/activity`,
         body: workPackage.activities
       }).then(response => {
-        cy.wrap(response.body[0].id).as('activityId');
-        options.activityId = response.body[0].id;
+        response.body.forEach((activity, index) => {
+          if (workPackage.activities[index].cypressReference) {
+            cy.wrap(activity.id).as(workPackage.activities[index].cypressReference);
+          }
+        });
       });
       cy.request({
         method: 'PUT',
@@ -401,7 +401,6 @@ function createWorkPlan(applicationId: number, workPlan: any[]) {
       });
     });
   });
-  return options;
 }
 
 function createResults(applicationId: number, results: []) {

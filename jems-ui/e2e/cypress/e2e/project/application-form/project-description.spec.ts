@@ -12,6 +12,9 @@ context('Project description tests', () => {
       cy.createApplication(application).then(applicationId => {
         cy.updateProjectIdentification(applicationId, application.identification);
         cy.createProjectProposedUnitCosts(applicationId, application.projectProposedUnitCosts);
+        // remove references to activities
+        application.partners[0].stateAid.activities = null;
+        application.partners[1].stateAid.activities = null;
         cy.createPartners(applicationId, application.partners);
       });
     });
