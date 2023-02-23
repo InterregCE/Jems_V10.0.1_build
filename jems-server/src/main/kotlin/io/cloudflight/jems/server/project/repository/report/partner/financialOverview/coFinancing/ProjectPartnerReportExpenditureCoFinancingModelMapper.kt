@@ -25,6 +25,14 @@ fun ReportProjectPartnerExpenditureCoFinancingEntity.toModel(
         privateContribution = privateContributionCurrent,
         sum = sumCurrent,
     ),
+    currentlyReportedReIncluded = ReportExpenditureCoFinancingColumn(
+        funds = coFinancing.associateBy({ it.programmeFund?.id }, { it.currentReIncluded }),
+        partnerContribution = partnerContributionCurrentReIncluded,
+        publicContribution = publicContributionCurrentReIncluded,
+        automaticPublicContribution = automaticPublicContributionCurrentReIncluded,
+        privateContribution = privateContributionCurrentReIncluded,
+        sum = sumCurrentReIncluded
+    ),
     totalEligibleAfterControl = ReportExpenditureCoFinancingColumn(
         funds = coFinancing.associateBy({ it.programmeFund?.id }, { it.totalEligibleAfterControl }),
         partnerContribution = partnerContributionTotalEligibleAfterControl,
@@ -40,6 +48,14 @@ fun ReportProjectPartnerExpenditureCoFinancingEntity.toModel(
         automaticPublicContribution = automaticPublicContributionPreviouslyReported,
         privateContribution = privateContributionPreviouslyReported,
         sum = sumPreviouslyReported,
+    ),
+    previouslyReportedParked = ReportExpenditureCoFinancingColumn(
+        funds = coFinancing.associateBy({ it.programmeFund?.id }, { it.previouslyReportedParked }),
+        partnerContribution = partnerContributionPreviouslyReportedParked,
+        publicContribution = publicContributionPreviouslyReportedParked,
+        automaticPublicContribution = automaticPublicContributionPreviouslyReportedParked,
+        privateContribution = privateContributionPreviouslyReportedParked,
+        sum = sumPreviouslyReportedParked,
     ),
     previouslyPaid = ReportExpenditureCoFinancingColumn(
         funds = coFinancing.associateBy({ it.programmeFund?.id }, { it.previouslyPaid }),

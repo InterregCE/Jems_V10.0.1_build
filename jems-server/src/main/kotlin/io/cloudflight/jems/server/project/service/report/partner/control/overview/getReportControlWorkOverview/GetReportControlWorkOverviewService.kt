@@ -28,11 +28,14 @@ class GetReportControlWorkOverviewService(
         val costCategories = reportExpenditureCostCategoryPersistence.getCostCategories(partnerId, reportId = reportId)
 
         val controlSample = currentExpenditures.onlySamplingOnes().sum()
-        // this parked sum might not be needed when report finalized and after MP2-3099 is implemented
-        val parkedSum = currentExpenditures.onlyParkedOnes().calculateCurrent(costCategories.options).sum
 
-        val eligibleAfterControl = if
-            (isClosed) costCategories.totalEligibleAfterControl.sum
+        val parkedSum = if (isClosed)
+            costCategories.currentlyReportedParked.sum
+        else
+            currentExpenditures.onlyParkedOnes().calculateCurrent(costCategories.options).sum
+
+        val eligibleAfterControl = if (isClosed)
+            costCategories.totalEligibleAfterControl.sum
         else
             currentExpenditures.calculateCertified(costCategories.options).sum
 

@@ -35,8 +35,7 @@ class GetReportControlDeductionOverviewService(
         val options = costCategories.options
 
         val totalDeclared = costCategories.currentlyReported
-        // this parked sum might not be needed when report finalized and after MP2-3099 is implemented
-        val totalParked = expenditures.onlyParkedOnes().calculateCurrent(options)
+        val totalParked = if (isClosed) costCategories.currentlyReportedParked else expenditures.onlyParkedOnes().calculateCurrent(options)
         val totalEligibleAfterControl = if (isClosed) costCategories.totalEligibleAfterControl else expenditures.calculateCertified(options)
 
         val totalDeductedSplit = totalDeclared.minus(totalParked).minus(totalEligibleAfterControl)

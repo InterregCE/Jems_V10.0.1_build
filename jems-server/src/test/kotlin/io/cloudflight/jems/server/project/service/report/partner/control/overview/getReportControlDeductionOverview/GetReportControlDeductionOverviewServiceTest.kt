@@ -70,6 +70,19 @@ class GetReportControlDeductionOverviewServiceTest : UnitTest() {
                 sum = BigDecimal.valueOf(957738L, 2),
             )
 
+            every { it.currentlyReportedParked } returns BudgetCostsCalculationResultFull(
+                staff = BigDecimal.valueOf(110051L, 2),
+                office = BigDecimal.valueOf(11023L, 2),
+                travel = BigDecimal.valueOf(12002L, 2),
+                external = BigDecimal.valueOf(142015L, 2),
+                equipment = BigDecimal.valueOf(50000L, 2),
+                infrastructure = BigDecimal.valueOf(110000L, 2),
+                other = BigDecimal.valueOf(110L, 2),
+                lumpSum = BigDecimal.valueOf(120L, 2),
+                unitCost = BigDecimal.valueOf(130L, 2),
+                sum = BigDecimal.valueOf(435451L, 2),
+            )
+
             // used when call open
             every { it.totalEligibleAfterControl } returns BudgetCostsCalculationResultFull(
                 staff = BigDecimal.valueOf(9),
@@ -225,7 +238,7 @@ class GetReportControlDeductionOverviewServiceTest : UnitTest() {
     @InjectMockKs
     lateinit var getReportControlDeductionOverviewService: GetReportControlDeductionOverviewService
 
-    @ParameterizedTest(name = "get Overview for deductions when flat rates are applied (status {0})")
+    @ParameterizedTest(name = "get Overview for deductions when flat rates are applied - closed (status {0})")
     @EnumSource(value = ReportStatus::class, names = ["Certified"])
     fun `get Overview for deductions when flat rates are applied - closed`(status: ReportStatus) {
         val report = mockk<ProjectPartnerReport>()
@@ -248,32 +261,32 @@ class GetReportControlDeductionOverviewServiceTest : UnitTest() {
             /* flat rate row */ ControlDeductionOverviewRow(
                 typologyOfErrorId = null,
                 typologyOfErrorName = null,
-                staffCost = BigDecimal.valueOf(104760L, 2),
-                officeAndAdministration = BigDecimal.valueOf(10823L, 2),
-                travelAndAccommodation = BigDecimal.valueOf(14093L, 2),
+                staffCost = BigDecimal.valueOf(42287L, 2),
+                officeAndAdministration = BigDecimal.valueOf(5033L, 2),
+                travelAndAccommodation = BigDecimal.valueOf(8751L, 2),
                 externalExpertise = null,
                 equipment = null,
                 infrastructureAndWorks = null,
                 lumpSums = null,
                 unitCosts = null,
                 otherCosts = null,
-                total = BigDecimal.valueOf(129676L, 2),
+                total = BigDecimal.valueOf(56071L, 2),
             )
         )
 
         val expectedTotal =   ControlDeductionOverviewRow(
             typologyOfErrorId = null,
             typologyOfErrorName = null,
-            staffCost = BigDecimal.valueOf(104760L, 2),
-            officeAndAdministration = BigDecimal.valueOf(10823L, 2),
-            travelAndAccommodation = BigDecimal.valueOf(14093L, 2),
+            staffCost = BigDecimal.valueOf(42287L, 2),
+            officeAndAdministration = BigDecimal.valueOf(5033L, 2),
+            travelAndAccommodation = BigDecimal.valueOf(8751L, 2),
             externalExpertise = BigDecimal.ZERO,
             equipment =  BigDecimal.valueOf(100011L, 2),
             infrastructureAndWorks = BigDecimal.ZERO,
             lumpSums = BigDecimal.ZERO,
             unitCosts = BigDecimal.ZERO,
             otherCosts = BigDecimal.ZERO,
-            total = BigDecimal.valueOf(229687L, 2),
+            total = BigDecimal.valueOf(156082L, 2),
         )
 
         assertThat(getReportControlDeductionOverviewService.get(PARTNER_ID, REPORT_ID)).isEqualTo(
@@ -288,7 +301,7 @@ class GetReportControlDeductionOverviewServiceTest : UnitTest() {
         )
     }
 
-    @ParameterizedTest(name = "get Overview for deductions when flat rates are applied (status {0})")
+    @ParameterizedTest(name = "get Overview for deductions when flat rates are applied - open (status {0})")
     @EnumSource(value = ReportStatus::class, names = ["Certified"], mode = EnumSource.Mode.EXCLUDE)
     fun `get Overview for deductions when flat rates are applied - open`(status: ReportStatus) {
         val report = mockk<ProjectPartnerReport>()

@@ -312,12 +312,14 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
                         PreviouslyReportedFund(
                             fundId = programmeFundEntity.id, percentage = TEN,
                             total = valueOf(100L), previouslyReported = valueOf(25),
-                            previouslyPaid = valueOf(35)
+                            previouslyPaid = valueOf(35),
+                            previouslyReportedParked = valueOf(100)
                         ),
                         PreviouslyReportedFund(
                             fundId = null, percentage = valueOf(90),
                             total = valueOf(900L), previouslyReported = valueOf(400),
-                            previouslyPaid = valueOf(410)
+                            previouslyPaid = valueOf(410),
+                            previouslyReportedParked = valueOf(100)
                         ),
                     ),
                     totalPartner = valueOf(900L),
@@ -331,6 +333,12 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
                     previouslyReportedAutoPublic = valueOf(130L),
                     previouslyReportedPrivate = valueOf(170L),
                     previouslyReportedSum = valueOf(7500L),
+
+                    previouslyReportedParkedPartner = valueOf(100),
+                    previouslyReportedParkedAutoPublic = valueOf(100),
+                    previouslyReportedParkedPrivate = valueOf(100),
+                    previouslyReportedParkedPublic = valueOf(100),
+                    previouslyReportedParkedSum = valueOf(100),
                 ),
                 investments = listOf(
                     PartnerReportInvestment(

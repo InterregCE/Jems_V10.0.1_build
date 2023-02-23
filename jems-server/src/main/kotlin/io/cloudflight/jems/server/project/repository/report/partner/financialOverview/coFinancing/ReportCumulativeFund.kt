@@ -4,5 +4,6 @@ import java.math.BigDecimal
 
 data class ReportCumulativeFund(
     val reportFundId: Long?,
-    val sum: BigDecimal,
+    val currentSum: BigDecimal,
+    val currentParkedSum: BigDecimal,
 )

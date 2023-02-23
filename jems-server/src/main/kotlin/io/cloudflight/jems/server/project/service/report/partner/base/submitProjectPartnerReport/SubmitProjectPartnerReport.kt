@@ -9,6 +9,7 @@ import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ExpenditureCoFinancingCurrentWithReIncluded
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.investments.ExpenditureInvestmentCurrentWithReIncluded
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumCurrentWithReIncluded
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.unitCost.ExpenditureUnitCostCurrentWithReIncluded
@@ -70,19 +71,21 @@ class SubmitProjectPartnerReport(
         val expenditures = fillInVerificationForExpendituresAndSaveCurrencyRates(partnerId = partnerId, reportId = reportId)
         val costCategories = reportExpenditureCostCategoryPersistence.getCostCategories(partnerId = partnerId, reportId)
 
-        val currentCostCategories = expenditures.calculateCurrent(options = costCategories.options)
-        val currentCostCategoriesReIncluded = expenditures.onlyReIncluded().calculateCurrent(options = costCategories.options)
-        val currentCostCategoriesWithReIncluded = ExpenditureCostCategoryCurrentlyReportedWithReIncluded(currentCostCategories, currentCostCategoriesReIncluded)
+        val currentCostCategories = ExpenditureCostCategoryCurrentlyReportedWithReIncluded(
+            currentlyReported = expenditures.calculateCurrent(options = costCategories.options),
+            currentlyReportedReIncluded = expenditures.onlyReIncluded().calculateCurrent(options = costCategories.options),
+        )
 
-        saveCurrentCostCategories(currentCostCategoriesWithReIncluded, partnerId = partnerId, reportId)
-        saveCurrentCoFinancing(
-            currentExpenditure = currentCostCategories.sum,
+        saveCurrentCostCategories(currentCostCategories, partnerId = partnerId, reportId) // table 2
+        saveCurrentCoFinancing( // table 1
+            currentReport = currentCostCategories.currentlyReported.sum,
+            currentReportReIncluded = currentCostCategories.currentlyReportedReIncluded.sum,
             totalEligibleBudget = costCategories.totalsFromAF.sum,
             report = report, partnerId = partnerId,
         )
-        saveCurrentLumpSums(expenditures.getCurrentForLumpSums(), partnerId = partnerId, reportId)
-        saveCurrentUnitCosts(expenditures.getCurrentForUnitCosts(), partnerId = partnerId, reportId)
-        saveCurrentInvestments(expenditures.getCurrentForInvestments(), partnerId = partnerId, reportId)
+        saveCurrentLumpSums(expenditures.getCurrentForLumpSums(), partnerId = partnerId, reportId) // table 3
+        saveCurrentUnitCosts(expenditures.getCurrentForUnitCosts(), partnerId = partnerId, reportId) // table 4
+        saveCurrentInvestments(expenditures.getCurrentForInvestments(), partnerId = partnerId, reportId) // table 5
 
         return reportPersistence.submitReportById(
             partnerId = partnerId,
@@ -146,7 +149,8 @@ class SubmitProjectPartnerReport(
     }
 
     private fun saveCurrentCoFinancing(
-        currentExpenditure: BigDecimal,
+        currentReport: BigDecimal,
+        currentReportReIncluded: BigDecimal,
         totalEligibleBudget: BigDecimal,
         report: ProjectPartnerReport,
         partnerId: Long,
@@ -157,13 +161,22 @@ class SubmitProjectPartnerReport(
         reportExpenditureCoFinancingPersistence.updateCurrentlyReportedValues(
             partnerId = partnerId,
             reportId = report.id,
-            currentlyReported = getCurrentFrom(
-                contributions.generateCoFinCalculationInputData(
-                    totalEligibleBudget = totalEligibleBudget,
-                    currentValueToSplit = currentExpenditure,
-                    funds = report.identification.coFinancing,
+            currentlyReported = ExpenditureCoFinancingCurrentWithReIncluded(
+                current = getCurrentFrom(
+                    contributions.generateCoFinCalculationInputData(
+                        totalEligibleBudget = totalEligibleBudget,
+                        currentValueToSplit = currentReport,
+                        funds = report.identification.coFinancing,
+                    )
+                ),
+                currentReIncluded = getCurrentFrom(
+                    contributions.generateCoFinCalculationInputData(
+                        totalEligibleBudget = totalEligibleBudget,
+                        currentValueToSplit = currentReportReIncluded,
+                        funds = report.identification.coFinancing,
+                    )
                 )
-            ),
+            )
         )
     }
 

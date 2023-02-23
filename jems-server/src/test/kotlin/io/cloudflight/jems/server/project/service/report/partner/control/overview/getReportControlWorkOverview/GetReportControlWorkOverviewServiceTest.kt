@@ -171,15 +171,15 @@ internal class GetReportControlWorkOverviewServiceTest : UnitTest() {
                 declaredByPartner = BigDecimal.valueOf(119L),
                 inControlSample = BigDecimal.valueOf(1L),
                 inControlSamplePercentage = BigDecimal.valueOf(84L, 2),
-                parked = BigDecimal.valueOf(115, 2),
-                deductedByControl = BigDecimal.valueOf(10785L, 2),
+                parked = BigDecimal.valueOf(129L),
+                deductedByControl = BigDecimal.valueOf(-20L),
                 eligibleAfterControl = BigDecimal.valueOf(10L),
                 eligibleAfterControlPercentage = BigDecimal.valueOf(840L, 2),
             )
         )
     }
 
-    @ParameterizedTest(name = "get (status {0})")
+    @ParameterizedTest(name = "get - closed (status {0})")
     @EnumSource(value = ReportStatus::class, names = ["Certified"], mode = EnumSource.Mode.EXCLUDE)
     fun `get - closed`(status: ReportStatus) {
         val report = mockk<ProjectPartnerReport>()

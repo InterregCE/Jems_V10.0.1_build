@@ -4,7 +4,7 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.partner.financialOverview.ReportProjectPartnerExpenditureCostCategoryEntity
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
-import io.cloudflight.jems.server.project.service.budget.model.ExpenditureCostCategoryCurrentlyReportedWithParked
+import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCurrentValuesWrapper
 import io.cloudflight.jems.server.project.service.budget.model.ExpenditureCostCategoryCurrentlyReportedWithReIncluded
 import io.cloudflight.jems.server.project.service.budget.model.ExpenditureCostCategoryPreviouslyReportedWithParked
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
@@ -266,7 +266,7 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProviderTest : UnitT
         )
 
 
-        private val afterControl = ExpenditureCostCategoryCurrentlyReportedWithParked(
+        private val afterControl = BudgetCostsCurrentValuesWrapper(
             BudgetCostsCalculationResultFull(
                 staff = BigDecimal.valueOf(200),
                 office = BigDecimal.valueOf(201),

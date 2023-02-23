@@ -7,7 +7,7 @@ import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionList
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
-import io.cloudflight.jems.server.project.service.budget.model.ExpenditureCostCategoryCurrentlyReportedWithParked
+import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCurrentValuesWrapper
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
@@ -18,6 +18,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.control.o
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ExpenditureCoFinancingCurrent
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.investments.ExpenditureInvestmentCurrent
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumCurrent
@@ -73,7 +74,7 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
             partnerRole = ProjectPartnerRole.LEAD_PARTNER,
         )
 
-        private val expectedCostCategoryWithParked = ExpenditureCostCategoryCurrentlyReportedWithParked(
+        private val expectedCostCategoryWithParked = BudgetCostsCurrentValuesWrapper(
             currentlyReported = BudgetCostsCalculationResultFull(
                 staff = BigDecimal.valueOf(25448, 2),
                 office = BigDecimal.valueOf(2926, 2),
@@ -111,6 +112,19 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
             automaticPublicContribution = BigDecimal.valueOf(2963, 2),
             privateContribution = BigDecimal.valueOf(3704, 2),
             sum = BigDecimal.valueOf(37041, 2),
+        )
+
+        private val expectedParkedCoFin = ReportExpenditureCoFinancingColumn(
+            funds = mapOf(
+                29L to BigDecimal.valueOf(139, 2),
+                35L to BigDecimal.valueOf(631, 2),
+                null to BigDecimal.valueOf(229, 2),
+            ),
+            partnerContribution = BigDecimal.valueOf(229, 2),
+            publicContribution = BigDecimal.valueOf(60, 2),
+            automaticPublicContribution = BigDecimal.valueOf(80, 2),
+            privateContribution = BigDecimal.valueOf(100, 2),
+            sum = BigDecimal.valueOf(1000, 2),
         )
 
         private val expenditure1 = ProjectPartnerReportExpenditureVerification(
@@ -266,12 +280,12 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
         every { reportExpenditureCostCategoryPersistence.getCostCategories(PARTNER_ID, reportId = 42L) } returns options
         every { controlOverviewPersistence.updatePartnerControlReportOverviewEndDate(PARTNER_ID, 42L, LocalDate.now()) } returns controlOverview
 
-        val slotCostCategory = slot<ExpenditureCostCategoryCurrentlyReportedWithParked>()
+        val slotCostCategory = slot<BudgetCostsCurrentValuesWrapper>()
         every { reportExpenditureCostCategoryPersistence.updateAfterControlValues(PARTNER_ID, reportId = 42L, capture(slotCostCategory)) } answers { }
         every { reportDesignatedControllerPersistence.updateWithInstitutionName(PARTNER_ID, reportId = 42, controllerInstitution.name) } returns Unit
         every { controlInstitutionPersistence.getControllerInstitutions(setOf(PARTNER_ID)) } returns mapOf(Pair(PARTNER_ID, controllerInstitution))
 
-        val slotCostCoFin = slot<ReportExpenditureCoFinancingColumn>()
+        val slotCostCoFin = slot<ExpenditureCoFinancingCurrent>()
         every { reportContributionPersistence.getPartnerReportContribution(PARTNER_ID, reportId = 42L) } returns partnerContribution()
         every { reportExpenditureCoFinancingPersistence.updateAfterControlValues(PARTNER_ID, reportId = 42L, capture(slotCostCoFin)) } answers { }
 
@@ -305,7 +319,7 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
         assertThat(auditSlot.captured.auditCandidate.description).isEqualTo("Control work is finalised for partner report R.7 of partner LP1")
 
         assertThat(slotCostCategory.captured).isEqualTo(expectedCostCategoryWithParked)
-        assertThat(slotCostCoFin.captured).isEqualTo(expectedCoFin)
+        assertThat(slotCostCoFin.captured).isEqualTo(ExpenditureCoFinancingCurrent(expectedCoFin, expectedParkedCoFin))
         assertThat(slotUnitCost.captured).containsExactlyEntriesOf(
             mapOf(
                 Pair(

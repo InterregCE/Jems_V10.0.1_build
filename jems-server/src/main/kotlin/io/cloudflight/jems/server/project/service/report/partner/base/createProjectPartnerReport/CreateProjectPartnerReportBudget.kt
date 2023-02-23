@@ -30,6 +30,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.base.crea
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.create.CreateProjectPartnerReportContribution
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.PartnerReportInvestmentSummary
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ExpenditureCoFinancingCurrent
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ReportExpenditureCostCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.investments.ExpenditureInvestmentCurrent
@@ -322,7 +323,7 @@ class CreateProjectPartnerReportBudget(
         sum = ZERO,
     )
 
-    private fun ReportExpenditureCoFinancingColumn.toCreateModel(
+    private fun ExpenditureCoFinancingCurrent.toCreateModel(
         coFinancing: ProjectPartnerCoFinancingAndContribution,
         partnerTotal: BigDecimal,
         contributions: List<CreateProjectPartnerReportContribution>,
@@ -341,21 +342,23 @@ class CreateProjectPartnerReportBudget(
                 fundId = it.fund?.id,
                 percentage = it.percentage,
                 total = totals[it.fund?.id]!!,
-                previouslyReported = funds.getOrDefault(it.fund?.id, ZERO),
-                previouslyPaid = paymentPaid.getOrDefault(it.fund?.id, ZERO),
+                previouslyReported = current.funds.getOrDefault(it.fund?.id, ZERO),
+                previouslyReportedParked = currentParked.funds.getOrDefault(it.fund?.id, ZERO),
+                previouslyPaid = paymentPaid.getOrDefault(it.fund?.id, ZERO)
             )
         }
 
         // in case in modification some funds have been removed, we still need it in reporting
-        val removedFunds = funds.mapNotNullTo(LinkedHashSet()) { it.key }.minus(
+        val removedFunds = current.funds.mapNotNullTo(LinkedHashSet()) { it.key }.minus(
             currentFunds.mapNotNullTo(HashSet()) { it.fundId }
         ).map { fundId ->
             PreviouslyReportedFund(
                 fundId = fundId,
                 percentage = ZERO,
                 total = ZERO,
-                previouslyReported = funds[fundId]!!,
-                previouslyPaid = paymentPaid.getOrDefault(fundId, ZERO),
+                previouslyReported = current.funds[fundId]!!,
+                previouslyReportedParked = currentParked.funds[fundId]!!,
+                previouslyPaid = paymentPaid.getOrDefault(fundId, ZERO)
             )
         }
         currentFunds.addAll(maxOf(currentFunds.size - 1, 0), removedFunds) /* insert removed funds before partner contribution */
@@ -367,10 +370,12 @@ class CreateProjectPartnerReportBudget(
                     fundId = null,
                     percentage = BigDecimal.valueOf(100),
                     total = ZERO,
-                    previouslyReported = funds.getOrDefault(null, ZERO),
+                    previouslyReported = current.funds.getOrDefault(null, ZERO),
+                    previouslyReportedParked = currentParked.funds.getOrDefault(null, ZERO),
                     previouslyPaid = ZERO,
                 )
             )
+
 
         val publicTotalAmount = contributions.filter { it.legalStatus == Public }.sumOf { it.amount }
         val autoPublicTotalAmount = contributions.filter { it.legalStatus == AutomaticPublic }.sumOf { it.amount }
@@ -393,11 +398,17 @@ class CreateProjectPartnerReportBudget(
             totalPrivate = privateTotalAmount,
             totalSum = partnerTotal,
 
-            previouslyReportedPartner = partnerContribution,
-            previouslyReportedPublic = publicContribution,
-            previouslyReportedAutoPublic = automaticPublicContribution,
-            previouslyReportedPrivate = privateContribution,
-            previouslyReportedSum = sum,
+            previouslyReportedPartner = current.partnerContribution,
+            previouslyReportedPublic = current.publicContribution,
+            previouslyReportedAutoPublic = current.automaticPublicContribution,
+            previouslyReportedPrivate = current.privateContribution,
+            previouslyReportedSum = current.sum,
+
+            previouslyReportedParkedPartner = currentParked.partnerContribution,
+            previouslyReportedParkedPublic = currentParked.publicContribution,
+            previouslyReportedParkedPrivate = currentParked.privateContribution,
+            previouslyReportedParkedAutoPublic = currentParked.automaticPublicContribution,
+            previouslyReportedParkedSum = currentParked.sum,
         ).addExtraLumpSumValues(currentLumpSumValues)
     }
 

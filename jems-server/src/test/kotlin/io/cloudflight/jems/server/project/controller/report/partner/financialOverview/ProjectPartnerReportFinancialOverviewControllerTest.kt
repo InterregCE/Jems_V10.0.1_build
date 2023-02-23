@@ -58,8 +58,10 @@ class ProjectPartnerReportFinancialOverviewControllerTest : UnitTest() {
             fundId = null,
             totalEligibleBudget = BigDecimal.ONE,
             previouslyReported = BigDecimal.TEN,
+            previouslyReportedParked = BigDecimal.valueOf(100),
             previouslyPaid = BigDecimal.ONE,
             currentReport = BigDecimal.ZERO,
+            currentReportReIncluded = BigDecimal.valueOf(100),
             totalEligibleAfterControl = BigDecimal.ONE,
             totalReportedSoFar = BigDecimal.ONE,
             totalReportedSoFarPercentage = BigDecimal.TEN,
@@ -73,14 +75,14 @@ class ProjectPartnerReportFinancialOverviewControllerTest : UnitTest() {
             period = 4,
             totalEligibleBudget = BigDecimal.ONE,
             previouslyReported = BigDecimal.TEN,
+            previouslyReportedParked = BigDecimal.valueOf(1000),
             previouslyPaid = BigDecimal.ONE,
             currentReport = BigDecimal.ZERO,
+            currentReportReIncluded = BigDecimal.valueOf(100),
             totalEligibleAfterControl = BigDecimal.ONE,
             totalReportedSoFar = BigDecimal.ONE,
             totalReportedSoFarPercentage = BigDecimal.TEN,
             remainingBudget = BigDecimal.ZERO,
-            previouslyReportedParked = BigDecimal.valueOf(1000),
-            currentReportReIncluded = BigDecimal.valueOf(100),
         )
 
         private val dummyInvestmentLine = ExpenditureInvestmentBreakdownLine(
@@ -91,13 +93,13 @@ class ProjectPartnerReportFinancialOverviewControllerTest : UnitTest() {
             title = setOf(InputTranslation(SystemLanguage.EN, "investment title EN")),
             totalEligibleBudget = BigDecimal.ONE,
             previouslyReported = BigDecimal.TEN,
+            previouslyReportedParked = BigDecimal.valueOf(100),
             currentReport = BigDecimal.ZERO,
+            currentReportReIncluded = BigDecimal.ZERO,
             totalEligibleAfterControl = BigDecimal.ONE,
             totalReportedSoFar = BigDecimal.ONE,
             totalReportedSoFarPercentage = BigDecimal.TEN,
             remainingBudget = BigDecimal.ZERO,
-            previouslyReportedParked = BigDecimal.valueOf(100),
-            currentReportReIncluded = BigDecimal.ZERO,
             deactivated = false,
         )
 
@@ -185,6 +187,8 @@ class ProjectPartnerReportFinancialOverviewControllerTest : UnitTest() {
             totalReportedSoFar = BigDecimal.ONE,
             totalReportedSoFarPercentage = BigDecimal.TEN,
             remainingBudget = BigDecimal.ZERO,
+            previouslyReportedParked = BigDecimal.valueOf(100),
+            currentReportReIncluded = BigDecimal.valueOf(100)
         )
 
         private val expectedDummyLineLumpSum = ExpenditureLumpSumBreakdownLineDTO(

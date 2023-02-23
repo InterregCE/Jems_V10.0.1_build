@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.service.report.partner.financialOverview
 
-import io.cloudflight.jems.server.project.service.budget.model.ExpenditureCostCategoryCurrentlyReportedWithParked
+import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCurrentValuesWrapper
 import io.cloudflight.jems.server.project.service.budget.model.ExpenditureCostCategoryCurrentlyReportedWithReIncluded
 import io.cloudflight.jems.server.project.service.budget.model.ExpenditureCostCategoryPreviouslyReportedWithParked
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ReportExpenditureCostCategory
@@ -20,7 +20,7 @@ interface ProjectPartnerReportExpenditureCostCategoryPersistence {
     fun updateAfterControlValues(
         partnerId: Long,
         reportId: Long,
-        afterControlWithParked: ExpenditureCostCategoryCurrentlyReportedWithParked,
+        afterControlWithParked: BudgetCostsCurrentValuesWrapper,
     )
 
 }
