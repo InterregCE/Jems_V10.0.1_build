@@ -51,7 +51,7 @@ export class ContractReportingComponent implements OnInit {
       this.contractReportingStore.userCanViewDeadlines$,
       this.contractReportingStore.userCanEditDeadlines$,
       this.contractReportingStore.contractingMonitoringStartDate$,
-      this.contractReportingStore.userCanViewTimeplan$,
+      this.contractReportingStore.userCanViewTimeplan$
     ])
       .pipe(
         map(([availablePeriods, contractReportingDeadlines, userCanViewDeadlines, userCanEditDeadlines, contractingMonitoringStartDate, userCanViewTimeplan]) => ({
@@ -60,6 +60,8 @@ export class ContractReportingComponent implements OnInit {
             canView: userCanViewDeadlines,
             canEdit: userCanEditDeadlines,
             projectStartDate: contractingMonitoringStartDate,
+            projectEndDate: this.projectEndDateString(availablePeriods),
+            projectDuration: this.projectDurationString(availablePeriods),
             userCanViewTimeplan
           })
         ),
@@ -128,6 +130,15 @@ export class ContractReportingComponent implements OnInit {
     this.deadlines.at(index).patchValue({deadlinePeriodStartDate: period?.startDate});
     this.deadlines.at(index).patchValue({deadlinePeriodEndDate: period?.endDate});
     this.formService.setDirty(true);
+  }
+
+  projectEndDateString(periods: ProjectPeriodForMonitoringDTO[]): string {
+    const period = periods.find(p => p.number === (periods.length));
+    return period ? period.endDate : "";
+  }
+  projectDurationString(periods: ProjectPeriodForMonitoringDTO[]): string {
+    const period = periods.find(p => p.number === (periods.length));
+    return period ? period.end.toString() : "";
   }
 
   private initForm(isEditable: boolean): void {

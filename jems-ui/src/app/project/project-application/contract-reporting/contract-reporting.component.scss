@@ -28,6 +28,14 @@ mat-button-toggle {
   margin-bottom: -0.75rem;
 }
 
+.projectDatesRow {
+  display: flex;
+  gap: 1rem;
+  > * {
+    flex-grow: 1;
+  }
+}
+
 ::ng-deep {
   jems-form {
     jems-breadcrumb {

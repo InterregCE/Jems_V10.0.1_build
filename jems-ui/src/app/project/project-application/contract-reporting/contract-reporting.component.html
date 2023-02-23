@@ -9,6 +9,23 @@
         <form jemsFormLayout [formGroup]="reportingDeadlinesForm">
             <h3>{{'project.application.contract.reporting.subheader' | translate}}</h3>
             <p>{{'project.application.contract.reporting.explanation' | translate}}</p>
+            <div class="projectDatesRow">
+                <mat-form-field>
+                    <mat-label>{{'project.application.contract.monitoring.project.start.date' | translate  | dateFormatInfo}}</mat-label>
+                    <input [disabled]="true" matInput
+                           [value]="data.projectStartDate">
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>{{'project.application.contract.monitoring.project.end.date' | translate  | dateFormatInfo}}</mat-label>
+                    <input [disabled]="true" matInput
+                           [value]="data.projectEndDate">
+                </mat-form-field>
+                <mat-form-field jemsFormFieldWidth="large">
+                    <mat-label>{{'project.application.form.field.project.duration' | translate}}</mat-label>
+                    <input [disabled]="true" matInput
+                           [value]="data.projectDuration">
+                </mat-form-field>
+            </div>
             <mat-table *ngIf="data.canView && tableData.length > 0" jemsNoWidthLimit
                        id="deadline-dates-table"
                        class="mt-3 mb-3"
