@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.repository.report.partner.financialOverview.costCategory
 
-import io.cloudflight.jems.server.project.service.budget.model.ExpenditureCostCategoryCurrentlyReportedWithParked
+import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCurrentValuesWrapper
 import io.cloudflight.jems.server.project.service.budget.model.ExpenditureCostCategoryCurrentlyReportedWithReIncluded
 import io.cloudflight.jems.server.project.service.budget.model.ExpenditureCostCategoryPreviouslyReportedWithParked
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ReportExpenditureCostCategory
@@ -61,7 +61,7 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProvider(
     override fun updateAfterControlValues(
         partnerId: Long,
         reportId: Long,
-        afterControlWithParked: ExpenditureCostCategoryCurrentlyReportedWithParked
+        afterControlWithParked: BudgetCostsCurrentValuesWrapper
     ) {
         expenditureCostCategoryRepository
             .findFirstByReportEntityPartnerIdAndReportEntityId(partnerId = partnerId, reportId = reportId).apply {

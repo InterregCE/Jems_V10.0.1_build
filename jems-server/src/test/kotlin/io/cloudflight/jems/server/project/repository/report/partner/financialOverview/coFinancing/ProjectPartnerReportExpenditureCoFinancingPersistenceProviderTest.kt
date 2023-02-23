@@ -8,6 +8,8 @@ import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerRe
 import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.partner.financialOverview.ReportProjectPartnerExpenditureCoFinancingEntity
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportCoFinancingRepository
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ExpenditureCoFinancingCurrent
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ExpenditureCoFinancingCurrentWithReIncluded
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.mockk.clearMocks
@@ -56,6 +58,24 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProviderTest : UnitTe
             automaticPublicContributionPreviouslyReported = BigDecimal.valueOf(4),
             privateContributionPreviouslyReported = BigDecimal.valueOf(5),
             sumPreviouslyReported = BigDecimal.valueOf(6),
+
+            partnerContributionCurrentParked = BigDecimal.valueOf(50),
+            publicContributionCurrentParked = BigDecimal.valueOf(100),
+            automaticPublicContributionCurrentParked = BigDecimal.valueOf(150),
+            privateContributionCurrentParked = BigDecimal.valueOf(200),
+            sumCurrentParked = BigDecimal.valueOf(400),
+
+            partnerContributionCurrentReIncluded = BigDecimal.valueOf(50),
+            publicContributionCurrentReIncluded = BigDecimal.valueOf(100),
+            automaticPublicContributionCurrentReIncluded = BigDecimal.valueOf(150),
+            privateContributionCurrentReIncluded = BigDecimal.valueOf(200),
+            sumCurrentReIncluded = BigDecimal.valueOf(400),
+
+            partnerContributionPreviouslyReportedParked = BigDecimal.valueOf(50),
+            publicContributionPreviouslyReportedParked = BigDecimal.valueOf(100),
+            automaticPublicContributionPreviouslyReportedParked = BigDecimal.valueOf(150),
+            privateContributionPreviouslyReportedParked = BigDecimal.valueOf(200),
+            sumPreviouslyReportedParked = BigDecimal.valueOf(400),
         )
 
         private val coFin = ReportExpenditureCoFinancing(
@@ -75,6 +95,14 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProviderTest : UnitTe
                 privateContribution = BigDecimal.valueOf(200),
                 sum = BigDecimal.valueOf(250),
             ),
+            currentlyReportedReIncluded = ReportExpenditureCoFinancingColumn(
+                funds = mapOf(20L to BigDecimal.valueOf(125L), null to BigDecimal.valueOf(375L)),
+                partnerContribution = BigDecimal.valueOf(50),
+                publicContribution = BigDecimal.valueOf(100),
+                automaticPublicContribution = BigDecimal.valueOf(150),
+                privateContribution = BigDecimal.valueOf(200),
+                sum = BigDecimal.valueOf(400),
+            ),
             totalEligibleAfterControl = ReportExpenditureCoFinancingColumn(
                 funds = mapOf(20L to BigDecimal.valueOf(126L), null to BigDecimal.valueOf(376L)),
                 partnerContribution = BigDecimal.valueOf(51),
@@ -90,6 +118,14 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProviderTest : UnitTe
                 automaticPublicContribution = BigDecimal.valueOf(4),
                 privateContribution = BigDecimal.valueOf(5),
                 sum = BigDecimal.valueOf(6),
+            ),
+            previouslyReportedParked = ReportExpenditureCoFinancingColumn(
+                funds = mapOf(20L to BigDecimal.valueOf(50L), null to BigDecimal.valueOf(150L)),
+                partnerContribution = BigDecimal.valueOf(50),
+                publicContribution = BigDecimal.valueOf(100),
+                automaticPublicContribution = BigDecimal.valueOf(150),
+                privateContribution = BigDecimal.valueOf(200),
+                sum = BigDecimal.valueOf(400),
             ),
             previouslyPaid = ReportExpenditureCoFinancingColumn(
                 funds = mapOf(20L to BigDecimal.valueOf(81L), null to BigDecimal.valueOf(123L)),
@@ -110,6 +146,9 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProviderTest : UnitTe
             totalEligibleAfterControl = BigDecimal.valueOf(126L),
             previouslyReported = BigDecimal.valueOf(50L),
             previouslyPaid = BigDecimal.valueOf(81L),
+            currentParked = BigDecimal.valueOf(50L),
+            currentReIncluded = BigDecimal.valueOf(125L),
+            previouslyReportedParked = BigDecimal.valueOf(50L)
         )
 
         private fun partnerContribution() = ProjectPartnerReportCoFinancingEntity(
@@ -121,6 +160,9 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProviderTest : UnitTe
             totalEligibleAfterControl = BigDecimal.valueOf(376L),
             previouslyReported = BigDecimal.valueOf(150L),
             previouslyPaid = BigDecimal.valueOf(123L),
+            currentParked = BigDecimal.valueOf(150L),
+            currentReIncluded = BigDecimal.valueOf(375L),
+            previouslyReportedParked = BigDecimal.valueOf(150L)
         )
 
         private val reportsCumulative = ReportExpenditureCoFinancingColumnWithoutFunds(
@@ -131,14 +173,24 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProviderTest : UnitTe
             sum = BigDecimal.valueOf(28),
         )
 
+        private val reportsParkedCumulative = ReportExpenditureCoFinancingColumnWithoutFunds(
+            partnerContribution = BigDecimal.valueOf(11),
+            publicContribution = BigDecimal.valueOf(12),
+            automaticPublicContribution = BigDecimal.valueOf(13),
+            privateContribution = BigDecimal.valueOf(14),
+            sum = BigDecimal.valueOf(15),
+        )
+
         private val cumulativeFund = ReportCumulativeFund(
             reportFundId = fund().programmeFund!!.id,
-            sum = BigDecimal.valueOf(62),
+            currentSum = BigDecimal.valueOf(62),
+            currentParkedSum = BigDecimal.valueOf(62)
         )
 
         private val cumulativePartnerContrib = ReportCumulativeFund(
             reportFundId = null,
-            sum = BigDecimal.valueOf(184),
+            currentSum = BigDecimal.valueOf(184),
+            currentParkedSum = BigDecimal.valueOf(184)
         )
 
         private val coFinCumulative = ReportExpenditureCoFinancingColumn(
@@ -150,23 +202,53 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProviderTest : UnitTe
             sum = BigDecimal.valueOf(28),
         )
 
-        private val coFinNewValues = ReportExpenditureCoFinancingColumn(
-            funds = mapOf(20L to BigDecimal.valueOf(12L), null to BigDecimal.valueOf(18L)),
-            partnerContribution = BigDecimal.valueOf(50),
-            publicContribution = BigDecimal.valueOf(40),
-            automaticPublicContribution = BigDecimal.valueOf(30),
-            privateContribution = BigDecimal.valueOf(60),
-            sum = BigDecimal.valueOf(100),
+        private val coFinParkedCumulative = ReportExpenditureCoFinancingColumn(
+            funds = mapOf(20L to BigDecimal.valueOf(62L), null to BigDecimal.valueOf(184L)),
+            partnerContribution = BigDecimal.valueOf(11),
+            publicContribution = BigDecimal.valueOf(12),
+            automaticPublicContribution = BigDecimal.valueOf(13),
+            privateContribution = BigDecimal.valueOf(14),
+            sum = BigDecimal.valueOf(15),
         )
 
-        private val coFinAfterControl = ReportExpenditureCoFinancingColumn(
-            funds = mapOf(20L to BigDecimal.valueOf(22L), null to BigDecimal.valueOf(28L)),
-            partnerContribution = BigDecimal.valueOf(50),
-            publicContribution = BigDecimal.valueOf(10),
-            automaticPublicContribution = BigDecimal.valueOf(15),
-            privateContribution = BigDecimal.valueOf(25),
-            sum = BigDecimal.valueOf(100),
+        private val coFinNewValues = ExpenditureCoFinancingCurrentWithReIncluded(
+            current = ReportExpenditureCoFinancingColumn(
+                funds = mapOf(20L to BigDecimal.valueOf(12L), null to BigDecimal.valueOf(18L)),
+                partnerContribution = BigDecimal.valueOf(50),
+                publicContribution = BigDecimal.valueOf(40),
+                automaticPublicContribution = BigDecimal.valueOf(30),
+                privateContribution = BigDecimal.valueOf(60),
+                sum = BigDecimal.valueOf(100),
+            ),
+            currentReIncluded = ReportExpenditureCoFinancingColumn(
+                funds = mapOf(20L to BigDecimal.valueOf(12L), null to BigDecimal.valueOf(18L)),
+                partnerContribution = BigDecimal.valueOf(50),
+                publicContribution = BigDecimal.valueOf(40),
+                automaticPublicContribution = BigDecimal.valueOf(30),
+                privateContribution = BigDecimal.valueOf(60),
+                sum = BigDecimal.valueOf(100),
+            )
         )
+
+        private val coFinAfterControl = ExpenditureCoFinancingCurrent(
+            current = ReportExpenditureCoFinancingColumn(
+                funds = mapOf(20L to BigDecimal.valueOf(22L), null to BigDecimal.valueOf(28L)),
+                partnerContribution = BigDecimal.valueOf(50),
+                publicContribution = BigDecimal.valueOf(10),
+                automaticPublicContribution = BigDecimal.valueOf(15),
+                privateContribution = BigDecimal.valueOf(25),
+                sum = BigDecimal.valueOf(100),
+            ),
+            currentParked = ReportExpenditureCoFinancingColumn(
+                funds = mapOf(20L to BigDecimal.valueOf(10L), null to BigDecimal.valueOf(20L)),
+                partnerContribution = BigDecimal.valueOf(15),
+                publicContribution = BigDecimal.valueOf(10),
+                automaticPublicContribution = BigDecimal.valueOf(30),
+                privateContribution = BigDecimal.valueOf(25),
+                sum = BigDecimal.valueOf(80),
+            )
+        )
+
     }
 
     @MockK
@@ -195,9 +277,10 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProviderTest : UnitTe
     @Test
     fun getCoFinancingCumulative() {
         every { expenditureCoFinancingRepository.findCumulativeForReportIds(reportIds = setOf(9L)) } returns reportsCumulative
+        every { expenditureCoFinancingRepository.findCumulativeParkedForReportIds(reportIds = setOf(9L)) } returns reportsParkedCumulative
         every { partnerReportCoFinancingRepository.findCumulativeForReportIds(reportIds = setOf(9L)) } returns
             listOf(cumulativeFund, cumulativePartnerContrib)
-        assertThat(persistence.getCoFinancingCumulative(reportIds = setOf(9L))).isEqualTo(coFinCumulative)
+        assertThat(persistence.getCoFinancingCumulative(reportIds = setOf(9L))).isEqualTo(ExpenditureCoFinancingCurrent(coFinCumulative, coFinParkedCumulative))
     }
 
     @Test

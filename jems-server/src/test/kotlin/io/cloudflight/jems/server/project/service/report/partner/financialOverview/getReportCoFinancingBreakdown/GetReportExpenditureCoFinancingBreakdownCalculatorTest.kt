@@ -91,6 +91,18 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
                 privateContribution = BigDecimal.valueOf(200),
                 sum = BigDecimal.valueOf(250),
             ),
+            currentlyReportedReIncluded = ReportExpenditureCoFinancingColumn(
+                funds = mapOf(
+                    15L to BigDecimal.valueOf(7L),
+                    16L to BigDecimal.valueOf(10L),
+                    null to BigDecimal.valueOf(21L),
+                ),
+                partnerContribution = BigDecimal.valueOf(50),
+                publicContribution = BigDecimal.valueOf(100),
+                automaticPublicContribution = BigDecimal.valueOf(150),
+                privateContribution = BigDecimal.valueOf(200),
+                sum = BigDecimal.valueOf(250),
+            ),
             totalEligibleAfterControl = ReportExpenditureCoFinancingColumn(
                 funds = mapOf(
                     15L to BigDecimal.valueOf(15L),
@@ -114,6 +126,18 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
                 automaticPublicContribution = BigDecimal.valueOf(4),
                 privateContribution = BigDecimal.valueOf(5),
                 sum = BigDecimal.valueOf(6),
+            ),
+            previouslyReportedParked = ReportExpenditureCoFinancingColumn(
+                funds = mapOf(
+                    15L to BigDecimal.valueOf(22L),
+                    16L to BigDecimal.valueOf(30L),
+                    null to BigDecimal.valueOf(100L),
+                ),
+                partnerContribution = BigDecimal.valueOf(1),
+                publicContribution = BigDecimal.valueOf(2),
+                automaticPublicContribution = BigDecimal.valueOf(3),
+                privateContribution = BigDecimal.valueOf(4),
+                sum = BigDecimal.valueOf(5),
             ),
             previouslyPaid = ReportExpenditureCoFinancingColumn(
                 funds = mapOf(
@@ -170,8 +194,10 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
                     fundId = 15L,
                     totalEligibleBudget = BigDecimal.valueOf(150),
                     previouslyReported = BigDecimal.valueOf(45),
+                    previouslyReportedParked = BigDecimal.valueOf(22),
                     previouslyPaid = BigDecimal.valueOf(0),
                     currentReport = BigDecimal.valueOf(15000, 2),
+                    currentReportReIncluded = BigDecimal.valueOf(15000, 2),
                     totalEligibleAfterControl = BigDecimal.valueOf(15),
                     totalReportedSoFar = BigDecimal.valueOf(19500, 2),
                     totalReportedSoFarPercentage = BigDecimal.valueOf(13000, 2),
@@ -181,8 +207,10 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
                     fundId = 16L,
                     totalEligibleBudget = BigDecimal.valueOf(250),
                     previouslyReported = BigDecimal.valueOf(75),
+                    previouslyReportedParked = BigDecimal.valueOf(30),
                     previouslyPaid = BigDecimal.valueOf(17),
                     currentReport = BigDecimal.valueOf(25000, 2),
+                    currentReportReIncluded = BigDecimal.valueOf(25000, 2),
                     totalEligibleAfterControl = BigDecimal.valueOf(20),
                     totalReportedSoFar = BigDecimal.valueOf(32500, 2),
                     totalReportedSoFarPercentage = BigDecimal.valueOf(13000, 2),
@@ -192,8 +220,10 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
                     fundId = null,
                     totalEligibleBudget = BigDecimal.valueOf(750),
                     previouslyReported = BigDecimal.valueOf(225),
+                    previouslyReportedParked = BigDecimal.valueOf(100),
                     previouslyPaid = BigDecimal.valueOf(150),
                     currentReport = BigDecimal.valueOf(60000, 2),
+                    currentReportReIncluded = BigDecimal.valueOf(60000, 2),
                     totalEligibleAfterControl = BigDecimal.valueOf(70),
                     totalReportedSoFar = BigDecimal.valueOf(82500, 2),
                     totalReportedSoFarPercentage = BigDecimal.valueOf(11000, 2),
@@ -204,8 +234,10 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
                 fundId = null,
                 totalEligibleBudget = if (zeroTotals) BigDecimal.ZERO else BigDecimal.valueOf(900),
                 previouslyReported = BigDecimal.valueOf(2),
+                previouslyReportedParked = BigDecimal.valueOf(1),
                 previouslyPaid = BigDecimal.valueOf(0),
                 currentReport = BigDecimal.valueOf(60000, 2),
+                currentReportReIncluded = BigDecimal.valueOf(60000, 2),
                 totalEligibleAfterControl = BigDecimal.valueOf(51),
                 totalReportedSoFar = BigDecimal.valueOf(60200, 2),
                 totalReportedSoFarPercentage = if (zeroTotals) BigDecimal.ZERO else BigDecimal.valueOf(6689, 2),
@@ -215,8 +247,10 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
                 fundId = null,
                 totalEligibleBudget = if (zeroTotals) BigDecimal.ZERO else BigDecimal.valueOf(200),
                 previouslyReported = BigDecimal.valueOf(3),
+                previouslyReportedParked = BigDecimal.valueOf(2),
                 previouslyPaid = BigDecimal.valueOf(0),
                 currentReport = BigDecimal.valueOf(2000, 2),
+                currentReportReIncluded = BigDecimal.valueOf(2000, 2),
                 totalEligibleAfterControl = BigDecimal.valueOf(101),
                 totalReportedSoFar = BigDecimal.valueOf(2300, 2),
                 totalReportedSoFarPercentage = if (zeroTotals) BigDecimal.ZERO else BigDecimal.valueOf(1150, 2),
@@ -226,8 +260,10 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
                 fundId = null,
                 totalEligibleBudget = if (zeroTotals) BigDecimal.ZERO else BigDecimal.valueOf(300),
                 previouslyReported = BigDecimal.valueOf(4),
+                previouslyReportedParked = BigDecimal.valueOf(3),
                 previouslyPaid = BigDecimal.valueOf(0),
                 currentReport = BigDecimal.valueOf(3000, 2),
+                currentReportReIncluded = BigDecimal.valueOf(3000, 2),
                 totalEligibleAfterControl = BigDecimal.valueOf(151),
                 totalReportedSoFar = BigDecimal.valueOf(3400, 2),
                 totalReportedSoFarPercentage = if (zeroTotals) BigDecimal.ZERO else BigDecimal.valueOf(1133, 2),
@@ -237,8 +273,10 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
                 fundId = null,
                 totalEligibleBudget = if (zeroTotals) BigDecimal.ZERO else BigDecimal.valueOf(400),
                 previouslyReported = BigDecimal.valueOf(5),
+                previouslyReportedParked = BigDecimal.valueOf(4),
                 previouslyPaid = BigDecimal.valueOf(0),
                 currentReport = BigDecimal.valueOf(4000, 2),
+                currentReportReIncluded = BigDecimal.valueOf(4000, 2),
                 totalEligibleAfterControl = BigDecimal.valueOf(201),
                 totalReportedSoFar = BigDecimal.valueOf(4500, 2),
                 totalReportedSoFarPercentage = if (zeroTotals) BigDecimal.ZERO else BigDecimal.valueOf(1125, 2),
@@ -248,8 +286,10 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
                 fundId = null,
                 totalEligibleBudget = if (zeroTotals) BigDecimal.ZERO else BigDecimal.valueOf(1000),
                 previouslyReported = BigDecimal.valueOf(6),
+                previouslyReportedParked = BigDecimal.valueOf(5),
                 previouslyPaid = BigDecimal.valueOf(320),
                 currentReport = BigDecimal.valueOf(1000),
+                currentReportReIncluded = BigDecimal.valueOf(1000),
                 totalEligibleAfterControl = BigDecimal.valueOf(251),
                 totalReportedSoFar = BigDecimal.valueOf(1006),
                 totalReportedSoFarPercentage = if (zeroTotals) BigDecimal.ZERO else BigDecimal.valueOf(10060, 2),
@@ -263,8 +303,10 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
                     fundId = 15L,
                     totalEligibleBudget = BigDecimal.valueOf(150),
                     previouslyReported = BigDecimal.valueOf(45),
+                    previouslyReportedParked = BigDecimal.valueOf(22),
                     previouslyPaid = BigDecimal.valueOf(0),
                     currentReport = BigDecimal.valueOf(15),
+                    currentReportReIncluded = BigDecimal.valueOf(7),
                     totalEligibleAfterControl = BigDecimal.valueOf(15),
                     totalReportedSoFar = BigDecimal.valueOf(60),
                     totalReportedSoFarPercentage = BigDecimal.valueOf(4000, 2),
@@ -274,8 +316,10 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
                     fundId = 16L,
                     totalEligibleBudget = BigDecimal.valueOf(250),
                     previouslyReported = BigDecimal.valueOf(75),
+                    previouslyReportedParked = BigDecimal.valueOf(30),
                     previouslyPaid = BigDecimal.valueOf(17),
                     currentReport = BigDecimal.valueOf(25),
+                    currentReportReIncluded = BigDecimal.valueOf(10),
                     totalEligibleAfterControl = BigDecimal.valueOf(20),
                     totalReportedSoFar = BigDecimal.valueOf(100),
                     totalReportedSoFarPercentage = BigDecimal.valueOf(4000, 2),
@@ -285,8 +329,10 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
                     fundId = null,
                     totalEligibleBudget = BigDecimal.valueOf(750),
                     previouslyReported = BigDecimal.valueOf(225),
+                    previouslyReportedParked = BigDecimal.valueOf(100),
                     previouslyPaid = BigDecimal.valueOf(150),
                     currentReport = BigDecimal.valueOf(75),
+                    currentReportReIncluded = BigDecimal.valueOf(21),
                     totalEligibleAfterControl = BigDecimal.valueOf(70),
                     totalReportedSoFar = BigDecimal.valueOf(300),
                     totalReportedSoFarPercentage = BigDecimal.valueOf(4000, 2),
@@ -297,8 +343,10 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
                 fundId = null,
                 totalEligibleBudget = BigDecimal.valueOf(900),
                 previouslyReported = BigDecimal.valueOf(2),
+                previouslyReportedParked = BigDecimal.valueOf(1),
                 previouslyPaid = BigDecimal.valueOf(0),
                 currentReport = BigDecimal.valueOf(50),
+                currentReportReIncluded = BigDecimal.valueOf(50),
                 totalEligibleAfterControl = BigDecimal.valueOf(51),
                 totalReportedSoFar = BigDecimal.valueOf(52),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(578, 2),
@@ -308,8 +356,10 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
                 fundId = null,
                 totalEligibleBudget = BigDecimal.valueOf(200),
                 previouslyReported = BigDecimal.valueOf(3),
+                previouslyReportedParked = BigDecimal.valueOf(2),
                 previouslyPaid = BigDecimal.valueOf(0),
                 currentReport = BigDecimal.valueOf(100),
+                currentReportReIncluded = BigDecimal.valueOf(100),
                 totalEligibleAfterControl = BigDecimal.valueOf(101),
                 totalReportedSoFar = BigDecimal.valueOf(103),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(5150, 2),
@@ -319,8 +369,10 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
                 fundId = null,
                 totalEligibleBudget = BigDecimal.valueOf(300),
                 previouslyReported = BigDecimal.valueOf(4),
+                previouslyReportedParked = BigDecimal.valueOf(3),
                 previouslyPaid = BigDecimal.valueOf(0),
                 currentReport = BigDecimal.valueOf(150),
+                currentReportReIncluded = BigDecimal.valueOf(150),
                 totalEligibleAfterControl = BigDecimal.valueOf(151),
                 totalReportedSoFar = BigDecimal.valueOf(154),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(5133, 2),
@@ -330,8 +382,10 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
                 fundId = null,
                 totalEligibleBudget = BigDecimal.valueOf(400),
                 previouslyReported = BigDecimal.valueOf(5),
+                previouslyReportedParked = BigDecimal.valueOf(4),
                 previouslyPaid = BigDecimal.valueOf(0),
                 currentReport = BigDecimal.valueOf(200),
+                currentReportReIncluded = BigDecimal.valueOf(200),
                 totalEligibleAfterControl = BigDecimal.valueOf(201),
                 totalReportedSoFar = BigDecimal.valueOf(205),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(5125, 2),
@@ -341,8 +395,10 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
                 fundId = null,
                 totalEligibleBudget = BigDecimal.valueOf(1000),
                 previouslyReported = BigDecimal.valueOf(6),
+                previouslyReportedParked = BigDecimal.valueOf(5),
                 previouslyPaid = BigDecimal.valueOf(320),
                 currentReport = BigDecimal.valueOf(250),
+                currentReportReIncluded = BigDecimal.valueOf(250),
                 totalEligibleAfterControl = BigDecimal.valueOf(251),
                 totalReportedSoFar = BigDecimal.valueOf(256),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(2560, 2),
@@ -356,8 +412,10 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
                     fundId = 18L,
                     totalEligibleBudget = BigDecimal.valueOf(4_620_000_000L),
                     previouslyReported = BigDecimal.ZERO,
+                    previouslyReportedParked = BigDecimal.ZERO,
                     previouslyPaid = BigDecimal.ZERO,
                     currentReport = BigDecimal.valueOf(660_000_000_000_000_00L, 2),
+                    currentReportReIncluded = BigDecimal.valueOf(1_320_000_000_000_000_01L, 2),
                     totalEligibleAfterControl = BigDecimal.valueOf(1),
                     totalReportedSoFar = BigDecimal.valueOf(660_000_000_000_000_00L, 2),
                     totalReportedSoFarPercentage = BigDecimal.valueOf(14_285_714_29L, 2),
@@ -367,8 +425,10 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
                     fundId = null,
                     totalEligibleBudget = BigDecimal.valueOf(2_380_000_000L),
                     previouslyReported = BigDecimal.ZERO,
+                    previouslyReportedParked = BigDecimal.ZERO,
                     previouslyPaid = BigDecimal.ZERO,
                     currentReport = BigDecimal.valueOf(340_000_000_000_000_00L, 2),
+                    currentReportReIncluded = BigDecimal.valueOf(680_000_000_000_000_00L, 2),
                     totalEligibleAfterControl = BigDecimal.valueOf(2),
                     totalReportedSoFar = BigDecimal.valueOf(340_000_000_000_000_00L, 2),
                     totalReportedSoFarPercentage = BigDecimal.valueOf(14_285_714_29L, 2),
@@ -379,8 +439,10 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
                 fundId = null,
                 totalEligibleBudget = BigDecimal.valueOf(2_380_000_000L),
                 previouslyReported = BigDecimal.ZERO,
+                previouslyReportedParked = BigDecimal.ZERO,
                 previouslyPaid = BigDecimal.ZERO,
                 currentReport = BigDecimal.valueOf(340_000_000_000_000_00L, 2),
+                currentReportReIncluded = BigDecimal.valueOf(680_000_000_000_000_00L, 2),
                 totalEligibleAfterControl = BigDecimal.valueOf(3),
                 totalReportedSoFar = BigDecimal.valueOf(340_000_000_000_000_00L, 2),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(14_285_714_29L, 2),
@@ -390,8 +452,10 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
                 fundId = null,
                 totalEligibleBudget = BigDecimal.valueOf(2_200_000_000L),
                 previouslyReported = BigDecimal.ZERO,
+                previouslyReportedParked = BigDecimal.ZERO,
                 previouslyPaid = BigDecimal.ZERO,
                 currentReport = BigDecimal.valueOf(314_285_714_285_714_28L, 2),
+                currentReportReIncluded = BigDecimal.valueOf(628_571_428_571_428_57L, 2),
                 totalEligibleAfterControl = BigDecimal.valueOf(4),
                 totalReportedSoFar = BigDecimal.valueOf(314_285_714_285_714_28L, 2),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(14_285_714_29L, 2),
@@ -401,8 +465,10 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
                 fundId = null,
                 totalEligibleBudget = BigDecimal.valueOf(180_000_000L),
                 previouslyReported = BigDecimal.ZERO,
+                previouslyReportedParked = BigDecimal.ZERO,
                 previouslyPaid = BigDecimal.ZERO,
                 currentReport = BigDecimal.valueOf(25_714_285_714_285_71L, 2),
+                currentReportReIncluded = BigDecimal.valueOf(51_428_571_428_571_42L, 2),
                 totalEligibleAfterControl = BigDecimal.valueOf(5),
                 totalReportedSoFar = BigDecimal.valueOf(25_714_285_714_285_71L, 2),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(14_285_714_29L, 2),
@@ -412,8 +478,10 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
                 fundId = null,
                 totalEligibleBudget = BigDecimal.ZERO,
                 previouslyReported = BigDecimal.ZERO,
+                previouslyReportedParked = BigDecimal.ZERO,
                 previouslyPaid = BigDecimal.ZERO,
                 currentReport = BigDecimal.valueOf(0, 2),
+                currentReportReIncluded = BigDecimal.valueOf(0, 2),
                 totalEligibleAfterControl = BigDecimal.valueOf(6),
                 totalReportedSoFar = BigDecimal.valueOf(0, 2),
                 totalReportedSoFarPercentage = BigDecimal.ZERO,
@@ -423,8 +491,10 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
                 fundId = null,
                 totalEligibleBudget = BigDecimal.valueOf(7_000_000_000L),
                 previouslyReported = BigDecimal.ZERO,
+                previouslyReportedParked = BigDecimal.ZERO,
                 previouslyPaid = BigDecimal.ZERO,
                 currentReport = BigDecimal.valueOf(1_000_000_000_000_000_01L, 2),
+                currentReportReIncluded = BigDecimal.valueOf(2_000_000_000_000_000_02L, 2),
                 totalEligibleAfterControl = BigDecimal.valueOf(7),
                 totalReportedSoFar = BigDecimal.valueOf(1_000_000_000_000_000_01L, 2),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(14_285_714_29L, 2),
@@ -462,7 +532,12 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
 
         val currentCalculation = mockk<ExpenditureCostCategoryBreakdown>()
         every { currentCalculation.total } returns total
-        every { reportExpenditureCostCategoryCalculatorService.getSubmittedOrCalculateCurrent(PARTNER_ID, reportId = reportId) } returns currentCalculation
+        every {
+            reportExpenditureCostCategoryCalculatorService.getSubmittedOrCalculateCurrent(
+                PARTNER_ID,
+                reportId = reportId,
+            )
+        } returns currentCalculation
 
         every { reportContributionPersistence.getPartnerReportContribution(PARTNER_ID, reportId = reportId) } returns partnerContribution
         assertThat(calculator.get(PARTNER_ID, reportId = reportId)).isEqualTo(expectedSubmittedResult())
@@ -483,23 +558,43 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
     @Test
     fun `get - not submitted - zero total partner budget`() {
         val reportId = 24597L
-        every { reportPersistence.getPartnerReportById(partnerId = PARTNER_ID, reportId) } returns report(reportId, ReportStatus.Draft)
+        every { reportPersistence.getPartnerReportById(partnerId = PARTNER_ID, reportId) } returns report(
+            reportId,
+            ReportStatus.Draft
+        )
         every { reportExpenditureCoFinancingPersistence.getCoFinancing(PARTNER_ID, reportId = reportId) } returns
-            coFinancing.copy(totalsFromAF = ReportExpenditureCoFinancingColumn(
-                funds = coFinancing.totalsFromAF.funds,
-                partnerContribution = BigDecimal.ZERO,
-                publicContribution = BigDecimal.ZERO,
-                automaticPublicContribution = BigDecimal.ZERO,
-                privateContribution = BigDecimal.ZERO,
-                sum = BigDecimal.ZERO,
-            ))
+            coFinancing.copy(
+                totalsFromAF = ReportExpenditureCoFinancingColumn(
+                    funds = coFinancing.totalsFromAF.funds,
+                    partnerContribution = BigDecimal.ZERO,
+                    publicContribution = BigDecimal.ZERO,
+                    automaticPublicContribution = BigDecimal.ZERO,
+                    privateContribution = BigDecimal.ZERO,
+                    sum = BigDecimal.ZERO,
+                )
+            )
 
         val currentCalculation = mockk<ExpenditureCostCategoryBreakdown>()
         every { currentCalculation.total } returns total
-        every { reportExpenditureCostCategoryCalculatorService.getSubmittedOrCalculateCurrent(PARTNER_ID, reportId = reportId) } returns currentCalculation
+        every {
+            reportExpenditureCostCategoryCalculatorService.getSubmittedOrCalculateCurrent(
+                PARTNER_ID,
+                reportId = reportId,
+            )
+        } returns currentCalculation
 
-        every { reportContributionPersistence.getPartnerReportContribution(PARTNER_ID, reportId = reportId) } returns partnerContribution
-        assertThat(calculator.get(PARTNER_ID, reportId = reportId)).isEqualTo(expectedSubmittedResult(zeroTotals = true))
+        every {
+            reportContributionPersistence.getPartnerReportContribution(
+                PARTNER_ID,
+                reportId = reportId
+            )
+        } returns partnerContribution
+        assertThat(
+            calculator.get(
+                PARTNER_ID,
+                reportId = reportId
+            )
+        ).isEqualTo(expectedSubmittedResult(zeroTotals = true))
     }
 
     @Test
@@ -562,6 +657,17 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
                 privateContribution = BigDecimal.ZERO,
                 sum = BigDecimal.valueOf(1_000_000_000_000_000_01, 2),
             ),
+            currentlyReportedReIncluded = ReportExpenditureCoFinancingColumn(
+                funds = mapOf(
+                    18L to BigDecimal.valueOf(660_000_000_000_000L),
+                    null to BigDecimal.valueOf(340_000_000_000_000L),
+                ),
+                partnerContribution = BigDecimal.valueOf(340_000_000_000_000L),
+                publicContribution = BigDecimal.valueOf(314_285_714_285_714_28L, 2),
+                automaticPublicContribution = BigDecimal.valueOf(25_714_285_714_285_71L, 2),
+                privateContribution = BigDecimal.ZERO,
+                sum = BigDecimal.valueOf(1_000_000_000_000_000_01, 2),
+            ),
             totalEligibleAfterControl = ReportExpenditureCoFinancingColumn(
                 funds = mapOf(
                     18L to BigDecimal.valueOf(1L),
@@ -574,6 +680,17 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
                 sum = BigDecimal.valueOf(7),
             ),
             previouslyReported = ReportExpenditureCoFinancingColumn(
+                funds = mapOf(
+                    18L to BigDecimal.ZERO,
+                    null to BigDecimal.ZERO,
+                ),
+                partnerContribution = BigDecimal.ZERO,
+                publicContribution = BigDecimal.ZERO,
+                automaticPublicContribution = BigDecimal.ZERO,
+                privateContribution = BigDecimal.ZERO,
+                sum = BigDecimal.ZERO,
+            ),
+            previouslyReportedParked = ReportExpenditureCoFinancingColumn(
                 funds = mapOf(
                     18L to BigDecimal.ZERO,
                     null to BigDecimal.ZERO,

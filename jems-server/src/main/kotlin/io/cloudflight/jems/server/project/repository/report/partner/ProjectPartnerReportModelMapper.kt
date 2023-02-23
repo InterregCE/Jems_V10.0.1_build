@@ -199,19 +199,20 @@ fun ProjectPartnerReportCreate.toEntity(
 fun List<PreviouslyReportedFund>.toEntity(
     reportEntity: ProjectPartnerReportEntity,
     programmeFundResolver: (Long) -> ProgrammeFundEntity,
-): List<ProjectPartnerReportCoFinancingEntity> {
-    return mapIndexed { index, fund ->
-        ProjectPartnerReportCoFinancingEntity(
-            id = ProjectPartnerReportCoFinancingIdEntity(reportEntity, index.plus(1)),
-            programmeFund = fund.fundId?.let { programmeFundResolver.invoke(it) },
-            percentage = fund.percentage,
-            total = fund.total,
-            current = ZERO,
-            totalEligibleAfterControl = ZERO,
-            previouslyReported = fund.previouslyReported,
-            previouslyPaid = fund.previouslyPaid,
-        )
-    }
+): List<ProjectPartnerReportCoFinancingEntity> = mapIndexed { index, fund ->
+    ProjectPartnerReportCoFinancingEntity(
+        id = ProjectPartnerReportCoFinancingIdEntity(reportEntity, index.plus(1)),
+        programmeFund = fund.fundId?.let { programmeFundResolver.invoke(it) },
+        percentage = fund.percentage,
+        total = fund.total,
+        current = ZERO,
+        totalEligibleAfterControl = ZERO,
+        previouslyReported = fund.previouslyReported,
+        previouslyPaid = fund.previouslyPaid,
+        currentParked = ZERO,
+        currentReIncluded = ZERO,
+        previouslyReportedParked = fund.previouslyReportedParked
+    )
 }
 
 fun PreviouslyReportedCoFinancing.toEntity(
@@ -243,6 +244,24 @@ fun PreviouslyReportedCoFinancing.toEntity(
         automaticPublicContributionPreviouslyReported = previouslyReportedAutoPublic,
         privateContributionPreviouslyReported = previouslyReportedPrivate,
         sumPreviouslyReported = previouslyReportedSum,
+
+        partnerContributionCurrentParked = ZERO,
+        publicContributionCurrentParked = ZERO,
+        automaticPublicContributionCurrentParked = ZERO,
+        privateContributionCurrentParked = ZERO,
+        sumCurrentParked = ZERO,
+
+        partnerContributionPreviouslyReportedParked = previouslyReportedParkedPartner,
+        publicContributionPreviouslyReportedParked = previouslyReportedParkedPublic,
+        automaticPublicContributionPreviouslyReportedParked = previouslyReportedParkedAutoPublic,
+        privateContributionPreviouslyReportedParked = previouslyReportedParkedPrivate,
+        sumPreviouslyReportedParked = previouslyReportedParkedSum,
+
+        partnerContributionCurrentReIncluded = ZERO,
+        publicContributionCurrentReIncluded = ZERO,
+        automaticPublicContributionCurrentReIncluded = ZERO,
+        privateContributionCurrentReIncluded = ZERO,
+        sumCurrentReIncluded = ZERO,
     )
 }
 

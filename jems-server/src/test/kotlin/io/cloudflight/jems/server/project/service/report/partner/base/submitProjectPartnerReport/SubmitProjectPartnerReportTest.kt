@@ -24,9 +24,11 @@ import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPa
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ExpenditureCoFinancingCurrentWithReIncluded
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ReportExpenditureCostCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.investments.ExpenditureInvestmentCurrentWithReIncluded
@@ -296,9 +298,9 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
                 equipment = BigDecimal.ZERO,
                 infrastructure = BigDecimal.ZERO,
                 other = BigDecimal.ZERO,
-                lumpSum = BigDecimal.ZERO,
+                lumpSum = BigDecimal.valueOf(4850, 2),
                 unitCost = BigDecimal.ZERO,
-                sum = BigDecimal.valueOf(1262, 2),
+                sum = BigDecimal.valueOf(6112, 2),
             )
         )
 
@@ -344,6 +346,19 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             automaticPublicContribution = BigDecimal.valueOf(634, 2),
             privateContribution = BigDecimal.valueOf(792, 2),
             sum = BigDecimal.valueOf(7927, 2),
+        )
+
+        private val expectedReIncludedCoFinancing = ReportExpenditureCoFinancingColumn(
+            funds = mapOf(
+                29L to BigDecimal.valueOf(853, 2),
+                35L to BigDecimal.valueOf(3857, 2),
+                null to BigDecimal.valueOf(1400, 2),
+            ),
+            partnerContribution = BigDecimal.valueOf(1400, 2),
+            publicContribution = BigDecimal.valueOf(366, 2),
+            automaticPublicContribution = BigDecimal.valueOf(488, 2),
+            privateContribution = BigDecimal.valueOf(611, 2),
+            sum = BigDecimal.valueOf(6112, 2),
         )
 
     }
@@ -412,7 +427,16 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         every { preSubmissionCheck.preCheck(PARTNER_ID, reportId = 35L) } returns PreConditionCheckResult(emptyList(), true)
 
         every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, 35L) } returns
-            listOf(expenditure1, expenditure2, expenditure3)
+            listOf(
+                expenditure1, expenditure2.copy(
+                    parkingMetadata = ExpenditureParkingMetadata(
+                        reportOfOriginId = 70L,
+                        reportOfOriginNumber = 5,
+                        originalExpenditureNumber = 3
+                    ),
+                    currencyConversionRate = BigDecimal.valueOf(1)
+                ), expenditure3
+            )
         every { currencyPersistence.findAllByIdYearAndIdMonth(year = YEAR, month = MONTH) } returns
             listOf(
                 CurrencyConversion("CZK", YEAR, MONTH, "", BigDecimal.valueOf(254855, 4)),
@@ -433,7 +457,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         } answers { }
 
         every { reportContributionPersistence.getPartnerReportContribution(PARTNER_ID, reportId = 35L) } returns partnerContribution()
-        val coFinSlot = slot<ReportExpenditureCoFinancingColumn>()
+        val coFinSlot = slot<ExpenditureCoFinancingCurrentWithReIncluded>()
         every { reportExpenditureCoFinancingPersistence.updateCurrentlyReportedValues(PARTNER_ID, reportId = 35L, capture(coFinSlot)) } answers { }
 
         val lumpSumSlot = slot<Map<Long, ExpenditureLumpSumCurrentWithReIncluded>>()
@@ -458,9 +482,19 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
                 .updatePartnerControlReportExpenditureVerification(
                     PARTNER_ID,
                     35L,
-                    capture(slotExpenditureVerification)
-                )
-        } returns listOf(expenditureVerification1, expenditureVerification2, expenditureVerification3)
+                    capture(slotExpenditureVerification))
+
+        } returns listOf(
+            expenditureVerification1,
+            expenditureVerification2.copy(
+                parkingMetadata = ExpenditureParkingMetadata(
+                    reportOfOriginId = 70L,
+                    reportOfOriginNumber = 5,
+                    originalExpenditureNumber = 3
+                ),
+                currencyConversionRate = BigDecimal.valueOf(1)
+            ), expenditureVerification3
+        )
 
         submitReport.submit(PARTNER_ID, 35L)
 
@@ -484,16 +518,24 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
                 currencyConversionRate = BigDecimal.valueOf(254855, 4),
                 declaredAmountAfterSubmission = BigDecimal.valueOf(999, 2),
             ),
-            expenditure2.copy(),
+            expenditure2.copy(
+                declaredAmountAfterSubmission = BigDecimal.valueOf(4850, 2),
+                parkingMetadata = ExpenditureParkingMetadata(
+                    reportOfOriginId = 70L,
+                    reportOfOriginNumber = 5,
+                    originalExpenditureNumber = 3
+                ),
+                currencyConversionRate = BigDecimal.valueOf(1)
+            ),
             expenditure3.copy()
         )
         assertThat(expenditureCcSlot.captured).isEqualTo(expectedPersistedExpenditureCostCategory)
-        assertThat(coFinSlot.captured).isEqualTo(expectedCoFinancing)
+        assertThat(coFinSlot.captured).isEqualTo(ExpenditureCoFinancingCurrentWithReIncluded(expectedCoFinancing, expectedReIncludedCoFinancing))
         assertThat(lumpSumSlot.captured).containsExactlyEntriesOf(
             mapOf(
                 22L to ExpenditureLumpSumCurrentWithReIncluded(
-                    BigDecimal.valueOf(485, 1),
-                    BigDecimal.ZERO
+                    current = BigDecimal.valueOf(485, 1),
+                    currentReIncluded = BigDecimal.valueOf(485, 1)
                 )
             )
         )

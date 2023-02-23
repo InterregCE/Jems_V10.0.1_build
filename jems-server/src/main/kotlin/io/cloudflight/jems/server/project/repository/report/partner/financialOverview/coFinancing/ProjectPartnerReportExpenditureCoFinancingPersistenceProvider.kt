@@ -1,6 +1,8 @@
 package io.cloudflight.jems.server.project.repository.report.partner.financialOverview.coFinancing
 
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportCoFinancingRepository
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ExpenditureCoFinancingCurrent
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ExpenditureCoFinancingCurrentWithReIncluded
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
@@ -24,36 +26,65 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProvider(
             )
 
     @Transactional(readOnly = true)
-    override fun getCoFinancingCumulative(reportIds: Set<Long>) =
-        with(expenditureCoFinancingRepository.findCumulativeForReportIds(reportIds)) {
-            ReportExpenditureCoFinancingColumn(
-                funds = partnerReportCoFinancingRepository.findCumulativeForReportIds(reportIds).associateBy({ it.reportFundId }, { it.sum }),
-                partnerContribution = partnerContribution,
-                publicContribution = publicContribution,
-                automaticPublicContribution = automaticPublicContribution,
-                privateContribution = privateContribution,
-                sum = sum,
-            )
-        }
+    override fun getCoFinancingCumulative(reportIds: Set<Long>): ExpenditureCoFinancingCurrent {
+        val cumulativeByFund = partnerReportCoFinancingRepository.findCumulativeForReportIds(reportIds)
+            .associateBy { it.reportFundId }
+        return ExpenditureCoFinancingCurrent(
+            current = with(expenditureCoFinancingRepository.findCumulativeForReportIds(reportIds)) {
+                ReportExpenditureCoFinancingColumn(
+                    funds = cumulativeByFund.mapValues { it.value.currentSum },
+                    partnerContribution = partnerContribution,
+                    publicContribution = publicContribution,
+                    automaticPublicContribution = automaticPublicContribution,
+                    privateContribution = privateContribution,
+                    sum = sum,
+                )
+            },
+            currentParked = with(expenditureCoFinancingRepository.findCumulativeParkedForReportIds(reportIds)) {
+                ReportExpenditureCoFinancingColumn(
+                    funds = cumulativeByFund.mapValues { it.value.currentParkedSum },
+                    partnerContribution = partnerContribution,
+                    publicContribution = publicContribution,
+                    automaticPublicContribution = automaticPublicContribution,
+                    privateContribution = privateContribution,
+                    sum = sum,
+                )
+            }
+        )
+    }
 
     @Transactional
     override fun updateCurrentlyReportedValues(
         partnerId: Long,
         reportId: Long,
-        currentlyReported: ReportExpenditureCoFinancingColumn,
+        currentlyReported: ExpenditureCoFinancingCurrentWithReIncluded,
     ) {
         partnerReportCoFinancingRepository.findAllByIdReportIdOrderByIdFundSortNumber(reportId)
             .forEachIndexed { index, coFin ->
-                coFin.current = currentlyReported.funds.getOrDefault(coFin.programmeFund?.id, BigDecimal.ZERO)
+                coFin.current = currentlyReported.current.funds.getOrDefault(
+                    coFin.programmeFund?.id,
+                    BigDecimal.ZERO
+                )
+                coFin.currentReIncluded = currentlyReported.currentReIncluded.funds.getOrDefault(
+                    coFin.programmeFund?.id,
+                    BigDecimal.ZERO
+                )
             }
 
         expenditureCoFinancingRepository
             .findFirstByReportEntityPartnerIdAndReportEntityId(partnerId = partnerId, reportId = reportId).apply {
-                partnerContributionCurrent = currentlyReported.partnerContribution
-                publicContributionCurrent = currentlyReported.publicContribution
-                automaticPublicContributionCurrent = currentlyReported.automaticPublicContribution
-                privateContributionCurrent = currentlyReported.privateContribution
-                sumCurrent = currentlyReported.sum
+                partnerContributionCurrent = currentlyReported.current.partnerContribution
+                publicContributionCurrent = currentlyReported.current.publicContribution
+                automaticPublicContributionCurrent = currentlyReported.current.automaticPublicContribution
+                privateContributionCurrent = currentlyReported.current.privateContribution
+
+                partnerContributionCurrentReIncluded = currentlyReported.currentReIncluded.partnerContribution
+                publicContributionCurrentReIncluded = currentlyReported.currentReIncluded.publicContribution
+                automaticPublicContributionCurrentReIncluded = currentlyReported.currentReIncluded.automaticPublicContribution
+                privateContributionCurrentReIncluded = currentlyReported.currentReIncluded.privateContribution
+
+                sumCurrent = currentlyReported.current.sum
+                sumCurrentReIncluded = currentlyReported.currentReIncluded.sum
             }
     }
 
@@ -61,20 +92,27 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProvider(
     override fun updateAfterControlValues(
         partnerId: Long,
         reportId: Long,
-        afterControl: ReportExpenditureCoFinancingColumn
+        afterControl: ExpenditureCoFinancingCurrent,
     ) {
         partnerReportCoFinancingRepository.findAllByIdReportIdOrderByIdFundSortNumber(reportId)
             .forEachIndexed { index, coFin ->
-                coFin.totalEligibleAfterControl = afterControl.funds.getOrDefault(coFin.programmeFund?.id, BigDecimal.ZERO)
+                coFin.totalEligibleAfterControl = afterControl.current.funds.getOrDefault(coFin.programmeFund?.id, BigDecimal.ZERO)
+                coFin.currentParked = afterControl.currentParked.funds.getOrDefault(coFin.programmeFund?.id, BigDecimal.ZERO)
             }
 
         expenditureCoFinancingRepository
             .findFirstByReportEntityPartnerIdAndReportEntityId(partnerId = partnerId, reportId = reportId).apply {
-                partnerContributionTotalEligibleAfterControl = afterControl.partnerContribution
-                publicContributionTotalEligibleAfterControl = afterControl.publicContribution
-                automaticPublicContributionTotalEligibleAfterControl = afterControl.automaticPublicContribution
-                privateContributionTotalEligibleAfterControl = afterControl.privateContribution
-                sumTotalEligibleAfterControl = afterControl.sum
+                partnerContributionTotalEligibleAfterControl = afterControl.current.partnerContribution
+                publicContributionTotalEligibleAfterControl = afterControl.current.publicContribution
+                automaticPublicContributionTotalEligibleAfterControl = afterControl.current.automaticPublicContribution
+                privateContributionTotalEligibleAfterControl = afterControl.current.privateContribution
+                sumTotalEligibleAfterControl = afterControl.current.sum
+
+                partnerContributionCurrentParked = afterControl.currentParked.partnerContribution
+                publicContributionCurrentParked = afterControl.currentParked.publicContribution
+                automaticPublicContributionCurrentParked = afterControl.currentParked.automaticPublicContribution
+                privateContributionCurrentParked = afterControl.currentParked.privateContribution
+                sumCurrentParked = afterControl.currentParked.sum
             }
     }
 

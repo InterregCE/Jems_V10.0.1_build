@@ -5,8 +5,6 @@ import io.cloudflight.jems.server.project.entity.report.partner.financialOvervie
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
-import java.math.BigDecimal
-import java.util.Optional
 
 @Repository
 interface ReportProjectPartnerExpenditureCoFinancingRepository :
@@ -31,14 +29,16 @@ interface ReportProjectPartnerExpenditureCoFinancingRepository :
     fun findCumulativeForReportIds(reportIds: Set<Long>): ReportExpenditureCoFinancingColumnWithoutFunds
 
     @Query("""
-        SELECT SUM(rppecf.sumTotalEligibleAfterControl)
-        FROM #{#entityName} rppecf
-        WHERE rppecf.reportId IN (
-            SELECT rpp.id FROM report_project_partner rpp
-            INNER JOIN report_project rp
-            ON rpp.projectReport.id = rp.id
-            WHERE rp.status = 'Submitted' AND rpp.partnerId = :partnerId
+        SELECT new io.cloudflight.jems.server.project.repository.report.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumnWithoutFunds(
+            COALESCE(SUM(report.partnerContributionCurrentParked), 0),
+            COALESCE(SUM(report.publicContributionCurrentParked), 0),
+            COALESCE(SUM(report.automaticPublicContributionCurrentParked), 0),
+            COALESCE(SUM(report.privateContributionCurrentParked), 0),
+            COALESCE(SUM(report.sumCurrentParked), 0)
         )
+        FROM #{#entityName} report
+        WHERE report.reportEntity.id IN :reportIds
     """)
-    fun getTotalEligibleSumForSubmittedReports(partnerId: Long): Optional<BigDecimal>
+    fun findCumulativeParkedForReportIds(reportIds: Set<Long>): ReportExpenditureCoFinancingColumnWithoutFunds
+
 }

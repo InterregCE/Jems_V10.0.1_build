@@ -16,7 +16,8 @@ interface ProjectPartnerReportCoFinancingRepository :
     @Query("""
         SELECT new io.cloudflight.jems.server.project.repository.report.partner.financialOverview.coFinancing.ReportCumulativeFund(
             report.programmeFund.id,
-            COALESCE(SUM(report.current), 0)
+            COALESCE(SUM(report.current), 0),
+            COALESCE(SUM(report.currentParked), 0)
         )
         FROM #{#entityName} report
         WHERE report.id.report.id IN :reportIds
