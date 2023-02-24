@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody
 interface ProjectReportApi {
 
     companion object {
-        private const val ENDPOINT_API_PROJECT_REPORT_PREFIX = "/api/project/report/byProjectId/{projectId}"
+        const val ENDPOINT_API_PROJECT_REPORT_PREFIX = "/api/project/report/byProjectId/{projectId}"
         const val ENDPOINT_API_PROJECT_REPORT = "$ENDPOINT_API_PROJECT_REPORT_PREFIX/byReportId/{reportId}"
     }
 

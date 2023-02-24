@@ -1,0 +1,10 @@
+@use '../project-report-financial-overview-tab.component';
+
+.sub-row-indent {
+  padding-left: .25rem;
+  font-size: 1.25rem;
+}
+
+.border-bottom {
+  border-bottom: 1px solid var(--table-border-color) !important;
+}

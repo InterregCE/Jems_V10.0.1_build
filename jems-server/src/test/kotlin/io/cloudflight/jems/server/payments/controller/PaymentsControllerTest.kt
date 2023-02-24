@@ -74,6 +74,7 @@ class PaymentsControllerTest : UnitTest() {
             projectCustomIdentifier = project.customIdentifier,
             projectAcronym = project.acronym,
             paymentClaimNo = 0,
+            fundId = 5L,
             fundName = fund.type.name,
             amountApprovedPerFund = BigDecimal.TEN,
             amountPaidPerFund = BigDecimal.ZERO,

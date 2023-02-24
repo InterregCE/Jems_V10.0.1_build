@@ -48,6 +48,19 @@ fun Page<PaymentEntity>.toListModel(
     )
 }
 
+fun List<PaymentEntity>.toListModel(
+    getLumpSum: (Long, Int) -> ProjectLumpSumEntity,
+    getProject: (Long, String?) -> ProjectFull,
+    getConfirm: (Long) -> PaymentConfirmedInfo
+) = map {
+    val lumpSum = getLumpSum.invoke(it.project.id, it.orderNr)
+    it.toDetailModel(
+        lumpSum,
+        getProject.invoke(it.project.id, lumpSum.lastApprovedVersionBeforeReadyForPayment),
+        getConfirm.invoke(it.id)
+    )
+}
+
 fun PaymentEntity.toDetailModel(
     lumpSum: ProjectLumpSumEntity,
     projectFull: ProjectFull,
@@ -61,6 +74,7 @@ fun PaymentEntity.toDetailModel(
     paymentClaimSubmissionDate = projectFull.contractedDecision?.updated,
     paymentApprovalDate = lumpSum.paymentEnabledDate,
     totalEligibleAmount = lumpSum.programmeLumpSum.cost,
+    fundId = fund.id,
     fundName = fund.type.name,
     amountApprovedPerFund = amountApprovedPerFund!!,
     amountPaidPerFund = paymentConfirmedInfo.amountPaidPerFund,

@@ -134,11 +134,11 @@ export class ContractReportingComponent implements OnInit {
 
   projectEndDateString(periods: ProjectPeriodForMonitoringDTO[]): string {
     const period = periods.find(p => p.number === (periods.length));
-    return period ? period.endDate : "";
+    return period ? period.endDate : '';
   }
   projectDurationString(periods: ProjectPeriodForMonitoringDTO[]): string {
     const period = periods.find(p => p.number === (periods.length));
-    return period ? period.end.toString() : "";
+    return period ? period.end.toString() : '';
   }
 
   private initForm(isEditable: boolean): void {
