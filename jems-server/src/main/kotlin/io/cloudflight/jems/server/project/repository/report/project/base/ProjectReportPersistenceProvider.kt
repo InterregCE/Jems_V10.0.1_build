@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.repository.report.project.base
 
 import io.cloudflight.jems.server.common.entity.TranslationId
+import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportIdentificationTargetGroupEntity
 import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportIdentificationTargetGroupTranslEntity
@@ -9,6 +10,8 @@ import io.cloudflight.jems.server.project.entity.report.project.identification.P
 import io.cloudflight.jems.server.project.repository.contracting.reporting.ProjectContractingReportingRepository
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
+import io.cloudflight.jems.server.project.repository.report.project.ProjectReportCoFinancingRepository
+import io.cloudflight.jems.server.project.repository.report.project.coFinancing.ReportProjectCertificateCoFinancingRepository
 import io.cloudflight.jems.server.project.repository.report.project.identification.ProjectReportIdentificationTargetGroupRepository
 import io.cloudflight.jems.server.project.repository.report.project.identification.ProjectReportSpendingProfileRepository
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
@@ -18,6 +21,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.ProjectRe
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportDeadline
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
+import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportBudget
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -34,7 +38,10 @@ class ProjectReportPersistenceProvider(
     private val reportIdentificationTargetGroupRepository: ProjectReportIdentificationTargetGroupRepository,
     private val partnerRepository: ProjectPartnerRepository,
     private val partnerReportRepository: ProjectPartnerReportRepository,
-    private val projectReportSpendingProfileRepository: ProjectReportSpendingProfileRepository
+    private val projectReportSpendingProfileRepository: ProjectReportSpendingProfileRepository,
+    private val projectReportCertificateCoFinancingRepository: ReportProjectCertificateCoFinancingRepository,
+    private val programmeFundRepository: ProgrammeFundRepository,
+    private val projectReportCoFinancingRepository: ProjectReportCoFinancingRepository,
 ) : ProjectReportPersistence {
 
     @Transactional(readOnly = true)
@@ -49,13 +56,15 @@ class ProjectReportPersistenceProvider(
     override fun createReportAndFillItToEmptyCertificates(
         report: ProjectReportModel,
         targetGroups: List<ProjectRelevanceBenefit>,
-        previouslyReportedByPartner: Map<Long, BigDecimal>
+        previouslyReportedByPartner: Map<Long, BigDecimal>,
+        budget: ProjectReportBudget
     ): ProjectReportModel {
         val reportPersisted = projectReportRepository
             .save(report.toEntity(deadlineResolver = { contractingDeadlineRepository.findByProjectIdAndId(report.projectId, it) }))
 
         createTargetGroups(targetGroups, reportPersisted)
         createSpendingProfiles(previouslyReportedByPartner, reportPersisted)
+        saveCoFinancingData(budget, reportPersisted)
         fillProjectReportToAllEmptyCertificates(projectId = report.projectId, reportPersisted)
 
         return reportPersisted.toModel()
@@ -163,6 +172,22 @@ class ProjectReportPersistenceProvider(
                     currentlyReported = BigDecimal.ZERO
                 )
             }
+        )
+    }
+
+    private fun saveCoFinancingData(
+        budget: ProjectReportBudget,
+        report: ProjectReportEntity,
+    ) {
+        projectReportCoFinancingRepository.saveAll(
+            budget.previouslyReportedCoFinancing.fundsSorted.toProjectReportEntity(
+                reportEntity = report,
+                programmeFundResolver = { programmeFundRepository.getById(it) },
+            )
+        )
+
+        projectReportCertificateCoFinancingRepository.save(
+            budget.previouslyReportedCoFinancing.toProjectReportEntity(report),
         )
     }
 

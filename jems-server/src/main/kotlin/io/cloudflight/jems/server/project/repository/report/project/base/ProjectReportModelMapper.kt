@@ -1,11 +1,18 @@
 package io.cloudflight.jems.server.project.repository.report.project.base
 
+import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.project.entity.contracting.reporting.ProjectContractingReportingEntity
+import io.cloudflight.jems.server.project.entity.report.project.ProjectReportCoFinancingEntity
+import io.cloudflight.jems.server.project.entity.report.project.ProjectReportCoFinancingIdEntity
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
+import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateCoFinancingEntity
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
+import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedCoFinancing
+import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedFund
+import java.math.BigDecimal
 
 
 fun ProjectReportEntity.toModelSummary(
@@ -89,3 +96,47 @@ fun ProjectReportEntity.toSubmissionSummary() =
         projectIdentifier = projectIdentifier,
         projectAcronym = projectAcronym,
     )
+
+fun PreviouslyProjectReportedCoFinancing.toProjectReportEntity(
+    reportEntity: ProjectReportEntity,
+): ReportProjectCertificateCoFinancingEntity {
+    return ReportProjectCertificateCoFinancingEntity(
+        reportEntity = reportEntity,
+
+        partnerContributionTotal = totalPartner,
+        publicContributionTotal = totalPublic,
+        automaticPublicContributionTotal = totalAutoPublic,
+        privateContributionTotal = totalPrivate,
+        sumTotal = totalSum,
+
+        partnerContributionCurrent = BigDecimal.ZERO,
+        publicContributionCurrent = BigDecimal.ZERO,
+        automaticPublicContributionCurrent = BigDecimal.ZERO,
+        privateContributionCurrent = BigDecimal.ZERO,
+        sumCurrent = BigDecimal.ZERO,
+
+        partnerContributionPreviouslyReported = previouslyReportedPartner,
+        publicContributionPreviouslyReported = previouslyReportedPublic,
+        automaticPublicContributionPreviouslyReported = previouslyReportedAutoPublic,
+        privateContributionPreviouslyReported = previouslyReportedPrivate,
+        sumPreviouslyReported = previouslyReportedSum,
+    )
+}
+
+
+fun List<PreviouslyProjectReportedFund>.toProjectReportEntity(
+    reportEntity: ProjectReportEntity,
+    programmeFundResolver: (Long) -> ProgrammeFundEntity,
+): List<ProjectReportCoFinancingEntity> {
+    return mapIndexed { index, fund ->
+        ProjectReportCoFinancingEntity(
+            id = ProjectReportCoFinancingIdEntity(reportEntity, index.plus(1)),
+            programmeFund = fund.fundId?.let { programmeFundResolver.invoke(it) },
+            percentage = fund.percentage,
+            total = fund.total,
+            current = BigDecimal.ZERO,
+            previouslyReported = fund.previouslyReported,
+            previouslyPaid = fund.previouslyPaid,
+        )
+    }
+}

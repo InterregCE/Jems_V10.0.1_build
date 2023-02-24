@@ -253,6 +253,7 @@ class PaymentPersistenceProviderTest: UnitTest() {
             projectAcronym = "Test Project",
             paymentClaimNo = 0,
             fundName = "OTHER",
+            fundId = fundId,
             amountApprovedPerFund = BigDecimal(100),
             amountPaidPerFund = BigDecimal.ZERO,
             paymentApprovalDate = currentTime,
@@ -303,7 +304,7 @@ class PaymentPersistenceProviderTest: UnitTest() {
 
     @BeforeEach
     fun reset() {
-        clearMocks(reportFileRepository, fileRepository)
+        clearMocks(reportFileRepository, fileRepository, paymentRepository, paymentPartnerInstallmentRepository)
     }
 
     @Test
@@ -469,6 +470,18 @@ class PaymentPersistenceProviderTest: UnitTest() {
         every { reportFileRepository.findByTypeAndId(JemsFileType.PaymentAttachment, -1L) } returns null
         assertThrows<ResourceNotFoundException> { paymentPersistenceProvider.deletePaymentAttachment(-1L) }
         verify(exactly = 0) { fileRepository.delete(any()) }
+    }
+
+    @Test
+    fun getPaymentsByProjectIdToProject() {
+        every { paymentRepository.findAllByProjectId(projectId) } returns mutableListOf(paymentEntity)
+        every { projectLumpSumRepository.getByIdProjectIdAndIdOrderNr(projectId, 13) } returns lumpSumEntity
+        every {
+            projectPersistence.getProject(projectId, expectedPayments.lastApprovedVersionBeforeReadyForPayment)
+        } returns dummyProject.toModel(null, null, mutableSetOf(), mutableSetOf())
+
+        assertThat(paymentPersistenceProvider.getPaymentsByProjectId(projectId))
+            .containsExactly(expectedPayments)
     }
 
 }
