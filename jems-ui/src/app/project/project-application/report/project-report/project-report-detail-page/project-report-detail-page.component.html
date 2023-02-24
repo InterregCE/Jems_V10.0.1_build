@@ -25,7 +25,8 @@
                     </span>
             </a>
 
-            <a [active]="activeTab('submitReport')" mat-tab-link
+            <a *ngIf="projectReport.status === ProjectReportDTO.StatusEnum.Draft"
+               [active]="activeTab('submitReport')" mat-tab-link
                (click)="routeTo('submitReport')">
                     <span jemsText maxWidth="230">
                         {{'project.application.partner.report.tab.submission' | translate}}
