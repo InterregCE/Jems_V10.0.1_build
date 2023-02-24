@@ -1,11 +1,10 @@
 package io.cloudflight.jems.server.project.service.report.project.base
 
+import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportDeadline
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
-import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedCoFinancing
-import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportBudget
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
@@ -21,8 +20,7 @@ interface ProjectReportPersistence {
     fun createReportAndFillItToEmptyCertificates(
         report: ProjectReportModel,
         targetGroups: List<ProjectRelevanceBenefit>,
-        previouslyReportedByPartner: Map<Long, BigDecimal>,
-        budget: ProjectReportBudget
+        previouslyReportedByPartner: Map<Long, BigDecimal>
     ): ProjectReportModel
 
     fun updateReport(

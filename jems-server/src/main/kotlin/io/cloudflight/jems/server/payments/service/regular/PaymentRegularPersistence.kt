@@ -50,7 +50,5 @@ interface PaymentRegularPersistence {
 
     fun deletePaymentAttachment(fileId: Long)
 
-    fun getPaymentsByProjectId(projectId: Long): List<PaymentToProject>
-
 
 }

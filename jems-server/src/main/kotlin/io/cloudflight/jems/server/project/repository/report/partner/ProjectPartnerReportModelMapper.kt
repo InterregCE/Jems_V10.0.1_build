@@ -19,10 +19,6 @@ import io.cloudflight.jems.server.project.entity.report.partner.workPlan.Project
 import io.cloudflight.jems.server.project.entity.report.partner.workPlan.ProjectPartnerReportWorkPackageActivityEntity
 import io.cloudflight.jems.server.project.entity.report.partner.workPlan.ProjectPartnerReportWorkPackageEntity
 import io.cloudflight.jems.server.project.entity.report.partner.workPlan.ProjectPartnerReportWorkPackageOutputEntity
-import io.cloudflight.jems.server.project.entity.report.project.ProjectReportCoFinancingEntity
-import io.cloudflight.jems.server.project.entity.report.project.ProjectReportCoFinancingIdEntity
-import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
-import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateCoFinancingEntity
 import io.cloudflight.jems.server.project.repository.report.partner.model.CertificateSummary
 import io.cloudflight.jems.server.project.repository.report.partner.model.ReportSummary
 import io.cloudflight.jems.server.project.repository.report.partner.model.ReportIdentificationSummary
@@ -109,7 +105,6 @@ fun ProjectPartnerReportEntity.toSubmissionSummary() =
         projectAcronym = identification.projectAcronym,
         partnerNumber = identification.partnerNumber,
         partnerRole = identification.partnerRole,
-        partnerId = partnerId
     )
 
 fun List<ReportIdentificationSummary>.toIdentificationSummaries():List<ProjectPartnerReportIdentificationSummary> = map {

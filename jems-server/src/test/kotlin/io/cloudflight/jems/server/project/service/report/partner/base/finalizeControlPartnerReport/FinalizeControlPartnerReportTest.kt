@@ -72,7 +72,6 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
             projectAcronym = "acronym",
             partnerNumber = 1,
             partnerRole = ProjectPartnerRole.LEAD_PARTNER,
-            partnerId = PARTNER_ID
         )
 
         private val expectedCostCategoryWithParked = BudgetCostsCurrentValuesWrapper(

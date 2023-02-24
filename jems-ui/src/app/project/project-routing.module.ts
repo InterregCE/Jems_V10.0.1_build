@@ -242,9 +242,6 @@ import {
 import {
   PartnerReportExportTabComponent
 } from '@project/project-application/report/partner-report-detail-page/partner-report-export-tab/partner-report-export-tab.component';
-import {
-  ProjectReportFinancialOverviewTabComponent
-} from '@project/project-application/report/project-report/project-report-detail-page/project-report-financial-overview-tab/project-report-financial-overview-tab.component';
 
 export const routes: Routes = [
   {
@@ -412,10 +409,6 @@ export const routes: Routes = [
                       {
                         path: 'certificate',
                         component: ProjectReportCertificateTabComponent,
-                      },
-                      {
-                        path: 'financialOverview',
-                        component: ProjectReportFinancialOverviewTabComponent,
                       },
                       {
                         path: 'submitReport',

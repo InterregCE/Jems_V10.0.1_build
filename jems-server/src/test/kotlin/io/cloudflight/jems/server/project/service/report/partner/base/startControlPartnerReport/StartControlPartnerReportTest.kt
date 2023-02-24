@@ -49,7 +49,6 @@ internal class StartControlPartnerReportTest : UnitTest() {
             projectAcronym = "acronym",
             partnerNumber = 1,
             partnerRole = ProjectPartnerRole.LEAD_PARTNER,
-            partnerId = PARTNER_ID
         )
 
         private val controllerInstitution = ControllerInstitutionList(

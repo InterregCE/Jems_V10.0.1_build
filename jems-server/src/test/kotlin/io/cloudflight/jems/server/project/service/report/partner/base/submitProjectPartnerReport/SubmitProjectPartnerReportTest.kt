@@ -83,7 +83,6 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             projectAcronym = "acronym",
             partnerNumber = 1,
             partnerRole = ProjectPartnerRole.PARTNER,
-            partnerId = PARTNER_ID
         )
 
         private val expenditure1 = ProjectPartnerReportExpenditureCost(

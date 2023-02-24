@@ -210,7 +210,6 @@ class ProjectReportCertificatePersistenceProviderTest : UnitTest() {
                 projectAcronym = "projectAcronym",
                 partnerNumber = 4,
                 partnerRole = ProjectPartnerRole.PARTNER,
-                partnerId = 72L
             )
         )
     }

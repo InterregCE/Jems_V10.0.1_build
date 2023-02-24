@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.payments.repository.regular
 
 import io.cloudflight.jems.server.payments.entity.PaymentEntity
-import io.cloudflight.jems.server.payments.entity.PaymentPartnerInstallmentEntity
 import io.cloudflight.jems.server.payments.model.regular.PaymentRow
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
@@ -31,7 +30,5 @@ interface PaymentRepository: JpaRepository<PaymentEntity, Long> {
     @Modifying
     @Query("DELETE FROM #{#entityName} WHERE project_id = :projectId AND order_nr IN :orderNr", nativeQuery = true)
     fun deleteAllByProjectIdAndOrderNr(projectId: Long, orderNr: Set<Int>): List<PaymentEntity>
-
-    fun findAllByProjectId(projectId: Long): List<PaymentEntity>
 
 }

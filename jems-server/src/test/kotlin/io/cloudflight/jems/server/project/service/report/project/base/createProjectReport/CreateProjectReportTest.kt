@@ -1,8 +1,6 @@
 package io.cloudflight.jems.server.project.service.report.project.base.createProjectReport
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
-import io.cloudflight.jems.api.call.dto.CallStatus
-import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
@@ -10,38 +8,24 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
-import io.cloudflight.jems.server.call.service.CallPersistence
-import io.cloudflight.jems.server.call.service.model.CallDetail
-import io.cloudflight.jems.server.project.repository.partner.cofinancing.ProjectPartnerCoFinancingPersistenceProvider
 import io.cloudflight.jems.server.project.service.ProjectDescriptionPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
-import io.cloudflight.jems.server.project.service.cofinancing.model.PartnerBudgetCoFinancing
-import io.cloudflight.jems.server.project.service.common.PartnerBudgetPerFundCalculatorService
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.model.ProjectFull
-import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerFund
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost.GetBudgetTotalCost
-import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
-import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PreviouslyReportedCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReport
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportUpdate
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
-import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedCoFinancing
-import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportBudget
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.identification.ProjectReportIdentificationPersistence
-import io.cloudflight.jems.server.toScaledBigDecimal
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -93,13 +77,6 @@ internal class CreateProjectReportTest : UnitTest() {
             return mock
         }
 
-        private fun leadPartnerSummary(): ProjectPartnerSummary {
-            val mock = mockk<ProjectPartnerSummary>()
-            every { mock.role } returns ProjectPartnerRole.LEAD_PARTNER
-            every { mock.id } returns 1L
-            return mock
-        }
-
         private fun expectedProjectReport(projectId: Long) = ProjectReport(
             id = 0L,
             reportNumber = 8,
@@ -140,59 +117,6 @@ internal class CreateProjectReportTest : UnitTest() {
                 )
             )
         )
-
-        private val call = CallDetail(
-            id = 1,
-            name = "call",
-            status = CallStatus.PUBLISHED,
-            type = CallType.STANDARD,
-            startDate = ZonedDateTime.now(),
-            endDateStep1 = ZonedDateTime.now(),
-            endDate = ZonedDateTime.now(),
-            isAdditionalFundAllowed = true,
-            lengthOfPeriod = null,
-            applicationFormFieldConfigurations = mutableSetOf(),
-            preSubmissionCheckPluginKey = null,
-            firstStepPreSubmissionCheckPluginKey = null,
-            reportPartnerCheckPluginKey = null,
-            projectDefinedUnitCostAllowed = false,
-            projectDefinedLumpSumAllowed = true,
-        )
-
-        private val projectPartnerCoFinancingAndContribution = ProjectPartnerCoFinancingAndContribution(
-            finances = emptyList(),
-            partnerContributions = emptyList(),
-            partnerAbbreviation = ""
-        )
-
-        private val totalCostPartner = 80.toScaledBigDecimal()
-
-        val result = ProjectPartnerBudgetPerFund(
-            partner = null,
-            budgetPerFund = emptySet(),
-            publicContribution = BigDecimal.ZERO,
-            autoPublicContribution = BigDecimal.ZERO,
-            privateContribution = BigDecimal.ZERO,
-            totalPartnerContribution = BigDecimal.ZERO,
-            totalEligibleBudget = BigDecimal.ZERO,
-            percentageOfTotalEligibleBudget = BigDecimal.ZERO
-        )
-
-        val budget = ProjectReportBudget(
-            previouslyReportedCoFinancing = PreviouslyProjectReportedCoFinancing(
-                fundsSorted = emptyList(),
-                totalPartner = BigDecimal.ZERO,
-                totalPublic = BigDecimal.ZERO,
-                totalAutoPublic = BigDecimal.ZERO,
-                totalPrivate = BigDecimal.ZERO,
-                totalSum = BigDecimal.ZERO,
-                previouslyReportedSum = BigDecimal.ZERO,
-                previouslyReportedPrivate = BigDecimal.ZERO,
-                previouslyReportedAutoPublic = BigDecimal.ZERO,
-                previouslyReportedPublic = BigDecimal.ZERO,
-                previouslyReportedPartner = BigDecimal.ZERO,
-            )
-        )
     }
 
     @MockK
@@ -209,18 +133,6 @@ internal class CreateProjectReportTest : UnitTest() {
     private lateinit var projectDescriptionPersistence: ProjectDescriptionPersistence
     @MockK
     private lateinit var projectReportIdentificationPersistence: ProjectReportIdentificationPersistence
-    @MockK
-    private lateinit var createProjectReportBudget: CreateProjectReportBudget
-    @MockK
-    private lateinit var callPersistence: CallPersistence
-    @MockK
-    private lateinit var projectBudgetPersistence: ProjectBudgetPersistence
-    @MockK
-    private lateinit var projectPartnerCoFinancingPersistence: ProjectPartnerCoFinancingPersistenceProvider
-    @MockK
-    private lateinit var getBudgetTotalCost: GetBudgetTotalCost
-    @MockK
-    private lateinit var partnerBudgetPerFundCalculator: PartnerBudgetPerFundCalculatorService
 
     @InjectMockKs
     lateinit var interactor: CreateProjectReport
@@ -233,13 +145,7 @@ internal class CreateProjectReportTest : UnitTest() {
             projectPartnerPersistence,
             reportPersistence,
             auditPublisher,
-            projectReportIdentificationPersistence,
-            createProjectReportBudget,
-            callPersistence,
-            projectBudgetPersistence,
-            projectPartnerCoFinancingPersistence,
-            getBudgetTotalCost,
-            partnerBudgetPerFundCalculator
+            projectReportIdentificationPersistence
         )
     }
 
@@ -257,19 +163,12 @@ internal class CreateProjectReportTest : UnitTest() {
         every { reportPersistence.getSubmittedProjectReportIds(projectId) } returns setOf()
         every { projectReportIdentificationPersistence.getSpendingProfileCumulative(any()) } returns mapOf()
         every { projectReportIdentificationPersistence.getSpendingProfileCumulative(any()) } returns mapOf()
-        every { projectBudgetPersistence.getPartnersForProjectId(projectId, "version") } returns listOf(leadPartnerSummary())
-        every { callPersistence.getCallByProjectId(projectId) } returns call
-        every { projectPartnerCoFinancingPersistence.getCoFinancingAndContributions(1L, "version") } returns projectPartnerCoFinancingAndContribution
-        every { getBudgetTotalCost.getBudgetTotalCost(1L, "version") } returns totalCostPartner
-        every { partnerBudgetPerFundCalculator.calculate(any(), any(), any(), any())} returns listOf(result)
-        every { createProjectReportBudget.retrieveBudgetDataFor(any(), any(), any())} returns budget
 
         val reportStored = slot<ProjectReportModel>()
         every { reportPersistence.createReportAndFillItToEmptyCertificates(
             capture(reportStored),
             projectRelevanceBenefits(),
-            mapOf(1L to BigDecimal.ZERO),
-            budget
+            mapOf(1L to BigDecimal.ZERO)
         )} returnsArgument 0
 
         val auditSlot = slot<AuditCandidateEvent>()

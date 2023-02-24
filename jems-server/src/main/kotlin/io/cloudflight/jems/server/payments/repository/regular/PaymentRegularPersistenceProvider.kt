@@ -182,20 +182,6 @@ class PaymentRegularPersistenceProvider(
         )
     }
 
-    @Transactional(readOnly = true)
-    override fun getPaymentsByProjectId(projectId: Long): List<PaymentToProject> {
-        return paymentRepository.findAllByProjectId(projectId).toListModel(
-            getLumpSum = { internalProjectId, orderNr ->
-                projectLumpSumRepository.getByIdProjectIdAndIdOrderNr(
-                    internalProjectId,
-                    orderNr
-                )
-            },
-            getProject = { internalProjectId, version -> projectPersistence.getProject(internalProjectId, version) },
-            getConfirm = { id -> getConfirmedInfosForPayment(id) }
-        )
-    }
-
 
     private fun getUserOrNull(userId: Long?): UserEntity? =
         if (userId != null) {

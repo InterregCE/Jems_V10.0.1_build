@@ -4,28 +4,23 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.project.entity.contracting.reporting.ProjectContractingReportingEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportIdentificationTargetGroupEntity
+import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportSpendingProfileEntity
 import io.cloudflight.jems.server.project.repository.contracting.reporting.ProjectContractingReportingRepository
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
-import io.cloudflight.jems.server.project.repository.report.project.ProjectReportCoFinancingRepository
-import io.cloudflight.jems.server.project.repository.report.project.coFinancing.ReportProjectCertificateCoFinancingRepository
 import io.cloudflight.jems.server.project.repository.report.project.identification.ProjectReportIdentificationTargetGroupRepository
 import io.cloudflight.jems.server.project.repository.report.project.identification.ProjectReportSpendingProfileRepository
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
-import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PreviouslyReportedCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportDeadline
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
-import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedCoFinancing
-import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportBudget
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -127,22 +122,6 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
             createdAt = ZonedDateTime.now(),
             projectReport = null,
         )
-
-        val budget = ProjectReportBudget(
-            previouslyReportedCoFinancing = PreviouslyProjectReportedCoFinancing(
-                fundsSorted = emptyList(),
-                totalPartner = BigDecimal.ZERO,
-                totalPublic = BigDecimal.ZERO,
-                totalAutoPublic = BigDecimal.ZERO,
-                totalPrivate = BigDecimal.ZERO,
-                totalSum = BigDecimal.ZERO,
-                previouslyReportedSum = BigDecimal.ZERO,
-                previouslyReportedPrivate = BigDecimal.ZERO,
-                previouslyReportedAutoPublic = BigDecimal.ZERO,
-                previouslyReportedPublic = BigDecimal.ZERO,
-                previouslyReportedPartner = BigDecimal.ZERO,
-            )
-        )
     }
 
     @MockK
@@ -157,26 +136,13 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
     private lateinit var partnerReportRepository: ProjectPartnerReportRepository
     @MockK
     private lateinit var projectReportSpendingProfileRepository: ProjectReportSpendingProfileRepository
-    @MockK
-    private lateinit var projectReportCoFinancingRepository: ProjectReportCoFinancingRepository
-    @MockK
-    private lateinit var programmeFundRepository: ProgrammeFundRepository
-    @MockK
-    private lateinit var projectReportCertificateCoFinancingRepository: ReportProjectCertificateCoFinancingRepository
 
     @InjectMockKs
     private lateinit var persistence: ProjectReportPersistenceProvider
 
     @BeforeEach
     fun reset() {
-        clearMocks(
-            projectReportRepository,
-            contractingDeadlineRepository,
-            projectReportSpendingProfileRepository,
-            projectReportCoFinancingRepository,
-            programmeFundRepository,
-            projectReportCertificateCoFinancingRepository
-        )
+        clearMocks(projectReportRepository, contractingDeadlineRepository, projectReportSpendingProfileRepository)
     }
 
     @Test
@@ -224,10 +190,8 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
         every { partnerReportRepository.findAllByPartnerIdInAndProjectReportNullAndStatus(setOf(8789L), ReportStatus.Certified) } returns
             listOf(partnerReport)
         every { projectReportSpendingProfileRepository.saveAll(listOf()) } returnsArgument 0
-        every { projectReportCoFinancingRepository.saveAll(listOf()) } returnsArgument 0
-        every { projectReportCertificateCoFinancingRepository.save(any()) } returnsArgument 0
         val reportToCreate = report(0L, projectId).copy(periodNumber = null)
-        assertThat(persistence.createReportAndFillItToEmptyCertificates(reportToCreate, projectRelevanceBenefits(), mapOf(), budget))
+        assertThat(persistence.createReportAndFillItToEmptyCertificates(reportToCreate, projectRelevanceBenefits(), mapOf()))
             .isEqualTo(report(0L /* is changed by DB */, projectId).copy(periodNumber = null))
         assertThat(saveSlot.captured.projectId).isEqualTo(projectId)
 
