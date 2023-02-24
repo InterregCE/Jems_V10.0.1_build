@@ -7,7 +7,7 @@ import {
 import {
   PartnerReportDetailPageStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
-import {ProjectPartnerReportWorkPackageDTO} from '@cat/api';
+import {ProjectPartnerReportDTO, ProjectPartnerReportWorkPackageDTO} from '@cat/api';
 import {combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {
@@ -22,6 +22,7 @@ import {
 })
 export class PartnerReportDetailPageComponent {
 
+  ProjectPartnerReportDTO = ProjectPartnerReportDTO;
   data$: Observable<{
     workPackages: ProjectPartnerReportWorkPackageDTO[];
   }>;
