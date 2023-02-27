@@ -1,5 +1,8 @@
 package io.cloudflight.jems.server.project.service.report.model.project.base.create
 
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
+
 data class ProjectReportBudget(
-    val previouslyReportedCoFinancing: PreviouslyProjectReportedCoFinancing,
+    val coFinancing: PreviouslyProjectReportedCoFinancing,
+    val costCategorySetup: ReportCertificateCostCategory,
 )

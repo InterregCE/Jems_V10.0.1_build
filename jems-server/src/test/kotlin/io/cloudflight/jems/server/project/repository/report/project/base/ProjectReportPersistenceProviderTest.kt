@@ -14,18 +14,20 @@ import io.cloudflight.jems.server.project.repository.contracting.reporting.Proje
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.project.ProjectReportCoFinancingRepository
-import io.cloudflight.jems.server.project.repository.report.project.coFinancing.ReportProjectCertificateCoFinancingRepository
+import io.cloudflight.jems.server.project.repository.report.project.financialOverview.coFinancing.ReportProjectCertificateCoFinancingRepository
+import io.cloudflight.jems.server.project.repository.report.project.financialOverview.costCategory.ReportProjectCertificateCostCategoryRepository
 import io.cloudflight.jems.server.project.repository.report.project.identification.ProjectReportIdentificationTargetGroupRepository
 import io.cloudflight.jems.server.project.repository.report.project.identification.ProjectReportSpendingProfileRepository
+import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
-import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PreviouslyReportedCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportDeadline
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportBudget
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -129,7 +131,7 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
         )
 
         val budget = ProjectReportBudget(
-            previouslyReportedCoFinancing = PreviouslyProjectReportedCoFinancing(
+            coFinancing = PreviouslyProjectReportedCoFinancing(
                 fundsSorted = emptyList(),
                 totalPartner = BigDecimal.ZERO,
                 totalPublic = BigDecimal.ZERO,
@@ -141,6 +143,44 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
                 previouslyReportedAutoPublic = BigDecimal.ZERO,
                 previouslyReportedPublic = BigDecimal.ZERO,
                 previouslyReportedPartner = BigDecimal.ZERO,
+            ),
+            costCategorySetup = ReportCertificateCostCategory(
+                totalsFromAF = BudgetCostsCalculationResultFull(
+                    staff = BigDecimal.ZERO,
+                    travel = BigDecimal.ZERO,
+                    office = BigDecimal.ZERO,
+                    external = BigDecimal.ZERO,
+                    equipment = BigDecimal.ZERO,
+                    infrastructure = BigDecimal.ZERO,
+                    other = BigDecimal.ZERO,
+                    lumpSum = BigDecimal.ZERO,
+                    unitCost = BigDecimal.ZERO,
+                    sum = BigDecimal.ZERO
+                ),
+                currentlyReported = BudgetCostsCalculationResultFull(
+                    staff = BigDecimal.ZERO,
+                    travel = BigDecimal.ZERO,
+                    office = BigDecimal.ZERO,
+                    external = BigDecimal.ZERO,
+                    equipment = BigDecimal.ZERO,
+                    infrastructure = BigDecimal.ZERO,
+                    other = BigDecimal.ZERO,
+                    lumpSum = BigDecimal.ZERO,
+                    unitCost = BigDecimal.ZERO,
+                    sum = BigDecimal.ZERO
+                ),
+                previouslyReported = BudgetCostsCalculationResultFull(
+                    staff = BigDecimal.ZERO,
+                    travel = BigDecimal.ZERO,
+                    office = BigDecimal.ZERO,
+                    external = BigDecimal.ZERO,
+                    equipment = BigDecimal.ZERO,
+                    infrastructure = BigDecimal.ZERO,
+                    other = BigDecimal.ZERO,
+                    lumpSum = BigDecimal.ZERO,
+                    unitCost = BigDecimal.ZERO,
+                    sum = BigDecimal.ZERO
+                )
             )
         )
     }
@@ -163,6 +203,8 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
     private lateinit var programmeFundRepository: ProgrammeFundRepository
     @MockK
     private lateinit var projectReportCertificateCoFinancingRepository: ReportProjectCertificateCoFinancingRepository
+    @MockK
+    private lateinit var projectReportCertificateCostCategoryRepository: ReportProjectCertificateCostCategoryRepository
 
     @InjectMockKs
     private lateinit var persistence: ProjectReportPersistenceProvider
@@ -175,7 +217,8 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
             projectReportSpendingProfileRepository,
             projectReportCoFinancingRepository,
             programmeFundRepository,
-            projectReportCertificateCoFinancingRepository
+            projectReportCertificateCoFinancingRepository,
+            projectReportCertificateCostCategoryRepository
         )
     }
 
@@ -226,6 +269,7 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
         every { projectReportSpendingProfileRepository.saveAll(listOf()) } returnsArgument 0
         every { projectReportCoFinancingRepository.saveAll(listOf()) } returnsArgument 0
         every { projectReportCertificateCoFinancingRepository.save(any()) } returnsArgument 0
+        every { projectReportCertificateCostCategoryRepository.save(any()) } returnsArgument 0
         val reportToCreate = report(0L, projectId).copy(periodNumber = null)
         assertThat(persistence.createReportAndFillItToEmptyCertificates(reportToCreate, projectRelevanceBenefits(), mapOf(), budget))
             .isEqualTo(report(0L /* is changed by DB */, projectId).copy(periodNumber = null))

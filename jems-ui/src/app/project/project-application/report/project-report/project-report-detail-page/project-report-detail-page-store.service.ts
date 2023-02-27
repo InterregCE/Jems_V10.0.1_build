@@ -1,11 +1,10 @@
 import {Injectable} from '@angular/core';
 import {
-  PreConditionCheckResultDTO,
   ProjectReportDTO,
   ProjectReportService,
-  ProjectReportSummaryDTO, ProjectReportUpdateDTO,
+  ProjectReportSummaryDTO, ProjectReportUpdateDTO
 } from '@cat/api';
-import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
+import {combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {catchError, map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {Log} from '@common/utils/log';
@@ -25,6 +24,7 @@ export class ProjectReportDetailPageStore {
   projectReportId$: Observable<number>;
   reportStatus$: Observable<ProjectReportSummaryDTO.StatusEnum>;
   reportEditable$: Observable<boolean>;
+  reportVersion$ = new ReplaySubject<string | undefined>(1);
 
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
@@ -62,6 +62,7 @@ export class ProjectReportDetailPageStore {
           )
         : of({} as ProjectReportDTO)
       ),
+      tap(report => this.reportVersion$.next(report.linkedFormVersion)),
       tap(report => Log.info('Fetched the project report:', this, report)),
     );
 

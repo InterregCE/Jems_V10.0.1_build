@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCoFinancingBreakdown
 
-import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.CertificateCoFinancingBreakdown
-import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.CertificateCoFinancingBreakdownLine
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.CertificateCoFinancingBreakdown
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.CertificateCoFinancingBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancingColumn
 import java.math.BigDecimal

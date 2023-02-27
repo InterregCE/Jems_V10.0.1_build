@@ -363,6 +363,7 @@ import {
 } from '@project/project-application/report/partner-control-report/partner-control-report-overview-and-finalize-tab/control-report-deduction-overview/control-report-deduction-overview.component';
 import { ProjectReportFinancialOverviewTabComponent } from './project-application/report/project-report/project-report-detail-page/project-report-financial-overview-tab/project-report-financial-overview-tab.component';
 import { ProjectBreakdownCoFinancingComponent } from './project-application/report/project-report/project-report-detail-page/project-report-financial-overview-tab/project-breakdown-co-financing/project-breakdown-co-financing.component';
+import { ProjectReportCostCategoryComponent } from './project-application/report/project-report/project-report-detail-page/project-report-financial-overview-tab/project-report-cost-category/project-report-cost-category.component';
 
 @NgModule({
   declarations: [
@@ -532,7 +533,8 @@ import { ProjectBreakdownCoFinancingComponent } from './project-application/repo
     ProjectReportCertificateTabComponent,
     PartnerReportExportTabComponent,
     ProjectReportFinancialOverviewTabComponent,
-    ProjectBreakdownCoFinancingComponent
+    ProjectBreakdownCoFinancingComponent,
+    ProjectReportCostCategoryComponent
   ],
   imports: [
     SharedModule,

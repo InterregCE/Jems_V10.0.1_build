@@ -278,6 +278,7 @@
     <ID>PackageNaming:GetOutputIndicatorExceptions.kt$package io.cloudflight.jems.server.programme.service.indicator.get_output_indicator</ID>
     <ID>PackageNaming:GetOutputIndicatorInteractor.kt$package io.cloudflight.jems.server.programme.service.indicator.get_output_indicator</ID>
     <ID>PackageNaming:GetPartnerBudgetPerFund.kt$package io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_funds</ID>
+    <ID>PackageNaming:GetPartnerBudgetPerFundService.kt$package io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_funds</ID>
     <ID>PackageNaming:GetPartnerBudgetPerFundExceptions.kt$package io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_funds</ID>
     <ID>PackageNaming:GetPartnerBudgetPerFundInteractor.kt$package io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_funds</ID>
     <ID>PackageNaming:GetPartnerBudgetPerPeriod.kt$package io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_period</ID>

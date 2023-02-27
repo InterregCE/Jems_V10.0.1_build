@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.repository.report.partner.financialOverview.costCategory
 
+import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCurrentValuesWrapper
 import io.cloudflight.jems.server.project.service.budget.model.ExpenditureCostCategoryCurrentlyReportedWithReIncluded
 import io.cloudflight.jems.server.project.service.budget.model.ExpenditureCostCategoryPreviouslyReportedWithParked
@@ -87,5 +88,10 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProvider(
                 unitCostCurrentParked = afterControlWithParked.currentlyReportedParked.unitCost
                 sumCurrentParked = afterControlWithParked.currentlyReportedParked.sum
             }
+    }
+
+    @Transactional(readOnly = true)
+    override fun getCostCategoriesCumulativeTotalEligible(reportIds: Set<Long>): BudgetCostsCalculationResultFull {
+        return expenditureCostCategoryRepository.findCumulativeForReportIdsTotalAfterEligible(reportIds)
     }
 }

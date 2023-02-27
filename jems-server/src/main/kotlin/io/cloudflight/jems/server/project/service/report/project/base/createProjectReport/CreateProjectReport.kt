@@ -1,25 +1,14 @@
 package io.cloudflight.jems.server.project.service.report.project.base.createProjectReport
 
-import io.cloudflight.jems.api.call.dto.CallType
-import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanEditProjectReportNotSpecific
-import io.cloudflight.jems.server.project.repository.partner.cofinancing.ProjectPartnerCoFinancingPersistenceProvider
 import io.cloudflight.jems.server.project.service.ProjectDescriptionPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
-import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
-import io.cloudflight.jems.server.project.service.cofinancing.model.PartnerBudgetCoFinancing
-import io.cloudflight.jems.server.project.service.cofinancing.model.PartnerBudgetSpfCoFinancing
-import io.cloudflight.jems.server.project.service.common.PartnerBudgetPerFundCalculatorService
 import io.cloudflight.jems.server.project.service.model.ProjectFull
-import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerFund
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost.GetBudgetTotalCost
-import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReport
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportUpdate
@@ -44,12 +33,7 @@ class CreateProjectReport(
     private val auditPublisher: ApplicationEventPublisher,
     private val projectDescriptionPersistence: ProjectDescriptionPersistence,
     private val projectReportIdentificationPersistence: ProjectReportIdentificationPersistence,
-    private val createProjectReportBudget: CreateProjectReportBudget,
-    private val callPersistence: CallPersistence,
-    private val projectBudgetPersistence: ProjectBudgetPersistence,
-    private val projectPartnerCoFinancingPersistence: ProjectPartnerCoFinancingPersistenceProvider,
-    private val getBudgetTotalCost: GetBudgetTotalCost,
-    private val partnerBudgetPerFundCalculator: PartnerBudgetPerFundCalculatorService
+    private val createProjectReportBudget: CreateProjectReportBudget
 ) : CreateProjectReportInteractor {
 
     companion object {
@@ -82,8 +66,7 @@ class CreateProjectReport(
 
         val budget = createProjectReportBudget.retrieveBudgetDataFor(
             projectId = projectId,
-            version = version,
-            totalsFromAF = getTotalsFromAF(projectId, version),
+            version = version
         )
 
         return reportPersistence.createReportAndFillItToEmptyCertificates(
@@ -137,58 +120,4 @@ class CreateProjectReport(
         firstSubmission = null,
         verificationDate = null,
     )
-
-    private fun getTotalsFromAF(projectId: Long, version: String?): ProjectPartnerBudgetPerFund {
-        val partners = projectBudgetPersistence.getPartnersForProjectId(projectId = projectId, version)
-        val call = callPersistence.getCallByProjectId(projectId)
-        val projectChosenFunds = call.funds.map { it.programmeFund }
-
-        val budgetCoFinancingContributions: MutableMap<Long, ProjectPartnerCoFinancingAndContribution> = mutableMapOf()
-        partners.forEach { partner ->
-            budgetCoFinancingContributions[partner.id!!] =
-                projectPartnerCoFinancingPersistence.getCoFinancingAndContributions(partner.id, version)
-        }
-
-        val coFinancing = partners.map { partner ->
-            PartnerBudgetCoFinancing(
-                partner = partner,
-                projectPartnerCoFinancingAndContribution = budgetCoFinancingContributions[partner.id],
-                total = getBudgetTotalCost.getBudgetTotalCost(partner.id!!, version)
-            )
-        }
-        val spfCoFinancing = getSpfCoFinancing(call.type, partners, version)
-        val budgetPerFundExcludingPartnerContribution = partnerBudgetPerFundCalculator.calculate(
-            partners, projectChosenFunds, coFinancing, spfCoFinancing
-        )
-
-        budgetPerFundExcludingPartnerContribution.toMutableList().add(
-            ProjectPartnerBudgetPerFund(
-
-            )
-        )
-
-        return partnerBudgetPerFundCalculator.calculate(
-            partners, projectChosenFunds, coFinancing, spfCoFinancing
-        ).first { it.partner === null }
-    }
-
-    private fun getSpfCoFinancing(
-        callType: CallType,
-        partners: List<ProjectPartnerSummary>,
-        version: String?
-    ): List<PartnerBudgetSpfCoFinancing?> {
-        return if (callType == CallType.SPF) {
-            partners.map {
-                if (it.id != null)
-                    PartnerBudgetSpfCoFinancing(
-                        partner = it,
-                        projectPartnerCoFinancingAndContribution =
-                        projectPartnerCoFinancingPersistence.getSpfCoFinancingAndContributions(it.id, version),
-                        total = getBudgetTotalCost.getBudgetTotalSpfCost(it.id, version)
-                    )
-                else
-                    null
-            }
-        } else emptyList()
-    }
 }

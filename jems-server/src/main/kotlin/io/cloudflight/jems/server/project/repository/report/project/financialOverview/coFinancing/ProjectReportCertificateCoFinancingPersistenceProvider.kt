@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.repository.report.project.coFinancing
+package io.cloudflight.jems.server.project.repository.report.project.financialOverview.coFinancing
 
 import io.cloudflight.jems.server.project.repository.report.project.ProjectReportCoFinancingRepository
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancing

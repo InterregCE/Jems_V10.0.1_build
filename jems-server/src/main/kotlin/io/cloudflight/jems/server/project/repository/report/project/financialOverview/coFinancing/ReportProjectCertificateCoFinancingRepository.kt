@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.repository.report.project.coFinancing
+package io.cloudflight.jems.server.project.repository.report.project.financialOverview.coFinancing
 
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateCoFinancingEntity
@@ -16,7 +16,7 @@ interface ReportProjectCertificateCoFinancingRepository :
     ): ReportProjectCertificateCoFinancingEntity
 
     @Query("""
-        SELECT new io.cloudflight.jems.server.project.repository.report.project.coFinancing.ReportCertificateCoFinancingColumnWithoutFunds(
+        SELECT new io.cloudflight.jems.server.project.repository.report.project.financialOverview.coFinancing.ReportCertificateCoFinancingColumnWithoutFunds(
             COALESCE(SUM(report.partnerContributionCurrent), 0),
             COALESCE(SUM(report.publicContributionCurrent), 0),
             COALESCE(SUM(report.automaticPublicContributionCurrent), 0),

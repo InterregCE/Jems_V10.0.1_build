@@ -7,7 +7,7 @@ import {
 import {
   ProjectReportDetailPageStore
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-detail-page-store.service';
-import {ProjectReportDTO} from "@cat/api";
+import {ProjectReportDTO} from '@cat/api';
 
 @Component({
   selector: 'jems-project-report-detail-page',

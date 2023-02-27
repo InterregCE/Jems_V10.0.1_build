@@ -41,4 +41,17 @@ interface ReportProjectPartnerExpenditureCoFinancingRepository :
     """)
     fun findCumulativeParkedForReportIds(reportIds: Set<Long>): ReportExpenditureCoFinancingColumnWithoutFunds
 
+    @Query("""
+        SELECT new io.cloudflight.jems.server.project.repository.report.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumnWithoutFunds(
+            COALESCE(SUM(report.partnerContributionTotalEligibleAfterControl), 0),
+            COALESCE(SUM(report.publicContributionTotalEligibleAfterControl), 0),
+            COALESCE(SUM(report.automaticPublicContributionTotalEligibleAfterControl), 0),
+            COALESCE(SUM(report.privateContributionTotalEligibleAfterControl), 0),
+            COALESCE(SUM(report.sumTotalEligibleAfterControl), 0)
+        )
+        FROM #{#entityName} report
+        WHERE report.reportEntity.id IN :reportIds
+    """)
+    fun findCumulativeTotalsForReportIds(reportIds: Set<Long>): ReportExpenditureCoFinancingColumnWithoutFunds
+
 }

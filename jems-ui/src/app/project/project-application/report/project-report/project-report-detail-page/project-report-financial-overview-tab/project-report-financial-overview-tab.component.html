@@ -9,4 +9,10 @@
             [funds]="data.funds">
     </jems-project-breakdown-co-financing>
 
+    <h3>{{ 'project.application.project.report.financial.breakdown.cost.category' | translate}}</h3>
+    <jems-project-report-cost-category
+            [breakdown]="data.perCostCategory"
+            [allowedCostCategories]="data.allowedCostCategories">
+    </jems-project-report-cost-category>
+
 </jems-form>

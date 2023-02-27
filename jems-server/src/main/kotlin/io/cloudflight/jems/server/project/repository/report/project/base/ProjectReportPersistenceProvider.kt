@@ -11,7 +11,8 @@ import io.cloudflight.jems.server.project.repository.contracting.reporting.Proje
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.project.ProjectReportCoFinancingRepository
-import io.cloudflight.jems.server.project.repository.report.project.coFinancing.ReportProjectCertificateCoFinancingRepository
+import io.cloudflight.jems.server.project.repository.report.project.financialOverview.coFinancing.ReportProjectCertificateCoFinancingRepository
+import io.cloudflight.jems.server.project.repository.report.project.financialOverview.costCategory.ReportProjectCertificateCostCategoryRepository
 import io.cloudflight.jems.server.project.repository.report.project.identification.ProjectReportIdentificationTargetGroupRepository
 import io.cloudflight.jems.server.project.repository.report.project.identification.ProjectReportSpendingProfileRepository
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
@@ -22,6 +23,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.ProjectRe
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportDeadline
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportBudget
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -42,6 +44,7 @@ class ProjectReportPersistenceProvider(
     private val projectReportCertificateCoFinancingRepository: ReportProjectCertificateCoFinancingRepository,
     private val programmeFundRepository: ProgrammeFundRepository,
     private val projectReportCoFinancingRepository: ProjectReportCoFinancingRepository,
+    private val projectReportCertificateCostCategoryRepository: ReportProjectCertificateCostCategoryRepository,
 ) : ProjectReportPersistence {
 
     @Transactional(readOnly = true)
@@ -64,7 +67,8 @@ class ProjectReportPersistenceProvider(
 
         createTargetGroups(targetGroups, reportPersisted)
         createSpendingProfiles(previouslyReportedByPartner, reportPersisted)
-        saveCoFinancingData(budget, reportPersisted)
+        saveCoFinancing(budget, reportPersisted)
+        saveCostCategory(budget.costCategorySetup, report = reportPersisted)
         fillProjectReportToAllEmptyCertificates(projectId = report.projectId, reportPersisted)
 
         return reportPersisted.toModel()
@@ -175,20 +179,26 @@ class ProjectReportPersistenceProvider(
         )
     }
 
-    private fun saveCoFinancingData(
+    private fun saveCoFinancing(
         budget: ProjectReportBudget,
         report: ProjectReportEntity,
     ) {
         projectReportCoFinancingRepository.saveAll(
-            budget.previouslyReportedCoFinancing.fundsSorted.toProjectReportEntity(
+            budget.coFinancing.fundsSorted.toProjectReportEntity(
                 reportEntity = report,
                 programmeFundResolver = { programmeFundRepository.getById(it) },
             )
         )
 
         projectReportCertificateCoFinancingRepository.save(
-            budget.previouslyReportedCoFinancing.toProjectReportEntity(report),
+            budget.coFinancing.toProjectReportEntity(report),
         )
     }
+
+    private fun saveCostCategory(
+        certificateCostCategory: ReportCertificateCostCategory,
+        report: ProjectReportEntity,
+    ) =
+        projectReportCertificateCostCategoryRepository.save(certificateCostCategory.toCreateEntity(report = report))
 
 }
