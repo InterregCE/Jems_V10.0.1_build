@@ -394,6 +394,19 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         sum = BigDecimal.valueOf(5),
     )
 
+    private val previousPayments = ReportExpenditureCoFinancingColumn(
+        funds = mapOf(
+            fund.id to BigDecimal.valueOf(309L, 2), /* original fund */
+            -1L to BigDecimal.ZERO, /* fund which has been removed in modification */
+            null to BigDecimal.valueOf(723L, 2), /* partner contribution */
+        ),
+        partnerContribution = BigDecimal.valueOf(4031L, 2),
+        publicContribution = BigDecimal.valueOf(733L, 2),
+        automaticPublicContribution = BigDecimal.valueOf(1033L, 2),
+        privateContribution = BigDecimal.valueOf(1233L, 2),
+        sum = BigDecimal.valueOf(5063L, 2),
+    )
+
     private val expectedPrevious = BudgetCostsCalculationResultFull(
         staff = BigDecimal.valueOf(30),
         office = BigDecimal.valueOf(31),
@@ -402,9 +415,9 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         equipment = BigDecimal.valueOf(34),
         infrastructure = BigDecimal.valueOf(35),
         other = BigDecimal.valueOf(36),
-        lumpSum = BigDecimal.valueOf(4733, 2), /* +10.33 from ready FT lump sum */
+        lumpSum = BigDecimal.valueOf(8763, 2), /* +50.63 from ready FT lump sum */
         unitCost = BigDecimal.valueOf(38),
-        sum = BigDecimal.valueOf(4933, 2), /* +10.33 from ready FT lump sum */
+        sum = BigDecimal.valueOf(8963, 2), /* +50.63 from ready FT lump sum */
     )
 
     private val expectedPreviouslyReportedCoFinancing = PreviouslyReportedCoFinancing(
@@ -433,16 +446,16 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         totalAutoPublic = BigDecimal.valueOf(1),
         totalPrivate = BigDecimal.valueOf(0),
         totalSum = BigDecimal.valueOf(19),
-        previouslyReportedPartner = BigDecimal.valueOf(1623, 2),
-        previouslyReportedPublic = BigDecimal.valueOf(200, 2),
-        previouslyReportedAutoPublic = BigDecimal.valueOf(354, 2),
-        previouslyReportedPrivate = BigDecimal.valueOf(400, 2),
-        previouslyReportedSum = BigDecimal.valueOf(1533, 2),
-        previouslyReportedParkedSum = BigDecimal.valueOf(5),
-        previouslyReportedParkedPublic = BigDecimal.valueOf(2),
-        previouslyReportedParkedPrivate = BigDecimal.valueOf(4),
-        previouslyReportedParkedAutoPublic = BigDecimal.valueOf(3),
+        previouslyReportedPartner = BigDecimal.valueOf(4931L, 2),
+        previouslyReportedPublic = BigDecimal.valueOf(933L, 2),
+        previouslyReportedAutoPublic = BigDecimal.valueOf(1333L, 2),
+        previouslyReportedPrivate = BigDecimal.valueOf(1633L, 2),
+        previouslyReportedSum = BigDecimal.valueOf(5563L, 2),
         previouslyReportedParkedPartner = BigDecimal.valueOf(9),
+        previouslyReportedParkedPublic = BigDecimal.valueOf(2),
+        previouslyReportedParkedAutoPublic = BigDecimal.valueOf(3),
+        previouslyReportedParkedPrivate = BigDecimal.valueOf(4),
+        previouslyReportedParkedSum = BigDecimal.valueOf(5),
     )
 
     private val zeros = BudgetCostsCalculationResultFull(
@@ -651,12 +664,12 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
                             fundId = null,
                             percentage = BigDecimal.valueOf(100),
                             total = BigDecimal.ZERO,
-                            previouslyReported = BigDecimal.valueOf(0, 2),
+                            previouslyReported = BigDecimal.valueOf(723, 2),
                             previouslyPaid = BigDecimal.ZERO,
                             previouslyReportedParked = BigDecimal.ZERO
                         ),
                     ),
-                    previouslyReportedPartner = BigDecimal.valueOf(900, 2), /* should be no change on empty */
+                    previouslyReportedPartner = BigDecimal.valueOf(4931, 2),
                 )
             )
     }
@@ -729,8 +742,9 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
             paymentInstallment_1(),
             paymentInstallment_2()
         )
+        // previously reported
+        every { paymentPersistence.getCoFinancingAndContributionsCumulative(partnerId) } returns previousPayments
         every { reportExpenditureCostCategoryPersistence.getCostCategoriesCumulative(setOf(408L)) } returns previousExpenditures
-        // previouslyReportedCoFinancing
         every { reportExpenditureCoFinancingPersistence.getCoFinancingCumulative(setOf(408L)) } returns ExpenditureCoFinancingCurrent(
             current = previousReportedCoFinancing,
             currentParked = previousReportedCoFinancing

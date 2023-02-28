@@ -24,8 +24,10 @@ import io.cloudflight.jems.server.project.repository.lumpsum.ProjectLumpSumRepos
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.partner.toProjectPartnerDetail
 import io.cloudflight.jems.server.common.file.repository.JemsFileMetadataRepository
+import io.cloudflight.jems.server.payments.model.regular.contributionMeta.ContributionMeta
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.PaymentAttachment
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.data.domain.Page
@@ -40,6 +42,7 @@ class PaymentRegularPersistenceProvider(
     private val paymentRepository: PaymentRepository,
     private val paymentPartnerRepository: PaymentPartnerRepository,
     private val paymentPartnerInstallmentRepository: PaymentPartnerInstallmentRepository,
+    private val paymentContributionMetaRepository: PaymentContributionMetaRepository,
     private val projectRepository: ProjectRepository,
     private val projectPartnerRepository: ProjectPartnerRepository,
     private val projectLumpSumRepository: ProjectLumpSumRepository,
@@ -196,6 +199,32 @@ class PaymentRegularPersistenceProvider(
         )
     }
 
+    @Transactional
+    override fun storePartnerContributionsWhenReadyForPayment(contributions: Collection<ContributionMeta>) {
+        paymentContributionMetaRepository.saveAll(contributions.toEntities())
+    }
+
+    @Transactional
+    override fun deleteContributionsWhenReadyForPaymentReverted(projectId: Long, orderNrs: Set<Int>) {
+        paymentContributionMetaRepository.deleteAll(
+            paymentContributionMetaRepository.findByProjectIdAndLumpSumOrderNrIn(projectId, orderNrs)
+        )
+    }
+
+    @Transactional(readOnly = true)
+    override fun getCoFinancingAndContributionsCumulative(partnerId: Long): ReportExpenditureCoFinancingColumn {
+        val contribution = paymentContributionMetaRepository.getContributionCumulative(partnerId)
+        val funds = paymentPartnerRepository.getPaymentCumulative(partnerId).toMap()
+            .plus(Pair(null, contribution.partnerContribution))
+        return ReportExpenditureCoFinancingColumn(
+            funds = funds,
+            partnerContribution = contribution.partnerContribution,
+            publicContribution = contribution.publicContribution,
+            automaticPublicContribution = contribution.automaticPublicContribution,
+            privateContribution = contribution.privateContribution,
+            sum = funds.values.sumOf { it },
+        )
+    }
 
     private fun getUserOrNull(userId: Long?): UserEntity? =
         if (userId != null) {
