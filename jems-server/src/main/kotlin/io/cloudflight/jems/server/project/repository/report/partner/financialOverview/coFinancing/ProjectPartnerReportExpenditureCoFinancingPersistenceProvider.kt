@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.financial
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ExpenditureCoFinancingCurrentWithReIncluded
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -122,4 +123,13 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProvider(
             .findFirstByReportEntityPartnerIdAndReportEntityId(partnerId = partnerId, reportId = reportId)
             .sumCurrent
 
+
+    @Transactional(readOnly = true)
+    override fun getCoFinancingTotalEligible(reportIds: Set<Long>): ReportCertificateCoFinancingColumn =
+        expenditureCoFinancingRepository
+            .findCumulativeTotalsForReportIds(reportIds)
+            .toModel(
+                fundsData = partnerReportCoFinancingRepository
+                    .findCumulativeTotalsForReportIds(reportIds),
+            )
 }

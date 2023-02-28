@@ -2,8 +2,10 @@ package io.cloudflight.jems.server.project.repository.report.partner.financialOv
 
 import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.report.partner.financialOverview.ReportProjectPartnerExpenditureCoFinancingEntity
+import io.cloudflight.jems.server.project.repository.report.project.coFinancing.ProjectReportCumulativeFund
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancingColumn
 import java.math.BigDecimal
 
 fun ReportProjectPartnerExpenditureCoFinancingEntity.toModel(
@@ -65,4 +67,15 @@ fun ReportProjectPartnerExpenditureCoFinancingEntity.toModel(
         privateContribution = BigDecimal.ZERO,
         sum = coFinancing.sumOf { it.previouslyPaid },
     ),
+)
+
+fun ReportExpenditureCoFinancingColumnWithoutFunds.toModel(
+    fundsData: List<ProjectReportCumulativeFund>
+) = ReportCertificateCoFinancingColumn(
+    funds = fundsData.associateBy({it.reportFundId}, {it.sum}),
+    partnerContribution = partnerContribution,
+    publicContribution = publicContribution,
+    automaticPublicContribution = automaticPublicContribution,
+    privateContribution = privateContribution,
+    sum = sum
 )

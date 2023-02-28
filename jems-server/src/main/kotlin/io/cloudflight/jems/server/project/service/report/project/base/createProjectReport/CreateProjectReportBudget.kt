@@ -2,8 +2,10 @@ package io.cloudflight.jems.server.project.service.report.project.base.createPro
 
 import io.cloudflight.jems.server.payments.service.regular.PaymentRegularPersistence
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
-import io.cloudflight.jems.server.project.repository.report.project.coFinancing.ProjectReportCertificateCoFinancingPersistenceProvider
+import io.cloudflight.jems.server.project.repository.report.project.financialOverview.coFinancing.ProjectReportCertificateCoFinancingPersistenceProvider
+import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_funds.GetPartnerBudgetPerFundService
 import io.cloudflight.jems.server.project.service.budget.get_project_budget.GetProjectBudget
+import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerFund
@@ -11,8 +13,11 @@ import io.cloudflight.jems.server.project.service.report.model.project.base.crea
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedFund
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportBudget
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancingColumn
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.CertificateCostCategoryPreviouslyReported
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.applyPercentage
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCostCategoryPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
@@ -27,13 +32,14 @@ class CreateProjectReportBudget(
     private val getProjectBudget: GetProjectBudget,
     private val reportCertificateCoFinancingPersistence: ProjectReportCertificateCoFinancingPersistenceProvider,
     private val paymentPersistence: PaymentRegularPersistence,
+    private val reportCertificateCostCategoryPersistence: ProjectReportCertificateCostCategoryPersistence,
+    private val getPartnerBudgetPerFundService: GetPartnerBudgetPerFundService
 ) {
 
     @Transactional
     fun retrieveBudgetDataFor(
         projectId: Long,
-        version: String?,
-        totalsFromAF: ProjectPartnerBudgetPerFund
+        version: String?
     ): ProjectReportBudget {
         val submittedReportIds = reportPersistence.getSubmittedProjectReportIds(projectId = projectId)
 
@@ -44,8 +50,16 @@ class CreateProjectReportBudget(
 
         val installmentsPaid = paymentPersistence.getPaymentsByProjectId(projectId)
 
+        val previouslyReportedCostCategories = reportCertificateCostCategoryPersistence
+            .getCostCategoriesCumulative(submittedReportIds)
+            .addExtraPaymentReadyFastTrackLumpSums(sumOfPaymentReady)
+
+        val totalsFromAF = getPartnerBudgetPerFundService.getProjectPartnerBudgetPerFund(projectId, version)
+            .first { it.partner === null }
+        val costCategoryBreakdownFromAF = getCostCategoryBreakdownFromAF(projectId, version)
+
         return ProjectReportBudget(
-            previouslyReportedCoFinancing = reportCertificateCoFinancingPersistence
+            coFinancing = reportCertificateCoFinancingPersistence
                 .getCoFinancingCumulative(submittedReportIds)
                 .toCreateModel(
                     totalsFromAF = totalsFromAF,
@@ -53,8 +67,34 @@ class CreateProjectReportBudget(
                     paymentReadyFastTrackLumpSums = sumOfPaymentReady,
                     paymentPaid = installmentsPaid.byFund(),
                 ),
+            costCategorySetup = costCategorySetup(
+                budget = costCategoryBreakdownFromAF,
+                previouslyReported = previouslyReportedCostCategories
+            )
         )
     }
+
+    private fun costCategorySetup(
+        budget: BudgetCostsCalculationResultFull,
+        previouslyReported: CertificateCostCategoryPreviouslyReported,
+    ) = ReportCertificateCostCategory(
+        totalsFromAF = budget,
+        currentlyReported = fillZeros(),
+        previouslyReported = previouslyReported.previouslyReported,
+    )
+
+    private fun fillZeros() = BudgetCostsCalculationResultFull(
+        staff = ZERO,
+        office = ZERO,
+        travel = ZERO,
+        external = ZERO,
+        equipment = ZERO,
+        infrastructure = ZERO,
+        other = ZERO,
+        lumpSum = ZERO,
+        unitCost = ZERO,
+        sum = ZERO,
+    )
 
     private fun ProjectLumpSum.isReady() = fastTrack && readyForPayment
 
@@ -190,4 +230,30 @@ class CreateProjectReportBudget(
             this.multiply(BigDecimal.valueOf(100))
                 .divide(total, 17, RoundingMode.DOWN)
 
+    private fun CertificateCostCategoryPreviouslyReported.addExtraPaymentReadyFastTrackLumpSums(
+        paymentReadyFastTrackLumpSums: BigDecimal,
+    ): CertificateCostCategoryPreviouslyReported {
+        return this.copy(
+            previouslyReported = previouslyReported.copy(
+                lumpSum = previouslyReported.lumpSum.plus(paymentReadyFastTrackLumpSums),
+                sum = previouslyReported.sum.plus(paymentReadyFastTrackLumpSums)
+            ),
+        )
+    }
+
+    private fun getCostCategoryBreakdownFromAF(projectId: Long, version: String?): BudgetCostsCalculationResultFull {
+        val budget = getProjectBudget.getBudget(projectId, version)
+        return BudgetCostsCalculationResultFull(
+            staff = budget.sumOf { it.staffCosts },
+            office = budget.sumOf { it.officeAndAdministrationCosts },
+            travel = budget.sumOf { it.travelCosts },
+            external = budget.sumOf { it.externalCosts },
+            equipment = budget.sumOf { it.equipmentCosts },
+            infrastructure = budget.sumOf { it.infrastructureCosts },
+            other = budget.sumOf { it.otherCosts },
+            lumpSum = budget.sumOf { it.lumpSumContribution },
+            unitCost = budget.sumOf { it.unitCosts },
+            sum = budget.sumOf { it.totalCosts },
+        )
+    }
 }

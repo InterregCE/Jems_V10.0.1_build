@@ -6,10 +6,12 @@ import io.cloudflight.jems.server.project.entity.report.project.ProjectReportCoF
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportCoFinancingIdEntity
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateCoFinancingEntity
+import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateCostCategoryEntity
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedFund
 import java.math.BigDecimal
@@ -140,3 +142,42 @@ fun List<PreviouslyProjectReportedFund>.toProjectReportEntity(
         )
     }
 }
+
+fun ReportCertificateCostCategory.toCreateEntity(report: ProjectReportEntity) =
+    ReportProjectCertificateCostCategoryEntity(
+        reportEntity = report,
+
+        staffTotal = totalsFromAF.staff,
+        officeTotal = totalsFromAF.office,
+        travelTotal = totalsFromAF.travel,
+        externalTotal = totalsFromAF.external,
+        equipmentTotal = totalsFromAF.equipment,
+        infrastructureTotal = totalsFromAF.infrastructure,
+        otherTotal = totalsFromAF.other,
+        lumpSumTotal = totalsFromAF.lumpSum,
+        unitCostTotal = totalsFromAF.unitCost,
+        sumTotal = totalsFromAF.sum,
+
+        staffCurrent = BigDecimal.ZERO,
+        officeCurrent = BigDecimal.ZERO,
+        travelCurrent = BigDecimal.ZERO,
+        externalCurrent = BigDecimal.ZERO,
+        equipmentCurrent = BigDecimal.ZERO,
+        infrastructureCurrent = BigDecimal.ZERO,
+        otherCurrent = BigDecimal.ZERO,
+        lumpSumCurrent = BigDecimal.ZERO,
+        unitCostCurrent = BigDecimal.ZERO,
+        sumCurrent = BigDecimal.ZERO,
+
+        staffPreviouslyReported = previouslyReported.staff,
+        officePreviouslyReported = previouslyReported.office,
+        travelPreviouslyReported = previouslyReported.travel,
+        externalPreviouslyReported = previouslyReported.external,
+        equipmentPreviouslyReported = previouslyReported.equipment,
+        infrastructurePreviouslyReported = previouslyReported.infrastructure,
+        otherPreviouslyReported = previouslyReported.other,
+        lumpSumPreviouslyReported = previouslyReported.lumpSum,
+        unitCostPreviouslyReported = previouslyReported.unitCost,
+        sumPreviouslyReported = previouslyReported.sum,
+
+        )

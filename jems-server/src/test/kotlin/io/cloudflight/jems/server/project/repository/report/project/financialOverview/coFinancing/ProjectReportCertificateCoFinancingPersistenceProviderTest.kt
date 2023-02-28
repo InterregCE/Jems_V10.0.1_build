@@ -7,14 +7,8 @@ import io.cloudflight.jems.server.project.entity.report.project.ProjectReportCoF
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportCoFinancingIdEntity
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateCoFinancingEntity
-import io.cloudflight.jems.server.project.repository.report.partner.financialOverview.coFinancing.ReportCumulativeFund
 import io.cloudflight.jems.server.project.repository.report.project.ProjectReportCoFinancingRepository
-import io.cloudflight.jems.server.project.repository.report.project.coFinancing.ProjectReportCertificateCoFinancingPersistenceProvider
 import io.cloudflight.jems.server.project.repository.report.project.coFinancing.ProjectReportCumulativeFund
-import io.cloudflight.jems.server.project.repository.report.project.coFinancing.ReportCertificateCoFinancingColumnWithoutFunds
-import io.cloudflight.jems.server.project.repository.report.project.coFinancing.ReportProjectCertificateCoFinancingRepository
-import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancing
-import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancingColumn
 import io.mockk.clearMocks

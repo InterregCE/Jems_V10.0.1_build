@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.repository.report.project.coFinancing
+package io.cloudflight.jems.server.project.repository.report.project.financialOverview.coFinancing
 
 import java.math.BigDecimal
 

@@ -2,10 +2,15 @@ package io.cloudflight.jems.server.project.controller.report.project.financialOv
 
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.CertificateCoFinancingBreakdownDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.CertificateCoFinancingBreakdownLineDTO
+import io.cloudflight.jems.api.project.dto.report.project.financialOverview.CertificateCostCategoryBreakdownDTO
+import io.cloudflight.jems.api.project.dto.report.project.financialOverview.CertificateCostCategoryBreakdownLineDTO
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.CertificateCoFinancingBreakdown
-import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.CertificateCoFinancingBreakdownLine
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.CertificateCoFinancingBreakdown
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.CertificateCoFinancingBreakdownLine
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.CertificateCostCategoryBreakdown
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.CertificateCostCategoryBreakdownLine
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCoFinancingBreakdown.GetReportCertificateCoFinancingBreakdownInteractor
+import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCostCategoryBreakdown.GetReportCertificateCostCategoryBreakdownInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -65,10 +70,57 @@ class ProjectProjectReportFinancialOverviewControllerTest : UnitTest() {
             privateContribution = expectedDummyLineCoFin,
             total = expectedDummyLineCoFin,
         )
+
+        private val dummyCostCategoryLine = CertificateCostCategoryBreakdownLine(
+            totalEligibleBudget = BigDecimal.ONE,
+            previouslyReported = BigDecimal.ONE,
+            currentReport = BigDecimal.ONE,
+            totalReportedSoFar = BigDecimal.ONE,
+            totalReportedSoFarPercentage = BigDecimal.ONE,
+            remainingBudget = BigDecimal.ONE,
+        )
+
+        private val dummyCostCategory = CertificateCostCategoryBreakdown(
+            staff = dummyCostCategoryLine,
+            office = dummyCostCategoryLine,
+            travel = dummyCostCategoryLine,
+            external = dummyCostCategoryLine,
+            equipment = dummyCostCategoryLine,
+            infrastructure = dummyCostCategoryLine,
+            other = dummyCostCategoryLine,
+            lumpSum = dummyCostCategoryLine,
+            unitCost = dummyCostCategoryLine,
+            total = dummyCostCategoryLine,
+        )
+
+        private val expectedDummyCostCategoryLine = CertificateCostCategoryBreakdownLineDTO(
+            totalEligibleBudget = BigDecimal.ONE,
+            previouslyReported = BigDecimal.ONE,
+            currentReport = BigDecimal.ONE,
+            totalReportedSoFar = BigDecimal.ONE,
+            totalReportedSoFarPercentage = BigDecimal.ONE,
+            remainingBudget = BigDecimal.ONE,
+        )
+
+        private val expectedDummyCostCategory = CertificateCostCategoryBreakdownDTO(
+            staff = expectedDummyCostCategoryLine,
+            office = expectedDummyCostCategoryLine,
+            travel = expectedDummyCostCategoryLine,
+            external = expectedDummyCostCategoryLine,
+            equipment = expectedDummyCostCategoryLine,
+            infrastructure = expectedDummyCostCategoryLine,
+            other = expectedDummyCostCategoryLine,
+            lumpSum = expectedDummyCostCategoryLine,
+            unitCost = expectedDummyCostCategoryLine,
+            total = expectedDummyCostCategoryLine,
+        )
     }
 
     @MockK
     lateinit var getReportCertificateCoFinancingBreakdown: GetReportCertificateCoFinancingBreakdownInteractor
+
+    @MockK
+    lateinit var getReportCertificateCostCategoryBreakdownInteractor: GetReportCertificateCostCategoryBreakdownInteractor
 
     @InjectMockKs
     private lateinit var controller: ProjectReportFinancialOverviewController
@@ -79,5 +131,13 @@ class ProjectProjectReportFinancialOverviewControllerTest : UnitTest() {
             dummyCertificateCoFinancing
         assertThat(controller.getCoFinancingBreakdown(projectId = PROJECT_ID, reportId = REPORT_ID))
             .isEqualTo(expectedDummyCertificateCoFinancing)
+    }
+
+    @Test
+    fun getCostCategoriesBreakdown() {
+        every { getReportCertificateCostCategoryBreakdownInteractor.get(projectId = PROJECT_ID, reportId = REPORT_ID) } returns
+            dummyCostCategory
+        assertThat(controller.getCostCategoriesBreakdown(projectId = PROJECT_ID, reportId = REPORT_ID))
+            .isEqualTo(expectedDummyCostCategory)
     }
 }
