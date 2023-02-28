@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.payments.repository
+package io.cloudflight.jems.server.payments.repository.regular
 
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
@@ -22,10 +22,6 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerToCreate
 import io.cloudflight.jems.server.payments.model.regular.PaymentToCreate
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
-import io.cloudflight.jems.server.payments.repository.regular.PaymentPartnerInstallmentRepository
-import io.cloudflight.jems.server.payments.repository.regular.PaymentPartnerRepository
-import io.cloudflight.jems.server.payments.repository.regular.PaymentRegularPersistenceProvider
-import io.cloudflight.jems.server.payments.repository.regular.PaymentRepository
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
@@ -44,11 +40,15 @@ import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.lumpsum.ProjectLumpSumRepository
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.report.file.ProjectReportFileRepository
+import io.cloudflight.jems.server.payments.entity.PaymentContributionMetaEntity
+import io.cloudflight.jems.server.payments.model.regular.contributionMeta.ContributionMeta
+import io.cloudflight.jems.server.payments.model.regular.contributionMeta.PartnerContributionSplit
 import io.cloudflight.jems.server.project.repository.toModel
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.repository.user.UserRepository
@@ -71,12 +71,14 @@ import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
 import java.time.ZonedDateTime
 
-class PaymentPersistenceProviderTest: UnitTest() {
+class PaymentRegularPersistenceProviderTest: UnitTest() {
 
     @RelaxedMockK
     lateinit var paymentRepository: PaymentRepository
     @RelaxedMockK
     lateinit var paymentPartnerRepository: PaymentPartnerRepository
+    @MockK
+    lateinit var paymentContributionMetaRepository: PaymentContributionMetaRepository
     @RelaxedMockK
     lateinit var paymentPartnerInstallmentRepository: PaymentPartnerInstallmentRepository
 
@@ -303,7 +305,8 @@ class PaymentPersistenceProviderTest: UnitTest() {
 
     @BeforeEach
     fun reset() {
-        clearMocks(reportFileRepository, fileRepository)
+        clearMocks(reportFileRepository, fileRepository, paymentRepository, paymentPartnerInstallmentRepository,
+            paymentContributionMetaRepository)
     }
 
     @Test
@@ -323,7 +326,8 @@ class PaymentPersistenceProviderTest: UnitTest() {
         every { paymentPartnerRepository.findAllByPaymentId(paymentId) } returns listOf(partnerPaymentEntity)
         every {
             paymentPartnerInstallmentRepository.findAllByPaymentPartnerId(1L)
-        } returns listOf(installmentEntity, PaymentPartnerInstallmentEntity(
+        } returns listOf(
+            installmentEntity, PaymentPartnerInstallmentEntity(
             id = 4L,
             paymentPartner = partnerPaymentEntity,
             amountPaid = BigDecimal("22.21"),
@@ -485,6 +489,75 @@ class PaymentPersistenceProviderTest: UnitTest() {
         every { reportFileRepository.findByTypeAndId(JemsFileType.PaymentAdvanceAttachment, -1L) } returns null
         assertThrows<ResourceNotFoundException> { paymentPersistenceProvider.deletePaymentAdvanceAttachment(-1L) }
         verify(exactly = 0) { fileRepository.delete(any()) }
+    }
+
+    @Test
+    fun storePartnerContributionsWhenReadyForPayment() {
+        val saved = slot<Iterable<PaymentContributionMetaEntity>>()
+        every { paymentContributionMetaRepository.saveAll(capture(saved)) } returnsArgument 0
+        val toSave = listOf(
+            ContributionMeta(
+                projectId = 4L,
+                partnerId = 8L,
+                programmeLumpSumId = 15L,
+                orderNr = 10,
+                partnerContribution = BigDecimal.valueOf(100L),
+                publicContribution = BigDecimal.valueOf(200L),
+                automaticPublicContribution = BigDecimal.valueOf(300L),
+                privateContribution = BigDecimal.valueOf(400L),
+            )
+        )
+        paymentPersistenceProvider.storePartnerContributionsWhenReadyForPayment(toSave)
+
+        assertThat(saved.captured).hasSize(1)
+        with(saved.captured.first()) {
+            assertThat(id).isEqualTo(0L)
+            assertThat(projectId).isEqualTo(4L)
+            assertThat(partnerId).isEqualTo(8L)
+            assertThat(lumpSum.programmeLumpSumId).isEqualTo(15L)
+            assertThat(lumpSum.orderNr).isEqualTo(10)
+            assertThat(partnerContribution).isEqualByComparingTo(BigDecimal.valueOf(100L))
+            assertThat(publicContribution).isEqualByComparingTo(BigDecimal.valueOf(200L))
+            assertThat(automaticPublicContribution).isEqualByComparingTo(BigDecimal.valueOf(300L))
+            assertThat(privateContribution).isEqualByComparingTo(BigDecimal.valueOf(400L))
+        }
+    }
+
+    @Test
+    fun deleteContributionsWhenReadyForPaymentReverted() {
+        val toDelete = mockk<List<PaymentContributionMetaEntity>>()
+        every { paymentContributionMetaRepository.findByProjectIdAndLumpSumOrderNrIn(140L, setOf(7, 8)) } returns toDelete
+        every { paymentContributionMetaRepository.deleteAll(toDelete) } answers { }
+        paymentPersistenceProvider.deleteContributionsWhenReadyForPaymentReverted(140L, setOf(7, 8))
+        verify(exactly = 1) { paymentContributionMetaRepository.deleteAll(toDelete) }
+    }
+
+    @Test
+    fun getCoFinancingAndContributionsCumulative() {
+        every { paymentContributionMetaRepository.getContributionCumulative(partnerId) } returns PartnerContributionSplit(
+            partnerContribution = BigDecimal.valueOf(510L),
+            publicContribution = BigDecimal.valueOf(150L),
+            automaticPublicContribution = BigDecimal.valueOf(170L),
+            privateContribution = BigDecimal.valueOf(190L),
+        )
+        every { paymentPartnerRepository.getPaymentCumulative(partnerId) } returns listOf(
+            Pair(45L, BigDecimal.valueOf(750L)),
+            Pair(46L, BigDecimal.valueOf(347L)),
+        )
+        assertThat(paymentPersistenceProvider.getCoFinancingAndContributionsCumulative(partnerId)).isEqualTo(
+            ReportExpenditureCoFinancingColumn(
+                funds = mapOf(
+                    45L to BigDecimal.valueOf(750L),
+                    46L to BigDecimal.valueOf(347L),
+                    null to BigDecimal.valueOf(510L),
+                ),
+                partnerContribution = BigDecimal.valueOf(510L),
+                publicContribution = BigDecimal.valueOf(150L),
+                automaticPublicContribution = BigDecimal.valueOf(170L),
+                privateContribution = BigDecimal.valueOf(190L),
+                sum = BigDecimal.valueOf(1607L),
+            )
+        )
     }
 
 }
