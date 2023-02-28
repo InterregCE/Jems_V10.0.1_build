@@ -515,7 +515,6 @@ context('Programme management tests', () => {
         cy.fixture('api/application/application.json').then(application => {
           cy.fixture('api/application/spf.application.json').then(spfApplication => {
 
-
             cy.loginByRequest(user.programmeUser.email);
 
             cy.createCall(call).then(callId => {
@@ -533,11 +532,13 @@ context('Programme management tests', () => {
                   cy.createApplication(application).then(applicationId => {
                     cy.updateProjectIdentification(applicationId, application.identification);
                     cy.createProjectProposedUnitCosts(applicationId, application.projectProposedUnitCosts);
+                    cy.createProjectWorkPlan(applicationId, application.description.workPlan);
                     cy.createPartners(applicationId, application.partners);
                   });
                   cy.createApplication(spfApplication).then(spfApplicationId => {
                     cy.updateProjectIdentification(spfApplicationId, spfApplication.identification);
-                    cy.createProjectProposedUnitCosts(spfApplicationId, application.projectProposedUnitCosts);
+                    cy.createProjectProposedUnitCosts(spfApplicationId, spfApplication.projectProposedUnitCosts);
+                    cy.createProjectWorkPlan(spfApplicationId, spfApplication.description.workPlan);
                     cy.createPartners(spfApplicationId, spfApplication.partners);
                   });
                   cy.createApprovedApplication(application, user.programmeUser.email);
@@ -545,8 +546,6 @@ context('Programme management tests', () => {
                 }
               });
             });
-
-            cy.wait(15000); // give some time to the system to make sure all created projects/partners are in the exports
 
             cy.loginByRequest(user.admin.email);
             testData.dataExportUser.email = faker.internet.email();

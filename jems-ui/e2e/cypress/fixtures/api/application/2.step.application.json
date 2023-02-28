@@ -1,5 +1,4 @@
 {
-  "id": null,
   "details": {
     "acronym": "randomize",
     "projectCallId": null
@@ -554,7 +553,12 @@
               "language": "EN"
             }
           ],
-          "activities": [],
+          "activities": [
+            {
+              "cypressReference": "Lead Partner Activity",
+              "activityId": null
+            }
+          ],
           "stateAidScheme": {
             "id": 1,
             "measure": "GENERAL_DE_MINIMIS",
@@ -910,6 +914,7 @@
           },
           "activities": [
             {
+              "cypressReference": "Lead Partner Activity",
               "title": [
                 {
                   "translation": "API generated activity 1 title DE",

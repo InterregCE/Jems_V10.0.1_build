@@ -72,8 +72,8 @@ Cypress.Commands.add('updatePartnerCofinancing', (partnerId: number, cofinancing
   updateCofinancing(partnerId, cofinancing);
 });
 
-Cypress.Commands.add('updatePartnerStateAid', (partnerId: number, stateAid, options?) => {
-  updateStateAid(partnerId, stateAid, options);
+Cypress.Commands.add('updatePartnerStateAid', (partnerId: number, stateAid) => {
+  updateStateAid(partnerId, stateAid);
 });
 
 Cypress.Commands.add('deactivatePartner', (partnerId: number) => {
@@ -97,7 +97,7 @@ export function createPartner(applicationId: number, partner) {
   });
 }
 
-export function createPartners(applicationId: number, partners: [], options?) {
+export function createPartners(applicationId: number, partners: []) {
   partners.forEach((partner: any) => {
     createPartner(applicationId, partner.details).then(partnerId => {
       cy.wrap(partnerId).as(partner.details.abbreviation);
@@ -108,7 +108,7 @@ export function createPartners(applicationId: number, partners: [], options?) {
       updateCofinancing(partnerId, partner.cofinancing);
       if (partner.spfCofinancing)
         updateSpfCofinancing(partnerId, partner.spfCofinancing);
-      updateStateAid(partnerId, partner.stateAid, options);
+      updateStateAid(partnerId, partner.stateAid);
     });
   });
 }
@@ -226,20 +226,19 @@ function updateSpfCofinancing(partnerId, spfCofinancing) {
   });
 }
 
-function updateStateAid(partnerId, stateAid, options?) {
-  const stateAidCopy = JSON.parse(JSON.stringify(stateAid));
-  if (options?.workPlanId) {
-    const activity = {
-      "activityId": options.activityId,
-      "workPackageNumber": options.workPlanId,
-      "activityNumber": null
-    }
-    stateAidCopy.activities.push(activity);
-  }
-  cy.request({
-    method: 'PUT',
-    url: `api/project/partner/${partnerId}/stateAid`,
-    body: stateAidCopy
+function updateStateAid(partnerId, stateAid) {
+  // set activityId in the state aid
+  cy.then(function () {
+    stateAid.activities?.forEach((activity) => {
+      if (activity.cypressReference) {
+        activity.activityId = this[activity.cypressReference];
+      }
+    });
+    cy.request({
+      method: 'PUT',
+      url: `api/project/partner/${partnerId}/stateAid`,
+      body: stateAid
+    });
   });
 }
 
@@ -254,12 +253,12 @@ function createAssociatedOrganization(applicationId: number, partnerId: number, 
 
 function matchProjectProposedUnitCostReferences(costOptions) {
   // match any project proposed unit cost reference to its id
-  costOptions.forEach(unitCost => {
-    if (unitCost.cypressReference) {
-      cy.get(`@${unitCost.cypressReference}`).then(projectProposedUnitCostId => {
-        unitCost.unitCostId = projectProposedUnitCostId;
-      });
-    }
+  cy.then(function () {
+    costOptions.forEach(unitCost => {
+      if (unitCost.cypressReference) {
+        unitCost.unitCostId = this[unitCost.cypressReference];
+      }
+    });
   });
 }
 

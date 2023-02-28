@@ -796,7 +796,12 @@
             "language": "EN"
           }
         ],
-        "activities": [],
+        "activities": [
+          {
+            "cypressReference": "Lead Partner Activity",
+            "activityId": null
+          }
+        ],
         "stateAidScheme": {
           "id": 1,
           "measure": "GENERAL_DE_MINIMIS",
@@ -1160,7 +1165,12 @@
             "language": "EN"
           }
         ],
-        "activities": [],
+        "activities": [
+          {
+            "cypressReference": "Project Partner Activity",
+            "activityId": null
+          }
+        ],
         "stateAidScheme": {
           "id": 1,
           "measure": "GENERAL_DE_MINIMIS",
@@ -1523,9 +1533,7 @@
         },
         "activities": [
           {
-            "id": null,
-            "workPackageId": null,
-            "activityNumber": null,
+            "cypressReference": "Lead Partner Activity",
             "title": [
               {
                 "translation": "API generated activity 1 title DE",
@@ -1570,10 +1578,7 @@
                     "language": "EN"
                   }
                 ],
-                "period": 2,
-                "deliverableId": null,
-                "activityId": null,
-                "deliverableNumber": null
+                "period": 2
               },
               {
                 "title": [
@@ -1596,15 +1601,13 @@
                     "language": "EN"
                   }
                 ],
-                "period": 4,
-                "deliverableId": null,
-                "activityId": null,
-                "deliverableNumber": null
+                "period": 4
               }
             ],
             "partnerIds": []
           },
           {
+            "cypressReference": "Project Partner Activity",
             "title": [
               {
                 "translation": "API generated activity 2 title DE",
