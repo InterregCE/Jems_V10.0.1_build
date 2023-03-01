@@ -104,7 +104,7 @@ context('Control report tests', () => {
           cy.loginByRequest(user.applicantUser.email);
           application.partners[0].details.nameInEnglish = 'Updated name in english';
           application.partners[0].details.nameInOriginalLanguage = 'Updated name in original language';
-          cy.updatePartner(partnerId1, application.partners[0].details);
+          cy.updatePartnerIdentity(partnerId1, application.partners[0].details);
           cy.runPreSubmissionCheck(applicationId);
           cy.submitProjectApplication(applicationId);
           cy.approveModification(applicationId, approvalInfo, user.programmeUser.email);

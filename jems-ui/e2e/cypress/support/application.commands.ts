@@ -1,5 +1,5 @@
 import {faker} from '@faker-js/faker';
-import {createPartners} from './partner.commands';
+import {createPartners, updatePartnerData} from './partner.commands';
 import {loginByRequest} from './login.commands';
 
 declare global {
@@ -77,7 +77,7 @@ Cypress.Commands.add('createApplication', (application) => {
   });
 });
 
-Cypress.Commands.add('createSubmittedApplication', (application) => {
+Cypress.Commands.add('createSubmittedApplication', application => {
   createApplication(application.details).then(applicationId => {
     updateApplicationSections(applicationId, application);
     runPreSubmissionCheck(applicationId);
@@ -312,6 +312,9 @@ function updateApplicationSections(applicationId, application) {
 
   // A
   updateIdentification(applicationId, application.identification);
+  
+  // Partial B
+  createPartners(applicationId, application.partners);
 
   // C
   updateOverallObjective(applicationId, application.description.overallObjective);
@@ -326,7 +329,11 @@ function updateApplicationSections(applicationId, application) {
   createProjectProposedUnitCosts(applicationId, application.projectProposedUnitCosts);
 
   // B
-  createPartners(applicationId, application.partners);
+  application.partners.forEach(partner => {
+    cy.then(function() {
+      updatePartnerData(this[partner.details.abbreviation], partner);
+    });
+  });
   createAssociatedOrganisations(applicationId, application.associatedOrganisations);
 
   // E
@@ -374,23 +381,30 @@ function createWorkPlan(applicationId: number, workPlan: any[]) {
       body: workPackage.details
     }).then(result => {
       cy.wrap(result.body.id).as('workPlanId');
-      if (workPackage.investment) {
-        cy.request({
-          method: 'POST',
-          url: `api/project/${applicationId}/workPackage/${result.body.id}/investment`,
-          body: workPackage.investment
-        }).then(response => {
-          cy.wrap(response.body).as('investmentId');
+      if (workPackage.investments) {
+        workPackage.investments.forEach(investment => {
+          cy.request({
+            method: 'POST',
+            url: `api/project/${applicationId}/workPackage/${result.body.id}/investment`,
+            body: investment
+          }).then(response => {
+            if (investment.cypressReferenceInvestment) {
+              cy.wrap(response.body).as(investment.cypressReferenceInvestment);
+            }
+          });
         });
       }
+
+      // update work plan activities with partnerIds
+      matchPartnersToActivities(workPackage.activities);
       cy.request({
         method: 'PUT',
         url: `api/project/${applicationId}/workPackage/${result.body.id}/activity`,
         body: workPackage.activities
       }).then(response => {
         response.body.forEach((activity, index) => {
-          if (workPackage.activities[index].cypressReference) {
-            cy.wrap(activity.id).as(workPackage.activities[index].cypressReference);
+          if (workPackage.activities[index].cypressReferenceStateAid) {
+            cy.wrap(activity.id).as(workPackage.activities[index].cypressReferenceStateAid);
           }
         });
       });
@@ -509,7 +523,7 @@ function createProjectProposedUnitCost(applicationId, projectProposedUnitCost) {
     url: `api/project/${applicationId}/costOption/unitCost`,
     body: projectProposedUnitCost
   }).then(response => {
-    cy.wrap(response.body.id).as(projectProposedUnitCost.cypressReference);
+    cy.wrap(response.body.id).as(projectProposedUnitCost.cypressReferenceUnit);
   });
 }
 
@@ -537,6 +551,16 @@ function createAssociatedOrganisation(applicationId, associatedOrganisation) {
       body: associatedOrganisation
     }).then(response => {
       cy.wrap(response.body.id).as('associatedOrganisation');
+    });
+  });
+}
+
+function matchPartnersToActivities(activities) {
+  cy.then(function () {
+    activities.forEach(activity => {
+      if (activity.cypressReferencePartner) {
+        activity.partnerIds = [this[activity.cypressReferencePartner]];
+      }
     });
   });
 }
