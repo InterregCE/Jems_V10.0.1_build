@@ -30,7 +30,7 @@ enum GroupType {
   ResultTitle,
 }
 
-const iconString:string = `<i>do_not_disturb</i>`;
+const iconString = `<i>do_not_disturb</i>`;
 
 export const TRANSLATABLE_GROUP_TYPES: GroupType[] = [
   GroupType.WorkPackage,
