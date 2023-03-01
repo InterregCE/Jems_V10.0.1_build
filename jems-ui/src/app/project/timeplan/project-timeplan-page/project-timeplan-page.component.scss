@@ -163,10 +163,21 @@ $color-blue-light: #81D4FA;
     }
 
     .vis-item-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       width: 100%;
       text-align: center;
       padding: 0;
       line-height: $size-of-box;
+      i {
+        display: inline;
+        font-style: normal;
+        font-family: 'Material Icons' !important;
+        font-size: 1em;
+        font-weight: 600;
+        margin-right: 0.25em;
+      }
     }
   }
 
@@ -223,6 +234,16 @@ $color-blue-light: #81D4FA;
   }
 
   .vis-inner {
+    display: inline-flex !important;
+    align-items: center;
+    i {
+      display: inline;
+      font-style: normal;
+      font-family: 'Material Icons' !important;
+      font-size: 1em;
+      font-weight: 600;
+      margin-right: 0.5em;
+    }
     span {
       line-height: 1.25rem;
       overflow: hidden;

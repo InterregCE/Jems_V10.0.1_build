@@ -74,7 +74,6 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
         private const val deliverable2_1_id = 2L
         private const val deliverable2_2_id = 1L
 
-
         private val outputId1 = WorkPackageOutputId(workPackageId = WORK_PACKAGE_ID, outputNumber = 1)
         private val outputId2 = WorkPackageOutputId(workPackageId = WORK_PACKAGE_ID, outputNumber = 2)
 
@@ -220,7 +219,7 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
         )
 
         private const val INDICATOR_ID = 30L
-        val indicatorOutput = OutputIndicatorEntity(
+        private val indicatorOutput = OutputIndicatorEntity(
             id = INDICATOR_ID,
             identifier = "ID.30",
             code = "tst",
@@ -320,7 +319,6 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
     @MockK
     lateinit var partnerCollaboratorRepository: UserPartnerCollaboratorRepository
 
-
     private lateinit var projectVersionUtils: ProjectVersionUtils
 
     private lateinit var persistence: WorkPackagePersistenceProvider
@@ -394,6 +392,7 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
         every { mockWPRow.number } returns 3
         every { mockWPRow.specificObjective } returns "specificObjective"
         every { mockWPRow.objectiveAndAudience } returns "objectiveAndAudience"
+        every { mockWPRow.deactivated } returns false
         val mockWPARow: WorkPackageActivityRow = mockk()
         every { mockWPARow.id } returns activityId1
         every { mockWPARow.workPackageId } returns wpId
@@ -457,6 +456,7 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
         assertThat(result[0]).isEqualTo(
             ProjectWorkPackage(
                 id = mockWPRow.id,
+                deactivated = false,
                 workPackageNumber = mockWPRow.number!!,
                 name = setOf(InputTranslation(mockWPRow.language!!, mockWPRow.name)),
                 specificObjective = setOf(InputTranslation(mockWPRow.language!!, mockWPRow.specificObjective)),

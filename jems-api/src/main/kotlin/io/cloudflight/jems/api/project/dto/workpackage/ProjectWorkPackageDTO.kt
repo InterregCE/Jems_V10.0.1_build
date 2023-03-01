@@ -6,6 +6,7 @@ import io.cloudflight.jems.api.project.dto.workpackage.output.WorkPackageOutputD
 
 data class ProjectWorkPackageDTO(
     val id: Long,
+    val deactivated: Boolean,
     val workPackageNumber: Int,
     val name: Set<InputTranslation> = emptySet(),
     val activities: List<WorkPackageActivityDTO> = emptyList(),
