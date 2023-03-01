@@ -30,6 +30,8 @@ enum GroupType {
   ResultTitle,
 }
 
+const iconString:string = `<i>do_not_disturb</i>`;
+
 export const TRANSLATABLE_GROUP_TYPES: GroupType[] = [
   GroupType.WorkPackage,
   GroupType.Activity,
@@ -55,16 +57,16 @@ function getNestedEndDateFromPeriod(period: number): Moment {
   return getEndDateFromPeriod(period).subtract(1, 'd');
 }
 
-
 function groupTemplateFunction(item: any, translateService: TranslateService): string {
   const data = item.data;
+
   switch (data.type) {
     case GroupType.WorkPackage:
-      return `<span>${escapeHtml(translateService.instant(
+      return (data.deactivated ? iconString : '') + `<span>${escapeHtml(translateService.instant(
         'common.label.workpackage', {wpNumber: `${data.wpNumber}`, title: `${item.content}`}
       ))}</span>`;
     case GroupType.Activity:
-      return `<span>${escapeHtml(translateService.instant(
+      return (data.deactivated ? iconString : '') + `<span>${escapeHtml(translateService.instant(
         'common.label.activity',
         {wpNumber: `${data.wpNumber}`, activityNumber: `${data.activityNumber}`, title: `${item.content}`}
       ))}</span>`;
@@ -149,6 +151,8 @@ function getResultBoxId(resultIndicatorId: number, resultNumber: number): number
  *   - result indicator
  */
 export function getItems(workPackages: ProjectWorkPackageDTO[], results: ProjectResultDTO[], translateService: TranslateService): DataSet<any> {
+  const deactivationString = translateService.instant('export.work.plan.deactivated') + ' ';
+
   let items: any[] = [];
   workPackages.forEach((wp, indexWp) => {
     let minPeriod = 999;
@@ -158,6 +162,7 @@ export function getItems(workPackages: ProjectWorkPackageDTO[], results: Project
       if (activity.startPeriod && activity.endPeriod) {
         items = items.concat({
           id: getActivityBoxId(wp.workPackageNumber, activity.activityNumber),
+          deactivated: activity.deactivated,
           group: getActivityId(wp.workPackageNumber, activity.activityNumber),
           start: getStartDateFromPeriod(activity.startPeriod),
           end: getEndDateFromPeriod(activity.endPeriod),
@@ -169,11 +174,13 @@ export function getItems(workPackages: ProjectWorkPackageDTO[], results: Project
       activity.deliverables.forEach(deliverable => {
         items = items.concat({
           id: getDeliverableBoxId(wp.workPackageNumber, activity.activityNumber, deliverable.deliverableNumber),
+          deactivated: deliverable.deactivated,
           group: getActivityId(wp.workPackageNumber, activity.activityNumber),
           start: getNestedStartDateFromPeriod(deliverable.period),
           end: getNestedEndDateFromPeriod(deliverable.period),
           type: 'range',
-          content: `D${wp.workPackageNumber}.${activity.activityNumber}.${deliverable.deliverableNumber}`,
+          title: deliverable.deactivated ? deactivationString : '',
+          content: (deliverable.deactivated ? iconString : '') + `D${wp.workPackageNumber}.${activity.activityNumber}.${deliverable.deliverableNumber}`,
           className: getColor(indexWp),
         });
 
@@ -196,12 +203,13 @@ export function getItems(workPackages: ProjectWorkPackageDTO[], results: Project
     wp.outputs.forEach(output => {
       items = items.concat({
         id: getOutputBoxId(wp.workPackageNumber, output.outputNumber),
+        deactivated: output.deactivated,
         group: getOutputIndicatorId(wp.workPackageNumber, output.programmeOutputIndicatorId),
         start: getNestedStartDateFromPeriod(output.periodNumber),
         end: getNestedEndDateFromPeriod(output.periodNumber),
         type: 'range',
-        title: getOutputIndicatorTooltip(output.targetValue, translateService, output.deactivated),
-        content: `O${wp.workPackageNumber}.${output.outputNumber}` + (output.deactivated ? ' !' : ''),
+        title: (output.deactivated? deactivationString : '') + getOutputIndicatorTooltip(output.targetValue, translateService),
+        content: (output.deactivated ? iconString : '') + `O${wp.workPackageNumber}.${output.outputNumber}`,
         className: getColor(indexWp),
       });
       if (minPeriod > output.periodNumber) {
@@ -215,6 +223,7 @@ export function getItems(workPackages: ProjectWorkPackageDTO[], results: Project
     if (minPeriod !== 999 && maxPeriod !== 0) {
       items = items.concat({
         id: wp.workPackageNumber,
+        deactivated: wp.deactivated,
         group: getWorkPackageId(wp.workPackageNumber),
         start: getStartDateFromPeriod(minPeriod),
         end: getEndDateFromPeriod(maxPeriod),
@@ -227,12 +236,13 @@ export function getItems(workPackages: ProjectWorkPackageDTO[], results: Project
   results.forEach((result, indexResult) => {
     items = items.concat({
       id: getResultBoxId(result.programmeResultIndicatorId, result.resultNumber),
+      deactivated: result.deactivated,
       group: getResultIndicatorId(result.programmeResultIndicatorId),
       start: getNestedStartDateFromPeriod(result.periodNumber),
       end: getNestedEndDateFromPeriod(result.periodNumber),
       type: 'range',
-      title: getResultIndicatorTooltip(result.targetValue, translateService),
-      content: `R.${result.resultNumber}`,
+      title: (result.deactivated ? deactivationString : '') + getResultIndicatorTooltip(result.targetValue, translateService),
+      content: (result.deactivated ? iconString : '') + `R.${result.resultNumber}`,
       data: {type: GroupType.Indicator},
       className: 'bg-blue',
     });
@@ -249,12 +259,7 @@ function getResultIndicatorTooltip(targetValue: number, translateService: Transl
     : '';
 }
 
-function getOutputIndicatorTooltip(targetValue: number, translateService: TranslateService, deactivated: boolean): string {
-  if (deactivated) {
-    return `<span>${escapeHtml(
-      `${translateService.instant('project.application.form.partner.table.status')}: ${translateService.instant('project.application.form.partner.table.status.inactive')}`
-    )}</span>`;
-  }
+function getOutputIndicatorTooltip(targetValue: number, translateService: TranslateService): string {
   return targetValue
     ? `<span>${escapeHtml(
       `${translateService.instant('project.application.form.work.package.output.target.value')}: ${NumberService.toLocale(targetValue)}`
@@ -290,7 +295,7 @@ export function getGroups(workPackages: ProjectWorkPackageDTO[], results: Projec
       return {
         id: getActivityId(wp.workPackageNumber, activity.activityNumber),
         treeLevel: 2,
-        data: {type: GroupType.Activity, wpNumber: wp.workPackageNumber, activityNumber: activity.activityNumber}
+        data: {type: GroupType.Activity, wpNumber: wp.workPackageNumber, activityNumber: activity.activityNumber, deactivated: activity.deactivated}
       };
     });
     wpSubGroups = wpSubGroups.concat(activities);
@@ -298,13 +303,14 @@ export function getGroups(workPackages: ProjectWorkPackageDTO[], results: Projec
     const uniqueOutputIndicators: Indicator[] = [];
     wp.outputs.forEach(output => {
       if (uniqueOutputIndicators.findIndex(x => x.id === output.programmeOutputIndicatorId) === -1) {
-        uniqueOutputIndicators.push({id: output.programmeOutputIndicatorId, identifier: output.programmeOutputIndicatorIdentifier});
+        uniqueOutputIndicators.push({id: output.programmeOutputIndicatorId, identifier: output.programmeOutputIndicatorIdentifier, deactivated: output.deactivated});
       }
     });
 
     const outputGroups = uniqueOutputIndicators.sort(sortNullLast).map(indicator => {
       return {
         id: getOutputIndicatorId(wp.workPackageNumber, indicator.id),
+        deactivated: indicator.deactivated,
         content: indicator.identifier || EMPTY_STRING,
         treeLevel: 2,
         data: {type: GroupType.Indicator},
@@ -317,14 +323,14 @@ export function getGroups(workPackages: ProjectWorkPackageDTO[], results: Projec
       id: getWorkPackageId(wp.workPackageNumber),
       treeLevel: 1,
       nestedGroups: activities.map(activity => activity.id).concat(outputGroups.map(output => output.id)),
-      data: {type: GroupType.WorkPackage, wpNumber: wp.workPackageNumber},
+      data: {type: GroupType.WorkPackage, wpNumber: wp.workPackageNumber, deactivated: wp.deactivated},
     };
   });
 
   const uniqueResultIndicators: Indicator[] = [];
   results.forEach(result => {
     if (uniqueResultIndicators.findIndex(x => x.id === result.programmeResultIndicatorId) === -1) {
-      uniqueResultIndicators.push({id: result.programmeResultIndicatorId, identifier: result.programmeResultIndicatorIdentifier});
+      uniqueResultIndicators.push({id: result.programmeResultIndicatorId, identifier: result.programmeResultIndicatorIdentifier, deactivated: result.deactivated});
     }
   });
 
@@ -333,7 +339,7 @@ export function getGroups(workPackages: ProjectWorkPackageDTO[], results: Projec
       id: getResultIndicatorId(indicator.id),
       content: indicator.identifier || EMPTY_STRING,
       treeLevel: 2,
-      data: {type: GroupType.Indicator},
+      data: {type: GroupType.Indicator, deactivated: indicator.deactivated},
     };
   });
 
@@ -353,6 +359,7 @@ export function getGroups(workPackages: ProjectWorkPackageDTO[], results: Projec
 class Indicator {
   id: number;
   identifier: string;
+  deactivated: boolean;
 }
 
 export class Content {
@@ -362,6 +369,7 @@ export class Content {
 
 export function getInputTranslations(workPackages: ProjectWorkPackageDTO[]): { [language: string]: Content[] } {
   const languages: { [language: string]: Content[] } = {};
+
   workPackages.forEach(wp => {
     wp.name.forEach(translation => {
       if (!languages[translation.language]) {

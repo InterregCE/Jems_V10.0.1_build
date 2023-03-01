@@ -21,6 +21,7 @@ fun WorkPackageEntity.toModel(
     getOutputsForWorkPackageId: (Long) -> Collection<WorkPackageOutputEntity>?,
 ) = ProjectWorkPackage (
     id = id,
+    deactivated = deactivated,
     workPackageNumber = number ?: throw NullPointerException("There is work package without any number in database."),
     name = translatedValues.extractField { it.name },
     specificObjective = translatedValues.extractField { it.specificObjective },

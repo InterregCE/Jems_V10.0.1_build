@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkP
 
 fun ProjectWorkPackage.toDto() = ProjectWorkPackageDTO(
     id = id,
+    deactivated = deactivated,
     workPackageNumber = workPackageNumber,
     name = name,
     activities = activities.toDto(),

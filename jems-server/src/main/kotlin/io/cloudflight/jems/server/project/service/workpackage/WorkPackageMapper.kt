@@ -123,6 +123,7 @@ fun List<WorkPackageRow>.toTimePlanWorkPackageHistoricalData() =
     this.groupBy { it.id }.map { groupedRows ->
         ProjectWorkPackage(
             id = groupedRows.value.first().id,
+            deactivated = groupedRows.value.first().deactivated ?: false,
             workPackageNumber = groupedRows.value.first().number!!,
             name = groupedRows.value.extractField { it.name },
             specificObjective = groupedRows.value.extractField { it.specificObjective },

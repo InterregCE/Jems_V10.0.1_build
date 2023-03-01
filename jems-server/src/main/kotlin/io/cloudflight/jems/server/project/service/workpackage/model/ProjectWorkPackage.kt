@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkP
 
 data class ProjectWorkPackage(
     val id: Long,
+    val deactivated: Boolean,
     val workPackageNumber: Int,
     val name: Set<InputTranslation> = emptySet(),
     val specificObjective: Set<InputTranslation> =  emptySet(),
