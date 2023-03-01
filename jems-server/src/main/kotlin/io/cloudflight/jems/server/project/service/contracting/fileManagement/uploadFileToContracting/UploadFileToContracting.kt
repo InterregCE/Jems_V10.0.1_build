@@ -8,6 +8,8 @@ import io.cloudflight.jems.server.project.authorization.CanEditContractsAndAgree
 import io.cloudflight.jems.server.project.authorization.CanEditProjectMonitoring
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectContractingPartner
 import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.contracting.ContractingValidator
+import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingSection
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.file.uploadProjectFile.isFileTypeInvalid
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
@@ -25,24 +27,31 @@ class UploadFileToContracting(
     private val securityService: SecurityService,
     private val filePersistence: JemsFilePersistence,
     private val fileRepository: JemsProjectFileService,
+    private val validator: ContractingValidator
 ): UploadFileToContractingInteractor {
 
     @CanEditContractsAndAgreements
     @Transactional
     @ExceptionWrapper(UploadFileToContractingException::class)
-    override fun uploadContract(projectId: Long, file: ProjectFile) =
-        uploadFileGeneric(projectId, null, file, Contract)
+    override fun uploadContract(projectId: Long, file: ProjectFile): JemsFileMetadata {
+        validator.validateSectionLock(ProjectContractingSection.ContractsAgreements, projectId)
+        return uploadFileGeneric(projectId, null, file, Contract)
+    }
 
     @CanEditContractsAndAgreements
     @Transactional
     @ExceptionWrapper(UploadFileToContractingException::class)
-    override fun uploadContractDocument(projectId: Long, file: ProjectFile) =
-        uploadFileGeneric(projectId, null, file, ContractDoc)
+    override fun uploadContractDocument(projectId: Long, file: ProjectFile): JemsFileMetadata {
+        validator.validateSectionLock(ProjectContractingSection.ContractsAgreements, projectId)
+        return uploadFileGeneric(projectId, null, file, ContractDoc)
+    }
+
 
     @CanUpdateProjectContractingPartner
     @Transactional
     @ExceptionWrapper(UploadFileToContractingException::class)
     override fun uploadContractPartnerFile(projectId: Long, partnerId: Long, file: ProjectFile): JemsFileMetadata {
+        validator.validatePartnerLock(partnerId)
         if (projectId != partnerPersistence.getProjectIdForPartnerId(partnerId))
             throw PartnerNotFound(projectId = projectId, partnerId = partnerId)
 

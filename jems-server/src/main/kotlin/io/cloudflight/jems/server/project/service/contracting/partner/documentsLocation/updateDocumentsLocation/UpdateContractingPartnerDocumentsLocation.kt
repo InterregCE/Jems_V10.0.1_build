@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.EMAIL_REGEX
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectContractingPartner
+import io.cloudflight.jems.server.project.service.contracting.ContractingValidator
 import io.cloudflight.jems.server.project.service.contracting.partner.documentsLocation.ContractingPartnerDocumentsLocation
 import io.cloudflight.jems.server.project.service.contracting.partner.documentsLocation.ContractingPartnerDocumentsLocationPersistence
 import org.springframework.stereotype.Service
@@ -12,7 +13,8 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class UpdateContractingPartnerDocumentsLocation(
     private val documentsLocationPersistence: ContractingPartnerDocumentsLocationPersistence,
-    private val generalValidator: GeneralValidatorService
+    private val generalValidator: GeneralValidatorService,
+    private val validator: ContractingValidator
 ) : UpdateContractingPartnerDocumentsLocationInteractor {
 
     @CanUpdateProjectContractingPartner
@@ -23,6 +25,7 @@ class UpdateContractingPartnerDocumentsLocation(
         partnerId: Long,
         documentsLocation: ContractingPartnerDocumentsLocation
     ): ContractingPartnerDocumentsLocation {
+        validator.validatePartnerLock(partnerId)
         validateDocumentsLocation(documentsLocation)
         return documentsLocationPersistence.updateDocumentsLocation(projectId, partnerId, documentsLocation)
     }

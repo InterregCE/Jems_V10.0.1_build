@@ -5,6 +5,8 @@ import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.authorization.CanEditProjectReportingSchedule
 import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
+import io.cloudflight.jems.server.project.service.contracting.ContractingValidator
+import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingSection
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ProjectContractingReportingSchedule
 import io.cloudflight.jems.server.project.service.contracting.monitoring.ContractingMonitoringPersistence
 import io.cloudflight.jems.server.project.service.contracting.reporting.ContractingReportingPersistence
@@ -22,6 +24,7 @@ class UpdateContractingReporting(
     private val projectPersistence: ProjectPersistenceProvider,
     private val versionPersistence: ProjectVersionPersistence,
     private val generalValidator: GeneralValidatorService,
+    private val contractingValidator: ContractingValidator
 ): UpdateContractingReportingInteractor {
 
     companion object {
@@ -35,6 +38,7 @@ class UpdateContractingReporting(
         projectId: Long,
         deadlines: Collection<ProjectContractingReportingSchedule>,
     ): List<ProjectContractingReportingSchedule> {
+        contractingValidator.validateSectionLock(ProjectContractingSection.ProjectReportingSchedule, projectId)
         val lastApprovedVersion = versionPersistence.getLatestApprovedOrCurrent(projectId = projectId)
         val project = projectPersistence.getProject(projectId, lastApprovedVersion)
         if (project.projectStatus.status.hasNotBeenApprovedYet())

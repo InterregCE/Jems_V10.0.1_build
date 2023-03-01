@@ -5,6 +5,8 @@ import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
+import io.cloudflight.jems.server.project.service.contracting.ContractingModificationDeniedException
+import io.cloudflight.jems.server.project.service.contracting.ContractingValidator
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.partner.file.setDescriptionToFile.FileNotFound
 import io.mockk.clearMocks
@@ -32,9 +34,11 @@ class SetPartnerFileDescriptionTest: UnitTest() {
     @MockK
     lateinit var generalValidator: GeneralValidatorService
 
+    @MockK
+    lateinit var validator: ContractingValidator
+
     @InjectMockKs
     lateinit var setPartnerFileDescription: SetPartnerFileDescription
-
 
     @BeforeEach
     fun setup() {
@@ -47,6 +51,7 @@ class SetPartnerFileDescriptionTest: UnitTest() {
 
     @Test
     fun setDescription() {
+        every { validator.validatePartnerLock(PARTNER_ID) } returns Unit
         every {
             filePersistence.existsFileByPartnerIdAndFileIdAndFileTypeIn(
                 PARTNER_ID,
@@ -61,7 +66,8 @@ class SetPartnerFileDescriptionTest: UnitTest() {
     }
 
     @Test
-    fun `setDescription - not existing`() {
+    fun `setDescription - does not exist`() {
+        every { validator.validatePartnerLock(PARTNER_ID) } returns Unit
         every {
             filePersistence.existsFileByPartnerIdAndFileIdAndFileTypeIn(
                 PARTNER_ID,
@@ -71,5 +77,14 @@ class SetPartnerFileDescriptionTest: UnitTest() {
         } returns false
         assertThrows<FileNotFound> { setPartnerFileDescription.setPartnerFileDescription(PARTNER_ID, FILE_ID, "new desc") }
     }
-}
 
+    @Test
+    fun `setDescription - section locked`() {
+        val exception = ContractingModificationDeniedException()
+        every { validator.validatePartnerLock(PARTNER_ID) } throws exception
+
+        assertThrows<ContractingModificationDeniedException> {
+            setPartnerFileDescription.setPartnerFileDescription(PARTNER_ID, FILE_ID, "new desc")
+        }
+    }
+}

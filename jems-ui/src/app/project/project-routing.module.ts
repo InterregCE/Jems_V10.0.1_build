@@ -131,7 +131,7 @@ import {
 import {PrivilegesPageComponent} from './project-application/privileges-page/privileges-page.component';
 import {
   ContractMonitoringComponent
-} from '@project/project-application/contract-monitoring/contract-monitoring.component';
+} from '@project/project-application/contracting/contract-monitoring/contract-monitoring.component';
 import {PartnerReportComponent} from '@project/project-application/report/partner-report.component';
 import {
   PartnerReportDetailPageComponent
@@ -171,14 +171,14 @@ import {
 import {
   PartnerReportAnnexesTabComponent
 } from './project-application/report/partner-report-detail-page/partner-report-annexes-tab/partner-report-annexes-tab.component';
-import {ProjectManagementComponent} from '@project/project-application/project-management/project-management.component';
+import {ProjectManagementComponent} from '@project/project-application/contracting/project-management/project-management.component';
 import {
   PartnerReportFinancialOverviewTabComponent
 } from '@project/project-application/report/partner-report-detail-page/partner-report-financial-overview-tab/partner-report-financial-overview-tab.component';
 import {
   PartnerReportProcurementDetailComponent
 } from '@project/project-application/report/partner-report-detail-page/partner-report-procurements-tab/partner-report-procurement-detail/partner-report-procurement-detail.component';
-import {ContractReportingComponent} from '@project/project-application/contract-reporting/contract-reporting.component';
+import {ContractReportingComponent} from '@project/project-application/contracting/contract-reporting/contract-reporting.component';
 import {
   PartnerControlReportComponent
 } from '@project/project-application/report/partner-control-report/partner-control-report.component';
@@ -202,11 +202,11 @@ import {
 } from '@project/project-application/report/partner-control-report/partner-control-report-control-checklists-tab/partner-control-report-control-checklist-page/partner-control-report-control-checklist-page.component';
 import {
   ContractingContractComponent
-} from '@project/project-application/contracting-contract/contracting-contract.component';
+} from '@project/project-application/contracting/contracting-contract/contracting-contract.component';
 import {
   PartnerControlReportDocumentTabComponent
 } from '@project/project-application/report/partner-control-report/partner-control-report-document-tab/partner-control-report-document-tab.component';
-import {ContractPartnerComponent} from '@project/project-application/contract-partner/contract-partner.component';
+import {ContractPartnerComponent} from '@project/project-application/contracting/contract-partner/contract-partner.component';
 import {
   PartnerControlReportControlIdentificationTabComponent
 } from '@project/project-application/report/partner-control-report/partner-control-report-identification-tab/partner-control-report-control-identification-tab.component';
@@ -216,7 +216,7 @@ import {
 } from '@project/project-application/report/partner-control-report/partner-control-expenditure-verification-tab/partner-control-report-expenditure-verification-tab.component';
 import {
   ContractingChecklistPageComponent
-} from '@project/project-application/contract-monitoring/contract-monitoring-extension/contract-monitoring-extension-checklist-page/contract-monitoring-extension-checklist-page.component';
+} from '@project/project-application/contracting/contract-monitoring/contract-monitoring-extension/contract-monitoring-extension-checklist-page/contract-monitoring-extension-checklist-page.component';
 import {
   PartnerControlReportOverviewAndFinalizeTabComponent
 } from '@project/project-application/report/partner-control-report/partner-control-report-overview-and-finalize-tab/partner-control-report-overview-and-finalize-tab.component';

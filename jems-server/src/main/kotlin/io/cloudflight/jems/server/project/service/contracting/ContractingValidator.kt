@@ -5,11 +5,18 @@ import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingManagement
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
+import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingSection
+import io.cloudflight.jems.server.project.service.contracting.partner.partnerLock.ContractingPartnerLockPersistence
+import io.cloudflight.jems.server.project.service.contracting.sectionLock.ProjectContractingSectionLockPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import org.springframework.stereotype.Service
 
 @Service
-class ContractingValidator(private val validator: GeneralValidatorService) {
+class ContractingValidator(
+    private val validator: GeneralValidatorService,
+    private val projectContractingSectionLockPersistence: ProjectContractingSectionLockPersistence,
+    private val contractingPartnerLockPersistence: ContractingPartnerLockPersistence
+) {
 
     companion object {
         const val MAX_NUMBER_OF_ADD_DATES = 25
@@ -41,6 +48,18 @@ class ContractingValidator(private val validator: GeneralValidatorService) {
                 monitoring.addDates, MAX_NUMBER_OF_ADD_DATES, "addDates"
             )
         )
+
+    fun validateSectionLock(section: ProjectContractingSection, projectId: Long) {
+        if(projectContractingSectionLockPersistence.isLocked(projectId,section)) {
+            throw ContractingModificationDeniedException()
+        }
+    }
+
+    fun validatePartnerLock(partnerId: Long) {
+        if (contractingPartnerLockPersistence.isLocked(partnerId)){
+            throw ContractingModificationDeniedException()
+        }
+    }
 
     private fun validateContact(managerContact: ProjectContractingManagement) {
         validator.throwIfAnyIsInvalid(

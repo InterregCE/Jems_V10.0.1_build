@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
 import io.cloudflight.jems.server.project.service.contracting.ContractingValidator
 import io.cloudflight.jems.server.project.service.contracting.management.ContractingManagementPersistence
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingManagement
+import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingSection
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -14,12 +15,18 @@ class UpdateContractingManagement(
     private val contractingManagementPersistence: ContractingManagementPersistence,
     private val projectPersistence: ProjectPersistenceProvider,
     private val validator: ContractingValidator
-): UpdateContractingManagementInteractor {
+) : UpdateContractingManagementInteractor {
 
     @CanEditProjectManagers
     @Transactional
     @ExceptionWrapper(UpdateContractingManagementException::class)
-    override fun updateContractingManagement(projectId: Long , projectManagers: List<ProjectContractingManagement>): List<ProjectContractingManagement> {
+    override fun updateContractingManagement(
+        projectId: Long,
+        projectManagers: List<ProjectContractingManagement>
+    ): List<ProjectContractingManagement> {
+
+        validator.validateSectionLock(ProjectContractingSection.ProjectManagers, projectId)
+
         projectPersistence.getProjectSummary(projectId).let { projectSummary ->
             validator.validateProjectStepAndStatus(projectSummary)
             validator.validateManagerContacts(projectManagers)

@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.contracting.partner.beneficia
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectContractingPartner
+import io.cloudflight.jems.server.project.service.contracting.ContractingValidator
 import io.cloudflight.jems.server.project.service.contracting.partner.beneficialOwner.ContractingPartnerBeneficialOwner
 import io.cloudflight.jems.server.project.service.contracting.partner.beneficialOwner.ContractingPartnerBeneficialOwnersPersistence
 import org.springframework.stereotype.Service
@@ -11,7 +12,8 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class UpdateContractingPartnerBeneficialOwners(
     private val beneficialOwnersPersistence: ContractingPartnerBeneficialOwnersPersistence,
-    private val generalValidator: GeneralValidatorService
+    private val generalValidator: GeneralValidatorService,
+    private val validator: ContractingValidator
 ) : UpdateContractingPartnerBeneficialOwnersInteractor {
 
     companion object {
@@ -28,7 +30,7 @@ class UpdateContractingPartnerBeneficialOwners(
         partnerId: Long,
         beneficialOwners: List<ContractingPartnerBeneficialOwner>
     ): List<ContractingPartnerBeneficialOwner> {
-
+        validator.validatePartnerLock(partnerId)
         if (beneficialOwners.size > MAX_NUM_BENEFICIAL_OWNERS)
             throw MaxAmountOfBeneficialOwnersReachedException(MAX_NUM_BENEFICIAL_OWNERS)
         beneficialOwners.validateBeneficialOwners()

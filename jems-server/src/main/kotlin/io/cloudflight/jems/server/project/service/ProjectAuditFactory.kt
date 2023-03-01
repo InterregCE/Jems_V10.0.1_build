@@ -12,8 +12,9 @@ import io.cloudflight.jems.server.common.audit.fromOldToNewChanges
 import io.cloudflight.jems.server.project.entity.contracting.partner.ProjectContractingPartnerBeneficialOwnerEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
+import io.cloudflight.jems.server.project.repository.partner.toProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
+import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingSection
 import io.cloudflight.jems.server.project.service.contracting.partner.bankingDetails.ContractingPartnerBankingDetails
 import io.cloudflight.jems.server.project.service.contracting.partner.beneficialOwner.ContractingPartnerBeneficialOwner
 import io.cloudflight.jems.server.project.service.contracting.partner.documentsLocation.ContractingPartnerDocumentsLocation
@@ -24,6 +25,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectDetail
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.ProjectVersionSummary
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
 import java.time.LocalDate
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
@@ -241,6 +243,62 @@ fun projectContractInfoChanged(
     )
 }
 
+fun projectContractingSectionLocked(
+    context: Any,
+    contractingSection: ProjectContractingSection,
+    projectId: Long
+): AuditCandidateEvent {
+    return AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditCandidate(
+            action = AuditAction.PROJECT_CONTRACTING_SECTION_LOCKED,
+            project = AuditProject(id = projectId.toString()),
+            description = "Project contracting section ${contractingSection.name} was set to Locked"
+        )
+    )
+}
+
+fun projectContractingSectionUnlocked(
+    context: Any,
+    contractingSection: ProjectContractingSection,
+    projectId: Long
+): AuditCandidateEvent {
+    return AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditCandidate(
+            action = AuditAction.PROJECT_CONTRACTING_SECTION_UNLOCKED,
+            project = AuditProject(id = projectId.toString()),
+            description = "Project contracting section ${contractingSection.name} was set to Unlocked"
+        )
+    )
+}
+
+fun projectContractingPartnerLocked(context: Any, partner: ProjectPartnerDetail, projectId: Long): AuditCandidateEvent {
+    return AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditCandidate(
+            action = AuditAction.PROJECT_CONTRACTING_SECTION_LOCKED,
+            project = AuditProject(id = projectId.toString()),
+            description = "Project contracting partner ${getPartnerName(partner)} was set to Locked"
+        )
+    )
+}
+
+fun projectContractingPartnerUnlocked(
+    context: Any,
+    partner: ProjectPartnerDetail,
+    projectId: Long
+): AuditCandidateEvent {
+    return AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditCandidate(
+            action = AuditAction.PROJECT_CONTRACTING_SECTION_UNLOCKED,
+            project = AuditProject(id = projectId.toString()),
+            description = "Project contracting partner ${getPartnerName(partner)} was set to Unlocked"
+        )
+    )
+}
+
 fun projectContractingPartnerBeneficialOwnerCreated(
     context: Any,
     projectSummary: ProjectSummary,
@@ -337,7 +395,9 @@ fun projectContractingPartnerDocumentsLocationChanged(
     )
 }
 
-private fun getPartnerName(partner: ProjectPartnerEntity): String =
+private fun getPartnerName(partner: ProjectPartnerDetail): String =
     partner.role.isLead.let {
         if (it) "LP${partner.sortNumber}" else "PP${partner.sortNumber}"
     }
+private fun getPartnerName(partnerEntity: ProjectPartnerEntity): String =
+    getPartnerName(partnerEntity.toProjectPartnerDetail())
