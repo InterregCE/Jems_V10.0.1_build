@@ -4,6 +4,8 @@ import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
+import io.cloudflight.jems.server.project.service.contracting.ContractingModificationDeniedException
+import io.cloudflight.jems.server.project.service.contracting.ContractingValidator
 import io.cloudflight.jems.server.project.service.contracting.partner.beneficialOwner.ContractingPartnerBeneficialOwner
 import io.cloudflight.jems.server.project.service.contracting.partner.beneficialOwner.ContractingPartnerBeneficialOwnersPersistence
 import io.cloudflight.jems.server.project.service.contracting.partner.beneficialOwner.updateBeneficialOwners.MaxAmountOfBeneficialOwnersReachedException
@@ -22,10 +24,11 @@ internal class UpdateContractingPartnerBeneficialOwnersTest : UnitTest() {
 
     companion object {
         const val projectId = 1L
+        const val partnerId = 20L
 
         private val beneficialOwner1 = ContractingPartnerBeneficialOwner(
             id = 18L,
-            partnerId = 20L,
+            partnerId = partnerId,
             firstName = "Test1",
             lastName = "Sample2",
             vatNumber = "123456",
@@ -34,7 +37,7 @@ internal class UpdateContractingPartnerBeneficialOwnersTest : UnitTest() {
 
         private val beneficialOwner2 = ContractingPartnerBeneficialOwner(
             id = 19L,
-            partnerId = 20L,
+            partnerId = partnerId,
             firstName = "Test2",
             lastName = "Sample2",
             vatNumber = "102030",
@@ -43,7 +46,7 @@ internal class UpdateContractingPartnerBeneficialOwnersTest : UnitTest() {
 
         private val invalidBeneficialOwner = ContractingPartnerBeneficialOwner(
             id = 20L,
-            partnerId = 20L,
+            partnerId = partnerId,
             firstName = "Test3",
             lastName = "Sample3",
             vatNumber = "",
@@ -51,12 +54,14 @@ internal class UpdateContractingPartnerBeneficialOwnersTest : UnitTest() {
         )
     }
 
-
     @MockK
     lateinit var generalValidator: GeneralValidatorService
 
     @MockK
     lateinit var beneficialOwnersPersistence: ContractingPartnerBeneficialOwnersPersistence
+
+    @MockK
+    lateinit var validator: ContractingValidator
 
     @InjectMockKs
     lateinit var interactor: UpdateContractingPartnerBeneficialOwners
@@ -69,12 +74,12 @@ internal class UpdateContractingPartnerBeneficialOwnersTest : UnitTest() {
         every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isNotEmpty() }) } throws
                 AppInputValidationException(emptyMap())
         every { generalValidator.maxLength(any<String>(), any(), any()) } returns emptyMap()
-        every { generalValidator.notBlank(any<String>(), any()) } returns emptyMap()
+        every { generalValidator.notBlank(any(), any()) } returns emptyMap()
     }
 
     @Test
     fun `update - success`() {
-        val partnerId = 20L
+        every { validator.validatePartnerLock(partnerId) } returns Unit
         every {
             beneficialOwnersPersistence
                 .updateBeneficialOwners(projectId, partnerId, listOf(beneficialOwner1, beneficialOwner2))
@@ -88,8 +93,8 @@ internal class UpdateContractingPartnerBeneficialOwnersTest : UnitTest() {
 
     @Test
     fun `update - max amount reached`() {
-        val partnerId = 20L
         val owners = mockk<List<ContractingPartnerBeneficialOwner>>()
+        every { validator.validatePartnerLock(partnerId) } returns Unit
         every { owners.size } returns 11
         assertThrows<MaxAmountOfBeneficialOwnersReachedException> {
             interactor.updateBeneficialOwners(
@@ -102,13 +107,24 @@ internal class UpdateContractingPartnerBeneficialOwnersTest : UnitTest() {
 
     @Test
     fun `update - test input validations`() {
+        val owners = listOf(beneficialOwner1, beneficialOwner2, invalidBeneficialOwner)
+        every { validator.validatePartnerLock(partnerId) } returns Unit
         every { generalValidator.throwIfAnyIsInvalid(any()) } throws
                 AppInputValidationException(emptyMap())
         every { generalValidator.notBlank(any(), any()) } answers {
             mapOf(secondArg<String>() to I18nMessage(i18nKey = "${firstArg<String>()}---notBlank"))
         }
-        val partnerId = 20L
-        val owners = listOf(beneficialOwner1, beneficialOwner2, invalidBeneficialOwner)
         assertThrows<AppInputValidationException> { interactor.updateBeneficialOwners(projectId, partnerId, owners) }
+    }
+
+    @Test
+    fun `update - section locked`() {
+        val owners = listOf(beneficialOwner1, beneficialOwner2)
+        val exception = ContractingModificationDeniedException()
+        every { validator.validatePartnerLock(partnerId)} throws exception
+
+        assertThrows<ContractingModificationDeniedException> {
+            interactor.updateBeneficialOwners(projectId, partnerId, owners)
+        }
     }
 }

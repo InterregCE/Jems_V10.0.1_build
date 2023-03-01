@@ -9,8 +9,11 @@ import io.cloudflight.jems.server.project.service.contracting.model.ManagementTy
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingManagement
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoringAddDate
+import io.cloudflight.jems.server.project.service.contracting.partner.partnerLock.ContractingPartnerLockPersistence
+import io.cloudflight.jems.server.project.service.contracting.sectionLock.ProjectContractingSectionLockPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.mockk.MockKAnnotations
+import io.mockk.impl.annotations.MockK
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -74,11 +77,21 @@ class ContractingValidatorTest : UnitTest() {
 
     lateinit var validator: ContractingValidator
 
+    @MockK
+    lateinit var projectContractingSectionLockPersistence: ProjectContractingSectionLockPersistence
+
+    @MockK
+    lateinit var contractingPartnerLockPersistence: ContractingPartnerLockPersistence
+
     @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
         generalValidator = GeneralValidatorDefaultImpl()
-        validator = ContractingValidator(generalValidator)
+        validator = ContractingValidator(
+            generalValidator,
+            projectContractingSectionLockPersistence,
+            contractingPartnerLockPersistence
+        )
     }
 
     @Test

@@ -6,6 +6,7 @@ import io.cloudflight.jems.api.project.dto.ProjectPartnerStateAidDTO
 import io.cloudflight.jems.api.project.dto.assignment.PartnerCollaboratorLevelDTO
 import io.cloudflight.jems.api.project.dto.assignment.PartnerUserCollaboratorDTO
 import io.cloudflight.jems.api.project.dto.assignment.UpdatePartnerUserCollaboratorDTO
+import io.cloudflight.jems.api.project.dto.contracting.partner.ContractingPartnerSummaryDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectBudgetPartnerSummaryDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDTO
@@ -13,6 +14,7 @@ import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDetailDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerPaymentSummaryDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
 import io.cloudflight.jems.server.project.entity.partneruser.PartnerCollaboratorLevel
+import io.cloudflight.jems.server.project.service.contracting.model.partner.getPartners.ContractingPartnerSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectBudgetPartnerSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddress
@@ -32,11 +34,11 @@ fun ProjectPartnerStateAidDTO.toModel() = partnerDTOMapper.map(this)
 fun ProjectPartnerStateAid.toDto() = partnerDTOMapper.map(this)
 
 fun ProjectPartnerSummary.toDto() = partnerDTOMapper.map(this)
-fun ProjectPartnerSummary.toPaymentDto() = partnerDTOMapper.mapPayments(this)
+fun ContractingPartnerSummary.toDto() = partnerDTOMapper.mapContracting(this)
 fun ProjectBudgetPartnerSummary.toDto() = partnerDTOMapper.map(this)
 fun Page<ProjectBudgetPartnerSummary>.toDto(): Page<ProjectBudgetPartnerSummaryDTO> = map { it.toDto() }
 fun List<ProjectPartnerSummary>.toDto() = map { it.toDto() }
-fun List<ProjectPartnerSummary>.toPaymentDto() = map { it.toPaymentDto() }
+fun List<ContractingPartnerSummary>.toContractingDto() = map { it.toDto() }
 
 fun ProjectPartnerDetail.toDto() = partnerDTOMapper.map(this)
 
@@ -63,6 +65,7 @@ abstract class ProjectPartnerDTOMapper {
     abstract fun map(projectPartnerStateAid: ProjectPartnerStateAid): ProjectPartnerStateAidDTO
     abstract fun map(projectPartnerStateAidDTO: ProjectPartnerStateAidDTO): ProjectPartnerStateAid
     abstract fun map(projectPartnerSummary: ProjectPartnerSummary): ProjectPartnerSummaryDTO
+    abstract fun mapContracting(contractingPartnerSummary: ContractingPartnerSummary): ContractingPartnerSummaryDTO
     abstract fun mapPayments(projectPartnerSummary: ProjectPartnerSummary): ProjectPartnerPaymentSummaryDTO
     abstract fun map(projectBudgetPartnerSummary: ProjectBudgetPartnerSummary): ProjectBudgetPartnerSummaryDTO
     abstract fun map(projectPartnerDetail: ProjectPartnerDetail): ProjectPartnerDetailDTO

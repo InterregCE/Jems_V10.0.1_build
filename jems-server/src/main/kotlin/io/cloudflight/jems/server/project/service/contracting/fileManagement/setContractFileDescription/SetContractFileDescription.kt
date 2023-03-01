@@ -5,6 +5,8 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.authorization.CanEditContractsAndAgreements
+import io.cloudflight.jems.server.project.service.contracting.ContractingValidator
+import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingSection
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.partner.file.setDescriptionToFile.FileNotFound
 import org.springframework.stereotype.Service
@@ -14,15 +16,16 @@ import org.springframework.transaction.annotation.Transactional
 class SetContractFileDescription(
     private val filePersistence: JemsFilePersistence,
     private val fileService: JemsProjectFileService,
-    private val generalValidator: GeneralValidatorService
+    private val generalValidator: GeneralValidatorService,
+    private val validator: ContractingValidator
 ): SetContractFileDescriptionInteractor {
 
     @CanEditContractsAndAgreements
     @Transactional
     @ExceptionWrapper(SetDescriptionToContractFileException::class)
     override fun setContractFileDescription(projectId: Long, fileId: Long, description: String) {
+        validator.validateSectionLock(ProjectContractingSection.ContractsAgreements, projectId)
         validateDescription(description)
-
         if (!filePersistence.existsFileByProjectIdAndFileIdAndFileTypeIn(
                 projectId = projectId,
                 fileId = fileId,

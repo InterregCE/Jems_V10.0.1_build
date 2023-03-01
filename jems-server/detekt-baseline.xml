@@ -37,6 +37,7 @@
     <ID>LongParameterList:ProjectPartnerReportExpenditurePersistenceProviderTest.kt$ProjectPartnerReportExpenditurePersistenceProviderTest.Companion$( report: ProjectPartnerReportEntity, lumpSum: PartnerReportLumpSumEntity?, unitCost: PartnerReportUnitCostEntity?, investment: PartnerReportInvestmentEntity?, unParkedFrom: PartnerReportExpenditureCostEntity?, reportOfOrigin: ProjectPartnerReportEntity?, )</ID>
     <ID>LongParameterList:ProjectPartnerReportExportInteractor.kt$ProjectPartnerReportExportInteractor$( partnerId: Long, reportId: Long, pluginKey: String, exportLanguage: SystemLanguage, inputLanguage: SystemLanguage, localDateTime: LocalDateTime )</ID>
     <ID>LongParameterList:UploadFileToProjectPartnerReportWorkPlanInteractor.kt$UploadFileToProjectPartnerReportWorkPlanInteractor$( partnerId: Long, reportId: Long, workPackageId: Long, activityId: Long, deliverableId: Long, file: ProjectFile, )</ID>
+    <ID>MatchingDeclarationName:ProjectContractingManagementAuthorizationTest.kt$projectContractingAuthorizationTest : UnitTest</ID>
     <ID>MaxLineLength:AddWorkPackageInvestmentTestWorkPackageInvestmentBase.kt$AddWorkPackageInvestmentTestWorkPackageInvestmentBase$fun</ID>
     <ID>MaxLineLength:ApprovedApplicationWithConditionsStateTest.kt$ApprovedApplicationWithConditionsStateTest$every { projectWorkflowPersistence.updateProjectFundingDecision(PROJECT_ID, USER_ID, ApplicationStatus.APPROVED, any()) } returns ApplicationStatus.APPROVED</ID>
     <ID>MaxLineLength:ApprovedApplicationWithConditionsStateTest.kt$ApprovedApplicationWithConditionsStateTest$every { projectWorkflowPersistence.updateProjectFundingDecision(PROJECT_ID, USER_ID, ApplicationStatus.NOT_APPROVED, any()) } returns ApplicationStatus.NOT_APPROVED</ID>
@@ -48,7 +49,6 @@
     <ID>MaxLineLength:ExceptionWrapperAspectTest.kt$ExceptionWrapperAspectTest$fun</ID>
     <ID>MaxLineLength:FileHelper.kt$private val ALLOWED_EXTENSIONS = arrayOf("ddoc", "asice", "asics", "adoc", "bdoc", "edoc", "sce", "scs", "csv","dat","db","dbf","log","mdb","xml","email","eml","emlx","msg","oft","ost","pst","vcf","bmp","gif","jpeg","jpg","png","psd","svg","tif","tiff","htm","html","key","odp","pps","ppt","pptx","ods","xls","xlsm","xlsx","doc","docx","odt","pdf","rtf","tex","txt","wpd","mov","avi","mp4","zip","rar","ace","7z","url","p7m")</ID>
     <ID>MaxLineLength:GetBudgetTotalCostCalculatorTest.kt$GetBudgetTotalCostCalculatorTest$fun</ID>
-    <ID>MaxLineLength:GetReportExpenditureCoFinancingBreakdownCalculatorTest.kt$GetReportExpenditureCoFinancingBreakdownCalculatorTest$every { reportExpenditureCostCategoryCalculatorService.getSubmittedOrCalculateCurrent(PARTNER_ID, reportId = reportId, any()) } returns currentCalculation</ID>
     <ID>MaxLineLength:InModificationApplicationStateTest.kt$InModificationApplicationStateTest$every { projectPersistence.getProjectCallSettings(InModificationApplicationStateTest.PROJECT_ID) } returns InModificationApplicationStateTest.projectCallSettings</ID>
     <ID>MaxLineLength:MinioStorageTest.kt$MinioStorageTest$fun</ID>
     <ID>MaxLineLength:NotApprovedApplicationState.kt$NotApprovedApplicationState$ApplicationStatus.APPROVED_WITH_CONDITIONS</ID>
@@ -557,8 +557,8 @@
     <ID>ProtectedMemberInFinalClass:Authorization.kt$Authorization$protected fun isActiveUserIdEqualToOneOf(userIds: Set&lt;Long&gt;): Boolean</ID>
     <ID>ReturnCount:GetBudgetFundsPerPeriod.kt$GetBudgetFundsPerPeriod$private fun getTotalFundPerPeriodForPartner( partnerBudgetPerPeriod: ProjectPeriodBudget?, partnerCoFinancing: List&lt;ProjectPartnerCoFinancing&gt;?, fund: ProgrammeFund ): BigDecimal</ID>
     <ID>ReturnCount:GetInstitutionPartnerAssignment.kt$GetInstitutionPartnerAssignment$private fun getAvailableInstitutionsForPartner( partnerDetails: InstitutionPartnerDetails, nuts3CodeToInstitutionsMap: Map&lt;String, List&lt;IdNamePair&gt;&gt;, countryCodeToInstitutionsMap: Map&lt;String, MutableSet&lt;IdNamePair&gt;&gt;, allInstitutions: List&lt;IdNamePair&gt; ): Set&lt;IdNamePair&gt;</ID>
-    <ID>ReturnCount:ProjectContractingManagementAuthorization.kt$ProjectContractingManagementAuthorization$private fun canEdit(needed: ContractingPermission, projectId: Long): Boolean</ID>
-    <ID>ReturnCount:ProjectContractingManagementAuthorization.kt$ProjectContractingManagementAuthorization$private fun canView(needed: ContractingPermission, projectId: Long): Boolean</ID>
+    <ID>ReturnCount:ProjectContractingAuthorization.kt$ProjectContractingAuthorization$private fun canEdit(needed: ContractingPermission, projectId: Long): Boolean</ID>
+    <ID>ReturnCount:ProjectContractingAuthorization.kt$ProjectContractingAuthorization$private fun canView(needed: ContractingPermission, projectId: Long): Boolean</ID>
     <ID>ReturnCount:ProjectContractingPartnerAuthorization.kt$ProjectContractingPartnerAuthorization$fun hasPartnersPermission(projectId: Long): Boolean</ID>
     <ID>ReturnCount:ProjectDescriptionMapper.kt$fun getMappedStrategy(strategy: ProgrammeStrategy?): ProgrammeStrategy?</ID>
     <ID>ReturnCount:UserAuthorization.kt$UserAuthorization$private fun hasView(projectId: Long): Boolean</ID>

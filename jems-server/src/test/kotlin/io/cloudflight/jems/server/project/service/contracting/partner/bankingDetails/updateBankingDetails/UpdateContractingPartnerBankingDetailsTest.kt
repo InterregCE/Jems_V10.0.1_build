@@ -7,6 +7,8 @@ import io.cloudflight.jems.server.project.authorization.ProjectAuthorization
 import io.cloudflight.jems.server.project.authorization.ProjectContractingPartnerAuthorization
 import io.cloudflight.jems.server.project.authorization.ProjectPartnerReportAuthorization
 import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.contracting.ContractingModificationDeniedException
+import io.cloudflight.jems.server.project.service.contracting.ContractingValidator
 import io.cloudflight.jems.server.project.service.contracting.partner.bankingDetails.ContractingPartnerBankingDetails
 import io.cloudflight.jems.server.project.service.contracting.partner.bankingDetails.ContractingPartnerBankingDetailsPersistence
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
@@ -86,11 +88,15 @@ internal class UpdateContractingPartnerBankingDetailsTest : UnitTest() {
     @MockK
     lateinit var authorization: ProjectContractingPartnerAuthorization
 
+    @MockK
+    lateinit var validator: ContractingValidator
+
     @InjectMockKs
     lateinit var interactor: UpdateContractingPartnerBankingDetails
 
     @Test
     fun `update banking details - success`() {
+        every { validator.validatePartnerLock(partnerId) } returns Unit
         every { authorization.hasEditPermission(partnerId) } returns true
         every {
             bankingDetailsPersistence.updateBankingDetails(
@@ -105,6 +111,7 @@ internal class UpdateContractingPartnerBankingDetailsTest : UnitTest() {
 
     @Test
     fun `update banking details - invalid input`() {
+        every { validator.validatePartnerLock(partnerId) } returns Unit
         every { authorization.hasEditPermission(partnerId) } returns true
         every {
             bankingDetailsPersistence.updateBankingDetails(
@@ -121,12 +128,23 @@ internal class UpdateContractingPartnerBankingDetailsTest : UnitTest() {
 
     @Test
     fun `update banking details - unauthorized`() {
+        every { validator.validatePartnerLock(partnerId) } returns Unit
         every { authorization.hasEditPermission(partnerId) } returns false
         every {
             bankingDetailsPersistence.updateBankingDetails(partnerId, projectId, bankingDetailsToBeUpdatedTo)
         } throws UpdateContractingPartnerBankingDetailsNotAllowedException()
 
         assertThrows<UpdateContractingPartnerBankingDetailsNotAllowedException> {
+            interactor.updateBankingDetails(partnerId, projectId, bankingDetailsToBeUpdatedTo)
+        }
+    }
+
+    @Test
+    fun `update banking details - section locked`() {
+        val exception = ContractingModificationDeniedException()
+        every { validator.validatePartnerLock(partnerId) } throws exception
+
+        assertThrows<ContractingModificationDeniedException> {
             interactor.updateBankingDetails(partnerId, projectId, bankingDetailsToBeUpdatedTo)
         }
     }

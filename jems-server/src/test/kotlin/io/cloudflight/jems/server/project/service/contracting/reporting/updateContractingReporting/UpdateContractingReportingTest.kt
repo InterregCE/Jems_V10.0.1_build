@@ -6,7 +6,10 @@ import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.contracting.ContractingModificationDeniedException
+import io.cloudflight.jems.server.project.service.contracting.ContractingValidator
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
+import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingSection
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ProjectContractingReportingSchedule
 import io.cloudflight.jems.server.project.service.contracting.monitoring.ContractingMonitoringPersistence
@@ -59,7 +62,8 @@ class UpdateContractingReportingTest : UnitTest() {
     lateinit var versionPersistence: ProjectVersionPersistence
     @MockK
     lateinit var generalValidator: GeneralValidatorService
-
+    @MockK
+    lateinit var validator: ContractingValidator
 
     @InjectMockKs
     lateinit var interactor: UpdateContractingReporting
@@ -78,6 +82,7 @@ class UpdateContractingReportingTest : UnitTest() {
     fun updateReportingSchedule(status: ApplicationStatus) {
         val projectId = 100L + status.ordinal
         val version = "V_${status.ordinal}"
+        every { validator.validateSectionLock(ProjectContractingSection.ProjectReportingSchedule, projectId) } returns Unit
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
 
         val project = mockk<ProjectFull>()
@@ -116,6 +121,7 @@ class UpdateContractingReportingTest : UnitTest() {
     fun `updateReportingSchedule - wrong status`(status: ApplicationStatus) {
         val projectId = 200L + status.ordinal
         val version = "V_${status.ordinal}"
+        every { validator.validateSectionLock(ProjectContractingSection.ProjectReportingSchedule, projectId) } returns Unit
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
 
         val project = mockk<ProjectFull>()
@@ -130,6 +136,7 @@ class UpdateContractingReportingTest : UnitTest() {
     fun `updateReportingSchedule - missing start date`() {
         val projectId = 300L
         val version = "V_1.1"
+        every { validator.validateSectionLock(ProjectContractingSection.ProjectReportingSchedule, projectId) } returns Unit
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
 
         val project = mockk<ProjectFull>()
@@ -148,6 +155,7 @@ class UpdateContractingReportingTest : UnitTest() {
     fun `updateReportingSchedule - reached max amount`() {
         val projectId = 301L
         val version = "V_1.2"
+        every { validator.validateSectionLock(ProjectContractingSection.ProjectReportingSchedule, projectId) } returns Unit
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
 
         val project = mockk<ProjectFull>()
@@ -175,6 +183,7 @@ class UpdateContractingReportingTest : UnitTest() {
     fun `updateReportingSchedule - wrong period numbers`() {
         val projectId = 302L
         val version = "V_1.3"
+        every { validator.validateSectionLock(ProjectContractingSection.ProjectReportingSchedule, projectId) } returns Unit
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
 
         val project = mockk<ProjectFull>()
@@ -204,6 +213,7 @@ class UpdateContractingReportingTest : UnitTest() {
     fun `updateReportingSchedule - deadlines calculated successfully`() {
         val projectId = 303L
         val version = "V_1.4"
+        every { validator.validateSectionLock(ProjectContractingSection.ProjectReportingSchedule, projectId) } returns Unit
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
 
         val project = mockk<ProjectFull>()
@@ -237,6 +247,7 @@ class UpdateContractingReportingTest : UnitTest() {
     fun `updateReportingSchedule - deadlines do not fit periods`() {
         val projectId = 304L
         val version = "V_1.5"
+        every { validator.validateSectionLock(ProjectContractingSection.ProjectReportingSchedule, projectId) } returns Unit
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
 
         val project = mockk<ProjectFull>()
@@ -269,6 +280,7 @@ class UpdateContractingReportingTest : UnitTest() {
     fun `updateReportingSchedule - invalid period number`() {
         val projectId = 305L
         val version = "V_2"
+        every { validator.validateSectionLock(ProjectContractingSection.ProjectReportingSchedule, projectId) } returns Unit
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
         val project = mockk<ProjectFull>()
         every { project.projectStatus.status } returns ApplicationStatus.APPROVED
@@ -293,6 +305,7 @@ class UpdateContractingReportingTest : UnitTest() {
     fun `updateReportingSchedule - invalid deadline date`() {
         val projectId = 306L
         val version = "V_3"
+        every { validator.validateSectionLock(ProjectContractingSection.ProjectReportingSchedule, projectId) } returns Unit
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
         val project = mockk<ProjectFull>()
         every { project.projectStatus.status } returns ApplicationStatus.APPROVED
@@ -314,11 +327,32 @@ class UpdateContractingReportingTest : UnitTest() {
     }
 
     @Test
-    fun `clearNoLongerAvailablePeriodsAndDates`() {
+    fun `updateReportingSchedule - section locked`() {
+        val projectId = 307L
+        val exception = ContractingModificationDeniedException()
+        every { validator.validateSectionLock(ProjectContractingSection.ProjectReportingSchedule, projectId) } throws exception
+
+        val reporting = listOf(
+            ProjectContractingReportingSchedule(
+                id = 50L,
+                type = ContractingDeadlineType.Both,
+                periodNumber = 4,
+                date = LocalDate.of(2023, 2, 28),
+                comment = "dummy comment 100",
+            ),
+        )
+
+        assertThrows<ContractingModificationDeniedException> {
+            interactor.updateReportingSchedule(projectId, reporting)
+        }
+    }
+
+    @Test
+    fun clearNoLongerAvailablePeriodsAndDates() {
         val projectId = 307L
         val version = "v4.0"
-        val maxNewDuration = 3;
-        val invalidPeriodNumberList = listOf(4L);
+        val maxNewDuration = 3
+        val invalidPeriodNumberList = listOf(4L)
         val versions = listOf(
             ProjectVersion(
                 "v4.0",
@@ -337,7 +371,7 @@ class UpdateContractingReportingTest : UnitTest() {
                 false
             )
         )
-
+        every { validator.validateSectionLock(ProjectContractingSection.ProjectReportingSchedule, projectId) } returns Unit
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
         every { versionPersistence.getAllVersionsByProjectId(projectId) } returns versions
 
@@ -361,5 +395,4 @@ class UpdateContractingReportingTest : UnitTest() {
         interactor.checkNoLongerAvailablePeriodsAndDatesToRemove(projectId)
         verify(exactly = 1) { contractingReportingPersistence.clearPeriodAndDatesFor(invalidPeriodNumberList) }
     }
-
 }

@@ -4,6 +4,9 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionList
+import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
+import io.cloudflight.jems.server.project.service.contracting.model.partner.getPartners.ContractingPartnerSummary
+import io.cloudflight.jems.server.project.service.contracting.partner.partnerLock.ContractingPartnerLockPersistence
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaboratorPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
@@ -22,12 +25,13 @@ import java.time.ZonedDateTime
 internal class GetContractingPartnersTest: UnitTest() {
 
     companion object {
-        private val projectPartnerSummaryContracting = ProjectPartnerSummary(
+        private val projectPartnerSummaryContracting = ContractingPartnerSummary(
             id = 1L,
             abbreviation = "partner",
             active = true,
             role = ProjectPartnerRole.LEAD_PARTNER,
-            institutionName = null
+            institutionName = null,
+            locked = false
         )
 
         private val projectPartnerSummary = ProjectPartnerSummary(
@@ -67,15 +71,24 @@ internal class GetContractingPartnersTest: UnitTest() {
     @MockK
     lateinit var userAuthorization: UserAuthorization
 
+    @MockK
+    lateinit var contractingPartnerLockPersistence: ContractingPartnerLockPersistence
+
+    @MockK
+    lateinit var versionPersistence: ProjectVersionPersistence
+
     @InjectMockKs
     lateinit var interactor: GetContractingPartners
 
 
     @Test
     fun findAllByProjectIdForContracting() {
+
+        every { versionPersistence.getLatestApprovedOrCurrent(projectId = 1) } returns "v1.0"
         every { partnerPersistence.findAllByProjectIdForDropdown(1, any(), "v1.0") } returns listOf(
             projectPartnerSummary
         )
+        every { contractingPartnerLockPersistence.getLockedPartners(projectId = 1) } returns emptySet()
         every { userAuthorization.hasPermissionForProject(UserRolePermission.ProjectContractingPartnerView, 1L) } returns false
         every { securityService.getUserIdOrThrow() } returns 99L
         every { institutionPersistence.getControllerInstitutions(partnerIds = setOf(1L)) } returns
@@ -84,7 +97,7 @@ internal class GetContractingPartnersTest: UnitTest() {
             setOf(collaborator(partnerId = 1L))
         every { institutionPersistence.getRelatedProjectAndPartnerIdsForUser(userId = 99L) } returns
             mapOf(19L to setOf(57L))
-        Assertions.assertThat(interactor.findAllByProjectIdForContracting(1, mockk(), "v1.0"))
+        Assertions.assertThat(interactor.findAllByProjectIdForContracting(1, mockk()))
             .isEqualTo(listOf(projectPartnerSummaryContracting))
     }
 }

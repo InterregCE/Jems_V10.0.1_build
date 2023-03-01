@@ -6,16 +6,22 @@ import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.contracting.ContractingModificationDeniedException
+import io.cloudflight.jems.server.project.service.contracting.ContractingValidator
+import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingSection
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.mockk.Runs
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.just
 import io.mockk.mockk
 import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
@@ -41,6 +47,9 @@ internal class UploadFileToContractingTest : UnitTest() {
     @MockK
     lateinit var fileRepository: JemsProjectFileService
 
+    @RelaxedMockK
+    lateinit var validator: ContractingValidator
+
     @InjectMockKs
     lateinit var interactor: UploadFileToContracting
 
@@ -57,6 +66,7 @@ internal class UploadFileToContractingTest : UnitTest() {
     @Test
     fun uploadContract() {
         val file = ProjectFile(ByteArray(5).inputStream(), "file_name.xlsx", 50L)
+        every { validator.validateSectionLock(ProjectContractingSection.ContractsAgreements, PROJECT_ID) } returns Unit
         testUpload(
             { interactor.uploadContract(PROJECT_ID, file) },
             expectedPath = "Project/000440/Contracting/ContractSupport/Contract/",
@@ -67,6 +77,7 @@ internal class UploadFileToContractingTest : UnitTest() {
     @Test
     fun uploadContractDocument() {
         val file = ProjectFile(ByteArray(5).inputStream(), "file_name.xlsx", 50L)
+        every { validator.validateSectionLock(ProjectContractingSection.ContractsAgreements, PROJECT_ID) } returns Unit
         testUpload(
             { interactor.uploadContractDocument(PROJECT_ID, file) },
             expectedPath = "Project/000440/Contracting/ContractSupport/ContractDoc/",
@@ -76,6 +87,7 @@ internal class UploadFileToContractingTest : UnitTest() {
 
     @Test
     fun uploadContractPartnerFile() {
+        every { validator.validateSectionLock(ProjectContractingSection.ContractsAgreements, PROJECT_ID) } returns Unit
         every { partnerPersistence.getProjectIdForPartnerId(60L) } returns PROJECT_ID
         val file = ProjectFile(ByteArray(5).inputStream(), "file_name.xlsx", 50L)
         testUpload(
@@ -89,6 +101,7 @@ internal class UploadFileToContractingTest : UnitTest() {
     @Test
     fun uploadContractInternalFile() {
         val file = ProjectFile(ByteArray(5).inputStream(), "file_name.xlsx", 50L)
+        every { validator.validateSectionLock(ProjectContractingSection.ContractsAgreements, PROJECT_ID) } returns Unit
         testUpload(
             { interactor.uploadContractInternalFile(PROJECT_ID, file) },
             expectedPath = "Project/000440/Contracting/ContractInternal/",
@@ -120,9 +133,9 @@ internal class UploadFileToContractingTest : UnitTest() {
         }
     }
 
-
     @Test
     fun `uploadContractPartnerFile - not existing`() {
+        every { validator.validateSectionLock(ProjectContractingSection.ContractsAgreements, PROJECT_ID) } returns Unit
         every { partnerPersistence.getProjectIdForPartnerId(666L) } returns 22L
         val file = mockk<ProjectFile>()
 
@@ -132,6 +145,7 @@ internal class UploadFileToContractingTest : UnitTest() {
     @Test
     fun `uploadContract - wrong status`() {
         val summary = mockk<ProjectSummary>()
+        every { validator.validateSectionLock(ProjectContractingSection.ContractsAgreements, PROJECT_ID) } just Runs
         every { summary.status } returns ApplicationStatus.DRAFT
         every { projectPersistence.getProjectSummary(10L) } returns summary
 
@@ -141,12 +155,14 @@ internal class UploadFileToContractingTest : UnitTest() {
     @Test
     fun `uploadContract - wrong file type`() {
         val file = mockk<ProjectFile>()
+        every { validator.validateSectionLock(ProjectContractingSection.ContractsAgreements, PROJECT_ID) } returns Unit
         every { file.name } returns "virus.exe"
         assertThrows<FileTypeNotSupported> { interactor.uploadContract(PROJECT_ID, file) }
     }
 
     @Test
     fun `uploadContract - file already exists`() {
+        every { validator.validateSectionLock(ProjectContractingSection.ContractsAgreements, PROJECT_ID) } returns Unit
         every { filePersistence.existsFile("Project/000440/Contracting/ContractSupport/Contract/", "already-there.xlsx") } returns true
 
         val file = mockk<ProjectFile>()
@@ -154,4 +170,15 @@ internal class UploadFileToContractingTest : UnitTest() {
         assertThrows<FileAlreadyExists> { interactor.uploadContract(PROJECT_ID, file) }
     }
 
+    @Test
+    fun `uploadContract - section locked`() {
+        val file = mockk<ProjectFile>()
+        val exception = ContractingModificationDeniedException()
+        every { file.name } returns "test-file.xlsx"
+        every { validator.validateSectionLock(ProjectContractingSection.ContractsAgreements, PROJECT_ID) } throws exception
+
+        assertThrows<ContractingModificationDeniedException> {
+            interactor.uploadContract(PROJECT_ID, file)
+        }
+    }
 }

@@ -5,6 +5,9 @@ import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
+import io.cloudflight.jems.server.project.service.contracting.ContractingModificationDeniedException
+import io.cloudflight.jems.server.project.service.contracting.ContractingValidator
+import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingSection
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.partner.file.setDescriptionToFile.FileNotFound
 import io.mockk.clearMocks
@@ -27,9 +30,11 @@ class SetContractFileDescriptionTest: UnitTest() {
     @MockK
     lateinit var generalValidator: GeneralValidatorService
 
+    @MockK
+    lateinit var validator: ContractingValidator
+
     @InjectMockKs
     lateinit var setContractFileDescription: SetContractFileDescription
-
 
     @BeforeEach
     fun setup() {
@@ -43,6 +48,7 @@ class SetContractFileDescriptionTest: UnitTest() {
     @Test
     fun setDescription() {
         val projectId = 8L
+        every { validator.validateSectionLock(ProjectContractingSection.ContractsAgreements, projectId) } returns Unit
         every {
             filePersistence.existsFileByProjectIdAndFileIdAndFileTypeIn(
                 projectId,
@@ -57,8 +63,9 @@ class SetContractFileDescriptionTest: UnitTest() {
     }
 
     @Test
-    fun `setDescription - not existing`() {
+    fun `setDescription - does not exist`() {
         val projectId = 8L
+        every { validator.validateSectionLock(ProjectContractingSection.ContractsAgreements, projectId) } returns Unit
         every {
             filePersistence.existsFileByProjectIdAndFileIdAndFileTypeIn(
                 projectId,
@@ -67,5 +74,16 @@ class SetContractFileDescriptionTest: UnitTest() {
             )
         } returns false
         assertThrows<FileNotFound> { setContractFileDescription.setContractFileDescription(projectId, -1, "new desc") }
+    }
+
+    @Test
+    fun `setDescription - section locked`() {
+        val projectId = 8L
+        val exception = ContractingModificationDeniedException()
+        every { validator.validateSectionLock(ProjectContractingSection.ContractsAgreements, projectId) } throws exception
+
+        assertThrows<ContractingModificationDeniedException> {
+            setContractFileDescription.setContractFileDescription(projectId, 200L, "new desc")
+        }
     }
 }
