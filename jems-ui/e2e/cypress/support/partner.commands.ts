@@ -7,7 +7,13 @@ declare global {
 
       createPartners(applicationId: number, partners: any[]);
 
-      updatePartner(partnerId: number, partner);
+      createFullPartner(applicationId: number, partner);
+
+      createFullPartners(applicationId: number, partners: any[]);
+
+      updatePartnerData(partnerId: number, partnerData: any);
+
+      updatePartnerIdentity(partnerId: number, identity);
 
       updatePartnerAddress(partnerId: number, address: any[]);
 
@@ -15,13 +21,13 @@ declare global {
 
       updatePartnerMotivation(partnerId: number, address);
 
-      updatePartnerBudget(partnerId: number, address, investmentId?: number);
+      updatePartnerBudget(partnerId: number, address);
 
       addPartnerTravelCosts(partnerId: number, travelCosts: any[]);
 
       updatePartnerCofinancing(partnerId: number, cofinancing);
 
-      updatePartnerStateAid(partnerId: number, stateAid, options?: any);
+      updatePartnerStateAid(partnerId: number, stateAid);
 
       deactivatePartner(partnerId: number);
 
@@ -38,14 +44,20 @@ Cypress.Commands.add('createPartners', (applicationId: number, partners: []) => 
   createPartners(applicationId, partners);
 });
 
-Cypress.Commands.add('updatePartner', (partnerId: number, partner) => {
-  const tempPartner = JSON.parse(JSON.stringify(partner));
-  tempPartner.id = partnerId;
-  cy.request({
-    method: 'PUT',
-    url: `api/project/partner`,
-    body: tempPartner
-  });
+Cypress.Commands.add('createFullPartner', (applicationId: number, partner) => {
+  createFullPartner(applicationId, partner);
+});
+
+Cypress.Commands.add('createFullPartners', (applicationId: number, partners: []) => {
+  createFullPartners(applicationId, partners);
+});
+
+Cypress.Commands.add('updatePartnerData', (partnerId: number, partnerData) => {
+  updatePartnerData(partnerId, partnerData);
+});
+
+Cypress.Commands.add('updatePartnerIdentity', (partnerId: number, identity) => {
+  updateIdentity(partnerId, identity);
 });
 
 Cypress.Commands.add('updatePartnerAddress', (partnerId: number, partnerAddress: []) => {
@@ -60,8 +72,8 @@ Cypress.Commands.add('updatePartnerMotivation', (partnerId: number, partnerMotiv
   updateMotivation(partnerId, partnerMotivation);
 });
 
-Cypress.Commands.add('updatePartnerBudget', (partnerId: number, partnerBudget, investmentId: number) => {
-  updateBudget(partnerId, partnerBudget, investmentId);
+Cypress.Commands.add('updatePartnerBudget', (partnerId: number, partnerBudget) => {
+  updateBudget(partnerId, partnerBudget);
 });
 
 Cypress.Commands.add('addPartnerTravelCosts', (partnerId: number, travelCosts: []) => {
@@ -87,29 +99,53 @@ Cypress.Commands.add('createAssociatedOrganization', (applicationId: number, par
   createAssociatedOrganization(applicationId, partnerId, associatedOrganization);
 });
 
-export function createPartner(applicationId: number, partner) {
+export function createPartner(applicationId: number, partnerDetails) {
   return cy.request({
     method: 'POST',
     url: `api/project/partner/toProjectId/${applicationId}`,
-    body: partner
+    body: partnerDetails
   }).then(response => {
-    cy.wrap(response.body.id);
+    cy.wrap(response.body.id).as(partnerDetails.abbreviation);
+  });
+}
+
+export function createFullPartner(applicationId: number, partner) {
+  createPartner(applicationId, partner.details).then(partnerId => {
+    updatePartnerData(partnerId, partner);
   });
 }
 
 export function createPartners(applicationId: number, partners: []) {
   partners.forEach((partner: any) => {
-    createPartner(applicationId, partner.details).then(partnerId => {
-      cy.wrap(partnerId).as(partner.details.abbreviation);
-      updateAddress(partnerId, partner.address);
-      updateContact(partnerId, partner.contact);
-      updateMotivation(partnerId, partner.motivation);
-      updateBudget(partnerId, partner.budget);
-      updateCofinancing(partnerId, partner.cofinancing);
-      if (partner.spfCofinancing)
-        updateSpfCofinancing(partnerId, partner.spfCofinancing);
-      updateStateAid(partnerId, partner.stateAid);
-    });
+    createPartner(applicationId, partner.details);
+  });
+}
+
+export function createFullPartners(applicationId: number, partners: []) {
+  partners.forEach(partner => {
+    createFullPartner(applicationId, partner);
+  });
+}
+
+export function updatePartnerData(partnerId, partnerData) {
+  updateIdentity(partnerId, partnerData.details)
+  updateAddress(partnerId, partnerData.address);
+  updateContact(partnerId, partnerData.contact);
+  updateMotivation(partnerId, partnerData.motivation);
+  updateBudget(partnerId, partnerData.budget);
+  updateCofinancing(partnerId, partnerData.cofinancing);
+  if (partnerData.spfCofinancing)
+    updateSpfCofinancing(partnerId, partnerData.spfCofinancing);
+  updateStateAid(partnerId, partnerData.stateAid);
+}
+
+function updateIdentity(partnerId, identity) {
+  const tempPartner = JSON.parse(JSON.stringify(identity));
+  tempPartner.id = partnerId;
+  cy.request({
+    method: 'PUT',
+    url: `api/project/partner`,
+    body: tempPartner
   });
 }
 
@@ -137,12 +173,7 @@ function updateMotivation(partnerId, motivation) {
   });
 }
 
-function updateBudget(partnerId, budget, investmentId?: number) {
-  if (investmentId) {
-    budget.external[0].investmentId = investmentId;
-    budget.equipment[0].investmentId = investmentId;
-    budget.infrastructure[0].investmentId = investmentId;
-  }
+function updateBudget(partnerId, budget) {
   cy.request({
     method: 'PUT',
     url: `api/project/partner/${partnerId}/budget/options`,
@@ -159,6 +190,7 @@ function updateBudget(partnerId, budget, investmentId?: number) {
   }
   if (budget.external) {
     matchProjectProposedUnitCostReferences(budget.external);
+    matchInvestmentReferences(budget.external);
     cy.request({
       method: 'PUT',
       url: `api/project/partner/${partnerId}/budget/external`,
@@ -167,6 +199,7 @@ function updateBudget(partnerId, budget, investmentId?: number) {
   }
   if (budget.equipment) {
     matchProjectProposedUnitCostReferences(budget.equipment);
+    matchInvestmentReferences(budget.equipment);
     cy.request({
       method: 'PUT',
       url: `api/project/partner/${partnerId}/budget/equipment`,
@@ -175,6 +208,7 @@ function updateBudget(partnerId, budget, investmentId?: number) {
   }
   if (budget.infrastructure) {
     matchProjectProposedUnitCostReferences(budget.infrastructure);
+    matchInvestmentReferences(budget.infrastructure);
     cy.request({
       method: 'PUT',
       url: `api/project/partner/${partnerId}/budget/infrastructure`,
@@ -230,8 +264,8 @@ function updateStateAid(partnerId, stateAid) {
   // set activityId in the state aid
   cy.then(function () {
     stateAid.activities?.forEach((activity) => {
-      if (activity.cypressReference) {
-        activity.activityId = this[activity.cypressReference];
+      if (activity.cypressReferenceStateAid) {
+        activity.activityId = this[activity.cypressReferenceStateAid];
       }
     });
     cy.request({
@@ -251,12 +285,23 @@ function createAssociatedOrganization(applicationId: number, partnerId: number, 
   });
 }
 
-function matchProjectProposedUnitCostReferences(costOptions) {
+function matchProjectProposedUnitCostReferences(costs) {
   // match any project proposed unit cost reference to its id
   cy.then(function () {
-    costOptions.forEach(unitCost => {
-      if (unitCost.cypressReference) {
-        unitCost.unitCostId = this[unitCost.cypressReference];
+    costs.forEach(cost => {
+      if (cost.cypressReferenceUnit) {
+        cost.unitCostId = this[cost.cypressReferenceUnit];
+      }
+    });
+  });
+}
+
+function matchInvestmentReferences(investments) {
+  // match any project proposed unit cost reference to its id
+  cy.then(function () {
+    investments.forEach(investment => {
+      if (investment.cypressReferenceInvestment) {
+        investment.investmentId = this[investment.cypressReferenceInvestment];
       }
     });
   });

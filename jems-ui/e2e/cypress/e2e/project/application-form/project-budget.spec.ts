@@ -1,6 +1,5 @@
 import user from '../../../fixtures/users.json';
 import call from '../../../fixtures/api/call/1.step.call.json';
-import application from '../../../fixtures/api/application/application.json';
 import partner from '../../../fixtures/api/application/partner/partner.json';
 
 const baselinePath = '/project/application-form/project-budget/';
@@ -16,6 +15,7 @@ context('Project budget tests', () => {
 
   it('TB-534 Amounts cross-checks within AF', () => {
     cy.fixture('project/application-form/project-budget/TB-534.json').then(testData => {
+      cy.fixture('api/application/application.json').then(application => {
 
       cy.loginByRequest(user.programmeUser.email);
       call.budgetSettings.flatRates = testData.call.flatRates;
@@ -36,9 +36,10 @@ context('Project budget tests', () => {
         tempPartner.cofinancing = partnerData.cofinancing;
         application.partners.push(tempPartner);
       });
-      application.associatedOrganisations[0].cypressReference = application.partners[0].details.abbreviation;
-      
+      application.associatedOrganisations = null;
       application.lumpSums = [];
+      application.description.workPlan[0].activities[0].cypressReferencePartner = application.partners[0].details.abbreviation;
+      application.description.workPlan[0].activities[1].cypressReferencePartner = application.partners[1].details.abbreviation;
 
       cy.createApprovedApplication(application, user.programmeUser.email).then(applicationId => {
         cy.visit(`app/project/detail/${applicationId}/applicationFormOverviewTables`, {failOnStatusCode: false});
@@ -101,6 +102,7 @@ context('Project budget tests', () => {
             cy.contains('div.jems-table-config', 'Source').children().eq(3).find('div').eq(1).should('contain', partner.budgetOverview[9]);
           });
         });
+      });
       });
     });
   });

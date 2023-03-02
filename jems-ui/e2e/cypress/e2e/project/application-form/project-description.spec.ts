@@ -15,7 +15,7 @@ context('Project description tests', () => {
         // remove references to activities
         application.partners[0].stateAid.activities = null;
         application.partners[1].stateAid.activities = null;
-        cy.createPartners(applicationId, application.partners);
+        cy.createFullPartners(applicationId, application.partners);
       });
     });
   });

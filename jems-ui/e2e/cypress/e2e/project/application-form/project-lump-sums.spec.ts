@@ -14,7 +14,7 @@ context('Project lump sums tests', () => {
       cy.loginByRequest(user.applicantUser.email);
       cy.createApplication(application).then(applicationId => {
         cy.updateProjectIdentification(applicationId, application.identification);
-        cy.createPartners(applicationId, testData.partners);
+        cy.createFullPartners(applicationId, testData.partners);
 
         cy.visit('/app/project/detail/'+applicationId, {failOnStatusCode: false})
 

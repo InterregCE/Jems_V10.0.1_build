@@ -39,7 +39,7 @@ context('Partner reports tests', () => {
 
         cy.startModification(applicationId, user.programmeUser.email);
         cy.loginByRequest(user.applicantUser.email);
-        cy.updatePartner(partnerId, testData.updatedPartnerDetails);
+        cy.updatePartnerIdentity(partnerId, testData.updatedPartnerDetails);
         cy.updatePartnerAddress(partnerId, testData.updatedPartnerAddress);
         cy.updatePartnerCofinancing(partnerId, testData.updatedPartnerCofinancing);
         cy.submitProjectApplication(applicationId);

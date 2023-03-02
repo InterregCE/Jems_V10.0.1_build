@@ -530,15 +530,9 @@ context('Programme management tests', () => {
 
                 for (let i = 0; i < 3; i++) {
                   cy.createApplication(application).then(applicationId => {
-                    cy.updateProjectIdentification(applicationId, application.identification);
-                    cy.createProjectProposedUnitCosts(applicationId, application.projectProposedUnitCosts);
-                    cy.createProjectWorkPlan(applicationId, application.description.workPlan);
                     cy.createPartners(applicationId, application.partners);
                   });
                   cy.createApplication(spfApplication).then(spfApplicationId => {
-                    cy.updateProjectIdentification(spfApplicationId, spfApplication.identification);
-                    cy.createProjectProposedUnitCosts(spfApplicationId, spfApplication.projectProposedUnitCosts);
-                    cy.createProjectWorkPlan(spfApplicationId, spfApplication.description.workPlan);
                     cy.createPartners(spfApplicationId, spfApplication.partners);
                   });
                   cy.createApprovedApplication(application, user.programmeUser.email);

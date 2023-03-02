@@ -1,6 +1,6 @@
 [
   {
-    "cypressReference": "projectProposedTravel",
+    "cypressReferenceUnit": "projectProposedTravel",
     "name": [
       {
         "translation": "Project Proposed Unit Cost for One Category DE",
@@ -44,7 +44,7 @@
     ]
   },
   {
-    "cypressReference": "projectProposedMulti",
+    "cypressReferenceUnit": "projectProposedMulti",
     "name": [
       {
         "translation": "Project Proposed Unit Cost for Multi Categories DE",

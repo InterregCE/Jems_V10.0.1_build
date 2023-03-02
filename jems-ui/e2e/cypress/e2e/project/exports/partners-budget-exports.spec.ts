@@ -81,19 +81,11 @@ context('Partners budget exports', () => {
             cy.createProjectResults(applicationId, application2step.secondStep.description.results);
             cy.updateProjectManagement(applicationId, application2step.secondStep.description.management);
             cy.updateProjectLongTermPlans(applicationId, application2step.secondStep.description.longTermPlans);
-            cy.updatePartner(partnerId, updatedPartner.details);
-            cy.updatePartnerAddress(partnerId, updatedPartner.address);
-            cy.updatePartnerContact(partnerId, updatedPartner.contact);
-            cy.updatePartnerMotivation(partnerId, updatedPartner.motivation);
-            cy.then(function () {
-              cy.updatePartnerBudget(partnerId, updatedPartner.budget, this.investmentId);
-              cy.updatePartnerCofinancing(partnerId, updatedPartner.cofinancing);
-              cy.updatePartnerStateAid(partnerId, updatedPartner.stateAid, this.options);
-            });
+            cy.updatePartnerData(partnerId, updatedPartner);
             cy.createAssociatedOrganization(applicationId, partnerId, updatedPartner.associatedOrganization);
 
             partner.details.abbreviation = testData.secondStep.partnerAbbreviation;
-            cy.createPartners(applicationId, [partner]);
+            cy.createFullPartners(applicationId, [partner]);
 
             cy.runPreSubmissionCheck(applicationId);
             cy.submitProjectApplication(applicationId);
@@ -119,7 +111,7 @@ context('Partners budget exports', () => {
 
             modifiedPartner.budget.travel.push(testData.approvedModificationData.modifiedTravelCost);
             modifiedPartner.cofinancing = testData.approvedModificationData.modifiedCofinancing;
-            cy.updatePartner(partnerId, modifiedPartner.details);
+            cy.updatePartnerIdentity(partnerId, modifiedPartner.details);
             cy.updatePartnerBudget(partnerId, modifiedPartner.budget);
             cy.updatePartnerCofinancing(partnerId, modifiedPartner.cofinancing);
 
@@ -132,7 +124,7 @@ context('Partners budget exports', () => {
             cy.updateProjectIdentification(applicationId, testData.rejectedModificationData.identification);
             const thirdPartner = JSON.parse(JSON.stringify(partner));
             thirdPartner.details.abbreviation = testData.rejectedModificationData.partnerAbbreviation;
-            cy.createPartners(applicationId, [thirdPartner]);
+            cy.createFullPartners(applicationId, [thirdPartner]);
             cy.runPreSubmissionCheck(applicationId);
             cy.submitProjectApplication(applicationId);
             cy.rejectModification(applicationId, testData.rejectionInfo, user.programmeUser.email);
@@ -222,7 +214,7 @@ context('Partners budget exports', () => {
             cy.createProjectResults(applicationId, testData.application.description.results);
             cy.updateProjectManagement(applicationId, application2step.secondStep.description.management);
             cy.updateProjectLongTermPlans(applicationId, application2step.secondStep.description.longTermPlans);
-            cy.updatePartner(partnerId, updatedPartner.details);
+            cy.updatePartnerIdentity(partnerId, updatedPartner.details);
             cy.updatePartnerAddress(partnerId, updatedPartner.address);
             cy.updatePartnerContact(partnerId, updatedPartner.contact);
             cy.updatePartnerBudget(partnerId, updatedPartner.budget);

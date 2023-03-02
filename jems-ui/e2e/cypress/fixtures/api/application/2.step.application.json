@@ -165,6 +165,7 @@
           },
           "external": [
             {
+              "cypressReferenceInvestment": "investment2",
               "description": [
                 {
                   "translation": "API generated external cost description DE",
@@ -195,7 +196,6 @@
                   "language": "EN"
                 }
               ],
-              "investmentId": null,
               "unitType": [
                 {
                   "translation": "API generated external cost unit type DE",
@@ -242,12 +242,12 @@
                   "amount": 50,
                   "number": 8
                 }
-              ],
-              "unitCostId": null
+              ]
             }
           ],
           "equipment": [
             {
+              "cypressReferenceInvestment": "investment1",
               "description": [
                 {
                   "translation": "API generated equipment cost description DE",
@@ -288,7 +288,6 @@
                   "language": "EN"
                 }
               ],
-              "investmentId": null,
               "numberOfUnits": 5,
               "pricePerUnit": 150.66,
               "rowSum": 753.3,
@@ -325,8 +324,7 @@
                   "amount": 193,
                   "number": 8
                 }
-              ],
-              "unitCostId": null
+              ]
             }
           ],
           "infrastructure": [
@@ -555,7 +553,7 @@
           ],
           "activities": [
             {
-              "cypressReference": "Lead Partner Activity",
+              "cypressReferenceStateAid": "Lead Partner Activity",
               "activityId": null
             }
           ],
@@ -790,131 +788,257 @@
               }
             ]
           },
-          "investment": {
-            "title": [
-              {
-                "translation": "API generated investment title DE",
-                "language": "DE"
+          "investments": [
+            {
+              "cypressReferenceInvestment": "investment1",
+              "title": [
+                {
+                  "translation": "API generated investment 1 title DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated investment 1 title EN",
+                  "language": "EN"
+                }
+              ],
+              "expectedDeliveryPeriod": 1,
+              "justificationExplanation": [
+                {
+                  "translation": "API generated investment 1 justification DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated investment 1 justification EN",
+                  "language": "EN"
+                }
+              ],
+              "justificationTransactionalRelevance": [
+                {
+                  "translation": "API generated investment 1 transnational relevance DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated investment 1 transnational relevance EN",
+                  "language": "EN"
+                }
+              ],
+              "justificationBenefits": [
+                {
+                  "translation": "API generated investment 1 benefits DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated investment 1 benefits EN",
+                  "language": "EN"
+                }
+              ],
+              "justificationPilot": [
+                {
+                  "translation": "API generated investment 1 pilot clarification DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated investment 1 pilot clarification EN",
+                  "language": "EN"
+                }
+              ],
+              "address": {
+                "country": "Deutschland (DE)",
+                "region2": "Stuttgart (DE11)",
+                "region3": "Stuttgart, Stadtkreis (DE111)",
+                "street": "Investmentstreet",
+                "houseNumber": "1",
+                "postalCode": "1010",
+                "city": "Investment city"
               },
-              {
-                "translation": "API generated investment title EN",
-                "language": "EN"
-              }
-            ],
-            "expectedDeliveryPeriod": 1,
-            "justificationExplanation": [
-              {
-                "translation": "API generated investment justification DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated investment justification EN",
-                "language": "EN"
-              }
-            ],
-            "justificationTransactionalRelevance": [
-              {
-                "translation": "API generated investment transnational relevance DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated investment transnational relevance EN",
-                "language": "EN"
-              }
-            ],
-            "justificationBenefits": [
-              {
-                "translation": "API generated investment benefits DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated investment benefits EN",
-                "language": "EN"
-              }
-            ],
-            "justificationPilot": [
-              {
-                "translation": "API generated investment pilot clarification DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated investment pilot clarification EN",
-                "language": "EN"
-              }
-            ],
-            "address": {
-              "country": "Deutschland (DE)",
-              "region2": "Stuttgart (DE11)",
-              "region3": "Stuttgart, Stadtkreis (DE111)",
-              "street": "Investmentstreet",
-              "houseNumber": "1",
-              "postalCode": "1010",
-              "city": "Investment city"
+              "risk": [
+                {
+                  "translation": "API generated investment 1 risk DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated investment 1 risk EN",
+                  "language": "EN"
+                }
+              ],
+              "documentation": [
+                {
+                  "translation": "API generated investment 1 technical requirements DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated investment 1 technical requirements EN",
+                  "language": "EN"
+                }
+              ],
+              "documentationExpectedImpacts": [
+                {
+                  "translation": "API generated investment 1 climate change assessment DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated investment 1 climate change assessment EN",
+                  "language": "EN"
+                }
+              ],
+              "ownershipSiteLocation": [
+                {
+                  "translation": "API generated investment 1 ownership DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated investment 1 ownership EN",
+                  "language": "EN"
+                }
+              ],
+              "ownershipMaintenance": [
+                {
+                  "translation": "API generated investment 1 maintenance DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated investment 1 maintenance EN",
+                  "language": "EN"
+                }
+              ],
+              "ownershipRetain": [
+                {
+                  "translation": "API generated investment 1 ownership retainment DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated investment 1 ownership retainment EN",
+                  "language": "EN"
+                }
+              ]
             },
-            "risk": [
-              {
-                "translation": "API generated investment risk DE",
-                "language": "DE"
+            {
+              "cypressReferenceInvestment": "investment2",
+              "title": [
+                {
+                  "translation": "API generated investment 2 title DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated investment 2 title EN",
+                  "language": "EN"
+                }
+              ],
+              "expectedDeliveryPeriod": 4,
+              "justificationExplanation": [
+                {
+                  "translation": "API generated investment 2 justification DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated investment 2 justification EN",
+                  "language": "EN"
+                }
+              ],
+              "justificationTransactionalRelevance": [
+                {
+                  "translation": "API generated investment 2 transnational relevance DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated investment 2 transnational relevance EN",
+                  "language": "EN"
+                }
+              ],
+              "justificationBenefits": [
+                {
+                  "translation": "API generated investment 2 benefits DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated investment 2 benefits EN",
+                  "language": "EN"
+                }
+              ],
+              "justificationPilot": [
+                {
+                  "translation": "API generated investment 2 pilot clarification DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated investment 2 pilot clarification EN",
+                  "language": "EN"
+                }
+              ],
+              "address": {
+                "country": "Serbia (RS)",
+                "region2": "Autonomous Province of Vojvodina (RS12)",
+                "region3": "Severnobačka oblast (RS125)",
+                "street": "Investmentstreet 2",
+                "houseNumber": "2",
+                "postalCode": "21000",
+                "city": "Investment city 2"
               },
-              {
-                "translation": "API generated investment risk EN",
-                "language": "EN"
-              }
-            ],
-            "documentation": [
-              {
-                "translation": "API generated investment technical requirements DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated investment technical requirements EN",
-                "language": "EN"
-              }
-            ],
-            "documentationExpectedImpacts": [
-              {
-                "translation": "API generated investment climate change assessment DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated investment climate change assessment EN",
-                "language": "EN"
-              }
-            ],
-            "ownershipSiteLocation": [
-              {
-                "translation": "API generated investment ownership DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated investment ownership EN",
-                "language": "EN"
-              }
-            ],
-            "ownershipMaintenance": [
-              {
-                "translation": "API generated investment maintenance DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated investment maintenance EN",
-                "language": "EN"
-              }
-            ],
-            "ownershipRetain": [
-              {
-                "translation": "API generated investment ownership retainment DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated investment ownership retainment EN",
-                "language": "EN"
-              }
-            ]
-          },
+              "risk": [
+                {
+                  "translation": "API generated investment 2 risk DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated investment 2 risk EN",
+                  "language": "EN"
+                }
+              ],
+              "documentation": [
+                {
+                  "translation": "API generated investment 2 technical requirements DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated investment 2 technical requirements EN",
+                  "language": "EN"
+                }
+              ],
+              "documentationExpectedImpacts": [
+                {
+                  "translation": "API generated investment 2 climate change assessment DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated investment 2 climate change assessment EN",
+                  "language": "EN"
+                }
+              ],
+              "ownershipSiteLocation": [
+                {
+                  "translation": "API generated investment 2 ownership DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated investment 2 ownership EN",
+                  "language": "EN"
+                }
+              ],
+              "ownershipMaintenance": [
+                {
+                  "translation": "API generated investment 2 maintenance DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated investment 2 maintenance EN",
+                  "language": "EN"
+                }
+              ],
+              "ownershipRetain": [
+                {
+                  "translation": "API generated investment 2 ownership retainment DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated investment 2 ownership retainment EN",
+                  "language": "EN"
+                }
+              ]
+            }
+          ],
           "activities": [
             {
-              "cypressReference": "Lead Partner Activity",
+              "cypressReferenceStateAid": "Lead Partner Activity",
               "title": [
                 {
                   "translation": "API generated activity 1 title DE",
