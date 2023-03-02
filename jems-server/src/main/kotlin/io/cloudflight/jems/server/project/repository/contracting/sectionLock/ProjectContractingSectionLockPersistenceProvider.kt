@@ -19,7 +19,8 @@ class ProjectContractingSectionLockPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getLockedSections(projectId: Long): List<ProjectContractingSection> =
-        projectContractingSectionLockRepository.findAllByContractingSectionLockIdProjectId(projectId).map { it.contractingSectionLockId.section }
+        projectContractingSectionLockRepository.findAllByContractingSectionLockIdProjectId(projectId)
+            .map { it.contractingSectionLockId.section }
 
 
     @Transactional
