@@ -24,6 +24,7 @@ import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackag
 import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable.WorkPackageActivityDeliverableEntity
 import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable.WorkPackageActivityDeliverableTranslationEntity
 import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable.WorkPackageDeliverableRow
+import io.cloudflight.jems.server.project.entity.workpackage.investment.WorkPackageInvestmentRow
 import io.cloudflight.jems.server.project.entity.workpackage.output.OutputRowWithTranslations
 import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputEntity
 import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputId
@@ -37,11 +38,13 @@ import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPa
 import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityRepository
 import io.cloudflight.jems.server.project.repository.workpackage.investment.WorkPackageInvestmentRepository
 import io.cloudflight.jems.server.project.repository.workpackage.output.WorkPackageOutputRepository
+import io.cloudflight.jems.server.project.service.model.Address
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivitySummary
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackage
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackageFull
+import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
 import io.cloudflight.jems.server.utils.partner.ProjectPartnerTestUtil.Companion.project
 import io.cloudflight.jems.server.utils.partner.activityEntity
@@ -538,7 +541,7 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
                 timestamp
             )
         } returns listOf(
-            WorkPackageActivityRowImpl(activityId1, null, WORK_PACKAGE_ID, 10,1, 1, 2, null, null)
+            WorkPackageActivityRowImpl(activityId1, null, WORK_PACKAGE_ID, 10,1, 1, 2, null, null, null)
         )
         every {
             repositoryActivity.findAllDeliverablesByActivityIdAsOfTimestamp(
@@ -670,9 +673,77 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
     fun `should return work packages with all the details for the specified version of the project when there is no problem`() {
         val timestamp = Timestamp.valueOf(LocalDateTime.of(2020, 8, 15, 6, 0))
         val version = "1.0"
+
+        val mockWPRow: WorkPackageRow = mockk()
+        every { mockWPRow.id } returns WORK_PACKAGE_ID
+        every { mockWPRow.language } returns CS
+        every { mockWPRow.name } returns "WP CS name"
+        every { mockWPRow.number } returns workPackageWithActivities.number!!
+        every { mockWPRow.specificObjective } returns ""
+        every { mockWPRow.objectiveAndAudience } returns ""
+
+        val mockWPARow: WorkPackageActivityRow = mockk()
+        every { mockWPARow.id } returns activityEntity.id
+        every { mockWPARow.workPackageId } returns WORK_PACKAGE_ID
+        every { mockWPARow.activityNumber } returns activityEntity.activityNumber
+        every { mockWPARow.language } returns CS
+        every { mockWPARow.startPeriod } returns 1
+        every { mockWPARow.endPeriod } returns 3
+        every { mockWPARow.title } returns "title"
+        every { mockWPARow.description } returns "description"
+        every { mockWPARow.workPackageNumber } returns workPackageWithActivities.number!!
+        every { mockWPARow.partnerId } returns 5
+        val mockWPAPRow: WorkPackageActivityPartnerRow = mockk()
+        every { mockWPAPRow.activityId } returns activityId1
+        every { mockWPAPRow.workPackageId } returns WORK_PACKAGE_ID
+        every { mockWPAPRow.projectPartnerId } returns 5
+
+        val mockWPOutputRow: WorkPackageOutputRow = mockk()
+        every { mockWPOutputRow.workPackageId } returns WORK_PACKAGE_ID
+        every { mockWPOutputRow.outputNumber } returns 1
+        every { mockWPOutputRow.language } returns CS
+        every { mockWPOutputRow.targetValue } returns BigDecimal.TEN
+        every { mockWPOutputRow.periodNumber } returns 1
+        every { mockWPOutputRow.programmeOutputIndicatorId } returns null
+        every { mockWPOutputRow.programmeOutputIndicatorIdentifier } returns null
+        every { mockWPOutputRow.programmeOutputIndicatorLanguage } returns null
+        every { mockWPOutputRow.title } returns "title output"
+        every { mockWPOutputRow.description } returns "description output"
+
+        val mockWPInvestmentRow: WorkPackageInvestmentRow = mockk()
+        every { mockWPInvestmentRow.id } returns 1
+        every { mockWPInvestmentRow.language } returns CS
+        every { mockWPInvestmentRow.investmentNumber } returns 1
+        every { mockWPInvestmentRow.title } returns "title investment"
+        every { mockWPInvestmentRow.expectedDeliveryPeriod } returns null
+        every { mockWPInvestmentRow.justificationExplanation } returns null
+        every { mockWPInvestmentRow.justificationTransactionalRelevance } returns null
+        every { mockWPInvestmentRow.justificationBenefits } returns null
+        every { mockWPInvestmentRow.justificationPilot } returns null
+        every { mockWPInvestmentRow.risk } returns "risk"
+        every { mockWPInvestmentRow.documentation } returns "documentation"
+        every { mockWPInvestmentRow.documentationExpectedImpacts } returns null
+        every { mockWPInvestmentRow.ownershipSiteLocation } returns null
+        every { mockWPInvestmentRow.ownershipRetain } returns null
+        every { mockWPInvestmentRow.ownershipMaintenance } returns null
+        every { mockWPInvestmentRow.country } returns "country"
+        every { mockWPInvestmentRow.countryCode } returns "AT"
+        every { mockWPInvestmentRow.nutsRegion2 } returns "reg2"
+        every { mockWPInvestmentRow.nutsRegion2Code } returns "AT01"
+        every { mockWPInvestmentRow.nutsRegion3 } returns "reg3"
+        every { mockWPInvestmentRow.nutsRegion3Code } returns "AT011"
+        every { mockWPInvestmentRow.street } returns "str"
+        every { mockWPInvestmentRow.houseNumber } returns "nr"
+        every { mockWPInvestmentRow.postalCode } returns "code"
+        every { mockWPInvestmentRow.city } returns "city"
+
         every { projectRepository.findPeriodsByProjectIdAsOfTimestamp(PROJECT_ID, timestamp) } returns emptyList()
-        every { repository.findWorkPackagesByProjectIdAsOfTimestamp(PROJECT_ID, timestamp) } returns getWorkPackageDetailRows()
         every { projectVersionRepo.findTimestampByVersion(PROJECT_ID, version) } returns timestamp
+        every { repository.findWorkPackagesBaseByProjectIdAsOfTimestamp(PROJECT_ID, timestamp) } returns listOf(mockWPRow)
+        every { repositoryActivity.findAllActivitiesByWorkPackageIdAsOfTimestamp(WORK_PACKAGE_ID, timestamp) } returns listOf(mockWPARow)
+        every { repositoryActivity.findAllDeliverablesByActivityIdAsOfTimestamp(activityEntity.id, timestamp) } returns listOf()
+        every { repositoryOutput.findAllByOutputIdWorkPackageIdAsOfTimestamp(setOf(WORK_PACKAGE_ID), timestamp) } returns listOf(mockWPOutputRow)
+        every { investmentRepository.findAllByWorkPackageIdAsOfTimestamp(WORK_PACKAGE_ID, timestamp) } returns listOf(mockWPInvestmentRow)
 
         val workPackages = persistence.getWorkPackagesWithAllDataByProjectId(PROJECT_ID, version)
         assertThat(workPackages).containsExactly(
@@ -687,14 +758,33 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
                     workPackageId = WORK_PACKAGE_ID,
                     workPackageNumber = workPackageWithActivities.number!!,
                     activityNumber = activityEntity.activityNumber,
-                    title = emptySet(),
-                    description = emptySet(),
+                    title = setOf(InputTranslation(CS, "title")),
+                    description = setOf(InputTranslation(CS, "description")),
                     startPeriod = 1,
                     endPeriod = 3,
-                    deliverables = emptyList()
+                    deliverables = emptyList(),
+                    partnerIds = setOf(5)
                 )),
-                outputs = emptyList(),
-                investments = emptyList()
+                outputs = listOf(
+                    WorkPackageOutput(
+                        workPackageId = WORK_PACKAGE_ID,
+                        outputNumber = 1,
+                        targetValue = BigDecimal.TEN,
+                        periodNumber = 1,
+                        title = setOf(InputTranslation(CS, "title output")),
+                        description = setOf(InputTranslation(CS, "description output")),
+                    )
+                ),
+                investments = listOf(
+                    WorkPackageInvestment(
+                        id = 1L,
+                        investmentNumber = 1,
+                        title = setOf(InputTranslation(CS, "title investment")),
+                        risk = setOf(InputTranslation(CS, "risk")),
+                        documentation = setOf(InputTranslation(CS, "documentation")),
+                        address = Address("country", "AT","reg2", "AT01","reg3", "AT011", "str", "nr", "code", "city"),
+                    )
+                ),
             )
         )
     }
@@ -777,69 +867,6 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
         }
     }
 
-    private fun getWorkPackageDetailRows() : List<WorkPackageDetailRow> {
-        return listOf(
-            object : WorkPackageDetailRow{
-                override val id = WORK_PACKAGE_ID
-                override val number = workPackageWithActivities.number!!
-                override val name = "WP CS name"
-                override val specificObjective: String? = null
-                override val objectiveAndAudience: String? = null
-                override val language = CS
-                override val activityId = activityEntity.id
-                override val activityNumber =activityEntity.activityNumber
-                override val startPeriod = 1
-                override val endPeriod = 3
-                override var partnerId: Long? = null
-                override val activityTitle: String? = null
-                override val activityLanguage: SystemLanguage? = null
-                override val activityDescription: String? = null
-                override val deliverableId: Long? = null
-                override val deliverableNumber: Int? = null
-                override val deliverableStartPeriod: Int? = null
-                override val deliverableDescription: String? = null
-                override val deliverableTitle: String? = null
-                override val deliverableLanguage: SystemLanguage? = null
-                override val outputNumber: Int? = null
-                override val programmeOutputIndicatorId: Long? = null
-                override val programmeOutputIndicatorIdentifier: String? = null
-                override val targetValue: BigDecimal? = null
-                override val outputPeriodNumber: Int? = null
-                override val outputTitle: String? = null
-                override val outputDescription: String? = null
-                override val outputLanguage: SystemLanguage? = null
-                override val investmentId: Long? = null
-                override val investmentNumber: Int? = null
-                override val investmentCountry: String? = null
-                override val investmentCountryCode: String? = null
-                override val investmentNutsRegion2: String? = null
-                override val investmentNutsRegion2Code: String? = null
-                override val investmentNutsRegion3: String? = null
-                override val investmentNutsRegion3Code: String? = null
-                override val investmentStreet: String? = null
-                override val investmentHouseNumber: String? = null
-                override val investmentPostalCode: String? = null
-                override val investmentCity: String? = null
-                override val investmentTitle: String? = null
-                override val justificationExplanation: String? = null
-                override val justificationTransactionalRelevance: String? = null
-                override val justificationBenefits: String? = null
-                override val justificationPilot: String? = null
-                override val investmentRisk: String? = null
-                override val investmentDocumentation: String? = null
-                override val ownershipSiteLocation: String? = null
-                override val ownershipRetain: String? = null
-                override val ownershipMaintenance: String? = null
-                override val investmentLanguage: SystemLanguage? = null
-                override val programmeOutputIndicatorLanguage: SystemLanguage? = null
-                override val programmeOutputIndicatorMeasurementUnit: String? = null
-                override val programmeOutputIndicatorName: String? = null
-                override val investmentDocumentationExpectedImpacts: String? = null
-                override val investmentExpectedDeliveryPeriod: Int? = null
-            }
-        )
-    }
-
     data class WorkPackageActivityRowImpl(
         override val id: Long,
         override val language: SystemLanguage?,
@@ -849,7 +876,8 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
         override val startPeriod: Int?,
         override val endPeriod: Int?,
         override val title: String?,
-        override val description: String?
+        override val description: String?,
+        override val partnerId: Long?,
     ) : WorkPackageActivityRow
 
     data class WorkPackageActivityPartnerRowImpl(

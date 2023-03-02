@@ -27,12 +27,15 @@ interface WorkPackageActivityRepository : JpaRepository<WorkPackageActivityEntit
                 entity.activity_number as activityNumber,
                 CONVERT(entity.start_period, INT) as startPeriod,
                 CONVERT(entity.end_period, INT) as endPeriod,
-                translation.*
+                translation.*,
+                activityPartner.project_partner_id as partnerId
                 FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
                 LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS translation
                     ON entity.id = translation.source_entity_id
                 LEFT JOIN project_work_package FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS workpackage
                     ON entity.work_package_id = workpackage.id
+                LEFT JOIN project_work_package_activity_partner FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS activityPartner
+                    ON entity.id = activityPartner.activity_id
                 WHERE entity.work_package_id = :workPackageId
              """,
         nativeQuery = true
@@ -63,10 +66,13 @@ interface WorkPackageActivityRepository : JpaRepository<WorkPackageActivityEntit
                 entity.activity_number as activityNumber,
                 CONVERT(entity.start_period, INT) as startPeriod,
                 CONVERT(entity.end_period, INT) as endPeriod,
-                translation.*
+                translation.*,
+                activityPartner.project_partner_id as partnerId
                 FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
                 LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS translation
                     ON entity.id = translation.source_entity_id
+                LEFT JOIN project_work_package_activity_partner FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS activityPartner
+                    ON entity.id = activityPartner.activity_id
                 WHERE entity.work_package_id IN :workPackageIds
              """,
         nativeQuery = true
@@ -82,12 +88,15 @@ interface WorkPackageActivityRepository : JpaRepository<WorkPackageActivityEntit
                 entity.activity_number as activityNumber,
                 CONVERT(entity.start_period, INT) as startPeriod,
                 CONVERT(entity.end_period, INT) as endPeriod,
-                translation.*
+                translation.*,
+                activityPartner.project_partner_id as partnerId
                 FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
                 LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS translation
                     ON entity.id = translation.source_entity_id
                 LEFT JOIN project_work_package FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS workpackage
                     ON entity.work_package_id = workpackage.id
+                LEFT JOIN project_work_package_activity_partner FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS activityPartner
+                    ON entity.id = activityPartner.activity_id
                 WHERE entity.id IN :activityIds
              """,
         nativeQuery = true
