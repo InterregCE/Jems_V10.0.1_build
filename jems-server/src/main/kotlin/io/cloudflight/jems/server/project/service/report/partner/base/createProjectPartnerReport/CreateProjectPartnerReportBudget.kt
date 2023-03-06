@@ -88,7 +88,6 @@ class CreateProjectPartnerReportBudget(
         val budget = getProjectBudget.getBudget(listOf(partner), projectId, version).first()
 
         val lumpSums = lumpSumPersistence.getLumpSums(projectId, version = version)
-        val sumOfPaymentReady = lumpSums.sumOfPaymentReadyForPartner(partnerId)
 
         val staffCosts = partnerBudgetCostsPersistence.getBudgetStaffCosts(partnerId, version)
         val travelCosts = partnerBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(partnerId, version)
@@ -98,9 +97,11 @@ class CreateProjectPartnerReportBudget(
         val unitCosts = partnerBudgetCostsPersistence.getBudgetUnitCosts(partnerId, version)
 
         val installmentsPaid = paymentPersistence.findByPartnerId(partnerId).getOnlyPaid()
-        val previouslyReportedWithParked = reportExpenditureCostCategoryPersistence
+
+        val readyForPaymentLumpSums = paymentPersistence.getCoFinancingAndContributionsCumulative(partnerId)
+        val previouslyReportedCostCategories = reportExpenditureCostCategoryPersistence
             .getCostCategoriesCumulative(submittedReportIds)
-            .addExtraPaymentReadyFastTrackLumpSums(sumOfPaymentReady)
+            .addExtraPaymentReadyFastTrackLumpSums(readyForPaymentLumpSums.sum)
 
         return PartnerReportBudget(
             contributions = contributions,
@@ -128,7 +129,7 @@ class CreateProjectPartnerReportBudget(
             expenditureSetup = expenditureSetup(
                 options = projectPartnerBudgetOptionsPersistence.getBudgetOptions(partnerId, version) ?: ProjectPartnerBudgetOptions(partnerId),
                 budget = budget,
-                previouslyReportedWithParked = previouslyReportedWithParked
+                previouslyReportedWithParked = previouslyReportedCostCategories,
             ),
             previouslyReportedCoFinancing = reportExpenditureCoFinancingPersistence
                 .getCoFinancingCumulative(submittedReportIds)
@@ -136,7 +137,7 @@ class CreateProjectPartnerReportBudget(
                     coFinancing = coFinancing,
                     partnerTotal = budget.totalCosts,
                     contributions = contributions,
-                    paymentReadyFastTrackLumpSums = sumOfPaymentReady,
+                    previouslyReportedFastTrack = readyForPaymentLumpSums,
                     paymentPaid = installmentsPaid.byFund(),
                 ),
         )
@@ -327,7 +328,7 @@ class CreateProjectPartnerReportBudget(
         coFinancing: ProjectPartnerCoFinancingAndContribution,
         partnerTotal: BigDecimal,
         contributions: List<CreateProjectPartnerReportContribution>,
-        paymentReadyFastTrackLumpSums: BigDecimal,
+        previouslyReportedFastTrack: ReportExpenditureCoFinancingColumn,
         paymentPaid: Map<Long, BigDecimal>,
     ): PreviouslyReportedCoFinancing {
         val totals = coFinancing.finances.filter { it.fundType == MainFund }
@@ -381,14 +382,6 @@ class CreateProjectPartnerReportBudget(
         val autoPublicTotalAmount = contributions.filter { it.legalStatus == AutomaticPublic }.sumOf { it.amount }
         val privateTotalAmount = contributions.filter { it.legalStatus == Private }.sumOf { it.amount }
 
-        val currentLumpSumValues = getCurrentFrom(
-            generateCoFinCalculationInputData(
-                totalEligibleBudget = partnerTotal,
-                currentValueToSplit = paymentReadyFastTrackLumpSums,
-                coFinancing = coFinancing,
-            )
-        )
-
         return PreviouslyReportedCoFinancing(
             fundsSorted = currentFunds,
 
@@ -409,7 +402,7 @@ class CreateProjectPartnerReportBudget(
             previouslyReportedParkedPrivate = currentParked.privateContribution,
             previouslyReportedParkedAutoPublic = currentParked.automaticPublicContribution,
             previouslyReportedParkedSum = currentParked.sum,
-        ).addExtraLumpSumValues(currentLumpSumValues)
+        ).addExtraLumpSumValues(previouslyReportedFastTrack)
     }
 
     private fun List<PaymentPartnerInstallment>.byFund() =
@@ -440,16 +433,6 @@ class CreateProjectPartnerReportBudget(
             )
         )
     }
-
-    private fun Collection<ProjectLumpSum>.onlyReadyForPayment() = filter { it.isReady() }
-
-    private fun Collection<ProjectLumpSum>.onlyContributionsOf(partnerId: Long) =
-        flatMap { it.lumpSumContributions }.filter { it.partnerId == partnerId }
-
-    private fun Collection<ProjectLumpSum>.sumOfPaymentReadyForPartner(partnerId: Long): BigDecimal =
-        onlyReadyForPayment()
-            .onlyContributionsOf(partnerId)
-            .sumOf { it.amount }
 
     private fun PreviouslyReportedCoFinancing.addExtraLumpSumValues(paymentLumpSums: ReportExpenditureCoFinancingColumn): PreviouslyReportedCoFinancing {
         return this.copy(

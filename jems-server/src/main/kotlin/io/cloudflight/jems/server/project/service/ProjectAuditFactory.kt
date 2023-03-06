@@ -220,7 +220,7 @@ fun projectContractingMonitoringChanged(
         context = context,
         auditCandidate = AuditCandidate(
             action = AuditAction.PROJECT_CONTRACT_MONITORING_CHANGED,
-            project = AuditProject(id = project.id.toString()),
+            project = AuditProject(id = project.id.toString(), customIdentifier = project.customIdentifier, name = project.acronym),
             description = "Fields changed:\n$changes"
         )
     )
