@@ -21,9 +21,11 @@ import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfigu
 import io.cloudflight.jems.server.call.service.model.Call
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
+import io.cloudflight.jems.server.call.service.model.ProjectNotificationConfiguration
 import io.cloudflight.jems.server.call.service.validator.CallValidator
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeSpecificObjective
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs

@@ -130,7 +130,7 @@ class CallControllerTest : UnitTest() {
             firstStepPreSubmissionCheckPluginKey = PLUGIN_KEY,
             reportPartnerCheckPluginKey = PLUGIN_KEY_REPORT,
             projectDefinedUnitCostAllowed = false,
-            projectDefinedLumpSumAllowed = true,
+            projectDefinedLumpSumAllowed = true
         )
 
         private val callDto = CallDTO(
@@ -180,7 +180,7 @@ class CallControllerTest : UnitTest() {
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = PLUGIN_KEY,
             firstStepPreSubmissionCheckPluginKey = PLUGIN_KEY,
-            reportPartnerCheckPluginKey = PLUGIN_KEY_REPORT,
+            reportPartnerCheckPluginKey = PLUGIN_KEY_REPORT
         )
 
         private val callUpdateDto = CallUpdateRequestDTO(

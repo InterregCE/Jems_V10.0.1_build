@@ -11,6 +11,7 @@ import io.cloudflight.jems.api.call.dto.PreSubmissionPluginsDTO
 import io.cloudflight.jems.api.call.dto.applicationFormConfiguration.ApplicationFormFieldConfigurationDTO
 import io.cloudflight.jems.api.call.dto.applicationFormConfiguration.StepSelectionOptionDTO
 import io.cloudflight.jems.api.call.dto.applicationFormConfiguration.UpdateApplicationFormFieldConfigurationRequestDTO
+import io.cloudflight.jems.api.call.dto.notificationConfiguration.ProjectNotificationConfigurationDTO
 import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.Call
@@ -21,6 +22,7 @@ import io.cloudflight.jems.server.call.service.model.CallFundRate
 import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.call.service.model.PreSubmissionPlugins
+import io.cloudflight.jems.server.call.service.model.ProjectNotificationConfiguration
 import io.cloudflight.jems.server.common.CommonDTOMapper
 import io.cloudflight.jems.server.programme.controller.costoption.toDto
 import io.cloudflight.jems.server.programme.controller.priority.toDto
@@ -99,6 +101,10 @@ fun CallCostOption.toDto() = CallCostOptionDTO(
 fun CallApplicationFormFieldsConfiguration.toDto() =
     callDTOMapper.map(this)
 
+fun List<ProjectNotificationConfiguration>.toDto() = map { it.toDto() }
+
+fun List<ProjectNotificationConfigurationDTO>.toNotificationModel() = map { it.toModel() }
+
 fun MutableSet<ApplicationFormFieldConfiguration>.toDto(callType: CallType) =
     map { callDTOMapper.map(it, callType) }.toMutableSet()
 
@@ -117,6 +123,9 @@ fun AllowedRealCostsDTO.toModel() = callDTOMapper.map(this)
 fun CallFundRate.toDto() = callDTOMapper.map(this)
 fun CallFundRateDTO.toModel() = callDTOMapper.map(this)
 
+fun ProjectNotificationConfiguration.toDto() = callDTOMapper.map(this)
+fun ProjectNotificationConfigurationDTO.toModel() = callDTOMapper.map(this)
+
 
 private val callDTOMapper = Mappers.getMapper(CallDTOMapper::class.java)
 
@@ -134,6 +143,8 @@ abstract class CallDTOMapper {
 
     abstract fun map(preSubmissionPluginsDTO: PreSubmissionPluginsDTO): PreSubmissionPlugins
     abstract fun map(preSubmissionPlugins: PreSubmissionPlugins): PreSubmissionPluginsDTO
+    abstract fun map(projectNotificationConfiguration: ProjectNotificationConfiguration): ProjectNotificationConfigurationDTO
+    abstract fun map(projectNotificationConfiguration: ProjectNotificationConfigurationDTO): ProjectNotificationConfiguration
     fun mapUpdateRequest(
         updateApplicationFormFieldConfigurationDTOs: MutableSet<UpdateApplicationFormFieldConfigurationRequestDTO>,
     ): MutableSet<ApplicationFormFieldConfiguration> =
