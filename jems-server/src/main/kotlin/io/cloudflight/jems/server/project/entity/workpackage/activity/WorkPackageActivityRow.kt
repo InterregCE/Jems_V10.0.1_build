@@ -11,4 +11,5 @@ interface WorkPackageActivityRow: TranslationView {
     val endPeriod: Int?
     val title: String?
     val description: String?
+    val partnerId: Long?
 }

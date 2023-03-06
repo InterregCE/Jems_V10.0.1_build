@@ -134,7 +134,8 @@ fun List<WorkPackageActivityRow>.toActivityHistoricalData() =
             startPeriod = groupedRows.value.first().startPeriod,
             endPeriod = groupedRows.value.first().endPeriod,
             title = groupedRows.value.extractField { it.title },
-            description = groupedRows.value.extractField { it.description }
+            description = groupedRows.value.extractField { it.description },
+            partnerIds = groupedRows.value.mapNotNullTo(hashSetOf()) {it.partnerId}
         )
     }
 

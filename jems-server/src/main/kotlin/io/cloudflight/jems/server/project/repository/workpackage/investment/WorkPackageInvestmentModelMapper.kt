@@ -194,7 +194,8 @@ fun List<WorkPackageInvestmentRow>.toWorkPackageInvestmentHistoricalList() =
         documentationExpectedImpacts = groupedRows.value.extractField { it.documentationExpectedImpacts },
         ownershipSiteLocation = groupedRows.value.extractField { it.ownershipSiteLocation },
         ownershipRetain = groupedRows.value.extractField { it.ownershipRetain },
-        ownershipMaintenance = groupedRows.value.extractField { it.ownershipMaintenance }
+        ownershipMaintenance = groupedRows.value.extractField { it.ownershipMaintenance },
+        expectedDeliveryPeriod = groupedRows.value.first().expectedDeliveryPeriod,
     ) }.sortedBy { it.investmentNumber }
 
 fun List<WorkPackageSummaryRow>.toWorkPackageInvestmentSummaryList(workPackageNumber: Int?) =
