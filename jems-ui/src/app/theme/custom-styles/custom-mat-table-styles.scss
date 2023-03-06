@@ -10,7 +10,6 @@
     border: 1px solid var(--table-border-color);
     background-color: var(--table-backaground-color);
 
-
     .mat-header-row {
       .mat-header-cell {
         color: var(--table-header-text-color);
@@ -51,3 +50,6 @@
   }
 }
 
+mat-cell.mat-table-sticky {
+  z-index: 2 !important;
+}
