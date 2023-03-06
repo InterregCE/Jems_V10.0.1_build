@@ -106,7 +106,7 @@ interface ControllerInstitutionPartnerRepository: JpaRepository<ControllerInstit
     @Query("""
         SELECT new kotlin.Pair(pp.project.id, pp.id)
         FROM controller_institution_user AS ciu
-            LEFT JOIN #{#entityName} AS cip
+            INNER JOIN #{#entityName} AS cip
                 ON ciu.id.controllerInstitutionId = cip.institution.id
             LEFT JOIN project_partner pp
                 ON cip.partnerId = pp.id
