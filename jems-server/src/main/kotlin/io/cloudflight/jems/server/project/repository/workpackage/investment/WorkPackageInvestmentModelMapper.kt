@@ -200,6 +200,7 @@ fun List<WorkPackageInvestmentRow>.toWorkPackageInvestmentHistoricalList() =
         ownershipRetain = groupedRows.value.extractField { it.ownershipRetain },
         ownershipMaintenance = groupedRows.value.extractField { it.ownershipMaintenance },
         deactivated = groupedRows.value.first().deactivated ?: false,
+        expectedDeliveryPeriod = groupedRows.value.first().expectedDeliveryPeriod
     ) }.sortedBy { it.investmentNumber }
 
 fun List<WorkPackageSummaryRow>.toWorkPackageInvestmentSummaryList(workPackageNumber: Int?) =

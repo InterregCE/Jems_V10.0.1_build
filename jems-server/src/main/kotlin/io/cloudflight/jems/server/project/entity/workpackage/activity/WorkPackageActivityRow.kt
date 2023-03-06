@@ -12,4 +12,5 @@ interface WorkPackageActivityRow: TranslationView {
     val deactivated: Boolean?
     val title: String?
     val description: String?
+    val partnerId: Long?
 }

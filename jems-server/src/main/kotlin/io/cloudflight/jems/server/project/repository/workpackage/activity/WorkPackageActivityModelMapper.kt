@@ -140,6 +140,7 @@ fun List<WorkPackageActivityRow>.toActivityHistoricalData() =
             title = groupedRows.value.extractField { it.title },
             description = groupedRows.value.extractField { it.description },
             deactivated = groupedRows.value.first().deactivated ?: false,
+            partnerIds = groupedRows.value.mapNotNullTo(hashSetOf()) {it.partnerId}
         )
     }
 
