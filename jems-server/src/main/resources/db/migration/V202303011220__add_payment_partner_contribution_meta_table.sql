@@ -28,7 +28,7 @@ FROM project_lump_sum projectLS
     INNER JOIN project_version AS v ON v.project_id = projectLS.project_id AND v.version = projectLS.last_approved_version_before_ready_for_payment
     LEFT JOIN project_partner_lump_sum FOR SYSTEM_TIME AS OF TIMESTAMP IFNULL(v.row_end, NOW()) AS ppls
         ON projectLS.project_id = ppls.project_id and projectLS.order_nr = ppls.order_nr
-    LEFT JOIN (
+    INNER JOIN (
         SELECT
             p.programme_lump_sum_id AS programmeLumpSumId,
             p.order_nr AS orderNr,
