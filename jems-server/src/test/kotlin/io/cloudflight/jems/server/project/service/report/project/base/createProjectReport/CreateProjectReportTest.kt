@@ -15,6 +15,7 @@ import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.model.ProjectFull
+import io.cloudflight.jems.server.project.service.model.ProjectManagement
 import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerFund
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
@@ -28,9 +29,13 @@ import io.cloudflight.jems.server.project.service.report.model.project.ProjectRe
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportBudget
+import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportCreateModel
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.identification.ProjectReportIdentificationPersistence
+import io.cloudflight.jems.server.project.service.report.project.resultPrinciple.ProjectReportResultPrinciplePersistence
+import io.cloudflight.jems.server.project.service.result.ProjectResultPersistence
+import io.cloudflight.jems.server.project.service.result.model.ProjectResult
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -81,6 +86,42 @@ internal class CreateProjectReportTest : UnitTest() {
             every { mock.id } returns 1L
             return mock
         }
+
+        private fun projectResult(): ProjectResult = mockk {
+            every { resultNumber } returns 1
+            every { periodNumber } returns 2
+            every { programmeResultIndicatorId } returns null
+            every { baseline } returns BigDecimal.valueOf(3)
+            every { targetValue } returns BigDecimal.valueOf(4)
+        }
+
+        private fun projectManagement(): ProjectManagement = mockk {
+            every { projectHorizontalPrinciples } returns null
+        }
+
+        private fun projectReportModel(projectId: Long) = ProjectReportModel(
+            id = 0L,
+            reportNumber = 8,
+            status = ProjectReportStatus.Draft,
+            linkedFormVersion = "version",
+            startDate = YESTERDAY,
+            endDate = TOMORROW,
+
+            deadlineId = null,
+            type = ContractingDeadlineType.Both,
+            periodNumber = 4,
+            reportingDate = YESTERDAY.minusDays(1),
+
+            projectId = projectId,
+            projectIdentifier = "proj-custom-iden",
+            projectAcronym = "proj-acr",
+            leadPartnerNameInOriginalLanguage = "lead-orig",
+            leadPartnerNameInEnglish = "lead-en",
+
+            createdAt = ZonedDateTime.now(),
+            firstSubmission = null,
+            verificationDate = null,
+        )
 
         private fun expectedProjectReport(projectId: Long) = ProjectReport(
             id = 0L,
@@ -205,6 +246,10 @@ internal class CreateProjectReportTest : UnitTest() {
     private lateinit var projectReportIdentificationPersistence: ProjectReportIdentificationPersistence
     @MockK
     private lateinit var createProjectReportBudget: CreateProjectReportBudget
+    @MockK
+    private lateinit var projectResultPersistence: ProjectResultPersistence
+    @MockK
+    private lateinit var projectReportResultPersistence: ProjectReportResultPrinciplePersistence
 
     @InjectMockKs
     lateinit var interactor: CreateProjectReport
@@ -219,6 +264,8 @@ internal class CreateProjectReportTest : UnitTest() {
             auditPublisher,
             projectReportIdentificationPersistence,
             createProjectReportBudget,
+            projectResultPersistence,
+            projectReportResultPersistence
         )
     }
 
@@ -233,18 +280,16 @@ internal class CreateProjectReportTest : UnitTest() {
         every { reportPersistence.getCurrentLatestReportFor(projectId) } returns currentLatestReport(7)
         every { projectPartnerPersistence.findTop30ByProjectId(projectId, "version") } returns listOf(leadPartner())
         every { projectDescriptionPersistence.getBenefits(projectId, "version") } returns projectRelevanceBenefits()
-        every { reportPersistence.getSubmittedProjectReportIds(projectId) } returns setOf()
+        every { reportPersistence.getSubmittedProjectReportIds(projectId) } returns setOf(11L)
         every { projectReportIdentificationPersistence.getSpendingProfileCumulative(any()) } returns mapOf()
         every { projectReportIdentificationPersistence.getSpendingProfileCumulative(any()) } returns mapOf()
         every { createProjectReportBudget.retrieveBudgetDataFor(any(), any())} returns budget
+        every { projectResultPersistence.getResultsForProject(projectId, "version") } returns listOf(projectResult())
+        every { projectDescriptionPersistence.getProjectManagement(projectId, "version") } returns projectManagement()
+        every { projectReportResultPersistence.getResultCumulative(any()) } returns mapOf()
 
-        val reportStored = slot<ProjectReportModel>()
-        every { reportPersistence.createReportAndFillItToEmptyCertificates(
-            capture(reportStored),
-            projectRelevanceBenefits(),
-            mapOf(1L to BigDecimal.ZERO),
-            budget
-        )} returnsArgument 0
+        val reportStored = slot<ProjectReportCreateModel>()
+        every { reportPersistence.createReportAndFillItToEmptyCertificates(capture(reportStored))} returns projectReportModel(projectId)
 
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
@@ -258,7 +303,9 @@ internal class CreateProjectReportTest : UnitTest() {
             reportingDate = YESTERDAY.minusDays(1),
         )
         val created = interactor.createReportFor(projectId, data)
-        assertThat(created).isEqualTo(expectedProjectReport(projectId).copy(createdAt = reportStored.captured.createdAt))
+        assertThat(created).isEqualTo(
+            expectedProjectReport(projectId).copy(createdAt = created.createdAt)
+        )
 
         assertThat(auditSlot.captured.auditCandidate).isEqualTo(AuditCandidate(
             action = AuditAction.PROJECT_REPORT_ADDED,

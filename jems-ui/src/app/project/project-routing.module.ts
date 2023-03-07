@@ -245,6 +245,9 @@ import {
 import {
   ProjectReportFinancialOverviewTabComponent
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-financial-overview-tab/project-report-financial-overview-tab.component';
+import {
+  ProjectReportResultsAndPrinciplesTabComponent
+} from '@project/project-application/report/project-report/project-report-detail-page/project-report-results-and-principles-tab/project-report-results-and-principles-tab.component';
 
 export const routes: Routes = [
   {
@@ -408,6 +411,10 @@ export const routes: Routes = [
                       {
                         path: 'identification',
                         component: ProjectReportIdentificationTabComponent,
+                      },
+                      {
+                        path: 'resultsAndPrinciples',
+                        component: ProjectReportResultsAndPrinciplesTabComponent,
                       },
                       {
                         path: 'certificate',

@@ -11,6 +11,13 @@
                     </span>
             </a>
 
+            <a [active]="activeTab('resultsAndPrinciples')" mat-tab-link
+               (click)="routeTo('resultsAndPrinciples')">
+                    <span jemsText maxWidth="230">
+                        {{'project.application.project.report.tab.results.and.principles' | translate}}
+                    </span>
+            </a>
+
             <a [active]="activeTab('certificate')" mat-tab-link
                (click)="routeTo('certificate')">
                     <span jemsText maxWidth="230">

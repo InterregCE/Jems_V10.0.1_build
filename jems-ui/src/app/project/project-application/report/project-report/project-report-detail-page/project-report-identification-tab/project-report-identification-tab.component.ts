@@ -74,7 +74,7 @@ export class ProjectReportIdentificationTabComponent {
               private projectReportPageStore: ProjectReportPageStore,
               private projectSidenavService: ProjectApplicationFormSidenavService,
               public languageStore: LanguageStore) {
-    this.formService.init(this.form, this.reportId ? this.pageStore.reportEditable$ : this.projectReportPageStore.userCanEditReport$,);
+    this.formService.init(this.form, this.reportId ? this.pageStore.reportEditable$ : this.projectReportPageStore.userCanEditReport$);
     this.data$ = combineLatest([
       pageStore.projectReport$,
       this.projectStore.projectPeriods$,

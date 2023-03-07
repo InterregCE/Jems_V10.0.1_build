@@ -155,6 +155,8 @@ class JemsProjectFileRepositoryTest : UnitTest() {
         "PaymentAttachment",
         "PaymentAdvanceAttachment",
 
+        "ProjectResult",
+
         "PartnerReport",
         "Activity",
         "Deliverable",
