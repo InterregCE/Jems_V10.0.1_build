@@ -9,6 +9,7 @@ import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_
 import io.cloudflight.jems.server.project.service.budget.get_project_budget.GetProjectBudget
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
+import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
@@ -164,7 +165,7 @@ internal class CreateProjectReportBudgetTest : UnitTest() {
         val projectId = 30L
         val version = "v4.2"
 
-        every { reportPersistence.getSubmittedProjectReportIds(projectId) } returns setOf(1L)
+        every { reportPersistence.getSubmittedProjectReportIds(projectId) } returns listOf(Pair(1L, ContractingDeadlineType.Finance))
         every { getProjectBudget.getBudget(projectId, version) } returns listOf(partnerBudget(ProjectPartnerSummary(
             id = 1L,
             abbreviation = "LP",

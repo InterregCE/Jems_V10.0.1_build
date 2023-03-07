@@ -7,6 +7,8 @@ data class CreateProjectPartnerReportWorkPackageActivity(
     val number: Int,
     val title: Set<InputTranslation>,
     val deactivated: Boolean,
+    val startPeriodNumber: Int?,
+    val endPeriodNumber: Int?,
 
     val deliverables: List<CreateProjectPartnerReportWorkPackageActivityDeliverable>,
 )

@@ -3,6 +3,9 @@ package io.cloudflight.jems.server.project.repository.report.project.file
 import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.project.repository.report.project.resultPrinciple.ProjectReportProjectResultRepository
+import io.cloudflight.jems.server.project.repository.report.project.workPlan.ProjectReportWorkPackageActivityDeliverableRepository
+import io.cloudflight.jems.server.project.repository.report.project.workPlan.ProjectReportWorkPackageActivityRepository
+import io.cloudflight.jems.server.project.repository.report.project.workPlan.ProjectReportWorkPackageOutputRepository
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.project.file.ProjectReportFilePersistence
@@ -11,9 +14,36 @@ import org.springframework.transaction.annotation.Transactional
 
 @Repository
 class ProjectReportFilePersistenceProvider(
+    private val workPlanActivityRepository: ProjectReportWorkPackageActivityRepository,
+    private val workPlanActivityDeliverableRepository: ProjectReportWorkPackageActivityDeliverableRepository,
+    private val workPlanOutputRepository: ProjectReportWorkPackageOutputRepository,
+    private val projectResultRepository: ProjectReportProjectResultRepository,
     private val fileService: JemsProjectFileService,
-    private val projectResultRepository: ProjectReportProjectResultRepository
 ) : ProjectReportFilePersistence {
+
+    @Transactional
+    override fun updateReportActivityAttachment(activityId: Long, file: JemsFileCreate): JemsFileMetadata {
+        val activity = workPlanActivityRepository.getById(activityId)
+        activity.attachment.deleteIfPresent()
+
+        return persistFileAndUpdateLink(file = file) { activity.attachment = it }
+    }
+
+    @Transactional
+    override fun updateReportDeliverableAttachment(deliverableId: Long, file: JemsFileCreate): JemsFileMetadata {
+        val deliverable = workPlanActivityDeliverableRepository.getById(deliverableId)
+        deliverable.attachment.deleteIfPresent()
+
+        return persistFileAndUpdateLink(file = file) { deliverable.attachment = it }
+    }
+
+    @Transactional
+    override fun updateReportOutputAttachment(outputId: Long, file: JemsFileCreate): JemsFileMetadata {
+        val output = workPlanOutputRepository.getById(outputId)
+        output.attachment.deleteIfPresent()
+
+        return persistFileAndUpdateLink(file = file) { output.attachment = it }
+    }
 
     @Transactional
     override fun updateProjectResultAttachment(reportId: Long, resultNumber: Int, file: JemsFileCreate): JemsFileMetadata {

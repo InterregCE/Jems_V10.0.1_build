@@ -6,11 +6,10 @@ import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
+import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
-import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancing
-import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
@@ -24,6 +23,7 @@ import io.cloudflight.jems.server.project.service.report.project.certificate.Pro
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.project.identification.ProjectReportIdentificationPersistence
+import io.cloudflight.jems.server.project.service.report.project.workPlan.ProjectReportWorkPlanPersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -35,6 +35,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
 import java.math.BigDecimal
 import java.time.ZonedDateTime
@@ -154,6 +156,8 @@ internal class SubmitProjectReportTest : UnitTest() {
     @MockK
     lateinit var reportExpenditureCostCategoryPersistence: ProjectPartnerReportExpenditureCostCategoryPersistence
     @MockK
+    lateinit var reportWorkPlanPersistence: ProjectReportWorkPlanPersistence
+    @MockK
     lateinit var auditPublisher: ApplicationEventPublisher
 
     @InjectMockKs
@@ -162,15 +166,22 @@ internal class SubmitProjectReportTest : UnitTest() {
     @BeforeEach
     fun reset() {
         clearMocks(reportPersistence)
+        clearMocks(reportWorkPlanPersistence)
         clearMocks(auditPublisher)
     }
 
-    @Test
-    fun submit() {
+    @ParameterizedTest(name = "submit (type {0})")
+    @EnumSource(value = ContractingDeadlineType::class)
+    fun submit(type: ContractingDeadlineType) {
         val report = mockk<ProjectReportModel>()
         every { report.status } returns ProjectReportStatus.Draft
         every { report.id } returns REPORT_ID
+        every { report.type } returns type
         every { reportPersistence.getReportById(PROJECT_ID, REPORT_ID) } returns report
+
+        if (type == ContractingDeadlineType.Finance) {
+            every { reportWorkPlanPersistence.deleteWorkPlan(PROJECT_ID, REPORT_ID) } answers { }
+        }
 
         val submissionTime = slot<ZonedDateTime>()
         every { reportPersistence.submitReport(any(), any(), capture(submissionTime)) } returns mockedResult
@@ -201,6 +212,9 @@ internal class SubmitProjectReportTest : UnitTest() {
                 description = "[FG01_654]: Project report PR.4 submitted, certificates included: LP5-R.7"
             )
         )
+
+        val expectDeletions = if (type == ContractingDeadlineType.Finance) 1 else 0
+        verify(exactly = expectDeletions) { reportWorkPlanPersistence.deleteWorkPlan(any(), any()) }
     }
 
     @Test

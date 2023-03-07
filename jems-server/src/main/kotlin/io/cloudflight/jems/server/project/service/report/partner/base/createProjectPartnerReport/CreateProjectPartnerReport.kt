@@ -30,6 +30,7 @@ import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkP
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 
 @Service
 class CreateProjectPartnerReport(
@@ -159,37 +160,6 @@ class CreateProjectPartnerReport(
         countryCode = addresses.firstOrNull { it.type == ProjectPartnerAddressType.Organization }?.countryCode,
     ).apply {
         currency = getCurrencyCodeForCountry(countryCode, country, currencyResolver)
-    }
-
-    private fun List<ProjectWorkPackageFull>.toCreateEntity() = map { wp ->
-        CreateProjectPartnerReportWorkPackage(
-            workPackageId = wp.id,
-            number = wp.workPackageNumber,
-            deactivated = wp.deactivated,
-            activities = wp.activities.map { a ->
-                CreateProjectPartnerReportWorkPackageActivity(
-                    activityId = a.id,
-                    number = a.activityNumber,
-                    title = a.title,
-                    deliverables = a.deliverables.map { d ->
-                        CreateProjectPartnerReportWorkPackageActivityDeliverable(
-                            deliverableId = d.id,
-                            number = d.deliverableNumber,
-                            title = d.title,
-                            deactivated = d.deactivated
-                        )
-                    },
-                    deactivated = a.deactivated
-                )
-            },
-            outputs = wp.outputs.map { o ->
-                CreateProjectPartnerReportWorkPackageOutput(
-                    number = o.outputNumber,
-                    title = o.title,
-                    deactivated = o.deactivated,
-                )
-            },
-        )
     }
 
     private fun List<ProjectWorkPackageFull>.extractInvestments() = map { wp ->

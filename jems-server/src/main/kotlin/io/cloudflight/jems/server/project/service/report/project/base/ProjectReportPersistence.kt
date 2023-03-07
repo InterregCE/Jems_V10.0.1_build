@@ -1,9 +1,9 @@
 package io.cloudflight.jems.server.project.service.report.project.base
 
+import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportDeadline
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
-import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportCreateModel
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
@@ -15,8 +15,6 @@ interface ProjectReportPersistence {
     fun listReports(projectId: Long, pageable: Pageable): Page<ProjectReportModel>
 
     fun getReportById(projectId: Long, reportId: Long): ProjectReportModel
-
-    fun createReportAndFillItToEmptyCertificates(reportToCreate: ProjectReportCreateModel): ProjectReportModel
 
     fun updateReport(
         projectId: Long,
@@ -38,6 +36,6 @@ interface ProjectReportPersistence {
 
     fun submitReport(projectId: Long, reportId: Long, submissionTime: ZonedDateTime): ProjectReportSubmissionSummary
 
-    fun getSubmittedProjectReportIds(projectId: Long): Set<Long>
+    fun getSubmittedProjectReportIds(projectId: Long): List<Pair<Long, ContractingDeadlineType>>
 
 }

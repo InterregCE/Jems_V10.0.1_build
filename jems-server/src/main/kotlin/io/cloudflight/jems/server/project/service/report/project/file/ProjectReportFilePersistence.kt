@@ -5,6 +5,12 @@ import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMeta
 
 interface ProjectReportFilePersistence {
 
+    fun updateReportActivityAttachment(activityId: Long, file: JemsFileCreate): JemsFileMetadata
+
+    fun updateReportDeliverableAttachment(deliverableId: Long, file: JemsFileCreate): JemsFileMetadata
+
+    fun updateReportOutputAttachment(outputId: Long, file: JemsFileCreate): JemsFileMetadata
+
     fun updateProjectResultAttachment(reportId: Long, resultNumber: Int, file: JemsFileCreate): JemsFileMetadata
 
 }

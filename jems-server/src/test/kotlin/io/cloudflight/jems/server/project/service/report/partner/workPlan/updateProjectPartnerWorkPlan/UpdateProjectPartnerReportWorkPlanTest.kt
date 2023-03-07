@@ -27,6 +27,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import java.time.ZonedDateTime
 
 internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
@@ -183,10 +185,11 @@ internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
         clearMocks(reportWpPersistence)
     }
 
-    @Test
-    fun update() {
+    @ParameterizedTest(name = "update {0}")
+    @EnumSource(value = ReportStatus::class, names = ["Draft"])
+    fun update(status: ReportStatus) {
         every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = 11L) } returns
-            ProjectPartnerReportStatusAndVersion(ReportStatus.Draft, "4.12.0")
+            ProjectPartnerReportStatusAndVersion(status, "4.12.0")
         every { reportWpPersistence.getPartnerReportWorkPlanById(PARTNER_ID, reportId = 11) } returnsMany listOf(
             listOf(oldWorkPlan),
             listOf(newWorkPlan),
@@ -235,10 +238,11 @@ internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
         verify(exactly = 2) { reportWpPersistence.getPartnerReportWorkPlanById(PARTNER_ID, reportId = 12L) }
     }
 
-    @Test
-    fun `update - wrong status`() {
+    @ParameterizedTest(name = "update - wrong status {0}")
+    @EnumSource(value = ReportStatus::class, names = ["Draft"], mode = EnumSource.Mode.EXCLUDE)
+    fun `update - wrong status`(status: ReportStatus) {
         every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = 0L) } returns
-            ProjectPartnerReportStatusAndVersion(ReportStatus.Submitted, "4.12.0")
+            ProjectPartnerReportStatusAndVersion(status, "4.12.0")
         assertThrows<ReportAlreadyClosed> { updateWorkPlan.update(PARTNER_ID, reportId = 0L, emptyList()) }
     }
 }
