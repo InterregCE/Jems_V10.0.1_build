@@ -64,8 +64,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
   constants = PartnerControlReportExpenditureConstants;
   currencies: CurrencyDTO[];
   currentReport: ProjectPartnerReportDTO;
-  isReportEditable$: Observable<boolean>;
-  isReportFinalized: boolean;
+  isFormEditable: boolean;
   data$: Observable<{
     expendituresCosts: ProjectPartnerReportExpenditureCostDTO[];
     costCategories: string[];
@@ -105,7 +104,6 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
               private router: RoutingService,
               private customTranslatePipe: CustomTranslatePipe,
               private translateByInputLanguagePipe: TranslateByInputLanguagePipe) {
-    this.isReportEditable$ = this.pageStore.isEditable$;
   }
 
   ngOnInit(): void {
@@ -114,18 +112,19 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
       this.pageStore.investmentsSummary$,
       this.pageStore.reportLumpSums$,
       this.pageStore.reportUnitCosts$,
-      this.pageStore.isFinalized$
+      this.pageStore.isFinalized$,
+      this.pageStore.isEditable$
     ]).pipe(
-      map(([investments, lumpSums, unitCosts, isFinalized]) => {
+      map(([investments, lumpSums, unitCosts, isFinalized, isEditable]) => {
           this.setColumnsToDisplay(investments, lumpSums.length > 0 || unitCosts.length > 0);
           this.setColumnsWidths(investments, lumpSums.length > 0 || unitCosts.length > 0);
-          this.isReportFinalized = isFinalized;
+          this.isFormEditable = isEditable && !isFinalized;
         }
       ),
       untilDestroyed(this)
     ).subscribe();
-    this.pageStore.currentReport$.pipe(untilDestroyed(this)).subscribe(report=> this.currentReport = report);
-    this.pageStore.currencies$.pipe(untilDestroyed(this)).subscribe(currencies=> this.currencies = currencies);
+    this.pageStore.currentReport$.pipe(untilDestroyed(this)).subscribe(report => this.currentReport = report);
+    this.pageStore.currencies$.pipe(untilDestroyed(this)).subscribe(currencies => this.currencies = currencies);
 
     this.dataAsObservable();
   }
@@ -137,18 +136,21 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
   }
 
   getAvailableCurrenciesByType(type: string | null, unitCost?: any) {
-    switch(type) {
-      case 'lumpSum': return this.currencies.filter((currency) => currency.code === CurrencyCodesEnum.EUR);
-      case 'unitCost': return this.currencies.filter((currency) => currency.code === CurrencyCodesEnum.EUR
-        || currency.code === this.availableUnitCosts
-          .filter(el => (el.id === unitCost?.value?.id || el.id === unitCost?.id) )[0].foreignCurrencyCode);
-      default: return this.currencies;
+    switch (type) {
+      case 'lumpSum':
+        return this.currencies.filter((currency) => currency.code === CurrencyCodesEnum.EUR);
+      case 'unitCost':
+        return this.currencies.filter((currency) => currency.code === CurrencyCodesEnum.EUR
+          || currency.code === this.availableUnitCosts
+            .filter(el => (el.id === unitCost?.value?.id || el.id === unitCost?.id))[0].foreignCurrencyCode);
+      default:
+        return this.currencies;
     }
   }
 
   disableOnReset(control: FormGroup): void {
     control.get(this.constants.FORM_CONTROL_NAMES.certifiedAmount)?.disable();
-    if (this.isReportFinalized || control.get(this.constants.FORM_CONTROL_NAMES.parked)?.value) {
+    if (!this.isFormEditable || control.get(this.constants.FORM_CONTROL_NAMES.parked)?.value) {
       control.get(this.constants.FORM_CONTROL_NAMES.deductedAmount)?.disable();
     } else {
       control.get(this.constants.FORM_CONTROL_NAMES.deductedAmount)?.enable();
@@ -160,7 +162,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
     this.items.clear();
     partnerReportExpenditures.forEach((partnerReportExpenditure, expenditureIndex) => this.addExpenditure(partnerReportExpenditure, expenditureIndex));
     this.tableData = [...this.items.controls];
-    this.formService.setEditable(!this.isReportFinalized);
+    this.formService.setEditable(this.isFormEditable);
 
     this.items.controls.forEach((formGroup: FormGroup) => (this.disableOnReset(formGroup)));
   }
@@ -205,8 +207,8 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
       this.reportCosts$,
     ]).pipe(
       map(([typologyOfErrors, expendituresCosts, costCategories, investmentsSummary, contractIDs, reportCosts]) => ({
-        typologyOfErrors,
-        expendituresCosts,
+          typologyOfErrors,
+          expendituresCosts,
           costCategories,
           investmentsSummary,
           contractIDs,
@@ -219,7 +221,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
     );
   }
 
-  private setColumnsToDisplay(investments: InvestmentSummary[], isCostOptionsAvailable: boolean){
+  private setColumnsToDisplay(investments: InvestmentSummary[], isCostOptionsAvailable: boolean) {
 
     let columnsToDisplay: any[];
     const columnsToDisplayFirstPart = [
@@ -326,7 +328,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
   }
 
   getUnitCostType(reportExpenditureCost: ProjectPartnerReportExpenditureCostDTO) {
-    if(!reportExpenditureCost.lumpSumId && !reportExpenditureCost.unitCostId) {
+    if (!reportExpenditureCost.lumpSumId && !reportExpenditureCost.unitCostId) {
       return '';
     }
     return reportExpenditureCost.lumpSumId ? 'lumpSum' : 'unitCost';
@@ -358,7 +360,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
       })
     );
 
-    if(reportExpenditureControl.deductedAmount) {
+    if (reportExpenditureControl.deductedAmount) {
       this.items.controls[expenditureIndex].get(this.constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.setValidators([Validators.required]);
     }
   }
@@ -407,7 +409,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
         postfix = '-' + this.customTranslatePipe.transform('project.application.form.section.part.e.period.preparation');
       } else if (costOption.period && costOption.period === this.PERIOD_CLOSURE) {
         postfix = '-' + this.customTranslatePipe.transform('project.application.form.section.part.e.period.preparation');
-      } else if(costOption.period) {
+      } else if (costOption.period) {
         postfix = '-' + costOption.period;
       }
       return this.translateByInputLanguagePipe.transform(costOption.name).pipe(map(n => n + postfix));
@@ -433,7 +435,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
   }
 
   getTypologyOfErrorsTooltip(typologyOfErrors: [], selectedValue: string): string {
-    if(typologyOfErrors.length < 1) {
+    if (typologyOfErrors.length < 1) {
       return this.customTranslatePipe.transform('project.application.partner.report.control.expenditure.typology.error.warning');
     }
     return selectedValue;
