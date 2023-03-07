@@ -29,9 +29,15 @@ interface WorkPackageOutputRepository: PagingAndSortingRepository<WorkPackageOut
              entity.target_value as targetValue,
              CONVERT(entity.period_number, INT) as periodNumber,
              entity.deactivated as deactivated,
-             workPackageOutputTransl.*
+             workPackageOutputTransl.*,
+             programmeIndicatorOutputTransl.name as programmeOutputIndicatorName,
+             programmeIndicatorOutputTransl.measurement_unit as programmeOutputIndicatorMeasurementUnit,
+             programmeIndicatorOutputTransl.language as programmeOutputIndicatorLanguage
              FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
-             LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS workPackageOutputTransl ON entity.work_package_id = workPackageOutputTransl.work_package_id AND entity.output_number = workPackageOutputTransl.output_number
+             LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS workPackageOutputTransl
+                ON entity.work_package_id = workPackageOutputTransl.work_package_id AND entity.output_number = workPackageOutputTransl.output_number
+             LEFT JOIN programme_indicator_output_transl AS programmeIndicatorOutputTransl
+                ON entity.indicator_output_id = programmeIndicatorOutputTransl.source_entity_id
              WHERE entity.work_package_id IN :workPackageIds
              ORDER BY entity.output_number
              """,
