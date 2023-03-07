@@ -1,6 +1,6 @@
 .end-flex-header-table {
   display: flex;
-  justify-content: end;
+  justify-content: flex-end;
 }
 
 .custom-wrapper {
@@ -30,7 +30,7 @@
 }
 
 .align-right {
-  justify-content: end !important;
+  justify-content: flex-end !important;
 }
 
 .border-with-dotted {
