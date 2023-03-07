@@ -23,4 +23,6 @@ interface ProjectDescriptionPersistence {
     fun updateProjectLongTermPlans(id: Long, projectLongTermPlans: ProjectLongTermPlans): ProjectLongTermPlans
 
     fun getBenefits(projectId: Long, version: String?): List<ProjectRelevanceBenefit>?
+
+    fun getProjectManagement(projectId: Long, version: String?): ProjectManagement?
 }

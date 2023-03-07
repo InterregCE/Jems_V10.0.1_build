@@ -13,6 +13,9 @@ enum class JemsFileType(
 
     Project(null, true, "application"),
       Report(Project, false),
+        ProjectReport(Report, true),
+          ProjectResult(ProjectReport, true),
+
         Partner(Report, true),
           PartnerReport(Partner, true),
 

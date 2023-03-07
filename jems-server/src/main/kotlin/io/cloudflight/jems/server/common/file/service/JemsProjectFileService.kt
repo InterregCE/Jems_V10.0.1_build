@@ -31,6 +31,10 @@ class JemsProjectFileService(
             JemsFileType.PaymentAttachment,
             JemsFileType.PaymentAdvanceAttachment,
 
+            // Project Report
+            JemsFileType.ProjectResult,
+
+            // Partner Report
             JemsFileType.PartnerReport,
             JemsFileType.Activity,
             JemsFileType.Deliverable,
@@ -39,6 +43,7 @@ class JemsProjectFileService(
             JemsFileType.ProcurementAttachment,
             JemsFileType.Contribution,
 
+            // Partner Control
             JemsFileType.ControlDocument,
             JemsFileType.ControlCertificate,
             JemsFileType.ControlReport,

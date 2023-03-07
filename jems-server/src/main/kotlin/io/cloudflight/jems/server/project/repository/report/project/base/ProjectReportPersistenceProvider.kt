@@ -1,12 +1,14 @@
 package io.cloudflight.jems.server.project.repository.report.project.base
 
 import io.cloudflight.jems.server.common.entity.TranslationId
+import io.cloudflight.jems.server.programme.repository.indicator.ResultIndicatorRepository
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportIdentificationTargetGroupEntity
 import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportIdentificationTargetGroupTranslEntity
 import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportSpendingProfileEntity
 import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportSpendingProfileId
+import io.cloudflight.jems.server.project.entity.report.project.resultPrinciple.ProjectReportHorizontalPrincipleEntity
 import io.cloudflight.jems.server.project.repository.contracting.reporting.ProjectContractingReportingRepository
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
@@ -15,6 +17,10 @@ import io.cloudflight.jems.server.project.repository.report.project.financialOve
 import io.cloudflight.jems.server.project.repository.report.project.financialOverview.costCategory.ReportProjectCertificateCostCategoryRepository
 import io.cloudflight.jems.server.project.repository.report.project.identification.ProjectReportIdentificationTargetGroupRepository
 import io.cloudflight.jems.server.project.repository.report.project.identification.ProjectReportSpendingProfileRepository
+import io.cloudflight.jems.server.project.repository.report.project.resultPrinciple.ProjectReportHorizontalPrincipleRepository
+import io.cloudflight.jems.server.project.repository.report.project.resultPrinciple.ProjectReportProjectResultRepository
+import io.cloudflight.jems.server.project.repository.report.project.resultPrinciple.toIndexedEntity
+import io.cloudflight.jems.server.project.service.model.ProjectHorizontalPrinciples
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
@@ -22,7 +28,9 @@ import io.cloudflight.jems.server.project.service.report.model.project.ProjectRe
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportDeadline
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
-import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportBudget
+import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedCoFinancing
+import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportCreateModel
+import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportResultCreate
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import org.springframework.data.domain.Page
@@ -45,6 +53,9 @@ class ProjectReportPersistenceProvider(
     private val programmeFundRepository: ProgrammeFundRepository,
     private val projectReportCoFinancingRepository: ProjectReportCoFinancingRepository,
     private val projectReportCertificateCostCategoryRepository: ReportProjectCertificateCostCategoryRepository,
+    private val resultIndicatorRepository: ResultIndicatorRepository,
+    private val projectResultRepository: ProjectReportProjectResultRepository,
+    private val horizontalPrincipleRepository: ProjectReportHorizontalPrincipleRepository,
 ) : ProjectReportPersistence {
 
     @Transactional(readOnly = true)
@@ -56,23 +67,24 @@ class ProjectReportPersistenceProvider(
         projectReportRepository.getByIdAndProjectId(reportId, projectId = projectId).toModel()
 
     @Transactional
-    override fun createReportAndFillItToEmptyCertificates(
-        report: ProjectReportModel,
-        targetGroups: List<ProjectRelevanceBenefit>,
-        previouslyReportedByPartner: Map<Long, BigDecimal>,
-        budget: ProjectReportBudget
-    ): ProjectReportModel {
-        val reportPersisted = projectReportRepository
-            .save(report.toEntity(deadlineResolver = { contractingDeadlineRepository.findByProjectIdAndId(report.projectId, it) }))
+    override fun createReportAndFillItToEmptyCertificates(reportToCreate: ProjectReportCreateModel): ProjectReportModel {
+        val reportPersisted = persistBaseIdentification(reportToCreate.reportBase)
 
-        createTargetGroups(targetGroups, reportPersisted)
-        createSpendingProfiles(previouslyReportedByPartner, reportPersisted)
-        saveCoFinancing(budget, reportPersisted)
-        saveCostCategory(budget.costCategorySetup, report = reportPersisted)
-        fillProjectReportToAllEmptyCertificates(projectId = report.projectId, reportPersisted)
+        persistTargetGroups(reportToCreate.targetGroups, reportPersisted)
+        persistPreviousSpendingProfiles(reportToCreate.previouslyReportedSpendingProfileByPartner, reportPersisted)
+        persistCoFinancing(reportToCreate.reportBudget.coFinancing, reportPersisted)
+        persistCostCategories(reportToCreate.reportBudget.costCategorySetup, reportPersisted)
+        persistResultsAndHorizontalPrinciples(reportToCreate.results, reportToCreate.horizontalPrinciples, reportPersisted)
+
+        fillProjectReportToAllEmptyCertificates(projectId = reportToCreate.reportBase.projectId, reportPersisted)
 
         return reportPersisted.toModel()
     }
+
+    private fun persistBaseIdentification(report: ProjectReportModel): ProjectReportEntity =
+        projectReportRepository.save(
+            report.toEntity(deadlineResolver = { contractingDeadlineRepository.findByProjectIdAndId(report.projectId, it) })
+        )
 
     @Transactional
     override fun updateReport(
@@ -134,7 +146,8 @@ class ProjectReportPersistenceProvider(
     override fun getSubmittedProjectReportIds(projectId: Long): Set<Long> =
         projectReportRepository.getSubmittedProjectReportIds(projectId)
 
-    private fun createTargetGroups(targetGroups: List<ProjectRelevanceBenefit>, reportEntity: ProjectReportEntity) {
+
+    private fun persistTargetGroups(targetGroups: List<ProjectRelevanceBenefit>, reportEntity: ProjectReportEntity) {
         reportIdentificationTargetGroupRepository.saveAll(
             targetGroups.mapIndexed { index, targetGroup ->
                 ProjectReportIdentificationTargetGroupEntity(
@@ -164,41 +177,62 @@ class ProjectReportPersistenceProvider(
         }
     }
 
-    private fun createSpendingProfiles(
-        previouslyReportedByPartner: Map<Long, BigDecimal>,
-        reportPersisted: ProjectReportEntity
+    private fun persistPreviousSpendingProfiles(
+        previouslyReportedSpendingProfileByPartner: Map<Long, BigDecimal>,
+        reportPersisted: ProjectReportEntity,
     ) {
-        projectReportSpendingProfileRepository.saveAll(
-            previouslyReportedByPartner.map {
-                ProjectReportSpendingProfileEntity(
-                    id = ProjectReportSpendingProfileId(reportPersisted, it.key),
-                    previouslyReported = it.value,
-                    currentlyReported = BigDecimal.ZERO
-                )
-            }
-        )
+        val spendingProfiles = previouslyReportedSpendingProfileByPartner.map {
+            ProjectReportSpendingProfileEntity(
+                id = ProjectReportSpendingProfileId(reportPersisted, it.key),
+                previouslyReported = it.value,
+                currentlyReported = BigDecimal.ZERO,
+            )
+        }
+        projectReportSpendingProfileRepository.saveAll(spendingProfiles)
     }
 
-    private fun saveCoFinancing(
-        budget: ProjectReportBudget,
+    private fun persistCoFinancing(
+        coFinancing: PreviouslyProjectReportedCoFinancing,
         report: ProjectReportEntity,
     ) {
         projectReportCoFinancingRepository.saveAll(
-            budget.coFinancing.fundsSorted.toProjectReportEntity(
+            coFinancing.fundsSorted.toProjectReportEntity(
                 reportEntity = report,
                 programmeFundResolver = { programmeFundRepository.getById(it) },
             )
         )
 
         projectReportCertificateCoFinancingRepository.save(
-            budget.coFinancing.toProjectReportEntity(report),
+            coFinancing.toProjectReportEntity(report),
         )
     }
 
-    private fun saveCostCategory(
+    private fun persistCostCategories(
         certificateCostCategory: ReportCertificateCostCategory,
         report: ProjectReportEntity,
     ) =
         projectReportCertificateCostCategoryRepository.save(certificateCostCategory.toCreateEntity(report = report))
+
+    private fun persistResultsAndHorizontalPrinciples(
+        projectResults: List<ProjectReportResultCreate>,
+        horizontalPrinciples: ProjectHorizontalPrinciples,
+        projectReport: ProjectReportEntity
+    ) {
+        projectResultRepository.saveAll(
+            projectResults.toIndexedEntity(
+                projectReport = projectReport,
+                indicatorEntityResolver = { it?.let { resultIndicatorRepository.getById(it) } },
+            )
+        )
+
+        horizontalPrincipleRepository.save(
+            ProjectReportHorizontalPrincipleEntity(
+                projectReport = projectReport,
+                sustainableDevelopmentCriteriaEffect = horizontalPrinciples.sustainableDevelopmentCriteriaEffect,
+                equalOpportunitiesEffect = horizontalPrinciples.equalOpportunitiesEffect,
+                sexualEqualityEffect = horizontalPrinciples.sexualEqualityEffect
+            )
+        )
+    }
 
 }

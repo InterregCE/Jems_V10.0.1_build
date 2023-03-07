@@ -5,11 +5,13 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
+import io.cloudflight.jems.server.programme.repository.indicator.ResultIndicatorRepository
 import io.cloudflight.jems.server.project.entity.contracting.reporting.ProjectContractingReportingEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportIdentificationTargetGroupEntity
+import io.cloudflight.jems.server.project.entity.report.project.resultPrinciple.ProjectReportProjectResultEntity
 import io.cloudflight.jems.server.project.repository.contracting.reporting.ProjectContractingReportingRepository
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
@@ -18,8 +20,12 @@ import io.cloudflight.jems.server.project.repository.report.project.financialOve
 import io.cloudflight.jems.server.project.repository.report.project.financialOverview.costCategory.ReportProjectCertificateCostCategoryRepository
 import io.cloudflight.jems.server.project.repository.report.project.identification.ProjectReportIdentificationTargetGroupRepository
 import io.cloudflight.jems.server.project.repository.report.project.identification.ProjectReportSpendingProfileRepository
+import io.cloudflight.jems.server.project.repository.report.project.resultPrinciple.ProjectReportHorizontalPrincipleRepository
+import io.cloudflight.jems.server.project.repository.report.project.resultPrinciple.ProjectReportProjectResultRepository
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
+import io.cloudflight.jems.server.project.service.model.ProjectHorizontalPrinciples
+import io.cloudflight.jems.server.project.service.model.ProjectManagement
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
@@ -27,7 +33,10 @@ import io.cloudflight.jems.server.project.service.report.model.project.base.Proj
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportBudget
+import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportCreateModel
+import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportResultCreate
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
+import io.cloudflight.jems.server.project.service.result.model.ProjectResult
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -183,28 +192,61 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
                 )
             )
         )
+
+        fun projectResult(): List<ProjectReportResultCreate> = listOf(mockk {
+            every { resultNumber } returns 57
+            every { periodNumber } returns 1
+            every { programmeResultIndicatorId } returns 2
+            every { baseline } returns BigDecimal.valueOf(3)
+            every { targetValue } returns BigDecimal.valueOf(4)
+            every { previouslyReported } returns BigDecimal.valueOf(5)
+        })
+
+        fun projectManagement(): ProjectHorizontalPrinciples = mockk {
+            every { sustainableDevelopmentCriteriaEffect } returns mockk()
+            every { equalOpportunitiesEffect } returns mockk()
+            every { sexualEqualityEffect } returns mockk()
+        }
     }
 
     @MockK
     private lateinit var projectReportRepository: ProjectReportRepository
+
     @MockK
     private lateinit var contractingDeadlineRepository: ProjectContractingReportingRepository
+
     @MockK
     private lateinit var reportIdentificationTargetGroupRepository: ProjectReportIdentificationTargetGroupRepository
+
     @MockK
     private lateinit var partnerRepository: ProjectPartnerRepository
+
     @MockK
     private lateinit var partnerReportRepository: ProjectPartnerReportRepository
+
     @MockK
     private lateinit var projectReportSpendingProfileRepository: ProjectReportSpendingProfileRepository
+
     @MockK
     private lateinit var projectReportCoFinancingRepository: ProjectReportCoFinancingRepository
+
     @MockK
     private lateinit var programmeFundRepository: ProgrammeFundRepository
+
     @MockK
     private lateinit var projectReportCertificateCoFinancingRepository: ReportProjectCertificateCoFinancingRepository
+
     @MockK
     private lateinit var projectReportCertificateCostCategoryRepository: ReportProjectCertificateCostCategoryRepository
+
+    @MockK
+    private lateinit var resultIndicatorRepository: ResultIndicatorRepository
+
+    @MockK
+    private lateinit var projectResultRepository: ProjectReportProjectResultRepository
+
+    @MockK
+    private lateinit var horizontalPrincipleRepository: ProjectReportHorizontalPrincipleRepository
 
     @InjectMockKs
     private lateinit var persistence: ProjectReportPersistenceProvider
@@ -218,7 +260,10 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
             projectReportCoFinancingRepository,
             programmeFundRepository,
             projectReportCertificateCoFinancingRepository,
-            projectReportCertificateCostCategoryRepository
+            projectReportCertificateCostCategoryRepository,
+            resultIndicatorRepository,
+            projectResultRepository,
+            horizontalPrincipleRepository
         )
     }
 
@@ -270,8 +315,24 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
         every { projectReportCoFinancingRepository.saveAll(listOf()) } returnsArgument 0
         every { projectReportCertificateCoFinancingRepository.save(any()) } returnsArgument 0
         every { projectReportCertificateCostCategoryRepository.save(any()) } returnsArgument 0
-        val reportToCreate = report(0L, projectId).copy(periodNumber = null)
-        assertThat(persistence.createReportAndFillItToEmptyCertificates(reportToCreate, projectRelevanceBenefits(), mapOf(), budget))
+        every { projectReportRepository.getSubmittedProjectReportIds(projectId) } returns setOf(567L)
+        every { projectResultRepository.getCumulativeValues(setOf(567L)) } returns listOf(Pair(57, BigDecimal.TEN))
+        every { projectResultRepository.saveAll(any<List<ProjectReportProjectResultEntity>>()) } returnsArgument 0
+        every { horizontalPrincipleRepository.save(any()) } returnsArgument 0
+        every { resultIndicatorRepository.getById(2) } returns mockk()
+
+        assertThat(
+            persistence.createReportAndFillItToEmptyCertificates(
+                ProjectReportCreateModel(
+                    report(0L, projectId).copy(periodNumber = null),
+                    budget,
+                    projectRelevanceBenefits(),
+                    mapOf(),
+                    projectResult(),
+                    projectManagement(),
+                )
+            )
+        )
             .isEqualTo(report(0L /* is changed by DB */, projectId).copy(periodNumber = null))
         assertThat(saveSlot.captured.projectId).isEqualTo(projectId)
 
@@ -293,17 +354,22 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
             periodNumber = 14,
             reportingDate = WEEK_AGO,
         )
-        assertThat(persistence.updateReport(projectId,
-            reportId = 14L, startDate = WEEK_AGO, endDate = YEAR_AGO, deadline = deadline
-        )).isEqualTo(report(14L, projectId = projectId).copy(
-            // taken from deadline entity, because deadlineId is not null
-            startDate = WEEK_AGO,
-            endDate = YEAR_AGO,
-            deadlineId = 84L,
-            type = ContractingDeadlineType.Finance,
-            periodNumber = 5,
-            reportingDate = MONTH_AGO,
-        ))
+        assertThat(
+            persistence.updateReport(
+                projectId,
+                reportId = 14L, startDate = WEEK_AGO, endDate = YEAR_AGO, deadline = deadline
+            )
+        ).isEqualTo(
+            report(14L, projectId = projectId).copy(
+                // taken from deadline entity, because deadlineId is not null
+                startDate = WEEK_AGO,
+                endDate = YEAR_AGO,
+                deadlineId = 84L,
+                type = ContractingDeadlineType.Finance,
+                periodNumber = 5,
+                reportingDate = MONTH_AGO,
+            )
+        )
 
         // asserting report entity itself
         assertThat(report.startDate).isEqualTo(WEEK_AGO)
@@ -341,7 +407,8 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
         every { partnerReportRepository.findTotalAfterControlPerPartner(projectReportId) } returns
             listOf(Pair(10L, BigDecimal(400)), Pair(11L, BigDecimal(200)))
         assertThat(persistence.getCurrentSpendingProfile(projectReportId)).isEqualTo(
-            mapOf(10L to BigDecimal(400), 11L to BigDecimal(200)))
+            mapOf(10L to BigDecimal(400), 11L to BigDecimal(200))
+        )
     }
 
     @Test

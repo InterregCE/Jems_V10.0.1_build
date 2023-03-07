@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.repository
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.api.project.dto.description.ProjectHorizontalPrinciplesEffect
+import io.cloudflight.jems.api.project.dto.description.ProjectHorizontalPrinciplesEffect.*
 import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.entity.description.ProjectCooperationCriteriaEntity
@@ -86,6 +86,7 @@ internal class ProjectDescriptionPersistenceTest : UnitTest() {
                     overallObjective = setOf(InputTranslation(SystemLanguage.EN, "overallObjective"))
                 )
             )
+
         private fun dummyProjectRelevance() = ProjectRelevanceEntity(
             projectId = PROJECT_ID,
             translatedValues = combineTranslatedValuesRelevance(
@@ -152,6 +153,7 @@ internal class ProjectDescriptionPersistenceTest : UnitTest() {
                 }
             )
         )
+
         private fun dummyProjectPartnership() = ProjectPartnershipEntity(
             projectId = PROJECT_ID,
             translatedValues = combineTranslatedValuesPartnership(
@@ -159,6 +161,7 @@ internal class ProjectDescriptionPersistenceTest : UnitTest() {
                 partnership = setOf(InputTranslation(SystemLanguage.EN, "partnership"))
             )
         )
+
         private fun dummyProjectManagement() = ProjectManagementEntity(
             projectId = PROJECT_ID,
             projectCooperationCriteria = ProjectCooperationCriteriaEntity(
@@ -168,9 +171,9 @@ internal class ProjectDescriptionPersistenceTest : UnitTest() {
                 projectJointFinancing = true
             ),
             projectHorizontalPrinciples = ProjectHorizontalPrinciplesEntity(
-                sustainableDevelopmentCriteriaEffect = ProjectHorizontalPrinciplesEffect.PositiveEffects,
-                equalOpportunitiesEffect = ProjectHorizontalPrinciplesEffect.Neutral,
-                sexualEqualityEffect = ProjectHorizontalPrinciplesEffect.NegativeEffects
+                sustainableDevelopmentCriteriaEffect = PositiveEffects,
+                equalOpportunitiesEffect = Neutral,
+                sexualEqualityEffect = NegativeEffects
             ),
             translatedValues = combineTranslatedValuesManagement(
                 projectId = PROJECT_ID,
@@ -187,6 +190,7 @@ internal class ProjectDescriptionPersistenceTest : UnitTest() {
                 sexualEqualityDescription = setOf(InputTranslation(SystemLanguage.EN, "sexualEqualityDescription"))
             )
         )
+
         private fun dummyProjectLongTermPlans() = ProjectLongTermPlansEntity(
             projectId = PROJECT_ID,
             translatedValues = combineTranslatedValuesLongTermPlans(
@@ -206,23 +210,30 @@ internal class ProjectDescriptionPersistenceTest : UnitTest() {
                 territorialChallenge = setOf(InputTranslation(SystemLanguage.EN, "territorialChallenge")),
                 commonChallenge = setOf(InputTranslation(SystemLanguage.EN, "commonChallenge")),
                 transnationalCooperation = setOf(InputTranslation(SystemLanguage.EN, "transnationalCooperation")),
-                projectBenefits = listOf(ProjectRelevanceBenefit(
-                    group = ProjectTargetGroupDTO.LocalPublicAuthority,
-                    specification = setOf(InputTranslation(SystemLanguage.EN, "specification"))
-                )),
+                projectBenefits = listOf(
+                    ProjectRelevanceBenefit(
+                        group = ProjectTargetGroupDTO.LocalPublicAuthority,
+                        specification = setOf(InputTranslation(SystemLanguage.EN, "specification"))
+                    )
+                ),
                 projectSpfRecipients = listOf(
                     ProjectRelevanceSpfRecipient(
                         recipientGroup = ProjectTargetGroup.Egtc,
                         specification = setOf(InputTranslation(SystemLanguage.EN, "specification"))
-                    )),
-                projectStrategies = listOf(ProjectRelevanceStrategy(
-                    strategy = ProgrammeStrategy.AtlanticStrategy,
-                    specification = setOf(InputTranslation(SystemLanguage.EN, "specification"))
-                )),
-                projectSynergies = listOf(ProjectRelevanceSynergy(
-                    synergy = setOf(InputTranslation(SystemLanguage.EN, "synergy")),
-                    specification = setOf(InputTranslation(SystemLanguage.EN, "specification"))
-                )),
+                    )
+                ),
+                projectStrategies = listOf(
+                    ProjectRelevanceStrategy(
+                        strategy = ProgrammeStrategy.AtlanticStrategy,
+                        specification = setOf(InputTranslation(SystemLanguage.EN, "specification"))
+                    )
+                ),
+                projectSynergies = listOf(
+                    ProjectRelevanceSynergy(
+                        synergy = setOf(InputTranslation(SystemLanguage.EN, "synergy")),
+                        specification = setOf(InputTranslation(SystemLanguage.EN, "specification"))
+                    )
+                ),
                 availableKnowledge = setOf(InputTranslation(SystemLanguage.EN, "availableKnowledge"))
             ),
             projectPartnership = ProjectPartnership(
@@ -244,9 +255,9 @@ internal class ProjectDescriptionPersistenceTest : UnitTest() {
                 projectJointStaffingDescription = setOf(InputTranslation(SystemLanguage.EN, "projectJointStaffingDescription")),
                 projectJointFinancingDescription = setOf(InputTranslation(SystemLanguage.EN, "projectJointFinancingDescription")),
                 projectHorizontalPrinciples = ProjectHorizontalPrinciples(
-                    sustainableDevelopmentCriteriaEffect = ProjectHorizontalPrinciplesEffect.PositiveEffects,
-                    equalOpportunitiesEffect = ProjectHorizontalPrinciplesEffect.Neutral,
-                    sexualEqualityEffect = ProjectHorizontalPrinciplesEffect.NegativeEffects
+                    sustainableDevelopmentCriteriaEffect = PositiveEffects,
+                    equalOpportunitiesEffect = Neutral,
+                    sexualEqualityEffect = NegativeEffects
                 ),
                 sustainableDevelopmentDescription = setOf(InputTranslation(SystemLanguage.EN, "sustainableDevelopmentDescription")),
                 equalOpportunitiesDescription = setOf(InputTranslation(SystemLanguage.EN, "equalOpportunitiesDescription")),
@@ -267,12 +278,16 @@ internal class ProjectDescriptionPersistenceTest : UnitTest() {
 
     @RelaxedMockK
     lateinit var projectOverallObjectiveRepository: ProjectOverallObjectiveRepository
+
     @RelaxedMockK
     lateinit var projectRelevanceRepository: ProjectRelevanceRepository
+
     @RelaxedMockK
     lateinit var projectPartnershipRepository: ProjectPartnershipRepository
+
     @RelaxedMockK
     lateinit var projectManagementRepository: ProjectManagementRepository
+
     @RelaxedMockK
     lateinit var projectLongTermPlansRepository: ProjectLongTermPlansRepository
 
@@ -282,7 +297,14 @@ internal class ProjectDescriptionPersistenceTest : UnitTest() {
     fun setup() {
         MockKAnnotations.init(this)
         projectVersionUtils = ProjectVersionUtils(projectVersionRepo)
-        persistence = ProjectDescriptionPersistenceProvider(projectVersionUtils, projectOverallObjectiveRepository, projectRelevanceRepository, projectPartnershipRepository, projectManagementRepository, projectLongTermPlansRepository)
+        persistence = ProjectDescriptionPersistenceProvider(
+            projectVersionUtils,
+            projectOverallObjectiveRepository,
+            projectRelevanceRepository,
+            projectPartnershipRepository,
+            projectManagementRepository,
+            projectLongTermPlansRepository
+        )
     }
 
     @Test
@@ -354,9 +376,9 @@ internal class ProjectDescriptionPersistenceTest : UnitTest() {
         every { mockMRow.projectJointImplementation } returns true
         every { mockMRow.projectJointStaffing } returns true
         every { mockMRow.projectJointFinancing } returns true
-        every { mockMRow.sustainableDevelopmentCriteriaEffect } returns ProjectHorizontalPrinciplesEffect.PositiveEffects
-        every { mockMRow.equalOpportunitiesEffect } returns ProjectHorizontalPrinciplesEffect.Neutral
-        every { mockMRow.sexualEqualityEffect } returns ProjectHorizontalPrinciplesEffect.NegativeEffects
+        every { mockMRow.sustainableDevelopmentCriteriaEffect } returns PositiveEffects
+        every { mockMRow.equalOpportunitiesEffect } returns Neutral
+        every { mockMRow.sexualEqualityEffect } returns NegativeEffects
         every { mockMRow.projectCoordination } returns "projectCoordination"
         every { mockMRow.projectQualityAssurance } returns "projectQualityAssurance"
         every { mockMRow.projectCommunication } returns "projectCommunication"
@@ -522,5 +544,62 @@ internal class ProjectDescriptionPersistenceTest : UnitTest() {
                 specification = setOf(InputTranslation(SystemLanguage.EN, "specification")),
             ),
         )
+    }
+
+    @Test
+    fun `getProjectManagement - latest`() {
+        every { projectManagementRepository.findFirstByProjectId(PROJECT_ID) } returns dummyProjectManagement()
+
+        val result = persistence.getProjectManagement(PROJECT_ID, null)
+
+        assertThat(result?.projectHorizontalPrinciples).isEqualTo(
+            ProjectHorizontalPrinciples(
+                PositiveEffects, Neutral, NegativeEffects
+            )
+        )
+        assertThat(result?.sustainableDevelopmentDescription).containsExactly(InputTranslation(SystemLanguage.EN, "sustainableDevelopmentDescription"))
+        assertThat(result?.equalOpportunitiesDescription).containsExactly(InputTranslation(SystemLanguage.EN, "equalOpportunitiesDescription"))
+        assertThat(result?.sexualEqualityDescription).containsExactly(InputTranslation(SystemLanguage.EN, "sexualEqualityDescription"))
+    }
+
+    @Test
+    fun `getManagement - old version`() {
+        val version = "v7.1"
+        val timestamp = Timestamp.valueOf(LocalDateTime.now())
+
+        val mockRow: ProjectManagementRow = mockk()
+        every { mockRow.projectId } returns PROJECT_ID
+        every { mockRow.language } returns SystemLanguage.EN
+        every { mockRow.sustainableDevelopmentCriteriaEffect } returns PositiveEffects
+        every { mockRow.equalOpportunitiesEffect } returns NegativeEffects
+        every { mockRow.sexualEqualityEffect } returns Neutral
+        every { mockRow.sustainableDevelopmentDescription } returns "sustainableDevelopmentDescription"
+        every { mockRow.equalOpportunitiesDescription } returns "equalOpportunitiesDescription"
+        every { mockRow.sexualEqualityDescription } returns "sexualEqualityDescription"
+
+        every { mockRow.projectJointDevelopment } returns false
+        every { mockRow.projectJointImplementation } returns false
+        every { mockRow.projectJointStaffing } returns false
+        every { mockRow.projectJointFinancing } returns false
+        every { mockRow.projectCoordination } returns ""
+        every { mockRow.projectQualityAssurance } returns ""
+        every { mockRow.projectCommunication } returns ""
+        every { mockRow.projectFinancialManagement } returns ""
+        every { mockRow.projectJointDevelopmentDescription } returns ""
+        every { mockRow.projectJointImplementationDescription } returns ""
+        every { mockRow.projectJointStaffingDescription } returns ""
+        every { mockRow.projectJointFinancingDescription } returns ""
+
+        every { projectManagementRepository.findByProjectIdAsOfTimestamp(PROJECT_ID, timestamp) } returns listOf(mockRow)
+        every { projectVersionRepo.findTimestampByVersion(1, version) } returns timestamp
+
+        val result = persistence.getProjectManagement(PROJECT_ID, version)
+
+        assertThat(result?.projectHorizontalPrinciples?.sustainableDevelopmentCriteriaEffect).isEqualTo(PositiveEffects)
+        assertThat(result?.projectHorizontalPrinciples?.equalOpportunitiesEffect).isEqualTo(NegativeEffects)
+        assertThat(result?.projectHorizontalPrinciples?.sexualEqualityEffect).isEqualTo(Neutral)
+        assertThat(result?.sustainableDevelopmentDescription).containsExactly(InputTranslation(SystemLanguage.EN, "sustainableDevelopmentDescription"))
+        assertThat(result?.equalOpportunitiesDescription).containsExactly(InputTranslation(SystemLanguage.EN, "equalOpportunitiesDescription"))
+        assertThat(result?.sexualEqualityDescription).containsExactly(InputTranslation(SystemLanguage.EN, "sexualEqualityDescription"))
     }
 }
