@@ -21,6 +21,8 @@ import {CallStateAidsComponent} from './call-detail-page/call-state-aids/call-st
 import {CallAllowedRealCostsComponent} from './call-budget-settings-page/call-allow-real-costs/call-allow-real-costs.component';
 import {PreSubmissionCheckSettingsPageComponent} from './pre-submission-check-settings-page/pre-submission-check-settings-page.component';
 import { CallDraftBudgetComponent } from './call-budget-settings-page/call-draft-budget/call-draft-budget.component';
+import { NotificationsSettingsComponent } from './notifications-settings/notifications-settings.component';
+import { ProjectNotificationsSettingsTabComponent } from './notifications-settings/project-notificaitons-settings-tab/project-notifications-settings-tab.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +40,9 @@ import { CallDraftBudgetComponent } from './call-budget-settings-page/call-draft
     CallStateAidsComponent,
     CallAllowedRealCostsComponent,
     PreSubmissionCheckSettingsPageComponent,
-    CallDraftBudgetComponent
+    CallDraftBudgetComponent,
+    NotificationsSettingsComponent,
+    ProjectNotificationsSettingsTabComponent
   ],
   imports: [
     SharedModule,

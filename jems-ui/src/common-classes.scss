@@ -45,6 +45,10 @@
   justify-content: start !important;
 }
 
+.justify-space-between {
+  justify-content: space-between !important;
+}
+
 .no-bullets {
   list-style-type: none;
 }
@@ -565,4 +569,8 @@
 
 .respect-line-break {
   white-space: pre-wrap;
+}
+
+.text-normal {
+  font-weight: normal;
 }

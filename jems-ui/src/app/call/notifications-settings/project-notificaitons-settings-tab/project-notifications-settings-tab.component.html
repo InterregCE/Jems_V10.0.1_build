@@ -1,0 +1,80 @@
+<jems-form
+        *ngIf="data$ | async as data"
+        (save)="save()"
+        (discard)="resetForm(data.projectNotificationTemplates)">
+    <h3>{{'call.detail.notifications.config.tab.project.title' | translate}}</h3>
+    <p>{{'call.detail.notifications.config.tab.project.description' | translate}}</p>
+    <form jemsFormLayout [formGroup]="projectNotificationsForm">
+        <ng-container *ngFor="let notificationTemplate of projectNotificationConfigurationsArray.controls; let i=index"
+                      formArrayName="projectNotificationConfigurations">
+            <ng-container [formGroupName]="i">
+                <mat-expansion-panel jemsNoWidthLimit [expanded]="false">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title class="justify-space-between text-normal">
+                            <ng-container>
+                                <div>
+                                    <span>
+                                        <mat-slide-toggle formControlName="active" color="primary">
+                                             {{'common.label.projectapplicationstatus.' + notificationTemplate.get('id').value | translate}}
+                                        </mat-slide-toggle>
+                                    </span>
+                                    <jems-context-info
+                                            infoText="{{'call.detail.notifications.config.tab.project.status.'+ notificationTemplate.get('id').value +'.info'| translate}}"
+                                            infoPosition="right">
+                                    </jems-context-info>
+                                </div>
+
+                                <div>
+                                <span> {{'call.detail.notifications.config.tab.project.checkbox.users.project' | translate}}
+                                    :</span>
+                                    <mat-checkbox formControlName="sendToManager" class="ml-1" color="primary"
+                                                  (click)="$event.stopPropagation()">
+                                        {{ 'call.detail.notifications.config.tab.project.checkbox.manager' | translate }}
+                                    </mat-checkbox>
+
+
+                                    <mat-checkbox formControlName="sendToLeadPartner" class="ml-2" color="primary"
+                                                  (click)="$event.stopPropagation()">
+                                        {{ 'call.detail.notifications.config.tab.project.checkbox.lead.partner' | translate }}
+                                    </mat-checkbox>
+
+                                    <mat-checkbox formControlName="sendToProjectPartners" class="ml-2" color="primary"
+                                                  (click)="$event.stopPropagation()">
+                                        {{ 'call.detail.notifications.config.tab.project.checkbox.partners' | translate }}
+                                    </mat-checkbox>
+
+                                    <span class="ml-3">
+                                        {{'call.detail.notifications.config.tab.project.checkbox.users.programme' | translate}}:
+                                    </span>
+                                    <mat-checkbox formControlName="sendToProjectAssigned" class="ml-1 mr-5"
+                                                  color="primary" (click)="$event.stopPropagation()">
+                                        {{'call.detail.notifications.config.tab.project.checkbox.users.programme.project.assigned' |  translate}}
+                                    </mat-checkbox>
+                                </div>
+                            </ng-container>
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+
+                    <div jemsNoWidthLimit>
+                        <div>
+                            <mat-form-field jemsFormFieldWidth="two-thirds">
+                                <mat-label>Email subject</mat-label>
+                                <input formControlName="emailSubject" matInput name="emailSubject">
+                            </mat-form-field>
+                        </div>
+
+                        <div>
+                            <jems-expandable-textarea jemsMultiColumnRow jemsFormFieldWidth="two-thirds"
+                                                      [control]="notificationTemplate?.get('emailBody')"
+                                                      [errors]="notificationTemplate?.get('emailBody')?.errors"
+                                                      [characterLimit]="1000"
+                                                      [minRows]="1"
+                                                      [maxRows]="30">
+                            </jems-expandable-textarea>
+                        </div>
+                    </div>
+                </mat-expansion-panel>
+            </ng-container>
+        </ng-container>
+    </form>
+</jems-form>
