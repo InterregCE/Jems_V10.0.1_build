@@ -1,4 +1,11 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit,} from '@angular/core';
+import {
+  AfterViewChecked,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {catchError, map, take, tap} from 'rxjs/operators';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -37,6 +44,7 @@ import {
 } from '@project/project-application/report/partner-control-report/partner-control-expenditure-verification-tab/partner-control-report-file-expenditure-verification-store';
 import {Alert} from '@common/components/forms/alert';
 import {MatSlideToggleChange} from '@angular/material/slide-toggle';
+import {MatTable} from "@angular/material/table";
 
 @UntilDestroy()
 @Component({
@@ -46,7 +54,10 @@ import {MatSlideToggleChange} from '@angular/material/slide-toggle';
   providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PartnerControlReportExpenditureVerificationTabComponent implements OnInit {
+export class PartnerControlReportExpenditureVerificationTabComponent implements OnInit, AfterViewChecked {
+
+  @ViewChild('expenditureVerificationTable') expenditureVerificationTable: MatTable<any>;
+
   Alert = Alert;
   reportExpendituresForm: FormGroup;
   tableData: AbstractControl[] = [];
@@ -117,6 +128,12 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
     this.pageStore.currencies$.pipe(untilDestroyed(this)).subscribe(currencies=> this.currencies = currencies);
 
     this.dataAsObservable();
+  }
+
+  ngAfterViewChecked(): void {
+    if (this.expenditureVerificationTable) {
+      this.expenditureVerificationTable.updateStickyColumnStyles();
+    }
   }
 
   getAvailableCurrenciesByType(type: string | null, unitCost?: any) {
@@ -255,13 +272,13 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
   }
 
   private setColumnsWidths(investments: InvestmentSummary[], isCostOptionsAvailable: boolean) {
-    this.columnsWidthsToDisplay = [{minInRem: 1, maxInRem: 3}];
+    this.columnsWidthsToDisplay = [{minInRem: 2.5, maxInRem: 2.5}];
     if (isCostOptionsAvailable) {
-      this.columnsWidthsToDisplay.push({minInRem: 11, maxInRem: 16}); // cost options
+      this.columnsWidthsToDisplay.push({minInRem: 11, maxInRem: 11}); // cost options
     }
 
     this.columnsWidthsToDisplay.push(
-      {minInRem: 11, maxInRem: 16}, // cost category
+      {minInRem: 11, maxInRem: 11}, // cost category
     );
 
     this.collapsedColumnsWidths = [

@@ -12,13 +12,14 @@
         <form jemsFormLayout [formGroup]="reportExpendituresForm">
             <div id="table-container" jemsNoWidthLimit *ngIf="tableData.length > 0">
                 <jems-multi-language-container>
-                    <mat-table jemsNoWidthLimit
+                    <mat-table #expenditureVerificationTable
+                               jemsNoWidthLimit
                                id="expenditure-costs-table"
                                class="table-condensed"
                                [jemsTableConfig]="columnsWidthsToDisplay"
                                [dataSource]="tableData"
                                [formArrayName]="constants.FORM_CONTROL_NAMES.items">
-                        <ng-container matColumnDef="costItemID" stickyEnd>
+                        <ng-container matColumnDef="costItemID" sticky>
                             <mat-header-cell *matHeaderCellDef>
                                         <span jemsText
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.cost.ID' | translate}}</span>
@@ -36,7 +37,7 @@
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
 
-                        <ng-container matColumnDef="costOptions">
+                        <ng-container matColumnDef="costOptions" sticky>
                             <mat-header-cell *matHeaderCellDef>
                                         <span jemsText
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.cost.lump.sum' | translate}}</span>
@@ -55,7 +56,7 @@
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
 
-                        <ng-container matColumnDef="costCategory">
+                        <ng-container matColumnDef="costCategory" sticky>
                             <mat-header-cell *matHeaderCellDef>
                                         <span jemsText
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.cost.category' | translate}}</span>
