@@ -13,7 +13,7 @@
                     <mat-form-field jemsFormFieldWidth="two-thirds">
                         <mat-label>{{'project.application.project.report.tab.results.and.principles.result.indicator' | translate }}</mat-label>
                         <input matInput disabled
-                               [value]="(result.get('indicator')?.value | translate) + ': ' + (result.get('indicatorName')?.value | translateBySystemLanguage | async)">
+                               [value]="result.get('indicatorId')?.value && (result.get('indicator')?.value | translate) + ': ' + (result.get('indicatorName')?.value | translateBySystemLanguage | async)">
                     </mat-form-field>
 
                     <div>
