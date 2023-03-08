@@ -1,6 +1,6 @@
 <div *ngIf="data$ | async as data" jemsFormLayout>
 
-    <form *ngIf="data.isUserAllowedToEditReport" jemsFormLayout [formGroup]="exportForm">
+    <form *ngIf="data.canGenerateExportFile" jemsFormLayout [formGroup]="exportForm">
         <mat-form-field>
             <mat-label>{{'project.application.partner.report.control.tab.overviewAndFinalize.certificate.export.label.plugins' | translate}}</mat-label>
             <mat-select formControlName="plugin">

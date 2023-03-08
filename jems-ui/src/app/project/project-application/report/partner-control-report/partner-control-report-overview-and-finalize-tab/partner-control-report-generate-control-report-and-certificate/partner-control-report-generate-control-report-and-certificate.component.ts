@@ -45,6 +45,7 @@ export class PartnerControlReportGenerateControlReportAndCertificateComponent {
     isReportFinalized: boolean;
     isUserAllowedToEditReport: boolean;
     reportStatus: ProjectPartnerReportSummaryDTO.StatusEnum;
+    canGenerateExportFile: boolean;
   }>;
 
   isUploadDone = false;
@@ -71,9 +72,10 @@ export class PartnerControlReportGenerateControlReportAndCertificateComponent {
       this.fileManagementStore.certificateFileList$,
       this.partnerControlReportStore.controlReportFinalized$,
       this.partnerControlReportStore.canEditControlReport$,
+      this.fileManagementStore.canGenerateExportFile$,
       this.fileManagementStore.partnerControlReportStore.partnerReportDetailPageStore.reportStatus$,
     ]).pipe(
-      map(([plugins, files, isReportFinalized, isUserAllowedToEditReport, reportStatus]) => ({
+      map(([plugins, files, isReportFinalized, isUserAllowedToEditReport, canGenerateExportFile, reportStatus]) => ({
         plugins,
         files,
         fileList: files.content ? files.content?.map((file: PartnerReportControlFileDTO) => ({
@@ -93,6 +95,7 @@ export class PartnerControlReportGenerateControlReportAndCertificateComponent {
         } as FileListItem)) : [],
         isReportFinalized,
         isUserAllowedToEditReport,
+        canGenerateExportFile,
         reportStatus
       })),
     );

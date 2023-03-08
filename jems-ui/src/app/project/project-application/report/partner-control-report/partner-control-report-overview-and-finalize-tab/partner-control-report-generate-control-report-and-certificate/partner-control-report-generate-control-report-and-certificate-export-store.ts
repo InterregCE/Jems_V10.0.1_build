@@ -1,6 +1,10 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subject} from 'rxjs';
-import {PagePartnerReportControlFileDTO, PluginInfoDTO, ProjectPartnerControlReportFileAPIService} from '@cat/api';
+import {
+  PagePartnerReportControlFileDTO,
+  PluginInfoDTO,
+  ProjectPartnerControlReportFileAPIService
+} from '@cat/api';
 import {PluginStore} from '@common/services/plugin-store.service';
 import {DownloadService} from '@common/services/download.service';
 import {catchError, distinctUntilChanged, filter, map, startWith, switchMap, take, tap} from 'rxjs/operators';
@@ -11,6 +15,10 @@ import {MatSort} from '@angular/material/sort';
 import {FileListTableConstants} from '@common/components/file-list/file-list-table/file-list-table-constants';
 import {PartnerControlReportStore} from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
 import TypeEnum = PluginInfoDTO.TypeEnum;
+import {
+  PartnerReportDetailPageStore
+} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
+import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
 
 @Injectable({providedIn: 'root'})
 export class PartnerControlReportGenerateControlReportAndCertificateExportStore {
@@ -33,7 +41,9 @@ export class PartnerControlReportGenerateControlReportAndCertificateExportStore 
     public partnerControlReportStore: PartnerControlReportStore,
     private pluginStore: PluginStore,
     private controlReportExportService: ProjectPartnerControlReportFileAPIService,
-    private downloadService: DownloadService) {
+    private downloadService: DownloadService,
+    private partnerReportDetailPageStore: PartnerReportDetailPageStore,
+    private partnerReportPageStore: PartnerReportPageStore) {
     this.exportPlugins$ = combineLatest([
       this.pluginStore.getPluginListByType(TypeEnum.PARTNERCONTROLREPORTCERTIFICATE),
       this.pluginStore.getPluginListByType(TypeEnum.PARTNERCONTROLREPORTEXPORT)
@@ -72,6 +82,8 @@ export class PartnerControlReportGenerateControlReportAndCertificateExportStore 
         })
       );
   }
+
+  readonly canGenerateExportFile$ = this.partnerReportPageStore.institutionUserCanEditControlReports$;
 
   private certificateFileList(): Observable<PagePartnerReportControlFileDTO> {
     return combineLatest([
