@@ -30,7 +30,13 @@ class UploadAttachmentToProjectReportResultPrinciple(
             return filePersistence.updateProjectResultAttachment(
                 reportId = reportId,
                 resultNumber = resultNumber,
-                file = file.getFileMetadata(projectId, reportId, location, type = this, securityService.getUserIdOrThrow()),
+                file = file.getFileMetadata(
+                    projectId = projectId,
+                    partnerId = null,
+                    location = location,
+                    type = this,
+                    userId = securityService.getUserIdOrThrow()
+                )
             )
         }
     }
