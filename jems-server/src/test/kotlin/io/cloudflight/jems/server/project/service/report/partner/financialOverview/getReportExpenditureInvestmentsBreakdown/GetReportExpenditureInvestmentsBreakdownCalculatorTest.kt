@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
 import io.cloudflight.jems.server.currency.service.model.CurrencyConversion
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
@@ -32,18 +33,12 @@ import java.time.ZonedDateTime
 class GetReportExpenditureInvestmentsBreakdownCalculatorTest : UnitTest() {
 
     companion object {
-        private val LAST_YEAR = ZonedDateTime.now().minusYears(1)
-
         private val YEAR = LocalDate.now().year
         private val MONTH = LocalDate.now().monthValue
 
-        private fun report(id: Long, status: ReportStatus) = ProjectPartnerReport(
-            id = id,
-            reportNumber = 1,
+        private fun report(status: ReportStatus) = ProjectPartnerReportStatusAndVersion(
             status = status,
             version = "V_4.5",
-            identification = mockk(),
-            firstSubmission = LAST_YEAR,
         )
 
         private val investment_1 = ExpenditureInvestmentBreakdownLine(
@@ -245,7 +240,7 @@ class GetReportExpenditureInvestmentsBreakdownCalculatorTest : UnitTest() {
         val reportId = 1L
         val partnerId = 2L
 
-        every { reportPersistence.getPartnerReportById(partnerId = partnerId, reportId) } returns report(reportId, status)
+        every { reportPersistence.getPartnerReportStatusAndVersion(partnerId = partnerId, reportId) } returns report(status)
 
         every { expenditureInvestmentPersistence.getInvestments(partnerId, reportId) } returns
             listOf(
@@ -278,7 +273,7 @@ class GetReportExpenditureInvestmentsBreakdownCalculatorTest : UnitTest() {
         val reportId = 3L
         val partnerId = 4L
 
-        every { reportPersistence.getPartnerReportById(partnerId = partnerId, reportId) } returns report(reportId, status)
+        every { reportPersistence.getPartnerReportStatusAndVersion(partnerId = partnerId, reportId) } returns report(status)
         every { expenditureInvestmentPersistence.getInvestments(partnerId, reportId) } returns
             listOf(
                 investment_1.copy(totalEligibleAfterControl = BigDecimal.valueOf(80L)),

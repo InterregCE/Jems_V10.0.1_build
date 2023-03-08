@@ -24,12 +24,12 @@ class GetReportExpenditureCostCategoryCalculatorService(
      */
     @Transactional(readOnly = true)
     fun getSubmittedOrCalculateCurrent(partnerId: Long, reportId: Long): ExpenditureCostCategoryBreakdown {
-        val isSubmitted = reportPersistence.getPartnerReportById(partnerId = partnerId, reportId).status.isClosed()
+        val report = reportPersistence.getPartnerReportStatusAndVersion(partnerId = partnerId, reportId).status
         val data = reportExpenditureCostCategoryPersistence.getCostCategories(partnerId = partnerId, reportId = reportId)
 
         val costCategories = data.toLinesModel()
 
-        if (!isSubmitted) {
+        if (report.isOpen()) {
             val currentExpenditures = reportExpenditurePersistence.getPartnerReportExpenditureCosts(partnerId = partnerId, reportId = reportId)
             currentExpenditures.fillActualCurrencyRates(getActualCurrencyRates())
             costCategories.fillInCurrent(current = currentExpenditures.calculateCurrent(data.options))

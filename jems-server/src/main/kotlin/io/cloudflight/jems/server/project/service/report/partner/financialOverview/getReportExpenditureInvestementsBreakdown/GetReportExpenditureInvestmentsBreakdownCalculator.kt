@@ -20,12 +20,10 @@ class GetReportExpenditureInvestmentsBreakdownCalculator(
 
     @Transactional(readOnly = true)
     fun get(partnerId: Long, reportId: Long): ExpenditureInvestmentBreakdown {
-
-        val report = reportPersistence.getPartnerReportById(partnerId = partnerId, reportId)
-
+        val report = reportPersistence.getPartnerReportStatusAndVersion(partnerId = partnerId, reportId).status
         val data = expenditureInvestmentPersistence.getInvestments(partnerId = partnerId, reportId = reportId)
 
-        if (!report.status.isClosed()) {
+        if (report.isOpen()) {
             val currentExpenditures = reportExpenditurePersistence.getPartnerReportExpenditureCosts(partnerId = partnerId, reportId = reportId)
             currentExpenditures.fillActualCurrencyRates(getActualCurrencyRates())
             data.fillInCurrent(current = currentExpenditures.getCurrentForInvestments())

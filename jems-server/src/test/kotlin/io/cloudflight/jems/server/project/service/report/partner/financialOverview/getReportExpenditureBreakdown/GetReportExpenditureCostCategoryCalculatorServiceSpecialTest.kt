@@ -4,7 +4,7 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
 import io.cloudflight.jems.server.currency.service.model.CurrencyConversion
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
-import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ExpenditureCostCategoryBreakdown
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ExpenditureCostCategoryBreakdownLine
@@ -22,7 +22,6 @@ import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -36,13 +35,9 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceSpecialTest : Un
         private const val PARTNER_ID = 592L
         private val TODAY = ZonedDateTime.now()
 
-        private fun reportWithStatus(status: ReportStatus) = ProjectPartnerReport(
-            id = 0L,
-            reportNumber = 1,
+        private fun reportWithStatus(status: ReportStatus) = ProjectPartnerReportStatusAndVersion(
             status = status,
             version = "",
-            identification = mockk(),
-            firstSubmission = TODAY,
         )
 
         private val expectedOnDirect2Output = ExpenditureCostCategoryBreakdown(
@@ -198,7 +193,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceSpecialTest : Un
 
     @Test
     fun `get - is not submitted - office on direct - prevent case with same numbers in set`() {
-        every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = 28L) } returns
+        every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = 28L) } returns
             reportWithStatus(status = ReportStatus.Draft)
         every { reportExpenditureCostCategoryPersistence.getCostCategories(PARTNER_ID, reportId = 28L) } returns data
             .copy(
