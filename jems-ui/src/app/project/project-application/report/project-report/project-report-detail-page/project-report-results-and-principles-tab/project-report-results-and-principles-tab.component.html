@@ -3,26 +3,26 @@
     <form jemsFormLayout [formGroup]="form">
         <h3 class="mb-3">{{'project.application.project.report.tab.results.and.principles.header.1' | translate }}</h3>
 
-        <div *ngFor="let result of results.controls; let i = index" jemsNoWidthLimit class="project-results">
+        <div *ngFor="let result of results.controls; let i = index" class="project-results">
             <ng-container formArrayName="results">
                 <ng-container [formGroupName]="i">
                     <div>
                         <h4>{{'project.application.project.report.tab.results.and.principles.result' | translate }} {{result.get('resultNumber').value}}</h4>
                     </div>
 
-                    <mat-form-field jemsFormFieldWidth="two-thirds">
+                    <mat-form-field jemsFormFieldWidth="full">
                         <mat-label>{{'project.application.project.report.tab.results.and.principles.result.indicator' | translate }}</mat-label>
                         <input matInput disabled
                                [value]="result.get('indicatorId')?.value && (result.get('indicator')?.value | translate) + ': ' + (result.get('indicatorName')?.value | translateBySystemLanguage | async)">
                     </mat-form-field>
 
-                    <div>
-                        <mat-form-field jemsFormFieldWidth="x-large">
+                    <div class="input-field-row">
+                        <mat-form-field class="input-field">
                             <mat-label>{{'project.application.project.report.tab.results.and.principles.result.measurement.unit' | translate }}</mat-label>
                             <input matInput disabled [value]="result.get('measurementUnit')?.value | translateBySystemLanguage | async">
                         </mat-form-field>
 
-                        <mat-form-field class="ml-3" jemsFormFieldWidth="large">
+                        <mat-form-field class="input-field ml-3">
                             <mat-label>{{'project.application.project.report.tab.results.and.principles.result.baseline' | translate }}</mat-label>
                             <input currencyMask matInput
                                    type="decimal"
@@ -30,13 +30,14 @@
                                    [options]="{align: 'right', min: MIN_VALUE, max: MAX_VALUE}">
                         </mat-form-field>
 
-                        <mat-form-field class="ml-3" jemsFormFieldWidth="x-large">
+                        <mat-form-field class="input-field ml-3">
                             <mat-label>{{'project.application.project.report.tab.results.and.principles.result.delivery.period' | translate }}</mat-label>
                             <input matInput disabled
                                    [value]="result.get('periodDetail').value && 'project.application.form.work.package.output.delivery.period.entry' | translate : getPeriodArguments(result.get('periodDetail').value)">
                         </mat-form-field>
-
-                        <mat-form-field class="ml-3" jemsFormFieldWidth="large">
+                    </div>
+                    <div class="input-field-row">
+                        <mat-form-field class="input-field">
                             <mat-label>{{'project.application.project.report.tab.results.and.principles.result.target.value' | translate }}</mat-label>
                             <input currencyMask matInput
                                    type="decimal"
@@ -44,7 +45,7 @@
                                    [options]="{align: 'right', min: MIN_VALUE, max: MAX_VALUE}">
                         </mat-form-field>
 
-                        <mat-form-field class="ml-3" jemsFormFieldWidth="x-large">
+                        <mat-form-field class="input-field ml-3">
                             <mat-label>{{'project.application.project.report.tab.results.and.principles.result.achieved' | translate }}</mat-label>
                             <input currencyMask matInput
                                    type="decimal"
@@ -53,7 +54,7 @@
                                    (ngModelChange)="totalChanged(i)">
                         </mat-form-field>
 
-                        <mat-form-field class="ml-3" jemsFormFieldWidth="x-large">
+                        <mat-form-field class="input-field ml-3">
                             <mat-label>{{'project.application.project.report.tab.results.and.principles.result.cumulative' | translate }}</mat-label>
                             <input currencyMask matInput
                                    type="decimal"
@@ -61,30 +62,28 @@
                                    [options]="{align: 'right', min: MIN_VALUE, max: MAX_VALUE, allowNegative: true}">
                         </mat-form-field>
                     </div>
-                    <div jemsNoWidthLimit style="display: flex">
-                        <div jemsFormFieldWidth="two-thirds">
-                            <jems-multi-language-container>
-                                <jems-multi-language-form-field
-                                        formControlName="description"
-                                        maxLength="2000"
-                                        minRows="2"
-                                        maxRows="4"
-                                        type="textarea"
-                                        label="Result description"
-                                        [disabled]="!data.reportEditable">
-                                </jems-multi-language-form-field>
-                            </jems-multi-language-container>
-                        </div>
-                        <div jemsFormFieldWidth="large" class="ml-3">
-                            <p class="attachment-text">{{'project.application.project.report.tab.results.and.principles.result.attachment' | translate }}</p>
-                            <jems-partner-actions-cell class="attachments-element" [formControlName]="'fileMetadata'"
-                                                       [isReportEditable]="data.reportEditable"
-                                                       [isUploadDone]="isUploadDone"
-                                                       (upload)="onUpload($event, result.get('resultNumber').value, i)"
-                                                       (download)="onDownload(result.get('resultNumber').value)"
-                                                       (delete)="onDelete(result.get('resultNumber').value)">
-                            </jems-partner-actions-cell>
-                        </div>
+                    <div jemsNoWidthLimit>
+                        <jems-multi-language-container>
+                            <jems-multi-language-form-field
+                                    formControlName="description"
+                                    maxLength="2000"
+                                    minRows="2"
+                                    maxRows="4"
+                                    type="textarea"
+                                    label="Result description"
+                                    [disabled]="!data.reportEditable">
+                            </jems-multi-language-form-field>
+                        </jems-multi-language-container>
+                    </div>
+                    <div jemsFormFieldWidth="full" class="ml-3">
+                        <p class="attachment-text">{{'project.application.project.report.tab.results.and.principles.result.attachment' | translate }}</p>
+                        <jems-partner-actions-cell class="attachments-element" [formControlName]="'fileMetadata'"
+                                                   [isReportEditable]="data.reportEditable"
+                                                   [isUploadDone]="isUploadDone"
+                                                   (upload)="onUpload($event, result.get('resultNumber').value, i)"
+                                                   (download)="onDownload(result.get('resultNumber').value)"
+                                                   (delete)="onDelete(result.get('resultNumber').value)">
+                        </jems-partner-actions-cell>
                     </div>
                 </ng-container>
             </ng-container>
@@ -98,7 +97,7 @@
             <p>{{'project.application.project.report.tab.results.and.principles.horizontal.principles.description' | translate }}</p>
 
             <jems-multi-language-container jemsNoWidthLimit>
-                <div [jemsTableConfig]="[{minInRem:12},{minInRem:20},{}]">
+                <div [jemsTableConfig]="[{minInRem:12, maxInRem:17},{minInRem:20, maxInRem:20},{}]">
                     <div>
                         <span>{{'project.application.project.report.tab.results.and.principles.horizontal.principles.cooperation.criteria' | translate}}</span>
                         <span>{{'project.application.form.management.principles.table.header.contribution' | translate}}</span>

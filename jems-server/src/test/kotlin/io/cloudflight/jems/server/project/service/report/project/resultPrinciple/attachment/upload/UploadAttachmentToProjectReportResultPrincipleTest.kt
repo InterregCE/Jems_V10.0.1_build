@@ -48,7 +48,7 @@ class UploadAttachmentToProjectReportResultPrincipleTest {
 
         Assertions.assertThat(interactor.upload(projectId, reportId, resultNumber, file)).isEqualTo(persistedFile)
         Assertions.assertThat(slot.captured.projectId).isEqualTo(projectId)
-        Assertions.assertThat(slot.captured.partnerId).isEqualTo(reportId)
+        Assertions.assertThat(slot.captured.partnerId).isNull()
         Assertions.assertThat(slot.captured.type).isEqualTo(JemsFileType.ProjectResult)
         Assertions.assertThat(slot.captured.path).contains(projectId.toString(), reportId.toString(), resultNumber.toString())
         Assertions.assertThat(slot.captured.userId).isEqualTo(userId)

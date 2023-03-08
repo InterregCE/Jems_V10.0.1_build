@@ -1,9 +1,11 @@
-.project-results {
-  overflow-x: auto;
-  white-space: nowrap;
-}
-
 .attachment-text {
   font-weight: 500;
 }
 
+.input-field-row {
+  display: flex;
+}
+
+.input-field {
+  flex-grow: 1;
+}
