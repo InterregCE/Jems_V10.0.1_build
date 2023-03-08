@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
 import io.cloudflight.jems.server.currency.service.model.CurrencyConversion
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
@@ -32,18 +33,13 @@ internal class GetReportExpenditureUnitCostBreakdownCalculatorTest : UnitTest() 
 
     companion object {
         private const val PARTNER_ID = 591L
-        private val LAST_YEAR = ZonedDateTime.now().minusYears(1)
         private val YEAR = LocalDate.now().year
         private val MONTH = LocalDate.now().monthValue
 
-        private fun report(id: Long, status: ReportStatus) =
-            ProjectPartnerReport(
-                id = id,
-                reportNumber = 6,
+        private fun report(status: ReportStatus) =
+            ProjectPartnerReportStatusAndVersion(
                 status = status,
                 version = "V_1.1",
-                identification = mockk(),
-                firstSubmission = LAST_YEAR,
             )
 
         private val unitCost_1 = ExpenditureUnitCostBreakdownLine(
@@ -214,8 +210,7 @@ internal class GetReportExpenditureUnitCostBreakdownCalculatorTest : UnitTest() 
     @EnumSource(value = ReportStatus::class, names = ["Draft"])
     fun getOpen(status: ReportStatus) {
         val reportId = 97658L
-        every { reportPersistence.getPartnerReportById(partnerId = PARTNER_ID, reportId) } returns
-            report(reportId, status)
+        every { reportPersistence.getPartnerReportStatusAndVersion(partnerId = PARTNER_ID, reportId) } returns report(status)
         every { reportUnitCostPersistence.getUnitCost(partnerId = PARTNER_ID, reportId = reportId) } returns
             listOf(
                 unitCost_1.copy(currentReport = BigDecimal.ZERO),
@@ -248,8 +243,7 @@ internal class GetReportExpenditureUnitCostBreakdownCalculatorTest : UnitTest() 
     @EnumSource(value = ReportStatus::class, names = ["Draft"], mode = EnumSource.Mode.EXCLUDE)
     fun getClosed(status: ReportStatus) {
         val reportId = 97658L
-        every { reportPersistence.getPartnerReportById(partnerId = PARTNER_ID, reportId) } returns
-            report(reportId, status)
+        every { reportPersistence.getPartnerReportStatusAndVersion(partnerId = PARTNER_ID, reportId) } returns report(status)
         every { reportUnitCostPersistence.getUnitCost(partnerId = PARTNER_ID, reportId = reportId) } returns
             listOf(
                 unitCost_1.copy(

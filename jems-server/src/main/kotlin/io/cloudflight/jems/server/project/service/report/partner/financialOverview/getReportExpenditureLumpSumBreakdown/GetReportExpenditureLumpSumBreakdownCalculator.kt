@@ -16,11 +16,11 @@ class GetReportExpenditureLumpSumBreakdownCalculator(
 
     @Transactional(readOnly = true)
     fun get(partnerId: Long, reportId: Long): ExpenditureLumpSumBreakdown {
-        val report = reportPersistence.getPartnerReportById(partnerId = partnerId, reportId)
+        val report = reportPersistence.getPartnerReportStatusAndVersion(partnerId = partnerId, reportId).status
 
         val data = reportLumpSumPersistence.getLumpSum(partnerId = partnerId, reportId = reportId)
 
-        if (!report.status.isClosed()) {
+        if (report.isOpen()) {
             val currentExpenditures = reportExpenditurePersistence.getPartnerReportExpenditureCosts(partnerId = partnerId, reportId = reportId)
             data.fillInCurrent(current = currentExpenditures.getCurrentForLumpSums())
         }

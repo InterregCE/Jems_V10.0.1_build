@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.currency.service.model.CurrencyConversion
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
@@ -33,13 +34,9 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
         private const val PARTNER_ID = 591L
         private val TODAY = ZonedDateTime.now()
 
-        private fun reportWithStatus(status: ReportStatus) = ProjectPartnerReport(
-            id = 0L,
-            reportNumber = 1,
+        private fun reportWithStatus(status: ReportStatus) = ProjectPartnerReportStatusAndVersion(
             status = status,
             version = "",
-            identification = mockk(),
-            firstSubmission = TODAY,
         )
 
         val data = ReportExpenditureCostCategory(
@@ -763,7 +760,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
 
     @Test
     fun `get - is not submitted - no office`() {
-        every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = 18L) } returns
+        every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = 18L) } returns
             reportWithStatus(status = ReportStatus.Draft)
         every { reportExpenditureCostCategoryPersistence.getCostCategories(PARTNER_ID, reportId = 18L) } returns data
         every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, reportId = 18L) } returns listOf(
@@ -781,7 +778,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
 
     @Test
     fun `get - is not submitted - office on direct`() {
-        every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = 19L) } returns
+        every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = 19L) } returns
             reportWithStatus(status = ReportStatus.Draft)
         every { reportExpenditureCostCategoryPersistence.getCostCategories(PARTNER_ID, reportId = 19L) } returns data
             .copy(options = data.options.copy(officeAndAdministrationOnDirectCostsFlatRate = 10))
@@ -800,7 +797,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
 
     @Test
     fun `get - is not submitted - office on staff`() {
-        every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = 20L) } returns
+        every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = 20L) } returns
             reportWithStatus(status = ReportStatus.Draft)
         every { reportExpenditureCostCategoryPersistence.getCostCategories(PARTNER_ID, reportId = 20L) } returns data
             .copy(options = data.options.copy(officeAndAdministrationOnStaffCostsFlatRate = 15))
@@ -819,7 +816,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
 
     @Test
     fun `get - is submitted`() {
-        every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = 25L) } returns
+        every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = 25L) } returns
             reportWithStatus(status = ReportStatus.Submitted)
         every { reportExpenditureCostCategoryPersistence.getCostCategories(PARTNER_ID, reportId = 25L) } returns data
 
