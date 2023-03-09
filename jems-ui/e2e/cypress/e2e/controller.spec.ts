@@ -2,6 +2,8 @@ import user from "../fixtures/users.json";
 import {faker} from "@faker-js/faker";
 import call from "../fixtures/api/call/1.step.call.json";
 import application from "../fixtures/api/application/application.json";
+import partnerReportIdentification from "../fixtures/api/partnerReport/partnerReportIdentification.json";
+import partnerReportExpenditures from "../fixtures/api/partnerReport/partnerReportExpenditures.json";
 
 context('Controller tests', () => {
 
@@ -118,4 +120,124 @@ context('Controller tests', () => {
       });
     });
   });
+
+  it('TB-933 Controller identification - Controller selection', () => {
+    cy.fixture('controller/TB-933.json').then(testData => {
+
+      cy.loginByRequest(user.programmeUser.email);
+      cy.createCall(call).then(callId => {
+        application.details.projectCallId = callId;
+        cy.publishCall(callId);
+        cy.loginByRequest(user.applicantUser.email);
+        cy.createContractedApplication(application, user.programmeUser.email).then(function (applicationId) {
+
+          cy.loginByRequest(user.admin.email);
+          const partnerId = this[application.partners[0].details.abbreviation];
+
+          testData.controllerRole.name = `controllerRole_${faker.random.alphaNumeric(5)}`;
+          testData.controllerUser1.email = faker.internet.email();
+          testData.controllerUser2.email = faker.internet.email();
+          cy.createRole(testData.controllerRole).then(roleId => {
+            testData.controllerUser1.userRoleId = roleId;
+            testData.controllerUser2.userRoleId = roleId;
+            cy.createUser(testData.controllerUser1);
+            cy.createUser(testData.controllerUser2);
+            testData.controllerInstitution.name = `${faker.word.adjective()} ${faker.word.noun()}`;
+            testData.controllerInstitution.institutionUsers[0].userEmail = testData.controllerUser1.email;
+            testData.controllerInstitution.institutionUsers[1].userEmail = testData.controllerUser2.email;
+            cy.createInstitution(testData.controllerInstitution).then(institutionId => {
+              testData.controllerAssignment.assignmentsToAdd[0].partnerId = partnerId;
+              testData.controllerAssignment.assignmentsToAdd[0].institutionId = institutionId;
+              cy.assignInstitution(testData.controllerAssignment);
+            });
+          });
+
+          cy.assignPartnerCollaborators(applicationId, partnerId, testData.partnerCollaborator);
+
+          cy.createInstitution(testData.controllerInstitution).then(institutionId => {
+            testData.controllerAssignment.assignmentsToAdd[0].partnerId = partnerId;
+            testData.controllerAssignment.assignmentsToAdd[0].institutionId = institutionId;
+            cy.assignInstitution(testData.controllerAssignment);
+          });
+
+          cy.addPartnerReport(partnerId).then(reportId => {
+            cy.wrap(reportId).as('reportId');
+            cy.updatePartnerReportIdentification(partnerId, reportId, partnerReportIdentification);
+            cy.updatePartnerReportExpenditures(partnerId, reportId, partnerReportExpenditures);
+            cy.runPreSubmissionPartnerReportCheck(partnerId, reportId);
+            cy.submitPartnerReport(partnerId, reportId);
+
+            cy.loginByRequest(testData.controllerUser1.email);
+            cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId}/reports`, {failOnStatusCode: false});
+            cy.contains('Start control').should('be.enabled').click();
+            cy.contains('Confirm').should('be.visible').click();
+            cy.wait(2000);
+
+            cy.get('#control-project-partner-controller').scrollIntoView().contains('Controller name').click({force: true});
+            cy.get('.mat-autocomplete-visible').children('mat-option').should('have.length', 2);
+            cy.get('.mat-autocomplete-visible').children('mat-option').eq(0).contains(testData.controllerInstitution.institutionUsers[0].userEmail);
+            cy.get('.mat-autocomplete-visible').children('mat-option').eq(1).contains(testData.controllerInstitution.institutionUsers[1].userEmail);
+            cy.contains('mat-option', testData.controllerInstitution.institutionUsers[0].userEmail).click({force: true});
+            cy.contains('Save changes').click();
+
+            cy.get('input[name="controlUser"]').eq(1).click();
+            cy.contains('mat-option', testData.controllerInstitution.institutionUsers[0].userEmail).click();
+            cy.wait(2000);
+            cy.contains('Save changes').click();
+
+            cy.loginByRequest(user.admin.email);
+            cy.visit(`app/system/user`, {failOnStatusCode: false});
+
+            cy.contains('mat-row', testData.controllerInstitution.institutionUsers[0].userEmail).click();
+            cy.contains('button', 'Edit').click();
+
+            testData.controllerUser1.name = faker.name.firstName();
+            testData.controllerUser1.surname = faker.name.lastName();
+            testData.controllerUser1.email = faker.internet.email();
+
+            cy.get('input[name="name"]').clear().type(testData.controllerUser1.name);
+            cy.get('input[name="surname"]').clear().type(testData.controllerUser1.surname);
+            cy.get('input[name="email"]').clear().type(testData.controllerUser1.email);
+            cy.contains('Save changes').click();
+
+            const userInfoInitial = `${testData.controllerUser1.name} ${testData.controllerUser1.surname} - ${testData.controllerUser1.email}`;
+            cy.loginByRequest(testData.controllerUser1.email);
+            cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/controlReport/identificationTab`, {failOnStatusCode: false});
+            cy.get('#control-project-partner-controller input[name="controlUser"]').eq(0).should('have.value', userInfoInitial);
+            cy.get('#control-project-partner-controller input[name="controlUser"]').eq(1).should('have.value', userInfoInitial);
+
+            cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/controlReport/overviewAndFinalizeTab`, {failOnStatusCode: false});
+            cy.contains('Finalize control').click();
+            cy.contains('Confirm').should('be.visible').click();
+            cy.wait(2000);
+
+            cy.loginByRequest(user.admin.email);
+            cy.visit(`app/system/user`, {failOnStatusCode: false});
+
+            cy.contains('mat-row', testData.controllerUser1.email).click();
+            cy.contains('button', 'Edit').click();
+
+            testData.controllerUser1.name = faker.name.firstName();
+            testData.controllerUser1.surname = faker.name.lastName();
+            testData.controllerUser1.email = faker.internet.email();
+
+            cy.get('input[name="name"]').clear().type(testData.controllerUser1.name);
+            cy.get('input[name="surname"]').clear().type(testData.controllerUser1.surname);
+            cy.get('input[name="email"]').clear().type(testData.controllerUser1.email);
+            cy.contains('Save changes').click();
+
+            const userInfoUpdated = `${testData.controllerUser1.name} ${testData.controllerUser1.surname} - ${testData.controllerUser1.email}`;
+            cy.loginByRequest(testData.controllerUser1.email);
+            cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/controlReport/identificationTab`, {failOnStatusCode: false});
+            cy.get('#control-project-partner-controller input[name="controlUser"]').eq(0).should('have.value', userInfoUpdated);
+            cy.get('#control-project-partner-controller input[name="controlUser"]').eq(0).should('be.disabled')
+            cy.get('#control-project-partner-controller input[name="controlUser"]').eq(1).should('have.value', userInfoUpdated);
+            cy.get('#control-project-partner-controller input[name="controlUser"]').eq(1).should('be.disabled')
+            cy.contains(userInfoInitial).should('not.exist');
+          });
+        });
+      });
+    });
+  });
+
 });
