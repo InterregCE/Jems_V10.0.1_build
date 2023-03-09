@@ -11,6 +11,7 @@ import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.call.service.model.PreSubmissionPlugins
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
+import io.cloudflight.jems.server.call.service.model.ProjectNotificationConfiguration
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
@@ -52,4 +53,9 @@ interface CallPersistence {
     fun getCallCostOption(callId: Long): CallCostOption
     fun updateCallCostOption(callId: Long, costOption: CallCostOption): CallCostOption
 
+    fun getProjectNotificationConfigurations(callId: Long): List<ProjectNotificationConfiguration>
+
+    fun saveProjectNotificationConfigurations(
+        callId: Long, projectNotificationConfigurations: List<ProjectNotificationConfiguration>
+    ): List<ProjectNotificationConfiguration>
 }

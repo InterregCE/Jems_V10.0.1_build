@@ -21,12 +21,16 @@ import io.cloudflight.jems.server.call.entity.CallTranslEntity
 import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.entity.FundSetupId
 import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
+import io.cloudflight.jems.server.call.entity.ProjectNotificationConfigurationEntity
+import io.cloudflight.jems.server.call.entity.ProjectNotificationConfigurationId
 import io.cloudflight.jems.server.call.repository.toModel
+import io.cloudflight.jems.server.call.repository.toNotificationModel
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.CallFundRate
 import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
+import io.cloudflight.jems.server.call.service.model.ProjectNotificationConfiguration
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeStrategyEntity
@@ -149,7 +153,7 @@ fun createCallDetailModel(
         applicationFormFieldConfigurationEntities(createTestCallEntity(id,  name = name)).toModel(),
     preSubmissionCheckPluginKey: String? = null,
     firstStepPreSubmissionCheckPluginKey: String? = null,
-    reportPartnerCheckPluginKey: String? = null,
+    reportPartnerCheckPluginKey: String? = null
 ): CallDetail {
     return CallDetail(
         id = id,
@@ -252,7 +256,7 @@ fun callDetail(
     applicationFormFieldConfigurations : MutableSet<ApplicationFormFieldConfiguration> = mutableSetOf(),
     preSubmissionCheckPluginKey: String? = null,
     firstStepPreSubmissionCheckPluginKey: String? = null,
-    reportPartnerCheckPluginKey: String? = null,
+    reportPartnerCheckPluginKey: String? = null
 ) = CallDetail(
     id = id,
     name = name,

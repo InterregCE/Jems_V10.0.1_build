@@ -5,6 +5,7 @@ import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.call.dto.applicationFormConfiguration.ApplicationFormFieldConfigurationDTO
 import io.cloudflight.jems.api.call.dto.applicationFormConfiguration.StepSelectionOptionDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
+import io.cloudflight.jems.api.call.dto.notificationConfiguration.ProjectNotificationConfigurationDTO
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
@@ -14,6 +15,7 @@ import io.cloudflight.jems.api.programme.dto.stateaid.ProgrammeStateAidMeasure
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy.AtlanticStrategy
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy.EUStrategyBalticSeaRegion
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.server.call.END
 import io.cloudflight.jems.server.call.START
 import io.cloudflight.jems.server.call.callFundRate
@@ -29,9 +31,12 @@ import io.cloudflight.jems.server.call.entity.CallTranslEntity
 import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
 import io.cloudflight.jems.server.call.entity.ProjectCallStateAidEntity
+import io.cloudflight.jems.server.call.entity.ProjectNotificationConfigurationEntity
+import io.cloudflight.jems.server.call.entity.ProjectNotificationConfigurationId
 import io.cloudflight.jems.server.call.entity.StateAidSetupId
 import io.cloudflight.jems.server.call.entity.unitCost.ProjectCallUnitCostEntity
 import io.cloudflight.jems.server.call.entity.unitCost.ProjectCallUnitCostId
+import io.cloudflight.jems.server.call.repository.notifications.project.ProjectNotificationConfigurationRepository
 import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.Call
@@ -42,6 +47,7 @@ import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.call.service.model.PreSubmissionPlugins
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
+import io.cloudflight.jems.server.call.service.model.ProjectNotificationConfiguration
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
@@ -63,6 +69,7 @@ import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStat
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -98,6 +105,21 @@ internal class CallPersistenceProviderTest {
             ApplicationFormFieldConfigurationEntity(
                 ApplicationFormFieldConfigurationId("fieldId", callEntity),
                 FieldVisibilityStatus.STEP_ONE_AND_TWO
+            )
+        )
+
+        private fun projectNotificationConfigurationEntities(callEntity: CallEntity) = mutableSetOf(
+            ProjectNotificationConfigurationEntity(
+                ProjectNotificationConfigurationId(
+                    ApplicationStatus.SUBMITTED, callEntity
+                ),
+                active = false,
+                sendToManager = false,
+                sendToLeadPartner = false,
+                sendToProjectPartners = false,
+                sendToProjectAssigned = false,
+                emailBody = null,
+                emailSubject = null
             )
         )
 
@@ -352,6 +374,9 @@ internal class CallPersistenceProviderTest {
     private lateinit var applicationFormFieldConfigurationRepository: ApplicationFormFieldConfigurationRepository
 
     @MockK
+    private lateinit var projectNotificationConfigurationRepository: ProjectNotificationConfigurationRepository
+
+    @MockK
     private lateinit var programmeFundRepo: ProgrammeFundRepository
 
     @MockK
@@ -422,6 +447,9 @@ internal class CallPersistenceProviderTest {
         every { applicationFormFieldConfigurationRepository.saveAll(any<MutableSet<ApplicationFormFieldConfigurationEntity>>()) } returns newConfigs.toEntities(
             callEntity
         ).toList()
+        every { projectNotificationConfigurationRepository.findByIdCallEntityId(CALL_ID) } returns projectNotificationConfigurationEntities(
+            callEntity
+        )
         assertThat(
             persistence.saveApplicationFormFieldConfigurations(
                 CALL_ID,
@@ -463,9 +491,23 @@ internal class CallPersistenceProviderTest {
                 )
             ), FieldVisibilityStatus.STEP_ONE_AND_TWO
         )
+        val projectNotificationConfigEntity = ProjectNotificationConfigurationEntity(
+            ProjectNotificationConfigurationId(
+                ApplicationStatus.SUBMITTED, callEntity(
+                    CALL_ID
+                )
+            ), active = false,
+            sendToManager = false,
+            sendToLeadPartner = false,
+            sendToProjectPartners = false,
+            sendToProjectAssigned = false,
+            emailBody = null,
+            emailSubject = null
+        )
         every { callRepo.findById(CALL_ID) } returns Optional.of(callEntity)
         every { projectCallStateAidRepository.findAllByIdCallId(CALL_ID) } returns stateAidEntities(callEntity)
         every { applicationFormFieldConfigurationRepository.findAllByCallId(CALL_ID) } returns mutableSetOf(applicationFormConfigEntity)
+        every { projectNotificationConfigurationRepository.findByIdCallEntityId(CALL_ID) } returns mutableSetOf(projectNotificationConfigEntity)
         assertThat(persistence.updateProjectCallPreSubmissionCheckPlugin(CALL_ID, PreSubmissionPlugins(
             pluginKey = PLUGIN_KEY,
             firstStepPluginKey = PLUGIN_KEY,
@@ -502,6 +544,9 @@ internal class CallPersistenceProviderTest {
         every { applicationFormFieldConfigurationRepository.findAllByCallId(CALL_ID) } returns applicationFormFieldConfigurationEntities(
             callEntity
         )
+        every { projectNotificationConfigurationRepository.findByIdCallEntityId(CALL_ID) } returns projectNotificationConfigurationEntities(
+            callEntity
+        )
         every { projectCallStateAidRepository.findAllByIdCallId(CALL_ID) } returns stateAidEntities(callEntity)
         assertThat(persistence.getCallById(CALL_ID)).isEqualTo(expectedStandardCallDetail)
     }
@@ -520,6 +565,9 @@ internal class CallPersistenceProviderTest {
         every { applicationFormFieldConfigurationRepository.findAllByCallId(CALL_ID) } returns applicationFormFieldConfigurationEntities(
             callEntity
         )
+        every { projectNotificationConfigurationRepository.findByIdCallEntityId(callEntity.id) } returns projectNotificationConfigurationEntities(
+            callEntity
+        )
         every { projectCallStateAidRepository.findAllByIdCallId(CALL_ID) } returns stateAidEntities(callEntity)
         assertThat(persistence.getCallByProjectId(PROJECT_ID)).isEqualTo(expectedStandardCallDetail)
     }
@@ -533,7 +581,10 @@ internal class CallPersistenceProviderTest {
         every { partnerRepository.getById(114L) } returns partner
 
         assertThat(persistence.getCallSimpleByPartnerId(114L)).isEqualTo(
-            expectedStandardCallDetail.copy(applicationFormFieldConfigurations = mutableSetOf(), stateAids = emptyList())
+            expectedStandardCallDetail.copy(
+                applicationFormFieldConfigurations = mutableSetOf(),
+                stateAids = emptyList(),
+            )
         )
     }
 
@@ -595,6 +646,9 @@ internal class CallPersistenceProviderTest {
         every { applicationFormFieldConfigurationRepository.findAllByCallId(expectedResultEntity.id) } returns applicationFormFieldConfigurationEntities(
             expectedResultEntity
         )
+        every { projectNotificationConfigurationRepository.findByIdCallEntityId(expectedResultEntity.id) } returns projectNotificationConfigurationEntities(
+            expectedResultEntity
+        )
         every { projectCallStateAidRepository.findAllByIdCallId(expectedResultEntity.id) } returns stateAidEntities(
             expectedResultEntity
         )
@@ -649,6 +703,9 @@ internal class CallPersistenceProviderTest {
         } returns strategies
         every { programmeFundRepo.getTop20ByIdInAndSelectedTrue(setOf(FUND_ID)) } returns setOf(fund.setupId.programmeFund)
         every { applicationFormFieldConfigurationRepository.findAllByCallId(expectedResultEntity.id) } returns applicationFormFieldConfigurationEntities(
+            expectedResultEntity
+        )
+        every { projectNotificationConfigurationRepository.findByIdCallEntityId(expectedResultEntity.id) } returns projectNotificationConfigurationEntities(
             expectedResultEntity
         )
         every { projectCallStateAidRepository.findAllByIdCallId(expectedResultEntity.id) } returns stateAidEntities(
@@ -708,6 +765,7 @@ internal class CallPersistenceProviderTest {
 
         val formConfig = ApplicationFormFieldConfigurationEntity(ApplicationFormFieldConfigurationId("af-id", callOld), FieldVisibilityStatus.STEP_TWO_ONLY)
         every { applicationFormFieldConfigurationRepository.findAllByCallId(18L) } returns mutableSetOf(formConfig)
+        every { projectNotificationConfigurationRepository.findByIdCallEntityId(18L) } returns mutableSetOf()
         every { callRepo.save(any()) } returnsArgument 0
 
         val call = Call(
@@ -763,6 +821,9 @@ internal class CallPersistenceProviderTest {
         every { applicationFormFieldConfigurationRepository.findAllByCallId(call.id) } returns applicationFormFieldConfigurationEntities(
             call
         )
+        every { projectNotificationConfigurationRepository.findByIdCallEntityId(call.id) } returns projectNotificationConfigurationEntities(
+            call
+        )
         every { projectCallStateAidRepository.findAllByIdCallId(call.id) } returns stateAidEntities(call)
 
         persistence.updateProjectCallFlatRate(
@@ -790,6 +851,9 @@ internal class CallPersistenceProviderTest {
         every { callRepo.findById(1L) } returns Optional.of(call)
 
         every { applicationFormFieldConfigurationRepository.findAllByCallId(call.id) } returns applicationFormFieldConfigurationEntities(
+            call
+        )
+        every { projectNotificationConfigurationRepository.findByIdCallEntityId(call.id) } returns projectNotificationConfigurationEntities(
             call
         )
         every { projectCallStateAidRepository.findAllByIdCallId(call.id) } returns stateAidEntities(call)
@@ -836,6 +900,9 @@ internal class CallPersistenceProviderTest {
         every { applicationFormFieldConfigurationRepository.findAllByCallId(call.id) } returns applicationFormFieldConfigurationEntities(
             call
         )
+        every { projectNotificationConfigurationRepository.findByIdCallEntityId(call.id) } returns projectNotificationConfigurationEntities(
+            call
+        )
         every { projectCallStateAidRepository.findAllByIdCallId(call.id) } returns stateAidEntities(call)
         persistence.updateProjectCallLumpSum(1, setOf(2, 3))
         assertThat(call.lumpSums).containsExactlyInAnyOrder(lumpSum2, lumpSum3)
@@ -862,6 +929,9 @@ internal class CallPersistenceProviderTest {
         every { callRepo.findById(1L) } returns Optional.of(call)
         every { programmeUnitCostRepo.findAllByIdInAndProjectIdNull(setOf(2, 3)) } returns mutableListOf(unitCost2, unitCost3)
         every { applicationFormFieldConfigurationRepository.findAllByCallId(1) } returns applicationFormFieldConfigurationEntities(
+            call
+        )
+        every { projectNotificationConfigurationRepository.findByIdCallEntityId(1) } returns projectNotificationConfigurationEntities(
             call
         )
         every { projectCallStateAidRepository.findAllByIdCallId(1) } returns stateAidEntities(call)
@@ -975,6 +1045,80 @@ internal class CallPersistenceProviderTest {
         )
 
         assertThat(uc1.id.equals(uc2.id)).isTrue()
+    }
+
+    @Test
+    fun `should save set of project notification configurations for the call`() {
+        val callEntity = callEntity(CALL_ID)
+        val newConfigs = listOf(
+            ProjectNotificationConfiguration(
+                id = ApplicationStatus.SUBMITTED,
+                active = true,
+                sendToManager = true,
+                sendToLeadPartner = false,
+                sendToProjectPartners = false,
+                sendToProjectAssigned = false,
+                emailBody = null,
+                emailSubject = null
+            )
+        )
+        val expectedConfigs = mutableSetOf(
+             ProjectNotificationConfigurationDTO(
+                id = ApplicationStatusDTO.SUBMITTED,
+                active = true,
+                sendToManager = true,
+                sendToLeadPartner = false,
+                sendToProjectPartners = false,
+                sendToProjectAssigned = false,
+                emailBody = null,
+                emailSubject = null
+            )
+        )
+        every { callRepo.findById(CALL_ID) } returns Optional.of(callEntity)
+        every { projectCallStateAidRepository.findAllByIdCallId(CALL_ID) } returns stateAidEntities(callEntity)
+        every { applicationFormFieldConfigurationRepository.findAllByCallId(CALL_ID) } returns applicationFormFieldConfigurationEntities(
+            callEntity
+        )
+        every { projectNotificationConfigurationRepository
+            .saveAll(any<MutableSet<ProjectNotificationConfigurationEntity>>()) } returns newConfigs.toNotificationEntities(
+            callEntity
+        ).toList()
+        assertThat(
+            persistence.saveProjectNotificationConfigurations(
+                CALL_ID,
+                newConfigs
+            ).toDto()
+        ).containsAll(expectedConfigs)
+    }
+
+    @Test
+    fun `should return set of project notification configurations for the call`() {
+        val callEntity = callEntity(CALL_ID)
+        val configEntity = ProjectNotificationConfigurationEntity(
+            ProjectNotificationConfigurationId(
+                ApplicationStatus.SUBMITTED, callEntity(CALL_ID)
+            ), active = true,
+            sendToManager = true,
+            sendToLeadPartner = false,
+            sendToProjectPartners = false,
+            sendToProjectAssigned = false,
+            emailBody = null,
+            emailSubject = null
+        )
+        val expectedConfig = ProjectNotificationConfigurationDTO(
+            id = ApplicationStatusDTO.SUBMITTED,
+            active = true,
+            sendToManager = true,
+            sendToLeadPartner = false,
+            sendToProjectPartners = false,
+            sendToProjectAssigned = false,
+            emailBody = null,
+            emailSubject = null
+        )
+        every { callRepo.findById(CALL_ID)} returns Optional.of(callEntity)
+        every { projectNotificationConfigurationRepository.findByIdCallEntityId(CALL_ID) } returns mutableSetOf(configEntity)
+        assertThat(persistence.getProjectNotificationConfigurations(CALL_ID).toDto())
+            .containsExactly(expectedConfig)
     }
 
 }

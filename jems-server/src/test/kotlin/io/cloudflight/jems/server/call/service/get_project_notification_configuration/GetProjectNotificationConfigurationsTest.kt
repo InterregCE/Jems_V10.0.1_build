@@ -1,0 +1,67 @@
+package io.cloudflight.jems.server.call.service.get_project_notification_configuration
+
+import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.call.service.CallPersistence
+import io.cloudflight.jems.server.call.service.model.ProjectNotificationConfiguration
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.mockk.every
+import io.mockk.impl.annotations.InjectMockKs
+import io.mockk.impl.annotations.MockK
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
+
+class GetProjectNotificationConfigurationsTest: UnitTest() {
+
+    companion object {
+        private const val CALL_ID = 2L
+
+        private val projectNotificationConfigurations = listOf(
+            ProjectNotificationConfiguration(
+                id = ApplicationStatus.SUBMITTED,
+                active = true,
+                sendToManager = true,
+                sendToLeadPartner = false,
+                sendToProjectPartners = false,
+                sendToProjectAssigned = false,
+                emailBody = null,
+                emailSubject = null
+            )
+        )
+
+        private val expectedProjectNotificationConfigurations = listOf(
+            ProjectNotificationConfiguration(
+                id = ApplicationStatus.SUBMITTED,
+                active = true,
+                sendToManager = true,
+                sendToLeadPartner = false,
+                sendToProjectPartners = false,
+                sendToProjectAssigned = false,
+                emailBody = null,
+                emailSubject = null
+            ),
+            ProjectNotificationConfiguration(
+                id = ApplicationStatus.STEP1_SUBMITTED,
+                active = false,
+                sendToManager = false,
+                sendToLeadPartner = false,
+                sendToProjectPartners = false,
+                sendToProjectAssigned = false,
+                emailBody = null,
+                emailSubject = null
+            )
+        )
+    }
+
+    @MockK
+    lateinit var persistence: CallPersistence
+
+    @InjectMockKs
+    private lateinit var getProjectNotificationConfigurations: GetProjectNotificationConfigurations
+
+    @Test
+    fun `get application form field configurations`() {
+        every { persistence.getProjectNotificationConfigurations(CALL_ID) } returns projectNotificationConfigurations
+        assertThat(getProjectNotificationConfigurations.get(CALL_ID))
+            .containsAll(expectedProjectNotificationConfigurations)
+    }
+}
