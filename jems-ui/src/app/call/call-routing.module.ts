@@ -8,6 +8,10 @@ import {CallDetailPageComponent} from './call-detail-page/call-detail-page.compo
 import {UserRoleDTO} from '@cat/api';
 import {ApplicationFormConfigurationPageComponent} from './application-form-configuration-page/application-form-configuration-page.component';
 import {PreSubmissionCheckSettingsPageComponent} from './pre-submission-check-settings-page/pre-submission-check-settings-page.component';
+import {NotificationsSettingsComponent} from './notifications-settings/notifications-settings.component';
+import {
+  ProjectNotificationsSettingsTabComponent
+} from './notifications-settings/project-notificaitons-settings-tab/project-notifications-settings-tab.component';
 
 export const routes: Routes = [
   {
@@ -77,6 +81,25 @@ export const routes: Routes = [
             canActivate: [PermissionGuard],
             component: PreSubmissionCheckSettingsPageComponent,
           },
+          {
+            path: 'notificationSettings',
+            component: NotificationsSettingsComponent,
+            data: {
+              breadcrumb: 'call.detail.notifications.config.title',
+              permissionsOnly: [UserRoleDTO.PermissionsEnum.CallRetrieve],
+            },
+            children: [
+              {
+                path: '',
+                redirectTo:'project',
+              },
+              {
+                path: 'project',
+                component: ProjectNotificationsSettingsTabComponent,
+                data: {breadcrumb: 'project'}
+              }
+            ]
+          }
         ],
       },
       {
