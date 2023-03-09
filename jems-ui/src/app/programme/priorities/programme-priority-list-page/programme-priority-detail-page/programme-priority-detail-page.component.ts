@@ -251,7 +251,7 @@ export class ProgrammePriorityDetailPageComponent {
       ...a,
       [v]: this.formBuilder.control(
         selected && [...(
-          objective?.dimensionCodes?.[v]?.map((it) => ({value: it, canBeDeleted: false} as PartiallyLockableOption))
+          objective?.dimensionCodes?.[v]?.map((it) => ({value: it, canBeDeleted: !this.isProgrammeSetupLocked} as PartiallyLockableOption))
           || [])] || [],
         this.constants.dimensionCodesSize(group)
       )}), {});

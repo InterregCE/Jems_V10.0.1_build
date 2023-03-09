@@ -44,7 +44,7 @@ import {
 } from '@project/project-application/report/partner-control-report/partner-control-expenditure-verification-tab/partner-control-report-file-expenditure-verification-store';
 import {Alert} from '@common/components/forms/alert';
 import {MatSlideToggleChange} from '@angular/material/slide-toggle';
-import {MatTable} from "@angular/material/table";
+import {MatTable} from '@angular/material/table';
 
 @UntilDestroy()
 @Component({
