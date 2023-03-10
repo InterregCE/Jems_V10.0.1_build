@@ -1,0 +1,57 @@
+{
+  "controllerInstitution": {
+    "name": "randomize",
+    "description": "Controller institution for control-report",
+    "institutionNuts": ["FRK27"],
+    "institutionUsers": [
+      {
+        "userEmail": "randomize",
+        "accessLevel": "Edit"
+      },
+      {
+        "userEmail": "randomize",
+        "accessLevel": "Edit"
+      }
+    ]
+  },
+  "controllerRole": {
+    "name": "controllerRole",
+    "permissions": [
+      "ProjectContractingView",
+      "InstitutionsUpdate",
+      "InstitutionsUnlimited",
+      "InstitutionsRetrieve",
+      "InstitutionsAssignmentUpdate",
+      "InstitutionsAssignmentRetrieve"
+    ]
+  },
+  "controllerUser1": {
+    "email": "randomize",
+    "name": "Controller User1",
+    "surname": "User1",
+    "userRoleId": null,
+    "userStatus": "ACTIVE"
+  },
+  "controllerUser2": {
+    "email": "randomize",
+    "name": "Controller User2",
+    "surname": "User2",
+    "userRoleId": null,
+    "userStatus": "ACTIVE"
+  },
+  "partnerCollaborator": [
+    {
+      "userEmail": "applicant.user@jems.eu",
+      "level": "EDIT"
+    }
+  ],
+  "controllerAssignment": {
+    "assignmentsToAdd": [
+      {
+        "partnerId": null,
+        "institutionId": null
+      }
+    ],
+    "assignmentsToRemove": []
+  }
+}
