@@ -34,7 +34,7 @@
                                    [options]="{align: 'right', min: MIN_VALUE, max: MAX_VALUE}">
                         </mat-form-field>
 
-                        <mat-form-field class="input-field ml-3">
+                        <mat-form-field *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.DELIVERY_PERIOD" class="input-field ml-3">
                             <mat-label>{{'project.application.project.report.tab.results.and.principles.result.delivery.period' | translate }}</mat-label>
                             <input matInput disabled
                                    [value]="result.get('periodDetail').value && 'project.application.form.work.package.output.delivery.period.entry' | translate : getPeriodArguments(result.get('periodDetail').value)">
