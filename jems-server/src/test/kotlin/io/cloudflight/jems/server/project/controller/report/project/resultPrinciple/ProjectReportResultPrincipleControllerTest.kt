@@ -65,6 +65,7 @@ class ProjectReportResultPrincipleControllerTest : UnitTest() {
             description = setOf(InputTranslation(SystemLanguage.NL, "NL-desc")),
             measurementUnit = setOf(InputTranslation(SystemLanguage.EN, "test-measure-EN")),
             attachment = JemsFileMetadata(697L, "file.att", time),
+            deactivated = false
         )
 
         fun resultPrincipleDto(resultNumber: Int) = ProjectReportResultPrincipleDTO(
@@ -82,6 +83,7 @@ class ProjectReportResultPrincipleControllerTest : UnitTest() {
                     description = setOf(InputTranslation(SystemLanguage.NL, "NL-desc")),
                     measurementUnit = setOf(InputTranslation(SystemLanguage.EN, "test-measure-EN")),
                     attachment = ProjectReportFileMetadataDTO(697L, name = "file.att", time),
+                    deactivated = false
                 )
             ),
             horizontalPrinciples = InputProjectHorizontalPrinciples(PositiveEffects, NegativeEffects, Neutral),

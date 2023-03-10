@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.programme.entity.indicator.ResultIndicatorEnti
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
 import java.math.BigDecimal
 import javax.persistence.CascadeType
+import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
@@ -66,4 +67,6 @@ class ProjectReportProjectResultEntity(
     @JoinColumn(name = "attachment_id")
     var attachment: JemsFileMetadataEntity?,
 
+    @field:NotNull
+    val deactivated: Boolean,
 )

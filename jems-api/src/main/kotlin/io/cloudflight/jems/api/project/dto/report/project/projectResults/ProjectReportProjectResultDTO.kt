@@ -7,6 +7,7 @@ import java.math.BigDecimal
 
 data class ProjectReportProjectResultDTO(
     val resultNumber: Int,
+    val deactivated: Boolean,
     val programmeResultIndicatorId: Long?,
     val programmeResultIndicatorIdentifier: String?,
     val programmeResultIndicatorName: Set<InputTranslation>?,

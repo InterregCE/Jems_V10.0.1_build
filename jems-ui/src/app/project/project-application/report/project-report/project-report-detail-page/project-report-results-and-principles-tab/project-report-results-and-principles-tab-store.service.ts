@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {combineLatest, merge, Observable, Subject} from 'rxjs';
+import {combineLatest, merge, Observable, pipe, Subject} from 'rxjs';
 import {
   ProjectReportFileMetadataDTO,
   ProjectReportResultPrincipleDTO,
@@ -12,7 +12,7 @@ import {ProjectStore} from '@project/project-application/containers/project-appl
 import {
   ProjectReportDetailPageStore
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-detail-page-store.service';
-import {shareReplay, startWith, switchMap, take, tap} from 'rxjs/operators';
+import {shareReplay, switchMap, take, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {DownloadService} from '@common/services/download.service';
 
@@ -20,7 +20,6 @@ import {DownloadService} from '@common/services/download.service';
 export class ProjectReportResultsAndPrinciplesTabStore {
   savedResultsAndPrinciples$ = new Subject<ProjectReportResultPrincipleDTO>();
   resultsAndPrinciples$: Observable<ProjectReportResultPrincipleDTO>;
-  resultsAndPrinciplesChanged$ = new Subject();
 
   constructor(private routingService: RoutingService,
               private projectStore: ProjectStore,
@@ -48,8 +47,7 @@ export class ProjectReportResultsAndPrinciplesTabStore {
   private resultsAndPrinciples(): Observable<ProjectReportResultPrincipleDTO> {
     const initialData$ = combineLatest([
       this.projectStore.projectId$,
-      this.projectReportDetailPageStore.projectReportId$,
-      this.resultsAndPrinciplesChanged$.pipe(startWith(null))
+      this.projectReportDetailPageStore.projectReportId$
     ])
       .pipe(
         switchMap(([projectId, reportId]) => this.projectReportResultPrincipleService.getResultAndPrinciple(projectId, reportId)),
@@ -86,7 +84,6 @@ export class ProjectReportResultsAndPrinciplesTabStore {
         switchMap(([projectId, reportId]) => {
           return this.projectReportResultPrincipleService.uploadAttachmentToResultForm(file, projectId, reportId, resultNumber);
         }),
-        tap(() => this.resultsAndPrinciplesChanged$.next()),
       );
   }
 
@@ -99,8 +96,7 @@ export class ProjectReportResultsAndPrinciplesTabStore {
         take(1),
         switchMap(([projectId, reportId]) => {
           return this.projectReportResultPrincipleService.deleteAttachmentFromResult(projectId, reportId, resultNumber);
-        }),
-        tap(() => this.resultsAndPrinciplesChanged$.next()),
+        })
       );
   }
 }

@@ -200,6 +200,7 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
             every { baseline } returns BigDecimal.valueOf(3)
             every { targetValue } returns BigDecimal.valueOf(4)
             every { previouslyReported } returns BigDecimal.valueOf(5)
+            every { deactivated } returns false
         })
 
         fun projectManagement(): ProjectHorizontalPrinciples = mockk {

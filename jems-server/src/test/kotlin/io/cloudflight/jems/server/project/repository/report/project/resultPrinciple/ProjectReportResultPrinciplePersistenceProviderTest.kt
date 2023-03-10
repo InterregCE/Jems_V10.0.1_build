@@ -52,6 +52,7 @@ class ProjectReportResultPrinciplePersistenceProviderTest : UnitTest() {
                     description = setOf(InputTranslation(SystemLanguage.CS, "desc-CS")),
                     measurementUnit = setOf(InputTranslation(SystemLanguage.EN, "measurement")),
                     attachment = JemsFileMetadata(45L, "test.txt", time),
+                    deactivated = false
                 )
             ),
             horizontalPrinciples = ProjectHorizontalPrinciples(PositiveEffects, PositiveEffects, PositiveEffects),
@@ -110,6 +111,7 @@ class ProjectReportResultPrinciplePersistenceProviderTest : UnitTest() {
                 currentReport = BigDecimal.valueOf(3),
                 previouslyReported = BigDecimal.valueOf(4),
                 attachment = attachment,
+                deactivated = false
             )
         }
 

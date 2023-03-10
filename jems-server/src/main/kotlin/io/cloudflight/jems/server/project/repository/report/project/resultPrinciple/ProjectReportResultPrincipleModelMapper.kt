@@ -37,6 +37,7 @@ fun List<ProjectReportProjectResultEntity>.toModel(
 ) = map {
     ProjectReportProjectResult(
         resultNumber = it.resultNumber,
+        deactivated = it.deactivated,
         programmeResultIndicatorId = it.programmeResultIndicatorEntity?.id,
         programmeResultIndicatorIdentifier = it.programmeResultIndicatorEntity?.identifier,
         programmeResultIndicatorName = it.programmeResultIndicatorEntity?.getName() ?: mutableSetOf(),
@@ -58,6 +59,7 @@ fun List<ProjectReportResultCreate>.toIndexedEntity(
     ProjectReportProjectResultEntity(
         projectReport = projectReport,
         resultNumber = it.resultNumber,
+        deactivated = it.deactivated,
         periodNumber = it.periodNumber,
         programmeResultIndicatorEntity = indicatorEntityResolver.invoke(it.programmeResultIndicatorId),
         baseline = it.baseline,

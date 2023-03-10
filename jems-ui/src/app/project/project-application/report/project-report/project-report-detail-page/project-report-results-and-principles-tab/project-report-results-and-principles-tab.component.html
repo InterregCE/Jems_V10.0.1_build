@@ -6,9 +6,13 @@
         <div *ngFor="let result of results.controls; let i = index" class="project-results">
             <ng-container formArrayName="results">
                 <ng-container [formGroupName]="i">
-                    <div>
-                        <h4>{{'project.application.project.report.tab.results.and.principles.result' | translate }} {{result.get('resultNumber').value}}</h4>
-                    </div>
+                    <h4>
+                        <mat-icon *ngIf="result.get('deactivated').value" class="vertical-middle"
+                                  [matTooltip]="'project.application.form.partner.table.status.inactive' | translate">
+                            do_not_disturb
+                        </mat-icon>
+                        {{'project.application.project.report.tab.results.and.principles.result' | translate }} {{result.get('resultNumber').value}}
+                    </h4>
 
                     <mat-form-field jemsFormFieldWidth="full">
                         <mat-label>{{'project.application.project.report.tab.results.and.principles.result.indicator' | translate }}</mat-label>
@@ -77,12 +81,12 @@
                     </div>
                     <div jemsFormFieldWidth="full" class="ml-3">
                         <p class="attachment-text">{{'project.application.project.report.tab.results.and.principles.result.attachment' | translate }}</p>
-                        <jems-partner-actions-cell class="attachments-element" [formControlName]="'fileMetadata'"
+                        <jems-partner-actions-cell class="attachments-element" [formControlName]="'attachment'"
                                                    [isReportEditable]="data.reportEditable"
                                                    [isUploadDone]="isUploadDone"
                                                    (upload)="onUpload($event, result.get('resultNumber').value, i)"
                                                    (download)="onDownload(result.get('resultNumber').value)"
-                                                   (delete)="onDelete(result.get('resultNumber').value)">
+                                                   (delete)="onDelete(result.get('resultNumber').value, i)">
                         </jems-partner-actions-cell>
                     </div>
                 </ng-container>
