@@ -212,7 +212,7 @@
             <div class="dimensions pt-2">
                 <jems-filter-autocomplete-input
                         [options]=getCodesByDimension(dimension)
-                        [isDisabled]="isProgrammeSetupLocked && form.disabled"
+                        [isDisabled]="form.disabled"
                         [formControl]=objectiveControl.get(constants.DIMENSION_CODES.name).get(dimension)
                         [hasPartialLockingOfValues]="true"
                         formFieldWidth=full
