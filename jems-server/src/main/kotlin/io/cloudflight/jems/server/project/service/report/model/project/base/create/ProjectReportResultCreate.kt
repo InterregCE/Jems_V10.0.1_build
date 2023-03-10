@@ -4,6 +4,7 @@ import java.math.BigDecimal
 
 data class ProjectReportResultCreate(
     val resultNumber: Int,
+    val deactivated: Boolean,
     val periodNumber: Int?,
     val programmeResultIndicatorId: Long?,
     val baseline: BigDecimal,

@@ -93,6 +93,7 @@ internal class CreateProjectReportTest : UnitTest() {
             every { programmeResultIndicatorId } returns null
             every { baseline } returns BigDecimal.valueOf(3)
             every { targetValue } returns BigDecimal.valueOf(4)
+            every { deactivated } returns false
         }
 
         private fun projectManagement(): ProjectManagement = mockk {

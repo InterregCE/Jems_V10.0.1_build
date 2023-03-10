@@ -139,6 +139,7 @@ class CreateProjectReport(
     ): List<ProjectReportResultCreate> = map {
         ProjectReportResultCreate(
             resultNumber = it.resultNumber,
+            deactivated = it.deactivated,
             periodNumber = it.periodNumber,
             programmeResultIndicatorId = it.programmeResultIndicatorId,
             baseline = it.baseline,

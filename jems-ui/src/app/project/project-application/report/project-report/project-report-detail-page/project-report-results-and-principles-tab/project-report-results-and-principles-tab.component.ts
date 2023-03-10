@@ -12,6 +12,7 @@ import {
   ProjectReportResultsAndPrinciplesTabStore
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-results-and-principles-tab/project-report-results-and-principles-tab-store.service';
 import {
+  ProjectReportFileMetadataDTO,
   ProjectReportProjectResultDTO,
   ProjectReportResultPrincipleDTO,
   UpdateProjectReportProjectResultDTO,
@@ -111,7 +112,7 @@ export class ProjectReportResultsAndPrinciplesTabComponent {
         finalize(() => this.isUploadDone = true)
       )
       .subscribe(value => {
-        this.results.at(index).patchValue({attachmentId: value.id, attachmentName: value.name, attachmentUploadedDate: value.uploaded});
+        this.results.at(index).patchValue({attachment: value});
       });
   }
 
@@ -121,18 +122,20 @@ export class ProjectReportResultsAndPrinciplesTabComponent {
       .subscribe();
   }
 
-  onDelete(resultNumber: number) {
+  onDelete(resultNumber: number, index: number) {
     this.resultsAndPrinciplesTabStore.deleteFile(resultNumber)
       .pipe(take(1))
-      .subscribe();
+      .subscribe(() => this.results.at(index).patchValue({attachment: null}));
   }
 
   resetForm(resultsAndPrinciples: ProjectReportResultPrincipleDTO, reportEditable: boolean) {
-    this.initialCumulativeValues = resultsAndPrinciples.projectResults.map(result => result.cumulativeValue);
+    const attachments: [ProjectReportFileMetadataDTO] = this.results.value.map((result: any) => result.attachment);
+    this.initialCumulativeValues = resultsAndPrinciples.projectResults.map((result: ProjectReportProjectResultDTO) => result.cumulativeValue);
     this.results.clear();
-    resultsAndPrinciples.projectResults.forEach((resultDTO: ProjectReportProjectResultDTO) => {
+    resultsAndPrinciples.projectResults.forEach((resultDTO: ProjectReportProjectResultDTO, index) => {
       const result = this.formBuilder.group({
         resultNumber: this.formBuilder.control(resultDTO.resultNumber),
+        deactivated: this.formBuilder.control(resultDTO.deactivated),
         indicatorId: this.formBuilder.control(resultDTO.programmeResultIndicatorId),
         indicator: this.formBuilder.control(resultDTO.programmeResultIndicatorIdentifier),
         indicatorName: this.formBuilder.control(resultDTO.programmeResultIndicatorName),
@@ -141,9 +144,9 @@ export class ProjectReportResultsAndPrinciplesTabComponent {
         targetValue: this.formBuilder.control({value: resultDTO.targetValue, disabled: true}),
         achievedInReportingPeriod: this.formBuilder.control({value: resultDTO.achievedInReportingPeriod, disabled: !reportEditable}),
         cumulativeValue: this.formBuilder.control({value: resultDTO.cumulativeValue + resultDTO.achievedInReportingPeriod, disabled: true}),
-        description: this.formBuilder.control(resultDTO.description || [], [Validators.maxLength(2000)]),
+        description: this.formBuilder.control(resultDTO.description ?? [], [Validators.maxLength(2000)]),
         measurementUnit: this.formBuilder.control({value: resultDTO.measurementUnit, disabled: true}),
-        fileMetadata: this.formBuilder.control(resultDTO.attachment || null),
+        attachment: this.formBuilder.control(resultDTO.attachment ?? attachments[index]),
       });
       this.results.push(result);
     });

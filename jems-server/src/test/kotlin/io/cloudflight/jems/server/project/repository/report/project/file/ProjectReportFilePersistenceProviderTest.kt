@@ -31,7 +31,8 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
             targetValue = BigDecimal.valueOf(2),
             currentReport = BigDecimal.valueOf(3),
             previouslyReported = BigDecimal.valueOf(4),
-            attachment = mockk()
+            attachment = mockk(),
+            deactivated = false
         )
 
         val jesmFileCreate = JemsFileCreate(
