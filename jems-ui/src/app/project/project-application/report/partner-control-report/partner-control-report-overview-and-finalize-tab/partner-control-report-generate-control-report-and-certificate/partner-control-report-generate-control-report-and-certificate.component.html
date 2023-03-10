@@ -29,7 +29,7 @@
                 [downloadAttachmentCallback]="downloadAttachmentCallback"
                 [displayedColumns]="displayedColumns"
                 [isUploadDone]="isUploadDone"
-                [isUserAllowedToEditReport]="data.isUserAllowedToEditReport"
+                [isUserAllowedToEditReport]="data.canGenerateExportFile"
                 [reportStatus]="data.reportStatus"
                 [isFileDeletable]="!data.isReportFinalized"
                 (onSortChange)="fileManagementStore.newSort$.next($event)"
