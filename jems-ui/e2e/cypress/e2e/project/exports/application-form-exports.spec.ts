@@ -6,7 +6,7 @@ import application2step from '../../../fixtures/api/application/2.step.applicati
 import partner from '../../../fixtures/api/application/partner/partner.json';
 import {faker} from '@faker-js/faker';
 
-const baselinePath = "/project/exports/application-form/";
+const baselinePath = '/project/exports/application-form/';
 
 const frontPageProjectIdCoordinates = {x0: 387, x1: 440, y0: 324, y1: 343};
 const frontPageProjectAcronymCoordinates = {x0: 260, x1: 580, y0: 373, y1: 404};
