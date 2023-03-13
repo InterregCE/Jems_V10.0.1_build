@@ -4,8 +4,6 @@ import com.querydsl.core.types.Predicate
 import com.querydsl.core.types.dsl.BooleanExpression
 import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.common.file.entity.QJemsFileMetadataEntity
-
-
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -16,7 +14,8 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor
 import org.springframework.stereotype.Repository
 
 @Repository
-interface JemsFileMetadataRepository : JpaRepository<JemsFileMetadataEntity, Long>, QuerydslPredicateExecutor<JemsFileMetadataEntity> {
+interface JemsFileMetadataRepository : JpaRepository<JemsFileMetadataEntity, Long>,
+    QuerydslPredicateExecutor<JemsFileMetadataEntity> {
 
     fun existsByProjectIdAndId(projectId: Long, fileId: Long): Boolean
 
@@ -32,6 +31,15 @@ interface JemsFileMetadataRepository : JpaRepository<JemsFileMetadataEntity, Lon
     fun existsByPartnerIdAndPathPrefixAndId(partnerId: Long, pathPrefix: String, id: Long): Boolean
 
     fun existsByTypeAndId(type: JemsFileType, id: Long): Boolean
+
+    @Query(
+        """
+        SELECT CASE WHEN COUNT(e) > 0 THEN TRUE ELSE FALSE END
+        FROM #{#entityName} e
+        WHERE e.projectId = :projectId AND e.path LIKE :pathPrefix% AND e.id = :id
+    """
+    )
+    fun existsByProjectIdAndPathPrefixAndId(projectId: Long, pathPrefix: String, id: Long): Boolean
 
     fun existsByProjectIdAndIdAndTypeIn(
         projectId: Long,

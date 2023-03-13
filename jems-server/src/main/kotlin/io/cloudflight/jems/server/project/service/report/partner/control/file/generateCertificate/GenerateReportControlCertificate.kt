@@ -80,7 +80,6 @@ class GenerateReportControlCertificate(
         surname = currentUser?.user?.surname ?: ""
     )
 
-
     private fun addIdentifierToFileName(fileName: String, reportId: Long): String {
         val identifier = projectPartnerReportControlFilePersistence.countReportControlFilesByFileType(reportId = reportId, JemsFileType.ControlCertificate) + 1
         val certificateFilePrefix = "Control Certificate"
@@ -96,7 +95,6 @@ class GenerateReportControlCertificate(
             null
         }
     }
-
 
     private fun ExportResult.toJemsFile(projectId: Long, partnerId: Long, reportId: Long) = JemsFileCreate(
         projectId = projectId,

@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.payments.service.advance.attachment.uploadPaymentAdvanceAttachment
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.payments.authorization.CanUpdateAdvancePayments
 import io.cloudflight.jems.server.payments.service.advance.PaymentAdvancePersistence
@@ -19,7 +19,7 @@ class UploadPaymentAdvanceAttachment(
     private val filePersistence: JemsFilePersistence,
     private val fileRepository: JemsProjectFileService,
     private val securityService: SecurityService,
-): UploadPaymentAdvAttachmentInteractor {
+) : UploadPaymentAdvAttachmentInteractor {
 
     @CanUpdateAdvancePayments
     @Transactional

@@ -1,16 +1,16 @@
 package io.cloudflight.jems.server.project.service.report.partner.procurement.attachment.uploadFileToProjectPartnerReportProcurementAttachment
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.file.uploadProjectFile.isFileTypeInvalid
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.file.ProjectPartnerReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectPartnerReportProcurementPersistence
 import io.cloudflight.jems.server.project.service.report.partner.procurement.attachment.MAX_AMOUNT_OF_ATTACHMENT
 import io.cloudflight.jems.server.project.service.report.partner.procurement.attachment.ProjectPartnerReportProcurementAttachmentPersistence
@@ -68,5 +68,4 @@ class UploadFileToProjectPartnerReportProcurementAttachment(
         if (amountBeforeSave >= MAX_AMOUNT_OF_ATTACHMENT)
             throw MaxAmountOfAttachmentReachedException(MAX_AMOUNT_OF_ATTACHMENT)
     }
-
 }

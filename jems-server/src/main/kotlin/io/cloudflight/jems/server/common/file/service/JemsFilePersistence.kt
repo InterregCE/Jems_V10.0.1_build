@@ -6,12 +6,13 @@ import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
-
 interface JemsFilePersistence {
 
     fun existsFile(exactPath: String, fileName: String): Boolean
 
     fun existsFile(partnerId: Long, pathPrefix: String, fileId: Long): Boolean
+
+    fun existsReportFile(projectId: Long, pathPrefix: String, fileId: Long): Boolean
 
     fun existsFile(type: JemsFileType, fileId: Long): Boolean
 
@@ -21,7 +22,11 @@ interface JemsFilePersistence {
         fileTypes: Set<JemsFileType>
     ): Boolean
 
-    fun existsFileByPartnerIdAndFileIdAndFileTypeIn(partnerId: Long, fileId: Long, fileTypes: Set<JemsFileType>): Boolean
+    fun existsFileByPartnerIdAndFileIdAndFileTypeIn(
+        partnerId: Long,
+        fileId: Long,
+        fileTypes: Set<JemsFileType>
+    ): Boolean
 
     fun listAttachments(
         pageable: Pageable,
@@ -34,9 +39,13 @@ interface JemsFilePersistence {
 
     fun downloadFile(partnerId: Long, fileId: Long): Pair<String, ByteArray>?
 
+    fun downloadReportFile(projectId: Long, fileId: Long): Pair<String, ByteArray>?
+
     fun downloadFile(type: JemsFileType, fileId: Long): Pair<String, ByteArray>?
 
     fun deleteFile(partnerId: Long, fileId: Long)
+
+    fun deleteReportFile(projectId: Long, fileId: Long)
 
     fun deleteFile(type: JemsFileType, fileId: Long)
 

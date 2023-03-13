@@ -5,18 +5,18 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
-import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
-import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.common.file.minio.MinioStorage
-import io.cloudflight.jems.server.common.file.service.WrongFileTypeException
-import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.common.file.repository.JemsFileMetadataRepository
+import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
+import io.cloudflight.jems.server.common.file.service.WrongFileTypeException
+import io.cloudflight.jems.server.project.entity.ProjectEntity
+import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.PaymentAdvanceAttachment
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.PaymentAttachment
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import io.mockk.clearMocks
@@ -27,6 +27,7 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -93,6 +94,7 @@ class JemsProjectFileRepositoryTest : UnitTest() {
         "PaymentAttachment",
         "PaymentAdvanceAttachment",
 
+        "ProjectReport",
         "PartnerReport",
         "Activity",
         "Deliverable",
@@ -126,7 +128,7 @@ class JemsProjectFileRepositoryTest : UnitTest() {
 
         val file = file(type = type)
         var additionalStepInvoked = false
-        repository.persistProjectFileAndPerformAction(file, { additionalStepInvoked = true })
+        repository.persistProjectFileAndPerformAction(file) { additionalStepInvoked = true }
 
         verify(exactly = 1) { minioStorage.saveFile(expectedBucket, "/our/indexed/path/new_file.txt", any(), any(), true) }
 
@@ -141,7 +143,7 @@ class JemsProjectFileRepositoryTest : UnitTest() {
         assertThat(slotFileEntity.captured.user).isEqualTo(userEntity)
         assertThat(slotFileEntity.captured.description).isEmpty()
 
-        assertThat(additionalStepInvoked).isTrue()
+        assertTrue(additionalStepInvoked)
         assertThat(auditSlot.captured.auditCandidate).isEqualTo(AuditCandidate(
             action = AuditAction.PROJECT_FILE_UPLOADED_SUCCESSFULLY,
             project = AuditProject(PROJECT_ID.toString(), "custom-id", "acronym"),
@@ -155,6 +157,7 @@ class JemsProjectFileRepositoryTest : UnitTest() {
         "PaymentAttachment",
         "PaymentAdvanceAttachment",
 
+        "ProjectReport",
         "ProjectResult",
 
         "PartnerReport",
@@ -176,7 +179,7 @@ class JemsProjectFileRepositoryTest : UnitTest() {
     fun `persistProjectFileAndPerformAction wrong type`(type: JemsFileType) {
         val file = file(type = type)
         assertThrows<WrongFileTypeException> {
-            repository.persistProjectFileAndPerformAction(file, { })
+            repository.persistProjectFileAndPerformAction(file) { }
         }
     }
 
@@ -245,5 +248,4 @@ class JemsProjectFileRepositoryTest : UnitTest() {
             description = "/sample/location",
         ))
     }
-
 }

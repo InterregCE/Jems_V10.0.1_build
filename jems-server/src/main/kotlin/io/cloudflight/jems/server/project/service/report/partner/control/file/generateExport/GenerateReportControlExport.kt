@@ -79,7 +79,6 @@ class GenerateReportControlExport(
         surname = currentUser?.user?.surname ?: ""
     )
 
-
     private fun addIdentifierToFileName(fileName: String, reportId: Long): String {
         val identifier = projectPartnerReportControlFilePersistence.countReportControlFilesByFileType(reportId = reportId, JemsFileType.ControlReport) + 1
         val exportFilePrefix = "Control Report"
@@ -95,7 +94,6 @@ class GenerateReportControlExport(
             null
         }
     }
-
 
     private fun ExportResult.toJemsFile(projectId: Long, partnerId: Long, reportId: Long) = JemsFileCreate(
         projectId = projectId,

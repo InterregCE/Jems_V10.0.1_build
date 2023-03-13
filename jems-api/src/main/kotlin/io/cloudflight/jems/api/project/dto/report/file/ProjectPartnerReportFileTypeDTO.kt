@@ -9,6 +9,13 @@ enum class ProjectPartnerReportFileTypeDTO {
 
     Project,
       Report,
+        ProjectReport,
+          ProjectResult,
+          WorkPlanProjectReport,
+            WorkPackageProjectReport,
+              ActivityProjectReport,
+                DeliverableProjectReport,
+              OutputProjectReport,
         Partner,
           PartnerReport,
 

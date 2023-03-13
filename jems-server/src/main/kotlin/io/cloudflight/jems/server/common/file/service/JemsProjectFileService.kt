@@ -4,14 +4,14 @@ import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.common.exception.ApplicationUnprocessableException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
-import io.cloudflight.jems.server.common.file.minio.*
-import io.cloudflight.jems.server.project.repository.ProjectRepository
+import io.cloudflight.jems.server.common.file.minio.MinioStorage
 import io.cloudflight.jems.server.common.file.repository.JemsFileMetadataRepository
+import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.report.partner.toModel
 import io.cloudflight.jems.server.project.repository.toSummaryModel
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Repository
@@ -32,6 +32,7 @@ class JemsProjectFileService(
             JemsFileType.PaymentAdvanceAttachment,
 
             // Project Report
+            JemsFileType.ProjectReport,
             JemsFileType.ProjectResult,
 
             // Partner Report
@@ -89,8 +90,10 @@ class JemsProjectFileService(
 
         val projectRelated = projectRepository.getById(file.projectId!!).toSummaryModel()
         auditPublisher.publishEvent(
-            projectFileUploadSuccess(context = this, fileMeta = fileMeta,
-            location = locationForMinio, type = file.type, projectSummary = projectRelated)
+            projectFileUploadSuccess(
+                context = this, fileMeta = fileMeta,
+                location = locationForMinio, type = file.type, projectSummary = projectRelated
+            )
         )
 
         return fileMeta
@@ -107,8 +110,14 @@ class JemsProjectFileService(
         val projectRelated = projectRepository.getById(file.projectId!!).toSummaryModel()
 
         auditPublisher.publishEvent(
-            fileDescriptionChanged(context = this, fileMeta = file.toModel(),
-            location = file.minioLocation, oldValue = oldDescription, newValue = description, projectSummary = projectRelated)
+            fileDescriptionChanged(
+                context = this,
+                fileMeta = file.toModel(),
+                location = file.minioLocation,
+                oldValue = oldDescription,
+                newValue = description,
+                projectSummary = projectRelated
+            )
         )
     }
 
@@ -123,8 +132,10 @@ class JemsProjectFileService(
         projectFileMetadataRepository.delete(file)
 
         auditPublisher.publishEvent(
-            fileDeleted(context = this, fileId = fileId,
-            location = file.minioLocation, projectSummary = projectRepository.getById(projectId).toSummaryModel())
+            fileDeleted(
+                context = this, fileId = fileId,
+                location = file.minioLocation, projectSummary = projectRepository.getById(projectId).toSummaryModel()
+            )
         )
     }
 
@@ -136,7 +147,7 @@ class JemsProjectFileService(
 
 }
 
-class WrongFileTypeException(type: JemsFileType): ApplicationUnprocessableException(
+class WrongFileTypeException(type: JemsFileType) : ApplicationUnprocessableException(
     code = "GENERIC-FILE-EXCEPTION",
     i18nMessage = I18nMessage("not.allowed.file.type.in.generic.project.file.repository"),
     message = type.name,

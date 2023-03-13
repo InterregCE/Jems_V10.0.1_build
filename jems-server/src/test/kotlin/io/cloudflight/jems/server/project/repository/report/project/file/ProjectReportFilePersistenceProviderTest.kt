@@ -45,7 +45,6 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
             content = mockk(),
             userId = 1L,
         )
-
     }
 
     @MockK
