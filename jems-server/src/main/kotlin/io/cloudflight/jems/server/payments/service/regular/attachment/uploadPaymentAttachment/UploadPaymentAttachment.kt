@@ -1,15 +1,15 @@
 package io.cloudflight.jems.server.payments.service.regular.attachment.uploadPaymentAttachment
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
-import io.cloudflight.jems.server.payments.service.regular.PaymentRegularPersistence
 import io.cloudflight.jems.server.payments.authorization.CanUpdatePayments
+import io.cloudflight.jems.server.payments.service.regular.PaymentRegularPersistence
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.file.uploadProjectFile.isFileTypeInvalid
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -47,5 +47,4 @@ class UploadPaymentAttachment(
             return fileRepository.persistProjectFile(fileToSave)
         }
     }
-
 }

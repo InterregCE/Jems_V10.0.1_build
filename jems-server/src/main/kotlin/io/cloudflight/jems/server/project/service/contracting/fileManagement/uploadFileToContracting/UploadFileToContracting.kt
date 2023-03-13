@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.project.service.contracting.fileManagement.uploadFileToContracting
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.project.authorization.CanEditContractsAndAgreements
 import io.cloudflight.jems.server.project.authorization.CanEditProjectMonitoring
@@ -14,9 +14,9 @@ import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.file.uploadProjectFile.isFileTypeInvalid
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.*
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -28,7 +28,7 @@ class UploadFileToContracting(
     private val filePersistence: JemsFilePersistence,
     private val fileRepository: JemsProjectFileService,
     private val validator: ContractingValidator
-): UploadFileToContractingInteractor {
+) : UploadFileToContractingInteractor {
 
     @CanEditContractsAndAgreements
     @Transactional
@@ -65,7 +65,12 @@ class UploadFileToContracting(
         uploadFileGeneric(projectId, null, file, ContractInternal)
 
 
-    private fun uploadFileGeneric(projectId: Long, partnerId: Long?, file: ProjectFile, type: JemsFileType): JemsFileMetadata {
+    private fun uploadFileGeneric(
+        projectId: Long,
+        partnerId: Long?,
+        file: ProjectFile,
+        type: JemsFileType
+    ): JemsFileMetadata {
         val project = projectPersistence.getProjectSummary(projectId)
         validateProjectIsApproved(project)
 
@@ -96,5 +101,4 @@ class UploadFileToContracting(
             throw ProjectNotApprovedException()
         }
     }
-
 }

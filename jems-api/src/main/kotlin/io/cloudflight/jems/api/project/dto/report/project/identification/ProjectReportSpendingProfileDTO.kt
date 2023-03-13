@@ -6,7 +6,7 @@ import java.math.BigDecimal
 
 data class ProjectReportSpendingProfileDTO(
     val partnerRole: ProjectPartnerRoleDTO,
-    val partnerNumber: Integer,
+    val partnerNumber: Int,
     val periodDetail: ProjectPartnerReportPeriodDTO?,
     var currentReport: BigDecimal,
     val previouslyReported: BigDecimal,

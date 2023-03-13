@@ -77,5 +77,4 @@ class ReIncludeParkedExpenditure(
         content = ByteArrayInputStream(content),
         userId = author.id,
     )
-
 }

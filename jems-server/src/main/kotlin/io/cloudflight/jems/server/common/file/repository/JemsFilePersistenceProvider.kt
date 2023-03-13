@@ -1,11 +1,11 @@
 package io.cloudflight.jems.server.common.file.repository
 
-import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
-import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
-import io.cloudflight.jems.server.common.file.service.toModel
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
+import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.common.file.minio.MinioStorage
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
+import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
+import io.cloudflight.jems.server.common.file.service.toModel
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import org.springframework.data.domain.Page
@@ -18,7 +18,7 @@ class JemsFilePersistenceProvider(
     private val projectFileMetadataRepository: JemsFileMetadataRepository,
     private val fileService: JemsProjectFileService,
     private val minioStorage: MinioStorage
-): JemsFilePersistence {
+) : JemsFilePersistence {
 
     @Transactional(readOnly = true)
     override fun existsFile(exactPath: String, fileName: String) =
@@ -35,6 +35,14 @@ class JemsFilePersistenceProvider(
     @Transactional(readOnly = true)
     override fun existsFile(type: JemsFileType, fileId: Long) =
         projectFileMetadataRepository.existsByTypeAndId(type, id = fileId)
+
+    @Transactional(readOnly = true)
+    override fun existsReportFile(projectId: Long, pathPrefix: String, fileId: Long) =
+        projectFileMetadataRepository.existsByProjectIdAndPathPrefixAndId(
+            projectId,
+            pathPrefix,
+            fileId
+        )
 
     @Transactional(readOnly = true)
     override fun existsFileByProjectIdAndFileIdAndFileTypeIn(
@@ -60,7 +68,7 @@ class JemsFilePersistenceProvider(
             fileTypes = fileTypes
         )
 
-   @Transactional(readOnly = true)
+    @Transactional(readOnly = true)
     override fun listAttachments(
         pageable: Pageable,
         indexPrefix: String,
@@ -90,6 +98,9 @@ class JemsFilePersistenceProvider(
     override fun downloadFile(type: JemsFileType, fileId: Long) =
         projectFileMetadataRepository.findByTypeAndId(type = type, fileId = fileId)?.download()
 
+    @Transactional(readOnly = true)
+    override fun downloadReportFile(projectId: Long, fileId: Long) =
+        projectFileMetadataRepository.findByProjectIdAndId(projectId = projectId, fileId = fileId)?.download()
 
     @Transactional
     override fun deleteFile(partnerId: Long, fileId: Long) =
@@ -100,6 +111,12 @@ class JemsFilePersistenceProvider(
     override fun deleteFile(type: JemsFileType, fileId: Long) =
         projectFileMetadataRepository.findByTypeAndId(type, fileId = fileId)
             .deleteIfPresent()
+
+    @Transactional
+    override fun deleteReportFile(projectId: Long, fileId: Long) {
+        projectFileMetadataRepository.findByProjectIdAndId(projectId = projectId, fileId = fileId)
+            .deleteIfPresent()
+    }
 
     @Transactional
     override fun setDescriptionToFile(fileId: Long, description: String) =

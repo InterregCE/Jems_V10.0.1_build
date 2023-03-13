@@ -14,11 +14,11 @@ class UploadPaymentAdvAttachmentException(cause: Throwable) : ApplicationExcepti
 )
 
 class FileAlreadyExists : ApplicationUnprocessableException(
-    code = "$UPLOAD_PAYMENT_ADV_ATTACHMENT_ERROR_CODE_PREFIX-002",
+    code = "$UPLOAD_PAYMENT_ADV_ATTACHMENT_ERROR_CODE_PREFIX-001",
     i18nMessage = I18nMessage("$UPLOAD_PAYMENT_ADV_ATTACHMENT_ERROR_KEY_PREFIX.file.already.exists"),
 )
 
 class FileTypeNotSupported : ApplicationUnprocessableException(
-    code = "$UPLOAD_PAYMENT_ADV_ATTACHMENT_ERROR_CODE_PREFIX-003",
+    code = "$UPLOAD_PAYMENT_ADV_ATTACHMENT_ERROR_CODE_PREFIX-002",
     i18nMessage = I18nMessage("$UPLOAD_PAYMENT_ADV_ATTACHMENT_ERROR_KEY_PREFIX.type.not.supported")
 )

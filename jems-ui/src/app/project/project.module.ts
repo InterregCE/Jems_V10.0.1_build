@@ -1,25 +1,43 @@
 import {NgModule} from '@angular/core';
 import {DatePipe} from '@angular/common';
 import {routes} from './project-routing.module';
-import {ProjectApplicationComponent} from './project-application/containers/project-application-page/project-application.component';
+import {
+  ProjectApplicationComponent
+} from './project-application/containers/project-application-page/project-application.component';
 import {SharedModule} from '@common/shared-module';
 import {
   ProjectApplicationInformationComponent
 } from './project-application/components/project-application-detail/project-application-information/project-application-information.component';
-import {ProjectApplicationAssessmentsComponent} from './project-detail-page/project-application-assessments/project-application-assessments.component';
-import {DescriptionCellComponent} from './common/components/file-management/project-application-files-table/description-cell/description-cell.component';
-import {ProjectApplicationEligibilityCheckComponent} from './project-detail-page/project-application-eligibility-check/project-application-eligibility-check.component';
-import {ProjectApplicationQualityCheckComponent} from './project-detail-page/project-application-quality-check/project-application-quality-check.component';
-import {ActionsCellComponent} from './common/components/file-management/project-application-files-table/actions-cell/actions-cell.component';
-import {ProjectApplicationDecisionsComponent} from './project-detail-page/project-application-decisions/project-application-decisions.component';
-import {ProjectApplicationFundingPageComponent} from './project-detail-page/project-application-funding-page/project-application-funding-page.component';
+import {
+  ProjectApplicationAssessmentsComponent
+} from './project-detail-page/project-application-assessments/project-application-assessments.component';
+import {
+  DescriptionCellComponent
+} from './common/components/file-management/project-application-files-table/description-cell/description-cell.component';
+import {
+  ProjectApplicationEligibilityCheckComponent
+} from './project-detail-page/project-application-eligibility-check/project-application-eligibility-check.component';
+import {
+  ProjectApplicationQualityCheckComponent
+} from './project-detail-page/project-application-quality-check/project-application-quality-check.component';
+import {
+  ActionsCellComponent
+} from './common/components/file-management/project-application-files-table/actions-cell/actions-cell.component';
+import {
+  ProjectApplicationDecisionsComponent
+} from './project-detail-page/project-application-decisions/project-application-decisions.component';
+import {
+  ProjectApplicationFundingPageComponent
+} from './project-detail-page/project-application-funding-page/project-application-funding-page.component';
 import {
   ProjectApplicationFundingDecisionComponent
 } from './project-detail-page/project-application-funding-page/project-application-funding-decision/project-application-funding-decision.component';
 import {
   ProjectApplicationEligibilityDecisionPageComponent
 } from './project-detail-page/project-application-eligibility-decision-page/project-application-eligibility-decision-page.component';
-import {ProjectApplicationFormComponent} from './project-application/components/project-application-form/project-application-form.component';
+import {
+  ProjectApplicationFormComponent
+} from './project-application/components/project-application-form/project-application-form.component';
 import {
   ProjectApplicationFormPartnerSectionComponent
 } from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-form-partner-section.component';
@@ -29,7 +47,9 @@ import {
 import {
   ProjectApplicationFormPartnerEditComponent
 } from './project-application/components/project-application-form/project-application-form-partner-edit/project-application-form-partner-edit.component';
-import {ProjectApplicationFormSidenavService} from './project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
+import {
+  ProjectApplicationFormSidenavService
+} from './project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {
   ProjectApplicationFormManagementSectionComponent
 } from './project-application/containers/project-application-form-page/project-application-form-management-section/project-application-form-management-section.component';
@@ -49,7 +69,9 @@ import {
   ProjectApplicationFormPartnerContactComponent
 } from './project-application/components/project-application-form/project-application-form-partner-contact/project-application-form-partner-contact.component';
 import {RouterModule} from '@angular/router';
-import {ProjectApplyToCallComponent} from './project-application/containers/project-application-page/project-apply-to-call.component';
+import {
+  ProjectApplyToCallComponent
+} from './project-application/containers/project-application-page/project-apply-to-call.component';
 import {
   ProjectApplicationFormOverallObjectiveSectionComponent
 } from './project-application/containers/project-application-form-page/project-application-form-overall-objective-section/project-application-form-overall-objective-section.component';
@@ -89,9 +111,15 @@ import {
 import {
   DeleteActionCellComponent
 } from './project-application/components/project-application-form/project-application-form-partner-list/delete-action-cell/delete-action-cell.component';
-import {ProjectPartnerBudgetTabComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget-tab.component';
-import {ProjectPartnerBudgetComponent} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/project-partner-budget.component';
-import {ProjectApplicationFormStore} from './project-application/containers/project-application-form-page/services/project-application-form-store.service';
+import {
+  ProjectPartnerBudgetTabComponent
+} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget-tab.component';
+import {
+  ProjectPartnerBudgetComponent
+} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/project-partner-budget.component';
+import {
+  ProjectApplicationFormStore
+} from './project-application/containers/project-application-form-page/services/project-application-form-store.service';
 import {
   ProjectApplicationPartnerIdentityComponent
 } from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-partner-identity/project-application-partner-identity.component';
@@ -116,20 +144,28 @@ import {
 import {
   ProjectApplicationFormAddressComponent
 } from './project-application/components/project-application-form/project-application-form-address/project-application-form-address.component';
-import {ProjectPartnerCoFinancingTabComponent} from './partner/project-partner-detail-page/project-partner-co-financing-tab/project-partner-co-financing-tab.component';
-import {ProjectPartnerDetailPageComponent} from './partner/project-partner-detail-page/project-partner-detail-page.component';
+import {
+  ProjectPartnerCoFinancingTabComponent
+} from './partner/project-partner-detail-page/project-partner-co-financing-tab/project-partner-co-financing-tab.component';
+import {
+  ProjectPartnerDetailPageComponent
+} from './partner/project-partner-detail-page/project-partner-detail-page.component';
 import {BudgetPageComponent} from './budget/budget-page/budget-page.component';
 import {
   ProjectWorkPackageObjectivesTabComponent
 } from './work-package/project-work-package-page/work-package-detail-page/project-work-package-objectives-tab/project-work-package-objectives-tab.component';
-import {ProjectWorkPackageDetailPageComponent} from './work-package/project-work-package-page/work-package-detail-page/project-work-package-detail-page.component';
+import {
+  ProjectWorkPackageDetailPageComponent
+} from './work-package/project-work-package-page/work-package-detail-page/project-work-package-detail-page.component';
 import {
   ProjectWorkPackageActivitiesTabComponent
 } from './work-package/project-work-package-page/work-package-detail-page/project-work-package-activities-tab/project-work-package-activities-tab.component';
 import {
   TravelAndAccommodationCostsBudgetTableComponent
 } from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/travel-and-accommodation-costs-budget-table/travel-and-accommodation-costs-budget-table.component';
-import {ProjectPeriodsSelectComponent} from './common/components/project-periods-select/project-periods-select.component';
+import {
+  ProjectPeriodsSelectComponent
+} from './common/components/project-periods-select/project-periods-select.component';
 import {
   ProjectWorkPackageInvestmentsTabComponent
 } from './work-package/project-work-package-page/work-package-detail-page/project-work-package-investments-tab/project-work-package-investments-tab.component';
@@ -145,7 +181,9 @@ import {
 import {
   GeneralBudgetTableComponent
 } from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/general-budget-table/general-budget-table.component';
-import {WorkPackagePageStore} from './work-package/project-work-package-page/work-package-detail-page/work-package-page-store.service';
+import {
+  WorkPackagePageStore
+} from './work-package/project-work-package-page/work-package-detail-page/work-package-page-store.service';
 import {ProjectPartnerDetailPageStore} from './partner/project-partner-detail-page/project-partner-detail-page.store';
 import {ProjectResultsPageComponent} from './results/project-results-page/project-results-page.component';
 import {
@@ -158,53 +196,95 @@ import {ProjectLumpSumsPageComponent} from './lump-sums/project-lump-sums-page/p
 import {ProjectLumpSumsStore} from './lump-sums/project-lump-sums-page/project-lump-sums-store.service';
 import {BudgetPagePerPartnerComponent} from './budget/budget-page-per-partner/budget-page-per-partner.component';
 import {ProjectTimeplanPageComponent} from './timeplan/project-timeplan-page/project-timeplan-page.component';
-import {FilterUnitCostsPipe} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/filter-unit-costs.pipe';
+import {
+  FilterUnitCostsPipe
+} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/filter-unit-costs.pipe';
 import {ProjectDetailPageComponent} from './project-detail-page/project-detail-page.component';
 import {
   ProjectApplicationPreConditionCheckResultComponent
 } from './project-detail-page/project-application-pre-condition-check-result/project-application-pre-condition-check-result.component';
-import {ProjectAcronymResolver} from './project-application/containers/project-application-detail/services/project-acronym.resolver';
+import {
+  ProjectAcronymResolver
+} from './project-application/containers/project-application-detail/services/project-acronym.resolver';
 import {ProjectPageTemplateComponent} from './project-page-template/project-page-template.component';
-import {ProjectWorkPackagePageComponent} from './work-package/project-work-package-page/project-work-package-page.component';
+import {
+  ProjectWorkPackagePageComponent
+} from './work-package/project-work-package-page/project-work-package-page.component';
 import {FormFieldVisibilityStatusDirective} from './common/directives/form-field-visibility-status.directive';
-import {ProjectPartnerStateAidTabComponent} from './partner/project-partner-detail-page/project-partner-state-aid-tab/project-partner-state-aid-tab.component';
+import {
+  ProjectPartnerStateAidTabComponent
+} from './partner/project-partner-detail-page/project-partner-state-aid-tab/project-partner-state-aid-tab.component';
 import {CategoryTreeComponent} from './common/components/category-tree/category-tree.component';
-import {PeriodsTotalPipe} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/periods-total.pipe';
+import {
+  PeriodsTotalPipe
+} from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/periods-total.pipe';
 import {FileManagementComponent} from './common/components/file-management/file-management.component';
-import {ProjectApplicationFilesTableComponent} from './common/components/file-management/project-application-files-table/project-application-files-table.component';
-import {ProjectPartnerFilterPipe} from './work-package/project-work-package-page/work-package-detail-page/project-work-package-activities-tab/project-partner-filter.pipe';
+import {
+  ProjectApplicationFilesTableComponent
+} from './common/components/file-management/project-application-files-table/project-application-files-table.component';
+import {
+  ProjectPartnerFilterPipe
+} from './work-package/project-work-package-page/work-package-detail-page/project-work-package-activities-tab/project-partner-filter.pipe';
 import {ApplicationAnnexesComponent} from './project-application/application-annexes/application-annexes.component';
 import {CheckAndSubmitComponent} from './project-application/check-and-submit/check-and-submit.component';
-import {AssessmentAndDecisionComponent} from './project-application/assessment-and-decision/assessment-and-decision.component';
-import {ProjectWorkPackageActivitiesFilterPipe} from './partner/project-partner-detail-page/project-partner-state-aid-tab/work-package-activities-filter.pipe';
-import {ProjectWorkPackagePageStore} from './work-package/project-work-package-page/project-work-package-page-store.service';
-import {PartnerBreadcrumbResolver} from './project-application/containers/project-application-detail/services/partner-breadcrumb-resolver.service';
-import {WorkPackageBreadcrumbResolver} from './project-application/containers/project-application-detail/services/work-package-breadcrumb-resolver.service';
+import {
+  AssessmentAndDecisionComponent
+} from './project-application/assessment-and-decision/assessment-and-decision.component';
+import {
+  ProjectWorkPackageActivitiesFilterPipe
+} from './partner/project-partner-detail-page/project-partner-state-aid-tab/work-package-activities-filter.pipe';
+import {
+  ProjectWorkPackagePageStore
+} from './work-package/project-work-package-page/project-work-package-page-store.service';
+import {
+  PartnerBreadcrumbResolver
+} from './project-application/containers/project-application-detail/services/partner-breadcrumb-resolver.service';
+import {
+  WorkPackageBreadcrumbResolver
+} from './project-application/containers/project-application-detail/services/work-package-breadcrumb-resolver.service';
 import {
   ProjectWorkPackageInvestmentDetailPageStore
 } from './work-package/project-work-package-page/work-package-detail-page/project-work-package-investments-tab/project-work-package-investment-detail-page/project-work-package-Investment-detail-page-store.service';
-import {InvestmentBreadcrumbResolver} from './project-application/containers/project-application-detail/services/investment-breadcrumb.resolver';
+import {
+  InvestmentBreadcrumbResolver
+} from './project-application/containers/project-application-detail/services/investment-breadcrumb.resolver';
 import {
   ProjectPartnerBudgetOverviewComponent
 } from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget-overview/project-partner-budget-overview.component';
 import {BudgetTableComponent} from './budget/budget-page/budget-table/budget-table.component';
-import {ProjectApplicationFormA4Component} from './project-overview-tables-page/project-application-form-a4/project-application-form-a4.component';
-import {ProjectOverviewTablesPageComponent} from './project-overview-tables-page/project-overview-tables-page.component';
-import {ProjectBudgetOverviewComponent} from './project-overview-tables-page/project-budget-overview/project-budget-overview.component';
-import {BudgetPageFundPerPeriodComponent} from './budget/budget-page-per-period/budget-page-fund-per-period/budget-page-fund-per-period.component';
+import {
+  ProjectApplicationFormA4Component
+} from './project-overview-tables-page/project-application-form-a4/project-application-form-a4.component';
+import {
+  ProjectOverviewTablesPageComponent
+} from './project-overview-tables-page/project-overview-tables-page.component';
+import {
+  ProjectBudgetOverviewComponent
+} from './project-overview-tables-page/project-budget-overview/project-budget-overview.component';
+import {
+  BudgetPageFundPerPeriodComponent
+} from './budget/budget-page-per-period/budget-page-fund-per-period/budget-page-fund-per-period.component';
 import {BudgetPerPeriodPageComponent} from './budget/budget-page-per-period/budget-per-period-page.component';
 import {ProjectBudgetPeriodPageStore} from './budget/budget-page-per-period/budget-period-page.store';
 import {ProjectPartnerBudgetStore} from './budget/services/project-partner-budget.store';
-import {ProjectPartnerCoFinancingStore} from './partner/project-partner-detail-page/project-partner-co-financing-tab/services/project-partner-co-financing.store';
+import {
+  ProjectPartnerCoFinancingStore
+} from './partner/project-partner-detail-page/project-partner-co-financing-tab/services/project-partner-co-financing.store';
 import {ProjectPartnerStateAidsStore} from './partner/services/project-partner-state-aids.store';
-import {BudgetPagePartnerPerPeriodComponent} from './budget/budget-page-per-period/budget-page-partner-per-period/budget-page-partner-per-period.component';
+import {
+  BudgetPagePartnerPerPeriodComponent
+} from './budget/budget-page-per-period/budget-page-partner-per-period/budget-page-partner-per-period.component';
 import {ExportComponent} from './project-application/export/export.component';
 import {UsersFilterPipe} from '@common/components/project-application-list-user-assignments/user-filter.pipe';
-import {ProjectApplicationListUserAssignmentsComponent} from '@common/components/project-application-list-user-assignments/project-application-list-user-assignments.component';
+import {
+  ProjectApplicationListUserAssignmentsComponent
+} from '@common/components/project-application-list-user-assignments/project-application-list-user-assignments.component';
 import {ProjectUnitCostsPageComponent} from './unit-costs/project-unit-costs-page/project-unit-costs-page.component';
 import {ProjectUnitCostsStore} from './unit-costs/project-unit-costs-page/project-unit-costs-store.service';
 import {ModificationPageComponent} from './project-application/modification-page/modification-page.component';
-import {ModificationConfirmationComponent} from './project-application/modification-page/modification-confirmation/modification-confirmation.component';
+import {
+  ModificationConfirmationComponent
+} from './project-application/modification-page/modification-confirmation/modification-confirmation.component';
 import {PrivilegesPageComponent} from './project-application/privileges-page/privileges-page.component';
 import {
   ContractMonitoringComponent
@@ -229,18 +309,24 @@ import {
   SmallProjectFundBudgetComponent
 } from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/small-project-fund-budget/small-project-fund-budget.component';
 
-import {PartnerReportDetailPageComponent} from './project-application/report/partner-report-detail-page/partner-report-detail-page.component';
+import {
+  PartnerReportDetailPageComponent
+} from './project-application/report/partner-report-detail-page/partner-report-detail-page.component';
 import {
   PartnerReportIdentificationTabComponent
 } from './project-application/report/partner-report-detail-page/partner-report-identification-tab/partner-report-identification-tab.component';
 import {
   PartnerReportWorkPlanProgressTabComponent
 } from './project-application/report/partner-report-detail-page/partner-report-work-plan-progress-tab/partner-report-work-plan-progress-tab.component';
-import {PartnerReportSubmitTabComponent} from './project-application/report/partner-report-detail-page/partner-report-submit-tab/partner-report-submit-tab.component';
+import {
+  PartnerReportSubmitTabComponent
+} from './project-application/report/partner-report-detail-page/partner-report-submit-tab/partner-report-submit-tab.component';
 import {
   ProjectPartnerCoFinancingSpfTabComponent
 } from '@project/partner/project-partner-detail-page/project-partner-co-financing-spf-tab/project-partner-co-financing-spf-tab.component';
-import {ProjectPartnerCoFinancingSpfStore} from '@project/partner/project-partner-detail-page/project-partner-co-financing-spf-tab/project-partner-co-financing-spf.store';
+import {
+  ProjectPartnerCoFinancingSpfStore
+} from '@project/partner/project-partner-detail-page/project-partner-co-financing-spf-tab/project-partner-co-financing-spf.store';
 import {
   PartnerReportExpendituresTabComponent
 } from '@project/project-application/report/partner-report-detail-page/partner-report-expenditures-tab/partner-report-expenditures-tab.component';
@@ -250,28 +336,42 @@ import {
 import {
   PartnerReportProcurementsTabComponent
 } from '@project/project-application/report/partner-report-detail-page/partner-report-procurements-tab/partner-report-procurements-tab.component';
-import {PartnerActionsCellComponent} from '@project/project-application/report/partner-report-detail-page/partner-report-actions/partner-actions-cell.component';
+import {
+  PartnerActionsCellComponent
+} from '@project/project-application/report/partner-report-detail-page/partner-report-actions/partner-actions-cell.component';
 import {
   AssessmentAndDecisionChecklistPageComponent
 } from './project-application/assessment-and-decision/assessment-and-decision-checklist-page/assessment-and-decision-checklist-page.component';
-import {PartnerReportAnnexesTabComponent} from './project-application/report/partner-report-detail-page/partner-report-annexes-tab/partner-report-annexes-tab.component';
-import {ReportAnnexesTableComponent} from './project-application/report/partner-report-detail-page/partner-report-annexes-tab/report-annexes-table/report-annexes-table.component';
-import {ProjectManagementComponent} from './project-application/contracting/project-management/project-management.component';
+import {
+  PartnerReportAnnexesTabComponent
+} from './project-application/report/partner-report-detail-page/partner-report-annexes-tab/partner-report-annexes-tab.component';
+import {
+  ReportAnnexesTableComponent
+} from './project-application/report/partner-report-detail-page/partner-report-annexes-tab/report-annexes-table/report-annexes-table.component';
+import {
+  ProjectManagementComponent
+} from './project-application/contracting/project-management/project-management.component';
 import {
   PartnerReportFinancialOverviewTabComponent
 } from '@project/project-application/report/partner-report-detail-page/partner-report-financial-overview-tab/partner-report-financial-overview-tab.component';
 import {
   PartnerBreakdownCostCategoryComponent
 } from '@project/project-application/report/partner-report-detail-page/partner-report-financial-overview-tab/partner-breakdown-cost-category/partner-breakdown-cost-category.component';
-import {ContractMonitoringExtensionComponent} from './project-application/contracting/contract-monitoring/contract-monitoring-extension/contract-monitoring-extension.component';
-import {ContractingFilesComponent} from '@project/project-application/contracting/contract-monitoring/contracting-files/contracting-files.component';
+import {
+  ContractMonitoringExtensionComponent
+} from './project-application/contracting/contract-monitoring/contract-monitoring-extension/contract-monitoring-extension.component';
+import {
+  ContractingFilesComponent
+} from '@project/project-application/contracting/contract-monitoring/contracting-files/contracting-files.component';
 import {
   PartnerBreakdownCoFinancingComponent
 } from '@project/project-application/report/partner-report-detail-page/partner-report-financial-overview-tab/partner-breakdown-co-financing/partner-breakdown-co-financing.component';
 import {
   PartnerReportProcurementDetailComponent
 } from '@project/project-application/report/partner-report-detail-page/partner-report-procurements-tab/partner-report-procurement-detail/partner-report-procurement-detail.component';
-import {ContractReportingComponent} from '@project/project-application/contracting/contract-reporting/contract-reporting.component';
+import {
+  ContractReportingComponent
+} from '@project/project-application/contracting/contract-reporting/contract-reporting.component';
 import {
   PartnerReportProcurementIdentificationComponent
 } from '@project/project-application/report/partner-report-detail-page/partner-report-procurements-tab/partner-report-procurement-detail/partner-report-procurement-identification/partner-report-procurement-identification.component';
@@ -281,20 +381,30 @@ import {
 import {
   PartnerReportProcurementSubcontractComponent
 } from '@project/project-application/report/partner-report-detail-page/partner-report-procurements-tab/partner-report-procurement-detail/partner-report-procurement-subcontract/partner-report-procurement-subcontract.component';
-import {PartnerReportStatusComponent} from '@project/project-application/report/partner-report-status/partner-report-status.component';
-import {PartnerControlReportComponent} from '@project/project-application/report/partner-control-report/partner-control-report.component';
-import {PartnerControlReportStore} from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
+import {
+  PartnerReportStatusComponent
+} from '@project/project-application/report/partner-report-status/partner-report-status.component';
+import {
+  PartnerControlReportComponent
+} from '@project/project-application/report/partner-control-report/partner-control-report.component';
+import {
+  PartnerControlReportStore
+} from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
 import {
   PartnerControlReportControlChecklistsTabComponent
 } from '@project/project-application/report/partner-control-report/partner-control-report-control-checklists-tab/partner-control-report-control-checklists-tab.component';
 import {
   PartnerControlReportControlChecklistPageComponent
 } from '@project/project-application/report/partner-control-report/partner-control-report-control-checklists-tab/partner-control-report-control-checklist-page/partner-control-report-control-checklist-page.component';
-import {ProjectProposedUnitCostsComponent} from './unit-costs/project-unit-costs-page/project-proposed-unit-costs/project-proposed-unit-costs.component';
+import {
+  ProjectProposedUnitCostsComponent
+} from './unit-costs/project-unit-costs-page/project-proposed-unit-costs/project-proposed-unit-costs.component';
 import {
   ProjectProposedUnitCostDetailComponent
 } from './unit-costs/project-unit-costs-page/project-proposed-unit-costs/project-proposed-unit-cost-detail/project-proposed-unit-cost-detail.component';
-import {ProjectProposedUnitCostBreadcrumbResolver} from '@project/project-application/containers/project-application-detail/services/project-proposed-unit-cost.resolver';
+import {
+  ProjectProposedUnitCostBreadcrumbResolver
+} from '@project/project-application/containers/project-application-detail/services/project-proposed-unit-cost.resolver';
 import {
   ContractingContractComponent
 } from '@project/project-application/contracting/contracting-contract/contracting-contract.component';
@@ -308,15 +418,25 @@ import {TranslateByInputLanguagePipe} from '@common/pipe/translate-by-input-lang
 import {
   PartnerControlReportDocumentTabComponent
 } from '@project/project-application/report/partner-control-report/partner-control-report-document-tab/partner-control-report-document-tab.component';
-import {ContractPartnerComponent} from '@project/project-application/contracting/contract-partner/contract-partner.component';
-import {ContractPartnerBeneficialOwnerComponent} from '@project/project-application/contracting/contract-partner/beneficial-owner/contract-partner-beneficial-owner.component';
+import {
+  ContractPartnerComponent
+} from '@project/project-application/contracting/contract-partner/contract-partner.component';
+import {
+  ContractPartnerBeneficialOwnerComponent
+} from '@project/project-application/contracting/contract-partner/beneficial-owner/contract-partner-beneficial-owner.component';
 import {AdaptTranslationKeyByCallTypePipe} from '@common/pipe/adapt-translation-by-call-type.pipe';
-import {ContractPartnerBankingDetailsComponent} from '@project/project-application/contracting/contract-partner/banking-details/contract-partner-banking-details.component';
-import {ContractPartnerDocumentsLocationComponent} from '@project/project-application/contracting/contract-partner/documents-location/contract-partner-documents-location.component';
+import {
+  ContractPartnerBankingDetailsComponent
+} from '@project/project-application/contracting/contract-partner/banking-details/contract-partner-banking-details.component';
+import {
+  ContractPartnerDocumentsLocationComponent
+} from '@project/project-application/contracting/contract-partner/documents-location/contract-partner-documents-location.component';
 import {
   ContractMonitoringCodesOfInterventionTableComponent
 } from './project-application/contracting/contract-monitoring/contract-monitoring-codes-of-intervention-table/contract-monitoring-codes-of-intervention-table.component';
-import {PartnerFilesComponent} from '@project/project-application/contracting/contract-partner/partner-files/partner-files.component';
+import {
+  PartnerFilesComponent
+} from '@project/project-application/contracting/contract-partner/partner-files/partner-files.component';
 import {
   PartnerControlReportControlIdentificationTabComponent
 } from '@project/project-application/report/partner-control-report/partner-control-report-identification-tab/partner-control-report-control-identification-tab.component';
@@ -339,12 +459,18 @@ import {
   PartnerControlReportOverviewAndFinalizeTabComponent
 } from '@project/project-application/report/partner-control-report/partner-control-report-overview-and-finalize-tab/partner-control-report-overview-and-finalize-tab.component';
 import {ProjectReportComponent} from './project-application/report/project-report/project-report.component';
-import {ProjectReportStatusComponent} from './project-application/report/project-report/project-report-status/project-report-status.component';
-import {ProjectReportDetailPageComponent} from './project-application/report/project-report/project-report-detail-page/project-report-detail-page.component';
+import {
+  ProjectReportStatusComponent
+} from './project-application/report/project-report/project-report-status/project-report-status.component';
+import {
+  ProjectReportDetailPageComponent
+} from './project-application/report/project-report/project-report-detail-page/project-report-detail-page.component';
 import {
   ProjectReportIdentificationTabComponent
 } from './project-application/report/project-report/project-report-detail-page/project-report-identification-tab/project-report-identification-tab.component';
-import {ProjectReportCreateComponent} from './project-application/report/project-report/project-report-detail-page/project-report-create/project-report-create.component';
+import {
+  ProjectReportCreateComponent
+} from './project-application/report/project-report/project-report-detail-page/project-report-create/project-report-create.component';
 import {
   ProjectReportSubmitTabComponent
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-submit-tab/project-report-submit-tab.component';
@@ -360,7 +486,9 @@ import {
 import {
   ProjectReportCertificateTabComponent
 } from './project-application/report/project-report/project-report-detail-page/./project-report-certificate-tab/project-report-certificate-tab.component';
-import { PartnerReportExportTabComponent } from './project-application/report/partner-report-detail-page/partner-report-export-tab/partner-report-export-tab.component';
+import {
+  PartnerReportExportTabComponent
+} from './project-application/report/partner-report-detail-page/partner-report-export-tab/partner-report-export-tab.component';
 import {
   ControlReportWorkOverviewComponent
 } from '@project/project-application/report/partner-control-report/partner-control-report-overview-and-finalize-tab/control-report-work-overview/control-report-work-overview.component';
@@ -368,9 +496,21 @@ import {
   ControlReportDeductionOverviewComponent
 } from '@project/project-application/report/partner-control-report/partner-control-report-overview-and-finalize-tab/control-report-deduction-overview/control-report-deduction-overview.component';
 import {SectionLockComponent} from '@project/common/components/section-lock/section-lock.component';
-import { ProjectReportFinancialOverviewTabComponent } from './project-application/report/project-report/project-report-detail-page/project-report-financial-overview-tab/project-report-financial-overview-tab.component';
-import { ProjectBreakdownCoFinancingComponent } from './project-application/report/project-report/project-report-detail-page/project-report-financial-overview-tab/project-breakdown-co-financing/project-breakdown-co-financing.component';
-import { ProjectReportCostCategoryComponent } from './project-application/report/project-report/project-report-detail-page/project-report-financial-overview-tab/project-report-cost-category/project-report-cost-category.component';
+import {
+  ProjectReportFinancialOverviewTabComponent
+} from './project-application/report/project-report/project-report-detail-page/project-report-financial-overview-tab/project-report-financial-overview-tab.component';
+import {
+  ProjectBreakdownCoFinancingComponent
+} from './project-application/report/project-report/project-report-detail-page/project-report-financial-overview-tab/project-breakdown-co-financing/project-breakdown-co-financing.component';
+import {
+  ProjectReportCostCategoryComponent
+} from './project-application/report/project-report/project-report-detail-page/project-report-financial-overview-tab/project-report-cost-category/project-report-cost-category.component';
+import {
+  ProjectReportAnnexesTableComponent
+} from '@project/project-application/report/project-report/project-report-detail-page/project-report-annexes-tab/project-report-annexes-table/project-report-annexes-table.component';
+import {
+  ProjectReportAnnexesTabComponent
+} from '@project/project-application/report/project-report/project-report-detail-page/project-report-annexes-tab/project-report-annexes-tab.component';
 import {
   ProjectReportResultsAndPrinciplesTabComponent
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-results-and-principles-tab/project-report-results-and-principles-tab.component';
@@ -546,7 +686,9 @@ import {
     ProjectBreakdownCoFinancingComponent,
     ProjectReportCostCategoryComponent,
     SectionLockComponent,
-    ProjectReportResultsAndPrinciplesTabComponent,
+    ProjectReportAnnexesTabComponent,
+    ProjectReportAnnexesTableComponent,
+    ProjectReportResultsAndPrinciplesTabComponent
   ],
   imports: [
     SharedModule,

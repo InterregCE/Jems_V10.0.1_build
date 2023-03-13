@@ -35,7 +35,8 @@ import org.junit.jupiter.api.Test
 import java.math.BigDecimal.ONE
 import java.math.BigDecimal.ZERO
 import java.time.ZonedDateTime
-import java.util.*
+import java.util.Optional
+import java.util.UUID
 
 class ProjectPartnerReportFilePersistenceProviderTest : UnitTest() {
 
@@ -44,22 +45,6 @@ class ProjectPartnerReportFilePersistenceProviderTest : UnitTest() {
         private const val USER_ID = 270L
 
         private val LAST_WEEK = ZonedDateTime.now().minusWeeks(1)
-        private const val BUCKET = "custom_bucket"
-
-        private fun file(id: Long, name: String = "file.txt", filePathFull: String = "path/to/file.txt") = JemsFileMetadataEntity(
-            id = id,
-            projectId = 6666L,
-            partnerId = PARTNER_ID,
-            path = "",
-            minioBucket = BUCKET,
-            minioLocation = filePathFull,
-            name = name,
-            type = JemsFileType.Activity,
-            size = 45L,
-            user = mockk(),
-            uploaded = LAST_WEEK,
-            description = "desc",
-        )
 
         private fun activity(id: Long, attachment: JemsFileMetadataEntity?) = ProjectPartnerReportWorkPackageActivityEntity(
             id = id,
@@ -307,5 +292,4 @@ class ProjectPartnerReportFilePersistenceProviderTest : UnitTest() {
 
         assertThat(persistence.addAttachmentToPartnerReport(file = fileCreate)).isEqualTo(resultMock)
     }
-
 }

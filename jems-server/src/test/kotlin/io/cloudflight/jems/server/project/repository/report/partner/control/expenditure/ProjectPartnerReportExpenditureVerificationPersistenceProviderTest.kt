@@ -6,17 +6,17 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
-import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportLumpSumEntity
-import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportUnitCostEntity
-import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportInvestmentEntity
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportExpenditureCostEntity
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportExpenditureCostTranslEntity
+import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportInvestmentEntity
+import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportLumpSumEntity
+import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportUnitCostEntity
 import io.cloudflight.jems.server.project.repository.report.partner.expenditure.ProjectPartnerReportExpenditureRepository
 import io.cloudflight.jems.server.project.repository.report.partner.model.ExpenditureVerificationUpdate
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
-import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -32,13 +32,12 @@ import java.time.ZonedDateTime
 class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitTest() {
     companion object {
         private const val PARTNER_ID = 380L
-
         private const val EXPENDITURE_TO_UPDATE = 40L
 
         private val YESTERDAY = LocalDate.now().minusDays(1)
         private val TOMORROW = LocalDate.now().plusDays(1)
 
-        val dummyAttachment = JemsFileMetadataEntity(
+        private val dummyAttachment = JemsFileMetadataEntity(
             id = 970L,
             projectId = 4L,
             partnerId = PARTNER_ID,

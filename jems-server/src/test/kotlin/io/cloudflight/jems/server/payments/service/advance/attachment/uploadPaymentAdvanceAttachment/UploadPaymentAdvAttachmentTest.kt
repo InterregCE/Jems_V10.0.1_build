@@ -10,9 +10,13 @@ import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
-import io.mockk.*
+import io.mockk.clearMocks
+import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
+import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -106,5 +110,4 @@ class UploadPaymentAdvAttachmentTest : UnitTest() {
 
         verify(exactly = 0) { fileRepository.persistProjectFile(any()) }
     }
-
 }

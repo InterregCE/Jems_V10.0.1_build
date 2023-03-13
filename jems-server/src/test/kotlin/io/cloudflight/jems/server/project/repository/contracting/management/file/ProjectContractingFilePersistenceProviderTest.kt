@@ -21,25 +21,25 @@ class ProjectContractingFilePersistenceProviderTest : UnitTest() {
 
     companion object {
         private const val PROJECT_ID = 389L
-
-        private val LAST_WEEK = ZonedDateTime.now().minusWeeks(1)
         private const val BUCKET = "bucket_buck_buck"
 
-        private fun file(id: Long, name: String = "file.txt", filePathFull: String = "path/to/file.txt") = JemsFileMetadataEntity(
-            id = id,
-            projectId = PROJECT_ID,
-            partnerId = null,
-            path = "",
-            minioBucket = BUCKET,
-            minioLocation = filePathFull,
-            name = name,
-            type = JemsFileType.Contract,
-            size = 45L,
-            user = mockk(),
-            uploaded = LAST_WEEK,
-            description = "dummy description",
-        )
+        private val LAST_WEEK = ZonedDateTime.now().minusWeeks(1)
 
+        private fun file(id: Long, name: String = "file.txt", filePathFull: String = "path/to/file.txt") =
+            JemsFileMetadataEntity(
+                id = id,
+                projectId = PROJECT_ID,
+                partnerId = null,
+                path = "",
+                minioBucket = BUCKET,
+                minioLocation = filePathFull,
+                name = name,
+                type = JemsFileType.Contract,
+                size = 45L,
+                user = mockk(),
+                uploaded = LAST_WEEK,
+                description = "dummy description",
+            )
     }
 
     @MockK
@@ -65,7 +65,7 @@ class ProjectContractingFilePersistenceProviderTest : UnitTest() {
     fun downloadFile() {
         val filePathFull = "sample/path/to/file.txt"
         every { reportFileRepository.findByProjectIdAndId(PROJECT_ID, fileId = 19L) } returns
-            file(id = 17L, name = "file.txt", filePathFull = filePathFull)
+                file(id = 17L, name = "file.txt", filePathFull = filePathFull)
         every { minioStorage.getFile(BUCKET, filePathFull) } returns ByteArray(5)
 
         assertThat(persistence.downloadFile(PROJECT_ID, fileId = 19L))
@@ -106,7 +106,7 @@ class ProjectContractingFilePersistenceProviderTest : UnitTest() {
     fun `download file by partner id`() {
         val filePathFull = "sample/path/to/file.txt"
         every { reportFileRepository.findByPartnerIdAndId(partnerId = 1L, fileId = 19L) } returns
-            file(id = 19, name = "file.txt", filePathFull = filePathFull)
+                file(id = 19, name = "file.txt", filePathFull = filePathFull)
         every { minioStorage.getFile(BUCKET, filePathFull) } returns ByteArray(5)
 
         assertThat(persistence.downloadFileByPartnerId(partnerId = 1L, fileId = 19L))
@@ -127,5 +127,4 @@ class ProjectContractingFilePersistenceProviderTest : UnitTest() {
 
         verify(exactly = 1) { fileRepository.delete(file) }
     }
-
 }
