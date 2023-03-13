@@ -514,6 +514,7 @@ import {
 import {
   ProjectReportResultsAndPrinciplesTabComponent
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-results-and-principles-tab/project-report-results-and-principles-tab.component';
+import { ProjectReportWorkPlanTabComponent } from './project-application/report/project-report/project-report-detail-page/project-report-work-plan-tab/project-report-work-plan-tab.component';
 
 @NgModule({
   declarations: [
@@ -688,7 +689,8 @@ import {
     SectionLockComponent,
     ProjectReportAnnexesTabComponent,
     ProjectReportAnnexesTableComponent,
-    ProjectReportResultsAndPrinciplesTabComponent
+    ProjectReportResultsAndPrinciplesTabComponent,
+    ProjectReportWorkPlanTabComponent,
   ],
   imports: [
     SharedModule,

@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {combineLatest, merge, Observable, pipe, Subject} from 'rxjs';
+import {combineLatest, merge, Observable, Subject} from 'rxjs';
 import {
   ProjectReportFileMetadataDTO,
   ProjectReportResultPrincipleDTO,
@@ -12,7 +12,7 @@ import {ProjectStore} from '@project/project-application/containers/project-appl
 import {
   ProjectReportDetailPageStore
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-detail-page-store.service';
-import {shareReplay, switchMap, take, tap} from 'rxjs/operators';
+import {switchMap, take, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {DownloadService} from '@common/services/download.service';
 
@@ -53,10 +53,7 @@ export class ProjectReportResultsAndPrinciplesTabStore {
         switchMap(([projectId, reportId]) => this.projectReportResultPrincipleService.getResultAndPrinciple(projectId, reportId)),
       );
 
-    return merge(initialData$, this.savedResultsAndPrinciples$)
-      .pipe(
-        shareReplay(1)
-      );
+    return merge(initialData$, this.savedResultsAndPrinciples$);
   }
 
   downloadFile(resultNumber: number): Observable<any> {

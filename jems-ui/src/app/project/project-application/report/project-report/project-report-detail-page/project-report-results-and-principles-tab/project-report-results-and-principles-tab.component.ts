@@ -10,7 +10,7 @@ import {
 import {catchError, finalize, map, take, tap} from 'rxjs/operators';
 import {
   ProjectReportResultsAndPrinciplesTabStore
-} from '@project/project-application/report/project-report/project-report-detail-page/project-report-results-and-principles-tab/project-report-results-and-principles-tab-store.service';
+} from '@project/project-application/report/project-report/project-report-detail-page/project-report-results-and-principles-tab/project-report-results-and-principles-tab.store';
 import {
   ProjectReportFileMetadataDTO,
   ProjectReportProjectResultDTO,
