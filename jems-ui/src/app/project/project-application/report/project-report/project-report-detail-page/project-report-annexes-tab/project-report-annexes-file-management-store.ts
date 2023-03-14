@@ -44,6 +44,7 @@ export class ProjectReportAnnexesFileManagementStore {
     fileCategories$: Observable<CategoryNode>;
     isEditable$: Observable<boolean>;
     isInDraft$: Observable<boolean>;
+    currentProjectReport$: Observable<ProjectReportSummaryDTO>;
 
     selectedCategory$ = new ReplaySubject<CategoryInfo | undefined>(1);
     newPageSize$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_SIZE);
@@ -64,6 +65,7 @@ export class ProjectReportAnnexesFileManagementStore {
     ) {
         this.projectId$ = this.projectStore.projectId$;
         this.reportId$ = this.projectReportId();
+        this.currentProjectReport$ = this.getCurrentProjectReport();
         this.fileList$ = this.fileList();
         this.isEditable$ = this.isEditable();
         this.isInDraft$ = this.isInDraft();
@@ -99,7 +101,7 @@ export class ProjectReportAnnexesFileManagementStore {
     }
 
     private isInDraft(): Observable<boolean> {
-        return this.getCurrentProjectReport().pipe(
+        return this.currentProjectReport$.pipe(
             map((projectReport: ProjectReportSummaryDTO) => {
                 return projectReport.status === ProjectReportSummaryDTO.StatusEnum.Draft;
             })
@@ -123,9 +125,9 @@ export class ProjectReportAnnexesFileManagementStore {
     }
 
     private fileCategories(section: CategoryInfo): Observable<CategoryNode> {
-        return this.reportId$.pipe(
-            map((id: number) =>
-                this.getCategories(section, id)
+        return this.currentProjectReport$.pipe(
+            map((projectReport: ProjectReportSummaryDTO) =>
+                this.getCategories(section, projectReport.reportNumber)
             ),
             tap(filters => this.setParent(filters)),
         );
