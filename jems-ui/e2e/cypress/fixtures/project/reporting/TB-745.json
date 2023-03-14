@@ -1,0 +1,1058 @@
+{
+  "call": {
+    "flatRates": {
+      "staffCostFlatRateSetup": {
+        "rate": 20,
+        "adjustable": false
+      },
+      "officeAndAdministrationOnStaffCostsFlatRateSetup": {
+        "rate": 15,
+        "adjustable": false
+      },
+      "officeAndAdministrationOnDirectCostsFlatRateSetup": {
+        "rate": 25,
+        "adjustable": false
+      },
+      "travelAndAccommodationOnStaffCostsFlatRateSetup": {
+        "rate": 15,
+        "adjustable": false
+      },
+      "otherCostsOnStaffCostsFlatRateSetup": {
+        "rate": 40,
+        "adjustable": false
+      }
+    }
+  },
+  "fundingAmounts": {
+    "totalERDF": "240.249,58",
+    "totalCBC": "8.800,12",
+    "total": "440.276,21",
+    "totalBudgetOverview": [
+      "94.361,37",
+      "29.587,03",
+      "39.937,03",
+      "120.000,00",
+      "41.234,56",
+      "110.000,00",
+      "4.845,78",
+      "0,00",
+      "310,44",
+      "440.276,21"
+    ],
+    "automaticPublicContribution": "0,00",
+    "totalPublicContribution": "25.062,09",
+    "privateContribution": "166.164,42"
+  },
+  "partners": [
+    {
+      "abbreviation": "LP1",
+      "role": "LEAD_PARTNER",
+      "budget": {
+        "options": {
+          "officeAndAdministrationOnStaffCostsFlatRate": null,
+          "officeAndAdministrationOnDirectCostsFlatRate": 25,
+          "staffCostsFlatRate": null,
+          "travelAndAccommodationOnStaffCostsFlatRate": null,
+          "otherCostsOnStaffCostsFlatRate": null
+        },
+        "staff": [
+          {
+            "comments": [
+              {
+                "translation": "API generated staff cost comment DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated staff cost comment EN",
+                "language": "EN"
+              }
+            ],
+            "unitType": [
+              {
+                "translation": "API generated staff cost unit type DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated staff cost unit type EN",
+                "language": "EN"
+              }
+            ],
+            "description": [
+              {
+                "translation": "API generated staff cost description DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated staff cost description EN",
+                "language": "EN"
+              }
+            ],
+            "numberOfUnits": 4,
+            "pricePerUnit": 2500,
+            "budgetPeriods": [
+              {
+                "amount": 2500,
+                "number": 1
+              },
+              {
+                "amount": 0,
+                "number": 2
+              },
+              {
+                "amount": 0,
+                "number": 3
+              },
+              {
+                "amount": 2499.5,
+                "number": 4
+              },
+              {
+                "amount": 2500,
+                "number": 5
+              },
+              {
+                "amount": 2500.5,
+                "number": 6
+              },
+              {
+                "amount": 0,
+                "number": 7
+              },
+              {
+                "amount": 0,
+                "number": 8
+              }
+            ]
+          }
+        ],
+        "travel": [
+          {
+            "description": [
+              {
+                "translation": "API generated travel and accommodation cost description DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated travel and accommodation cost description EN",
+                "language": "EN"
+              }
+            ],
+            "comments": [
+              {
+                "translation": "API generated travel and accommodation cost comments DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated travel and accommodation cost comments EN",
+                "language": "EN"
+              }
+            ],
+            "unitType": [
+              {
+                "translation": "API generated travel and accommodation cost unit type DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated travel and accommodation cost unit type EN",
+                "language": "EN"
+              }
+            ],
+            "numberOfUnits": 1,
+            "pricePerUnit": 10000,
+            "budgetPeriods": [
+              {
+                "amount": 0,
+                "number": 1
+              },
+              {
+                "amount": 10000,
+                "number": 2
+              },
+              {
+                "amount": 0,
+                "number": 3
+              },
+              {
+                "amount": 0,
+                "number": 4
+              },
+              {
+                "amount": 0,
+                "number": 5
+              },
+              {
+                "amount": 0,
+                "number": 6
+              },
+              {
+                "amount": 0,
+                "number": 7
+              },
+              {
+                "amount": 0,
+                "number": 8
+              }
+            ]
+          }
+        ],
+        "external": [
+          {
+            "description": [
+              {
+                "translation": "API external cost description DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API external cost description EN",
+                "language": "EN"
+              }
+            ],
+            "comments": [
+              {
+                "translation": "API generated external cost comments DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated external cost comments EN",
+                "language": "EN"
+              }
+            ],
+            "awardProcedures": [
+              {
+                "translation": "API generated external cost award procedures DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated external cost award procedures EN",
+                "language": "EN"
+              }
+            ],
+            "unitType": [
+              {
+                "translation": "API generated external cost unit type DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated external cost unit type EN",
+                "language": "EN"
+              }
+            ],
+            "numberOfUnits": 10,
+            "pricePerUnit": 1000,
+            "budgetPeriods": [
+              {
+                "amount": 5000,
+                "number": 1
+              },
+              {
+                "amount": 0,
+                "number": 2
+              },
+              {
+                "amount": 0,
+                "number": 3
+              },
+              {
+                "amount": 0,
+                "number": 4
+              },
+              {
+                "amount": 0,
+                "number": 5
+              },
+              {
+                "amount": 0,
+                "number": 6
+              },
+              {
+                "amount": 0,
+                "number": 7
+              },
+              {
+                "amount": 5000,
+                "number": 8
+              }
+            ]
+          }
+        ],
+        "equipment": [
+          {
+            "description": [
+              {
+                "translation": "API generated equipment cost description DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated equipment cost description EN",
+                "language": "EN"
+              }
+            ],
+            "comments": [
+              {
+                "translation": "API generated equipment cost comments DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated equipment cost comments EN",
+                "language": "EN"
+              }
+            ],
+            "unitType": [
+              {
+                "translation": "API generated equipment cost unit type DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated equipment cost unit type EN",
+                "language": "EN"
+              }
+            ],
+            "awardProcedures": [
+              {
+                "translation": "API generated equipment cost award procedures DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated equipment cost award procedures EN",
+                "language": "EN"
+              }
+            ],
+            "numberOfUnits": 1,
+            "pricePerUnit": 10000,
+            "budgetPeriods": [
+              {
+                "amount": 2500,
+                "number": 1
+              },
+              {
+                "amount": 2500,
+                "number": 2
+              },
+              {
+                "amount": 0,
+                "number": 3
+              },
+              {
+                "amount": 5000,
+                "number": 4
+              },
+              {
+                "amount": 0,
+                "number": 5
+              },
+              {
+                "amount": 0,
+                "number": 6
+              },
+              {
+                "amount": 0,
+                "number": 7
+              },
+              {
+                "amount": 0,
+                "number": 8
+              }
+            ]
+          }
+        ],
+        "infrastructure": [
+          {
+            "description": [
+              {
+                "translation": "API generated infrastructure and works cost description DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated infrastructure and works cost description EN",
+                "language": "EN"
+              }
+            ],
+            "comments": [
+              {
+                "translation": "API generated infrastructure and works cost comments DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated infrastructure and works cost comments EN",
+                "language": "EN"
+              }
+            ],
+            "unitType": [
+              {
+                "translation": "API generated infrastructure and works cost unit type DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated infrastructure and works cost unit type EN",
+                "language": "EN"
+              }
+            ],
+            "awardProcedures": [
+              {
+                "translation": "API generated infrastructure and works cost award procedures DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated infrastructure and works cost award procedures EN",
+                "language": "EN"
+              }
+            ],
+            "numberOfUnits": 2,
+            "pricePerUnit": 5000,
+            "budgetPeriods": [
+              {
+                "amount": 0,
+                "number": 1
+              },
+              {
+                "amount": 10000,
+                "number": 2
+              },
+              {
+                "amount": 0,
+                "number": 3
+              },
+              {
+                "amount": 0,
+                "number": 4
+              },
+              {
+                "amount": 0,
+                "number": 5
+              },
+              {
+                "amount": 0,
+                "number": 6
+              },
+              {
+                "amount": 0,
+                "number": 7
+              },
+              {
+                "amount": 0,
+                "number": 8
+              }
+            ]
+          }
+        ],
+        "unit": [
+          {
+            "unitCostId": 6,
+            "numberOfUnits": 1,
+            "budgetPeriods": [
+              {
+                "amount": 155.22,
+                "number": 1
+              },
+              {
+                "amount": 0,
+                "number": 2
+              },
+              {
+                "amount": 0,
+                "number": 3
+              },
+              {
+                "amount": 0,
+                "number": 4
+              },
+              {
+                "amount": 0,
+                "number": 5
+              },
+              {
+                "amount": 0,
+                "number": 6
+              },
+              {
+                "amount": 0,
+                "number": 7
+              },
+              {
+                "amount": 0,
+                "number": 8
+              }
+            ]
+          }
+        ]
+      },
+      "cofinancing": {
+        "finances": [
+          {
+            "fundId": 1,
+            "fundType": "MainFund",
+            "percentage": 60
+          },
+          {
+            "percentage": 40,
+            "fundType": "PartnerContribution"
+          }
+        ],
+        "partnerContributions": [
+          {
+            "status": "Public",
+            "amount": 25062.09,
+            "partner": true
+          }
+        ]
+      },
+      "budgetOverview": [
+        "10.000,00",
+        "12.500,00",
+        "10.000,00",
+        "10.000,00",
+        "10.000,00",
+        "10.000,00",
+        "0,00",
+        "0,00",
+        "155,22",
+        "62.655,22"
+      ],
+      "cofinancingAmount": "37.593,13"
+    },
+    {
+      "abbreviation": "PP2",
+      "role": "PARTNER",
+      "budget": {
+        "options": {
+          "officeAndAdministrationOnStaffCostsFlatRate": 15,
+          "officeAndAdministrationOnDirectCostsFlatRate": null,
+          "staffCostsFlatRate": 20,
+          "travelAndAccommodationOnStaffCostsFlatRate": 15,
+          "otherCostsOnStaffCostsFlatRate": null
+        },
+        "external": [
+          {
+            "description": [
+              {
+                "translation": "API generated external cost description DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated external cost description EN",
+                "language": "EN"
+              }
+            ],
+            "comments": [
+              {
+                "translation": "API generated external cost comments DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated external cost comments EN",
+                "language": "EN"
+              }
+            ],
+            "awardProcedures": [
+              {
+                "translation": "API generated external cost award procedures DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated external cost award procedures EN",
+                "language": "EN"
+              }
+            ],
+            "unitType": [
+              {
+                "translation": "API generated external cost unit type DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated external cost unit type EN",
+                "language": "EN"
+              }
+            ],
+            "numberOfUnits": 100,
+            "pricePerUnit": 1000,
+            "budgetPeriods": [
+              {
+                "amount": 50000,
+                "number": 1
+              },
+              {
+                "amount": 0,
+                "number": 2
+              },
+              {
+                "amount": 0,
+                "number": 3
+              },
+              {
+                "amount": 0,
+                "number": 4
+              },
+              {
+                "amount": 0,
+                "number": 5
+              },
+              {
+                "amount": 0,
+                "number": 6
+              },
+              {
+                "amount": 0,
+                "number": 7
+              },
+              {
+                "amount": 50000,
+                "number": 8
+              }
+            ]
+          }
+        ],
+        "equipment": [
+          {
+            "comments": [
+              {
+                "translation": "API generated equipment cost comments DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated equipment cost comments EN",
+                "language": "EN"
+              }
+            ],
+            "awardProcedures": [
+              {
+                "translation": "API generated equipment cost award procedures DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated equipment cost award procedures EN",
+                "language": "EN"
+              }
+            ],
+            "unitCostId": 4,
+            "numberOfUnits": 1,
+            "pricePerUnit": 1234.56,
+            "budgetPeriods": [
+              {
+                "amount": 250,
+                "number": 1
+              },
+              {
+                "amount": 250,
+                "number": 2
+              },
+              {
+                "amount": 0,
+                "number": 3
+              },
+              {
+                "amount": 50,
+                "number": 4
+              },
+              {
+                "amount": 5,
+                "number": 5
+              },
+              {
+                "amount": 0,
+                "number": 6
+              },
+              {
+                "amount": 679.56,
+                "number": 7
+              },
+              {
+                "amount": 0,
+                "number": 8
+              }
+            ]
+          }
+        ],
+        "infrastructure": [
+          {
+            "description": [
+              {
+                "translation": "API generated infrastructure and works cost description DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated infrastructure and works cost description EN",
+                "language": "EN"
+              }
+            ],
+            "comments": [
+              {
+                "translation": "API generated infrastructure and works cost comments DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated infrastructure and works cost comments EN",
+                "language": "EN"
+              }
+            ],
+            "unitType": [
+              {
+                "translation": "API generated infrastructure and works cost unit type DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated infrastructure and works cost unit type EN",
+                "language": "EN"
+              }
+            ],
+            "awardProcedures": [
+              {
+                "translation": "API generated infrastructure and works cost award procedures DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated infrastructure and works cost award procedures EN",
+                "language": "EN"
+              }
+            ],
+            "numberOfUnits": 2,
+            "pricePerUnit": 50000,
+            "budgetPeriods": [
+              {
+                "amount": 0,
+                "number": 1
+              },
+              {
+                "amount": 100000,
+                "number": 2
+              },
+              {
+                "amount": 0,
+                "number": 3
+              },
+              {
+                "amount": 0,
+                "number": 4
+              },
+              {
+                "amount": 0,
+                "number": 5
+              },
+              {
+                "amount": 0,
+                "number": 6
+              },
+              {
+                "amount": 0,
+                "number": 7
+              },
+              {
+                "amount": 0,
+                "number": 8
+              }
+            ]
+          }
+        ],
+        "unit": [
+          {
+            "unitCostId": 6,
+            "numberOfUnits": 1,
+            "budgetPeriods": [
+              {
+                "amount": 155.22,
+                "number": 1
+              },
+              {
+                "amount": 0,
+                "number": 2
+              },
+              {
+                "amount": 0,
+                "number": 3
+              },
+              {
+                "amount": 0,
+                "number": 4
+              },
+              {
+                "amount": 0,
+                "number": 5
+              },
+              {
+                "amount": 0,
+                "number": 6
+              },
+              {
+                "amount": 0,
+                "number": 7
+              },
+              {
+                "amount": 0,
+                "number": 8
+              }
+            ]
+          }
+        ]
+      },
+      "cofinancing": {
+        "finances": [
+          {
+            "fundId": 1,
+            "fundType": "MainFund",
+            "percentage": 60
+          },
+          {
+            "percentage": 40,
+            "fundType": "PartnerContribution"
+          }
+        ],
+        "partnerContributions": [
+          {
+            "status": "Private",
+            "amount": 101484.30,
+            "partner": true
+          }
+        ]
+      },
+      "budgetOverview": [
+        "40.246,91",
+        "6.037,03",
+        "6.037,03",
+        "100.000,00",
+        "1.234,56",
+        "100.000,00",
+        "0,00",
+        "0,00",
+        "155,22",
+        "253.710,75"
+      ],
+      "cofinancingAmount": "152.226,45"
+    },
+    {
+      "abbreviation": "PP3",
+      "role": "PARTNER",
+      "budget": {
+        "options": {
+          "officeAndAdministrationOnStaffCostsFlatRate": null,
+          "officeAndAdministrationOnDirectCostsFlatRate": null,
+          "staffCostsFlatRate": null,
+          "travelAndAccommodationOnStaffCostsFlatRate": null,
+          "otherCostsOnStaffCostsFlatRate": 40
+        },
+        "staff": [
+          {
+            "comments": [
+              {
+                "translation": "API generated staff cost comment DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated staff cost comment EN",
+                "language": "EN"
+              }
+            ],
+            "numberOfUnits": 1,
+            "unitType": [
+              {
+                "translation": "API generated staff cost unit type DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated staff cost unit type EN",
+                "language": "EN"
+              }
+            ],
+            "description": [
+              {
+                "translation": "API generated staff cost description DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated staff cost description EN",
+                "language": "EN"
+              }
+            ],
+            "pricePerUnit": 2114.46,
+            "budgetPeriods": [
+              {
+                "amount": 0,
+                "number": 1
+              },
+              {
+                "amount": 0,
+                "number": 2
+              },
+              {
+                "amount": 0,
+                "number": 3
+              },
+              {
+                "amount": 2014.46,
+                "number": 4
+              },
+              {
+                "amount": 0,
+                "number": 5
+              },
+              {
+                "amount": 0,
+                "number": 6
+              },
+              {
+                "amount": 100,
+                "number": 7
+              },
+              {
+                "amount": 0,
+                "number": 8
+              }
+            ]
+          }
+        ]
+      },
+      "cofinancing": {
+        "finances": [
+          {
+            "fundId": 3,
+            "fundType": "MainFund",
+            "percentage": 50
+          },
+          {
+            "percentage": 50,
+            "fundType": "PartnerContribution"
+          }
+        ],
+        "partnerContributions": [
+          {
+            "status": "Private",
+            "amount": 1480.12,
+            "partner": true
+          }
+        ]
+      },
+      "budgetOverview": [
+        "2.114,46",
+        "0,00",
+        "0,00",
+        "0,00",
+        "0,00",
+        "0,00",
+        "845,78",
+        "0,00",
+        "0,00",
+        "2.960,24"
+      ],
+      "cofinancingAmount": "1.480,12"
+    },
+    {
+      "abbreviation": "PP4",
+      "role": "PARTNER",
+      "budget": {
+        "options": {
+          "officeAndAdministrationOnStaffCostsFlatRate": null,
+          "officeAndAdministrationOnDirectCostsFlatRate": null,
+          "staffCostsFlatRate": null,
+          "travelAndAccommodationOnStaffCostsFlatRate": null,
+          "otherCostsOnStaffCostsFlatRate": 40
+        },
+        "staff": [
+          {
+            "comments": [
+              {
+                "translation": "API generated staff cost comment DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated staff cost comment EN",
+                "language": "EN"
+              }
+            ],
+            "numberOfUnits": 1,
+            "unitType": [
+              {
+                "translation": "API generated staff cost unit type DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated staff cost unit type EN",
+                "language": "EN"
+              }
+            ],
+            "description": [
+              {
+                "translation": "API generated staff cost description DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated staff cost description EN",
+                "language": "EN"
+              }
+            ],
+            "pricePerUnit": 2114.46,
+            "budgetPeriods": [
+              {
+                "amount": 0,
+                "number": 1
+              },
+              {
+                "amount": 0,
+                "number": 2
+              },
+              {
+                "amount": 0,
+                "number": 3
+              },
+              {
+                "amount": 2014.46,
+                "number": 4
+              },
+              {
+                "amount": 0,
+                "number": 5
+              },
+              {
+                "amount": 0,
+                "number": 6
+              },
+              {
+                "amount": 100,
+                "number": 7
+              },
+              {
+                "amount": 0,
+                "number": 8
+              }
+            ]
+          }
+        ]
+      },
+      "cofinancing": {
+        "finances": [
+          {
+            "fundId": 3,
+            "fundType": "MainFund",
+            "percentage": 50
+          },
+          {
+            "percentage": 50,
+            "fundType": "PartnerContribution"
+          }
+        ],
+        "partnerContributions": [
+          {
+            "status": "Private",
+            "amount": 1480.12,
+            "partner": true
+          }
+        ]
+      },
+      "budgetOverview": [
+        "2.114,46",
+        "0,00",
+        "0,00",
+        "0,00",
+        "0,00",
+        "0,00",
+        "845,78",
+        "0,00",
+        "0,00",
+        "2.960,24"
+      ],
+      "cofinancingAmount": "1.480,12"
+    }
+  ],
+  "approvalInfo": {
+    "note": "API modification approved",
+    "date": "2023-03-14",
+    "entryIntoForceDate": "2023-03-14"
+  }
+}
