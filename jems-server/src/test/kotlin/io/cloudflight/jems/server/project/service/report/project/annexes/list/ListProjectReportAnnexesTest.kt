@@ -49,7 +49,11 @@ class ListProjectReportAnnexesTest : UnitTest() {
             projectId = 1L,
             reportId = 2L,
             type = JemsFileType.WorkPlanProjectReport,
-            filterSubtypes = emptySet(),
+            filterSubtypes = setOf(
+                JemsFileType.ActivityProjectReport,
+                JemsFileType.DeliverableProjectReport,
+                JemsFileType.OutputProjectReport
+            ),
             expectedIndexSearch = "Project/000001/Report/ProjectReport/000002/WorkPlanProjectReport/"
         )
     }
@@ -60,7 +64,7 @@ class ListProjectReportAnnexesTest : UnitTest() {
             projectId = 1L,
             reportId = 2L,
             type = JemsFileType.ProjectResult,
-            filterSubtypes = emptySet(),
+            filterSubtypes = setOf(JemsFileType.ProjectResult),
             expectedIndexSearch = "Project/000001/Report/ProjectReport/000002/ProjectResult/"
         )
     }

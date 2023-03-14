@@ -70,10 +70,10 @@ class ListProjectReportAnnexes(
         reportId: Long,
     ): String {
         return when (treeNode) {
-            JemsFileType.ProjectReport ->
+            JemsFileType.ProjectReport, JemsFileType.WorkPlanProjectReport ->
                 treeNode.generatePath(projectId, reportId)
 
-            JemsFileType.WorkPlanProjectReport, JemsFileType.ProjectResult ->
+            JemsFileType.ProjectResult ->
                 treeNode.generatePath(projectId, reportId, 0).replace(regex = REMOVE_LAST_ID_REGEX, "")
 
             else ->
