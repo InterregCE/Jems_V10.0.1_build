@@ -9,6 +9,6 @@ data class ProjectNotificationConfiguration(
     val sendToLeadPartner: Boolean,
     val sendToProjectPartners: Boolean,
     val sendToProjectAssigned: Boolean,
-    val emailSubject: String?,
-    val emailBody: String?
+    val emailSubject: String = "",
+    val emailBody: String = ""
 )

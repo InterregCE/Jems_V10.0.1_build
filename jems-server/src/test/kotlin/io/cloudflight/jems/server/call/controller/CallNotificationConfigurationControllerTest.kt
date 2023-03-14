@@ -31,8 +31,6 @@ class CallNotificationConfigurationControllerTest : UnitTest() {
                 sendToLeadPartner = false,
                 sendToProjectPartners = false,
                 sendToProjectAssigned = false,
-                emailBody = null,
-                emailSubject = null
             ),
             ProjectNotificationConfigurationDTO(
                 id = ApplicationStatusDTO.STEP1_SUBMITTED,
@@ -41,8 +39,6 @@ class CallNotificationConfigurationControllerTest : UnitTest() {
                 sendToLeadPartner = false,
                 sendToProjectPartners = false,
                 sendToProjectAssigned = false,
-                emailBody = null,
-                emailSubject = null
             )
         )
 
@@ -54,8 +50,6 @@ class CallNotificationConfigurationControllerTest : UnitTest() {
                 sendToLeadPartner = false,
                 sendToProjectPartners = false,
                 sendToProjectAssigned = false,
-                emailBody = null,
-                emailSubject = null
             ),
             ProjectNotificationConfigurationDTO(
                 id = ApplicationStatusDTO.STEP1_SUBMITTED,
@@ -64,8 +58,6 @@ class CallNotificationConfigurationControllerTest : UnitTest() {
                 sendToLeadPartner = false,
                 sendToProjectPartners = false,
                 sendToProjectAssigned = false,
-                emailBody = null,
-                emailSubject = null
             )
         )
 
@@ -77,8 +69,6 @@ class CallNotificationConfigurationControllerTest : UnitTest() {
                 sendToLeadPartner = false,
                 sendToProjectPartners = false,
                 sendToProjectAssigned = false,
-                emailBody = null,
-                emailSubject = null
             ),
             ProjectNotificationConfiguration(
                 id = ApplicationStatus.STEP1_SUBMITTED,
@@ -87,8 +77,6 @@ class CallNotificationConfigurationControllerTest : UnitTest() {
                 sendToLeadPartner = false,
                 sendToProjectPartners = false,
                 sendToProjectAssigned = false,
-                emailBody = null,
-                emailSubject = null
             )
         )
     }

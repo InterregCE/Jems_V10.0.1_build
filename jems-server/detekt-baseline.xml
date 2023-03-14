@@ -17,10 +17,10 @@
     <ID>ComplexMethod:CallDetail.kt$CallDetail$fun getDiff(old: CallDetail? = null): Map&lt;String, Pair&lt;Any?, Any?&gt;&gt;</ID>
     <ID>ComplexMethod:GetReportExpenditureCoFinancingBreakdownCalculatorTest.kt$GetReportExpenditureCoFinancingBreakdownCalculatorTest.Companion$private fun expectedSubmittedResult(zeroTotals: Boolean = false)</ID>
     <ID>ComplexMethod:ProjectDataModelMapper.kt$PluginDataMapper$fun map(programmeStrategy: ProgrammeStrategy): ProgrammeStrategyData</ID>
+    <ID>ComplexMethod:ProjectNotificationEventListeners.kt$ProjectNotificationEventListeners$@TransactionalEventListener @Transactional(propagation = Propagation.REQUIRES_NEW) fun publishJemsMailEvent(event: ProjectNotificationEvent)</ID>
     <ID>ComplexMethod:ProjectPartnerEntityMapper.kt$fun ProjectPartnerEntity.copy( projectPartner: ProjectPartner? = null, legalStatusRef: ProgrammeLegalStatusEntity? = null, newAddresses: Set&lt;ProjectPartnerAddress&gt;? = null, newContacts: Set&lt;ProjectPartnerContact&gt;? = null, newMotivation: ProjectPartnerMotivation? = null, newPartnerContributions: List&lt;ProjectPartnerContribution&gt;? = null, ): ProjectPartnerEntity</ID>
     <ID>FunctionOnlyReturningConstant:MockedMethodSignature.kt$MockedMethodSignature$@ExceptionWrapper(SampleWrapperException::class) fun methodWithAspectWhichReturnsNormally(): String</ID>
     <ID>FunctionOnlyReturningConstant:ProgrammeSetupAuthorization.kt$ProgrammeSetupAuthorization$ fun canReadProgrammeSetup()</ID>
-    <ID>LargeClass:CallPersistenceProviderTest.kt$CallPersistenceProviderTest</ID>
     <ID>LargeClass:CreateProjectPartnerReportBudgetTest.kt$CreateProjectPartnerReportBudgetTest : UnitTest</ID>
     <ID>LargeClass:GetBudgetFundsPerPeriodInteractorTest.kt$GetBudgetFundsPerPeriodInteractorTest : UnitTest</ID>
     <ID>LargeClass:GetReportExpenditureCostCategoryCalculatorServiceTest.kt$GetReportExpenditureCostCategoryCalculatorServiceTest$Companion</ID>
@@ -303,9 +303,6 @@
     <ID>PackageNaming:GetProjectLumpSumsExceptions.kt$package io.cloudflight.jems.server.project.service.lumpsum.get_project_lump_sums</ID>
     <ID>PackageNaming:GetProjectLumpSumsInteractor.kt$package io.cloudflight.jems.server.project.service.lumpsum.get_project_lump_sums</ID>
     <ID>PackageNaming:GetProjectLumpSumsPerPartnerExceptions.kt$package io.cloudflight.jems.server.project.service.lumpsum.get_project_lump_sums</ID>
-    <ID>PackageNaming:GetProjectNotificationConfigurationExceptions.kt$package io.cloudflight.jems.server.call.service.get_project_notification_configuration</ID>
-    <ID>PackageNaming:GetProjectNotificationConfigurations.kt$package io.cloudflight.jems.server.call.service.get_project_notification_configuration</ID>
-    <ID>PackageNaming:GetProjectNotificationConfigurationsInteractor.kt$package io.cloudflight.jems.server.call.service.get_project_notification_configuration</ID>
     <ID>PackageNaming:GetProjectPartner.kt$package io.cloudflight.jems.server.project.service.partner.get_project_partner</ID>
     <ID>PackageNaming:GetProjectPartnerException.kt$package io.cloudflight.jems.server.project.service.partner.get_project_partner</ID>
     <ID>PackageNaming:GetProjectPartnerInteractor.kt$package io.cloudflight.jems.server.project.service.partner.get_project_partner</ID>
@@ -517,9 +514,6 @@
     <ID>PackageNaming:UpdateProjectDescriptionInteractor.kt$package io.cloudflight.jems.server.project.service.update_project_description</ID>
     <ID>PackageNaming:UpdateProjectLumpSums.kt$package io.cloudflight.jems.server.project.service.lumpsum.update_project_lump_sums</ID>
     <ID>PackageNaming:UpdateProjectLumpSumsInteractor.kt$package io.cloudflight.jems.server.project.service.lumpsum.update_project_lump_sums</ID>
-    <ID>PackageNaming:UpdateProjectNotificationConfiguration.kt$package io.cloudflight.jems.server.call.service.update_project_notification_configurations</ID>
-    <ID>PackageNaming:UpdateProjectNotificationConfigurationExceptions.kt$package io.cloudflight.jems.server.call.service.update_project_notification_configurations</ID>
-    <ID>PackageNaming:UpdateProjectNotificationConfigurationsInteractor.kt$package io.cloudflight.jems.server.call.service.update_project_notification_configurations</ID>
     <ID>PackageNaming:UpdateProjectPartner.kt$package io.cloudflight.jems.server.project.service.partner.update_project_partner</ID>
     <ID>PackageNaming:UpdateProjectPartnerException.kt$package io.cloudflight.jems.server.project.service.partner.update_project_partner</ID>
     <ID>PackageNaming:UpdateProjectPartnerInteractor.kt$package io.cloudflight.jems.server.project.service.partner.update_project_partner</ID>

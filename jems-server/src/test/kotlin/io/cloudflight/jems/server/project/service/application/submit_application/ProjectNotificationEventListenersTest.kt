@@ -9,6 +9,7 @@ import io.cloudflight.jems.server.call.service.notificationConfigurations.CallNo
 import io.cloudflight.jems.server.common.event.JemsAuditEvent
 import io.cloudflight.jems.server.common.event.JemsMailEvent
 import io.cloudflight.jems.server.common.model.Variable
+import io.cloudflight.jems.server.notification.NotificationPersistence
 import io.cloudflight.jems.server.notification.mail.service.model.MailNotificationInfo
 import io.cloudflight.jems.server.project.entity.partneruser.PartnerCollaboratorLevel
 import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel
@@ -173,6 +174,9 @@ class ProjectNotificationEventListenersTest: UnitTest() {
     @RelaxedMockK
     lateinit var userProjectPersistence: UserProjectPersistence
 
+    @RelaxedMockK
+    lateinit var notificationPersistence: NotificationPersistence
+
     @InjectMockKs
     lateinit var projectNotificationEventListeners: ProjectNotificationEventListeners
 
@@ -193,6 +197,7 @@ class ProjectNotificationEventListenersTest: UnitTest() {
         every { partnerCollaboratorPersistence.findByProjectAndPartners(PROJECT_ID, setOf(2L)) } returns setOf(leadPartnerCollaborator)
         every { partnerCollaboratorPersistence.findByProjectAndPartners(PROJECT_ID, setOf(3L)) } returns setOf(partnerCollaborator)
         every { userProjectPersistence.getUsersForProject(PROJECT_ID) } returns setOf(programmeUser)
+        every { notificationPersistence.saveNotification(PROJECT_ID, any()) } returns Unit
 
         val applicationEvent = ProjectNotificationEvent(
             context = this,
@@ -228,6 +233,7 @@ class ProjectNotificationEventListenersTest: UnitTest() {
         every { partnerCollaboratorPersistence.findByProjectAndPartners(PROJECT_ID, setOf(2L)) } returns setOf(leadPartnerCollaborator)
         every { partnerCollaboratorPersistence.findByProjectAndPartners(PROJECT_ID, setOf(3L)) } returns setOf(partnerCollaborator)
         every { userProjectPersistence.getUsersForProject(PROJECT_ID) } returns setOf(programmeUser)
+        every { notificationPersistence.saveNotification(PROJECT_ID, any()) } returns Unit
 
         val applicationEvent = ProjectNotificationEvent(
             context = this,

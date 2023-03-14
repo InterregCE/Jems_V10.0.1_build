@@ -3,6 +3,9 @@ package io.cloudflight.jems.server.project.service.application.submit_applicatio
 import io.cloudflight.jems.server.call.service.notificationConfigurations.CallNotificationConfigurationsPersistence
 import io.cloudflight.jems.server.common.event.JemsMailEvent
 import io.cloudflight.jems.server.common.model.Variable
+import io.cloudflight.jems.server.notification.NotificationPersistence
+import io.cloudflight.jems.server.notification.model.Notification
+import io.cloudflight.jems.server.notification.model.NotificationType
 import io.cloudflight.jems.server.notification.mail.service.model.MailNotificationInfo
 import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -18,6 +21,8 @@ import io.cloudflight.jems.server.user.service.model.assignment.CollaboratorAssi
 import io.cloudflight.jems.server.user.service.model.assignment.PartnerCollaborator
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Propagation
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.event.TransactionalEventListener
 
 data class ProjectNotificationEvent(
@@ -33,7 +38,8 @@ data class ProjectNotificationEventListeners(
     private val userProjectCollaboratorPersistence: UserProjectCollaboratorPersistence,
     private val partnerCollaboratorPersistence: UserPartnerCollaboratorPersistence,
     private val partnerPersistence: PartnerPersistence,
-    private val userProjectPersistence: UserProjectPersistence
+    private val userProjectPersistence: UserProjectPersistence,
+    private val notificationPersistence: NotificationPersistence
 ) {
 
     @TransactionalEventListener
@@ -47,6 +53,7 @@ data class ProjectNotificationEventListeners(
 
 
     @TransactionalEventListener
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     fun publishJemsMailEvent(event: ProjectNotificationEvent) {
 
         val projectId = event.projectSummary.id
@@ -73,17 +80,29 @@ data class ProjectNotificationEventListeners(
                     .partnerCollaboratorEmails()
 
         val programmeUsers = if (!notification.sendToProjectAssigned) emptySet() else
-            userProjectPersistence.getUsersForProject(projectId).emails()
+            userProjectPersistence.getUsersForProject(projectId)
+                .emails()
 
         val emailsToNotify =
             managers union leadPartnerCollaborators union nonLeadPartnerCollaborators union programmeUsers
 
+        val notificationsToSave = emailsToNotify
+            .map { email ->
+                Notification(
+                email = email,
+                subject = notification.emailSubject ?: "",
+                body = notification.emailBody ?: "",
+                type = NotificationType.values().first { it.key == notification.id.toString() }
+                )
+            }
+
+        notificationPersistence.saveNotification(projectId, notificationsToSave)
 
         eventPublisher.publishEvent(
             JemsMailEvent(
                 emailTemplateFileName = "notification.html",
                 mailNotificationInfo = MailNotificationInfo(
-                    subject = notification.emailSubject!!,
+                    subject = notification.emailSubject,
                     templateVariables =
                     setOf(
                         Variable("body", notification.emailBody),

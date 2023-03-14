@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {ProjectNotificationConfigurationDTO} from '@cat/api';
-import {FormArray, FormBuilder, Validators} from '@angular/forms';
+import {AbstractControl, FormArray, FormBuilder, Validators} from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
 import {CallNotificationSettingsStore} from '../call-notification-settings-store.service';
 import {catchError, map, take, tap} from 'rxjs/operators';
@@ -69,6 +69,11 @@ export class ProjectNotificationsSettingsTabComponent {
             tap(() => this.formService.setSuccess('call.detail.notifications.config.tab.project.form.save.success')),
             catchError(err => this.formService.setError(err)),
         ).subscribe();
+    }
+
+    existsOnProjectStatus(notification: AbstractControl): boolean {
+      return notification.get('id')?.value === ProjectNotificationConfigurationDTO.IdEnum.STEP1SUBMITTED
+      || notification.get('id')?.value === ProjectNotificationConfigurationDTO.IdEnum.SUBMITTED;
     }
 }
 
