@@ -54,7 +54,7 @@ internal class AssignUserToProjectTest : UnitTest() {
 
         private fun role(id: Long) = UserRoleSummary(id, "role", false)
 
-        private fun project(id: Long) = ProjectSummary(id, "cid", "call", "acronym", ApplicationStatus.STEP1_DRAFT)
+        private fun project(id: Long) = ProjectSummary(id, "cid", 1L, "call", "acronym", ApplicationStatus.STEP1_DRAFT)
 
         val admin = UserSummary(USER_ADMIN_ID, "admin", "", "", role(ADMIN_ROLE_ID), UserStatus.ACTIVE)
         val programmeUser = UserSummary(USER_PROGRAMME_ID, "programme", "", "", role(PROGRAMME_ROLE_ID), UserStatus.ACTIVE)

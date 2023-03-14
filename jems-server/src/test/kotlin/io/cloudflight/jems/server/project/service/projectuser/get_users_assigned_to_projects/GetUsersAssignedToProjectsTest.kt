@@ -57,7 +57,13 @@ internal class GetUsersAssignedToProjectsTest : UnitTest() {
         val users = mockk<Set<UserSummary>>()
         every { userProjectPersistence.getUsersForProject(12L) } returns users
         every { projectPersistence.getAssignedProjects(Pageable.unpaged(), projectSearchRequest) } returns PageImpl(listOf(
-            ProjectSummary(id = 12L, callName = "call name", customIdentifier = "project", acronym = "project acronym", status = ApplicationStatus.DRAFT),
+            ProjectSummary(id = 12L,
+                callId = 1L,
+                callName = "call name",
+                customIdentifier = "project",
+                acronym = "project acronym",
+                status = ApplicationStatus.DRAFT
+            ),
         ))
         assertThat(getUsersAssigned.getProjectsWithAssignedUsers(Pageable.unpaged(), projectWithUsersDTO).content).containsExactly(
             ProjectWithUsers(

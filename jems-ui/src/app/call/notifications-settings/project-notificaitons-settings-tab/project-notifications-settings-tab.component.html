@@ -1,20 +1,23 @@
 <jems-form
         *ngIf="data$ | async as data"
         (save)="save()"
-        (discard)="resetForm(data.projectNotificationTemplates)">
+        (discard)="resetForm(data.projectNotificationConfigurations)">
     <h3>{{'call.detail.notifications.config.tab.project.title' | translate}}</h3>
     <p>{{'call.detail.notifications.config.tab.project.description' | translate}}</p>
     <form jemsFormLayout [formGroup]="projectNotificationsForm">
         <ng-container *ngFor="let notificationTemplate of projectNotificationConfigurationsArray.controls; let i=index"
                       formArrayName="projectNotificationConfigurations">
             <ng-container [formGroupName]="i">
-                <mat-expansion-panel jemsNoWidthLimit [expanded]="false">
+                <mat-expansion-panel jemsNoWidthLimit
+                                     [expanded]="false">
                     <mat-expansion-panel-header>
                         <mat-panel-title class="justify-space-between text-normal">
                             <ng-container>
                                 <div>
                                     <span>
-                                        <mat-slide-toggle formControlName="active" color="primary">
+                                        <mat-slide-toggle formControlName="active"
+                                                          color="primary"
+                                                          (click)="$event.stopPropagation()">
                                              {{'common.label.projectapplicationstatus.' + notificationTemplate.get('id').value | translate}}
                                         </mat-slide-toggle>
                                     </span>
@@ -25,9 +28,8 @@
                                 </div>
 
                                 <div>
-                                <span> {{'call.detail.notifications.config.tab.project.checkbox.users.project' | translate}}
-                                    :</span>
-                                    <mat-checkbox formControlName="sendToManager" class="ml-1" color="primary"
+                                    <span> <b>{{'call.detail.notifications.config.tab.project.checkbox.users.project' | translate}}</b>:</span>
+                                    <mat-checkbox formControlName="sendToManager" class="ml-3" color="primary"
                                                   (click)="$event.stopPropagation()">
                                         {{ 'call.detail.notifications.config.tab.project.checkbox.manager' | translate }}
                                     </mat-checkbox>
@@ -43,10 +45,10 @@
                                         {{ 'call.detail.notifications.config.tab.project.checkbox.partners' | translate }}
                                     </mat-checkbox>
 
-                                    <span class="ml-3">
-                                        {{'call.detail.notifications.config.tab.project.checkbox.users.programme' | translate}}:
+                                    <span class="ml-6">
+                                        <b>{{'call.detail.notifications.config.tab.project.checkbox.users.programme' | translate}}</b>:
                                     </span>
-                                    <mat-checkbox formControlName="sendToProjectAssigned" class="ml-1 mr-5"
+                                    <mat-checkbox formControlName="sendToProjectAssigned" class="ml-3 mr-5"
                                                   color="primary" (click)="$event.stopPropagation()">
                                         {{'call.detail.notifications.config.tab.project.checkbox.users.programme.project.assigned' |  translate}}
                                     </mat-checkbox>
@@ -58,7 +60,7 @@
                     <div jemsNoWidthLimit>
                         <div>
                             <mat-form-field jemsFormFieldWidth="two-thirds">
-                                <mat-label>Email subject</mat-label>
+                                <mat-label>{{'call.detail.notifications.config.email.subject.label' | translate}}</mat-label>
                                 <input formControlName="emailSubject" matInput name="emailSubject">
                             </mat-form-field>
                         </div>
@@ -67,8 +69,9 @@
                             <jems-expandable-textarea jemsMultiColumnRow jemsFormFieldWidth="two-thirds"
                                                       [control]="notificationTemplate?.get('emailBody')"
                                                       [errors]="notificationTemplate?.get('emailBody')?.errors"
-                                                      [characterLimit]="1000"
-                                                      [minRows]="1"
+                                                      label="call.detail.notifications.config.email.body.label"
+                                                      [characterLimit]="10000"
+                                                      [minRows]="5"
                                                       [maxRows]="30">
                             </jems-expandable-textarea>
                         </div>

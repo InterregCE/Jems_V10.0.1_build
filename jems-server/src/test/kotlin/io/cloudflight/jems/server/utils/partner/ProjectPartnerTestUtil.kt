@@ -63,6 +63,7 @@ val CREATED_AT_TIMESTAMP: Timestamp = Timestamp.valueOf(LocalDateTime.of(2020,1,
 fun projectSummary(status: ApplicationStatus = ApplicationStatus.DRAFT) = ProjectSummary(
     id = PROJECT_ID,
     customIdentifier = "01",
+    callId = 1L,
     callName = "",
     acronym = "project acronym",
     status = status

@@ -30,7 +30,7 @@ class RejectModification(
         actionInfo.ifIsValid(generalValidatorService).let {
             projectPersistence.getProjectSummary(projectId).let { projectSummary ->
                 applicationStateFactory.getInstance(projectSummary).rejectModification(actionInfo).also {
-                    auditPublisher.publishEvent(projectStatusChanged(this, projectSummary, newStatus = it))
+                    auditPublisher.publishEvent(projectStatusChanged(projectSummary, newStatus = it))
                 }
             }
         }

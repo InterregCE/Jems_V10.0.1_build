@@ -3,9 +3,9 @@ package io.cloudflight.jems.server.project.service.application.approve_applicati
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentQualityResult.RECOMMENDED_FOR_FUNDING
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.common.event.JemsAuditEvent
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.authorization.ProjectAuthorization
 import io.cloudflight.jems.server.project.service.ProjectPersistence
@@ -46,6 +46,7 @@ class ApproveApplicationInteractorTest : UnitTest() {
         private fun summary(status: ApplicationStatus) = ProjectSummary(
             id = PROJECT_ID,
             customIdentifier = "01",
+            callId = 1L,
             callName = "",
             acronym = "project acronym",
             status = status,
@@ -100,7 +101,7 @@ class ApproveApplicationInteractorTest : UnitTest() {
 
         assertThat(approveApplication.approve(PROJECT_ID, actionInfo)).isEqualTo(APPROVED)
 
-        val slotAudit = slot<AuditCandidateEvent>()
+        val slotAudit = slot<JemsAuditEvent>()
         verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }
         assertThat(slotAudit.captured.auditCandidate).isEqualTo(
             AuditCandidate(
@@ -122,7 +123,7 @@ class ApproveApplicationInteractorTest : UnitTest() {
 
         assertThat(approveApplication.approve(PROJECT_ID, actionInfo)).isEqualTo(STEP1_APPROVED)
 
-        val slotAudit = slot<AuditCandidateEvent>()
+        val slotAudit = slot<JemsAuditEvent>()
         verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }
         assertThat(slotAudit.captured.auditCandidate).isEqualTo(
             AuditCandidate(

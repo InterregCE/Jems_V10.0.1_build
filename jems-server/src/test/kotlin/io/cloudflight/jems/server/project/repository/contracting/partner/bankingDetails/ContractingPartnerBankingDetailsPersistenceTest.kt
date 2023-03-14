@@ -39,6 +39,7 @@ internal class ContractingPartnerBankingDetailsPersistenceTest : UnitTest() {
             id = projectId,
             customIdentifier = "01",
             callName = "",
+            callId = 1L,
             acronym = "project acronym",
             status = ApplicationStatus.CONTRACTED
         )

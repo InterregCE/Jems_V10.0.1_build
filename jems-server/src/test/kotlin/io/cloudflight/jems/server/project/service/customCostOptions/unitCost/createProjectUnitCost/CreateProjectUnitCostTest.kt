@@ -39,6 +39,7 @@ internal class CreateProjectUnitCostTest : UnitTest() {
         private fun projectSummary(id: Long) = ProjectSummary(
             id = id,
             customIdentifier = "CUST_ID",
+            callId = 1L,
             callName = "",
             acronym = "PROJ_ACR",
             status = ApplicationStatus.DRAFT,

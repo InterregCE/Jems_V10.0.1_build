@@ -96,7 +96,7 @@ internal class SetProjectFileDescriptionTest : UnitTest() {
         every { filePersistence.getFileMetadata(FILE_ID) } returns fileMetadata
         every { filePersistence.setFileDescription(FILE_ID, newDescription) } returns fileMetadata
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns
-            ProjectSummary(PROJECT_ID, "custom_id", "", "acronym", ApplicationStatus.DRAFT)
+            ProjectSummary(PROJECT_ID, "custom_id", 1L, "", "acronym", ApplicationStatus.DRAFT)
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
 
         assertThat(

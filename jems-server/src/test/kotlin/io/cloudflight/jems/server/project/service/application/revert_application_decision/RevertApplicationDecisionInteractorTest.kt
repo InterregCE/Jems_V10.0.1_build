@@ -2,9 +2,9 @@ package io.cloudflight.jems.server.project.service.application.revert_applicatio
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.common.event.JemsAuditEvent
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
@@ -27,6 +27,7 @@ class RevertApplicationDecisionInteractorTest : UnitTest() {
         private val summary = ProjectSummary(
             id = PROJECT_ID,
             customIdentifier = "01",
+            callId = 1L,
             callName = "",
             acronym = "project acronym",
             status = ApplicationStatus.ELIGIBLE
@@ -57,9 +58,10 @@ class RevertApplicationDecisionInteractorTest : UnitTest() {
 
         assertThat(revertApplicationDecision.revert(PROJECT_ID)).isEqualTo(ApplicationStatus.SUBMITTED)
 
-        val slotAudit = slot<AuditCandidateEvent>()
+        val slotAudit = mutableListOf<JemsAuditEvent>()
+        every { auditPublisher.publishEvent(capture(slotAudit)) }.returns(Unit)
         verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }
-        assertThat(slotAudit.captured.auditCandidate).isEqualTo(
+        assertThat(slotAudit[0].auditCandidate).isEqualTo(
             AuditCandidate(
                 action = AuditAction.APPLICATION_STATUS_CHANGED,
                 project = AuditProject(id = PROJECT_ID.toString(), customIdentifier = "01", name = "project acronym"),

@@ -6,6 +6,7 @@ import java.time.ZonedDateTime
 data class ProjectSummary(
     val id: Long,
     val customIdentifier: String,
+    val callId: Long,
     val callName: String,
     val acronym: String,
     val status: ApplicationStatus,

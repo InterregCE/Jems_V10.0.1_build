@@ -28,7 +28,7 @@ class RefuseApplication(
         actionInfo.ifIsValid(generalValidatorService).let {
             projectPersistence.getProjectSummary(projectId).let { projectSummary ->
                 applicationStateFactory.getInstance(projectSummary).refuse(actionInfo).also {
-                    auditPublisher.publishEvent(projectStatusChanged(this, projectSummary, newStatus = it))
+                    auditPublisher.publishEvent(projectStatusChanged(projectSummary, newStatus = it))
                 }
             }
         }

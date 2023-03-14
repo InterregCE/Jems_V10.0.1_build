@@ -157,6 +157,7 @@ fun ProjectEntity.toDetailModel(
 fun ProjectEntity.toSummaryModel() = ProjectSummary(
     id = id,
     customIdentifier = customIdentifier,
+    callId = call.id,
     callName = call.name,
     acronym = acronym,
     status = currentStatus.status,

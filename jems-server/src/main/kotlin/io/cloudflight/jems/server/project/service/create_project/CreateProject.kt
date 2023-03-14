@@ -65,7 +65,7 @@ class CreateProject(
         auditPublisher.publishEvent(
             projectVersionRecorded(
                 context = this,
-                projectSummary = ProjectSummary(project.id, customIdentifier, call.name, project.acronym, project.projectStatus.status),
+                projectSummary = ProjectSummary(project.id, customIdentifier, call.id, call.name, project.acronym, project.projectStatus.status),
                 userEmail = project.applicant.email,
             )
         )

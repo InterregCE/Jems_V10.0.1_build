@@ -28,7 +28,7 @@ class ApproveApplicationWithConditions(
         actionInfo.ifIsValid(generalValidatorService).let {
             projectPersistence.getProjectSummary(projectId).let { projectSummary ->
                 applicationStateFactory.getInstance(projectSummary).approveWithConditions(actionInfo).also {
-                    auditPublisher.publishEvent(projectStatusChanged(this, projectSummary, newStatus = it))
+                    auditPublisher.publishEvent(projectStatusChanged(projectSummary, newStatus = it))
                 }
             }
         }

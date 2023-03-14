@@ -129,6 +129,7 @@ class ProjectControllerTest {
         private val projectSummary = ProjectSummary(
             id = 8L,
             customIdentifier = "01",
+            callId = 2L,
             callName = "call name",
             acronym = "ACR",
             status = ApplicationStatus.SUBMITTED,
@@ -141,6 +142,7 @@ class ProjectControllerTest {
         private val contractedProjectSummary = ProjectSummary(
             id = 8L,
             customIdentifier = "01",
+            callId = 2L,
             callName = "call name",
             acronym = "ACR",
             status = ApplicationStatus.CONTRACTED,

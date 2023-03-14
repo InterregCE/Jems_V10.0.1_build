@@ -41,6 +41,7 @@ class UpdateContractInfoTest: UnitTest() {
         private fun projectSummary(applicationStatus: ApplicationStatus) = ProjectSummary(
             id = 1L,
             customIdentifier = "TGCI",
+            callId = 1L,
             callName = "Test Contract Info",
             acronym = "TCI",
             status = applicationStatus,

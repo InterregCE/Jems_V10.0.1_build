@@ -1,8 +1,9 @@
 package io.cloudflight.jems.server.call.service.get_project_notification_configuration
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.ProjectNotificationConfiguration
+import io.cloudflight.jems.server.call.service.notificationConfigurations.CallNotificationConfigurationsPersistence
+import io.cloudflight.jems.server.call.service.notificationConfigurations.getProjectNotificationConfiguration.GetProjectNotificationConfigurations
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -53,14 +54,14 @@ class GetProjectNotificationConfigurationsTest: UnitTest() {
     }
 
     @MockK
-    lateinit var persistence: CallPersistence
+    lateinit var callNotificationConfigurationsPersistence: CallNotificationConfigurationsPersistence
 
     @InjectMockKs
     private lateinit var getProjectNotificationConfigurations: GetProjectNotificationConfigurations
 
     @Test
     fun `get application form field configurations`() {
-        every { persistence.getProjectNotificationConfigurations(CALL_ID) } returns projectNotificationConfigurations
+        every { callNotificationConfigurationsPersistence.getProjectNotificationConfigurations(CALL_ID) } returns projectNotificationConfigurations
         assertThat(getProjectNotificationConfigurations.get(CALL_ID))
             .containsAll(expectedProjectNotificationConfigurations)
     }

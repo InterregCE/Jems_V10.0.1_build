@@ -34,7 +34,7 @@ class SetApplicationAsEligible(
 
             projectPersistence.getProjectSummary(projectId).let { projectSummary ->
                 applicationStateFactory.getInstance(projectSummary).setAsEligible(actionInfo).also {
-                    auditPublisher.publishEvent(projectStatusChanged(this, projectSummary, newStatus = it))
+                    auditPublisher.publishEvent(projectStatusChanged(projectSummary, newStatus = it))
                 }
             }
         }

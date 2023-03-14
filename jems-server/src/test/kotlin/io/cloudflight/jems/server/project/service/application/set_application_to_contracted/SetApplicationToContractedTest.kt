@@ -2,10 +2,10 @@ package io.cloudflight.jems.server.project.service.application.set_application_t
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.common.event.JemsAuditEvent
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -34,6 +34,7 @@ internal class SetApplicationToContractedTest : UnitTest() {
         private val summary = ProjectSummary(
             id = PROJECT_ID,
             customIdentifier = "01",
+            callId = 1L,
             callName = "",
             acronym = "project acronym",
             status = ApplicationStatus.APPROVED
@@ -69,7 +70,7 @@ internal class SetApplicationToContractedTest : UnitTest() {
 
         assertThat(setApplicationToContracted.setApplicationToContracted(PROJECT_ID)).isEqualTo(ApplicationStatus.CONTRACTED)
 
-        val slotAudit = slot<AuditCandidateEvent>()
+        val slotAudit = slot<JemsAuditEvent>()
         verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }
         assertThat(slotAudit.captured.auditCandidate).isEqualTo(
             AuditCandidate(

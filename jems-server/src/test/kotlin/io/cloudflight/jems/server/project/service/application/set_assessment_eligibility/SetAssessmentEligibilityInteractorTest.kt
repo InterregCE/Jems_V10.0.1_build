@@ -38,6 +38,7 @@ class SetAssessmentEligibilityInteractorTest : UnitTest() {
             return ProjectSummary(
                 id = PROJECT_ID,
                 customIdentifier = project.customIdentifier,
+                callId = project.callSettings.callId,
                 callName = project.callSettings.callName,
                 acronym = project.acronym,
                 status = status,

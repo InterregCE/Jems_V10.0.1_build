@@ -1,28 +1,13 @@
 package io.cloudflight.jems.server.call.controller
 
-import io.cloudflight.jems.api.call.dto.CallStatus
-import io.cloudflight.jems.api.call.dto.CallType
-import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
 import io.cloudflight.jems.api.call.dto.notificationConfiguration.ProjectNotificationConfigurationDTO
-import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
-import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective
-import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
-import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
-import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.call.callFundRate
-import io.cloudflight.jems.server.call.service.get_project_notification_configuration.GetProjectNotificationConfigurationException
-import io.cloudflight.jems.server.call.service.get_project_notification_configuration.GetProjectNotificationConfigurationsInteractor
-import io.cloudflight.jems.server.call.service.model.CallDetail
-import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.call.service.model.ProjectNotificationConfiguration
-import io.cloudflight.jems.server.call.service.update_project_notification_configurations.UpdateProjectNotificationConfigurationsException
-import io.cloudflight.jems.server.call.service.update_project_notification_configurations.UpdateProjectNotificationConfigurationsInteractor
-import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
-import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
-import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
-import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeSpecificObjective
+import io.cloudflight.jems.server.call.service.notificationConfigurations.getProjectNotificationConfiguration.GetProjectNotificationConfigurationException
+import io.cloudflight.jems.server.call.service.notificationConfigurations.getProjectNotificationConfiguration.GetProjectNotificationConfigurationsInteractor
+import io.cloudflight.jems.server.call.service.notificationConfigurations.updateProjectNotificationConfigurations.UpdateProjectNotificationConfigurationsException
+import io.cloudflight.jems.server.call.service.notificationConfigurations.updateProjectNotificationConfigurations.UpdateProjectNotificationConfigurationsInteractor
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -32,7 +17,6 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.time.ZonedDateTime
 
 class CallNotificationConfigurationControllerTest : UnitTest() {
 
