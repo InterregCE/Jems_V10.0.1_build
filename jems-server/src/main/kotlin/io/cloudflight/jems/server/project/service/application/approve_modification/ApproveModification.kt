@@ -35,7 +35,7 @@ class ApproveModification(
             projectPersistence.getProjectSummary(projectId).let { projectSummary ->
                 applicationStateFactory.getInstance(projectSummary).approveModification(actionInfo).also {
                     projectVersionPersistence.updateTimestampForApprovedModification(projectId)
-                    auditPublisher.publishEvent(projectStatusChanged(this, projectSummary, newStatus = it))
+                    auditPublisher.publishEvent(projectStatusChanged(projectSummary, newStatus = it))
                     updateContractingReportingService.checkNoLongerAvailablePeriodsAndDatesToRemove(projectId)
                     checkInstitutionPartnerAssignments.checkInstitutionAssignmentsToRemoveForUpdatedPartners(projectId)
                 }

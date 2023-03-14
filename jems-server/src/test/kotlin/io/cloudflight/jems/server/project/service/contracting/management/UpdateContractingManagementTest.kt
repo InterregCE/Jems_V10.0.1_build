@@ -59,6 +59,7 @@ class UpdateContractingManagementTest : UnitTest() {
         private val projectSummary = ProjectSummary(
             id = 12L,
             customIdentifier = "TSTCM",
+            callId = 1L,
             callName = "Test contracting management",
             acronym = "TCM",
             status = ApplicationStatus.APPROVED,

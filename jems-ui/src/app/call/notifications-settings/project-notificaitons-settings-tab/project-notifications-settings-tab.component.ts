@@ -22,7 +22,7 @@ export class ProjectNotificationsSettingsTabComponent {
     });
 
     data$: Observable<{
-        projectNotificationTemplates: ProjectNotificationConfigurationDTO[];
+        projectNotificationConfigurations: ProjectNotificationConfigurationDTO[];
     }>;
 
     constructor(
@@ -31,9 +31,9 @@ export class ProjectNotificationsSettingsTabComponent {
         private callNotificationSettingsStore: CallNotificationSettingsStore
     ) {
         this.data$ = this.callNotificationSettingsStore.projectNotificationConfigurations$.pipe(
-            tap(templates => this.resetForm(templates)),
-            map(templates => ({
-                projectNotificationTemplates: templates
+            tap(notificationConfigurations => this.resetForm(notificationConfigurations)),
+            map(notificationConfigurations => ({
+                projectNotificationConfigurations: notificationConfigurations
             })),
             untilDestroyed(this)
         );
@@ -43,19 +43,19 @@ export class ProjectNotificationsSettingsTabComponent {
         return this.projectNotificationsForm.get('projectNotificationConfigurations') as FormArray;
     }
 
-    resetForm(projectNotificationTemplates: ProjectNotificationConfigurationDTO[]): void {
+    resetForm(projectNotificationConfigurations: ProjectNotificationConfigurationDTO[]): void {
         this.projectNotificationConfigurationsArray.clear();
-        projectNotificationTemplates.forEach(notificationTemplate => {
+        projectNotificationConfigurations.forEach(notificationConfig => {
             this.projectNotificationConfigurationsArray.push(this.formBuilder.group(
                 {
-                    id: notificationTemplate.id,
-                    active: notificationTemplate.active,
-                    emailSubject: notificationTemplate.emailSubject,
-                    emailBody: [notificationTemplate.emailBody, Validators.maxLength(1000)],
-                    sendToManager: notificationTemplate.sendToManager,
-                    sendToLeadPartner: notificationTemplate.sendToLeadPartner,
-                    sendToProjectPartners: notificationTemplate.sendToProjectPartners,
-                    sendToProjectAssigned: notificationTemplate.sendToProjectAssigned
+                    id: notificationConfig.id,
+                    active: notificationConfig.active,
+                    emailSubject: notificationConfig.emailSubject,
+                    emailBody: [notificationConfig.emailBody, Validators.maxLength(10000)],
+                    sendToManager: notificationConfig.sendToManager,
+                    sendToLeadPartner: notificationConfig.sendToLeadPartner,
+                    sendToProjectPartners: notificationConfig.sendToProjectPartners,
+                    sendToProjectAssigned: notificationConfig.sendToProjectAssigned
                 }
             ));
         });
@@ -66,9 +66,9 @@ export class ProjectNotificationsSettingsTabComponent {
         const notificationTemplates = this.projectNotificationsForm.getRawValue().projectNotificationConfigurations;
         this.callNotificationSettingsStore.updateProjectNotifications(notificationTemplates).pipe(
             take(1),
-            tap(projectNotificationConfigurations => this.resetForm(projectNotificationConfigurations)),
             tap(() => this.formService.setSuccess('call.detail.notifications.config.tab.project.form.save.success')),
             catchError(err => this.formService.setError(err)),
         ).subscribe();
     }
 }
+

@@ -51,6 +51,7 @@ internal class GetProjectTest : UnitTest() {
         val dummyProject = ProjectSummary(
             id = 8L,
             customIdentifier = "01",
+            callId = 1L,
             callName = "call name",
             acronym = "ACR",
             status = ApplicationStatus.SUBMITTED,

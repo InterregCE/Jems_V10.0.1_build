@@ -49,6 +49,7 @@ internal class AssignUserCollaboratorToProjectTest : UnitTest() {
         private val projectSummary = ProjectSummary(
             id = PROJECT_ID,
             customIdentifier = "01",
+            callId = 1L,
             callName = "",
             acronym = "project acronym",
             status = ApplicationStatus.DRAFT,

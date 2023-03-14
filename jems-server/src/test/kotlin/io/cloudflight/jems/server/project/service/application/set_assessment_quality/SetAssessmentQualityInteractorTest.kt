@@ -38,6 +38,7 @@ class SetAssessmentQualityInteractorTest : UnitTest() {
             return ProjectSummary(
                 id = PROJECT_ID,
                 customIdentifier = "01",
+                callId = project.callSettings.callId,
                 callName = project.callSettings.callName,
                 acronym = project.acronym,
                 status = status,

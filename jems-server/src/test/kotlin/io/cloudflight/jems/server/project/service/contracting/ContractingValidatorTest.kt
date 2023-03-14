@@ -63,6 +63,7 @@ class ContractingValidatorTest : UnitTest() {
         private val projectSummary = ProjectSummary(
             id = projectID,
             customIdentifier = "TSTCM",
+            callId = 1L,
             callName = "Test contracting management",
             acronym = "TCM",
             status = ApplicationStatus.APPROVED,
@@ -187,6 +188,7 @@ class ContractingValidatorTest : UnitTest() {
         val projectSummary = ProjectSummary(
             id = projectID,
             customIdentifier = "TST",
+            callId = 1L,
             callName = "Test contracting management",
             acronym = "TCM",
             status = ApplicationStatus.DRAFT
@@ -203,6 +205,7 @@ class ContractingValidatorTest : UnitTest() {
         val projectSummary = ProjectSummary(
             id = projectID,
             customIdentifier = "TST",
+            callId = 1L,
             callName = "Test contracting management",
             acronym = "TCM",
             status = ApplicationStatus.STEP1_SUBMITTED
@@ -219,6 +222,7 @@ class ContractingValidatorTest : UnitTest() {
         val projectSummary = ProjectSummary(
             id = projectID,
             customIdentifier = "TST",
+            callId = 1L,
             callName = "Test contracting monitoring",
             acronym = "TCM",
             status = ApplicationStatus.APPROVED
@@ -234,6 +238,7 @@ class ContractingValidatorTest : UnitTest() {
         val projectSummary = ProjectSummary(
             id = projectID,
             customIdentifier = "TST",
+            callId = 1L,
             callName = "Test contracting monitoring",
             acronym = "TCM",
             status = ApplicationStatus.STEP1_DRAFT

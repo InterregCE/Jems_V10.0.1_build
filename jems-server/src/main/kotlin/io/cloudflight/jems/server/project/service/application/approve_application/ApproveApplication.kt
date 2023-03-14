@@ -33,7 +33,7 @@ class ApproveApplication(
                     if(projectSummary.isInStep2()) {
                         projectVersionPersistence.saveTimestampForApprovedApplication(projectId)
                     }
-                    auditPublisher.publishEvent(projectStatusChanged(this, projectSummary, newStatus = it))
+                    auditPublisher.publishEvent(projectStatusChanged(projectSummary, newStatus = it))
                 }
             }
         }

@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.common.event.JemsAuditEvent
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
@@ -18,6 +19,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
@@ -31,6 +33,7 @@ class StartModificationInteractorTest: UnitTest() {
         private val summary = ProjectSummary(
             id = PROJECT_ID,
             customIdentifier = "01",
+            callId = 1L,
             callName = "",
             acronym = "project acronym",
             status = ApplicationStatus.APPROVED
@@ -73,24 +76,30 @@ class StartModificationInteractorTest: UnitTest() {
 
     @Test
     fun startModifications() {
-        every { projectPersistence.getProjectSummary(StartModificationInteractorTest.PROJECT_ID) } returns StartModificationInteractorTest.summary
+        every { projectPersistence.getProjectSummary(PROJECT_ID) } returns StartModificationInteractorTest.summary
         every { applicationStateFactory.getInstance(any()) } returns approvedState
         every { projectPersistence.getApplicantAndStatusById(any()).projectStatus } returns ApplicationStatus.APPROVED
         every { approvedState.startModification() } returns ApplicationStatus.MODIFICATION_PRECONTRACTING
 
-        val slotAudit = mutableListOf<AuditCandidateEvent>()
-        every { auditPublisher.publishEvent(capture(slotAudit)) }.returnsMany(Unit)
 
-        Assertions.assertThat(startModification.startModification(StartModificationInteractorTest.PROJECT_ID))
+        val slotAuditStatus = slot<JemsAuditEvent>()
+        val slotAuditVersion = slot<AuditCandidateEvent>()
+        every { auditPublisher.publishEvent(capture(slotAuditStatus)) }.returns(Unit)
+        every { auditPublisher.publishEvent(capture(slotAuditVersion)) }.returns(Unit)
+
+
+        Assertions.assertThat(startModification.startModification(PROJECT_ID))
             .isEqualTo(ApplicationStatus.MODIFICATION_PRECONTRACTING)
 
-        verify(exactly = 2) { auditPublisher.publishEvent(or(slotAudit[0], slotAudit[1])) }
+        verify (exactly = 1){ auditPublisher.publishEvent(capture(slotAuditStatus)) }
+        verify (exactly = 1){ auditPublisher.publishEvent(capture(slotAuditVersion)) }
 
-        Assertions.assertThat(slotAudit[0].auditCandidate).isEqualTo(
+
+        Assertions.assertThat(slotAuditStatus.captured.auditCandidate).isEqualTo(
             AuditCandidate(
                 action = AuditAction.APPLICATION_STATUS_CHANGED,
                 project = AuditProject(
-                    id = StartModificationInteractorTest.PROJECT_ID.toString(),
+                    id = PROJECT_ID.toString(),
                     customIdentifier = "01",
                     name = "project acronym"
                 ),
@@ -98,15 +107,15 @@ class StartModificationInteractorTest: UnitTest() {
             )
         )
 
-        Assertions.assertThat(slotAudit[1].auditCandidate).isEqualTo(
+        Assertions.assertThat(slotAuditVersion.captured.auditCandidate).isEqualTo(
             AuditCandidate(
                 action = AuditAction.APPLICATION_VERSION_RECORDED,
                 project = AuditProject(
-                    id = StartModificationInteractorTest.PROJECT_ID.toString(),
+                    id = PROJECT_ID.toString(),
                     customIdentifier = "01",
                     name = "project acronym"
                 ),
-                description = slotAudit[1].auditCandidate.description
+                description = slotAuditVersion.captured.auditCandidate.description
             )
         )
     }

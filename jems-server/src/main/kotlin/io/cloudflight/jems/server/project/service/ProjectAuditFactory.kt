@@ -9,6 +9,7 @@ import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.common.audit.fromOldToNewChanges
+import io.cloudflight.jems.server.common.event.JemsAuditEvent
 import io.cloudflight.jems.server.project.entity.contracting.partner.ProjectContractingPartnerBeneficialOwnerEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
@@ -43,11 +44,9 @@ fun projectApplicationCreated(
             .build()
     )
 
-fun projectStatusChanged(
-    context: Any, projectSummary: ProjectSummary, newStatus: ApplicationStatus
-): AuditCandidateEvent =
-    AuditCandidateEvent(
-        context = context,
+fun projectStatusChanged(projectSummary: ProjectSummary, newStatus: ApplicationStatus
+): JemsAuditEvent =
+    JemsAuditEvent(
         auditCandidate = AuditBuilder(AuditAction.APPLICATION_STATUS_CHANGED)
             .project(projectSummary)
             .description("Project application status changed from ${projectSummary.status} to $newStatus")

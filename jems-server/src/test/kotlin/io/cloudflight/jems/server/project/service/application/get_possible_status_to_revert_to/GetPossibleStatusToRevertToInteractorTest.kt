@@ -21,6 +21,7 @@ class GetPossibleStatusToRevertToInteractorTest : UnitTest() {
         private val summary = ProjectSummary(
             id = PROJECT_ID,
             customIdentifier = "01",
+            callId = 1L,
             callName = "",
             acronym = "project acronym",
             status = ApplicationStatus.NOT_APPROVED

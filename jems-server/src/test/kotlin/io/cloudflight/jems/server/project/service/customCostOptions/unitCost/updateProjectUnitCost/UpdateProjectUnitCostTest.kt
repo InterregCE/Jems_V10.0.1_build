@@ -47,6 +47,7 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
         private val projectSummary = ProjectSummary(
             id = PROJECT_ID,
             customIdentifier = "CUST_ID",
+            callId = 1L,
             callName = "",
             acronym = "PROJ_ACR",
             status = ApplicationStatus.DRAFT,

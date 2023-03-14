@@ -2,10 +2,10 @@ package io.cloudflight.jems.server.project.service.application.reject_modificati
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.common.event.JemsAuditEvent
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
@@ -32,6 +32,7 @@ class RejectModificationInteractorTest : UnitTest() {
         private val summary = ProjectSummary(
             id = PROJECT_ID,
             customIdentifier = "01",
+            callId = 1L,
             callName = "",
             acronym = "project acronym",
             status = ApplicationStatus.MODIFICATION_PRECONTRACTING
@@ -75,7 +76,7 @@ class RejectModificationInteractorTest : UnitTest() {
         every { applicationStateFactory.getInstance(any()) } returns inModificationState
         every { inModificationState.rejectModification(actionInfo) } returns ApplicationStatus.MODIFICATION_REJECTED
 
-        val slotAudit = slot<AuditCandidateEvent>()
+        val slotAudit = slot<JemsAuditEvent>()
         every { auditPublisher.publishEvent(capture(slotAudit)) }.returnsMany(Unit)
 
         assertThat(rejectModification.reject(PROJECT_ID, actionInfo)).isEqualTo(ApplicationStatus.MODIFICATION_REJECTED)

@@ -19,6 +19,7 @@ import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldSetting
 import io.cloudflight.jems.server.call.service.model.Call
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.ProjectNotificationSetting
+import io.cloudflight.jems.server.call.service.notificationConfigurations.CallNotificationConfigurationsPersistence
 import io.cloudflight.jems.server.call.service.validator.CallValidator
 import io.cloudflight.jems.server.call.userWithId
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
@@ -100,6 +101,9 @@ class CreateCallTest : UnitTest() {
     lateinit var persistence: CallPersistence
 
     @MockK
+    lateinit var callNotificationConfigurationsPersistence: CallNotificationConfigurationsPersistence
+
+    @MockK
     lateinit var securityService: SecurityService
 
     @RelaxedMockK
@@ -131,7 +135,7 @@ class CreateCallTest : UnitTest() {
             )
         } returns expectedCallDetail
         every {
-            persistence.saveProjectNotificationConfigurations(
+            callNotificationConfigurationsPersistence.saveProjectNotificationConfigurations(
                 expectedCallDetail.id,
                 ProjectNotificationSetting.getDefaultProjectNotificationConfigurations
             )
@@ -224,7 +228,7 @@ class CreateCallTest : UnitTest() {
             )
         } returns expectedCallDetail
         every {
-            persistence.saveProjectNotificationConfigurations(
+            callNotificationConfigurationsPersistence.saveProjectNotificationConfigurations(
                 expectedCallDetail.id,
                 ProjectNotificationSetting.getDefaultProjectNotificationConfigurations
             )

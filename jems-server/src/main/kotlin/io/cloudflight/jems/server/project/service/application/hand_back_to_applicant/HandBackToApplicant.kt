@@ -21,7 +21,7 @@ class HandBackToApplicant(
     override fun handBackToApplicant(projectId: Long): ApplicationStatus =
         projectPersistence.getProjectSummary(projectId).let { projectSummary ->
             applicationStateFactory.getInstance(projectSummary).handBackToApplicant().also {
-                auditPublisher.publishEvent(projectStatusChanged(this, projectSummary, newStatus = it))
+                auditPublisher.publishEvent(projectStatusChanged(projectSummary, newStatus = it))
             }
         }
 }

@@ -29,7 +29,7 @@ class StartSecondStep(
         createNewProjectVersion.create(projectId).let { newProjectVersion ->
             projectPersistence.getProjectSummary(projectId).let { projectSummary ->
                 applicationStateFactory.getInstance(projectSummary).startSecondStep().also {
-                    auditPublisher.publishEvent(projectStatusChanged(this, projectSummary, newStatus = it))
+                    auditPublisher.publishEvent(projectStatusChanged(projectSummary, newStatus = it))
                     auditPublisher.publishEvent(
                         projectVersionRecorded(
                             this, projectSummary,

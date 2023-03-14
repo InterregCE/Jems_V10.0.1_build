@@ -367,6 +367,7 @@ internal class ProjectPersistenceProviderTest : UnitTest() {
             ProjectSummary(
                 id = PROJECT_ID,
                 customIdentifier = "01",
+                callId = CALL_ID,
                 callName = "call name",
                 acronym = project.acronym,
                 status = project.currentStatus.status,
@@ -674,6 +675,7 @@ internal class ProjectPersistenceProviderTest : UnitTest() {
             ProjectSummary(
                 id = PROJECT_ID,
                 customIdentifier = "01",
+                callId = CALL_ID,
                 callName = "call name",
                 acronym = "Test Project",
                 status = ApplicationStatus.DRAFT,
@@ -697,6 +699,7 @@ internal class ProjectPersistenceProviderTest : UnitTest() {
             ProjectSummary(
                 id = PROJECT_ID,
                 customIdentifier = "01",
+                callId = CALL_ID,
                 callName = "call name",
                 acronym = "Test Project",
                 status = ApplicationStatus.DRAFT,

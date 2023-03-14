@@ -4,7 +4,6 @@ import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.entity.CallFundRateEntity
 import io.cloudflight.jems.server.call.entity.FundSetupId
-import io.cloudflight.jems.server.call.repository.notifications.project.ProjectNotificationConfigurationRepository
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
@@ -17,7 +16,6 @@ import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.call.service.model.PreSubmissionPlugins
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
-import io.cloudflight.jems.server.call.service.model.ProjectNotificationConfiguration
 import io.cloudflight.jems.server.programme.repository.StrategyRepository
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeLumpSumRepository
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeUnitCostRepository
@@ -45,7 +43,6 @@ class CallPersistenceProvider(
     private val projectCallStateAidRepo: ProjectCallStateAidRepository,
     private val programmeStateAidRepository: ProgrammeStateAidRepository,
     private val applicationFormFieldConfigurationRepository: ApplicationFormFieldConfigurationRepository,
-    private val projectNotificationConfigurationRepository: ProjectNotificationConfigurationRepository,
     private val projectPersistence: ProjectPersistence,
     private val partnerRepository: ProjectPartnerRepository,
 ) : CallPersistence {
@@ -323,24 +320,6 @@ class CallPersistenceProvider(
             projectDefinedUnitCostAllowed = call.projectDefinedUnitCostAllowed,
             projectDefinedLumpSumAllowed = call.projectDefinedLumpSumAllowed,
         )
-    }
-
-    @Transactional(readOnly = true)
-    override fun getProjectNotificationConfigurations(callId: Long): List<ProjectNotificationConfiguration> {
-        return projectNotificationConfigurationRepository.findByIdCallEntityId(callId).toNotificationModel()
-    }
-
-    @Transactional()
-    override fun saveProjectNotificationConfigurations(
-        callId: Long,
-        projectNotificationConfigurations: List<ProjectNotificationConfiguration>
-    ): List<ProjectNotificationConfiguration> {
-        val callEntity = findOrThrow(callId)
-
-        val configurations =
-            projectNotificationConfigurationRepository.saveAll(projectNotificationConfigurations.toNotificationEntities(callEntity))
-                .toMutableSet()
-        return configurations.toNotificationModel()
     }
 
     private fun findOrThrow(callId: Long) = callRepo.findById(callId).orElseThrow { CallNotFound() }

@@ -146,6 +146,7 @@ internal class UpdateActivityTest {
             return ProjectSummary(
                 id = projectId,
                 customIdentifier = "test",
+                callId = 1L,
                 callName = "call",
                 acronym = "test",
                 status = status,

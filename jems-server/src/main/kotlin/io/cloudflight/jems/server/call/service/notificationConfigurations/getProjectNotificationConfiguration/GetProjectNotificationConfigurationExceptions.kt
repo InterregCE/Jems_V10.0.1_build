@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.call.service.get_project_notification_configuration
+package io.cloudflight.jems.server.call.service.notificationConfigurations.getProjectNotificationConfiguration
 
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.common.exception.ApplicationException

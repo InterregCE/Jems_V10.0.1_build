@@ -36,6 +36,7 @@ class ApplicationStateFactoryTest : UnitTest() {
         private fun summary(status: ApplicationStatus) = ProjectSummary(
             id = PROJECT_ID,
             customIdentifier = "01",
+            callId = 1L,
             callName = "",
             acronym = "project acronym",
             status = status

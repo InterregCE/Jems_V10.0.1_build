@@ -34,6 +34,7 @@ internal class ContractingPartnerDocumentsLocationPersistenceTest : UnitTest() {
         private val projectSummary = ProjectSummary(
             id = projectId,
             customIdentifier = "01",
+            callId = 1L,
             callName = "",
             acronym = "project acronym",
             status = ApplicationStatus.CONTRACTED

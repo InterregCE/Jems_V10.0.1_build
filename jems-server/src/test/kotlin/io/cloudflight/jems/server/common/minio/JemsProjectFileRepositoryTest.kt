@@ -59,6 +59,7 @@ class JemsProjectFileRepositoryTest : UnitTest() {
 
             every { p.id } returns PROJECT_ID
             every { p.customIdentifier } returns "custom-id"
+            every { p.call.id } returns 1L
             every { p.call.name } returns "callName"
             every { p.acronym } returns "acronym"
             every { p.currentStatus.status } returns ApplicationStatus.DRAFT

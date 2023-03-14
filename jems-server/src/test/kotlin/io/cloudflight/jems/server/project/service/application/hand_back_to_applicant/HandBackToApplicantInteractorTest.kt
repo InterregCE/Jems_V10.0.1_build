@@ -2,10 +2,10 @@ package io.cloudflight.jems.server.project.service.application.hand_back_to_appl
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.common.event.JemsAuditEvent
 import io.cloudflight.jems.server.project.authorization.ProjectAuthorization
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
@@ -19,7 +19,6 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.verify
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
@@ -31,6 +30,7 @@ class HandBackToApplicantInteractorTest : UnitTest() {
         private val summary = ProjectSummary(
             id = PROJECT_ID,
             customIdentifier = "01",
+            callId = 1L,
             callName = "",
             acronym = "project acronym",
             status = ApplicationStatus.CONDITIONS_SUBMITTED
@@ -67,15 +67,15 @@ class HandBackToApplicantInteractorTest : UnitTest() {
         every { applicationStateFactory.getInstance(any()) } returns conditionsSubmittedApplicationState
         every { conditionsSubmittedApplicationState.handBackToApplicant() } returns ApplicationStatus.RETURNED_TO_APPLICANT_FOR_CONDITIONS
 
-        val slotAudit = mutableListOf<AuditCandidateEvent>()
+        val slotAudit = mutableListOf<JemsAuditEvent>()
         every { auditPublisher.publishEvent(capture(slotAudit)) }.returnsMany(Unit)
 
-        Assertions.assertThat(handBackToApplicant.handBackToApplicant(PROJECT_ID))
+        assertThat(handBackToApplicant.handBackToApplicant(PROJECT_ID))
             .isEqualTo(ApplicationStatus.RETURNED_TO_APPLICANT_FOR_CONDITIONS)
 
         verify (exactly = 1){ auditPublisher.publishEvent(slotAudit[0]) }
 
-        Assertions.assertThat(slotAudit[0].auditCandidate).isEqualTo(
+        assertThat(slotAudit[0].auditCandidate).isEqualTo(
             AuditCandidate(
                 action = AuditAction.APPLICATION_STATUS_CHANGED,
                 project = AuditProject(id = PROJECT_ID.toString(), customIdentifier = "01", name = "project acronym"),
