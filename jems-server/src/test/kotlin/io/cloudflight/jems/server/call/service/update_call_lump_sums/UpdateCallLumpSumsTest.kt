@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.call.service.update_call_lump_sums
 
-import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.audit.dto.AuditAction
+import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
@@ -83,7 +83,7 @@ class UpdateCallLumpSumsTest {
             AuditCandidate(
                 action = AuditAction.CALL_CONFIGURATION_CHANGED,
                 entityRelatedId = ID,
-                description = "Configuration of published call id=1 name='' changed:\n" +
+                description = "Configuration of published call id=1 name='' changed: Application form configuration was changed\n" +
                     "lumpSumIds changed from [] to [2, 3]"
             )
         )

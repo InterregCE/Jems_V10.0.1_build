@@ -1,10 +1,6 @@
 package io.cloudflight.jems.server.project.service.report.partner.control.expenditure.updateProjectPartnerReportExpenditureVerification
 
-import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
-import io.cloudflight.jems.server.audit.model.AuditProject
-import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.programme.service.typologyerrors.ProgrammeTypologyErrorsPersistence
 import io.cloudflight.jems.server.programme.service.typologyerrors.model.TypologyErrors
 import io.cloudflight.jems.server.project.repository.report.partner.model.ExpenditureVerificationUpdate
@@ -20,15 +16,12 @@ import io.cloudflight.jems.server.project.service.report.model.partner.expenditu
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.PartnerReportParkedExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.ProjectPartnerReportExpenditureVerificationPersistence
-import io.mockk.Runs
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.just
 import io.mockk.mockk
 import io.mockk.slot
-import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
@@ -265,8 +258,6 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
         every { projectPartnerReport.identification.projectIdentifier } returns "identifier"
         every { projectPartnerReport.identification.projectAcronym } returns "acronym"
         every { projectPartnerReport.identification.partnerRole } returns ProjectPartnerRole.PARTNER
-        val auditSlot = slot<AuditCandidateEvent>()
-        every { auditPublisher.publishEvent(capture(auditSlot)) } just Runs
 
         val slotToUpdate = slot<List<ExpenditureVerificationUpdate>>()
         every { reportExpenditurePersistence
@@ -289,12 +280,6 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
             ParkExpenditureData(expenditureId=14L, originalReportId=14L, originalNumber=9)
         )
         assertThat(unParkedIds.captured).isEmpty()
-
-        verify(exactly = 1) { auditPublisher.publishEvent(capture(auditSlot)) }
-        assertThat(auditSlot.captured.auditCandidate.action).isEqualTo(AuditAction.PARTNER_EXPENDITURE_PARKED)
-        assertThat(auditSlot.captured.auditCandidate.entityRelatedId).isEqualTo(55L)
-        assertThat(auditSlot.captured.auditCandidate.description)
-            .isEqualTo("Controller parked the following expenditures: [R4.1] of partner PP from report R.4")
     }
 
     @Test
@@ -310,8 +295,6 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
         every { projectPartnerReport.identification.projectIdentifier } returns "identifier"
         every { projectPartnerReport.identification.projectAcronym } returns "acronym"
         every { projectPartnerReport.identification.partnerRole } returns ProjectPartnerRole.PARTNER
-        val auditSlot = slot<AuditCandidateEvent>()
-        every { auditPublisher.publishEvent(capture(auditSlot)) } just Runs
 
         val slotToUpdate = slot<List<ExpenditureVerificationUpdate>>()
         every { reportExpenditurePersistence
@@ -333,16 +316,6 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
 
         assertThat(parkedItems.captured).isEmpty()
         assertThat(unParkedIds.captured).containsExactly(14L)
-
-        verify(exactly = 1) { auditPublisher.publishEvent(capture(auditSlot)) }
-        assertThat(auditSlot.captured.auditCandidate).isEqualTo(
-            AuditCandidate(
-                action = AuditAction.PARTNER_EXPENDITURE_UNPARKED,
-                project = AuditProject(id = "40", customIdentifier = "identifier", name = "acronym"),
-                entityRelatedId = 54L,
-                description = "Controller unparked the following expenditures: [R4.1] of partner PP from report R.4",
-            )
-        )
     }
 
     @Test

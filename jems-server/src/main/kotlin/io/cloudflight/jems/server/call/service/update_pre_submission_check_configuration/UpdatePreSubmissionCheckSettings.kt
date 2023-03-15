@@ -7,8 +7,10 @@ import io.cloudflight.jems.server.call.authorization.CanUpdateCall
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.PreSubmissionPlugins
+import io.cloudflight.jems.server.call.service.preSubmissionCheckSettingsUpdated
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.plugin.JemsPluginRegistry
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import kotlin.reflect.KClass
@@ -16,8 +18,9 @@ import kotlin.reflect.KClass
 @Service
 class UpdatePreSubmissionCheckSettings(
     private val persistence: CallPersistence,
-    private val jemsPluginRegistry: JemsPluginRegistry
-) : UpdatePreSubmissionCheckSettingsInteractor {
+    private val jemsPluginRegistry: JemsPluginRegistry,
+    private val auditPublisher: ApplicationEventPublisher
+    ) : UpdatePreSubmissionCheckSettingsInteractor {
 
     @CanUpdateCall
     @Transactional
@@ -27,6 +30,7 @@ class UpdatePreSubmissionCheckSettings(
 
         return if (isSelectedPluginKeyValid(call.is2StepCall(), pluginKeys))
             persistence.updateProjectCallPreSubmissionCheckPlugin(callId, pluginKeys)
+                .also { auditPublisher.publishEvent(preSubmissionCheckSettingsUpdated(this, pluginKeys, call.toPluginModel(), it)) }
         else
             call
     }
@@ -42,4 +46,9 @@ class UpdatePreSubmissionCheckSettings(
     private fun <T : JemsPlugin> exists(pluginKey: String?, type: KClass<T>) =
         jemsPluginRegistry.get(type, pluginKey).getKey().isNotEmpty()
 
+    private fun CallDetail.toPluginModel() = PreSubmissionPlugins(
+        firstStepPluginKey = firstStepPreSubmissionCheckPluginKey,
+        pluginKey = preSubmissionCheckPluginKey ?: "",
+        reportPartnerCheckPluginKey = reportPartnerCheckPluginKey ?: ""
+    )
 }

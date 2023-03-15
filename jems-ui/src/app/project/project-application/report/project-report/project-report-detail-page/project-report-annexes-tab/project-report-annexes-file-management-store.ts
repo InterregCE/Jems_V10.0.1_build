@@ -146,7 +146,7 @@ export class ProjectReportAnnexesFileManagementStore {
         const reportFiles: CategoryNode = {
             name: {
                 i18nKey: 'project.application.project.report.annexes.title.number',
-                i18nArguments: {reportNumber: reportNumber.toString()}
+                i18nArguments: {reportNumber: "PR." + reportNumber.toString()}
             },
             info: {type: ProjectReportCategoryTypeEnum.PROJECT_REPORT},
             children: []

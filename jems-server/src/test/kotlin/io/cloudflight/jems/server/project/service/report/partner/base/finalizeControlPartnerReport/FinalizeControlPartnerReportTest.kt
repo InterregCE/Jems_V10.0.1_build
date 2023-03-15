@@ -317,7 +317,9 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
         assertThat(auditSlot.captured.auditCandidate.project?.customIdentifier).isEqualTo("FG01_654")
         assertThat(auditSlot.captured.auditCandidate.project?.name).isEqualTo("acronym")
         assertThat(auditSlot.captured.auditCandidate.entityRelatedId).isEqualTo(42L)
-        assertThat(auditSlot.captured.auditCandidate.description).isEqualTo("Control work is finalised for partner report R.7 of partner LP1")
+        assertThat(auditSlot.captured.auditCandidate.description).isEqualTo(
+            "[LP1] Control for partner report R.7 is finalized and the following items were parked by control: [R5.3]"
+        )
 
         assertThat(slotCostCategory.captured).isEqualTo(expectedCostCategoryWithParked)
         assertThat(slotCostCoFin.captured).isEqualTo(ExpenditureCoFinancingCurrent(expectedCoFin, expectedParkedCoFin))

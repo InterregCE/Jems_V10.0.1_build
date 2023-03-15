@@ -1,6 +1,8 @@
 package io.cloudflight.jems.server.call.service.update_call
 
+import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.api.call.dto.CallStatus
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective.PO1
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.AdvancedTechnologies
@@ -11,8 +13,6 @@ import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy.EUStrate
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy.MediterraneanSeaBasin
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.api.audit.dto.AuditAction
-import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.call.callFundRate
@@ -21,11 +21,9 @@ import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfigu
 import io.cloudflight.jems.server.call.service.model.Call
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
-import io.cloudflight.jems.server.call.service.model.ProjectNotificationConfiguration
 import io.cloudflight.jems.server.call.service.validator.CallValidator
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeSpecificObjective
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -138,7 +136,7 @@ class UpdateCallTest : UnitTest() {
             AuditCandidate(
                 action = AuditAction.CALL_CONFIGURATION_CHANGED,
                 entityRelatedId = CALL_ID,
-                description = "Configuration of published call id=592 name='call name' changed:\n" +
+                description = "Configuration of published call id=592 name='call name' changed: Application form configuration was changed\n" +
                     "name changed from 'old name' to 'call name'"
             )
         )

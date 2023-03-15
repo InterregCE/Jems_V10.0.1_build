@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.CallSummary
+import io.cloudflight.jems.server.call.service.model.PreSubmissionPlugins
 import io.cloudflight.jems.server.common.audit.fromOldToNewChanges
 import io.cloudflight.jems.server.common.audit.onlyNewChanges
 
@@ -24,7 +25,7 @@ fun callUpdated(context: Any, oldCall: CallDetail, call: CallDetail): AuditCandi
         context = context,
         auditCandidate = AuditBuilder(AuditAction.CALL_CONFIGURATION_CHANGED)
             .entityRelatedId(call.id)
-            .description("Configuration of $callStatus call id=${call.id} name='${call.name}' changed:\n$changes")
+            .description("Configuration of $callStatus call id=${call.id} name='${call.name}' changed: Application form configuration was changed\n$changes")
             .build()
     )
 }
@@ -36,3 +37,21 @@ fun callPublished(context: Any, call: CallSummary) = AuditCandidateEvent(
         .description("Call id=${call.id} '${call.name}' published")
         .build()
 )
+
+fun preSubmissionCheckSettingsUpdated(
+    context: Any,
+    plugins: PreSubmissionPlugins,
+    oldPlugins: PreSubmissionPlugins,
+    call: CallDetail
+): AuditCandidateEvent {
+    val changes = plugins.getDiff(oldPlugins).fromOldToNewChanges()
+    val callStatus = if (call.isPublished()) "published" else "not-published"
+
+    return AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.CALL_CONFIGURATION_CHANGED)
+            .entityRelatedId(call.id)
+            .description("Configuration of $callStatus call id=${call.id} name='${call.name}' changed: Plugin selection was changed\n$changes")
+            .build()
+    )
+}
