@@ -85,7 +85,7 @@ fun CallUpdateRequestDTO.toModel() = Call(
 fun PreSubmissionPluginsDTO.toDTO() = callDTOMapper.map(this)
 fun PreSubmissionPluginsDTO.toModel() = PreSubmissionPlugins(
     pluginKey = pluginKey,
-    firstStepPluginKey = firstStepPluginKey,
+    firstStepPluginKey = firstStepPluginKey ?: "",
     reportPartnerCheckPluginKey = reportPartnerCheckPluginKey,
 )
 

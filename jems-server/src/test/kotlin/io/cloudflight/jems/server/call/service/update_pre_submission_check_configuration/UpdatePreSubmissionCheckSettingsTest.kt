@@ -34,6 +34,9 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
         private fun call(is2step: Boolean): CallDetail {
             val call = mockk<CallDetail>()
             every { call.is2StepCall() } returns is2step
+            every { call.preSubmissionCheckPluginKey } returns null
+            every { call.firstStepPreSubmissionCheckPluginKey } returns null
+            every { call.reportPartnerCheckPluginKey } returns null
             return call
         }
     }
@@ -74,7 +77,7 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
 
         assertThat(updatePreSubmissionCheckSettings.update(
             callId = 1L,
-            pluginKeys = PreSubmissionPlugins(
+            newPluginsConfig = PreSubmissionPlugins(
                 pluginKey = "jems-pre-condition-check-off",
                 firstStepPluginKey = PreConditionCheckSamplePluginKey,
                 reportPartnerCheckPluginKey = ReportCheckPluginKey,
@@ -114,7 +117,7 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
 
         assertThat(updatePreSubmissionCheckSettings.update(
             callId = 8L,
-            pluginKeys = PreSubmissionPlugins(
+            newPluginsConfig = PreSubmissionPlugins(
                 pluginKey = "missing",
                 firstStepPluginKey = PreConditionCheckSamplePluginKey,
                 reportPartnerCheckPluginKey = ReportCheckPluginKey,
@@ -138,7 +141,7 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
 
         assertThat(updatePreSubmissionCheckSettings.update(
             callId = 15L,
-            pluginKeys = PreSubmissionPlugins(
+            newPluginsConfig = PreSubmissionPlugins(
                 pluginKey = PreConditionCheckSamplePluginKey,
                 firstStepPluginKey = "missing",
                 reportPartnerCheckPluginKey = ReportCheckPluginKey,
@@ -163,7 +166,7 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
 
         assertThat(updatePreSubmissionCheckSettings.update(
             callId = 20L,
-            pluginKeys = PreSubmissionPlugins(
+            newPluginsConfig = PreSubmissionPlugins(
                 pluginKey = "missing",
                 firstStepPluginKey = "missing",
                 reportPartnerCheckPluginKey = "missing",
@@ -191,9 +194,9 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
 
         assertThat(updatePreSubmissionCheckSettings.update(
             callId = 17L,
-            pluginKeys = PreSubmissionPlugins(
+            newPluginsConfig = PreSubmissionPlugins(
                 pluginKey = PreConditionCheckSamplePluginKey,
-                firstStepPluginKey = null,
+                firstStepPluginKey = "",
                 reportPartnerCheckPluginKey = ReportCheckPluginKey,
             )
         )).isEqualTo(call)
@@ -201,7 +204,7 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
         verify(exactly = 1) {
             persistence.updateProjectCallPreSubmissionCheckPlugin(
                 17L,
-                PreSubmissionPlugins(PreConditionCheckSamplePluginKey, null, ReportCheckPluginKey)
+                PreSubmissionPlugins(PreConditionCheckSamplePluginKey, "", ReportCheckPluginKey)
             )
         }
 
@@ -232,7 +235,7 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
 
         assertThat(updatePreSubmissionCheckSettings.update(
             callId = 24L,
-            pluginKeys = PreSubmissionPlugins(
+            newPluginsConfig = PreSubmissionPlugins(
                 pluginKey = "missing",
                 reportPartnerCheckPluginKey = ReportCheckPluginKey,
             )
@@ -257,7 +260,7 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
 
         assertThat(updatePreSubmissionCheckSettings.update(
             callId = 25L,
-            pluginKeys = PreSubmissionPlugins(
+            newPluginsConfig = PreSubmissionPlugins(
                 pluginKey = PreConditionCheckSamplePluginKey,
                 reportPartnerCheckPluginKey = "missing",
             )

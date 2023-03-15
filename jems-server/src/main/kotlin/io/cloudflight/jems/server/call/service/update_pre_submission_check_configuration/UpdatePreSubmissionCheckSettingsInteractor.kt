@@ -5,5 +5,5 @@ import io.cloudflight.jems.server.call.service.model.PreSubmissionPlugins
 
 
 interface UpdatePreSubmissionCheckSettingsInteractor {
-    fun update(callId: Long, pluginKeys: PreSubmissionPlugins): CallDetail
+    fun update(callId: Long, newPluginsConfig: PreSubmissionPlugins): CallDetail
 }
