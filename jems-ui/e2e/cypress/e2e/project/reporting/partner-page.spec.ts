@@ -1,75 +1,69 @@
 import user from "../../../fixtures/users.json";
 import call from "../../../fixtures/api/call/1.step.call.json";
 import partner from "../../../fixtures/api/application/partner/partner.json";
+import {loginByRequest} from "../../../support/login.commands";
 
 context('Partner reports tests', () => {
-
   it.only('TB-745 Partner page', function () {
     cy.fixture('project/reporting/TB-745.json').then(testData => {
       cy.fixture('api/application/application.json').then(application => {
         prepareTestData(testData, application);
-
         cy.createApprovedApplication(application, user.programmeUser.email).then(applicationId => {
           const partnerIdsToDisable = [2, 3];
 
-          openApplicationModification(applicationId);
-          disableSomePartners(testData, applicationId, partnerIdsToDisable);
+          enableModification(applicationId);
+          disableSelectedPartners(testData, applicationId, partnerIdsToDisable);
+          verifyPartnerChangesBeforeApproving(testData, applicationId, partnerIdsToDisable);
+          cy.approveModification(applicationId, testData.approvalInfo, user.programmeUser.email);
 
-          cy.loginByRequest(user.admin.email);
-          cy.visit(`https://amsterdam.interact-eu.net/app/project/detail/${applicationId}/applicationFormPartner`, {failOnStatusCode: false}).then(() => {
-            partnerIdsToDisable.forEach(id => {
-              cy.contains('mat-row', testData.partners[id].abbreviation)
-                .contains('Inactive')
-                .should('be.visible');
+          cy.visit(`https://amsterdam.interact-eu.net/app/project/detail/${applicationId}`, {failOnStatusCode: false})
+            .then(() => {
+              partnerIdsToDisable.forEach(id => {
+                // this could be replaced by verifyIconsInPartnerDetails() function
+                // if 'be.visible' would work in this particular case
+                cy.get('mat-expansion-panel-header:contains("Partner details")')
+                  .next('div')
+                  .find(`li:contains("${testData.partners[id].abbreviation}")`)
+                  .contains('mat-icon', 'person_off')
+                  .should('exist');
+              });
+              verifyIconsInProjectPrivileges(testData, partnerIdsToDisable, true);
+            });
 
-              cy.contains('mat-row', testData.partners[id].abbreviation)
-                .contains('mat-icon', 'person_off')
-                .should('be.visible');
+          enableModification(applicationId);
+          loginByRequest(user.applicantUser.email);
+          cy.createFullPartner(applicationId, partner);
 
-              cy.contains('mat-expansion-panel-header', 'Partner details')
-                .next('div')
-                .find(`li:contains("${testData.partners[id].abbreviation}")`)
-                .contains('mat-icon', 'person_off')
-                .should('not.exist');
-
-              cy.contains('mat-expansion-panel-header', 'Project partners')
-                .next('div')
-                .find(`li:contains("${testData.partners[id].abbreviation}")`)
-                .contains('mat-icon', 'person_off')
-                .scrollIntoView()
-                .should('be.visible');
-            })
-          });
-
-          // cy.approveModification(applicationId, testData.approvalInfo, user.programmeUser.email)
-          // verify that they're deactivated only within the Application Form > NOT THE PARTNER DETAILS SECTION
+          // TODO: Verification after addition of 30th partner
         });
-
-
-
       });
     });
-
-    // VERIFICAITON PHASE
-
-    // re-submit application form
-    // confirm changes
-    // verify that PPs are deactivated within reporting
-
-    // TODO: Clarify that deactivation of PP means there's an additional slot for another PP or not
   });
 });
 
 function prepareTestData(testData, application) {
   cy.loginByRequest(user.programmeUser.email);
+
   call.budgetSettings.flatRates = testData.call.flatRates;
   call.generalCallSettings.additionalFundAllowed = false;
-  cy.createCall(call).then(callId => {
-    application.details.projectCallId = callId;
-    cy.publishCall(callId);
-  });
+
+  cy.createCall(call)
+    .then(callId => {
+      application.details.projectCallId = callId;
+      cy.publishCall(callId);
+    });
 
   cy.loginByRequest(user.applicantUser.email);
+
+  preparePartnersList(testData, application);
+
+  application.associatedOrganisations = null;
+  application.lumpSums = [];
+  application.description.workPlan[0].activities[0].cypressReferencePartner = application.partners[0].details.abbreviation;
+  application.description.workPlan[0].activities[1].cypressReferencePartner = application.partners[1].details.abbreviation;
+}
+
+function preparePartnersList(testData, application) {
   application.partners = [];
   testData.partners.forEach(partnerData => {
     const tempPartner = JSON.parse(JSON.stringify(partner));
@@ -79,31 +73,39 @@ function prepareTestData(testData, application) {
     tempPartner.cofinancing = partnerData.cofinancing;
     application.partners.push(tempPartner);
   });
-  application.associatedOrganisations = null;
-  application.lumpSums = [];
-  application.description.workPlan[0].activities[0].cypressReferencePartner = application.partners[0].details.abbreviation;
-  application.description.workPlan[0].activities[1].cypressReferencePartner = application.partners[1].details.abbreviation;
 }
 
-function openApplicationModification(applicationId) {
+function enableModification(applicationId) {
   cy.loginByRequest(user.programmeUser.email);
-  cy.visit(`app/project/detail/${applicationId}/modification`, {failOnStatusCode: false}).then(() => {
-    cy.contains('Open new modification').click();
-    cy.get('jems-confirm-dialog').should('be.visible');
-    cy.get('jems-confirm-dialog').find('.mat-dialog-actions').contains('Confirm').click();
-    cy.contains('You have successfully opened a modification').should('be.visible');
-  });
+
+  cy.visit(`app/project/detail/${applicationId}/modification`, {failOnStatusCode: false})
+    .then(() => {
+      cy.contains('Open new modification')
+        .click();
+      cy.get('jems-confirm-dialog')
+        .should('be.visible');
+      cy.get('jems-confirm-dialog')
+        .find('.mat-dialog-actions')
+        .contains('Confirm')
+        .click();
+      cy.contains('You have successfully opened a modification')
+        .should('be.visible');
+    });
 }
 
-function disableSomePartners(testData, applicationId, partnerIdsToDisable) {
+function disableSelectedPartners(testData, applicationId, partnerIdsToDisable) {
   cy.loginByRequest(user.applicantUser.email);
-  cy.visit(`https://amsterdam.interact-eu.net/app/project/detail/${applicationId}/applicationFormPartner`, {failOnStatusCode: false}).then(() => {
-    //TODO: add more disabled partners after returning to the previous JSON file
-    disablePartnersByIds(testData, partnerIdsToDisable);
+  cy.visit(`https://amsterdam.interact-eu.net/app/project/detail/${applicationId}/applicationFormPartner`, {failOnStatusCode: false})
+    .then(() => {
+      //TODO: add more disabled partners after returning to the previous JSON file
+      disablePartnersByIds(testData, partnerIdsToDisable);
+      submitProjectApp(applicationId);
+    });
+}
 
-    cy.runPreSubmissionCheck(applicationId);
-    cy.submitProjectApplication(applicationId);
-  });
+function submitProjectApp(applicationId) {
+  cy.runPreSubmissionCheck(applicationId);
+  cy.submitProjectApplication(applicationId);
 }
 
 function disablePartnersByIds(testData, partnerIdsToDisable) {
@@ -121,13 +123,16 @@ function disablePartnersByIds(testData, partnerIdsToDisable) {
     cy.contains('div', `Partner "${testData.partners[id].abbreviation}" deactivated successfully`)
       .should('not.exist');
 
-    cy.contains('mat-row', testData.partners[id].abbreviation).contains('button', 'Deactivate partner')
+    cy.contains('mat-row', testData.partners[id].abbreviation)
+      .contains('button', 'Deactivate partner')
       .should('be.disabled');
 
-    cy.contains('mat-row', testData.partners[id].abbreviation).contains('Inactive')
+    cy.contains('mat-row', testData.partners[id].abbreviation)
+      .contains('Inactive')
       .should('be.visible');
 
-    cy.contains('mat-row', testData.partners[id].abbreviation).contains('mat-icon', 'person_off')
+    cy.contains('mat-row', testData.partners[id].abbreviation)
+      .contains('mat-icon', 'person_off')
       .should('be.visible');
 
     cy.contains('mat-expansion-panel-header', 'Project partners')
@@ -136,4 +141,81 @@ function disablePartnersByIds(testData, partnerIdsToDisable) {
       .contains('mat-icon', 'person_off')
       .should('be.visible');
   })
+}
+
+function verifyPartnerChangesBeforeApproving(testData, applicationId, partnerIdsToDisable) {
+  const disabledPartnerAbbreviation = testData.partners[partnerIdsToDisable[0]].abbreviation;
+
+  cy.loginByRequest(user.admin.email);
+
+  cy.visit(`https://amsterdam.interact-eu.net/app/project/detail/${applicationId}/applicationFormPartner`, {failOnStatusCode: false}).then(() => {
+    cy.get('mat-sidenav')
+      .should('be.visible');
+
+    partnerIdsToDisable.forEach(id => {
+      cy.contains('mat-row', testData.partners[id].abbreviation)
+        .contains('Inactive')
+        .should('be.visible');
+
+      cy.contains('mat-row', testData.partners[id].abbreviation)
+        .contains('mat-icon', 'person_off')
+        .should('be.visible');
+
+      verifyIconsInPartnerDetails(testData, id, false);
+      verifyIconsInProjectPartners(testData, id, true);
+    });
+
+    verifyIconsInProjectPrivileges(testData, partnerIdsToDisable, false)
+    verifyDeactivatedPartnerBannerDisplay("Partner details", disabledPartnerAbbreviation, false);
+    verifyDeactivatedPartnerBannerDisplay("Project partners", disabledPartnerAbbreviation, true);
+  });
+}
+
+function verifyIconsInProjectPrivileges(testData, partnerIdsToDisable, shouldIconsBeDisplayed) {
+  const displayFlag = shouldIconsBeDisplayed ? 'be.visible' : 'not.exist';
+
+  cy.contains('Project privileges')
+    .click()
+    .then(() => {
+      partnerIdsToDisable.forEach(id => {
+        cy.get(`mat-expansion-panel-header:contains("${testData.partners[id].abbreviation}")`)
+          .scrollIntoView()
+          .contains('mat-icon', 'person_off')
+          .should(displayFlag)
+      });
+    });
+}
+
+function verifyIconsInPartnerDetails(testData, id, shouldIconsBeDisplayed) {
+  const displayFlag = shouldIconsBeDisplayed ? 'be.visible' : 'not.exist';
+
+  cy.get('mat-expansion-panel-header:contains("Partner details")')
+    .next('div')
+    .find(`li:contains("${testData.partners[id].abbreviation}")`)
+    .contains('mat-icon', 'person_off')
+    .should(displayFlag);
+}
+
+function verifyIconsInProjectPartners(testData, id, shouldIconsBeDisplayed) {
+  const displayFlag = shouldIconsBeDisplayed ? 'be.visible' : 'not.exist';
+
+  cy.get('mat-expansion-panel-header:contains("Project partners")')
+    .next('div')
+    .find(`li:contains("${testData.partners[id].abbreviation}")`)
+    .contains('mat-icon', 'person_off')
+    .scrollIntoView()
+    .should(displayFlag);
+}
+
+function verifyDeactivatedPartnerBannerDisplay(headerTitle, disabledPartnerAbbreviation, shouldBannerBeDisplayed) {
+  const displayFlag = shouldBannerBeDisplayed ? 'be.visible' : 'not.exist';
+
+  cy.get(`mat-expansion-panel-header:contains(${headerTitle})`)
+    .next('div')
+    .find(`span:contains("${disabledPartnerAbbreviation}")`)
+    .click()
+    .then(() => {
+      cy.contains('div', "You are currently viewing a deactivated partner.")
+        .should(displayFlag);
+    });
 }
