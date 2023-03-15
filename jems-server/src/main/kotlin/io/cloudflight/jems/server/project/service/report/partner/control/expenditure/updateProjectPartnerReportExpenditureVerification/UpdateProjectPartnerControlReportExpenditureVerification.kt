@@ -4,15 +4,11 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.programme.service.typologyerrors.ProgrammeTypologyErrorsPersistence
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerControlReport
 import io.cloudflight.jems.server.project.repository.report.partner.model.ExpenditureVerificationUpdate
-import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.control.expenditure.ParkExpenditureData
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerificationUpdate
-import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.PartnerReportParkedExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.ProjectPartnerReportExpenditureVerificationPersistence
-import io.cloudflight.jems.server.project.service.report.partner.partnerReportExpenditureParked
-import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
@@ -21,10 +17,7 @@ import java.math.BigDecimal
 class UpdateProjectPartnerControlReportExpenditureVerification(
     private val reportExpenditurePersistence: ProjectPartnerReportExpenditureVerificationPersistence,
     private val reportParkedExpenditurePersistence: PartnerReportParkedExpenditurePersistence,
-    private val typologyPersistence: ProgrammeTypologyErrorsPersistence,
-    private val partnerPersistence: PartnerPersistence,
-    private val reportPersistence: ProjectPartnerReportPersistence,
-    private val auditPublisher: ApplicationEventPublisher,
+    private val typologyPersistence: ProgrammeTypologyErrorsPersistence
 ) : UpdateProjectPartnerControlReportExpenditureVerificationInteractor {
 
     @CanEditPartnerControlReport
@@ -54,7 +47,6 @@ class UpdateProjectPartnerControlReportExpenditureVerification(
             partnerId = partnerId, reportId = reportId, valuesToBeUpdated.toUpdateModel()
         ).also {
             updateParkedItems(
-                partnerId = partnerId,
                 reportId = reportId,
                 parkedOldIds = parkedOldIds,
                 unparkedOldIds = unparkedOldIds,
@@ -64,7 +56,6 @@ class UpdateProjectPartnerControlReportExpenditureVerification(
     }
 
     private fun updateParkedItems(
-        partnerId: Long,
         reportId: Long,
         parkedOldIds: List<Long>,
         unparkedOldIds: List<Long>,
@@ -80,14 +71,6 @@ class UpdateProjectPartnerControlReportExpenditureVerification(
             newVerifications.filter { it.id in newlyParked }.toParkData(reportId)
         )
         reportParkedExpenditurePersistence.unParkExpenditures(newlyUnparked)
-
-        if (newlyParked.isNotEmpty() || newlyUnparked.isNotEmpty())
-            publishAuditLogs(
-                partnerId,
-                reportId,
-                newVerifications.filter { it.id in newlyParked },
-                newVerifications.filter { it.id in newlyUnparked }
-            )
     }
 
     private fun Collection<ProjectPartnerReportExpenditureVerification>.getParkedIds() =
@@ -148,38 +131,6 @@ class UpdateProjectPartnerControlReportExpenditureVerification(
     }
 
     private fun BigDecimal.isNotZero() = compareTo(BigDecimal.ZERO) != 0
-
-    private fun publishAuditLogs(
-        partnerId: Long,
-        reportId: Long,
-        parked: Collection<ProjectPartnerReportExpenditureVerification>,
-        unparked: Collection<ProjectPartnerReportExpenditureVerification>
-    ) {
-        val report = reportPersistence.getPartnerReportById(partnerId = partnerId, reportId = reportId)
-        val projectId = partnerPersistence.getProjectIdForPartnerId(id = partnerId, report.version)
-        if (parked.isNotEmpty()) {
-            auditPublisher.publishEvent(
-                partnerReportExpenditureParked(
-                    context = this,
-                    projectId = projectId,
-                    partnerReport = report,
-                    isParked = true,
-                    expenditureIds = parked.map { it.number }
-                )
-            )
-        }
-        if (unparked.isNotEmpty()) {
-            auditPublisher.publishEvent(
-                partnerReportExpenditureParked(
-                    context = this,
-                    projectId = projectId,
-                    partnerReport = report,
-                    isParked = false,
-                    expenditureIds = unparked.map { it.number }
-                )
-            )
-        }
-    }
 
     private fun Collection<ProjectPartnerReportExpenditureVerification>.toParkData(reportId: Long) = map {
         ParkExpenditureData(

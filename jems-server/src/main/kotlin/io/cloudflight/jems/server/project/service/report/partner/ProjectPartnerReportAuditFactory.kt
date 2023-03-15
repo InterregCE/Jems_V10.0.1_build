@@ -6,9 +6,10 @@ import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
-import io.cloudflight.jems.server.project.service.report.model.partner.base.create.ProjectPartnerReportCreate
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
+import io.cloudflight.jems.server.project.service.report.model.partner.base.create.ProjectPartnerReportCreate
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
 
 fun partnerReportCreated(
     context: Any,
@@ -80,16 +81,36 @@ fun partnerReportControlFinalized(
     context: Any,
     projectId: Long,
     report: ProjectPartnerReportSubmissionSummary,
-): AuditCandidateEvent =
-    AuditCandidateEvent(
+    parked: List<ProjectPartnerReportExpenditureVerification>
+): AuditCandidateEvent {
+    val parkedIds = parked.mapTo(HashSet()) {
+        if (it.parkingMetadata != null)
+            Pair(it.parkingMetadata.reportOfOriginNumber, it.parkingMetadata.originalExpenditureNumber)
+        else
+            Pair(report.reportNumber, it.number)
+    }
+    return AuditCandidateEvent(
         context = context,
         auditCandidate = AuditBuilder(AuditAction.PARTNER_REPORT_CONTROL_FINALIZED)
-            .project(projectId = projectId, customIdentifier = report.projectIdentifier, acronym = report.projectAcronym)
+            .project(
+                projectId = projectId,
+                customIdentifier = report.projectIdentifier,
+                acronym = report.projectAcronym
+            )
             .entityRelatedId(entityRelatedId = report.id)
-            .description("Control work is finalised for partner report R.${report.reportNumber} of partner " +
-                (if (report.partnerRole == ProjectPartnerRole.LEAD_PARTNER) "LP" else "PP") + "${report.partnerNumber}")
+            .description(
+                "[" + (if (report.partnerRole == ProjectPartnerRole.LEAD_PARTNER) "LP" else "PP") + "${report.partnerNumber}] " +
+                        "Control for partner report R.${report.reportNumber} is finalized" +
+                        (if (parkedIds.isNotEmpty()) " and the following items were parked by control: " +
+                                parkedIds.joinToString(
+                                    separator = ", ",
+                                    prefix = "[", postfix = "]",
+                                    transform = { "R" + it.first + "." + it.second })
+                        else "")
+            )
             .build()
     )
+}
 
 fun partnerReportDeleted(
     context: Any,
@@ -106,41 +127,12 @@ fun partnerReportDeleted(
             )
             .entityRelatedId(entityRelatedId = partnerReport.id)
             .description("[" +
-                partnerReport.identification.projectIdentifier +
-                "] [" +
-                (if (partnerReport.identification.partnerRole == ProjectPartnerRole.LEAD_PARTNER) "LP" else "PP") +
-                "${partnerReport.identification.partnerNumber}" +
-                "] Draft partner report R.${partnerReport.reportNumber} deleted")
-            .build()
-    )
-
-fun partnerReportExpenditureParked(
-    context: Any,
-    projectId: Long,
-    partnerReport: ProjectPartnerReport,
-    isParked: Boolean,
-    expenditureIds: List<Int>
-): AuditCandidateEvent =
-    AuditCandidateEvent(
-        context = context,
-        auditCandidate = AuditBuilder(
-            if (isParked) AuditAction.PARTNER_EXPENDITURE_PARKED else AuditAction.PARTNER_EXPENDITURE_UNPARKED)
-            .project(
-                projectId = projectId,
-                customIdentifier = partnerReport.identification.projectIdentifier,
-                acronym = partnerReport.identification.projectAcronym,
+                        partnerReport.identification.projectIdentifier +
+                        "] [" +
+                        (if (partnerReport.identification.partnerRole == ProjectPartnerRole.LEAD_PARTNER) "LP" else "PP") +
+                        "${partnerReport.identification.partnerNumber}" +
+                        "] Draft partner report R.${partnerReport.reportNumber} deleted"
             )
-            .entityRelatedId(entityRelatedId = partnerReport.id)
-            .description("Controller " +
-                (if (isParked) "parked the following expenditures: " else "unparked the following expenditures: ") +
-                expenditureIds.joinToString(
-                    separator = ", ",
-                    prefix = "[", postfix = "]",
-                    transform = {"R" + partnerReport.reportNumber + "." + it.toString()}) +
-                " of partner " +
-                (if (partnerReport.identification.partnerRole == ProjectPartnerRole.LEAD_PARTNER) "LP" else "PP") +
-                " from report R.${partnerReport.reportNumber}"
-                )
             .build()
     )
 

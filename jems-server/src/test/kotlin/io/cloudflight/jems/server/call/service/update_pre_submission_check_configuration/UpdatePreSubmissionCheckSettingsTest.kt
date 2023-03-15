@@ -1,8 +1,11 @@
 package io.cloudflight.jems.server.call.service.update_pre_submission_check_configuration
 
+import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.plugin.contract.pre_condition_check.PreConditionCheckPlugin
 import io.cloudflight.jems.plugin.contract.pre_condition_check.ReportPartnerCheckPlugin
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
+import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.PreSubmissionPlugins
@@ -16,11 +19,14 @@ import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
+import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.context.ApplicationEventPublisher
 
 internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
 
@@ -38,13 +44,15 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
     @MockK
     lateinit var jemsPluginRegistry: JemsPluginRegistry
 
+    @RelaxedMockK
+    lateinit var auditPublisher: ApplicationEventPublisher
+
     @InjectMockKs
     lateinit var updatePreSubmissionCheckSettings: UpdatePreSubmissionCheckSettings
 
     @BeforeEach
     fun reset() {
-        clearMocks(persistence)
-        clearMocks(jemsPluginRegistry)
+        clearMocks(persistence, jemsPluginRegistry, auditPublisher)
     }
 
     @Test
@@ -57,6 +65,12 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
         every { jemsPluginRegistry.get(ReportPartnerCheckPlugin::class, ReportCheckPluginKey) } returns ReportPartnerCheckSamplePlugin()
 
         every { persistence.updateProjectCallPreSubmissionCheckPlugin(1L, any()) } returns call
+        every { call.isPublished() } returns true
+        every { call.id } returns 1L
+        every { call.name } returns "Test"
+        every { call.firstStepPreSubmissionCheckPluginKey } returns "no-check"
+        every { call.preSubmissionCheckPluginKey } returns "no-check"
+        every { call.reportPartnerCheckPluginKey } returns "no-check"
 
         assertThat(updatePreSubmissionCheckSettings.update(
             callId = 1L,
@@ -71,6 +85,19 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
             callId = 1L,
             pluginKeys = PreSubmissionPlugins("jems-pre-condition-check-off", PreConditionCheckSamplePluginKey, ReportCheckPluginKey),
         ) }
+
+        val slotAudit = slot<AuditCandidateEvent>()
+        verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }
+        assertThat(slotAudit.captured.auditCandidate).isEqualTo(
+            AuditCandidate(
+                action = AuditAction.CALL_CONFIGURATION_CHANGED,
+                entityRelatedId = 1L,
+                description = "Configuration of published call id=1 name='Test' changed: Plugin selection was changed\n" +
+                        "PreSubmissionCheckFirstStep changed from 'no-check' to 'key-1',\n" +
+                        "PreSubmissionCheck changed from 'no-check' to 'jems-pre-condition-check-off',\n" +
+                        "PreSubmissionCheckPartnerReport changed from 'no-check' to 'key-3'"
+            )
+        )
     }
 
     @Test
@@ -155,6 +182,12 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
         every { jemsPluginRegistry.get(ReportPartnerCheckPlugin::class, ReportCheckPluginKey) } returns ReportPartnerCheckSamplePlugin()
 
         every { persistence.updateProjectCallPreSubmissionCheckPlugin(17L, any()) } returns call
+        every { call.isPublished() } returns false
+        every { call.id } returns 17L
+        every { call.name } returns "Test2"
+        every { call.firstStepPreSubmissionCheckPluginKey } returns null
+        every { call.preSubmissionCheckPluginKey } returns "no-check"
+        every { call.reportPartnerCheckPluginKey } returns "blocked"
 
         assertThat(updatePreSubmissionCheckSettings.update(
             callId = 17L,
@@ -171,6 +204,18 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
                 PreSubmissionPlugins(PreConditionCheckSamplePluginKey, null, ReportCheckPluginKey)
             )
         }
+
+        val slotAudit = slot<AuditCandidateEvent>()
+        verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }
+        assertThat(slotAudit.captured.auditCandidate).isEqualTo(
+            AuditCandidate(
+                action = AuditAction.CALL_CONFIGURATION_CHANGED,
+                entityRelatedId = 17L,
+                description = "Configuration of not-published call id=17 name='Test2' changed: Plugin selection was changed\n" +
+                        "PreSubmissionCheck changed from 'no-check' to 'key-1',\n" +
+                        "PreSubmissionCheckPartnerReport changed from 'blocked' to 'key-3'"
+            )
+        )
     }
 
     @Test
