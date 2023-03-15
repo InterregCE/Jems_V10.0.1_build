@@ -4,5 +4,6 @@
   <CurrentIssues>
     <ID>LongParameterList:ProjectPartnerReportExportApi.kt$ProjectPartnerReportExportApi$( @PathVariable partnerId: Long, @PathVariable reportId: Long, @RequestParam(required = true) pluginKey: String, @RequestParam exportLanguage: SystemLanguage, @RequestParam inputLanguage: SystemLanguage, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) localDateTime: LocalDateTime, )</ID>
     <ID>LongParameterList:ProjectPartnerReportWorkPlanApi.kt$ProjectPartnerReportWorkPlanApi$( @PathVariable partnerId: Long, @PathVariable reportId: Long, @PathVariable workPackageId: Long, @PathVariable activityId: Long, @PathVariable deliverableId: Long, @RequestPart("file") file: MultipartFile )</ID>
+    <ID>LongParameterList:ProjectReportWorkPlanApi.kt$ProjectReportWorkPlanApi$( @PathVariable projectId: Long, @PathVariable reportId: Long, @PathVariable workPackageId: Long, @PathVariable activityId: Long, @PathVariable deliverableId: Long, @RequestPart("file") file: MultipartFile )</ID>
   </CurrentIssues>
 </SmellBaseline>

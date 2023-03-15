@@ -11,7 +11,7 @@ enum class ProjectReportStatus {
     fun isOpen() = !isClosed()
 
     companion object {
-        private val SUBMITTED_STATUSES = setOf(Submitted, Verified, Paid)
+        val SUBMITTED_STATUSES = setOf(Submitted, Verified, Paid)
     }
 
 }

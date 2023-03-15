@@ -96,6 +96,11 @@ class JemsProjectFileRepositoryTest : UnitTest() {
         "PaymentAdvanceAttachment",
 
         "ProjectReport",
+        "ProjectResult",
+        "ActivityProjectReport",
+        "DeliverableProjectReport",
+        "OutputProjectReport",
+
         "PartnerReport",
         "Activity",
         "Deliverable",
@@ -160,6 +165,9 @@ class JemsProjectFileRepositoryTest : UnitTest() {
 
         "ProjectReport",
         "ProjectResult",
+        "ActivityProjectReport",
+        "DeliverableProjectReport",
+        "OutputProjectReport",
 
         "PartnerReport",
         "Activity",

@@ -14,6 +14,7 @@ import io.cloudflight.jems.server.project.service.report.project.financialOvervi
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.project.identification.ProjectReportIdentificationPersistence
 import io.cloudflight.jems.server.project.service.report.project.projectReportSubmitted
+import io.cloudflight.jems.server.project.service.report.project.workPlan.ProjectReportWorkPlanPersistence
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -28,6 +29,7 @@ class SubmitProjectReport(
     private val reportCertificateCostCategoryPersistence: ProjectReportCertificateCostCategoryPersistence,
     private val reportExpenditureCoFinancingPersistence: ProjectPartnerReportExpenditureCoFinancingPersistence,
     private val reportExpenditureCostCategoryPersistence: ProjectPartnerReportExpenditureCostCategoryPersistence,
+    private val reportWorkPlanPersistence: ProjectReportWorkPlanPersistence,
     private val auditPublisher: ApplicationEventPublisher,
 ) : SubmitProjectReportInteractor {
 
@@ -38,9 +40,12 @@ class SubmitProjectReport(
         val report = reportPersistence.getReportById(projectId, reportId)
         val certificates = reportCertificatePersistence.listCertificatesOfProjectReport(reportId)
         validateReportIsStillDraft(report)
-        updateSpendingProfileReportedValues(reportId)
+
+        saveCurrentSpendingProfile(reportId)
         saveCurrentCoFinancing(certificates, projectId, reportId)
         saveCurrentCostCategories(certificates, projectId, reportId)
+
+        deleteWorkPlanTabDataIfNotNeeded(projectId, report)
 
         return reportPersistence.submitReport(
             projectId = projectId,
@@ -58,7 +63,7 @@ class SubmitProjectReport(
         }.status
     }
 
-    private fun updateSpendingProfileReportedValues(reportId: Long) {
+    private fun saveCurrentSpendingProfile(reportId: Long) {
         val currentSpendingProfile = reportIdentificationPersistence.getSpendingProfileCurrentValues(reportId)
         reportIdentificationPersistence.updateSpendingProfile(reportId, currentValuesByPartnerId = currentSpendingProfile)
     }
@@ -97,6 +102,14 @@ class SubmitProjectReport(
                 currentlyReported = currentValues
             ),
         )
+    }
+
+    private fun deleteWorkPlanTabDataIfNotNeeded(
+        projectId: Long,
+        report: ProjectReportModel,
+    ) {
+        if (!report.type!!.hasWorkPlan())
+            reportWorkPlanPersistence.deleteWorkPlan(projectId, reportId = report.id)
     }
 
 }

@@ -16,14 +16,18 @@ import io.cloudflight.jems.server.project.service.report.model.project.ProjectRe
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportCreateModel
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportResultCreate
+import io.cloudflight.jems.server.project.service.report.partner.base.createProjectPartnerReport.toCreateEntity
+import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportCreatePersistence
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.toServiceModel
 import io.cloudflight.jems.server.project.service.report.project.base.updateProjectReport.UpdateProjectReport.Companion.validateInput
 import io.cloudflight.jems.server.project.service.report.project.identification.ProjectReportIdentificationPersistence
 import io.cloudflight.jems.server.project.service.report.project.projectReportCreated
 import io.cloudflight.jems.server.project.service.report.project.resultPrinciple.ProjectReportResultPrinciplePersistence
+import io.cloudflight.jems.server.project.service.report.project.workPlan.ProjectReportWorkPlanPersistence
 import io.cloudflight.jems.server.project.service.result.ProjectResultPersistence
 import io.cloudflight.jems.server.project.service.result.model.ProjectResult
+import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -36,12 +40,15 @@ class CreateProjectReport(
     private val projectPersistence: ProjectPersistence,
     private val projectPartnerPersistence: PartnerPersistence,
     private val reportPersistence: ProjectReportPersistence,
+    private val reportCreatePersistence: ProjectReportCreatePersistence,
     private val auditPublisher: ApplicationEventPublisher,
+    private val projectWorkPackagePersistence: WorkPackagePersistence,
     private val projectDescriptionPersistence: ProjectDescriptionPersistence,
     private val projectReportIdentificationPersistence: ProjectReportIdentificationPersistence,
     private val createProjectReportBudget: CreateProjectReportBudget,
     private val projectResultPersistence: ProjectResultPersistence,
     private val projectReportResultPersistence: ProjectReportResultPrinciplePersistence,
+    private val workPlanPersistence: ProjectReportWorkPlanPersistence,
 ) : CreateProjectReportInteractor {
 
     companion object {
@@ -71,7 +78,11 @@ class CreateProjectReport(
         val latestReportNumber = reportPersistence.getCurrentLatestReportFor(projectId)?.reportNumber ?: 0
         val partners = projectPartnerPersistence.findTop30ByProjectId(projectId, version).toSet()
         val leadPartner = partners.firstOrNull { it.role == ProjectPartnerRole.LEAD_PARTNER }
-        val submittedReportIds = reportPersistence.getSubmittedProjectReportIds(projectId)
+        val submittedReports = reportPersistence.getSubmittedProjectReportIds(projectId)
+        val submittedReportIds = submittedReports.mapTo(HashSet()) { it.first }
+
+        val workPackages = projectWorkPackagePersistence
+            .getWorkPackagesWithAllDataByProjectId(projectId = project.id!!, version = version)
 
         val targetGroups = projectDescriptionPersistence.getBenefits(projectId = projectId, version = version) ?: emptyList()
 
@@ -81,16 +92,22 @@ class CreateProjectReport(
             .toCreateModel(previouslyReportedByNumber = projectReportResultPersistence.getResultCumulative(submittedReportIds))
         val projectManagement = projectDescriptionPersistence.getProjectManagement(projectId = projectId, version = version)
 
+        val lastSubmittedReportIdWithWorkPlan = submittedReports.firstOrNull { it.second.hasWorkPlan() }?.first
         val reportToCreate = ProjectReportCreateModel(
             reportBase = data.toCreateModel(latestReportNumber, version, project, leadPartner),
             reportBudget = createProjectReportBudget.retrieveBudgetDataFor(projectId = projectId, version = version),
+            workPackages = workPackages.toCreateEntity(
+                previouslyReportedDeliverables = workPlanPersistence.getDeliverableCumulative(submittedReportIds),
+                previouslyReportedOutputs = workPlanPersistence.getOutputCumulative(submittedReportIds),
+                lastWorkPlan = lastSubmittedReportIdWithWorkPlan?.let { workPlanPersistence.getReportWorkPlanById(projectId, it) } ?: emptyList(),
+            ),
             targetGroups = targetGroups,
             previouslyReportedSpendingProfileByPartner = getPreviouslyReportedByPartner(submittedReportIds),
             results = projectResults,
             horizontalPrinciples = projectManagement?.projectHorizontalPrinciples ?: emptyPrinciples,
         )
 
-        return reportPersistence.createReportAndFillItToEmptyCertificates(reportToCreate).also {
+        return reportCreatePersistence.createReportAndFillItToEmptyCertificates(reportToCreate).also {
             auditPublisher.publishEvent(projectReportCreated(this, project, it))
         }.toServiceModel({ periodNumber -> periods[periodNumber]!! })
     }

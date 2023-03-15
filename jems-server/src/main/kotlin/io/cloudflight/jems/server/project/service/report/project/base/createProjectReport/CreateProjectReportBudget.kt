@@ -42,6 +42,7 @@ class CreateProjectReportBudget(
         version: String?
     ): ProjectReportBudget {
         val submittedReportIds = reportPersistence.getSubmittedProjectReportIds(projectId = projectId)
+            .mapTo(HashSet()) { it.first }
 
         val budget = getProjectBudget.getBudget(projectId, version)
 

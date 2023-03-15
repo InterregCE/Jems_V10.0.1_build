@@ -136,18 +136,25 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
                 CreateProjectPartnerReportWorkPackage(
                     workPackageId = WORK_PACKAGE_ID,
                     number = 4,
+                    deactivated = false,
+                    specificObjective = emptySet(),
+                    communicationObjective = emptySet(),
                     activities = listOf(
                         CreateProjectPartnerReportWorkPackageActivity(
                             activityId = ACTIVITY_ID,
                             number = 1,
                             title = setOf(InputTranslation(EN, "4.1 activity title")),
                             deactivated = false,
+                            startPeriodNumber = 6,
+                            endPeriodNumber = 8,
                             deliverables = listOf(
                                 CreateProjectPartnerReportWorkPackageActivityDeliverable(
                                     deliverableId = DELIVERABLE_ID,
                                     number = 1,
-                                    deactivated = false,
                                     title = setOf(InputTranslation(EN, "4.1.1 title")),
+                                    deactivated = false,
+                                    periodNumber = 7,
+                                    previouslyReported = null,
                                 )
                             ),
                         )
@@ -157,9 +164,12 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
                             number = 7,
                             title = setOf(InputTranslation(EN, "7 output title")),
                             deactivated = false,
+                            programmeOutputIndicatorId = 75L,
+                            periodNumber = 9,
+                            targetValue = TEN,
+                            previouslyReported = null,
                         )
                     ),
-                    deactivated = false
                 )
             ),
             targetGroups = listOf(
