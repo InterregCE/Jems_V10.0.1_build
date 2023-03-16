@@ -36,11 +36,13 @@
 
 
                                     <mat-checkbox formControlName="sendToLeadPartner" class="ml-2" color="primary"
+                                                  [disabled]="existsOnProjectStatus(notificationTemplate)"
                                                   (click)="$event.stopPropagation()">
                                         {{ 'call.detail.notifications.config.tab.project.checkbox.lead.partner' | translate }}
                                     </mat-checkbox>
 
                                     <mat-checkbox formControlName="sendToProjectPartners" class="ml-2" color="primary"
+                                                  [disabled]="existsOnProjectStatus(notificationTemplate)"
                                                   (click)="$event.stopPropagation()">
                                         {{ 'call.detail.notifications.config.tab.project.checkbox.partners' | translate }}
                                     </mat-checkbox>

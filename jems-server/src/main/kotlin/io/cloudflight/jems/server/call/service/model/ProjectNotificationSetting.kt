@@ -14,9 +14,7 @@ enum class ProjectNotificationSetting(val id: ApplicationStatus) {
                     sendToManager = false,
                     sendToLeadPartner = false,
                     sendToProjectPartners = false,
-                    sendToProjectAssigned = false,
-                    emailSubject = null,
-                    emailBody = null
+                    sendToProjectAssigned = false
                 )
             }
         }

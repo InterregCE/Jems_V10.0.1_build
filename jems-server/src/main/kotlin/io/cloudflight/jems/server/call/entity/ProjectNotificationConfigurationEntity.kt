@@ -24,6 +24,9 @@ class ProjectNotificationConfigurationEntity (
     @field:NotNull
     var sendToProjectAssigned: Boolean,
 
-    var emailSubject: String?,
-    var emailBody: String?,
+    @field:NotNull
+    var emailSubject: String,
+
+    @field:NotNull
+    var emailBody: String,
 )

@@ -22,8 +22,6 @@ class UpdateProjectNotificationConfigurationsTest : UnitTest() {
             sendToLeadPartner = false,
             sendToProjectPartners = false,
             sendToProjectAssigned = false,
-            emailBody = null,
-            emailSubject = null
         ),
         ProjectNotificationConfiguration(
             id = ApplicationStatus.STEP1_SUBMITTED,
@@ -32,8 +30,6 @@ class UpdateProjectNotificationConfigurationsTest : UnitTest() {
             sendToLeadPartner = false,
             sendToProjectPartners = false,
             sendToProjectAssigned = false,
-            emailBody = null,
-            emailSubject = null
         )
     )
 

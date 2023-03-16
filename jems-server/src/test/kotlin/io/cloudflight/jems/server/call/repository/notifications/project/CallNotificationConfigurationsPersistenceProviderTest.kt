@@ -44,8 +44,6 @@ class CallNotificationConfigurationsPersistenceProviderTest {
                    sendToLeadPartner = false,
                    sendToProjectPartners = false,
                    sendToProjectAssigned = false,
-                   emailBody = null,
-                   emailSubject = null
                )
            )
            val expectedConfigs = mutableSetOf(
@@ -56,8 +54,6 @@ class CallNotificationConfigurationsPersistenceProviderTest {
                    sendToLeadPartner = false,
                    sendToProjectPartners = false,
                    sendToProjectAssigned = false,
-                   emailBody = null,
-                   emailSubject = null
                )
            )
            every { callRepository.getById(CALL_ID) } returns callEntity
@@ -85,8 +81,8 @@ class CallNotificationConfigurationsPersistenceProviderTest {
             sendToLeadPartner = false,
             sendToProjectPartners = false,
             sendToProjectAssigned = false,
-            emailBody = null,
-            emailSubject = null
+            emailSubject = "",
+            emailBody = ""
         )
         val expectedConfig = ProjectNotificationConfigurationDTO(
             id = ApplicationStatusDTO.SUBMITTED,
@@ -95,8 +91,6 @@ class CallNotificationConfigurationsPersistenceProviderTest {
             sendToLeadPartner = false,
             sendToProjectPartners = false,
             sendToProjectAssigned = false,
-            emailBody = null,
-            emailSubject = null
         )
         every { callRepository.getById(CALL_ID)} returns callEntity
         every { projectNotificationConfigurationRepository.findByIdCallEntityId(CALL_ID) } returns mutableSetOf(configEntity)
@@ -116,8 +110,8 @@ class CallNotificationConfigurationsPersistenceProviderTest {
             sendToLeadPartner = false,
             sendToProjectPartners = false,
             sendToProjectAssigned = false,
-            emailBody = null,
-            emailSubject = null
+            emailSubject = "",
+            emailBody = ""
         )
         every { callRepository.getById(CALL_ID)} returns callEntity
         every {
@@ -136,8 +130,8 @@ class CallNotificationConfigurationsPersistenceProviderTest {
                 sendToLeadPartner = false,
                 sendToProjectPartners = false,
                 sendToProjectAssigned = false,
-                emailBody = null,
-                emailSubject = null
+                emailSubject = "",
+                emailBody = ""
             )
 
         assertThat(persistence.getActiveNotificationOfType(CALL_ID, ApplicationStatus.SUBMITTED)).isEqualTo(ProjectNotificationConfigurationEntity(
@@ -148,8 +142,8 @@ class CallNotificationConfigurationsPersistenceProviderTest {
             sendToLeadPartner = false,
             sendToProjectPartners = false,
             sendToProjectAssigned = false,
-            emailBody = null,
-            emailSubject = null
+            emailSubject = "",
+            emailBody = ""
         ).toModel())
     }
 
