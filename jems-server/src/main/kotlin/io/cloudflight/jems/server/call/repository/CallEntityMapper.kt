@@ -208,7 +208,7 @@ fun CallFundRateEntity.toModel() = CallFundRate(
 fun MutableSet<ApplicationFormFieldConfigurationEntity>.toModel() =
     callEntityMapper.map(this)
 
-fun MutableSet<ProjectNotificationConfigurationEntity>.toNotificationModel() =
+fun List<ProjectNotificationConfigurationEntity>.toNotificationModel() =
     map {it.toModel()}
 
 fun MutableSet<ApplicationFormFieldConfiguration>.toEntities(call: CallEntity) =

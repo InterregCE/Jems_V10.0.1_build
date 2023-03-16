@@ -11,6 +11,9 @@ import io.cloudflight.jems.server.common.event.JemsMailEvent
 import io.cloudflight.jems.server.common.model.Variable
 import io.cloudflight.jems.server.notification.NotificationPersistence
 import io.cloudflight.jems.server.notification.mail.service.model.MailNotificationInfo
+import io.cloudflight.jems.server.notification.model.Notification
+import io.cloudflight.jems.server.notification.model.NotificationProject
+import io.cloudflight.jems.server.notification.model.NotificationType
 import io.cloudflight.jems.server.project.entity.partneruser.PartnerCollaboratorLevel
 import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -49,7 +52,7 @@ class ProjectNotificationEventListenersTest: UnitTest() {
         private const val PROJECT_ID = 5L
 
         val step1_submitted_notification_config = ProjectNotificationConfiguration(
-            id = ApplicationStatus.STEP1_SUBMITTED,
+            id = NotificationType.ProjectSubmittedStep1,
             active = true,
             sendToManager = false,
             sendToLeadPartner = true,
@@ -60,7 +63,7 @@ class ProjectNotificationEventListenersTest: UnitTest() {
         )
 
         val submitted_notification_config = ProjectNotificationConfiguration(
-            id = ApplicationStatus.SUBMITTED,
+            id = NotificationType.ProjectSubmitted,
             active = true,
             sendToManager = true,
             sendToLeadPartner = true,
@@ -189,15 +192,17 @@ class ProjectNotificationEventListenersTest: UnitTest() {
     @Test
     fun `submitting step1 application should trigger mail event`() {
         val applicationStatus = ApplicationStatus.STEP1_SUBMITTED
+        val notifType = NotificationType.ProjectSubmittedStep1
         val auditSlot = slot<JemsMailEvent>()
 
-        every { callNotificationConfigPersistence.getActiveNotificationOfType(CALL_ID, applicationStatus) } returns step1_submitted_notification_config
+        every { callNotificationConfigPersistence.getActiveNotificationOfType(CALL_ID, notifType) } returns step1_submitted_notification_config
         every { userProjectCollaboratorPersistence.getUserIdsForProject(PROJECT_ID) } returns listOf(projectManager, projectCollaborator)
         every { partnerPersistence.findTop30ByProjectId(PROJECT_ID) } returns listOf(leadPartner, partner)
         every { partnerCollaboratorPersistence.findByProjectAndPartners(PROJECT_ID, setOf(2L)) } returns setOf(leadPartnerCollaborator)
         every { partnerCollaboratorPersistence.findByProjectAndPartners(PROJECT_ID, setOf(3L)) } returns setOf(partnerCollaborator)
         every { userProjectPersistence.getUsersForProject(PROJECT_ID) } returns setOf(programmeUser)
-        every { notificationPersistence.saveNotification(PROJECT_ID, any()) } returns Unit
+        val slotNotifications = slot<List<Notification>>()
+        every { notificationPersistence.saveNotifications(capture(slotNotifications)) } returns Unit
 
         val applicationEvent = ProjectNotificationEvent(
             context = this,
@@ -208,16 +213,38 @@ class ProjectNotificationEventListenersTest: UnitTest() {
 
         verify(exactly = 1) { eventPublisher.publishEvent(capture(auditSlot)) }
 
-        assertThat(auditSlot.captured.mailNotificationInfo).isEqualTo(
-            MailNotificationInfo(
-                subject = "Application Step 1 Submitted",
-                templateVariables =
-                setOf(
-                    Variable("body", "test step 1"),
+        assertThat(auditSlot.captured).isEqualTo(
+            JemsMailEvent(
+                "notification-project.html",
+                MailNotificationInfo(
+                    subject = "Application Step 1 Submitted",
+                    templateVariables =
+                    setOf(
+                        Variable("projectId", 5L),
+                        Variable("projectIdentifier", "01"),
+                        Variable("projectAcronym", "project acronym"),
+                        Variable("body", "test step 1"),
+                    ),
+                    recipients = setOf("john.doe@ce.eu", "lp.collaborator@jems.eu"),
+                    messageType = notifType.name
                 ),
-                recipients = setOf("john.doe@ce.eu", "lp.collaborator@jems.eu"),
-                messageType = applicationStatus.toString()
             )
+        )
+        assertThat(slotNotifications.captured).containsExactly(
+            Notification(
+                email = "lp.collaborator@jems.eu",
+                subject = "Application Step 1 Submitted",
+                body = "test step 1",
+                type = notifType,
+                project = NotificationProject(projectId = 5L, projectIdentifier = "01", projectAcronym = "project acronym"),
+            ),
+            Notification(
+                email = "john.doe@ce.eu",
+                subject = "Application Step 1 Submitted",
+                body = "test step 1",
+                type = notifType,
+                project = NotificationProject(projectId = 5L, projectIdentifier = "01", projectAcronym = "project acronym"),
+            ),
         )
     }
 
@@ -225,15 +252,17 @@ class ProjectNotificationEventListenersTest: UnitTest() {
     @Test
     fun `submitting application should trigger mail event`() {
         val applicationStatus = ApplicationStatus.SUBMITTED
+        val notifType = NotificationType.ProjectSubmitted
         val auditSlot = slot<JemsMailEvent>()
 
-        every { callNotificationConfigPersistence.getActiveNotificationOfType(CALL_ID, applicationStatus) } returns submitted_notification_config
+        every { callNotificationConfigPersistence.getActiveNotificationOfType(CALL_ID, notifType) } returns submitted_notification_config
         every { userProjectCollaboratorPersistence.getUserIdsForProject(PROJECT_ID) } returns listOf(projectManager, projectCollaborator)
         every { partnerPersistence.findTop30ByProjectId(PROJECT_ID) } returns listOf(leadPartner, partner)
         every { partnerCollaboratorPersistence.findByProjectAndPartners(PROJECT_ID, setOf(2L)) } returns setOf(leadPartnerCollaborator)
         every { partnerCollaboratorPersistence.findByProjectAndPartners(PROJECT_ID, setOf(3L)) } returns setOf(partnerCollaborator)
         every { userProjectPersistence.getUsersForProject(PROJECT_ID) } returns setOf(programmeUser)
-        every { notificationPersistence.saveNotification(PROJECT_ID, any()) } returns Unit
+        val slotNotifications = slot<List<Notification>>()
+        every { notificationPersistence.saveNotifications(capture(slotNotifications)) } returns Unit
 
         val applicationEvent = ProjectNotificationEvent(
             context = this,
@@ -244,16 +273,45 @@ class ProjectNotificationEventListenersTest: UnitTest() {
 
         verify(exactly = 1) { eventPublisher.publishEvent(capture(auditSlot)) }
 
-        assertThat(auditSlot.captured.mailNotificationInfo).isEqualTo(
-            MailNotificationInfo(
-                subject = "Application Submitted",
-                templateVariables =
-                setOf(
-                    Variable("body", "test"),
+        assertThat(auditSlot.captured).isEqualTo(
+            JemsMailEvent(
+                "notification-project.html",
+                MailNotificationInfo(
+                    subject = "Application Submitted",
+                    templateVariables =
+                    setOf(
+                        Variable("projectId", 5L),
+                        Variable("projectIdentifier", "01"),
+                        Variable("projectAcronym", "project acronym"),
+                        Variable("body", "test"),
+                    ),
+                    recipients = setOf("manager@jems.eu", "pp1.collaborator@jems.eu", "lp.collaborator@jems.eu"),
+                    messageType = notifType.name
                 ),
-                recipients = setOf("manager@jems.eu", "pp1.collaborator@jems.eu", "lp.collaborator@jems.eu"),
-                messageType = applicationStatus.toString()
             )
+        )
+        assertThat(slotNotifications.captured).containsExactly(
+            Notification(
+                email = "manager@jems.eu",
+                subject = "Application Submitted",
+                body = "test",
+                type = notifType,
+                project = NotificationProject(projectId = 5L, projectIdentifier = "01", projectAcronym = "project acronym"),
+            ),
+            Notification(
+                email = "lp.collaborator@jems.eu",
+                subject = "Application Submitted",
+                body = "test",
+                type = notifType,
+                project = NotificationProject(projectId = 5L, projectIdentifier = "01", projectAcronym = "project acronym"),
+            ),
+            Notification(
+                email = "pp1.collaborator@jems.eu",
+                subject = "Application Submitted",
+                body = "test",
+                type = notifType,
+                project = NotificationProject(projectId = 5L, projectIdentifier = "01", projectAcronym = "project acronym"),
+            ),
         )
     }
 
@@ -274,7 +332,7 @@ class ProjectNotificationEventListenersTest: UnitTest() {
         assertThat(slotAudit.captured.auditCandidate).isEqualTo(
             AuditCandidate(
                 action = AuditAction.APPLICATION_STATUS_CHANGED,
-                project = AuditProject(id = PROJECT_ID.toString(), customIdentifier = "01", name = "project acronym"),
+                project = AuditProject(id = "5", customIdentifier = "01", name = "project acronym"),
                 description = "Project application status changed from DRAFT to SUBMITTED"
             )
         )

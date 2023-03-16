@@ -4,7 +4,6 @@ import io.cloudflight.jems.server.call.authorization.CanUpdateCall
 import io.cloudflight.jems.server.call.service.model.ProjectNotificationConfiguration
 import io.cloudflight.jems.server.call.service.notificationConfigurations.CallNotificationConfigurationsPersistence
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -27,9 +26,7 @@ class UpdateProjectNotificationConfiguration(private val persistence: CallNotifi
     private fun ifConfigurationIsValid(
         projectNotificationConfigurations: List<ProjectNotificationConfiguration>
     ) {
-        with(projectNotificationConfigurations.filter {
-            !listOf(ApplicationStatus.SUBMITTED, ApplicationStatus.STEP1_SUBMITTED).contains(it.id)
-        }) {
+        with(projectNotificationConfigurations.filter { it.id.isNotProjectNotification() }) {
             if (this.isNotEmpty())
                 throw InvalidNotificationTypeException()
         }

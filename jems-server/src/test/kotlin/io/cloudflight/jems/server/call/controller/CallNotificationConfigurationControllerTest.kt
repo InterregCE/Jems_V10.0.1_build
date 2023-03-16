@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.call.service.notificationConfigurations.getPro
 import io.cloudflight.jems.server.call.service.notificationConfigurations.getProjectNotificationConfiguration.GetProjectNotificationConfigurationsInteractor
 import io.cloudflight.jems.server.call.service.notificationConfigurations.updateProjectNotificationConfigurations.UpdateProjectNotificationConfigurationsException
 import io.cloudflight.jems.server.call.service.notificationConfigurations.updateProjectNotificationConfigurations.UpdateProjectNotificationConfigurationsInteractor
+import io.cloudflight.jems.server.notification.model.NotificationType
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -63,7 +64,7 @@ class CallNotificationConfigurationControllerTest : UnitTest() {
 
         private val configModel = listOf(
             ProjectNotificationConfiguration(
-                id = ApplicationStatus.SUBMITTED,
+                id = NotificationType.ProjectSubmitted,
                 active = true,
                 sendToManager = true,
                 sendToLeadPartner = false,
@@ -71,7 +72,7 @@ class CallNotificationConfigurationControllerTest : UnitTest() {
                 sendToProjectAssigned = false,
             ),
             ProjectNotificationConfiguration(
-                id = ApplicationStatus.STEP1_SUBMITTED,
+                id = NotificationType.ProjectSubmittedStep1,
                 active = true,
                 sendToManager = true,
                 sendToLeadPartner = false,

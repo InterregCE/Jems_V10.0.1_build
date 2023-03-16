@@ -4,10 +4,11 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.service.model.ProjectNotificationConfiguration
 import io.cloudflight.jems.server.call.service.notificationConfigurations.CallNotificationConfigurationsPersistence
 import io.cloudflight.jems.server.call.service.notificationConfigurations.updateProjectNotificationConfigurations.UpdateProjectNotificationConfiguration
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.notification.model.NotificationType
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -16,7 +17,7 @@ class UpdateProjectNotificationConfigurationsTest : UnitTest() {
     private val CALL_ID = 1L
     private val projectNotificationConfigStandard: List<ProjectNotificationConfiguration> = listOf(
         ProjectNotificationConfiguration(
-            id = ApplicationStatus.SUBMITTED,
+            id = NotificationType.ProjectSubmitted,
             active = true,
             sendToManager = true,
             sendToLeadPartner = false,
@@ -24,7 +25,7 @@ class UpdateProjectNotificationConfigurationsTest : UnitTest() {
             sendToProjectAssigned = false,
         ),
         ProjectNotificationConfiguration(
-            id = ApplicationStatus.STEP1_SUBMITTED,
+            id = NotificationType.ProjectSubmittedStep1,
             active = true,
             sendToManager = true,
             sendToLeadPartner = false,
@@ -42,14 +43,13 @@ class UpdateProjectNotificationConfigurationsTest : UnitTest() {
     @Test
     fun `update application form field configuration`() {
         every {
-            callNotificationConfigurationsPersistence.saveProjectNotificationConfigurations(
-                CALL_ID,
-                projectNotificationConfigStandard
-            )
-        } returns projectNotificationConfigStandard
+            callNotificationConfigurationsPersistence.saveProjectNotificationConfigurations(CALL_ID, any())
+        } returnsArgument 1
 
         val result = updateProjectNotificationConfiguration.update(CALL_ID, projectNotificationConfigStandard)
 
         assertThat(result).isEqualTo(projectNotificationConfigStandard)
+        verify(exactly = 1) { callNotificationConfigurationsPersistence.saveProjectNotificationConfigurations(CALL_ID, projectNotificationConfigStandard) }
     }
+
 }

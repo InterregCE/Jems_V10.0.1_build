@@ -7,10 +7,9 @@ import io.cloudflight.jems.server.call.entity.ProjectNotificationConfigurationEn
 import io.cloudflight.jems.server.call.entity.ProjectNotificationConfigurationId
 import io.cloudflight.jems.server.call.repository.CallPersistenceProviderTest.Companion.callEntity
 import io.cloudflight.jems.server.call.repository.CallRepository
-import io.cloudflight.jems.server.call.repository.toModel
 import io.cloudflight.jems.server.call.repository.toNotificationEntities
 import io.cloudflight.jems.server.call.service.model.ProjectNotificationConfiguration
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.notification.model.NotificationType
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -38,7 +37,7 @@ class CallNotificationConfigurationsPersistenceProviderTest {
            val callEntity = callEntity(CALL_ID)
            val newConfigs = listOf(
                ProjectNotificationConfiguration(
-                   id = ApplicationStatus.SUBMITTED,
+                   id = NotificationType.ProjectSubmitted,
                    active = true,
                    sendToManager = true,
                    sendToLeadPartner = false,
@@ -75,7 +74,7 @@ class CallNotificationConfigurationsPersistenceProviderTest {
         val callEntity = callEntity(CALL_ID)
         val configEntity = ProjectNotificationConfigurationEntity(
             ProjectNotificationConfigurationId(
-                ApplicationStatus.SUBMITTED, callEntity(CALL_ID)
+                NotificationType.ProjectSubmitted, callEntity(CALL_ID)
             ), active = true,
             sendToManager = true,
             sendToLeadPartner = false,
@@ -93,7 +92,7 @@ class CallNotificationConfigurationsPersistenceProviderTest {
             sendToProjectAssigned = false,
         )
         every { callRepository.getById(CALL_ID)} returns callEntity
-        every { projectNotificationConfigurationRepository.findByIdCallEntityId(CALL_ID) } returns mutableSetOf(configEntity)
+        every { projectNotificationConfigurationRepository.findByIdCallEntityId(CALL_ID) } returns listOf(configEntity)
         assertThat(persistence.getProjectNotificationConfigurations(CALL_ID).toDto())
             .containsExactly(expectedConfig)
     }
@@ -101,50 +100,36 @@ class CallNotificationConfigurationsPersistenceProviderTest {
 
     @Test
     fun `should return notification configurations`() {
-        val callEntity = callEntity(CALL_ID)
-        val configEntity = ProjectNotificationConfigurationEntity(
-            ProjectNotificationConfigurationId(
-                ApplicationStatus.SUBMITTED, callEntity(CALL_ID)
-            ), active = true,
-            sendToManager = true,
-            sendToLeadPartner = false,
-            sendToProjectPartners = false,
-            sendToProjectAssigned = false,
-            emailSubject = "",
-            emailBody = ""
-        )
-        every { callRepository.getById(CALL_ID)} returns callEntity
         every {
-            projectNotificationConfigurationRepository.findByActiveTrueAndId(
-                ProjectNotificationConfigurationId(
-                    ApplicationStatus.SUBMITTED,
-                    callEntity
-                )
+            projectNotificationConfigurationRepository.findByActiveTrueAndIdCallEntityIdAndIdId(
+                CALL_ID,
+                NotificationType.ProjectSubmitted,
             )
         } returns
             ProjectNotificationConfigurationEntity(
                 ProjectNotificationConfigurationId(
-                    ApplicationStatus.SUBMITTED, callEntity(CALL_ID)
+                    NotificationType.ProjectSubmitted, callEntity(CALL_ID)
                 ), active = true,
                 sendToManager = true,
                 sendToLeadPartner = false,
                 sendToProjectPartners = false,
                 sendToProjectAssigned = false,
-                emailSubject = "",
-                emailBody = ""
+                emailSubject = "sub",
+                emailBody = "body"
             )
 
-        assertThat(persistence.getActiveNotificationOfType(CALL_ID, ApplicationStatus.SUBMITTED)).isEqualTo(ProjectNotificationConfigurationEntity(
-            ProjectNotificationConfigurationId(
-                ApplicationStatus.SUBMITTED, callEntity(CALL_ID)
-            ), active = true,
-            sendToManager = true,
-            sendToLeadPartner = false,
-            sendToProjectPartners = false,
-            sendToProjectAssigned = false,
-            emailSubject = "",
-            emailBody = ""
-        ).toModel())
+        assertThat(persistence.getActiveNotificationOfType(CALL_ID, NotificationType.ProjectSubmitted)).isEqualTo(
+            ProjectNotificationConfiguration(
+                id = NotificationType.ProjectSubmitted,
+                active = true,
+                sendToManager = true,
+                sendToLeadPartner = false,
+                sendToProjectPartners = false,
+                sendToProjectAssigned = false,
+                emailSubject = "sub",
+                emailBody = "body",
+            )
+        )
     }
 
 }

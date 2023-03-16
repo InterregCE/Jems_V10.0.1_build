@@ -1,0 +1,200 @@
+package io.cloudflight.jems.server.project.repository.report.project.financialOverview.costCategory
+
+import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
+import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateCostCategoryEntity
+import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
+import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCurrentValuesWrapper
+import io.cloudflight.jems.server.project.service.budget.model.ExpenditureCostCategoryCurrentlyReportedWithReIncluded
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.CertificateCostCategoryCurrentlyReported
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.CertificateCostCategoryPreviouslyReported
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
+import io.mockk.clearMocks
+import io.mockk.every
+import io.mockk.impl.annotations.InjectMockKs
+import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import java.math.BigDecimal
+
+class ProjectReportCertificateCostCategoryPersistenceProviderTest : UnitTest() {
+
+    companion object {
+        private const val PROJECT_ID = 362L
+
+        private val report = mockk<ProjectReportEntity>().also {
+            every { it.projectId } returns PROJECT_ID
+        }
+
+        private fun expenditureEntity() = ReportProjectCertificateCostCategoryEntity(
+            reportId = 4L,
+            reportEntity = report,
+
+            staffTotal = BigDecimal.valueOf(10),
+            officeTotal = BigDecimal.valueOf(11),
+            travelTotal = BigDecimal.valueOf(12),
+            externalTotal = BigDecimal.valueOf(13),
+            equipmentTotal = BigDecimal.valueOf(14),
+            infrastructureTotal = BigDecimal.valueOf(15),
+            otherTotal = BigDecimal.valueOf(16),
+            lumpSumTotal = BigDecimal.valueOf(17),
+            unitCostTotal = BigDecimal.valueOf(18),
+            sumTotal = BigDecimal.valueOf(19),
+
+            staffCurrent = BigDecimal.valueOf(20),
+            officeCurrent = BigDecimal.valueOf(21),
+            travelCurrent = BigDecimal.valueOf(22),
+            externalCurrent = BigDecimal.valueOf(23),
+            equipmentCurrent = BigDecimal.valueOf(24),
+            infrastructureCurrent = BigDecimal.valueOf(25),
+            otherCurrent = BigDecimal.valueOf(26),
+            lumpSumCurrent = BigDecimal.valueOf(27),
+            unitCostCurrent = BigDecimal.valueOf(28),
+            sumCurrent = BigDecimal.valueOf(29),
+
+            staffPreviouslyReported = BigDecimal.valueOf(30),
+            officePreviouslyReported = BigDecimal.valueOf(31),
+            travelPreviouslyReported = BigDecimal.valueOf(32),
+            externalPreviouslyReported = BigDecimal.valueOf(33),
+            equipmentPreviouslyReported = BigDecimal.valueOf(34),
+            infrastructurePreviouslyReported = BigDecimal.valueOf(35),
+            otherPreviouslyReported = BigDecimal.valueOf(36),
+            lumpSumPreviouslyReported = BigDecimal.valueOf(37),
+            unitCostPreviouslyReported = BigDecimal.valueOf(38),
+            sumPreviouslyReported = BigDecimal.valueOf(39),
+        )
+
+        private val expenditure = ReportCertificateCostCategory(
+            totalsFromAF = BudgetCostsCalculationResultFull(
+                staff = BigDecimal.valueOf(10),
+                office = BigDecimal.valueOf(11),
+                travel = BigDecimal.valueOf(12),
+                external = BigDecimal.valueOf(13),
+                equipment = BigDecimal.valueOf(14),
+                infrastructure = BigDecimal.valueOf(15),
+                other = BigDecimal.valueOf(16),
+                lumpSum = BigDecimal.valueOf(17),
+                unitCost = BigDecimal.valueOf(18),
+                sum = BigDecimal.valueOf(19),
+            ),
+            currentlyReported = BudgetCostsCalculationResultFull(
+                staff = BigDecimal.valueOf(20),
+                office = BigDecimal.valueOf(21),
+                travel = BigDecimal.valueOf(22),
+                external = BigDecimal.valueOf(23),
+                equipment = BigDecimal.valueOf(24),
+                infrastructure = BigDecimal.valueOf(25),
+                other = BigDecimal.valueOf(26),
+                lumpSum = BigDecimal.valueOf(27),
+                unitCost = BigDecimal.valueOf(28),
+                sum = BigDecimal.valueOf(29),
+            ),
+            previouslyReported = BudgetCostsCalculationResultFull(
+                staff = BigDecimal.valueOf(30),
+                office = BigDecimal.valueOf(31),
+                travel = BigDecimal.valueOf(32),
+                external = BigDecimal.valueOf(33),
+                equipment = BigDecimal.valueOf(34),
+                infrastructure = BigDecimal.valueOf(35),
+                other = BigDecimal.valueOf(36),
+                lumpSum = BigDecimal.valueOf(37),
+                unitCost = BigDecimal.valueOf(38),
+                sum = BigDecimal.valueOf(39),
+            ),
+        )
+
+        private val expenditureCurrentlyReportedWithReIncluded = ExpenditureCostCategoryCurrentlyReportedWithReIncluded(
+            currentlyReported = BudgetCostsCalculationResultFull(
+                staff = BigDecimal.valueOf(100),
+                office = BigDecimal.valueOf(101),
+                travel = BigDecimal.valueOf(102),
+                external = BigDecimal.valueOf(103),
+                equipment = BigDecimal.valueOf(104),
+                infrastructure = BigDecimal.valueOf(105),
+                other = BigDecimal.valueOf(106),
+                lumpSum = BigDecimal.valueOf(107),
+                unitCost = BigDecimal.valueOf(108),
+                sum = BigDecimal.valueOf(109),
+            ),
+            currentlyReportedReIncluded = BudgetCostsCalculationResultFull(
+                staff = BigDecimal.valueOf(110),
+                office = BigDecimal.valueOf(111),
+                travel = BigDecimal.valueOf(112),
+                external = BigDecimal.valueOf(113),
+                equipment = BigDecimal.valueOf(114),
+                infrastructure = BigDecimal.valueOf(115),
+                other = BigDecimal.valueOf(116),
+                lumpSum = BigDecimal.valueOf(117),
+                unitCost = BigDecimal.valueOf(118),
+                sum = BigDecimal.valueOf(119),
+            )
+        )
+
+        private val expenditurePreviouslyReportedWithParked = CertificateCostCategoryPreviouslyReported(
+            previouslyReported = BudgetCostsCalculationResultFull(
+                staff = BigDecimal.valueOf(100),
+                office = BigDecimal.valueOf(101),
+                travel = BigDecimal.valueOf(102),
+                external = BigDecimal.valueOf(103),
+                equipment = BigDecimal.valueOf(104),
+                infrastructure = BigDecimal.valueOf(105),
+                other = BigDecimal.valueOf(106),
+                lumpSum = BigDecimal.valueOf(107),
+                unitCost = BigDecimal.valueOf(108),
+                sum = BigDecimal.valueOf(109),
+            ),
+        )
+
+    }
+
+    @MockK
+    private lateinit var certificateCostCategoryRepository: ReportProjectCertificateCostCategoryRepository
+
+    @InjectMockKs
+    private lateinit var persistence: ProjectReportCertificateCostCategoryPersistenceProvider
+
+    @BeforeEach
+    fun reset() {
+        clearMocks(certificateCostCategoryRepository)
+    }
+
+    @Test
+    fun getCostCategories() {
+        every { certificateCostCategoryRepository
+            .findFirstByReportEntityProjectIdAndReportEntityId(PROJECT_ID, reportId = 4L)
+        } returns expenditureEntity()
+        assertThat(persistence.getCostCategories(PROJECT_ID, reportId = 4L)).isEqualTo(expenditure)
+    }
+
+    @Test
+    fun getCostCategoriesCumulative() {
+        every { certificateCostCategoryRepository.findCumulativeForReportIds(setOf(42L, 43L)) } returns
+            expenditurePreviouslyReportedWithParked.previouslyReported
+        assertThat(persistence.getCostCategoriesCumulative(setOf(42L, 43L))).isEqualTo(expenditurePreviouslyReportedWithParked)
+    }
+
+    @Test
+    fun updateCurrentlyReportedValues() {
+        val entity = expenditureEntity()
+        every { certificateCostCategoryRepository
+            .findFirstByReportEntityProjectIdAndReportEntityId(PROJECT_ID, reportId = 4L)
+        } returns entity
+        persistence.updateCurrentlyReportedValues(PROJECT_ID, reportId = 4L,
+            CertificateCostCategoryCurrentlyReported(expenditureCurrentlyReportedWithReIncluded.currentlyReported)
+        )
+
+        assertThat(entity.staffCurrent).isEqualTo(BigDecimal.valueOf(100))
+        assertThat(entity.officeCurrent).isEqualTo(BigDecimal.valueOf(101))
+        assertThat(entity.travelCurrent).isEqualTo(BigDecimal.valueOf(102))
+        assertThat(entity.externalCurrent).isEqualTo(BigDecimal.valueOf(103))
+        assertThat(entity.equipmentCurrent).isEqualTo(BigDecimal.valueOf(104))
+        assertThat(entity.infrastructureCurrent).isEqualTo(BigDecimal.valueOf(105))
+        assertThat(entity.otherCurrent).isEqualTo(BigDecimal.valueOf(106))
+        assertThat(entity.lumpSumCurrent).isEqualTo(BigDecimal.valueOf(107))
+        assertThat(entity.unitCostCurrent).isEqualTo(BigDecimal.valueOf(108))
+        assertThat(entity.sumCurrent).isEqualTo(BigDecimal.valueOf(109))
+    }
+
+}

@@ -8,8 +8,6 @@ import io.cloudflight.jems.server.call.service.callCreated
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldSetting
 import io.cloudflight.jems.server.call.service.model.Call
 import io.cloudflight.jems.server.call.service.model.CallDetail
-import io.cloudflight.jems.server.call.service.model.ProjectNotificationSetting
-import io.cloudflight.jems.server.call.service.notificationConfigurations.CallNotificationConfigurationsPersistence
 import io.cloudflight.jems.server.call.service.validator.CallValidator
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import org.springframework.context.ApplicationEventPublisher
@@ -19,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class CreateCall(
     private val persistence: CallPersistence,
-    private val callNotificationConfigurationsPersistence: CallNotificationConfigurationsPersistence,
     private val securityService: SecurityService,
     private val callValidator: CallValidator,
     private val auditPublisher: ApplicationEventPublisher,
@@ -39,10 +36,6 @@ class CreateCall(
         ).also {
             persistence.updateProjectCallStateAids(it.id, call.stateAidIds)
             persistence.saveApplicationFormFieldConfigurations(it.id, ApplicationFormFieldSetting.getDefaultApplicationFormFieldConfigurations(it.type))
-            callNotificationConfigurationsPersistence.saveProjectNotificationConfigurations(
-                it.id,
-                ProjectNotificationSetting.getDefaultProjectNotificationConfigurations
-            )
             auditPublisher.publishEvent(callCreated(this, it))
         }
     }
