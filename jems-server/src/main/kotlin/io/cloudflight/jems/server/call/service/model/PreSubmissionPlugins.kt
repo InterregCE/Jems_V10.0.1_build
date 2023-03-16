@@ -2,19 +2,19 @@ package io.cloudflight.jems.server.call.service.model
 
 data class PreSubmissionPlugins (
     val pluginKey: String,
-    val firstStepPluginKey: String? = "",
+    val firstStepPluginKey: String = "",
     val reportPartnerCheckPluginKey: String,
 ) {
-    fun getDiff(old: PreSubmissionPlugins? = null): Map<String, Pair<Any?, Any?>> {
-        val changes = mutableMapOf<String, Pair<Any?, Any?>>()
+    fun getDiff(old: PreSubmissionPlugins? = null): Map<String, Pair<String?, String>> {
+        val changes = mutableMapOf<String, Pair<String?, String>>()
 
-        if (old == null || firstStepPluginKey != old.firstStepPluginKey)
+        if (old?.firstStepPluginKey != firstStepPluginKey)
             changes["PreSubmissionCheckFirstStep"] = Pair(old?.firstStepPluginKey, firstStepPluginKey)
 
-        if (old == null || pluginKey != old.pluginKey)
+        if (old?.pluginKey != pluginKey)
             changes["PreSubmissionCheck"] = Pair(old?.pluginKey, pluginKey)
 
-        if (old == null || reportPartnerCheckPluginKey != old.reportPartnerCheckPluginKey)
+        if (old?.reportPartnerCheckPluginKey != reportPartnerCheckPluginKey)
             changes["PreSubmissionCheckPartnerReport"] = Pair(old?.reportPartnerCheckPluginKey, reportPartnerCheckPluginKey)
 
         return changes

@@ -25,12 +25,14 @@ class UpdatePreSubmissionCheckSettings(
     @CanUpdateCall
     @Transactional
     @ExceptionWrapper(UpdatePreSubmissionCheckSettingsException::class)
-    override fun update(callId: Long, pluginKeys: PreSubmissionPlugins): CallDetail {
+    override fun update(callId: Long, newPluginsConfig: PreSubmissionPlugins): CallDetail {
         val call = persistence.getCallById(callId)
+        val oldPluginsConfig = call.toPluginModel()
+        val changes = newPluginsConfig.getDiff(oldPluginsConfig)
 
-        return if (isSelectedPluginKeyValid(call.is2StepCall(), pluginKeys))
-            persistence.updateProjectCallPreSubmissionCheckPlugin(callId, pluginKeys)
-                .also { auditPublisher.publishEvent(preSubmissionCheckSettingsUpdated(this, pluginKeys, call.toPluginModel(), it)) }
+        return if (isSelectedPluginKeyValid(call.is2StepCall(), newPluginsConfig) && changes.isNotEmpty())
+            persistence.updateProjectCallPreSubmissionCheckPlugin(callId, newPluginsConfig)
+                .also { auditPublisher.publishEvent(preSubmissionCheckSettingsUpdated(this, changes, it)) }
         else
             call
     }
@@ -47,8 +49,8 @@ class UpdatePreSubmissionCheckSettings(
         jemsPluginRegistry.get(type, pluginKey).getKey().isNotEmpty()
 
     private fun CallDetail.toPluginModel() = PreSubmissionPlugins(
-        firstStepPluginKey = firstStepPreSubmissionCheckPluginKey,
         pluginKey = preSubmissionCheckPluginKey ?: "",
+        firstStepPluginKey = firstStepPreSubmissionCheckPluginKey ?: "",
         reportPartnerCheckPluginKey = reportPartnerCheckPluginKey ?: ""
     )
 }
