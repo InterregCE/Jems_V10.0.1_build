@@ -17,14 +17,22 @@ import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
-import io.cloudflight.jems.server.project.service.model.*
+import io.cloudflight.jems.server.project.service.model.ProjectBudgetOverviewPerPartnerPerPeriod
+import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerPeriod
+import io.cloudflight.jems.server.project.service.model.ProjectPartnerCostType
+import io.cloudflight.jems.server.project.service.model.ProjectPeriodBudget
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
-import io.cloudflight.jems.server.project.service.partner.model.*
+import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
+import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostEntry
+import io.cloudflight.jems.server.project.service.partner.model.BudgetTravelAndAccommodationCostEntry
+import io.cloudflight.jems.server.project.service.partner.model.BudgetUnitCostEntry
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportInvestment
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportLumpSum
@@ -56,7 +64,7 @@ import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
-import java.util.*
+import java.util.UUID
 
 internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
 
@@ -420,6 +428,19 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         sum = BigDecimal.valueOf(8963, 2), /* +50.63 from ready FT lump sum */
     )
 
+    private val expectedPreviousParked = BudgetCostsCalculationResultFull(
+        staff = BigDecimal.valueOf(40),
+        office = BigDecimal.valueOf(41),
+        travel = BigDecimal.valueOf(42),
+        external = BigDecimal.valueOf(43),
+        equipment = BigDecimal.valueOf(44),
+        infrastructure = BigDecimal.valueOf(45),
+        other = BigDecimal.valueOf(46),
+        lumpSum = BigDecimal.valueOf(47),
+        unitCost = BigDecimal.valueOf(48),
+        sum = BigDecimal.valueOf(49),
+    )
+
     private val expectedPreviouslyReportedCoFinancing = PreviouslyReportedCoFinancing(
         fundsSorted = listOf(
             PreviouslyReportedFund(
@@ -503,7 +524,8 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
             investmentNumber = 2,
             workPackageNumber = 1,
             deactivated = false,
-        ))
+        )
+    )
 
     @MockK
     lateinit var reportPersistence: ProjectPartnerReportPersistence
@@ -613,7 +635,11 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         assertThat(result.expenditureSetup.options).isEqualTo(budgetOptions)
         assertThat(result.expenditureSetup.totalsFromAF).isEqualTo(expectedTotal)
         assertThat(result.expenditureSetup.currentlyReported).isEqualTo(zeros)
+        assertThat(result.expenditureSetup.currentlyReportedParked).isEqualTo(zeros)
         assertThat(result.expenditureSetup.previouslyReported).isEqualTo(expectedPrevious)
+        assertThat(result.expenditureSetup.previouslyReportedParked).isEqualTo(expectedPreviousParked)
+        assertThat(result.expenditureSetup.currentlyReportedReIncluded).isEqualTo(zeros)
+        assertThat(result.expenditureSetup.totalEligibleAfterControl).isEqualTo(zeros)
 
         assertThat(result.previouslyReportedCoFinancing).isEqualTo(expectedPreviouslyReportedCoFinancing)
 
