@@ -1,0 +1,356 @@
+<jems-form *ngIf="data$ | async as data"
+           (save)="saveForm()"
+           (discard)="resetForm(data.workPackages, data.reportEditable)">
+
+    <h3 class="mb-3" [innerText]="'project.application.project.report.tab.work.plan' | translate"></h3>
+
+    <form [formGroup]="form" jemsFormLayout>
+
+        <!-- WORK PACKAGES -->
+        <ng-container *ngFor="let workPackage of workPackages.controls; let workPackageIndex = index" [formArrayName]="constants.WORK_PACKAGES.name">
+            <ng-container [formGroupName]="workPackageIndex">
+                <mat-expansion-panel class="work-package-panel my-3" [expanded]="false">
+                    <mat-expansion-panel-header jemsNoWidthLimit>
+                        <mat-panel-title>
+                            <span *ngIf="workPackage.get(constants.WORK_PACKAGE_DEACTIVATED.name)?.value">
+                                <mat-icon [matTooltip]="'project.application.form.partner.table.status.inactive' | translate">do_not_disturb</mat-icon>
+                            </span>
+                            <span [innerText]="('project.application.form.workpackage.form.header' | translate) + ' ' + workPackage.get(constants.WORK_PACKAGE_NUMBER.name)?.value"></span>
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+
+                    <div>
+                        <mat-checkbox class="my-3" [formControlName]="constants.WORK_PACKAGE_COMPLETED.name">
+                            {{ 'project.application.project.report.tab.work.plan.work.package.completed' | translate }}
+                        </mat-checkbox>
+                    </div>
+
+                    <div jemsFormLayout>
+                        <p class="mt-5" [innerText]="'project.application.project.report.tab.work.plan.work.package.description' | translate "></p>
+                    </div>
+
+                    <div class="input-field-row mt-5">
+                        <jems-multi-language-container class="input-field title" [switchButtonsVisible]="false">
+                            <jems-multi-language-form-field minRows="1" type="textarea"
+                                                            label="project.application.project.report.tab.work.plan.work.package.project.objective"
+                                                            [formControlName]="constants.WORK_PACKAGE_SPECIFIC_OBJECTIVE.name">
+                            </jems-multi-language-form-field>
+                        </jems-multi-language-container>
+
+                        <mat-form-field class="input-field">
+                            <mat-label [innerText]="'project.application.project.report.tab.work.plan.work.package.project.status' | translate"></mat-label>
+                            <mat-select [formControlName]="constants.WORK_PACKAGE_SPECIFIC_STATUS.name">
+                                <mat-option *ngFor="let status of specificStatus" [value]="status"
+                                            [innerText]="('project.application.project.report.tab.work.plan.work.package.project.status.' + status) | translate"></mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+
+                    <jems-multi-language-container>
+                        <jems-multi-language-form-field minRows="2" maxRows="4" type="textarea"
+                                                        label="project.application.project.report.tab.work.plan.work.package.project.explanations"
+                                                        [formControlName]="constants.WORK_PACKAGE_SPECIFIC_EXPLANATION.name"
+                                                        [maxLength]="constants.WORK_PACKAGE_SPECIFIC_EXPLANATION.maxLength">
+                        </jems-multi-language-form-field>
+                    </jems-multi-language-container>
+
+                    <div class="input-field-row mt-5">
+                        <jems-multi-language-container class="input-field title" [switchButtonsVisible]="false">
+                            <jems-multi-language-form-field minRows="1" type="textarea"
+                                                            label="project.application.project.report.tab.work.plan.work.package.communication.objective"
+                                                            [formControlName]="constants.WORK_PACKAGE_COMMUNICATION_OBJECTIVE.name">
+                            </jems-multi-language-form-field>
+                        </jems-multi-language-container>
+
+                        <mat-form-field class="input-field">
+                            <mat-label
+                                    [innerText]="'project.application.project.report.tab.work.plan.work.package.communication.status' | translate"></mat-label>
+                            <mat-select [formControlName]="constants.WORK_PACKAGE_COMMUNICATION_STATUS.name">
+                                <mat-option *ngFor="let status of communicationStatus" [value]="status"
+                                            [innerText]="('project.application.project.report.tab.work.plan.work.package.communication.status.' + status) | translate"></mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+
+                    <jems-multi-language-container>
+                        <jems-multi-language-form-field minRows="2" maxRows="4" type="textarea"
+                                                        label="project.application.project.report.tab.work.plan.work.package.communication.explanations"
+                                                        [formControlName]="constants.WORK_PACKAGE_COMMUNICATION_EXPLANATION.name"
+                                                        [maxLength]="constants.WORK_PACKAGE_COMMUNICATION_EXPLANATION.maxLength">
+                        </jems-multi-language-form-field>
+                    </jems-multi-language-container>
+
+                    <p class="mt-3" [innerText]="'project.application.project.report.tab.work.plan.work.package.progress' | translate"></p>
+                    <jems-multi-language-container>
+                        <jems-multi-language-form-field minRows="2" maxRows="4" type="textarea"
+                                                        label="common.textarea.enter.text"
+                                                        [formControlName]="constants.WORK_PACKAGE_DESCRIPTION.name"
+                                                        [maxLength]="constants.WORK_PACKAGE_DESCRIPTION.maxLength">
+                        </jems-multi-language-form-field>
+                    </jems-multi-language-container>
+
+                    <div *ngIf="activities(workPackageIndex)?.value.length || outputs(workPackageIndex)?.value.length" class="my-5">
+                        <h4 [innerText]="'project.application.project.report.tab.work.plan.work.package.subtitle' | translate"></h4>
+                    </div>
+
+                    <!-- ACTIVITIES -->
+                    <ng-container *ngIf="activities(workPackageIndex).controls.length">
+                        <div *ngFor="let activity of activities(workPackageIndex).controls; let activityIndex = index"
+                             jemsNoWidthLimit [formArrayName]="constants.ACTIVITIES.name">
+                            <div class="table-container" [formGroupName]="activityIndex">
+
+                                <div class="table-header" jemsNoWidthLimit>
+                                    <h4 jemsMultiColumnRow class="my-1 table-header-inner">
+                                        <mat-icon *ngIf="activity.get(constants.ACTIVITY_DEACTIVATED.name)?.value"
+                                                  [matTooltip]="'project.application.form.partner.table.status.inactive' | translate">
+                                            do_not_disturb
+                                        </mat-icon>
+                                        <span [innerText]="'project.application.project.report.tab.work.plan.activity.nr.entry' | translate: {
+                                                workPackageNr: workPackage.get(constants.WORK_PACKAGE_NUMBER.name)?.value,
+                                                activityNr: activity.get(constants.ACTIVITY_NUMBER.name)?.value}"></span>
+                                        <span *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.TITLE"
+                                              [innerText]="activity.get(constants.ACTIVITY_TITLE.name)?.value | translateByInputLanguage | async"></span>
+                                    </h4>
+                                </div>
+
+                                <jems-multi-language-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.TITLE"
+                                                               [switchButtonsVisible]="false">
+                                    <jems-multi-language-form-field minRows="1" type="textarea" class="mt-2"
+                                                                    label="project.application.project.report.tab.work.plan.activity.title"
+                                                                    [formControlName]="constants.ACTIVITY_TITLE.name">
+                                    </jems-multi-language-form-field>
+                                </jems-multi-language-container>
+
+                                <div class="input-field-row">
+                                    <mat-form-field *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.START_PERIOD"
+                                                    class="input-field">
+                                        <mat-label [innerText]="'project.application.project.report.tab.work.plan.activity.start' | translate"></mat-label>
+                                        <input matInput disabled [value]="activity.get(constants.ACTIVITY_START_PERIOD.name)?.value
+                                             && 'project.application.form.work.package.output.delivery.period.entry' | translate :
+                                             getPeriodArguments(activity.get(constants.ACTIVITY_START_PERIOD.name)?.value )">
+                                    </mat-form-field>
+
+                                    <mat-form-field *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.END_PERIOD"
+                                                    class="input-field">
+                                        <mat-label [innerText]="'project.application.project.report.tab.work.plan.activity.end' | translate "></mat-label>
+                                        <input matInput disabled [value]="activity.get(constants.ACTIVITY_END_PERIOD.name)?.value
+                                             && 'project.application.form.work.package.output.delivery.period.entry' | translate :
+                                             getPeriodArguments(activity.get(constants.ACTIVITY_END_PERIOD.name)?.value )">
+                                    </mat-form-field>
+
+                                    <mat-form-field class="input-field">
+                                        <mat-label [innerText]="'project.application.project.report.tab.work.plan.activity.status' | translate"></mat-label>
+                                        <mat-select [formControlName]="constants.ACTIVITY_STATUS.name">
+                                            <mat-option *ngFor="let status of activityStatus" [value]="status"
+                                                        [innerText]="('project.application.project.report.tab.work.plan.activity.status.' + status) | translate"></mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+
+                                <jems-multi-language-container>
+                                    <jems-multi-language-form-field type="textarea"
+                                                                    label="project.application.project.report.tab.work.plan.activity.progress.description"
+                                                                    [formControlName]="constants.ACTIVITY_PROGRESS.name"
+                                                                    [maxLength]="constants.ACTIVITY_PROGRESS.maxLength">
+                                    </jems-multi-language-form-field>
+                                </jems-multi-language-container>
+
+                                <div jemsFormFieldWidth="full" class="attachment-row">
+                                    <span class="attachment-text"
+                                          [innerText]="'project.application.project.report.tab.work.plan.activity.attachment' | translate"></span>
+                                    <jems-partner-actions-cell [formControlName]="constants.DELIVERABLE_ATTACHMENT.name"
+                                                               [isReportEditable]="data.reportEditable"
+                                                               [isUploadDone]="isUploadDone"
+                                                               (download)="onDownloadFile($event)"
+                                                               (upload)="onUploadActivity($event, workPackageIndex, activityIndex)"
+                                                               (delete)="onDeleteActivity($event, workPackageIndex, activityIndex)">
+                                    </jems-partner-actions-cell>
+                                </div>
+
+
+                                <!-- DELIVERABLE -->
+                                <div class="px-2" *ngIf="deliverables(workPackageIndex, activityIndex).controls?.length">
+                                    <div *ngFor="let deliverable of deliverables(workPackageIndex, activityIndex).controls; let deliverableIndex = index"
+                                         jemsNoWidthLimit class="pt-2" [formArrayName]="constants.DELIVERABLES.name">
+                                        <div class="table-container" [formGroupName]="deliverableIndex">
+
+                                            <div class="table-header secondary" jemsNoWidthLimit>
+                                                <h4 jemsMultiColumnRow class="mb-0 table-header-inner">
+                                                    <mat-icon *ngIf="activity.get(constants.DELIVERABLE_DEACTIVATED.name)?.value"
+                                                              [matTooltip]="'project.application.form.partner.table.status.inactive' | translate">
+                                                        do_not_disturb
+                                                    </mat-icon>
+                                                    <span [innerText]="'project.application.project.report.tab.work.plan.deliverable.nr.entry' | translate: {
+                                                        workPackageNr: workPackage.get(constants.WORK_PACKAGE_NUMBER.name)?.value,
+                                                        activityNr: activity.get(constants.ACTIVITY_NUMBER.name)?.value,
+                                                        deliverableNr: deliverable.get(constants.DELIVERABLE_NUMBER.name)?.value}"></span>
+                                                    <span [innerText]="activity.get(constants.DELIVERABLE_TITLE.name)?.value | translateByInputLanguage | async"></span>
+                                                </h4>
+                                            </div>
+
+                                            <jems-multi-language-container [switchButtonsVisible]="false">
+                                                <jems-multi-language-form-field minRows="1" type="textarea" class="mt-2"
+                                                                                label="project.application.project.report.tab.work.plan.deliverable.title"
+                                                                                [formControlName]="constants.DELIVERABLE_TITLE.name">
+                                                </jems-multi-language-form-field>
+                                            </jems-multi-language-container>
+
+                                            <div class="input-field-row">
+                                                <mat-form-field class="input-field">
+                                                    <mat-label
+                                                            [innerText]="'project.application.project.report.tab.work.plan.deliverable.period' | translate"></mat-label>
+                                                    <input matInput disabled [value]="activity.get(constants.DELIVERABLE_PERIOD.name)?.value
+                                                        && 'project.application.form.work.package.output.delivery.period.entry' | translate :
+                                                        getPeriodArguments(activity.get(constants.DELIVERABLE_PERIOD.name)?.value )">
+                                                </mat-form-field>
+
+                                                <mat-form-field class="input-field">
+                                                    <mat-label
+                                                            [innerText]="'project.application.project.report.tab.work.plan.deliverable.current.report' | translate"></mat-label>
+                                                    <input currencyMask matInput type="decimal"
+                                                           [formControlName]="constants.DELIVERABLE_CURRENT_REPORT.name"
+                                                           [options]="{align: 'right', min: MIN_VALUE, max: MAX_VALUE, allowNegative: true}"
+                                                           (ngModelChange)="deliverableTotalChanged(deliverable)">
+                                                </mat-form-field>
+
+                                                <mat-form-field class="input-field">
+                                                    <mat-label
+                                                            [innerText]="'project.application.project.report.tab.work.plan.deliverable.previously.reported' | translate"></mat-label>
+                                                    <input currencyMask matInput type="decimal"
+                                                           [formControlName]="constants.DELIVERABLE_TOTAL_REPORTED_SO_FAR.name"
+                                                           [options]="{align: 'right', allowNegative: true}">
+                                                </mat-form-field>
+                                            </div>
+
+                                            <jems-multi-language-container>
+                                                <jems-multi-language-form-field type="textarea"
+                                                                                label="project.application.project.report.tab.work.plan.deliverable.progress"
+                                                                                [formControlName]="constants.DELIVERABLE_PROGRESS.name"
+                                                                                [maxLength]="constants.DELIVERABLE_PROGRESS.maxLength">
+                                                </jems-multi-language-form-field>
+                                            </jems-multi-language-container>
+                                            <div jemsFormFieldWidth="full" class="attachment-row">
+                                                <span class="attachment-text"
+                                                      [innerText]="'project.application.project.report.tab.work.plan.deliverable.attachment' | translate"></span>
+                                                <jems-partner-actions-cell [formControlName]="constants.DELIVERABLE_ATTACHMENT.name"
+                                                                           [isReportEditable]="data.reportEditable"
+                                                                           [isUploadDone]="isUploadDone"
+                                                                           (download)="onDownloadFile($event)"
+                                                                           (upload)="onUploadDeliverable($event, workPackageIndex, activityIndex, deliverableIndex)"
+                                                                           (delete)="onDeleteDeliverable($event, workPackageIndex, activityIndex, deliverableIndex)">
+                                                </jems-partner-actions-cell>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </ng-container>
+
+                    <!-- OUTPUTS  -->
+                    <div *ngIf="outputs(workPackageIndex).controls.length">
+                        <div *ngFor="let output of outputs(workPackageIndex).controls; let outputIndex = index"
+                             jemsNoWidthLimit class="mt-2" [formArrayName]="constants.OUTPUTS.name">
+                            <div class="table-container" [formGroupName]="outputIndex">
+
+                                <div class="table-header" jemsNoWidthLimit>
+                                    <h4 jemsMultiColumnRow class="my-1 table-header-inner">
+                                        <mat-icon *ngIf="output.get(constants.OUTPUTS.name)?.value"
+                                                  [matTooltip]="'project.application.form.partner.table.status.inactive' | translate">
+                                            do_not_disturb
+                                        </mat-icon>
+                                        <span [innerText]="'project.application.project.report.tab.work.plan.output.nr.entry' | translate: {
+                                                workPackageNr: workPackage.get(constants.WORK_PACKAGE_NUMBER.name)?.value,
+                                                outputNr: output.get(constants.OUTPUT_NUMBER.name)?.value}"></span>
+                                        <span *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.TITLE"
+                                              [innerText]="output.get(constants.OUTPUT_TITLE.name)?.value | translateByInputLanguage | async"></span>
+                                    </h4>
+                                </div>
+
+                                <jems-multi-language-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.TITLE"
+                                                               [switchButtonsVisible]="false">
+                                    <jems-multi-language-form-field minRows="1" type="textarea" class="mt-2"
+                                                                    label="project.application.project.report.tab.work.plan.output.title"
+                                                                    [formControlName]="constants.OUTPUT_TITLE.name">
+                                    </jems-multi-language-form-field>
+                                </jems-multi-language-container>
+
+                                <div *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.PROGRAMME_OUTPUT_INDICATOR_AND_MEASUREMENT_UNIT"
+                                     class="input-field-row mt-2">
+                                    <mat-form-field class="input-field">
+                                        <mat-label
+                                                [innerText]="'project.application.project.report.tab.results.and.principles.result.indicator' | translate"></mat-label>
+                                        <input matInput disabled [value]="output.get(constants.OUTPUT_INDICATOR.name)?.value?.id &&
+                                            output.get(constants.OUTPUT_INDICATOR.name)?.value?.identifier + ': ' +
+                                            (output.get(constants.OUTPUT_INDICATOR.name)?.value?.name | translateBySystemLanguage | async)">
+                                    </mat-form-field>
+                                    <mat-form-field class="input-field">
+                                        <mat-label
+                                                [innerText]="'project.application.project.report.tab.results.and.principles.result.measurement.unit' | translate"></mat-label>
+                                        <input matInput disabled
+                                               [value]="output.get(constants.OUTPUT_INDICATOR.name)?.value?.measurementUnit | translateBySystemLanguage | async">
+                                    </mat-form-field>
+                                </div>
+
+                                <div class="input-field-row">
+                                    <mat-form-field *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.DELIVERY_PERIOD"
+                                                    class="input-field">
+                                        <mat-label [innerText]="'project.application.project.report.tab.work.plan.output.period' | translate"></mat-label>
+                                        <input matInput disabled [value]="output.get(constants.OUTPUT_PERIOD.name)?.value
+                                            && 'project.application.form.work.package.output.delivery.period.entry' | translate :
+                                            getPeriodArguments(output.get(constants.OUTPUT_PERIOD.name)?.value )">
+                                    </mat-form-field>
+                                    <mat-form-field *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.TARGET_VALUE"
+                                                    class="input-field">
+                                        <mat-label
+                                                [innerText]="'project.application.project.report.tab.work.plan.output.target.value' | translate"></mat-label>
+                                        <input currencyMask matInput type="decimal"
+                                               [formControlName]="constants.OUTPUT_TARGET_VALUE.name"
+                                               [options]="{align: 'right'}">
+                                    </mat-form-field>
+                                    <mat-form-field class="input-field">
+                                        <mat-label
+                                                [innerText]="'project.application.project.report.tab.work.plan.output.current.report' | translate"></mat-label>
+                                        <input currencyMask matInput type="decimal"
+                                               [formControlName]="constants.OUTPUT_CURRENT_REPORT.name"
+                                               [options]="{align: 'right', min: MIN_VALUE, max: MAX_VALUE, allowNegative: true}"
+                                               (ngModelChange)="outputTotalChanged(output)">
+                                    </mat-form-field>
+                                    <mat-form-field class="input-field">
+                                        <mat-label
+                                                [innerText]="'project.application.project.report.tab.work.plan.output.previously.reported' | translate"></mat-label>
+                                        <input currencyMask matInput type="decimal"
+                                               [formControlName]="constants.OUTPUT_TOTAL_REPORTED_SO_FAR.name"
+                                               [options]="{align: 'right', allowNegative: true}">
+                                    </mat-form-field>
+                                </div>
+                                <jems-multi-language-container>
+                                    <jems-multi-language-form-field type="textarea" label="project.application.project.report.tab.work.plan.output.progress"
+                                                                    [formControlName]="constants.OUTPUT_PROGRESS.name"
+                                                                    [maxLength]="constants.OUTPUT_PROGRESS.maxLength">
+                                    </jems-multi-language-form-field>
+                                </jems-multi-language-container>
+
+                                <div jemsFormFieldWidth="full" class="attachment-row">
+                                    <span class="attachment-text"
+                                          [innerText]="'project.application.project.report.tab.work.plan.output.attachment' | translate"></span>
+                                    <jems-partner-actions-cell [formControlName]="constants.OUTPUT_ATTACHMENT.name"
+                                                               [isReportEditable]="data.reportEditable"
+                                                               [isUploadDone]="isUploadDone"
+                                                               (download)="onDownloadFile($event)"
+                                                               (upload)="onUploadOutput($event, workPackageIndex, outputIndex)"
+                                                               (delete)="onDeleteOutput($event, workPackageIndex, outputIndex)">
+                                    </jems-partner-actions-cell>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </mat-expansion-panel>
+            </ng-container>
+        </ng-container>
+
+    </form>
+
+</jems-form>

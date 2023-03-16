@@ -1,5 +1,12 @@
+.attachment-row {
+  display: flex;
+  align-items: center;
+}
+
 .attachment-text {
   font-weight: 500;
+  margin-bottom: 0.25rem;
+  margin-right: 0.5rem;
 }
 
 .input-field-row {
@@ -9,6 +16,7 @@
 .input-field {
   flex-grow: 1;
 }
+
 .vertical-middle{
   vertical-align: middle;
   font-size: 1.25rem;
