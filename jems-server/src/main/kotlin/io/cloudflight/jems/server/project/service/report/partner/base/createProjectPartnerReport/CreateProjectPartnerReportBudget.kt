@@ -45,8 +45,6 @@ import io.cloudflight.jems.server.project.service.report.partner.financialOvervi
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportLumpSumPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportUnitCostPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.applyPercentage
-import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.generateCoFinCalculationInputData
-import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.getCurrentFrom
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
@@ -426,10 +424,6 @@ class CreateProjectPartnerReportBudget(
             previouslyReported = previouslyReported.copy(
                 lumpSum = previouslyReported.lumpSum.plus(paymentReadyFastTrackLumpSums),
                 sum = previouslyReported.sum.plus(paymentReadyFastTrackLumpSums)
-            ),
-            previouslyReportedParked = previouslyReportedParked.copy(
-                lumpSum = previouslyReportedParked.lumpSum.plus(paymentReadyFastTrackLumpSums),
-                sum = previouslyReportedParked.sum.plus(paymentReadyFastTrackLumpSums)
             )
         )
     }
