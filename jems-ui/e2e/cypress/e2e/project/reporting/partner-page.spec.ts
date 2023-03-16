@@ -19,14 +19,13 @@ context('Partner reports tests', () => {
           cy.visit(`https://amsterdam.interact-eu.net/app/project/detail/${applicationId}`, {failOnStatusCode: false})
             .then(() => {
               partnerIdsToDisable.forEach(id => {
-                // this could be replaced by verifyIconsInPartnerDetails() function
-                // if 'be.visible' would work in this particular case
                 cy.get('mat-expansion-panel-header:contains("Partner details")')
                   .next('div')
                   .find(`li:contains("${testData.partners[id].abbreviation}")`)
                   .contains('mat-icon', 'person_off')
                   .should('exist');
               });
+
               verifyIconsInProjectPrivileges(testData, partnerIdsToDisable, true);
             });
 
@@ -34,7 +33,11 @@ context('Partner reports tests', () => {
           loginByRequest(user.applicantUser.email);
           cy.createFullPartner(applicationId, partner);
 
-          // TODO: Verification after addition of 30th partner
+          cy.loginByRequest(user.admin.email);
+          verifyPartnerAvailability(false);
+
+          cy.approveModification(applicationId, testData.approvalInfo, user.programmeUser.email);
+          verifyPartnerAvailability(true);
         });
       });
     });
@@ -218,4 +221,29 @@ function verifyDeactivatedPartnerBannerDisplay(headerTitle, disabledPartnerAbbre
       cy.contains('div', "You are currently viewing a deactivated partner.")
         .should(displayFlag);
     });
+}
+
+function verifyPartnerInPartnerDetails(shouldPartnerBeDisplayed) {
+  const displayFlag = shouldPartnerBeDisplayed ? 'be.visible' : 'not.exist';
+
+  cy.get('mat-expansion-panel-header:contains("Partner details")')
+    .next('div')
+    .find(`li:contains("${partner.details.abbreviation}")`)
+    .should(displayFlag);
+}
+
+function verifyPartnerAvailabilityInProjectPrivileges(shouldPartnerBeDisplayed) {
+  const displayFlag = shouldPartnerBeDisplayed ? 'be.visible' : 'not.exist';
+
+  cy.contains('Project privileges')
+    .click()
+    .then(() => {
+      cy.get(`mat-expansion-panel-header:contains("${partner.details.abbreviation}")`)
+        .should(displayFlag)
+    });
+}
+
+function verifyPartnerAvailability(shouldPartnerBeDisplayed) {
+  verifyPartnerInPartnerDetails(shouldPartnerBeDisplayed);
+  verifyPartnerAvailabilityInProjectPrivileges(shouldPartnerBeDisplayed);
 }
