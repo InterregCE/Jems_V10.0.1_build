@@ -5,10 +5,12 @@ import {SharedModule} from './shared-module';
 import {UserDetailPageStore} from '../system/user-page/user-detail-page/user-detail-page-store.service';
 import {UserDetailPageComponent} from '../system/user-page/user-detail-page/user-detail-page.component';
 import {SystemPageSidenavService} from '../system/services/system-page-sidenav.service';
+import {UserSettingsComponent} from '../system/user-page/user-detail-page/user-settings/user-settings.component';
 
 const declarations = [
   UserDetailPageComponent,
   UserPasswordComponent,
+  UserSettingsComponent,
   PasswordFieldComponent,
 ];
 

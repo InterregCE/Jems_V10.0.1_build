@@ -52,6 +52,7 @@ import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserRole
+import io.cloudflight.jems.server.user.service.model.UserSettings
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import java.math.BigDecimal
 import java.time.ZoneId
@@ -68,6 +69,7 @@ private const val UNIT_COST_ID = 3L
 private val account = UserEntity(
     id = 1,
     email = "admin@admin.dev",
+    sendNotificationsToEmail = false,
     name = "Name",
     surname = "Surname",
     userRole = UserRoleEntity(id = 1, name = "ADMIN"),
@@ -197,6 +199,7 @@ fun userWithId(id: Long) = LocalCurrentUser(
     user = User(
         id = id,
         email = "x@y",
+        userSettings = UserSettings(sendNotificationsToEmail = false),
         name = "",
         surname = "",
         userRole = UserRole(0, "", permissions = emptySet(), isDefault = false),

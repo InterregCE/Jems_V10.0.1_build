@@ -24,6 +24,7 @@ internal class UserProjectPersistenceProviderTest : UnitTest() {
             val user = mockk<UserEntity>()
             every { user.id } returns id
             every { user.email } returns "$id-email"
+            every { user.sendNotificationsToEmail } returns false
             every { user.name } returns "$id-name"
             every { user.surname } returns "$id-surname"
             every { user.userRole } returns UserRoleEntity(id = 3L, name = "role-3")

@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {ProjectNotificationConfigurationDTO} from '@cat/api';
-import {AbstractControl, FormArray, FormBuilder, Validators} from '@angular/forms';
+import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
 import {CallNotificationSettingsStore} from '../call-notification-settings-store.service';
 import {catchError, map, take, tap} from 'rxjs/operators';
@@ -14,9 +14,6 @@ import {Observable} from 'rxjs';
     styleUrls: ['./project-notifications-settings-tab.component.scss']
 })
 export class ProjectNotificationsSettingsTabComponent {
-
-
-
     projectNotificationsForm = this.formBuilder.group({
         projectNotificationConfigurations: this.formBuilder.array([]),
     });
@@ -50,7 +47,7 @@ export class ProjectNotificationsSettingsTabComponent {
                 {
                     id: notificationConfig.id,
                     active: notificationConfig.active,
-                    emailSubject: notificationConfig.emailSubject,
+                    emailSubject: [notificationConfig.emailSubject, Validators.maxLength(255)],
                     emailBody: [notificationConfig.emailBody, Validators.maxLength(10000)],
                     sendToManager: notificationConfig.sendToManager,
                     sendToLeadPartner: notificationConfig.sendToLeadPartner,

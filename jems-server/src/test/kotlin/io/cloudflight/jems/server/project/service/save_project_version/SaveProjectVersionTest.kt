@@ -31,6 +31,7 @@ internal class SaveProjectVersionTest : UnitTest() {
     private val user = UserEntity(
         id = userId,
         email = "admin@admin.dev",
+        sendNotificationsToEmail = false,
         name = "Name",
         surname = "Surname",
         userRole = UserRoleEntity(id = 1, name = "ADMIN"),

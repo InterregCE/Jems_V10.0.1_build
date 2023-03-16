@@ -383,6 +383,13 @@ export class Permission {
           ],
           viewTooltip: 'call.list.open.title.view.tooltip'
         },
+        {
+          name: 'call.detail.notifications.config.title',
+          mode: PermissionMode.HIDDEN_VIEW,
+          viewPermissions: [
+            PermissionsEnum.NotificationsRetrieve,
+          ],
+        },
       ],
     },
     {

@@ -10,6 +10,7 @@ import io.cloudflight.jems.server.config.AppProperties
 import io.cloudflight.jems.server.notification.mail.service.model.MailNotificationInfo
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserRole
+import io.cloudflight.jems.server.user.service.model.UserSettings
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.clearAllMocks
 import io.mockk.impl.annotations.InjectMockKs
@@ -27,6 +28,7 @@ internal class UserUpdatedEventListenersTest : UnitTest() {
         val oldUser = User(
             id = 1,
             email = "applicant@interact.eu",
+            userSettings = UserSettings(sendNotificationsToEmail = false),
             name = "Noam",
             surname = "Chomsky",
             userRole = UserRole(
@@ -40,6 +42,7 @@ internal class UserUpdatedEventListenersTest : UnitTest() {
         val user = User(
             id = 1,
             email = "applicant@interact.eu",
+            userSettings = UserSettings(sendNotificationsToEmail = false),
             name = "Michael",
             surname = "Schumacher",
             userRole = UserRole(

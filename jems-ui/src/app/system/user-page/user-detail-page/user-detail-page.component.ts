@@ -12,8 +12,8 @@ import {map, take, tap} from 'rxjs/operators';
 import {SystemPageSidenavService} from '../../services/system-page-sidenav.service';
 import {FormState} from '@common/components/forms/form-state';
 import {RoutingService} from '@common/services/routing.service';
-import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {PermissionService} from '../../../security/permissions/permission.service';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import UserStatusEnum = UserDTO.UserStatusEnum;
 
 @Component({
@@ -141,6 +141,8 @@ export class UserDetailPageComponent extends ViewEditFormComponent {
       this.router.navigate(['/app/system/user']);
     }
     this.changeFormState$.next(FormState.VIEW);
+    this.userForm.get('sendNotificationsToEmail')?.enable();
+
     this.resetUser(user);
   }
 

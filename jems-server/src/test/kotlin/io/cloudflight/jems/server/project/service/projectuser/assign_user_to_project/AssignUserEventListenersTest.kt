@@ -26,8 +26,8 @@ internal class AssignUserEventListenersTest : UnitTest() {
     companion object {
         val project = ProjectSummary(1L, "cid", 1L, "call", "acronym", ApplicationStatus.STEP1_DRAFT)
         val userRole = UserRoleSummary(2L, "role", false)
-        val user = UserSummary(3L, "email", "", "", userRole, UserStatus.ACTIVE)
-        val otherUser = UserSummary(4L, "other@email", "", "", userRole, UserStatus.ACTIVE)
+        val user = UserSummary(3L, "email", sendNotificationsToEmail = false, "", "", userRole, UserStatus.ACTIVE)
+        val otherUser = UserSummary(4L, "other@email", sendNotificationsToEmail = false, "", "", userRole, UserStatus.ACTIVE)
     }
 
     @RelaxedMockK

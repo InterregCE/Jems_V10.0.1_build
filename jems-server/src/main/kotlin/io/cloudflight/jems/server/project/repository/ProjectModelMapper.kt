@@ -65,6 +65,7 @@ fun List<ProjectVersionRow>.toProjectVersion() =
             UserEntity(
                 groupedRows.value.first().userId,
                 groupedRows.value.first().email,
+                groupedRows.value.first().sendNotificationsToEmail,
                 groupedRows.value.first().name,
                 groupedRows.value.first().surname,
                 UserRoleEntity(groupedRows.value.first().roleId, groupedRows.value.first().roleName),
@@ -200,6 +201,7 @@ fun List<ProjectRow>.toProjectEntryWithDetailData(
                 UserSummary(
                     groupedRows.value.first().userId,
                     groupedRows.value.first().email,
+                    groupedRows.value.first().sendNotificationsToEmail,
                     groupedRows.value.first().name,
                     groupedRows.value.first().surname,
                     UserRoleSummary(

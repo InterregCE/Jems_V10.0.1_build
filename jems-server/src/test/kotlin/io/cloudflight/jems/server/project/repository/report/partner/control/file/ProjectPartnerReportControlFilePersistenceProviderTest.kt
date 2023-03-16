@@ -40,6 +40,7 @@ class ProjectPartnerReportControlFilePersistenceProviderTest : UnitTest() {
             user = UserEntity(
                 id = 1L,
                 email = "some@email",
+                sendNotificationsToEmail = false,
                 name = "Smith",
                 surname = "Jon",
                 userRole = UserRoleEntity(

@@ -10,6 +10,7 @@ import io.cloudflight.jems.server.config.AppProperties
 import io.cloudflight.jems.server.notification.mail.service.model.MailNotificationInfo
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserRole
+import io.cloudflight.jems.server.user.service.model.UserSettings
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.clearAllMocks
 import io.mockk.impl.annotations.InjectMockKs
@@ -27,6 +28,7 @@ internal class UserCreatedEventListenersTest : UnitTest() {
         val user = User(
             id = 1,
             email = "applicant@interact.eu",
+            userSettings = UserSettings(sendNotificationsToEmail = false),
             name = "Michael",
             surname = "Schumacher",
             userRole = UserRole(
@@ -67,6 +69,7 @@ internal class UserCreatedEventListenersTest : UnitTest() {
                 entityRelatedId = 1,
                 description = "A new user applicant@interact.eu was created:\n" +
                     "email set to 'applicant@interact.eu',\n" +
+                    "userSettings set to disabled,\n" +
                     "name set to 'Michael',\n" +
                     "surname set to 'Schumacher',\n" +
                     "userRole set to 'applicant(id=1)',\n" +

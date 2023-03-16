@@ -121,6 +121,7 @@ class ContractingChecklistInstancePersistenceTest : UnitTest() {
     private val user = UserEntity(
         id = creatorId,
         email = "test@email.com",
+        sendNotificationsToEmail = false,
         name = "name",
         surname = "surname",
         userRole = UserRoleEntity(2L, "name"),

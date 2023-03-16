@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaborato
 import io.cloudflight.jems.server.project.service.partner.get_partner_user_collaborator.GetPartnerUserCollaborators
 import io.cloudflight.jems.server.user.service.authorization.UserAuthorization
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.assignment.PartnerCollaborator
 import io.mockk.clearMocks
 import io.mockk.every
@@ -28,6 +29,8 @@ internal class GetPartnerUserCollaboratorsTest : UnitTest() {
             userId = USER_ID,
             partnerId = PARTNER_ID,
             userEmail = "test",
+            sendNotificationsToEmail = false,
+            userStatus = UserStatus.ACTIVE,
             level = PartnerCollaboratorLevel.EDIT,
             gdpr = false
         )

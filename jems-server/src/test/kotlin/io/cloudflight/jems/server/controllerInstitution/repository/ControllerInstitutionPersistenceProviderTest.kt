@@ -83,6 +83,7 @@ class ControllerInstitutionPersistenceProviderTest: UnitTest() {
                     user = UserEntity(
                         id = 1L,
                         email = "some email",
+                        sendNotificationsToEmail = false,
                         name = "some name",
                         surname = "some surname",
                         userRole = UserRoleEntity(

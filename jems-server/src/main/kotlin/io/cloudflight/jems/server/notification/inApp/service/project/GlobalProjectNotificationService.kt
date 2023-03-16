@@ -17,6 +17,7 @@ import io.cloudflight.jems.server.project.service.projectuser.UserProjectCollabo
 import io.cloudflight.jems.server.project.service.projectuser.UserProjectPersistence
 import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.UserRolePersistence
+import io.cloudflight.jems.server.user.service.model.UserEmailNotification
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.cloudflight.jems.server.user.service.model.assignment.CollaboratorAssignedToProject
@@ -66,39 +67,43 @@ class GlobalProjectNotificationService(
             type = type,
         ) else null) ?: return null
 
-        val managers = if (!notification.sendToManager) emptySet() else
+        val managers = if (!notification.sendToManager) emptyMap() else
             userProjectCollaboratorPersistence.getUserIdsForProject(projectId).emails()
 
         val partnerIdsByType = partnerPersistence.findTop30ByProjectId(projectId).groupBy({ it.role }, { it.id })
         val leadPartnerId = partnerIdsByType[ProjectPartnerRole.LEAD_PARTNER]?.firstOrNull()
         val partnerIds = partnerIdsByType[ProjectPartnerRole.PARTNER]?.toSet() ?: emptySet()
 
-        val leadPartnerCollaborators = if (leadPartnerId == null || !notification.sendToLeadPartner) emptySet() else
+        val leadPartnerCollaborators = if (leadPartnerId == null || !notification.sendToLeadPartner) emptyMap() else
             partnerCollaboratorPersistence.findByProjectAndPartners(projectId, setOf(leadPartnerId))
                 .partnerCollaboratorEmails()
 
         val nonLeadPartnerCollaborators =
-            if (partnerIds.isEmpty() || !notification.sendToProjectPartners) emptySet() else
+            if (partnerIds.isEmpty() || !notification.sendToProjectPartners) emptyMap() else
                 partnerCollaboratorPersistence.findByProjectAndPartners(projectId, partnerIds)
                     .partnerCollaboratorEmails()
 
-        val programmeUsers = if (!notification.sendToProjectAssigned) emptySet() else
-            userProjectPersistence.getUsersForProject(projectId).emails() union getUsersWithProjectRetrievePermissions().emails()
+        val programmeUsers = if (!notification.sendToProjectAssigned) emptyMap() else
+            userProjectPersistence.getUsersForProject(projectId)
+                .emails() + getUsersWithProjectRetrievePermissions().emails()
 
         val emailsToNotify =
-            managers union leadPartnerCollaborators union nonLeadPartnerCollaborators union programmeUsers
+            managers + leadPartnerCollaborators + nonLeadPartnerCollaborators + programmeUsers
 
         return NotificationConfigurationWithRecipients(
-            recipientsInApp = emailsToNotify,
-            recipientsEmail = emailsToNotify,
+            recipientsInApp = emailsToNotify.keys,
+            recipientsEmail = emailsToNotify.filterValues { it.isEmailEnabled && it.isActive() }.keys,
             config = notification,
             emailTemplate = if (type.isProjectNotification()) "notification.html" else null,
         )
     }
 
-    private fun Set<PartnerCollaborator>.partnerCollaboratorEmails() = mapTo(HashSet()) { it.userEmail }
-    private fun Collection<UserSummary>.emails() = mapTo(HashSet()) { it.email }
-    private fun List<CollaboratorAssignedToProject>.emails() = mapTo(HashSet()) { it.userEmail }
+    private fun Set<PartnerCollaborator>.partnerCollaboratorEmails() =
+        associateBy({ it.userEmail }, { UserEmailNotification(it.sendNotificationsToEmail, it.userStatus) })
+    private fun Collection<UserSummary>.emails() =
+        associateBy({ it.email }, { UserEmailNotification(it.sendNotificationsToEmail, it.userStatus) })
+    private fun List<CollaboratorAssignedToProject>.emails() =
+        associateBy({ it.userEmail }, { UserEmailNotification(it.sendNotificationsToEmail, it.userStatus) })
 
     private fun getUsersWithProjectRetrievePermissions() = userPersistence.findAllWithRoleIdIn(
         roleIds = userRolePersistence.findRoleIdsHavingAndNotHavingPermissions(
@@ -116,5 +121,4 @@ class GlobalProjectNotificationService(
             messageType = type.name,
         ),
     )
-
 }

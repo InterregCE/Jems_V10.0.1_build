@@ -49,6 +49,7 @@ internal class GetAssociatedOrganizationInteractorTest : UnitTest() {
         name = "Name",
         password = "hash",
         email = "admin@admin.dev",
+        sendNotificationsToEmail = false,
         surname = "Surname",
         userRole = userRole,
         userStatus = UserStatus.ACTIVE

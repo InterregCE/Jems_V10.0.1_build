@@ -46,6 +46,7 @@ class StartSecondStepInteractorTest : UnitTest() {
         private val userEntity = UserEntity(
             id = 2L,
             email = "some@applicant",
+            sendNotificationsToEmail = false,
             name ="",
             surname = "",
             userRole = UserRoleEntity(0, "role"),

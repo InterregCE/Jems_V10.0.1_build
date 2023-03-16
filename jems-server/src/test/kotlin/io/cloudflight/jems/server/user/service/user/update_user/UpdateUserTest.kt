@@ -9,6 +9,7 @@ import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserChange
 import io.cloudflight.jems.server.user.service.model.UserRole
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
+import io.cloudflight.jems.server.user.service.model.UserSettings
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.UserWithPassword
 import io.mockk.every
@@ -30,6 +31,7 @@ internal class UpdateUserTest : UnitTest() {
         private val oldUser = UserWithPassword(
             id = USER_ID,
             email = "maintainer_old@interact.eu",
+            userSettings = UserSettings(sendNotificationsToEmail = false),
             name = "Michael_old",
             surname = "Schumacher_old",
             userRole = UserRole(
@@ -74,6 +76,7 @@ internal class UpdateUserTest : UnitTest() {
         val expectedUser = User(
             id = USER_ID,
             email = "maintainer@interact.eu",
+            userSettings = UserSettings(sendNotificationsToEmail = false),
             name = "Michael",
             surname = "Schumacher",
             userRole = UserRole(

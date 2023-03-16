@@ -418,7 +418,15 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
         val status1 =
             ProjectStatusHistoryEntity(id = 1, status = ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED, user = ProjectPartnerTestUtil.user)
 
-         val userSummary = UserSummary(ProjectPartnerTestUtil.user.id, ProjectPartnerTestUtil.user.email, ProjectPartnerTestUtil.user.name, ProjectPartnerTestUtil.user.surname, UserRoleSummary(1L, "ADMIN"), UserStatus.ACTIVE)
+        val userSummary = UserSummary(
+            ProjectPartnerTestUtil.user.id,
+            ProjectPartnerTestUtil.user.email,
+            ProjectPartnerTestUtil.user.sendNotificationsToEmail,
+            ProjectPartnerTestUtil.user.name,
+            ProjectPartnerTestUtil.user.surname,
+            UserRoleSummary(1L, "ADMIN"),
+            UserStatus.ACTIVE
+        )
 
         val expectedStatus = ProjectStatus(id = 2, ApplicationStatus.APPROVED, userSummary, status2.updated, null, null, null)
         every {

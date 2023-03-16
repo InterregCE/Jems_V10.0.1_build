@@ -222,6 +222,7 @@ class ControllerInstitutionPersistenceProviderTest : UnitTest() {
                         name = USER_NAME,
                         password = "hash",
                         email = MONITOR_USER_1_EMAIL,
+                        sendNotificationsToEmail = false,
                         surname = USER_SURNAME,
                         userRole = UserRoleEntity(3L, "Controller"),
                         userStatus = UserStatus.ACTIVE
@@ -237,6 +238,7 @@ class ControllerInstitutionPersistenceProviderTest : UnitTest() {
                         name = USER_NAME,
                         password = "hash",
                         email = MONITOR_USER_2_EMAIL,
+                        sendNotificationsToEmail = false,
                         surname = USER_SURNAME,
                         userRole = UserRoleEntity(3L, "Controller"),
                         userStatus = UserStatus.ACTIVE

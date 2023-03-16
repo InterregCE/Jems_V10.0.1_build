@@ -533,6 +533,7 @@ internal class ProjectPersistenceProviderTest : UnitTest() {
                             user = UserSummary(
                                 id = user.id,
                                 email = user.email,
+                                sendNotificationsToEmail = user.sendNotificationsToEmail,
                                 name = user.name,
                                 surname = user.surname,
                                 userRole = UserRoleSummary(id = 1, name = "ADMIN"),
@@ -554,6 +555,7 @@ internal class ProjectPersistenceProviderTest : UnitTest() {
                             user = UserSummary(
                                 id = user.id,
                                 email = user.email,
+                                sendNotificationsToEmail = user.sendNotificationsToEmail,
                                 name = user.name,
                                 surname = user.surname,
                                 userRole = UserRoleSummary(id = 1, name = "ADMIN"),
@@ -588,6 +590,7 @@ internal class ProjectPersistenceProviderTest : UnitTest() {
         every { mockRow.note } returns project.currentStatus.note!!
         every { mockRow.userId } returns 1L
         every { mockRow.email } returns "admin@admin.dev"
+        every { mockRow.sendNotificationsToEmail } returns false
         every { mockRow.name } returns "Name"
         every { mockRow.surname } returns "Surname"
         every { mockRow.userStatus } returns UserStatus.ACTIVE
@@ -633,7 +636,7 @@ internal class ProjectPersistenceProviderTest : UnitTest() {
                     applicant = project.applicant.toUserSummary(),
                     projectStatus = ProjectStatus(
                         mockRow.statusId, mockRow.status,
-                    UserSummary(mockRow.userId, mockRow.email, mockRow.name, mockRow.surname,
+                    UserSummary(mockRow.userId, mockRow.email, mockRow.sendNotificationsToEmail, mockRow.name, mockRow.surname,
                         UserRoleSummary(mockRow.roleId, mockRow.roleName), mockRow.userStatus),
                         ZonedDateTime.of(mockRow.updated.toLocalDateTime(), ZoneId.systemDefault()),
                         mockRow.decisionDate, mockRow.entryIntoForceDate, mockRow.note

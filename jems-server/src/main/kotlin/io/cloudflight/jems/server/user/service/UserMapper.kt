@@ -24,6 +24,7 @@ fun UserWithPassword.toLocalCurrentUser() = LocalCurrentUser(
 
 fun UserRegistrationDTO.toEntity(role: UserRoleEntity, password: String) = UserEntity(
     email = this.email,
+    sendNotificationsToEmail = false,
     name = this.name,
     surname = this.surname,
     userRole = role,

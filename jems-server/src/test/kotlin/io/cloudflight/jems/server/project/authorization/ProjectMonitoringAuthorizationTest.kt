@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserRole
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
+import io.cloudflight.jems.server.user.service.model.UserSettings
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.MockKAnnotations
 import io.mockk.clearMocks
@@ -25,6 +26,7 @@ class ProjectMonitoringAuthorizationTest: UnitTest() {
         val programmeUser = User(
             id = 22,
             email = "user@programme.dev",
+            userSettings = UserSettings(sendNotificationsToEmail = false),
             name = "",
             surname = "",
             userRole = UserRole(id = 2, name = "programme user", permissions = emptySet(), isDefault = false),

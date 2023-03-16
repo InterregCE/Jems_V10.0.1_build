@@ -14,6 +14,7 @@ import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaboratorPersistence
 import io.cloudflight.jems.server.project.service.projectuser.UserProjectCollaboratorPersistence
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.assignment.CollaboratorAssignedToProject
 import io.cloudflight.jems.server.user.service.model.assignment.PartnerCollaborator
 import io.mockk.clearMocks
@@ -59,6 +60,8 @@ internal class ProjectContractingPartnerAuthorizationTest: UnitTest() {
             userId = 1L,
             partnerId = 99L,
             userEmail = "collaborator@test.com",
+            sendNotificationsToEmail = false,
+            userStatus = UserStatus.ACTIVE,
             level = PartnerCollaboratorLevel.VIEW,
             gdpr = false
         )
@@ -66,6 +69,8 @@ internal class ProjectContractingPartnerAuthorizationTest: UnitTest() {
         private val collaboratorAssignedToProject = CollaboratorAssignedToProject(
             userId = 1L,
             userEmail = "collaborator@test.com",
+            sendNotificationsToEmail = false,
+            userStatus = UserStatus.ACTIVE,
             level = ProjectCollaboratorLevel.VIEW
         )
     }

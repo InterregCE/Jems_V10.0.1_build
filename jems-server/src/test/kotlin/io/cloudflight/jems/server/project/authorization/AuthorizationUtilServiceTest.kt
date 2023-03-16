@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstit
 import io.cloudflight.jems.server.project.entity.partneruser.PartnerCollaboratorLevel
 import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaboratorPersistence
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.assignment.PartnerCollaborator
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -27,6 +28,8 @@ class AuthorizationUtilServiceTest: UnitTest() {
             userId = PARTNER_COLLABORATOR_USER_ID,
             partnerId = PARTNER_COLLABORATOR_USER_ID,
             userEmail = "user05@jems.eu",
+            sendNotificationsToEmail = false,
+            userStatus = UserStatus.ACTIVE,
             level = PartnerCollaboratorLevel.EDIT,
             gdpr = false
         )

@@ -14,6 +14,7 @@ interface ProjectVersionRow {
     //// user
     val userId: Long
     var email: String
+    var sendNotificationsToEmail: Boolean
     var name: String
     var surname: String
     var userStatus: UserStatus

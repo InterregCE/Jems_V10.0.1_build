@@ -9,6 +9,7 @@ import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaborato
 import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.UserRolePersistence
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectCreate
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.assignment.PartnerCollaborator
 import io.cloudflight.jems.server.utils.partner.projectPartnerEntity
 import io.cloudflight.jems.server.utils.partner.projectPartnerSummary
@@ -68,7 +69,14 @@ internal class AssignUserCollaboratorToPartnerTest : UnitTest() {
     fun `update partner collaborators`() {
         val userData = slot<Map<Long, Pair<PartnerCollaboratorLevel, Boolean>>>()
         val expectedResult = setOf(
-            PartnerCollaborator(userId = USER_ID, partnerId = PARTNER_ID, userEmail = user.email, PartnerCollaboratorLevel.EDIT, gdpr = false),
+            PartnerCollaborator(
+                userId = USER_ID,
+                partnerId = PARTNER_ID,
+                userEmail = user.email,
+                sendNotificationsToEmail = false,
+                userStatus = UserStatus.ACTIVE,
+                PartnerCollaboratorLevel.EDIT,
+                gdpr = false),
         )
         val allEmails = slot<Collection<String>>()
 
@@ -96,7 +104,15 @@ internal class AssignUserCollaboratorToPartnerTest : UnitTest() {
     fun `update partner collaborators with GDPR`() {
         val userData = slot<Map<Long, Pair<PartnerCollaboratorLevel, Boolean>>>()
         val expectedResult = setOf(
-            PartnerCollaborator(userId = USER_ID, partnerId = PARTNER_ID, userEmail = user.email, PartnerCollaboratorLevel.EDIT, gdpr = true),
+            PartnerCollaborator(
+                userId = USER_ID,
+                partnerId = PARTNER_ID,
+                userEmail = user.email,
+                sendNotificationsToEmail = false,
+                userStatus = UserStatus.ACTIVE,
+                PartnerCollaboratorLevel.EDIT,
+                gdpr = true
+            ),
         )
         val allEmails = slot<Collection<String>>()
 

@@ -22,6 +22,7 @@ import io.cloudflight.jems.server.project.service.report.partner.control.file.ge
 import io.cloudflight.jems.server.resources.service.get_logos.GetLogosInteractor
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserRole
+import io.cloudflight.jems.server.user.service.model.UserSettings
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.clearMocks
 import io.mockk.every
@@ -53,6 +54,7 @@ class GenerateReportControlExportTest : UnitTest() {
         val userController = User(
             id = 3,
             email = "controller@jems.eu",
+            userSettings = UserSettings(sendNotificationsToEmail = false),
             name = "John",
             surname = "Doe",
             userRole = CONTROLER_ROLE,

@@ -84,6 +84,7 @@ internal class RegisterUserTest : UnitTest() {
         val expectedUser = User(
             id = USER_ID,
             email = "applicant@interact.eu",
+            userSettings = UserSettings(sendNotificationsToEmail = false),
             name = "Michael",
             surname = "Schumacher",
             userRole = UserRole(

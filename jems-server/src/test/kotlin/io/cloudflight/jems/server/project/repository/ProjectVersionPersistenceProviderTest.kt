@@ -31,6 +31,7 @@ class ProjectVersionPersistenceProviderTest : UnitTest() {
     private val user = UserEntity(
         id = userId,
         email = "admin@admin.dev",
+        sendNotificationsToEmail = false,
         name = "Name",
         surname = "Surname",
         userRole = UserRoleEntity(id = 1, name = "ADMIN"),
@@ -83,6 +84,7 @@ class ProjectVersionPersistenceProviderTest : UnitTest() {
         every { versionMock.status } returns ApplicationStatus.DRAFT
         every { versionMock.userId } returns projectVersionEntity.user.id
         every { versionMock.email } returns projectVersionEntity.user.email
+        every { versionMock.sendNotificationsToEmail } returns projectVersionEntity.user.sendNotificationsToEmail
         every { versionMock.name } returns projectVersionEntity.user.name
         every { versionMock.surname } returns projectVersionEntity.user.surname
         every { versionMock.userStatus } returns projectVersionEntity.user.userStatus
@@ -108,6 +110,7 @@ class ProjectVersionPersistenceProviderTest : UnitTest() {
             override val status = ApplicationStatus.DRAFT
             override val userId= 2L
             override var email = "email@example.com"
+            override var sendNotificationsToEmail = false
             override var name = "name"
             override var surname =  "surname"
             override var userStatus = UserStatus.ACTIVE
@@ -123,6 +126,7 @@ class ProjectVersionPersistenceProviderTest : UnitTest() {
             override val status = ApplicationStatus.SUBMITTED
             override val userId= 3L
             override var email = "email2@example.com"
+            override var sendNotificationsToEmail = false
             override var name = "name2"
             override var surname =  "surname2"
             override var userStatus = UserStatus.ACTIVE

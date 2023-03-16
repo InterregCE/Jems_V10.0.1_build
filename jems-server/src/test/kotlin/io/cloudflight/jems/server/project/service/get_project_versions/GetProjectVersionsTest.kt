@@ -26,6 +26,7 @@ internal class GetProjectVersionsTest : UnitTest() {
                 name = "Name",
                 password = "hash",
                 email = "admin@admin.dev",
+                sendNotificationsToEmail = false,
                 surname = "surname",
                 userRole = UserRoleEntity(id = 1, name = "ADMIN"),
                 userStatus = UserStatus.ACTIVE

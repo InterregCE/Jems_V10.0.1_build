@@ -9,6 +9,7 @@ import io.cloudflight.jems.server.config.AppProperties
 import io.cloudflight.jems.server.notification.mail.service.model.MailNotificationInfo
 import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.model.UserRole
+import io.cloudflight.jems.server.user.service.model.UserSettings
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.UserWithPassword
 import io.mockk.every
@@ -26,6 +27,7 @@ internal class SendPasswordResetLinkToEmailTest : UnitTest() {
     private val userWithPassword = UserWithPassword(
         id = 1L,
         email = email,
+        userSettings = UserSettings(sendNotificationsToEmail = false),
         name = "name",
         surname = "surname",
         userRole = UserRole(2L, "name", emptySet(), false),

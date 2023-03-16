@@ -26,6 +26,7 @@ class ProjectStatusTestUtil {
 
         val userSummary = UserSummary(
             email = "admin@admin.dev",
+            sendNotificationsToEmail = false,
             name = "Name",
             surname = "Surname",
             userRole = UserRoleSummary(name = "role"),

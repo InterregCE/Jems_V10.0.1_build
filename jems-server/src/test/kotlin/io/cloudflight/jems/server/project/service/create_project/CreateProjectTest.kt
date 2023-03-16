@@ -101,6 +101,7 @@ internal class CreateProjectTest : UnitTest() {
         private val userEntity = UserEntity(
             id = USER_ID,
             email = "some@applicant",
+            sendNotificationsToEmail = false,
             name ="",
             surname = "",
             userRole = UserRoleEntity(0, "role"),

@@ -19,7 +19,7 @@ export class ProjectReportIdentificationExtensionStore {
   projectReportId$: Observable<number>;
   updatedReportStatus$ = new Subject<ProjectReportSummaryDTO.StatusEnum>();
   projectReportIdentification$: Observable<ProjectReportIdentificationDTO>;
-  resultIndicatorOverview$: Observable<Array<ProjectReportResultIndicatorOverviewDTO>>;
+  resultIndicatorOverview$: Observable<ProjectReportResultIndicatorOverviewDTO[]>;
 
   private updatedReportIdentification$ = new Subject<ProjectReportIdentificationDTO>();
 
@@ -63,7 +63,7 @@ export class ProjectReportIdentificationExtensionStore {
     );
   }
 
-  public resultIndicatorOverview(): Observable<Array<ProjectReportResultIndicatorOverviewDTO>> {
+  public resultIndicatorOverview(): Observable<ProjectReportResultIndicatorOverviewDTO[]> {
     return combineLatest([
       this.projectStore.projectId$,
       this.projectReportId$,

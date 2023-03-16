@@ -13,7 +13,6 @@
                 </button>
             </ng-container>
         </div>
-
         <mat-form-field *jemsHasPermission="PermissionsEnum.UserUpdateRole">
             <mat-label>{{'user.detail.field.status' | translate}}</mat-label>
             <mat-select formControlName="userStatus" required>
@@ -95,6 +94,17 @@
             </jems-alert>
         </div>
     </form>
+
+    <div class="user-settings">
+        <jems-user-settings class="user-settings"
+                            [disabled]="false"
+                            [userId]="details.user?.id"
+                            [userSettings]="details.user.userSettings"
+                            [error$]="userStore.userSettingsSaveError$"
+                            [ownUser]="details.currentUser?.id === details.user?.id"
+                            [success$]="userStore.userSettingsSaveSuccess$">
+        </jems-user-settings>
+    </div>
 
     <ng-container
             *ngIf="details.canUpdatePassword">

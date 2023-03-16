@@ -10,6 +10,7 @@ import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectC
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectCreatorCollaboratorsUpdate
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectMonitorCollaboratorsRetrieve
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectMonitorCollaboratorsUpdate
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.UserUpdate
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
 
@@ -28,6 +29,14 @@ annotation class CanCreateUser
 @Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("hasAuthority('UserUpdate')")
 annotation class CanUpdateUser
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@userAuthorization.isThisUser(#user.id)")
+annotation class IsCurrentUser
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@userAuthorization.canUpdateUserProfile(#userSettings.id)")
+annotation class CanUpdateUserSettings
 
 @Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("hasAuthority('UserUpdatePassword')")
@@ -56,6 +65,9 @@ class UserAuthorization(
 
     fun isThisUser(userId: Long): Boolean =
         securityService.currentUser?.user?.id == userId
+
+    fun canUpdateUserProfile(userId: Long): Boolean =
+        this.isThisUser(userId) || hasPermission(UserUpdate)
 
     fun hasViewProjectPrivilegesPermission(projectId: Long) = hasView(projectId)
 

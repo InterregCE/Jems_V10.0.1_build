@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.projectuser.get_user_collabor
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel
 import io.cloudflight.jems.server.project.service.projectuser.UserProjectCollaboratorPersistence
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.assignment.CollaboratorAssignedToProject
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -13,7 +14,13 @@ import org.junit.jupiter.api.Test
 internal class GetUserCollaboratorsAssignedToProjectsTest : UnitTest() {
 
     companion object {
-        private val collaborator = CollaboratorAssignedToProject(userId = 400L, userEmail = "four@hundred.com", level = ProjectCollaboratorLevel.MANAGE)
+        private val collaborator = CollaboratorAssignedToProject(
+            userId = 400L,
+            userEmail = "four@hundred.com",
+            sendNotificationsToEmail = false,
+            userStatus = UserStatus.ACTIVE,
+            level = ProjectCollaboratorLevel.MANAGE
+        )
     }
 
     @MockK
