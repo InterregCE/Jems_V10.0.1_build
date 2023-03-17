@@ -1,28 +1,4 @@
 {
-  "call": {
-    "flatRates": {
-      "staffCostFlatRateSetup": {
-        "rate": 20,
-        "adjustable": false
-      },
-      "officeAndAdministrationOnStaffCostsFlatRateSetup": {
-        "rate": 15,
-        "adjustable": false
-      },
-      "officeAndAdministrationOnDirectCostsFlatRateSetup": {
-        "rate": 25,
-        "adjustable": false
-      },
-      "travelAndAccommodationOnStaffCostsFlatRateSetup": {
-        "rate": 15,
-        "adjustable": false
-      },
-      "otherCostsOnStaffCostsFlatRateSetup": {
-        "rate": 40,
-        "adjustable": false
-      }
-    }
-  },
   "fundingAmounts": {
     "totalERDF": "240.249,58",
     "totalCBC": "8.800,12",
@@ -45,7 +21,7 @@
   },
   "partners": [
     {
-      "abbreviation": "LP1",
+      "abbreviation": "Lead Partner",
       "role": "LEAD_PARTNER",
       "budget": {
         "options": {

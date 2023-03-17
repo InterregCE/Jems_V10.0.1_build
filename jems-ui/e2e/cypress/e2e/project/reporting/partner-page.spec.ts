@@ -17,7 +17,7 @@ context('Partner reports tests', () => {
           cy.approveModification(applicationId, testData.approvalInfo, user.programmeUser.email);
 
           cy.loginByRequest(user.admin.email).then(() => {
-            cy.visit(`https://amsterdam.interact-eu.net/app/project/detail/${applicationId}`, {failOnStatusCode: false})
+            cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false})
               .then(() => {
                 partnerIdsToDisable.forEach(id => {
                   cy.get('mat-expansion-panel-header:contains("Partner details")')
@@ -38,14 +38,14 @@ context('Partner reports tests', () => {
           });
 
           cy.loginByRequest(user.admin.email).then(() => {
-            cy.visit(`https://amsterdam.interact-eu.net/app/project/detail/${applicationId}`, {failOnStatusCode: false})
+            cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false})
             verifyPartnerAvailability(false);
           });
 
           cy.approveModification(applicationId, testData.approvalInfo, user.programmeUser.email);
 
           cy.loginByRequest(user.admin.email).then(() => {
-            cy.visit(`https://amsterdam.interact-eu.net/app/project/detail/${applicationId}`, {failOnStatusCode: false})
+            cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false})
             verifyPartnerAvailability(true);
           });
         });
@@ -57,9 +57,6 @@ context('Partner reports tests', () => {
 function prepareTestData(testData, application) {
   cy.loginByRequest(user.programmeUser.email);
 
-  call.budgetSettings.flatRates = testData.call.flatRates;
-  call.generalCallSettings.additionalFundAllowed = false;
-
   cy.createCall(call)
     .then(callId => {
       application.details.projectCallId = callId;
@@ -70,7 +67,6 @@ function prepareTestData(testData, application) {
 
   preparePartnersList(testData, application);
 
-  application.associatedOrganisations = null;
   application.lumpSums = [];
   application.description.workPlan[0].activities[0].cypressReferencePartner = application.partners[0].details.abbreviation;
   application.description.workPlan[0].activities[1].cypressReferencePartner = application.partners[1].details.abbreviation;
@@ -92,23 +88,21 @@ function enableModification(applicationId) {
   cy.loginByRequest(user.programmeUser.email);
 
   cy.visit(`app/project/detail/${applicationId}/modification`, {failOnStatusCode: false})
-    .then(() => {
-      cy.contains('Open new modification')
-        .click();
-      cy.get('jems-confirm-dialog')
-        .should('be.visible');
-      cy.get('jems-confirm-dialog')
-        .find('.mat-dialog-actions')
-        .contains('Confirm')
-        .click();
-      cy.contains('You have successfully opened a modification')
-        .should('be.visible');
-    });
+  cy.contains('Open new modification')
+    .click();
+  cy.get('jems-confirm-dialog')
+    .should('be.visible');
+  cy.get('jems-confirm-dialog')
+    .find('.mat-dialog-actions')
+    .contains('Confirm')
+    .click();
+  cy.contains('You have successfully opened a modification')
+    .should('be.visible');
 }
 
 function disableSelectedPartners(testData, applicationId, partnerIdsToDisable) {
   cy.loginByRequest(user.applicantUser.email);
-  cy.visit(`https://amsterdam.interact-eu.net/app/project/detail/${applicationId}/applicationFormPartner`, {failOnStatusCode: false})
+  cy.visit(`app/project/detail/${applicationId}/applicationFormPartner`, {failOnStatusCode: false})
     .then(() => {
       disablePartnersByIds(testData, partnerIdsToDisable);
       submitProjectApp(applicationId);
@@ -160,7 +154,7 @@ function verifyPartnerChangesBeforeApproving(testData, applicationId, partnerIds
 
   cy.loginByRequest(user.admin.email);
 
-  cy.visit(`https://amsterdam.interact-eu.net/app/project/detail/${applicationId}/applicationFormPartner`, {failOnStatusCode: false})
+  cy.visit(`app/project/detail/${applicationId}/applicationFormPartner`, {failOnStatusCode: false})
     .then(() => {
       cy.get('mat-sidenav')
         .should('be.visible');
