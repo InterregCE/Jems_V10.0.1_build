@@ -7,13 +7,15 @@ import io.cloudflight.jems.server.user.entity.UserEntity
 import java.time.ZonedDateTime
 
 fun List<Notification>.toEntities(
-    project: ProjectEntity,
+    creationTime: ZonedDateTime,
     users: Map<String, UserEntity>
 ) = map {
     NotificationEntity(
         userEntity = users[it.email]!!,
-        created = ZonedDateTime.now(),
-        project = project,
+        created = creationTime,
+        projectId = it.project?.projectId,
+        projectIdentifier = it.project?.projectIdentifier,
+        projectAcronym = it.project?.projectAcronym,
         subject = it.subject,
         body = it.body,
         type = it.type

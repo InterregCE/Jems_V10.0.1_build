@@ -1,6 +1,5 @@
 package io.cloudflight.jems.api.call
 
-import io.cloudflight.jems.api.call.dto.CallDetailDTO
 import io.cloudflight.jems.api.call.dto.notificationConfiguration.ProjectNotificationConfigurationDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation

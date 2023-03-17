@@ -15,7 +15,7 @@ import javax.persistence.ManyToOne
 import javax.validation.constraints.NotNull
 import javax.persistence.Id
 
-@Entity(name = "call_notification")
+@Entity(name = "notification")
 class NotificationEntity (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,16 +29,15 @@ class NotificationEntity (
     @field:NotNull
     val created: ZonedDateTime,
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "project_id")
-    @field:NotNull
-    val project: ProjectEntity,
-
-    @field:NotNull
-    val body: String,
+    val projectId: Long?,
+    val projectIdentifier: String?,
+    val projectAcronym: String?,
 
     @field:NotNull
     val subject: String,
+
+    @field:NotNull
+    val body: String,
 
     @Enumerated(EnumType.STRING)
     @field:NotNull

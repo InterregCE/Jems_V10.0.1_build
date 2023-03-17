@@ -18,8 +18,6 @@ import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldSetting
 import io.cloudflight.jems.server.call.service.model.Call
 import io.cloudflight.jems.server.call.service.model.CallDetail
-import io.cloudflight.jems.server.call.service.model.ProjectNotificationSetting
-import io.cloudflight.jems.server.call.service.notificationConfigurations.CallNotificationConfigurationsPersistence
 import io.cloudflight.jems.server.call.service.validator.CallValidator
 import io.cloudflight.jems.server.call.userWithId
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
@@ -101,9 +99,6 @@ class CreateCallTest : UnitTest() {
     lateinit var persistence: CallPersistence
 
     @MockK
-    lateinit var callNotificationConfigurationsPersistence: CallNotificationConfigurationsPersistence
-
-    @MockK
     lateinit var securityService: SecurityService
 
     @RelaxedMockK
@@ -134,12 +129,6 @@ class CreateCallTest : UnitTest() {
                 ApplicationFormFieldSetting.getDefaultApplicationFormFieldConfigurations(expectedCallDetail.type)
             )
         } returns expectedCallDetail
-        every {
-            callNotificationConfigurationsPersistence.saveProjectNotificationConfigurations(
-                expectedCallDetail.id,
-                ProjectNotificationSetting.getDefaultProjectNotificationConfigurations
-            )
-        } returns ProjectNotificationSetting.getDefaultProjectNotificationConfigurations
         every {
             persistence.updateProjectCallStateAids(
                 expectedCallDetail.id,
@@ -227,12 +216,6 @@ class CreateCallTest : UnitTest() {
                 ApplicationFormFieldSetting.getDefaultApplicationFormFieldConfigurations(expectedCallDetail.type)
             )
         } returns expectedCallDetail
-        every {
-            callNotificationConfigurationsPersistence.saveProjectNotificationConfigurations(
-                expectedCallDetail.id,
-                ProjectNotificationSetting.getDefaultProjectNotificationConfigurations
-            )
-        } returns ProjectNotificationSetting.getDefaultProjectNotificationConfigurations
         every {
             persistence.updateProjectCallStateAids(
                 expectedCallDetail.id,

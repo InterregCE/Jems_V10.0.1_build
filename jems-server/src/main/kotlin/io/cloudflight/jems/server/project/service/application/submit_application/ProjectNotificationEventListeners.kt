@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.application.submit_application
 
+import io.cloudflight.jems.server.call.service.model.ProjectNotificationConfiguration
 import io.cloudflight.jems.server.call.service.notificationConfigurations.CallNotificationConfigurationsPersistence
 import io.cloudflight.jems.server.common.event.JemsMailEvent
 import io.cloudflight.jems.server.common.model.Variable
@@ -7,6 +8,8 @@ import io.cloudflight.jems.server.notification.NotificationPersistence
 import io.cloudflight.jems.server.notification.model.Notification
 import io.cloudflight.jems.server.notification.model.NotificationType
 import io.cloudflight.jems.server.notification.mail.service.model.MailNotificationInfo
+import io.cloudflight.jems.server.notification.model.NotificationProject
+import io.cloudflight.jems.server.notification.model.NotificationType.Companion.toNotificationType
 import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
@@ -58,9 +61,11 @@ data class ProjectNotificationEventListeners(
 
         val projectId = event.projectSummary.id
         val callId = event.projectSummary.callId
-        val newStatus = event.newStatus
+        val notificationType = event.newStatus.toNotificationType()
 
-        val notification = callNotificationConfigPersistence.getActiveNotificationOfType(callId, newStatus) ?: return
+        val notification = notificationType?.let {
+            callNotificationConfigPersistence.getActiveNotificationOfType(callId, notificationType)
+        } ?: return
 
         val managers = if (!notification.sendToManager) emptySet() else
             userProjectCollaboratorPersistence.getUserIdsForProject(projectId)
@@ -86,32 +91,11 @@ data class ProjectNotificationEventListeners(
         val emailsToNotify =
             managers union leadPartnerCollaborators union nonLeadPartnerCollaborators union programmeUsers
 
-        val notificationsToSave = emailsToNotify
-            .map { email ->
-                Notification(
-                email = email,
-                subject = notification.emailSubject ?: "",
-                body = notification.emailBody ?: "",
-                type = NotificationType.values().first { it.key == notification.id.toString() }
-                )
-            }
+        val notifications = emailsToNotify.map { email -> notification.buildNotificationFor(email, event.projectSummary) }
+        val emailEvents = notification.buildEmailFor(emailsToNotify, event.projectSummary)
 
-        notificationPersistence.saveNotification(projectId, notificationsToSave)
-
-        eventPublisher.publishEvent(
-            JemsMailEvent(
-                emailTemplateFileName = "notification.html",
-                mailNotificationInfo = MailNotificationInfo(
-                    subject = notification.emailSubject,
-                    templateVariables =
-                    setOf(
-                        Variable("body", notification.emailBody),
-                    ),
-                    recipients = emailsToNotify,
-                    messageType = notification.id.toString()
-                )
-            )
-        )
+        notificationPersistence.saveNotifications(notifications)
+        eventPublisher.publishEvent(emailEvents)
     }
 
     private fun Set<PartnerCollaborator>.partnerCollaboratorEmails() = mapTo(HashSet()) { it.userEmail }
@@ -120,5 +104,30 @@ data class ProjectNotificationEventListeners(
     private fun List<CollaboratorAssignedToProject>.onlyThoseWithManage() =
         filter { it.level == ProjectCollaboratorLevel.MANAGE }
 
-}
+    private fun ProjectSummary.toProject() = NotificationProject(id, customIdentifier, acronym)
 
+    private fun ProjectNotificationConfiguration.buildNotificationFor(email: String, projectSummary: ProjectSummary) = Notification(
+        email = email,
+        subject = emailSubject,
+        body = emailBody,
+        type = NotificationType.valueOf(id.name),
+        project = projectSummary.toProject(),
+    )
+
+    private fun ProjectNotificationConfiguration.buildEmailFor(emails: Set<String>, projectSummary: ProjectSummary) = JemsMailEvent(
+        emailTemplateFileName = "notification-project.html",
+        mailNotificationInfo = MailNotificationInfo(
+            subject = emailSubject,
+            templateVariables =
+            setOf(
+                Variable("projectId", projectSummary.id),
+                Variable("projectIdentifier", projectSummary.customIdentifier),
+                Variable("projectAcronym", projectSummary.acronym),
+                Variable("body", emailBody),
+            ),
+            recipients = emails,
+            messageType = id.toString(),
+        ),
+    )
+
+}

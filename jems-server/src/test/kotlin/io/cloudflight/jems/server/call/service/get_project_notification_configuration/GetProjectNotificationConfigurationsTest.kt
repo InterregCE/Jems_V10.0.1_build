@@ -4,7 +4,7 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.service.model.ProjectNotificationConfiguration
 import io.cloudflight.jems.server.call.service.notificationConfigurations.CallNotificationConfigurationsPersistence
 import io.cloudflight.jems.server.call.service.notificationConfigurations.getProjectNotificationConfiguration.GetProjectNotificationConfigurations
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.notification.model.NotificationType
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -18,7 +18,7 @@ class GetProjectNotificationConfigurationsTest: UnitTest() {
 
         private val projectNotificationConfigurations = listOf(
             ProjectNotificationConfiguration(
-                id = ApplicationStatus.SUBMITTED,
+                id = NotificationType.ProjectSubmitted,
                 active = true,
                 sendToManager = true,
                 sendToLeadPartner = false,
@@ -29,7 +29,7 @@ class GetProjectNotificationConfigurationsTest: UnitTest() {
 
         private val expectedProjectNotificationConfigurations = listOf(
             ProjectNotificationConfiguration(
-                id = ApplicationStatus.SUBMITTED,
+                id = NotificationType.ProjectSubmitted,
                 active = true,
                 sendToManager = true,
                 sendToLeadPartner = false,
@@ -37,7 +37,7 @@ class GetProjectNotificationConfigurationsTest: UnitTest() {
                 sendToProjectAssigned = false,
             ),
             ProjectNotificationConfiguration(
-                id = ApplicationStatus.STEP1_SUBMITTED,
+                id = NotificationType.ProjectSubmittedStep1,
                 active = false,
                 sendToManager = false,
                 sendToLeadPartner = false,
