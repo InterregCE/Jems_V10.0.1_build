@@ -19,4033 +19,821 @@
     "totalPublicContribution": "25.062,09",
     "privateContribution": "166.164,42"
   },
-  "partners": [
-    {
+  "partner": {
+    "details": {
       "abbreviation": "Lead Partner",
       "role": "LEAD_PARTNER",
-      "budget": {
-        "options": {
-          "officeAndAdministrationOnStaffCostsFlatRate": null,
-          "officeAndAdministrationOnDirectCostsFlatRate": 25,
-          "staffCostsFlatRate": null,
-          "travelAndAccommodationOnStaffCostsFlatRate": null,
-          "otherCostsOnStaffCostsFlatRate": null
+      "nameInOriginalLanguage": "Lead Partner in original language",
+      "nameInEnglish": "Lead Partner in english",
+      "department": [
+        {
+          "translation": "API generated department / unit / division DE",
+          "language": "DE"
         },
-        "staff": [
-          {
-            "comments": [
-              {
-                "translation": "API generated staff cost comment DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated staff cost comment EN",
-                "language": "EN"
-              }
-            ],
-            "unitType": [
-              {
-                "translation": "API generated staff cost unit type DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated staff cost unit type EN",
-                "language": "EN"
-              }
-            ],
-            "description": [
-              {
-                "translation": "API generated staff cost description DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated staff cost description EN",
-                "language": "EN"
-              }
-            ],
-            "numberOfUnits": 4,
-            "pricePerUnit": 2500,
-            "budgetPeriods": [
-              {
-                "amount": 2500,
-                "number": 1
-              },
-              {
-                "amount": 0,
-                "number": 2
-              },
-              {
-                "amount": 0,
-                "number": 3
-              },
-              {
-                "amount": 2499.5,
-                "number": 4
-              },
-              {
-                "amount": 2500,
-                "number": 5
-              },
-              {
-                "amount": 2500.5,
-                "number": 6
-              },
-              {
-                "amount": 0,
-                "number": 7
-              },
-              {
-                "amount": 0,
-                "number": 8
-              }
-            ]
-          }
-        ],
-        "travel": [
-          {
-            "description": [
-              {
-                "translation": "API generated travel and accommodation cost description DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated travel and accommodation cost description EN",
-                "language": "EN"
-              }
-            ],
-            "comments": [
-              {
-                "translation": "API generated travel and accommodation cost comments DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated travel and accommodation cost comments EN",
-                "language": "EN"
-              }
-            ],
-            "unitType": [
-              {
-                "translation": "API generated travel and accommodation cost unit type DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated travel and accommodation cost unit type EN",
-                "language": "EN"
-              }
-            ],
-            "numberOfUnits": 1,
-            "pricePerUnit": 10000,
-            "budgetPeriods": [
-              {
-                "amount": 0,
-                "number": 1
-              },
-              {
-                "amount": 10000,
-                "number": 2
-              },
-              {
-                "amount": 0,
-                "number": 3
-              },
-              {
-                "amount": 0,
-                "number": 4
-              },
-              {
-                "amount": 0,
-                "number": 5
-              },
-              {
-                "amount": 0,
-                "number": 6
-              },
-              {
-                "amount": 0,
-                "number": 7
-              },
-              {
-                "amount": 0,
-                "number": 8
-              }
-            ]
-          }
-        ],
-        "external": [
-          {
-            "description": [
-              {
-                "translation": "API external cost description DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API external cost description EN",
-                "language": "EN"
-              }
-            ],
-            "comments": [
-              {
-                "translation": "API generated external cost comments DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated external cost comments EN",
-                "language": "EN"
-              }
-            ],
-            "awardProcedures": [
-              {
-                "translation": "API generated external cost award procedures DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated external cost award procedures EN",
-                "language": "EN"
-              }
-            ],
-            "unitType": [
-              {
-                "translation": "API generated external cost unit type DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated external cost unit type EN",
-                "language": "EN"
-              }
-            ],
-            "numberOfUnits": 10,
-            "pricePerUnit": 1000,
-            "budgetPeriods": [
-              {
-                "amount": 5000,
-                "number": 1
-              },
-              {
-                "amount": 0,
-                "number": 2
-              },
-              {
-                "amount": 0,
-                "number": 3
-              },
-              {
-                "amount": 0,
-                "number": 4
-              },
-              {
-                "amount": 0,
-                "number": 5
-              },
-              {
-                "amount": 0,
-                "number": 6
-              },
-              {
-                "amount": 0,
-                "number": 7
-              },
-              {
-                "amount": 5000,
-                "number": 8
-              }
-            ]
-          }
-        ],
-        "equipment": [
-          {
-            "description": [
-              {
-                "translation": "API generated equipment cost description DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated equipment cost description EN",
-                "language": "EN"
-              }
-            ],
-            "comments": [
-              {
-                "translation": "API generated equipment cost comments DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated equipment cost comments EN",
-                "language": "EN"
-              }
-            ],
-            "unitType": [
-              {
-                "translation": "API generated equipment cost unit type DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated equipment cost unit type EN",
-                "language": "EN"
-              }
-            ],
-            "awardProcedures": [
-              {
-                "translation": "API generated equipment cost award procedures DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated equipment cost award procedures EN",
-                "language": "EN"
-              }
-            ],
-            "numberOfUnits": 1,
-            "pricePerUnit": 10000,
-            "budgetPeriods": [
-              {
-                "amount": 2500,
-                "number": 1
-              },
-              {
-                "amount": 2500,
-                "number": 2
-              },
-              {
-                "amount": 0,
-                "number": 3
-              },
-              {
-                "amount": 5000,
-                "number": 4
-              },
-              {
-                "amount": 0,
-                "number": 5
-              },
-              {
-                "amount": 0,
-                "number": 6
-              },
-              {
-                "amount": 0,
-                "number": 7
-              },
-              {
-                "amount": 0,
-                "number": 8
-              }
-            ]
-          }
-        ],
-        "infrastructure": [
-          {
-            "description": [
-              {
-                "translation": "API generated infrastructure and works cost description DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated infrastructure and works cost description EN",
-                "language": "EN"
-              }
-            ],
-            "comments": [
-              {
-                "translation": "API generated infrastructure and works cost comments DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated infrastructure and works cost comments EN",
-                "language": "EN"
-              }
-            ],
-            "unitType": [
-              {
-                "translation": "API generated infrastructure and works cost unit type DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated infrastructure and works cost unit type EN",
-                "language": "EN"
-              }
-            ],
-            "awardProcedures": [
-              {
-                "translation": "API generated infrastructure and works cost award procedures DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated infrastructure and works cost award procedures EN",
-                "language": "EN"
-              }
-            ],
-            "numberOfUnits": 2,
-            "pricePerUnit": 5000,
-            "budgetPeriods": [
-              {
-                "amount": 0,
-                "number": 1
-              },
-              {
-                "amount": 10000,
-                "number": 2
-              },
-              {
-                "amount": 0,
-                "number": 3
-              },
-              {
-                "amount": 0,
-                "number": 4
-              },
-              {
-                "amount": 0,
-                "number": 5
-              },
-              {
-                "amount": 0,
-                "number": 6
-              },
-              {
-                "amount": 0,
-                "number": 7
-              },
-              {
-                "amount": 0,
-                "number": 8
-              }
-            ]
-          }
-        ],
-        "unit": [
-          {
-            "unitCostId": 6,
-            "numberOfUnits": 1,
-            "budgetPeriods": [
-              {
-                "amount": 155.22,
-                "number": 1
-              },
-              {
-                "amount": 0,
-                "number": 2
-              },
-              {
-                "amount": 0,
-                "number": 3
-              },
-              {
-                "amount": 0,
-                "number": 4
-              },
-              {
-                "amount": 0,
-                "number": 5
-              },
-              {
-                "amount": 0,
-                "number": 6
-              },
-              {
-                "amount": 0,
-                "number": 7
-              },
-              {
-                "amount": 0,
-                "number": 8
-              }
-            ]
-          }
-        ]
-      },
-      "cofinancing": {
-        "finances": [
-          {
-            "fundId": 1,
-            "fundType": "MainFund",
-            "percentage": 60
-          },
-          {
-            "percentage": 40,
-            "fundType": "PartnerContribution"
-          }
-        ],
-        "partnerContributions": [
-          {
-            "status": "Public",
-            "amount": 25062.09,
-            "partner": true
-          }
-        ]
-      },
-      "budgetOverview": [
-        "10.000,00",
-        "12.500,00",
-        "10.000,00",
-        "10.000,00",
-        "10.000,00",
-        "10.000,00",
-        "0,00",
-        "0,00",
-        "155,22",
-        "62.655,22"
+        {
+          "translation": "API generated department / unit / division EN",
+          "language": "EN"
+        }
       ],
-      "cofinancingAmount": "37.593,13"
+      "partnerType": "LocalPublicAuthority",
+      "partnerSubType": "MICRO_ENTERPRISE",
+      "nace": "A_03_22",
+      "otherIdentifierNumber": "654321",
+      "otherIdentifierDescription": [
+        {
+          "translation": "API generated other identifier description DE",
+          "language": "DE"
+        },
+        {
+          "translation": "API generated other identifier description EN",
+          "language": "EN"
+        }
+      ],
+      "pic": "123456789",
+      "legalStatusId": 1,
+      "vat": "123456",
+      "vatRecovery": "Yes"
     },
-    {
-      "abbreviation": "PP2",
-      "role": "PARTNER",
-      "budget": {
-        "options": {
-          "officeAndAdministrationOnStaffCostsFlatRate": 15,
-          "officeAndAdministrationOnDirectCostsFlatRate": null,
-          "staffCostsFlatRate": 20,
-          "travelAndAccommodationOnStaffCostsFlatRate": 15,
-          "otherCostsOnStaffCostsFlatRate": null
+    "address": [
+      {
+        "type": "Organization",
+        "country": "Österreich (AT)",
+        "nutsRegion2": "Wien (AT13)",
+        "nutsRegion3": "Wien (AT130)",
+        "street": "Partnerstreet",
+        "houseNumber": "2",
+        "postalCode": "1020",
+        "city": "Partner city",
+        "homepage": "partner@test.com"
+      },
+      {
+        "type": "Department",
+        "country": "Österreich (AT)",
+        "nutsRegion2": "Oberösterreich (AT31)",
+        "nutsRegion3": "Linz-Wels (AT312)",
+        "street": "Departmentstreet",
+        "houseNumber": "5",
+        "postalCode": "4020",
+        "city": "Department city",
+        "homepage": ""
+      }
+    ],
+    "contact": [
+      {
+        "type": "LegalRepresentative",
+        "title": "Mr",
+        "firstName": "Legal",
+        "lastName": "Representative",
+        "email": "",
+        "telephone": ""
+      },
+      {
+        "type": "ContactPerson",
+        "title": "Ms",
+        "firstName": "Contact",
+        "lastName": "Person",
+        "email": "contact@person.com",
+        "telephone": "+1234567890"
+      }
+    ],
+    "motivation": {
+      "organizationRelevance": [
+        {
+          "translation": "API generated partner motivation DE",
+          "language": "DE"
         },
-        "external": [
-          {
-            "description": [
-              {
-                "translation": "API generated external cost description DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated external cost description EN",
-                "language": "EN"
-              }
-            ],
-            "comments": [
-              {
-                "translation": "API generated external cost comments DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated external cost comments EN",
-                "language": "EN"
-              }
-            ],
-            "awardProcedures": [
-              {
-                "translation": "API generated external cost award procedures DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated external cost award procedures EN",
-                "language": "EN"
-              }
-            ],
-            "unitType": [
-              {
-                "translation": "API generated external cost unit type DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated external cost unit type EN",
-                "language": "EN"
-              }
-            ],
-            "numberOfUnits": 100,
-            "pricePerUnit": 1000,
-            "budgetPeriods": [
-              {
-                "amount": 50000,
-                "number": 1
-              },
-              {
-                "amount": 0,
-                "number": 2
-              },
-              {
-                "amount": 0,
-                "number": 3
-              },
-              {
-                "amount": 0,
-                "number": 4
-              },
-              {
-                "amount": 0,
-                "number": 5
-              },
-              {
-                "amount": 0,
-                "number": 6
-              },
-              {
-                "amount": 0,
-                "number": 7
-              },
-              {
-                "amount": 50000,
-                "number": 8
-              }
-            ]
-          }
-        ],
-        "equipment": [
-          {
-            "comments": [
-              {
-                "translation": "API generated equipment cost comments DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated equipment cost comments EN",
-                "language": "EN"
-              }
-            ],
-            "awardProcedures": [
-              {
-                "translation": "API generated equipment cost award procedures DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated equipment cost award procedures EN",
-                "language": "EN"
-              }
-            ],
-            "unitCostId": 4,
-            "numberOfUnits": 1,
-            "pricePerUnit": 1234.56,
-            "budgetPeriods": [
-              {
-                "amount": 250,
-                "number": 1
-              },
-              {
-                "amount": 250,
-                "number": 2
-              },
-              {
-                "amount": 0,
-                "number": 3
-              },
-              {
-                "amount": 50,
-                "number": 4
-              },
-              {
-                "amount": 5,
-                "number": 5
-              },
-              {
-                "amount": 0,
-                "number": 6
-              },
-              {
-                "amount": 679.56,
-                "number": 7
-              },
-              {
-                "amount": 0,
-                "number": 8
-              }
-            ]
-          }
-        ],
-        "infrastructure": [
-          {
-            "description": [
-              {
-                "translation": "API generated infrastructure and works cost description DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated infrastructure and works cost description EN",
-                "language": "EN"
-              }
-            ],
-            "comments": [
-              {
-                "translation": "API generated infrastructure and works cost comments DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated infrastructure and works cost comments EN",
-                "language": "EN"
-              }
-            ],
-            "unitType": [
-              {
-                "translation": "API generated infrastructure and works cost unit type DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated infrastructure and works cost unit type EN",
-                "language": "EN"
-              }
-            ],
-            "awardProcedures": [
-              {
-                "translation": "API generated infrastructure and works cost award procedures DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated infrastructure and works cost award procedures EN",
-                "language": "EN"
-              }
-            ],
-            "numberOfUnits": 2,
-            "pricePerUnit": 50000,
-            "budgetPeriods": [
-              {
-                "amount": 0,
-                "number": 1
-              },
-              {
-                "amount": 100000,
-                "number": 2
-              },
-              {
-                "amount": 0,
-                "number": 3
-              },
-              {
-                "amount": 0,
-                "number": 4
-              },
-              {
-                "amount": 0,
-                "number": 5
-              },
-              {
-                "amount": 0,
-                "number": 6
-              },
-              {
-                "amount": 0,
-                "number": 7
-              },
-              {
-                "amount": 0,
-                "number": 8
-              }
-            ]
-          }
-        ],
-        "unit": [
-          {
-            "unitCostId": 6,
-            "numberOfUnits": 1,
-            "budgetPeriods": [
-              {
-                "amount": 155.22,
-                "number": 1
-              },
-              {
-                "amount": 0,
-                "number": 2
-              },
-              {
-                "amount": 0,
-                "number": 3
-              },
-              {
-                "amount": 0,
-                "number": 4
-              },
-              {
-                "amount": 0,
-                "number": 5
-              },
-              {
-                "amount": 0,
-                "number": 6
-              },
-              {
-                "amount": 0,
-                "number": 7
-              },
-              {
-                "amount": 0,
-                "number": 8
-              }
-            ]
-          }
-        ]
-      },
-      "cofinancing": {
-        "finances": [
-          {
-            "fundId": 1,
-            "fundType": "MainFund",
-            "percentage": 60
-          },
-          {
-            "percentage": 40,
-            "fundType": "PartnerContribution"
-          }
-        ],
-        "partnerContributions": [
-          {
-            "status": "Private",
-            "amount": 101484.30,
-            "partner": true
-          }
-        ]
-      },
-      "budgetOverview": [
-        "40.246,91",
-        "6.037,03",
-        "6.037,03",
-        "100.000,00",
-        "1.234,56",
-        "100.000,00",
-        "0,00",
-        "0,00",
-        "155,22",
-        "253.710,75"
+        {
+          "translation": "API generated partner motivation EN",
+          "language": "EN"
+        }
       ],
-      "cofinancingAmount": "152.226,45"
+      "organizationRole": [
+        {
+          "translation": "API generated partner role DE",
+          "language": "DE"
+        },
+        {
+          "translation": "API generated partner role EN",
+          "language": "EN"
+        }
+      ],
+      "organizationExperience": [
+        {
+          "translation": "API generated partner experience DE",
+          "language": "DE"
+        },
+        {
+          "translation": "API generated partner experience EN",
+          "language": "EN"
+        }
+      ]
     },
-    {
-      "abbreviation": "PP3",
-      "role": "PARTNER",
-      "budget": {
-        "options": {
-          "officeAndAdministrationOnStaffCostsFlatRate": null,
-          "officeAndAdministrationOnDirectCostsFlatRate": null,
-          "staffCostsFlatRate": null,
-          "travelAndAccommodationOnStaffCostsFlatRate": null,
-          "otherCostsOnStaffCostsFlatRate": 40
+    "budget": {
+      "options": {
+        "officeAndAdministrationOnStaffCostsFlatRate": 10,
+        "officeAndAdministrationOnDirectCostsFlatRate": null,
+        "staffCostsFlatRate": 20,
+        "travelAndAccommodationOnStaffCostsFlatRate": null,
+        "otherCostsOnStaffCostsFlatRate": null
+      },
+      "travel": [
+        {
+          "description": [
+            {
+              "language": "EN",
+              "translation": "API generated travel and accommodation cost description EN"
+            }, {
+              "language": "DE",
+              "translation": "API generated travel and accommodation cost description DE"
+            }
+          ],
+          "comments": [
+            {
+              "language": "DE",
+              "translation": "API generated travel and accommodation cost comments DE"
+            }, {
+              "language": "EN",
+              "translation": "API generated travel and accommodation cost comments EN"
+            }
+          ],
+          "unitType": [
+            {
+              "language": "EN",
+              "translation": "API generated travel and accommodation cost unit type EN"
+            }, {
+              "language": "DE",
+              "translation": "API generated travel and accommodation cost unit type DE"
+            }
+          ],
+          "numberOfUnits": 1,
+          "pricePerUnit": 999.99,
+          "rowSum": 999.99,
+          "budgetPeriods": [
+            {
+              "amount": 500,
+              "number": 1
+            }, {
+              "amount": 499.99,
+              "number": 8
+            }
+          ]
+        }, {
+          "comments": [
+            {
+              "translation": "API generated travel and accommodation cost comments DE",
+              "language": "DE"
+            }, {
+              "translation": "API generated travel and accommodation cost comments EN",
+              "language": "EN"
+            }
+          ],
+          "unitCostId": 2,
+          "numberOfUnits": 2,
+          "pricePerUnit": 555.56,
+          "rowSum": 1111.12,
+          "budgetPeriods": [
+            {
+              "amount": 1111.12,
+              "number": 7
+            }
+          ]
         },
-        "staff": [
-          {
-            "comments": [
-              {
-                "translation": "API generated staff cost comment DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated staff cost comment EN",
-                "language": "EN"
-              }
-            ],
-            "numberOfUnits": 1,
-            "unitType": [
-              {
-                "translation": "API generated staff cost unit type DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated staff cost unit type EN",
-                "language": "EN"
-              }
-            ],
-            "description": [
-              {
-                "translation": "API generated staff cost description DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated staff cost description EN",
-                "language": "EN"
-              }
-            ],
-            "pricePerUnit": 2114.46,
-            "budgetPeriods": [
-              {
-                "amount": 0,
-                "number": 1
-              },
-              {
-                "amount": 0,
-                "number": 2
-              },
-              {
-                "amount": 0,
-                "number": 3
-              },
-              {
-                "amount": 2014.46,
-                "number": 4
-              },
-              {
-                "amount": 0,
-                "number": 5
-              },
-              {
-                "amount": 0,
-                "number": 6
-              },
-              {
-                "amount": 100,
-                "number": 7
-              },
-              {
-                "amount": 0,
-                "number": 8
-              }
-            ]
-          }
-        ]
-      },
-      "cofinancing": {
-        "finances": [
-          {
-            "fundId": 3,
-            "fundType": "MainFund",
-            "percentage": 50
-          },
-          {
-            "percentage": 50,
-            "fundType": "PartnerContribution"
-          }
-        ],
-        "partnerContributions": [
-          {
-            "status": "Private",
-            "amount": 1480.12,
-            "partner": true
-          }
-        ]
-      },
-      "budgetOverview": [
-        "2.114,46",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "845,78",
-        "0,00",
-        "0,00",
-        "2.960,24"
+        {
+          "cypressReferenceUnit": "projectProposedTravel",
+          "comments": [
+            {
+              "translation": "API generated travel and accommodation cost comments DE",
+              "language": "DE"
+            },
+            {
+              "translation": "API generated travel and accommodation cost comments EN",
+              "language": "EN"
+            }
+          ],
+          "numberOfUnits": 1,
+          "pricePerUnit": 4321.99,
+          "rowSum": 4321.99,
+          "budgetPeriods": [
+            {
+              "amount": 1000,
+              "number": 1
+            },
+            {
+              "amount": 1000,
+              "number": 2
+            },
+            {
+              "amount": 1000,
+              "number": 3
+            },
+            {
+              "amount": 0,
+              "number": 4
+            },
+            {
+              "amount": 0,
+              "number": 5
+            },
+            {
+              "amount": 0,
+              "number": 6
+            },
+            {
+              "amount": 0,
+              "number": 7
+            },
+            {
+              "amount": 1321.99,
+              "number": 8
+            }
+          ]
+        }
       ],
-      "cofinancingAmount": "1.480,12"
+      "external": [
+        {
+          "cypressReferenceInvestment": "investment3",
+          "description": [
+            {
+              "language": "DE",
+              "translation": "API generated external cost description DE"
+            }, {
+              "language": "EN",
+              "translation": "API generated external cost description EN"
+            }
+          ],
+          "comments": [
+            {
+              "language": "DE",
+              "translation": "API generated external cost comments DE"
+            }, {
+              "language": "EN",
+              "translation": "API generated external cost comments EN"
+            }
+          ],
+          "unitType": [
+            {
+              "language": "DE",
+              "translation": "API generated external cost unit type DE"
+            }, {
+              "language": "EN",
+              "translation": "API generated external cost unit type EN"
+            }
+          ],
+          "awardProcedures": [
+            {
+              "language": "EN",
+              "translation": "API generated external cost award procedures EN"
+            }, {
+              "language": "DE",
+              "translation": "API generated external cost award procedures DE"
+            }
+          ],
+          "numberOfUnits": 1,
+          "pricePerUnit": 100.99,
+          "rowSum": 100.99,
+          "budgetPeriods": [
+            {
+              "amount": 50.59,
+              "number": 1
+            }, {
+              "amount": 50.40,
+              "number": 8
+            }
+          ]
+        }, {
+          "cypressReferenceInvestment": "investment2",
+          "comments": [
+            {
+              "translation": "API generated external cost comments DE",
+              "language": "DE"
+            }, {
+              "translation": "API generated external cost comments EN",
+              "language": "EN"
+            }
+          ],
+          "unitCostId": 3,
+          "awardProcedures": [
+            {
+              "translation": "API generated external cost award procedures DE",
+              "language": "DE"
+            }, {
+              "translation": "API generated external cost award procedures EN",
+              "language": "EN"
+            }
+          ],
+          "numberOfUnits": 3,
+          "pricePerUnit": 899.99,
+          "rowSum": 2699.97,
+          "budgetPeriods": [
+            {
+              "amount": 1000,
+              "number": 2
+            }, {
+              "amount": 1000,
+              "number": 3
+            }, {
+              "amount": 699.97,
+              "number": 4
+            }
+          ]
+        },
+        {
+          "cypressReferenceInvestment": "investment1",
+          "cypressReferenceUnit": "projectProposedExternal",
+          "comments": [
+            {
+              "translation": "API generated external cost comments DE",
+              "language": "DE"
+            },
+            {
+              "translation": "API generated external cost comments EN",
+              "language": "EN"
+            }
+          ],
+          "awardProcedures": [
+            {
+              "translation": "API generated external cost award procedures DE",
+              "language": "DE"
+            },
+            {
+              "translation": "API generated external cost award procedures EN",
+              "language": "EN"
+            }
+          ],
+          "numberOfUnits": 1,
+          "pricePerUnit": 999.99,
+          "rowSum": 999.99,
+          "budgetPeriods": [
+            {
+              "amount": 100,
+              "number": 5
+            },
+            {
+              "amount": 100,
+              "number": 6
+            },
+            {
+              "amount": 799.99,
+              "number": 7
+            }
+          ]
+        }
+      ],
+      "equipment": [
+        {
+          "cypressReferenceInvestment": "investment2",
+          "description": [
+            {
+              "language": "EN",
+              "translation": "API generated equipment cost description EN"
+            }, {
+              "language": "DE",
+              "translation": "API generated equipment cost description DE"
+            }
+          ],
+          "comments": [
+            {
+              "language": "DE",
+              "translation": "API generated equipment cost comments DE"
+            }, {
+              "language": "EN",
+              "translation": "API generated equipment cost comments EN"
+            }
+          ],
+          "unitType": [
+            {
+              "language": "DE",
+              "translation": "API generated equipment cost unit type DE"
+            }, {
+              "language": "EN",
+              "translation": "API generated equipment cost unit type EN"
+            }
+          ],
+          "awardProcedures": [
+            {
+              "language": "DE",
+              "translation": "API generated equipment cost award procedures DE"
+            }, {
+              "language": "EN",
+              "translation": "API generated equipment cost award procedures EN"
+            }
+          ],
+          "numberOfUnits": 5,
+          "pricePerUnit": 150.66,
+          "rowSum": 753.3,
+          "budgetPeriods": [
+            {
+              "amount": 10.3,
+              "number": 1
+            }, {
+              "amount": 50,
+              "number": 2
+            }, {
+              "amount": 400,
+              "number": 3
+            }, {
+              "amount": 100,
+              "number": 4
+            }, {
+              "amount": 193,
+              "number": 8
+            }
+          ]
+        }, {
+          "cypressReferenceInvestment": "investment1",
+          "comments": [
+            {
+              "translation": "API generated equipment cost comments DE",
+              "language": "DE"
+            }, {
+              "translation": "API generated equipment cost comments EN",
+              "language": "EN"
+            }
+          ],
+          "unitCostId": 4,
+          "awardProcedures": [
+            {
+              "translation": "API generated equipment cost award procedures DE",
+              "language": "DE"
+            }, {
+              "translation": "API generated equipment cost award procedures EN",
+              "language": "EN"
+            }
+          ],
+          "numberOfUnits": 1,
+          "pricePerUnit": 1234.56,
+          "rowSum": 1234.56,
+          "budgetPeriods": [
+            {
+              "amount": 1234.56,
+              "number": 6
+            }
+          ]
+        },
+        {
+          "cypressReferenceInvestment": "investment3",
+          "cypressReferenceUnit": "projectProposedEquipment",
+          "comments": [
+            {
+              "translation": "API generated equipment cost comments DE",
+              "language": "DE"
+            },
+            {
+              "translation": "API generated equipment cost comments EN",
+              "language": "EN"
+            }
+          ],
+          "awardProcedures": [
+            {
+              "translation": "API generated equipment cost award procedures DE",
+              "language": "DE"
+            },
+            {
+              "translation": "API generated equipment cost award procedures EN",
+              "language": "EN"
+            }
+          ],
+          "numberOfUnits": 3,
+          "pricePerUnit": 50.5,
+          "rowSum": 151.5,
+          "budgetPeriods": [
+            {
+              "amount": 50.5,
+              "number": 5
+            },
+            {
+              "amount": 50.5,
+              "number": 7
+            },
+            {
+              "amount": 50.5,
+              "number": 8
+            }
+          ]
+        }
+      ],
+      "infrastructure": [
+        {
+          "cypressReferenceInvestment": "investment1",
+          "description": [
+            {
+              "language": "DE",
+              "translation": "API generated infrastructure and works cost description DE"
+            }, {
+              "language": "EN",
+              "translation": "API generated infrastructure and works cost description EN"
+            }
+          ],
+          "comments": [
+            {
+              "language": "DE",
+              "translation": "API generated infrastructure and works cost comments DE"
+            }, {
+              "language": "EN",
+              "translation": "API generated infrastructure and works cost comments EN"
+            }
+          ],
+          "unitType": [
+            {
+              "language": "EN",
+              "translation": "API generated infrastructure and works cost unit type EN"
+            }, {
+              "language": "DE",
+              "translation": "API generated infrastructure and works cost unit type DE"
+            }
+          ],
+          "awardProcedures": [
+            {
+              "language": "DE",
+              "translation": "API generated infrastructure and works cost award procedures DE"
+            }, {
+              "language": "EN",
+              "translation": "API generated infrastructure and works cost award procedures EN"
+            }
+          ],
+          "numberOfUnits": 5.5,
+          "pricePerUnit": 1000.33,
+          "rowSum": 5501.81,
+          "budgetPeriods": [
+            {
+              "amount": 5501.81,
+              "number": 8
+            }
+          ]
+        }, {
+          "cypressReferenceInvestment": "investment3",
+          "comments": [
+            {
+              "translation": "API generated infrastructure and works cost comments DE",
+              "language": "DE"
+            }, {
+              "translation": "API generated infrastructure and works cost comments EN",
+              "language": "EN"
+            }
+          ],
+          "unitCostId": 5,
+          "awardProcedures": [
+            {
+              "translation": "API generated infrastructure and works cost award procedures DE",
+              "language": "DE"
+            }, {
+              "translation": "API generated infrastructure and works cost award procedures EN",
+              "language": "EN"
+            }
+          ],
+          "numberOfUnits": 8,
+          "pricePerUnit": 2519.77,
+          "rowSum": 20158.16,
+          "budgetPeriods": [
+            {
+              "amount": 2519.77,
+              "number": 1
+            }, {
+              "amount": 2519.77,
+              "number": 2
+            }, {
+              "amount": 2519.77,
+              "number": 3
+            }, {
+              "amount": 2519.77,
+              "number": 4
+            }, {
+              "amount": 2519.77,
+              "number": 5
+            }, {
+              "amount": 2519.77,
+              "number": 6
+            }, {
+              "amount": 2519.77,
+              "number": 7
+            }, {
+              "amount": 2519.77,
+              "number": 8
+            }
+          ]
+        },
+        {
+          "cypressReferenceInvestment": "investment2",
+          "cypressReferenceUnit": "projectProposedInfrastructure",
+          "unitCostId": null,
+          "comments": [
+            {
+              "translation": "API generated infrastructure and works cost comments DE",
+              "language": "DE"
+            },
+            {
+              "translation": "API generated infrastructure and works cost comments EN",
+              "language": "EN"
+            }
+          ],
+          "awardProcedures": [
+            {
+              "translation": "API generated infrastructure and works cost award procedures DE",
+              "language": "DE"
+            },
+            {
+              "translation": "API generated infrastructure and works cost award procedures EN",
+              "language": "EN"
+            }
+          ],
+          "numberOfUnits": 1,
+          "pricePerUnit": 66.13,
+          "rowSum": 66.13,
+          "budgetPeriods": [
+            {
+              "amount": 66.13,
+              "number": 8
+            }
+          ]
+        }
+      ],
+      "unit": [
+        {
+          "unitCostId": 6,
+          "numberOfUnits": 2,
+          "rowSum": 310.44,
+          "budgetPeriods": [
+            {
+              "amount": 310.44,
+              "number": 7
+            }
+          ]
+        }, {
+          "unitCostId": 7,
+          "numberOfUnits": 3,
+          "rowSum": 5999.97,
+          "budgetPeriods": [
+            {
+              "amount": 1000,
+              "number": 1
+            }, {
+              "amount": 1000,
+              "number": 2
+            }, {
+              "amount": 1000,
+              "number": 3
+            }, {
+              "amount": 1000,
+              "number": 4
+            }, {
+              "amount": 1000,
+              "number": 5
+            }, {
+              "amount": 999.97,
+              "number": 8
+            }
+          ]
+        },
+        {
+          "cypressReferenceUnit": "projectProposedMulti",
+          "unitCostId": null,
+          "numberOfUnits": 7,
+          "rowSum": 4666.62,
+          "budgetPeriods": [
+            {
+              "amount": 666.66,
+              "number": 1
+            },
+            {
+              "amount": 666.66,
+              "number": 2
+            },
+            {
+              "amount": 2666,
+              "number": 3
+            },
+            {
+              "amount": 667.3,
+              "number": 8
+            }
+          ]
+        }
+      ]
     },
-    {
-      "abbreviation": "PP4",
-      "role": "PARTNER",
-      "budget": {
-        "options": {
-          "officeAndAdministrationOnStaffCostsFlatRate": null,
-          "officeAndAdministrationOnDirectCostsFlatRate": null,
-          "staffCostsFlatRate": null,
-          "travelAndAccommodationOnStaffCostsFlatRate": null,
-          "otherCostsOnStaffCostsFlatRate": 40
-        },
-        "staff": [
-          {
-            "comments": [
-              {
-                "translation": "API generated staff cost comment DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated staff cost comment EN",
-                "language": "EN"
-              }
-            ],
-            "numberOfUnits": 1,
-            "unitType": [
-              {
-                "translation": "API generated staff cost unit type DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated staff cost unit type EN",
-                "language": "EN"
-              }
-            ],
-            "description": [
-              {
-                "translation": "API generated staff cost description DE",
-                "language": "DE"
-              },
-              {
-                "translation": "API generated staff cost description EN",
-                "language": "EN"
-              }
-            ],
-            "pricePerUnit": 2114.46,
-            "budgetPeriods": [
-              {
-                "amount": 0,
-                "number": 1
-              },
-              {
-                "amount": 0,
-                "number": 2
-              },
-              {
-                "amount": 0,
-                "number": 3
-              },
-              {
-                "amount": 2014.46,
-                "number": 4
-              },
-              {
-                "amount": 0,
-                "number": 5
-              },
-              {
-                "amount": 0,
-                "number": 6
-              },
-              {
-                "amount": 100,
-                "number": 7
-              },
-              {
-                "amount": 0,
-                "number": 8
-              }
-            ]
-          }
-        ]
-      },
-      "cofinancing": {
-        "finances": [
-          {
-            "fundId": 3,
-            "fundType": "MainFund",
-            "percentage": 50
-          },
-          {
-            "percentage": 50,
-            "fundType": "PartnerContribution"
-          }
-        ],
-        "partnerContributions": [
-          {
-            "status": "Private",
-            "amount": 1480.12,
-            "partner": true
-          }
-        ]
-      },
-      "budgetOverview": [
-        "2.114,46",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "845,78",
-        "0,00",
-        "0,00",
-        "2.960,24"
+    "cofinancing": {
+      "finances": [
+        {
+          "fundId": 1,
+          "fundType": "MainFund",
+          "percentage": 60
+        }, {
+          "fundId": 8,
+          "fundType": "MainFund",
+          "percentage": 14.66
+        }, {
+          "percentage": 25.34,
+          "fundType": "PartnerContribution"
+        }
       ],
-      "cofinancingAmount": "1.480,12"
+      "partnerContributions": [
+        {
+          "name": "Lead Partner",
+          "status": "Public",
+          "amount": 5698.97,
+          "partner": true
+        }, {
+          "name": "Lead contribution 1",
+          "status": "Private",
+          "amount": 3261.01,
+          "partner": false
+        }, {
+          "name": "Lead contribution 2",
+          "status": "AutomaticPublic",
+          "amount": 5600.00,
+          "partner": false
+        }
+      ]
     },
-    {
-      "abbreviation":"PP5",
-      "role":"PARTNER",
-      "budget":{
-        "options":{
-          "officeAndAdministrationOnStaffCostsFlatRate":15,
-          "officeAndAdministrationOnDirectCostsFlatRate":null,
-          "staffCostsFlatRate":20,
-          "travelAndAccommodationOnStaffCostsFlatRate":null,
-          "otherCostsOnStaffCostsFlatRate":null
+    "stateAid": {
+      "answer1": true,
+      "justification1": [
+        {
+          "translation": "API generated partner state aid criterium 1 justification 1 DE",
+          "language": "DE"
         },
-        "travel":[
+        {
+          "translation": "API generated partner state aid criterium 1 justification 1 EN",
+          "language": "EN"
+        }
+      ],
+      "answer2": false,
+      "justification2": [
+        {
+          "translation": "API generated partner state aid criterium 1 justification 2 DE",
+          "language": "DE"
+        },
+        {
+          "translation": "API generated partner state aid criterium 1 justification 2 EN",
+          "language": "EN"
+        }
+      ],
+      "answer3": false,
+      "justification3": [
+        {
+          "translation": "API generated partner state aid criterium 2 justification 1 DE",
+          "language": "DE"
+        },
+        {
+          "translation": "API generated partner state aid criterium 2 justification 1 EN",
+          "language": "EN"
+        }
+      ],
+      "answer4": true,
+      "justification4": [
+        {
+          "translation": "API generated partner state aid criterium 2 justification 2 DE",
+          "language": "DE"
+        },
+        {
+          "translation": "API generated partner state aid criterium 2 justification 2 EN",
+          "language": "EN"
+        }
+      ],
+      "activities": [
+        {
+          "cypressReferenceStateAid": "Lead Partner Activity",
+          "activityId": null
+        }
+      ],
+      "stateAidScheme": {
+        "id": 1,
+        "measure": "GENERAL_DE_MINIMIS",
+        "name": [
           {
-            "description":[
-              {
-                "translation":"APIgeneratedtravelandaccommodationcostdescriptionDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedtravelandaccommodationcostdescriptionEN",
-                "language":"EN"
-              }
-            ],
-            "comments":[
-              {
-                "translation":"APIgeneratedtravelandaccommodationcostcommentsDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedtravelandaccommodationcostcommentsEN",
-                "language":"EN"
-              }
-            ],
-            "unitType":[
-              {
-                "translation":"APIgeneratedtravelandaccommodationcostunittypeDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedtravelandaccommodationcostunittypeEN",
-                "language":"EN"
-              }
-            ],
-            "numberOfUnits":1,
-            "pricePerUnit":10000,
-            "budgetPeriods":[
-              {
-                "amount":0,
-                "number":1
-              },
-              {
-                "amount":0,
-                "number":2
-              },
-              {
-                "amount":0,
-                "number":3
-              },
-              {
-                "amount":0,
-                "number":4
-              },
-              {
-                "amount":0,
-                "number":5
-              },
-              {
-                "amount":0,
-                "number":6
-              },
-              {
-                "amount":0,
-                "number":7
-              },
-              {
-                "amount":10000,
-                "number":8
-              }
-            ]
-          }
-        ]
-      },
-      "cofinancing":{
-        "finances":[
-          {
-            "fundId":3,
-            "fundType":"MainFund",
-            "percentage":20
+            "language": "DE",
+            "translation": "General de minimis DE"
           },
           {
-            "percentage":80,
-            "fundType":"PartnerContribution"
+            "language": "EN",
+            "translation": "General de minimis"
           }
         ],
-        "partnerContributions":[
+        "abbreviatedName": [
           {
-            "status":"Private",
-            "amount":9840,
-            "partner":true
-          }
-        ]
-      },
-      "budgetOverview":[
-        "2.000,00",
-        "300,00",
-        "10.000,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "12.300,00"
-      ],
-      "cofinancingAmount":"2.460,00"
-    },
-    {
-      "abbreviation":"PP6",
-      "role":"PARTNER",
-      "budget":{
-        "options":{
-          "officeAndAdministrationOnStaffCostsFlatRate":15,
-          "officeAndAdministrationOnDirectCostsFlatRate":null,
-          "staffCostsFlatRate":20,
-          "travelAndAccommodationOnStaffCostsFlatRate":15,
-          "otherCostsOnStaffCostsFlatRate":null
-        },
-        "external":[
-          {
-            "description":[
-              {
-                "translation":"APIgeneratedexternalcostdescriptionDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedexternalcostdescriptionEN",
-                "language":"EN"
-              }
-            ],
-            "comments":[
-              {
-                "translation":"APIgeneratedexternalcostcommentsDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedexternalcostcommentsEN",
-                "language":"EN"
-              }
-            ],
-            "awardProcedures":[
-              {
-                "translation":"APIgeneratedexternalcostawardproceduresDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedexternalcostawardproceduresEN",
-                "language":"EN"
-              }
-            ],
-            "unitType":[
-              {
-                "translation":"APIgeneratedexternalcostunittypeDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedexternalcostunittypeEN",
-                "language":"EN"
-              }
-            ],
-            "numberOfUnits":10,
-            "pricePerUnit":1000,
-            "budgetPeriods":[
-              {
-                "amount":3000,
-                "number":1
-              },
-              {
-                "amount":0,
-                "number":2
-              },
-              {
-                "amount":3000,
-                "number":3
-              },
-              {
-                "amount":0,
-                "number":4
-              },
-              {
-                "amount":3000,
-                "number":5
-              },
-              {
-                "amount":0,
-                "number":6
-              },
-              {
-                "amount":1000,
-                "number":7
-              },
-              {
-                "amount":0,
-                "number":8
-              }
-            ]
-          }
-        ]
-      },
-      "cofinancing":{
-        "finances":[
-          {
-            "fundId":3,
-            "fundType":"MainFund",
-            "percentage":10
+            "language": "DE",
+            "translation": "General de minimis DE"
           },
           {
-            "percentage":90,
-            "fundType":"PartnerContribution"
+            "language": "EN",
+            "translation": "General de minimis"
           }
         ],
-        "partnerContributions":[
+        "schemeNumber": "",
+        "maxIntensity": null,
+        "threshold": 200000,
+        "comments": [
           {
-            "status":"Private",
-            "amount":11340,
-            "partner":true
-          }
-        ]
-      },
-      "budgetOverview":[
-        "2.000,00",
-        "300,00",
-        "300,00",
-        "10.000,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "12.600,00"
-      ],
-      "cofinancingAmount":"1.260,00"
-    },
-    {
-      "abbreviation":"PP7",
-      "role":"PARTNER",
-      "budget":{
-        "options":{
-          "officeAndAdministrationOnStaffCostsFlatRate":null,
-          "officeAndAdministrationOnDirectCostsFlatRate":25,
-          "staffCostsFlatRate":20,
-          "travelAndAccommodationOnStaffCostsFlatRate":null,
-          "otherCostsOnStaffCostsFlatRate":null
-        },
-        "equipment":[
-          {
-            "description":[
-              {
-                "translation":"APIgeneratedequipmentcostdescriptionDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedequipmentcostdescriptionEN",
-                "language":"EN"
-              }
-            ],
-            "comments":[
-              {
-                "translation":"APIgeneratedequipmentcostcommentsDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedequipmentcostcommentsEN",
-                "language":"EN"
-              }
-            ],
-            "unitType":[
-              {
-                "translation":"APIgeneratedequipmentcostunittypeDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedequipmentcostunittypeEN",
-                "language":"EN"
-              }
-            ],
-            "awardProcedures":[
-              {
-                "translation":"APIgeneratedequipmentcostawardproceduresDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedequipmentcostawardproceduresEN",
-                "language":"EN"
-              }
-            ],
-            "numberOfUnits":1,
-            "pricePerUnit":10000,
-            "budgetPeriods":[
-              {
-                "amount":999.99,
-                "number":1
-              },
-              {
-                "amount":9000.01,
-                "number":2
-              },
-              {
-                "amount":0,
-                "number":3
-              },
-              {
-                "amount":0,
-                "number":4
-              },
-              {
-                "amount":0,
-                "number":5
-              },
-              {
-                "amount":0,
-                "number":6
-              },
-              {
-                "amount":0,
-                "number":7
-              },
-              {
-                "amount":0,
-                "number":8
-              }
-            ]
-          }
-        ]
-      },
-      "cofinancing":{
-        "finances":[
-          {
-            "fundId":1,
-            "fundType":"MainFund",
-            "percentage":60
+            "language": "DE",
+            "translation": "Per MS DE"
           },
           {
-            "percentage":40,
-            "fundType":"PartnerContribution"
-          }
-        ],
-        "partnerContributions":[
-          {
-            "status":"Private",
-            "amount":6000,
-            "partner":true
+            "language": "EN",
+            "translation": "per MS"
           }
         ]
-      },
-      "budgetOverview":[
-        "2.000,00",
-        "3.000,00",
-        "0,00",
-        "0,00",
-        "10.000,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "15.000,00"
-      ],
-      "cofinancingAmount":"9.000,00"
-    },
-    {
-      "abbreviation":"PP8",
-      "role":"PARTNER",
-      "budget":{
-        "options":{
-          "officeAndAdministrationOnStaffCostsFlatRate":null,
-          "officeAndAdministrationOnDirectCostsFlatRate":25,
-          "staffCostsFlatRate":20,
-          "travelAndAccommodationOnStaffCostsFlatRate":15,
-          "otherCostsOnStaffCostsFlatRate":null
-        },
-        "equipment":[
-          {
-            "description":[
-              {
-                "translation":"APIgeneratedequipmentcostdescriptionDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedequipmentcostdescriptionEN",
-                "language":"EN"
-              }
-            ],
-            "comments":[
-              {
-                "translation":"APIgeneratedequipmentcostcommentsDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedequipmentcostcommentsEN",
-                "language":"EN"
-              }
-            ],
-            "unitType":[
-              {
-                "translation":"APIgeneratedequipmentcostunittypeDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedequipmentcostunittypeEN",
-                "language":"EN"
-              }
-            ],
-            "awardProcedures":[
-              {
-                "translation":"APIgeneratedequipmentcostawardproceduresDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedequipmentcostawardproceduresEN",
-                "language":"EN"
-              }
-            ],
-            "numberOfUnits":1,
-            "pricePerUnit":10000,
-            "budgetPeriods":[
-              {
-                "amount":999.99,
-                "number":1
-              },
-              {
-                "amount":100.01,
-                "number":2
-              },
-              {
-                "amount":8900,
-                "number":3
-              },
-              {
-                "amount":0,
-                "number":4
-              },
-              {
-                "amount":0,
-                "number":5
-              },
-              {
-                "amount":0,
-                "number":6
-              },
-              {
-                "amount":0,
-                "number":7
-              },
-              {
-                "amount":0,
-                "number":8
-              }
-            ]
-          }
-        ]
-      },
-      "cofinancing":{
-        "finances":[
-          {
-            "fundId":1,
-            "fundType":"MainFund",
-            "percentage":60
-          },
-          {
-            "percentage":40,
-            "fundType":"PartnerContribution"
-          }
-        ],
-        "partnerContributions":[
-          {
-            "status":"Private",
-            "amount":6150,
-            "partner":true
-          }
-        ]
-      },
-      "budgetOverview":[
-        "2.000,00",
-        "3.075,00",
-        "300,00",
-        "0,00",
-        "10.000,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "15.375,00"
-      ],
-      "cofinancingAmount":"9.225,00"
-    },
-    {
-      "abbreviation":"PP9",
-      "role":"PARTNER",
-      "budget":{
-        "options":{
-          "officeAndAdministrationOnStaffCostsFlatRate":null,
-          "officeAndAdministrationOnDirectCostsFlatRate":null,
-          "staffCostsFlatRate":20,
-          "travelAndAccommodationOnStaffCostsFlatRate":15,
-          "otherCostsOnStaffCostsFlatRate":null
-        },
-        "equipment":[
-          {
-            "description":[
-              {
-                "translation":"APIgeneratedequipmentcostdescriptionDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedequipmentcostdescriptionEN",
-                "language":"EN"
-              }
-            ],
-            "comments":[
-              {
-                "translation":"APIgeneratedequipmentcostcommentsDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedequipmentcostcommentsEN",
-                "language":"EN"
-              }
-            ],
-            "unitType":[
-              {
-                "translation":"APIgeneratedequipmentcostunittypeDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedequipmentcostunittypeEN",
-                "language":"EN"
-              }
-            ],
-            "awardProcedures":[
-              {
-                "translation":"APIgeneratedequipmentcostawardproceduresDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedequipmentcostawardproceduresEN",
-                "language":"EN"
-              }
-            ],
-            "numberOfUnits":1,
-            "pricePerUnit":10000,
-            "budgetPeriods":[
-              {
-                "amount":0,
-                "number":1
-              },
-              {
-                "amount":0,
-                "number":2
-              },
-              {
-                "amount":0,
-                "number":3
-              },
-              {
-                "amount":0,
-                "number":4
-              },
-              {
-                "amount":0,
-                "number":5
-              },
-              {
-                "amount":0,
-                "number":6
-              },
-              {
-                "amount":0,
-                "number":7
-              },
-              {
-                "amount":10000,
-                "number":8
-              }
-            ]
-          }
-        ]
-      },
-      "cofinancing":{
-        "finances":[
-          {
-            "fundId":1,
-            "fundType":"MainFund",
-            "percentage":60
-          },
-          {
-            "percentage":40,
-            "fundType":"PartnerContribution"
-          }
-        ],
-        "partnerContributions":[
-          {
-            "status":"Private",
-            "amount":4920,
-            "partner":true
-          }
-        ]
-      },
-      "budgetOverview":[
-        "2.000,00",
-        "0,00",
-        "300,00",
-        "0,00",
-        "10.000,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "12.300,00"
-      ],
-      "cofinancingAmount":"7.380,00"
-    },
-    {
-      "abbreviation":"PP10",
-      "role":"PARTNER",
-      "budget":{
-        "options":{
-          "officeAndAdministrationOnStaffCostsFlatRate":15,
-          "officeAndAdministrationOnDirectCostsFlatRate":null,
-          "staffCostsFlatRate":null,
-          "travelAndAccommodationOnStaffCostsFlatRate":15,
-          "otherCostsOnStaffCostsFlatRate":null
-        },
-        "staff":[
-          {
-            "comments":[
-              {
-                "translation":"APIgeneratedstaffcostcommentDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedstaffcostcommentEN",
-                "language":"EN"
-              }
-            ],
-            "unitType":[
-              {
-                "translation":"APIgeneratedstaffcostunittypeDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedstaffcostunittypeEN",
-                "language":"EN"
-              }
-            ],
-            "description":[
-              {
-                "translation":"APIgeneratedstaffcostdescriptionDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedstaffcostdescriptionEN",
-                "language":"EN"
-              }
-            ],
-            "numberOfUnits":1,
-            "pricePerUnit":10000,
-            "budgetPeriods":[
-              {
-                "amount":0,
-                "number":1
-              },
-              {
-                "amount":0,
-                "number":2
-              },
-              {
-                "amount":0,
-                "number":3
-              },
-              {
-                "amount":10000,
-                "number":4
-              },
-              {
-                "amount":0,
-                "number":5
-              },
-              {
-                "amount":0,
-                "number":6
-              },
-              {
-                "amount":0,
-                "number":7
-              },
-              {
-                "amount":0,
-                "number":8
-              }
-            ]
-          }
-        ]
-      },
-      "cofinancing":{
-        "finances":[
-          {
-            "fundId":1,
-            "fundType":"MainFund",
-            "percentage":60
-          },
-          {
-            "percentage":40,
-            "fundType":"PartnerContribution"
-          }
-        ],
-        "partnerContributions":[
-          {
-            "status":"Private",
-            "amount":5200,
-            "partner":true
-          }
-        ]
-      },
-      "budgetOverview":[
-        "10.000,00",
-        "1.500,00",
-        "1.500,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "13.000,00"
-      ],
-      "cofinancingAmount":"7.800,00"
-    },
-    {
-      "abbreviation":"PP11",
-      "role":"PARTNER",
-      "budget":{
-        "options":{
-          "officeAndAdministrationOnStaffCostsFlatRate":null,
-          "officeAndAdministrationOnDirectCostsFlatRate":null,
-          "staffCostsFlatRate":null,
-          "travelAndAccommodationOnStaffCostsFlatRate":null,
-          "otherCostsOnStaffCostsFlatRate":40
-        },
-        "staff":[
-          {
-            "comments":[
-              {
-                "translation":"APIgeneratedstaffcostcommentDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedstaffcostcommentEN",
-                "language":"EN"
-              }
-            ],
-            "unitType":[
-              {
-                "translation":"APIgeneratedstaffcostunittypeDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedstaffcostunittypeEN",
-                "language":"EN"
-              }
-            ],
-            "description":[
-              {
-                "translation":"APIgeneratedstaffcostdescriptionDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedstaffcostdescriptionEN",
-                "language":"EN"
-              }
-            ],
-            "numberOfUnits":1,
-            "pricePerUnit":10000,
-            "budgetPeriods":[
-              {
-                "amount":0,
-                "number":1
-              },
-              {
-                "amount":0,
-                "number":2
-              },
-              {
-                "amount":0,
-                "number":3
-              },
-              {
-                "amount":0,
-                "number":4
-              },
-              {
-                "amount":0,
-                "number":5
-              },
-              {
-                "amount":10000,
-                "number":6
-              },
-              {
-                "amount":0,
-                "number":7
-              },
-              {
-                "amount":0,
-                "number":8
-              }
-            ]
-          }
-        ]
-      },
-      "cofinancing":{
-        "finances":[
-          {
-            "fundId":1,
-            "fundType":"MainFund",
-            "percentage":60
-          },
-          {
-            "percentage":40,
-            "fundType":"PartnerContribution"
-          }
-        ],
-        "partnerContributions":[
-          {
-            "status":"Private",
-            "amount":5600,
-            "partner":true
-          }
-        ]
-      },
-      "budgetOverview":[
-        "10.000,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "4.000,00",
-        "0,00",
-        "0,00",
-        "14.000,00"
-      ],
-      "cofinancingAmount":"8.400,00"
-    },
-    {
-      "abbreviation":"PP12",
-      "role":"PARTNER",
-      "budget":{
-        "options":{
-          "officeAndAdministrationOnStaffCostsFlatRate":null,
-          "officeAndAdministrationOnDirectCostsFlatRate":25,
-          "staffCostsFlatRate":null,
-          "travelAndAccommodationOnStaffCostsFlatRate":15,
-          "otherCostsOnStaffCostsFlatRate":null
-        },
-        "staff":[
-          {
-            "comments":[
-              {
-                "translation":"APIgeneratedstaffcostcommentDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedstaffcostcommentEN",
-                "language":"EN"
-              }
-            ],
-            "unitType":[
-              {
-                "translation":"APIgeneratedstaffcostunittypeDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedstaffcostunittypeEN",
-                "language":"EN"
-              }
-            ],
-            "description":[
-              {
-                "translation":"APIgeneratedstaffcostdescriptionDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedstaffcostdescriptionEN",
-                "language":"EN"
-              }
-            ],
-            "numberOfUnits":1,
-            "pricePerUnit":10000,
-            "budgetPeriods":[
-              {
-                "amount":5000,
-                "number":1
-              },
-              {
-                "amount":0,
-                "number":2
-              },
-              {
-                "amount":0,
-                "number":3
-              },
-              {
-                "amount":0,
-                "number":4
-              },
-              {
-                "amount":0,
-                "number":5
-              },
-              {
-                "amount":5000,
-                "number":6
-              },
-              {
-                "amount":0,
-                "number":7
-              },
-              {
-                "amount":0,
-                "number":8
-              }
-            ]
-          }
-        ]
-      },
-      "cofinancing":{
-        "finances":[
-          {
-            "fundId":1,
-            "fundType":"MainFund",
-            "percentage":60
-          },
-          {
-            "percentage":40,
-            "fundType":"PartnerContribution"
-          }
-        ],
-        "partnerContributions":[
-          {
-            "status":"Private",
-            "amount":5750,
-            "partner":true
-          }
-        ]
-      },
-      "budgetOverview":[
-        "10.000,00",
-        "2.875,00",
-        "1.500,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "14.375,00"
-      ],
-      "cofinancingAmount":"8.625,00"
-    },
-    {
-      "abbreviation":"PP13",
-      "role":"PARTNER",
-      "budget":{
-        "options":{
-          "officeAndAdministrationOnStaffCostsFlatRate":null,
-          "officeAndAdministrationOnDirectCostsFlatRate":null,
-          "staffCostsFlatRate":null,
-          "travelAndAccommodationOnStaffCostsFlatRate":null,
-          "otherCostsOnStaffCostsFlatRate":40
-        },
-        "staff":[
-          {
-            "comments":[
-              {
-                "translation":"APIgeneratedstaffcostcommentDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedstaffcostcommentEN",
-                "language":"EN"
-              }
-            ],
-            "numberOfUnits":1,
-            "unitType":[
-              {
-                "translation":"APIgeneratedstaffcostunittypeDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedstaffcostunittypeEN",
-                "language":"EN"
-              }
-            ],
-            "description":[
-              {
-                "translation":"APIgeneratedstaffcostdescriptionDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedstaffcostdescriptionEN",
-                "language":"EN"
-              }
-            ],
-            "pricePerUnit":2114.46,
-            "budgetPeriods":[
-              {
-                "amount":0,
-                "number":1
-              },
-              {
-                "amount":0,
-                "number":2
-              },
-              {
-                "amount":0,
-                "number":3
-              },
-              {
-                "amount":2014.46,
-                "number":4
-              },
-              {
-                "amount":0,
-                "number":5
-              },
-              {
-                "amount":0,
-                "number":6
-              },
-              {
-                "amount":100,
-                "number":7
-              },
-              {
-                "amount":0,
-                "number":8
-              }
-            ]
-          }
-        ]
-      },
-      "cofinancing":{
-        "finances":[
-          {
-            "fundId":3,
-            "fundType":"MainFund",
-            "percentage":50
-          },
-          {
-            "percentage":50,
-            "fundType":"PartnerContribution"
-          }
-        ],
-        "partnerContributions":[
-          {
-            "status":"Private",
-            "amount":1480.12,
-            "partner":true
-          }
-        ]
-      },
-      "budgetOverview":[
-        "2.114,46",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "845,78",
-        "0,00",
-        "0,00",
-        "2.960,24"
-      ],
-      "cofinancingAmount":"1.480,12"
-    },
-    {
-      "abbreviation":"PP14",
-      "role":"PARTNER",
-      "budget":{
-        "options":{
-          "officeAndAdministrationOnStaffCostsFlatRate":null,
-          "officeAndAdministrationOnDirectCostsFlatRate":null,
-          "staffCostsFlatRate":20,
-          "travelAndAccommodationOnStaffCostsFlatRate":null,
-          "otherCostsOnStaffCostsFlatRate":null
-        },
-        "travel":[
-          {
-            "description":[
-              {
-                "translation":"APIgeneratedtravelandaccommodationcostdescriptionDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedtravelandaccommodationcostdescriptionEN",
-                "language":"EN"
-              }
-            ],
-            "comments":[
-              {
-                "translation":"APIgeneratedtravelandaccommodationcostcommentsDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedtravelandaccommodationcostcommentsEN",
-                "language":"EN"
-              }
-            ],
-            "unitType":[
-              {
-                "translation":"APIgeneratedtravelandaccommodationcostunittypeDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedtravelandaccommodationcostunittypeEN",
-                "language":"EN"
-              }
-            ],
-            "numberOfUnits":1,
-            "pricePerUnit":10000,
-            "budgetPeriods":[
-              {
-                "amount":0,
-                "number":1
-              },
-              {
-                "amount":0,
-                "number":2
-              },
-              {
-                "amount":10000,
-                "number":3
-              },
-              {
-                "amount":0,
-                "number":4
-              },
-              {
-                "amount":0,
-                "number":5
-              },
-              {
-                "amount":0,
-                "number":6
-              },
-              {
-                "amount":0,
-                "number":7
-              },
-              {
-                "amount":0,
-                "number":8
-              }
-            ]
-          }
-        ]
-      },
-      "cofinancing":{
-        "finances":[
-          {
-            "fundId":3,
-            "fundType":"MainFund",
-            "percentage":30
-          },
-          {
-            "percentage":70,
-            "fundType":"PartnerContribution"
-          }
-        ],
-        "partnerContributions":[
-          {
-            "status":"Private",
-            "amount":8400,
-            "partner":true
-          }
-        ]
-      },
-      "budgetOverview":[
-        "2.000,00",
-        "0,00",
-        "10.000,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "12.000,00"
-      ],
-      "cofinancingAmount":"3.600,00"
-    },
-    {
-      "abbreviation":"PP15",
-      "role":"PARTNER",
-      "budget":{
-        "options":{
-          "officeAndAdministrationOnStaffCostsFlatRate":15,
-          "officeAndAdministrationOnDirectCostsFlatRate":null,
-          "staffCostsFlatRate":20,
-          "travelAndAccommodationOnStaffCostsFlatRate":null,
-          "otherCostsOnStaffCostsFlatRate":null
-        },
-        "travel":[
-          {
-            "description":[
-              {
-                "translation":"APIgeneratedtravelandaccommodationcostdescriptionDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedtravelandaccommodationcostdescriptionEN",
-                "language":"EN"
-              }
-            ],
-            "comments":[
-              {
-                "translation":"APIgeneratedtravelandaccommodationcostcommentsDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedtravelandaccommodationcostcommentsEN",
-                "language":"EN"
-              }
-            ],
-            "unitType":[
-              {
-                "translation":"APIgeneratedtravelandaccommodationcostunittypeDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedtravelandaccommodationcostunittypeEN",
-                "language":"EN"
-              }
-            ],
-            "numberOfUnits":1,
-            "pricePerUnit":10000,
-            "budgetPeriods":[
-              {
-                "amount":0,
-                "number":1
-              },
-              {
-                "amount":0,
-                "number":2
-              },
-              {
-                "amount":0,
-                "number":3
-              },
-              {
-                "amount":0,
-                "number":4
-              },
-              {
-                "amount":0,
-                "number":5
-              },
-              {
-                "amount":0,
-                "number":6
-              },
-              {
-                "amount":0,
-                "number":7
-              },
-              {
-                "amount":10000,
-                "number":8
-              }
-            ]
-          }
-        ]
-      },
-      "cofinancing":{
-        "finances":[
-          {
-            "fundId":3,
-            "fundType":"MainFund",
-            "percentage":20
-          },
-          {
-            "percentage":80,
-            "fundType":"PartnerContribution"
-          }
-        ],
-        "partnerContributions":[
-          {
-            "status":"Private",
-            "amount":9840,
-            "partner":true
-          }
-        ]
-      },
-      "budgetOverview":[
-        "2.000,00",
-        "300,00",
-        "10.000,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "12.300,00"
-      ],
-      "cofinancingAmount":"2.460,00"
-    },
-    {
-      "abbreviation":"PP16",
-      "role":"PARTNER",
-      "budget":{
-        "options":{
-          "officeAndAdministrationOnStaffCostsFlatRate":15,
-          "officeAndAdministrationOnDirectCostsFlatRate":null,
-          "staffCostsFlatRate":20,
-          "travelAndAccommodationOnStaffCostsFlatRate":15,
-          "otherCostsOnStaffCostsFlatRate":null
-        },
-        "external":[
-          {
-            "description":[
-              {
-                "translation":"APIgeneratedexternalcostdescriptionDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedexternalcostdescriptionEN",
-                "language":"EN"
-              }
-            ],
-            "comments":[
-              {
-                "translation":"APIgeneratedexternalcostcommentsDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedexternalcostcommentsEN",
-                "language":"EN"
-              }
-            ],
-            "awardProcedures":[
-              {
-                "translation":"APIgeneratedexternalcostawardproceduresDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedexternalcostawardproceduresEN",
-                "language":"EN"
-              }
-            ],
-            "unitType":[
-              {
-                "translation":"APIgeneratedexternalcostunittypeDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedexternalcostunittypeEN",
-                "language":"EN"
-              }
-            ],
-            "numberOfUnits":10,
-            "pricePerUnit":1000,
-            "budgetPeriods":[
-              {
-                "amount":3000,
-                "number":1
-              },
-              {
-                "amount":0,
-                "number":2
-              },
-              {
-                "amount":3000,
-                "number":3
-              },
-              {
-                "amount":0,
-                "number":4
-              },
-              {
-                "amount":3000,
-                "number":5
-              },
-              {
-                "amount":0,
-                "number":6
-              },
-              {
-                "amount":1000,
-                "number":7
-              },
-              {
-                "amount":0,
-                "number":8
-              }
-            ]
-          }
-        ]
-      },
-      "cofinancing":{
-        "finances":[
-          {
-            "fundId":3,
-            "fundType":"MainFund",
-            "percentage":10
-          },
-          {
-            "percentage":90,
-            "fundType":"PartnerContribution"
-          }
-        ],
-        "partnerContributions":[
-          {
-            "status":"Private",
-            "amount":11340,
-            "partner":true
-          }
-        ]
-      },
-      "budgetOverview":[
-        "2.000,00",
-        "300,00",
-        "300,00",
-        "10.000,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "12.600,00"
-      ],
-      "cofinancingAmount":"1.260,00"
-    },
-    {
-      "abbreviation":"PP17",
-      "role":"PARTNER",
-      "budget":{
-        "options":{
-          "officeAndAdministrationOnStaffCostsFlatRate":null,
-          "officeAndAdministrationOnDirectCostsFlatRate":25,
-          "staffCostsFlatRate":20,
-          "travelAndAccommodationOnStaffCostsFlatRate":null,
-          "otherCostsOnStaffCostsFlatRate":null
-        },
-        "equipment":[
-          {
-            "description":[
-              {
-                "translation":"APIgeneratedequipmentcostdescriptionDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedequipmentcostdescriptionEN",
-                "language":"EN"
-              }
-            ],
-            "comments":[
-              {
-                "translation":"APIgeneratedequipmentcostcommentsDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedequipmentcostcommentsEN",
-                "language":"EN"
-              }
-            ],
-            "unitType":[
-              {
-                "translation":"APIgeneratedequipmentcostunittypeDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedequipmentcostunittypeEN",
-                "language":"EN"
-              }
-            ],
-            "awardProcedures":[
-              {
-                "translation":"APIgeneratedequipmentcostawardproceduresDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedequipmentcostawardproceduresEN",
-                "language":"EN"
-              }
-            ],
-            "numberOfUnits":1,
-            "pricePerUnit":10000,
-            "budgetPeriods":[
-              {
-                "amount":999.99,
-                "number":1
-              },
-              {
-                "amount":9000.01,
-                "number":2
-              },
-              {
-                "amount":0,
-                "number":3
-              },
-              {
-                "amount":0,
-                "number":4
-              },
-              {
-                "amount":0,
-                "number":5
-              },
-              {
-                "amount":0,
-                "number":6
-              },
-              {
-                "amount":0,
-                "number":7
-              },
-              {
-                "amount":0,
-                "number":8
-              }
-            ]
-          }
-        ]
-      },
-      "cofinancing":{
-        "finances":[
-          {
-            "fundId":1,
-            "fundType":"MainFund",
-            "percentage":60
-          },
-          {
-            "percentage":40,
-            "fundType":"PartnerContribution"
-          }
-        ],
-        "partnerContributions":[
-          {
-            "status":"Private",
-            "amount":6000,
-            "partner":true
-          }
-        ]
-      },
-      "budgetOverview":[
-        "2.000,00",
-        "3.000,00",
-        "0,00",
-        "0,00",
-        "10.000,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "15.000,00"
-      ],
-      "cofinancingAmount":"9.000,00"
-    },
-    {
-      "abbreviation":"PP18",
-      "role":"PARTNER",
-      "budget":{
-        "options":{
-          "officeAndAdministrationOnStaffCostsFlatRate":null,
-          "officeAndAdministrationOnDirectCostsFlatRate":25,
-          "staffCostsFlatRate":20,
-          "travelAndAccommodationOnStaffCostsFlatRate":15,
-          "otherCostsOnStaffCostsFlatRate":null
-        },
-        "equipment":[
-          {
-            "description":[
-              {
-                "translation":"APIgeneratedequipmentcostdescriptionDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedequipmentcostdescriptionEN",
-                "language":"EN"
-              }
-            ],
-            "comments":[
-              {
-                "translation":"APIgeneratedequipmentcostcommentsDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedequipmentcostcommentsEN",
-                "language":"EN"
-              }
-            ],
-            "unitType":[
-              {
-                "translation":"APIgeneratedequipmentcostunittypeDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedequipmentcostunittypeEN",
-                "language":"EN"
-              }
-            ],
-            "awardProcedures":[
-              {
-                "translation":"APIgeneratedequipmentcostawardproceduresDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedequipmentcostawardproceduresEN",
-                "language":"EN"
-              }
-            ],
-            "numberOfUnits":1,
-            "pricePerUnit":10000,
-            "budgetPeriods":[
-              {
-                "amount":999.99,
-                "number":1
-              },
-              {
-                "amount":100.01,
-                "number":2
-              },
-              {
-                "amount":8900,
-                "number":3
-              },
-              {
-                "amount":0,
-                "number":4
-              },
-              {
-                "amount":0,
-                "number":5
-              },
-              {
-                "amount":0,
-                "number":6
-              },
-              {
-                "amount":0,
-                "number":7
-              },
-              {
-                "amount":0,
-                "number":8
-              }
-            ]
-          }
-        ]
-      },
-      "cofinancing":{
-        "finances":[
-          {
-            "fundId":1,
-            "fundType":"MainFund",
-            "percentage":60
-          },
-          {
-            "percentage":40,
-            "fundType":"PartnerContribution"
-          }
-        ],
-        "partnerContributions":[
-          {
-            "status":"Private",
-            "amount":6150,
-            "partner":true
-          }
-        ]
-      },
-      "budgetOverview":[
-        "2.000,00",
-        "3.075,00",
-        "300,00",
-        "0,00",
-        "10.000,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "15.375,00"
-      ],
-      "cofinancingAmount":"9.225,00"
-    },
-    {
-      "abbreviation":"PP19",
-      "role":"PARTNER",
-      "budget":{
-        "options":{
-          "officeAndAdministrationOnStaffCostsFlatRate":null,
-          "officeAndAdministrationOnDirectCostsFlatRate":null,
-          "staffCostsFlatRate":20,
-          "travelAndAccommodationOnStaffCostsFlatRate":15,
-          "otherCostsOnStaffCostsFlatRate":null
-        },
-        "equipment":[
-          {
-            "description":[
-              {
-                "translation":"APIgeneratedequipmentcostdescriptionDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedequipmentcostdescriptionEN",
-                "language":"EN"
-              }
-            ],
-            "comments":[
-              {
-                "translation":"APIgeneratedequipmentcostcommentsDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedequipmentcostcommentsEN",
-                "language":"EN"
-              }
-            ],
-            "unitType":[
-              {
-                "translation":"APIgeneratedequipmentcostunittypeDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedequipmentcostunittypeEN",
-                "language":"EN"
-              }
-            ],
-            "awardProcedures":[
-              {
-                "translation":"APIgeneratedequipmentcostawardproceduresDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedequipmentcostawardproceduresEN",
-                "language":"EN"
-              }
-            ],
-            "numberOfUnits":1,
-            "pricePerUnit":10000,
-            "budgetPeriods":[
-              {
-                "amount":0,
-                "number":1
-              },
-              {
-                "amount":0,
-                "number":2
-              },
-              {
-                "amount":0,
-                "number":3
-              },
-              {
-                "amount":0,
-                "number":4
-              },
-              {
-                "amount":0,
-                "number":5
-              },
-              {
-                "amount":0,
-                "number":6
-              },
-              {
-                "amount":0,
-                "number":7
-              },
-              {
-                "amount":10000,
-                "number":8
-              }
-            ]
-          }
-        ]
-      },
-      "cofinancing":{
-        "finances":[
-          {
-            "fundId":1,
-            "fundType":"MainFund",
-            "percentage":60
-          },
-          {
-            "percentage":40,
-            "fundType":"PartnerContribution"
-          }
-        ],
-        "partnerContributions":[
-          {
-            "status":"Private",
-            "amount":4920,
-            "partner":true
-          }
-        ]
-      },
-      "budgetOverview":[
-        "2.000,00",
-        "0,00",
-        "300,00",
-        "0,00",
-        "10.000,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "12.300,00"
-      ],
-      "cofinancingAmount":"7.380,00"
-    },
-    {
-      "abbreviation":"PP20",
-      "role":"PARTNER",
-      "budget":{
-        "options":{
-          "officeAndAdministrationOnStaffCostsFlatRate":15,
-          "officeAndAdministrationOnDirectCostsFlatRate":null,
-          "staffCostsFlatRate":null,
-          "travelAndAccommodationOnStaffCostsFlatRate":15,
-          "otherCostsOnStaffCostsFlatRate":null
-        },
-        "staff":[
-          {
-            "comments":[
-              {
-                "translation":"APIgeneratedstaffcostcommentDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedstaffcostcommentEN",
-                "language":"EN"
-              }
-            ],
-            "unitType":[
-              {
-                "translation":"APIgeneratedstaffcostunittypeDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedstaffcostunittypeEN",
-                "language":"EN"
-              }
-            ],
-            "description":[
-              {
-                "translation":"APIgeneratedstaffcostdescriptionDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedstaffcostdescriptionEN",
-                "language":"EN"
-              }
-            ],
-            "numberOfUnits":1,
-            "pricePerUnit":10000,
-            "budgetPeriods":[
-              {
-                "amount":0,
-                "number":1
-              },
-              {
-                "amount":0,
-                "number":2
-              },
-              {
-                "amount":0,
-                "number":3
-              },
-              {
-                "amount":10000,
-                "number":4
-              },
-              {
-                "amount":0,
-                "number":5
-              },
-              {
-                "amount":0,
-                "number":6
-              },
-              {
-                "amount":0,
-                "number":7
-              },
-              {
-                "amount":0,
-                "number":8
-              }
-            ]
-          }
-        ]
-      },
-      "cofinancing":{
-        "finances":[
-          {
-            "fundId":1,
-            "fundType":"MainFund",
-            "percentage":60
-          },
-          {
-            "percentage":40,
-            "fundType":"PartnerContribution"
-          }
-        ],
-        "partnerContributions":[
-          {
-            "status":"Private",
-            "amount":5200,
-            "partner":true
-          }
-        ]
-      },
-      "budgetOverview":[
-        "10.000,00",
-        "1.500,00",
-        "1.500,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "13.000,00"
-      ],
-      "cofinancingAmount":"7.800,00"
-    },
-    {
-      "abbreviation":"PP21",
-      "role":"PARTNER",
-      "budget":{
-        "options":{
-          "officeAndAdministrationOnStaffCostsFlatRate":null,
-          "officeAndAdministrationOnDirectCostsFlatRate":null,
-          "staffCostsFlatRate":null,
-          "travelAndAccommodationOnStaffCostsFlatRate":null,
-          "otherCostsOnStaffCostsFlatRate":40
-        },
-        "staff":[
-          {
-            "comments":[
-              {
-                "translation":"APIgeneratedstaffcostcommentDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedstaffcostcommentEN",
-                "language":"EN"
-              }
-            ],
-            "unitType":[
-              {
-                "translation":"APIgeneratedstaffcostunittypeDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedstaffcostunittypeEN",
-                "language":"EN"
-              }
-            ],
-            "description":[
-              {
-                "translation":"APIgeneratedstaffcostdescriptionDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedstaffcostdescriptionEN",
-                "language":"EN"
-              }
-            ],
-            "numberOfUnits":1,
-            "pricePerUnit":10000,
-            "budgetPeriods":[
-              {
-                "amount":0,
-                "number":1
-              },
-              {
-                "amount":0,
-                "number":2
-              },
-              {
-                "amount":0,
-                "number":3
-              },
-              {
-                "amount":0,
-                "number":4
-              },
-              {
-                "amount":0,
-                "number":5
-              },
-              {
-                "amount":10000,
-                "number":6
-              },
-              {
-                "amount":0,
-                "number":7
-              },
-              {
-                "amount":0,
-                "number":8
-              }
-            ]
-          }
-        ]
-      },
-      "cofinancing":{
-        "finances":[
-          {
-            "fundId":1,
-            "fundType":"MainFund",
-            "percentage":60
-          },
-          {
-            "percentage":40,
-            "fundType":"PartnerContribution"
-          }
-        ],
-        "partnerContributions":[
-          {
-            "status":"Private",
-            "amount":5600,
-            "partner":true
-          }
-        ]
-      },
-      "budgetOverview":[
-        "10.000,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "4.000,00",
-        "0,00",
-        "0,00",
-        "14.000,00"
-      ],
-      "cofinancingAmount":"8.400,00"
-    },
-    {
-      "abbreviation":"PP22",
-      "role":"PARTNER",
-      "budget":{
-        "options":{
-          "officeAndAdministrationOnStaffCostsFlatRate":null,
-          "officeAndAdministrationOnDirectCostsFlatRate":25,
-          "staffCostsFlatRate":null,
-          "travelAndAccommodationOnStaffCostsFlatRate":15,
-          "otherCostsOnStaffCostsFlatRate":null
-        },
-        "staff":[
-          {
-            "comments":[
-              {
-                "translation":"APIgeneratedstaffcostcommentDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedstaffcostcommentEN",
-                "language":"EN"
-              }
-            ],
-            "unitType":[
-              {
-                "translation":"APIgeneratedstaffcostunittypeDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedstaffcostunittypeEN",
-                "language":"EN"
-              }
-            ],
-            "description":[
-              {
-                "translation":"APIgeneratedstaffcostdescriptionDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedstaffcostdescriptionEN",
-                "language":"EN"
-              }
-            ],
-            "numberOfUnits":1,
-            "pricePerUnit":10000,
-            "budgetPeriods":[
-              {
-                "amount":5000,
-                "number":1
-              },
-              {
-                "amount":0,
-                "number":2
-              },
-              {
-                "amount":0,
-                "number":3
-              },
-              {
-                "amount":0,
-                "number":4
-              },
-              {
-                "amount":0,
-                "number":5
-              },
-              {
-                "amount":5000,
-                "number":6
-              },
-              {
-                "amount":0,
-                "number":7
-              },
-              {
-                "amount":0,
-                "number":8
-              }
-            ]
-          }
-        ]
-      },
-      "cofinancing":{
-        "finances":[
-          {
-            "fundId":1,
-            "fundType":"MainFund",
-            "percentage":60
-          },
-          {
-            "percentage":40,
-            "fundType":"PartnerContribution"
-          }
-        ],
-        "partnerContributions":[
-          {
-            "status":"Private",
-            "amount":5750,
-            "partner":true
-          }
-        ]
-      },
-      "budgetOverview":[
-        "10.000,00",
-        "2.875,00",
-        "1.500,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "14.375,00"
-      ],
-      "cofinancingAmount":"8.625,00"
-    },
-    {
-      "abbreviation":"PP23",
-      "role":"PARTNER",
-      "budget":{
-        "options":{
-          "officeAndAdministrationOnStaffCostsFlatRate":null,
-          "officeAndAdministrationOnDirectCostsFlatRate":null,
-          "staffCostsFlatRate":null,
-          "travelAndAccommodationOnStaffCostsFlatRate":null,
-          "otherCostsOnStaffCostsFlatRate":40
-        },
-        "staff":[
-          {
-            "comments":[
-              {
-                "translation":"APIgeneratedstaffcostcommentDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedstaffcostcommentEN",
-                "language":"EN"
-              }
-            ],
-            "numberOfUnits":1,
-            "unitType":[
-              {
-                "translation":"APIgeneratedstaffcostunittypeDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedstaffcostunittypeEN",
-                "language":"EN"
-              }
-            ],
-            "description":[
-              {
-                "translation":"APIgeneratedstaffcostdescriptionDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedstaffcostdescriptionEN",
-                "language":"EN"
-              }
-            ],
-            "pricePerUnit":2114.46,
-            "budgetPeriods":[
-              {
-                "amount":0,
-                "number":1
-              },
-              {
-                "amount":0,
-                "number":2
-              },
-              {
-                "amount":0,
-                "number":3
-              },
-              {
-                "amount":2014.46,
-                "number":4
-              },
-              {
-                "amount":0,
-                "number":5
-              },
-              {
-                "amount":0,
-                "number":6
-              },
-              {
-                "amount":100,
-                "number":7
-              },
-              {
-                "amount":0,
-                "number":8
-              }
-            ]
-          }
-        ]
-      },
-      "cofinancing":{
-        "finances":[
-          {
-            "fundId":3,
-            "fundType":"MainFund",
-            "percentage":50
-          },
-          {
-            "percentage":50,
-            "fundType":"PartnerContribution"
-          }
-        ],
-        "partnerContributions":[
-          {
-            "status":"Private",
-            "amount":1480.12,
-            "partner":true
-          }
-        ]
-      },
-      "budgetOverview":[
-        "2.114,46",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "845,78",
-        "0,00",
-        "0,00",
-        "2.960,24"
-      ],
-      "cofinancingAmount":"1.480,12"
-    },
-    {
-      "abbreviation":"PP24",
-      "role":"PARTNER",
-      "budget":{
-        "options":{
-          "officeAndAdministrationOnStaffCostsFlatRate":null,
-          "officeAndAdministrationOnDirectCostsFlatRate":null,
-          "staffCostsFlatRate":20,
-          "travelAndAccommodationOnStaffCostsFlatRate":null,
-          "otherCostsOnStaffCostsFlatRate":null
-        },
-        "travel":[
-          {
-            "description":[
-              {
-                "translation":"APIgeneratedtravelandaccommodationcostdescriptionDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedtravelandaccommodationcostdescriptionEN",
-                "language":"EN"
-              }
-            ],
-            "comments":[
-              {
-                "translation":"APIgeneratedtravelandaccommodationcostcommentsDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedtravelandaccommodationcostcommentsEN",
-                "language":"EN"
-              }
-            ],
-            "unitType":[
-              {
-                "translation":"APIgeneratedtravelandaccommodationcostunittypeDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedtravelandaccommodationcostunittypeEN",
-                "language":"EN"
-              }
-            ],
-            "numberOfUnits":1,
-            "pricePerUnit":10000,
-            "budgetPeriods":[
-              {
-                "amount":0,
-                "number":1
-              },
-              {
-                "amount":0,
-                "number":2
-              },
-              {
-                "amount":10000,
-                "number":3
-              },
-              {
-                "amount":0,
-                "number":4
-              },
-              {
-                "amount":0,
-                "number":5
-              },
-              {
-                "amount":0,
-                "number":6
-              },
-              {
-                "amount":0,
-                "number":7
-              },
-              {
-                "amount":0,
-                "number":8
-              }
-            ]
-          }
-        ]
-      },
-      "cofinancing":{
-        "finances":[
-          {
-            "fundId":3,
-            "fundType":"MainFund",
-            "percentage":30
-          },
-          {
-            "percentage":70,
-            "fundType":"PartnerContribution"
-          }
-        ],
-        "partnerContributions":[
-          {
-            "status":"Private",
-            "amount":8400,
-            "partner":true
-          }
-        ]
-      },
-      "budgetOverview":[
-        "2.000,00",
-        "0,00",
-        "10.000,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "12.000,00"
-      ],
-      "cofinancingAmount":"3.600,00"
-    },
-    {
-      "abbreviation":"PP25",
-      "role":"PARTNER",
-      "budget":{
-        "options":{
-          "officeAndAdministrationOnStaffCostsFlatRate":15,
-          "officeAndAdministrationOnDirectCostsFlatRate":null,
-          "staffCostsFlatRate":20,
-          "travelAndAccommodationOnStaffCostsFlatRate":null,
-          "otherCostsOnStaffCostsFlatRate":null
-        },
-        "travel":[
-          {
-            "description":[
-              {
-                "translation":"APIgeneratedtravelandaccommodationcostdescriptionDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedtravelandaccommodationcostdescriptionEN",
-                "language":"EN"
-              }
-            ],
-            "comments":[
-              {
-                "translation":"APIgeneratedtravelandaccommodationcostcommentsDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedtravelandaccommodationcostcommentsEN",
-                "language":"EN"
-              }
-            ],
-            "unitType":[
-              {
-                "translation":"APIgeneratedtravelandaccommodationcostunittypeDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedtravelandaccommodationcostunittypeEN",
-                "language":"EN"
-              }
-            ],
-            "numberOfUnits":1,
-            "pricePerUnit":10000,
-            "budgetPeriods":[
-              {
-                "amount":0,
-                "number":1
-              },
-              {
-                "amount":0,
-                "number":2
-              },
-              {
-                "amount":0,
-                "number":3
-              },
-              {
-                "amount":0,
-                "number":4
-              },
-              {
-                "amount":0,
-                "number":5
-              },
-              {
-                "amount":0,
-                "number":6
-              },
-              {
-                "amount":0,
-                "number":7
-              },
-              {
-                "amount":10000,
-                "number":8
-              }
-            ]
-          }
-        ]
-      },
-      "cofinancing":{
-        "finances":[
-          {
-            "fundId":3,
-            "fundType":"MainFund",
-            "percentage":20
-          },
-          {
-            "percentage":80,
-            "fundType":"PartnerContribution"
-          }
-        ],
-        "partnerContributions":[
-          {
-            "status":"Private",
-            "amount":9840,
-            "partner":true
-          }
-        ]
-      },
-      "budgetOverview":[
-        "2.000,00",
-        "300,00",
-        "10.000,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "12.300,00"
-      ],
-      "cofinancingAmount":"2.460,00"
-    },
-    {
-      "abbreviation":"PP26",
-      "role":"PARTNER",
-      "budget":{
-        "options":{
-          "officeAndAdministrationOnStaffCostsFlatRate":15,
-          "officeAndAdministrationOnDirectCostsFlatRate":null,
-          "staffCostsFlatRate":20,
-          "travelAndAccommodationOnStaffCostsFlatRate":15,
-          "otherCostsOnStaffCostsFlatRate":null
-        },
-        "external":[
-          {
-            "description":[
-              {
-                "translation":"APIgeneratedexternalcostdescriptionDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedexternalcostdescriptionEN",
-                "language":"EN"
-              }
-            ],
-            "comments":[
-              {
-                "translation":"APIgeneratedexternalcostcommentsDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedexternalcostcommentsEN",
-                "language":"EN"
-              }
-            ],
-            "awardProcedures":[
-              {
-                "translation":"APIgeneratedexternalcostawardproceduresDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedexternalcostawardproceduresEN",
-                "language":"EN"
-              }
-            ],
-            "unitType":[
-              {
-                "translation":"APIgeneratedexternalcostunittypeDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedexternalcostunittypeEN",
-                "language":"EN"
-              }
-            ],
-            "numberOfUnits":10,
-            "pricePerUnit":1000,
-            "budgetPeriods":[
-              {
-                "amount":3000,
-                "number":1
-              },
-              {
-                "amount":0,
-                "number":2
-              },
-              {
-                "amount":3000,
-                "number":3
-              },
-              {
-                "amount":0,
-                "number":4
-              },
-              {
-                "amount":3000,
-                "number":5
-              },
-              {
-                "amount":0,
-                "number":6
-              },
-              {
-                "amount":1000,
-                "number":7
-              },
-              {
-                "amount":0,
-                "number":8
-              }
-            ]
-          }
-        ]
-      },
-      "cofinancing":{
-        "finances":[
-          {
-            "fundId":3,
-            "fundType":"MainFund",
-            "percentage":10
-          },
-          {
-            "percentage":90,
-            "fundType":"PartnerContribution"
-          }
-        ],
-        "partnerContributions":[
-          {
-            "status":"Private",
-            "amount":11340,
-            "partner":true
-          }
-        ]
-      },
-      "budgetOverview":[
-        "2.000,00",
-        "300,00",
-        "300,00",
-        "10.000,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "12.600,00"
-      ],
-      "cofinancingAmount":"1.260,00"
-    },
-    {
-      "abbreviation":"PP27",
-      "role":"PARTNER",
-      "budget":{
-        "options":{
-          "officeAndAdministrationOnStaffCostsFlatRate":null,
-          "officeAndAdministrationOnDirectCostsFlatRate":25,
-          "staffCostsFlatRate":20,
-          "travelAndAccommodationOnStaffCostsFlatRate":null,
-          "otherCostsOnStaffCostsFlatRate":null
-        },
-        "equipment":[
-          {
-            "description":[
-              {
-                "translation":"APIgeneratedequipmentcostdescriptionDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedequipmentcostdescriptionEN",
-                "language":"EN"
-              }
-            ],
-            "comments":[
-              {
-                "translation":"APIgeneratedequipmentcostcommentsDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedequipmentcostcommentsEN",
-                "language":"EN"
-              }
-            ],
-            "unitType":[
-              {
-                "translation":"APIgeneratedequipmentcostunittypeDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedequipmentcostunittypeEN",
-                "language":"EN"
-              }
-            ],
-            "awardProcedures":[
-              {
-                "translation":"APIgeneratedequipmentcostawardproceduresDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedequipmentcostawardproceduresEN",
-                "language":"EN"
-              }
-            ],
-            "numberOfUnits":1,
-            "pricePerUnit":10000,
-            "budgetPeriods":[
-              {
-                "amount":999.99,
-                "number":1
-              },
-              {
-                "amount":9000.01,
-                "number":2
-              },
-              {
-                "amount":0,
-                "number":3
-              },
-              {
-                "amount":0,
-                "number":4
-              },
-              {
-                "amount":0,
-                "number":5
-              },
-              {
-                "amount":0,
-                "number":6
-              },
-              {
-                "amount":0,
-                "number":7
-              },
-              {
-                "amount":0,
-                "number":8
-              }
-            ]
-          }
-        ]
-      },
-      "cofinancing":{
-        "finances":[
-          {
-            "fundId":1,
-            "fundType":"MainFund",
-            "percentage":60
-          },
-          {
-            "percentage":40,
-            "fundType":"PartnerContribution"
-          }
-        ],
-        "partnerContributions":[
-          {
-            "status":"Private",
-            "amount":6000,
-            "partner":true
-          }
-        ]
-      },
-      "budgetOverview":[
-        "2.000,00",
-        "3.000,00",
-        "0,00",
-        "0,00",
-        "10.000,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "15.000,00"
-      ],
-      "cofinancingAmount":"9.000,00"
-    },
-    {
-      "abbreviation":"PP28",
-      "role":"PARTNER",
-      "budget":{
-        "options":{
-          "officeAndAdministrationOnStaffCostsFlatRate":null,
-          "officeAndAdministrationOnDirectCostsFlatRate":25,
-          "staffCostsFlatRate":20,
-          "travelAndAccommodationOnStaffCostsFlatRate":15,
-          "otherCostsOnStaffCostsFlatRate":null
-        },
-        "equipment":[
-          {
-            "description":[
-              {
-                "translation":"APIgeneratedequipmentcostdescriptionDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedequipmentcostdescriptionEN",
-                "language":"EN"
-              }
-            ],
-            "comments":[
-              {
-                "translation":"APIgeneratedequipmentcostcommentsDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedequipmentcostcommentsEN",
-                "language":"EN"
-              }
-            ],
-            "unitType":[
-              {
-                "translation":"APIgeneratedequipmentcostunittypeDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedequipmentcostunittypeEN",
-                "language":"EN"
-              }
-            ],
-            "awardProcedures":[
-              {
-                "translation":"APIgeneratedequipmentcostawardproceduresDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedequipmentcostawardproceduresEN",
-                "language":"EN"
-              }
-            ],
-            "numberOfUnits":1,
-            "pricePerUnit":10000,
-            "budgetPeriods":[
-              {
-                "amount":999.99,
-                "number":1
-              },
-              {
-                "amount":100.01,
-                "number":2
-              },
-              {
-                "amount":8900,
-                "number":3
-              },
-              {
-                "amount":0,
-                "number":4
-              },
-              {
-                "amount":0,
-                "number":5
-              },
-              {
-                "amount":0,
-                "number":6
-              },
-              {
-                "amount":0,
-                "number":7
-              },
-              {
-                "amount":0,
-                "number":8
-              }
-            ]
-          }
-        ]
-      },
-      "cofinancing":{
-        "finances":[
-          {
-            "fundId":1,
-            "fundType":"MainFund",
-            "percentage":60
-          },
-          {
-            "percentage":40,
-            "fundType":"PartnerContribution"
-          }
-        ],
-        "partnerContributions":[
-          {
-            "status":"Private",
-            "amount":6150,
-            "partner":true
-          }
-        ]
-      },
-      "budgetOverview":[
-        "2.000,00",
-        "3.075,00",
-        "300,00",
-        "0,00",
-        "10.000,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "15.375,00"
-      ],
-      "cofinancingAmount":"9.225,00"
-    },
-    {
-      "abbreviation":"PP29",
-      "role":"PARTNER",
-      "budget":{
-        "options":{
-          "officeAndAdministrationOnStaffCostsFlatRate":null,
-          "officeAndAdministrationOnDirectCostsFlatRate":null,
-          "staffCostsFlatRate":20,
-          "travelAndAccommodationOnStaffCostsFlatRate":15,
-          "otherCostsOnStaffCostsFlatRate":null
-        },
-        "equipment":[
-          {
-            "description":[
-              {
-                "translation":"APIgeneratedequipmentcostdescriptionDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedequipmentcostdescriptionEN",
-                "language":"EN"
-              }
-            ],
-            "comments":[
-              {
-                "translation":"APIgeneratedequipmentcostcommentsDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedequipmentcostcommentsEN",
-                "language":"EN"
-              }
-            ],
-            "unitType":[
-              {
-                "translation":"APIgeneratedequipmentcostunittypeDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedequipmentcostunittypeEN",
-                "language":"EN"
-              }
-            ],
-            "awardProcedures":[
-              {
-                "translation":"APIgeneratedequipmentcostawardproceduresDE",
-                "language":"DE"
-              },
-              {
-                "translation":"APIgeneratedequipmentcostawardproceduresEN",
-                "language":"EN"
-              }
-            ],
-            "numberOfUnits":1,
-            "pricePerUnit":10000,
-            "budgetPeriods":[
-              {
-                "amount":0,
-                "number":1
-              },
-              {
-                "amount":0,
-                "number":2
-              },
-              {
-                "amount":0,
-                "number":3
-              },
-              {
-                "amount":0,
-                "number":4
-              },
-              {
-                "amount":0,
-                "number":5
-              },
-              {
-                "amount":0,
-                "number":6
-              },
-              {
-                "amount":0,
-                "number":7
-              },
-              {
-                "amount":10000,
-                "number":8
-              }
-            ]
-          }
-        ]
-      },
-      "cofinancing":{
-        "finances":[
-          {
-            "fundId":1,
-            "fundType":"MainFund",
-            "percentage":60
-          },
-          {
-            "percentage":40,
-            "fundType":"PartnerContribution"
-          }
-        ],
-        "partnerContributions":[
-          {
-            "status":"Private",
-            "amount":4920,
-            "partner":true
-          }
-        ]
-      },
-      "budgetOverview":[
-        "2.000,00",
-        "0,00",
-        "300,00",
-        "0,00",
-        "10.000,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "0,00",
-        "12.300,00"
-      ],
-      "cofinancingAmount":"7.380,00"
+      }
     }
-  ],
+  },
   "approvalInfo": {
     "note": "API modification approved",
     "date": "2023-03-14",

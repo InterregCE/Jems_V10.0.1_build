@@ -8,12 +8,13 @@ context('Partner reports tests', () => {
     cy.fixture('project/reporting/TB-745.json').then(testData => {
       cy.fixture('api/application/application.json').then(application => {
         prepareTestData(testData, application);
+
         cy.createApprovedApplication(application, user.programmeUser.email).then(applicationId => {
           const partnerIdsToDisable = [2, 3];
 
           enableModification(applicationId);
-          disableSelectedPartners(testData, applicationId, partnerIdsToDisable);
-          verifyPartnerChangesBeforeApproving(testData, applicationId, partnerIdsToDisable);
+          disableSelectedPartners(application, applicationId, partnerIdsToDisable);
+          verifyPartnerChangesBeforeApproving(application, applicationId, partnerIdsToDisable);
           cy.approveModification(applicationId, testData.approvalInfo, user.programmeUser.email);
 
           cy.loginByRequest(user.admin.email).then(() => {
@@ -22,12 +23,12 @@ context('Partner reports tests', () => {
                 partnerIdsToDisable.forEach(id => {
                   cy.get('mat-expansion-panel-header:contains("Partner details")')
                     .next('div')
-                    .find(`li:contains("${testData.partners[id].abbreviation}")`)
+                    .find(`li:contains("${application.partners[id].details.abbreviation}")`)
                     .contains('mat-icon', 'person_off')
                     .should('exist');
                 });
 
-                verifyIconsInProjectPrivileges(testData, partnerIdsToDisable, true);
+                verifyIconsInProjectPrivileges(application, partnerIdsToDisable, true);
               });
           });
 
@@ -74,14 +75,21 @@ function prepareTestData(testData, application) {
 
 function preparePartnersList(testData, application) {
   application.partners = [];
-  testData.partners.forEach(partnerData => {
-    const tempPartner = JSON.parse(JSON.stringify(partner));
-    tempPartner.details.abbreviation = partnerData.abbreviation;
-    tempPartner.details.role = partnerData.role;
-    tempPartner.budget = partnerData.budget;
-    tempPartner.cofinancing = partnerData.cofinancing;
+
+  for (let i = 0; i < 29; i++) {
+    const tempPartner = JSON.parse(JSON.stringify(testData.partner));
+
+    if (i === 0) {
+      application.partners.push(tempPartner);
+      continue;
+    }
+
+    const index = i + 1;
+
+    tempPartner.details.abbreviation = "PP" + index;
+    tempPartner.details.role = "PARTNER";
     application.partners.push(tempPartner);
-  });
+  }
 }
 
 function enableModification(applicationId) {
@@ -100,13 +108,11 @@ function enableModification(applicationId) {
     .should('be.visible');
 }
 
-function disableSelectedPartners(testData, applicationId, partnerIdsToDisable) {
+function disableSelectedPartners(application, applicationId, partnerIdsToDisable) {
   cy.loginByRequest(user.applicantUser.email);
   cy.visit(`app/project/detail/${applicationId}/applicationFormPartner`, {failOnStatusCode: false})
-    .then(() => {
-      disablePartnersByIds(testData, partnerIdsToDisable);
-      submitProjectApp(applicationId);
-    });
+  disablePartnersByIds(application, partnerIdsToDisable);
+  submitProjectApp(applicationId);
 }
 
 function submitProjectApp(applicationId) {
@@ -114,43 +120,43 @@ function submitProjectApp(applicationId) {
   cy.submitProjectApplication(applicationId);
 }
 
-function disablePartnersByIds(testData, partnerIdsToDisable) {
+function disablePartnersByIds(application, partnerIdsToDisable) {
   partnerIdsToDisable.forEach(id => {
-    cy.contains('mat-row', testData.partners[id].abbreviation)
+    cy.contains('mat-row', application.partners[id].details.abbreviation)
       .contains('button', 'Deactivate partner')
       .click();
 
     cy.contains('button', 'Confirm')
       .click();
 
-    cy.contains('div', `Partner "${testData.partners[id].abbreviation}" deactivated successfully`)
+    cy.contains('div', `Partner "${application.partners[id].details.abbreviation}" deactivated successfully`)
       .scrollIntoView()
       .should('be.visible');
 
-    cy.contains('div', `Partner "${testData.partners[id].abbreviation}" deactivated successfully`)
+    cy.contains('div', `Partner "${application.partners[id].details.abbreviation}" deactivated successfully`)
       .should('not.exist');
 
-    cy.contains('mat-row', testData.partners[id].abbreviation)
+    cy.contains('mat-row', application.partners[id].details.abbreviation)
       .contains('button', 'Deactivate partner')
       .scrollIntoView()
       .should('be.disabled');
 
-    cy.contains('mat-row', testData.partners[id].abbreviation)
+    cy.contains('mat-row', application.partners[id].details.abbreviation)
       .contains('Inactive')
       .scrollIntoView()
       .should('be.visible');
 
-    cy.contains('mat-row', testData.partners[id].abbreviation)
+    cy.contains('mat-row', application.partners[id].details.abbreviation)
       .contains('mat-icon', 'person_off')
       .scrollIntoView()
       .should('be.visible');
 
-    verifyIconsInProjectPartners(testData, id, true);
+    verifyIconsInProjectPartners(application, id, true);
   })
 }
 
-function verifyPartnerChangesBeforeApproving(testData, applicationId, partnerIdsToDisable) {
-  const disabledPartnerAbbreviation = testData.partners[partnerIdsToDisable[0]].abbreviation;
+function verifyPartnerChangesBeforeApproving(application, applicationId, partnerIdsToDisable) {
+  const disabledPartnerAbbreviation = application.partners[partnerIdsToDisable[0]].details.abbreviation;
 
   cy.loginByRequest(user.admin.email);
 
@@ -160,34 +166,34 @@ function verifyPartnerChangesBeforeApproving(testData, applicationId, partnerIds
         .should('be.visible');
 
       partnerIdsToDisable.forEach(id => {
-        cy.contains('mat-row', testData.partners[id].abbreviation)
+        cy.contains('mat-row', application.partners[id].details.abbreviation)
           .contains('Inactive')
           .scrollIntoView()
           .should('be.visible');
 
-        cy.contains('mat-row', testData.partners[id].abbreviation)
+        cy.contains('mat-row', application.partners[id].details.abbreviation)
           .contains('mat-icon', 'person_off')
           .scrollIntoView()
           .should('be.visible');
 
-        verifyIconsInPartnerDetails(testData, id, false);
-        verifyIconsInProjectPartners(testData, id, true);
+        verifyIconsInPartnerDetails(application, id, false);
+        verifyIconsInProjectPartners(application, id, true);
       });
 
-      verifyIconsInProjectPrivileges(testData, partnerIdsToDisable, false)
+      verifyIconsInProjectPrivileges(application, partnerIdsToDisable, false)
       verifyDeactivatedPartnerBannerDisplay("Partner details", disabledPartnerAbbreviation, false);
       verifyDeactivatedPartnerBannerDisplay("Project partners", disabledPartnerAbbreviation, true);
     });
 }
 
-function verifyIconsInProjectPrivileges(testData, partnerIdsToDisable, shouldIconsBeDisplayed) {
+function verifyIconsInProjectPrivileges(application, partnerIdsToDisable, shouldIconsBeDisplayed) {
   const displayFlag = shouldIconsBeDisplayed ? 'be.visible' : 'not.exist';
 
   cy.contains('Project privileges')
     .click()
     .then(() => {
       partnerIdsToDisable.forEach(id => {
-        cy.get(`mat-expansion-panel-header:contains("${testData.partners[id].abbreviation}")`)
+        cy.get(`mat-expansion-panel-header:contains("${application.partners[id].details.abbreviation}")`)
           .scrollIntoView()
           .contains('mat-icon', 'person_off')
           .should(displayFlag)
@@ -195,12 +201,12 @@ function verifyIconsInProjectPrivileges(testData, partnerIdsToDisable, shouldIco
     });
 }
 
-function verifyIconsInPartnerDetails(testData, id, shouldIconsBeDisplayed) {
+function verifyIconsInPartnerDetails(application, id, shouldIconsBeDisplayed) {
   const displayFlag = shouldIconsBeDisplayed ? 'be.visible' : 'not.exist';
 
   cy.get('mat-expansion-panel-header:contains("Partner details")')
     .next('div')
-    .find(`li:contains("${testData.partners[id].abbreviation}")`)
+    .find(`li:contains("${application.partners[id].details.abbreviation}")`)
     .then((foundElement) => {
       if (shouldIconsBeDisplayed) {
         cy.wrap(foundElement)
@@ -215,12 +221,12 @@ function verifyIconsInPartnerDetails(testData, id, shouldIconsBeDisplayed) {
     })
 }
 
-function verifyIconsInProjectPartners(testData, id, shouldIconsBeDisplayed) {
+function verifyIconsInProjectPartners(application, id, shouldIconsBeDisplayed) {
   const displayFlag = shouldIconsBeDisplayed ? 'be.visible' : 'not.exist';
 
   cy.get('mat-expansion-panel-header:contains("Project partners")')
     .next('div')
-    .find(`li:contains("${testData.partners[id].abbreviation}")`)
+    .find(`li:contains("${application.partners[id].details.abbreviation}")`)
     .contains('mat-icon', 'person_off')
     .then((foundElement) => {
       if (shouldIconsBeDisplayed) {
