@@ -9,7 +9,7 @@ import io.cloudflight.jems.server.call.repository.CallPersistenceProviderTest.Co
 import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.call.repository.toNotificationEntities
 import io.cloudflight.jems.server.call.service.model.ProjectNotificationConfiguration
-import io.cloudflight.jems.server.notification.model.NotificationType
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK

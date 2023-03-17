@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.call.service.model
 
-import io.cloudflight.jems.server.notification.model.NotificationType
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType
 
 data class ProjectNotificationConfiguration(
     val id: NotificationType,
