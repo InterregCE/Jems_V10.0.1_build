@@ -26,12 +26,14 @@ export class PreSubmissionCheckSettingsPageComponent {
     pluginKeys: PluginKeys;
     preSubmissionCheckPlugins: PluginInfoDTO[];
     reportPartnerCheckPlugins: PluginInfoDTO[];
+    controlReportSamplingCheckPlugins: PluginInfoDTO[];
     callIsEditable: boolean;
   }>;
 
   form = this.formBuilder.group({
     pluginKey: ['', Validators.required],
     reportPartnerCheckPluginKey: ['', Validators.required],
+    controlReportSamplingCheckPluginKey: ['', Validators.required],
     callHasTwoSteps: false
   });
 
@@ -44,11 +46,13 @@ export class PreSubmissionCheckSettingsPageComponent {
       pageStore.callIsEditable$,
       pageStore.preSubmissionCheckPlugins,
       pageStore.reportPartnerCheckPlugins,
+      pageStore.controlReportSamplingCheckPlugins,
       pageStore.pluginKeys$,
     ]).pipe(
-      map(([callIsEditable, preSubmissionCheckPlugins, reportPartnerCheckPlugins, pluginKeys]) => ({
+      map(([callIsEditable, preSubmissionCheckPlugins, reportPartnerCheckPlugins, controlReportSamplingCheckPlugins, pluginKeys]) => ({
         preSubmissionCheckPlugins,
         reportPartnerCheckPlugins,
+        controlReportSamplingCheckPlugins,
         callIsEditable,
         pluginKeys,
       })),
@@ -64,6 +68,7 @@ export class PreSubmissionCheckSettingsPageComponent {
     }
     this.pluginKey.setValue(pluginKeys.pluginKey);
     this.reportPartnerCheckPluginKey.setValue(pluginKeys.reportPartnerCheckPluginKey);
+    this.controlReportSamplingCheckPluginKey.setValue(pluginKeys.controlReportSamplingCheckPluginKey);
   }
 
   save(): void {
@@ -84,6 +89,10 @@ export class PreSubmissionCheckSettingsPageComponent {
 
   get reportPartnerCheckPluginKey(): FormControl {
     return this.form.get('reportPartnerCheckPluginKey') as FormControl;
+  }
+
+  get controlReportSamplingCheckPluginKey(): FormControl {
+    return this.form.get('controlReportSamplingCheckPluginKey') as FormControl;
   }
 
   get callHasTwoSteps(): FormControl {

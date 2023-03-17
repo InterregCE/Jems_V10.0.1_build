@@ -121,6 +121,7 @@ class ProjectPartnerReportFilePersistenceProviderTest : UnitTest() {
             unParkedFrom = null,
             reportOfOrigin = null,
             originalNumber = null,
+            partOfSampleLocked = false
         )
 
         private fun fileCreate(name: String = "new_file.txt", type: JemsFileType) = JemsFileCreate(

@@ -32,6 +32,7 @@ data class ProjectPartnerControlReportExpenditureVerificationDTO(
     val parkingMetadata: ExpenditureParkingMetadataDTO?,
 
     val partOfSample: Boolean,
+    val partOfSampleLocked: Boolean,
     val certifiedAmount: BigDecimal,
     val deductedAmount: BigDecimal,
     val typologyOfErrorId: Long?,

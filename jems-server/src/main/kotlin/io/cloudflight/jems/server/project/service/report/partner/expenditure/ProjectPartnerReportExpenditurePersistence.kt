@@ -29,6 +29,8 @@ interface ProjectPartnerReportExpenditurePersistence {
         expenditureId: Long,
     ): ProjectPartnerReportExpenditureCost
 
+    fun markAsSampledAndLock(expenditureIds: Set<Long>)
+
     fun existsByExpenditureId(partnerId: Long, reportId: Long, expenditureId: Long): Boolean
 
     fun getExpenditureAttachment(partnerId: Long, expenditureId: Long): JemsFile?

@@ -32,4 +32,5 @@ data class CallDetailDTO(
     val preSubmissionCheckPluginKey: String?,
     val firstStepPreSubmissionCheckPluginKey: String?,
     val reportPartnerCheckPluginKey: String?,
+    val controlReportSamplingCheckPluginKey: String?,
 )

@@ -1,13 +1,17 @@
 package io.cloudflight.jems.server.project.service.report.partner.base.startControlPartnerReport
 
+import io.cloudflight.jems.plugin.contract.pre_condition_check.ControlReportSamplingCheckPlugin
+import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
+import io.cloudflight.jems.server.plugin.JemsPluginRegistry
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerControlReport
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.partner.control.overview.ProjectPartnerReportControlOverviewPersistence
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportDesignatedControllerPersistence
 import io.cloudflight.jems.server.project.service.report.partner.partnerReportStartedControl
 import org.springframework.context.ApplicationEventPublisher
@@ -21,7 +25,10 @@ class StartControlPartnerReport(
     private val controlInstitutionPersistence: ControllerInstitutionPersistence,
     private val reportDesignatedControllerPersistence: ProjectPartnerReportDesignatedControllerPersistence,
     private val controlOverviewPersistence: ProjectPartnerReportControlOverviewPersistence,
-    private val auditPublisher: ApplicationEventPublisher
+    private val auditPublisher: ApplicationEventPublisher,
+    private val jemsPluginRegistry: JemsPluginRegistry,
+    private val expenditurePersistence: ProjectPartnerReportExpenditurePersistence,
+    private val callPersistence: CallPersistence
 ) : StartControlPartnerReportInteractor {
 
     @CanEditPartnerControlReport
@@ -33,6 +40,10 @@ class StartControlPartnerReport(
 
         val lastCertifiedReportId = reportPersistence.getLastCertifiedPartnerReportId(partnerId)
         controlOverviewPersistence.createPartnerControlReportOverview(partnerId, reportId, lastCertifiedReportId)
+
+        val sampledExpenditureIds = getSampledExpenditureIds(partnerId, reportId)
+        if (sampledExpenditureIds.isNotEmpty())
+            expenditurePersistence.markAsSampledAndLock(sampledExpenditureIds)
 
         val institution = controlInstitutionPersistence.getControllerInstitutions(setOf(partnerId)).values.firstOrNull()
         reportDesignatedControllerPersistence.create(partnerId, reportId, institution!!.id)
@@ -54,5 +65,12 @@ class StartControlPartnerReport(
     private fun validateReportIsSubmitted(report: ProjectPartnerReport) {
         if (report.status != ReportStatus.Submitted)
             throw ReportNotSubmitted()
+    }
+
+    private fun getSampledExpenditureIds(partnerId: Long, reportId: Long): Set<Long> {
+        val pluginKey = callPersistence.getCallSimpleByPartnerId(partnerId).controlReportSamplingCheckPluginKey
+        val plugin = jemsPluginRegistry.get(ControlReportSamplingCheckPlugin::class, key = pluginKey)
+        return runCatching { plugin.check(partnerId = partnerId, reportId = reportId).sampledExpenditureIds }
+            .getOrElse { setOf() }
     }
 }

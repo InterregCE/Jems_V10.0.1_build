@@ -86,6 +86,7 @@ class WorkPackageServiceTest {
         reportPartnerCheckPluginKey = "check-off",
         projectDefinedUnitCostAllowed = true,
         projectDefinedLumpSumAllowed = false,
+        controlReportSamplingCheckPluginKey = "control-report-sampling-check-off"
     ).apply { translatedValues.add(CallTranslEntity(TranslationId(this, SystemLanguage.EN), "This is a dummy call")) }
 
     private val statusDraft = ProjectStatusHistoryEntity(

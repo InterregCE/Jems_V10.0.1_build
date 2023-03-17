@@ -178,6 +178,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             verificationComment = null,
             parked = false,
             parkingMetadata = null,
+            partOfSampleLocked = false
         )
 
         private val expenditureVerification2 = ProjectPartnerReportExpenditureVerification(
@@ -206,6 +207,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             verificationComment = null,
             parked = false,
             parkingMetadata = null,
+            partOfSampleLocked = false
         )
 
         private val expenditureVerification3 = ProjectPartnerReportExpenditureVerification(
@@ -234,6 +236,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             verificationComment = null,
             parked = false,
             parkingMetadata = null,
+            partOfSampleLocked = false
         )
 
         private val expenditureVerificationUpdate1 = ExpenditureVerificationUpdate(

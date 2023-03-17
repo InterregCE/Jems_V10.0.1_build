@@ -51,6 +51,7 @@ class UpdatePreSubmissionCheckSettings(
     private fun CallDetail.toPluginModel() = PreSubmissionPlugins(
         pluginKey = preSubmissionCheckPluginKey ?: "",
         firstStepPluginKey = firstStepPreSubmissionCheckPluginKey ?: "",
-        reportPartnerCheckPluginKey = reportPartnerCheckPluginKey ?: ""
+        reportPartnerCheckPluginKey = reportPartnerCheckPluginKey ?: "",
+        controlReportSamplingCheckPluginKey = controlReportSamplingCheckPluginKey?: ""
     )
 }

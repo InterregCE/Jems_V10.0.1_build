@@ -72,6 +72,7 @@ class PartnerBudgetPerFundServiceTest : UnitTest() {
         reportPartnerCheckPluginKey = null,
         projectDefinedUnitCostAllowed = false,
         projectDefinedLumpSumAllowed = true,
+        controlReportSamplingCheckPluginKey = null
     )
     private val spfCall = CallDetail(
         id = 2,
@@ -89,6 +90,7 @@ class PartnerBudgetPerFundServiceTest : UnitTest() {
         reportPartnerCheckPluginKey = null,
         projectDefinedUnitCostAllowed = false,
         projectDefinedLumpSumAllowed = true,
+        controlReportSamplingCheckPluginKey = null
     )
 
     private val totalCostPartner1 = 80.toScaledBigDecimal()

@@ -91,6 +91,7 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
             unParkedFrom = unParkedFrom,
             reportOfOrigin = report,
             originalNumber = 12,
+            partOfSampleLocked = false
         ).apply {
             translatedValues.add(
                 PartnerReportExpenditureCostTranslEntity(
@@ -132,6 +133,7 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
                 verificationComment = "dummy comment",
                 parked = false,
                 parkingMetadata = ExpenditureParkingMetadata(reportOfOriginId = 600L, reportOfOriginNumber = 601, originalExpenditureNumber = 12),
+                partOfSampleLocked = false
             )
 
         private val dummyExpectedExpenditureUpdate = ExpenditureVerificationUpdate(

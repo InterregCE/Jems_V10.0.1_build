@@ -120,6 +120,15 @@ class ProjectPartnerReportExpenditurePersistenceProvider(
         ).toModel()
     }
 
+    @Transactional
+    override fun markAsSampledAndLock(expenditureIds: Set<Long>) {
+        var expenditures = reportExpenditureRepository.findAllById(expenditureIds)
+        expenditures.forEach {
+            it.partOfSample = true
+            it.partOfSampleLocked = true
+        }
+    }
+
     @Transactional(readOnly = true)
     override fun existsByExpenditureId(partnerId: Long, reportId: Long, expenditureId: Long) =
         reportExpenditureRepository

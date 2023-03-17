@@ -93,6 +93,7 @@ internal class CallPersistenceProviderTest {
         private const val UNIT_COST_ID = 3L
         private const val PLUGIN_KEY = "plugin-key"
         private const val PLUGIN_KEY_REPORT = "plugin-key-report"
+        private const val PLUGIN_KEY_CONTROL_SAMPLING = "plugin-key-control-sampling"
 
         private fun applicationFormFieldConfigurationEntities(callEntity: CallEntity) = mutableSetOf(
             ApplicationFormFieldConfigurationEntity(
@@ -141,6 +142,7 @@ internal class CallPersistenceProviderTest {
             call.preSubmissionCheckPluginKey = PLUGIN_KEY
             call.firstStepPreSubmissionCheckPluginKey = PLUGIN_KEY
             call.reportPartnerCheckPluginKey = PLUGIN_KEY_REPORT
+            call.controlReportSamplingCheckPluginKey = PLUGIN_KEY_CONTROL_SAMPLING
             call.prioritySpecificObjectives.clear()
             call.prioritySpecificObjectives.addAll(specificObjectives)
             call.strategies.clear()
@@ -198,6 +200,7 @@ internal class CallPersistenceProviderTest {
             preSubmissionCheckPluginKey = PLUGIN_KEY,
             firstStepPreSubmissionCheckPluginKey = PLUGIN_KEY,
             reportPartnerCheckPluginKey = PLUGIN_KEY_REPORT,
+            controlReportSamplingCheckPluginKey = PLUGIN_KEY_CONTROL_SAMPLING
         )
 
         private val expectedSPFCallDetail = createCallDetailModel(
@@ -325,6 +328,7 @@ internal class CallPersistenceProviderTest {
                 reportPartnerCheckPluginKey = "check-off",
                 projectDefinedUnitCostAllowed = true,
                 projectDefinedLumpSumAllowed = false,
+                controlReportSamplingCheckPluginKey = "control-report-sampling-check-off"
             )
         }
     }
@@ -469,6 +473,7 @@ internal class CallPersistenceProviderTest {
             pluginKey = PLUGIN_KEY,
             firstStepPluginKey = PLUGIN_KEY,
             reportPartnerCheckPluginKey = PLUGIN_KEY_REPORT,
+            controlReportSamplingCheckPluginKey = PLUGIN_KEY_CONTROL_SAMPLING
         ))).isEqualTo(expectedStandardCallDetail)
     }
 
@@ -480,6 +485,7 @@ internal class CallPersistenceProviderTest {
             pluginKey = PLUGIN_KEY,
             firstStepPluginKey = PLUGIN_KEY,
             reportPartnerCheckPluginKey = PLUGIN_KEY_REPORT,
+            controlReportSamplingCheckPluginKey = PLUGIN_KEY_CONTROL_SAMPLING
         ))
         }
     }
@@ -751,6 +757,7 @@ internal class CallPersistenceProviderTest {
             ),
             projectDefinedUnitCostAllowed = true,
             projectDefinedLumpSumAllowed = false,
+            controlReportSamplingCheckPluginKey = "control-report-sampling-check-off"
         )
         assertThat(persistence.updateCall(call)).isEqualTo(callDetail)
         verify(exactly = 1) { projectCallStateAidRepository.deleteAllBySetupIdStateAidId(489L) }

@@ -27,6 +27,7 @@ import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.call.service.model.ProjectNotificationConfiguration
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.entity.extractField
+import io.cloudflight.jems.server.plugin.pre_submission_check.ControlReportSamplingCheckOff
 import io.cloudflight.jems.server.plugin.pre_submission_check.ReportPartnerCheckOff
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeStrategyEntity
@@ -81,7 +82,8 @@ fun CallEntity.toDetailModel(
     firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey,
     reportPartnerCheckPluginKey = reportPartnerCheckPluginKey,
     projectDefinedUnitCostAllowed = projectDefinedUnitCostAllowed,
-    projectDefinedLumpSumAllowed = projectDefinedLumpSumAllowed
+    projectDefinedLumpSumAllowed = projectDefinedLumpSumAllowed,
+    controlReportSamplingCheckPluginKey = controlReportSamplingCheckPluginKey
 )
 
 fun ProjectNotificationConfiguration.toEntity(
@@ -155,6 +157,7 @@ fun Call.toEntity(
     reportPartnerCheckPluginKey = existingEntity?.reportPartnerCheckPluginKey ?: ReportPartnerCheckOff.KEY,
     projectDefinedUnitCostAllowed = existingEntity?.projectDefinedUnitCostAllowed ?: false,
     projectDefinedLumpSumAllowed = existingEntity?.projectDefinedLumpSumAllowed ?: false,
+    controlReportSamplingCheckPluginKey = existingEntity?.controlReportSamplingCheckPluginKey ?: ControlReportSamplingCheckOff.KEY
 ).apply {
     translatedValues.addAll(description.combineDescriptionsToTranslations(this))
 }

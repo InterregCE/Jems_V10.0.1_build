@@ -106,6 +106,7 @@ class ProjectServiceTest : UnitTest() {
         reportPartnerCheckPluginKey = "check-off",
         projectDefinedUnitCostAllowed = true,
         projectDefinedLumpSumAllowed = false,
+        controlReportSamplingCheckPluginKey = "control-report-sampling-check-off"
     )
 
     private fun wpWithActivity(id: Long, project: ProjectEntity, activityStartPeriod: Int, activityEndPeriod: Int, deliverablePeriod: Int) =
@@ -151,6 +152,7 @@ class ProjectServiceTest : UnitTest() {
         reportPartnerCheckPluginKey = "check-off",
         projectDefinedUnitCostAllowed = true,
         projectDefinedLumpSumAllowed = false,
+        controlReportSamplingCheckPluginKey = "control-report-sampling-check-off"
     )
 
     private fun project(call: CallEntity, status: ProjectStatusHistoryEntity, acronym: String, resultPeriodNumber: Int) = ProjectEntity(

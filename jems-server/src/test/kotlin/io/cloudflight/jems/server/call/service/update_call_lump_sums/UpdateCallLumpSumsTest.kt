@@ -43,6 +43,7 @@ class UpdateCallLumpSumsTest {
             reportPartnerCheckPluginKey = null,
             projectDefinedUnitCostAllowed = false,
             projectDefinedLumpSumAllowed = true,
+            controlReportSamplingCheckPluginKey = null
         )
     }
 

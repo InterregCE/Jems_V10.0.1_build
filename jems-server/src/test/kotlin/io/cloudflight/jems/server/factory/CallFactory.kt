@@ -46,6 +46,7 @@ class CallFactory(
                 reportPartnerCheckPluginKey = "check-off",
                 projectDefinedUnitCostAllowed = true,
                 projectDefinedLumpSumAllowed = false,
+                controlReportSamplingCheckPluginKey = "control-report-sampling-check-off"
             )
         )
     }

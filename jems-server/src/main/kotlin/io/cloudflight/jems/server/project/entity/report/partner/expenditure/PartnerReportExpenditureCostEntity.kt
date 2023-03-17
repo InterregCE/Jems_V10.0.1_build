@@ -58,6 +58,8 @@ class PartnerReportExpenditureCostEntity(
     @field:NotNull
     var partOfSample: Boolean,
     @field:NotNull
+    var partOfSampleLocked: Boolean,
+    @field:NotNull
     var certifiedAmount: BigDecimal,
     @field:NotNull
     var deductedAmount: BigDecimal,

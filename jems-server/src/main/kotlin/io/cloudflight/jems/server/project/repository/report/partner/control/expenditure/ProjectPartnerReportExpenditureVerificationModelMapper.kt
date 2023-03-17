@@ -31,6 +31,7 @@ fun Collection<PartnerReportExpenditureCostEntity>.toExtendedModel() = map {
         comment = it.translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.comment) },
         description = it.translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.description) },
         partOfSample = it.partOfSample,
+        partOfSampleLocked = it.partOfSampleLocked,
         certifiedAmount = it.certifiedAmount,
         deductedAmount = it.deductedAmount,
         typologyOfErrorId = it.typologyOfErrorId,

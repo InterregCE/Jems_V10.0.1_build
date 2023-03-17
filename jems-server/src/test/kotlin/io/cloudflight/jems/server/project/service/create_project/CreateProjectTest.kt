@@ -76,6 +76,7 @@ internal class CreateProjectTest : UnitTest() {
             reportPartnerCheckPluginKey = null,
             projectDefinedUnitCostAllowed = false,
             projectDefinedLumpSumAllowed = true,
+            controlReportSamplingCheckPluginKey = null
         )
 
         val callSettings = ProjectCallSettings(

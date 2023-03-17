@@ -84,6 +84,7 @@ class UpdateCallTest : UnitTest() {
             reportPartnerCheckPluginKey = null,
             projectDefinedUnitCostAllowed = false,
             projectDefinedLumpSumAllowed = true,
+            controlReportSamplingCheckPluginKey = null
         )
 
         private val callToUpdate = Call(

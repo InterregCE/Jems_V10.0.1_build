@@ -80,6 +80,7 @@ class GetCallTest : UnitTest() {
             reportPartnerCheckPluginKey = null,
             projectDefinedUnitCostAllowed = false,
             projectDefinedLumpSumAllowed = true,
+            controlReportSamplingCheckPluginKey = null
         )
 
         private val call = CallSummary(

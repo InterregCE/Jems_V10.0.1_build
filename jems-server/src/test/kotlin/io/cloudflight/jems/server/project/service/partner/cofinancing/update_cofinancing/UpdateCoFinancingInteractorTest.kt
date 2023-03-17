@@ -129,6 +129,7 @@ internal class UpdateCoFinancingInteractorTest {
             reportPartnerCheckPluginKey = null,
             projectDefinedUnitCostAllowed = false,
             projectDefinedLumpSumAllowed = true,
+            controlReportSamplingCheckPluginKey = null
         )
 
         private val callDetailsMaxFunds = CallDetail(
@@ -182,6 +183,7 @@ internal class UpdateCoFinancingInteractorTest {
             reportPartnerCheckPluginKey = null,
             projectDefinedUnitCostAllowed = false,
             projectDefinedLumpSumAllowed = true,
+            controlReportSamplingCheckPluginKey = null
         )
 
         private val callDetailsOneFund = CallDetail(
@@ -231,6 +233,7 @@ internal class UpdateCoFinancingInteractorTest {
             reportPartnerCheckPluginKey = null,
             projectDefinedUnitCostAllowed = false,
             projectDefinedLumpSumAllowed = true,
+            controlReportSamplingCheckPluginKey = null
         )
 
     }
