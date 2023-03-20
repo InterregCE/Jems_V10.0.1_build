@@ -71,4 +71,9 @@ class ProjectPartnerReportLumpSumPersistenceProvider(
                 }
             }
     }
+
+    @Transactional(readOnly = true)
+    override fun getLumpSumCumulativeAfterControl(reportIds: Set<Long>) =
+        reportLumpSumRepository.findCumulativeAfterControlForReportIds(reportIds)
+            .associate { Pair(it.first, it.second) }
 }

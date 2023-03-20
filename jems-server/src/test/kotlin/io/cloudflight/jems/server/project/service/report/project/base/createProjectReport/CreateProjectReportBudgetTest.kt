@@ -21,6 +21,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.financial
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.CertificateCostCategoryPreviouslyReported
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCostCategoryPersistence
+import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateLumpSumPersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -157,6 +158,9 @@ internal class CreateProjectReportBudgetTest : UnitTest() {
     @MockK
     lateinit var getPartnerBudgetPerFundService: GetPartnerBudgetPerFundService
 
+    @MockK
+    lateinit var reportCertificateLumpSumPersistence: ProjectReportCertificateLumpSumPersistence
+
     @InjectMockKs
     lateinit var service: CreateProjectReportBudget
 
@@ -176,7 +180,8 @@ internal class CreateProjectReportBudgetTest : UnitTest() {
         every { paymentPersistence.getPaymentsByProjectId(projectId) } returns listOf(payment)
         every { reportCertificateCoFinancingPersistence.getCoFinancingCumulative(setOf(1L)) } returns cumulativeFund
         every { reportCertificateCostCategoryPersistence.getCostCategoriesCumulative(setOf(1L)) } returns previouslyReportedCostCategory
-        every { getPartnerBudgetPerFundService.getProjectPartnerBudgetPerFund(projectId, version)} returns projectBudgetPerFund
+        every { getPartnerBudgetPerFundService.getProjectPartnerBudgetPerFund(projectId, version) } returns projectBudgetPerFund
+        every { reportCertificateLumpSumPersistence.getLumpSumCumulative(setOf(1L)) } returns mapOf(Pair(1, BigDecimal.TEN))
 
         val result = service.retrieveBudgetDataFor(
             projectId,

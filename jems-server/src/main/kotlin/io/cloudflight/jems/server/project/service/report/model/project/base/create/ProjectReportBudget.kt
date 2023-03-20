@@ -5,4 +5,5 @@ import io.cloudflight.jems.server.project.service.report.model.project.financial
 data class ProjectReportBudget(
     val coFinancing: PreviouslyProjectReportedCoFinancing,
     val costCategorySetup: ReportCertificateCostCategory,
+    val availableLumpSums: List<ProjectReportLumpSum>,
 )

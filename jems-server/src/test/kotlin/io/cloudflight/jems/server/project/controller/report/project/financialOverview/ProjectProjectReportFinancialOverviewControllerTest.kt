@@ -6,6 +6,8 @@ import io.cloudflight.jems.api.project.dto.report.project.financialOverview.Cert
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.CertificateCoFinancingBreakdownLineDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.CertificateCostCategoryBreakdownDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.CertificateCostCategoryBreakdownLineDTO
+import io.cloudflight.jems.api.project.dto.report.project.financialOverview.CertificateLumpSumBreakdownDTO
+import io.cloudflight.jems.api.project.dto.report.project.financialOverview.CertificateLumpSumBreakdownLineDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.PerPartnerCostCategoryBreakdownDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.PerPartnerCostCategoryBreakdownLineDTO
 import io.cloudflight.jems.server.UnitTest
@@ -15,12 +17,15 @@ import io.cloudflight.jems.server.project.service.report.model.project.financial
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.CertificateCoFinancingBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.CertificateCostCategoryBreakdown
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.CertificateCostCategoryBreakdownLine
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.lumpSum.CertificateLumpSumBreakdown
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.lumpSum.CertificateLumpSumBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.perPartner.PerPartnerCostCategoryBreakdown
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.perPartner.PerPartnerCostCategoryBreakdownLine
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCoFinancingBreakdown.GetReportCertificateCoFinancingBreakdownInteractor
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCostCategoryBreakdown.GetReportCertificateCostCategoryBreakdownInteractor
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.perPartner.GetPerPartnerCostCategoryBreakdownInteractor
 import io.mockk.clearMocks
+import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportLumpSumBreakdown.GetReportCertificateLumpSumsBreakdownInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -255,6 +260,46 @@ class ProjectProjectReportFinancialOverviewControllerTest : UnitTest() {
                 sum = BigDecimal.valueOf(50L),
             ),
         )
+
+        private val dummyLumpSumLine = CertificateLumpSumBreakdownLine(
+            reportLumpSumId = 1L,
+            lumpSumId = 1L,
+            name = setOf(),
+            period = 0,
+            orderNr = 0,
+            totalEligibleBudget = BigDecimal.valueOf(1),
+            previouslyReported = BigDecimal.valueOf(2),
+            currentReport = BigDecimal.valueOf(3),
+            totalReportedSoFar = BigDecimal.valueOf(4),
+            totalReportedSoFarPercentage = BigDecimal.valueOf(5),
+            remainingBudget = BigDecimal.valueOf(6),
+            previouslyPaid = BigDecimal.valueOf(7)
+        )
+
+        private val dummyLumpSum = CertificateLumpSumBreakdown(
+            lumpSums = listOf(dummyLumpSumLine),
+            total = dummyLumpSumLine,
+        )
+
+        private val expectedDummyLumpSumLine = CertificateLumpSumBreakdownLineDTO(
+            reportLumpSumId = 1L,
+            lumpSumId = 1L,
+            name = setOf(),
+            period = 0,
+            orderNr = 0,
+            totalEligibleBudget = BigDecimal.valueOf(1),
+            previouslyReported = BigDecimal.valueOf(2),
+            currentReport = BigDecimal.valueOf(3),
+            totalReportedSoFar = BigDecimal.valueOf(4),
+            totalReportedSoFarPercentage = BigDecimal.valueOf(5),
+            remainingBudget = BigDecimal.valueOf(6),
+            previouslyPaid = BigDecimal.valueOf(7)
+        )
+
+        private val expectedDummyLumpSum = CertificateLumpSumBreakdownDTO(
+            lumpSums = listOf(expectedDummyLumpSumLine),
+            total = expectedDummyLumpSumLine,
+        )
     }
 
     @MockK
@@ -266,6 +311,9 @@ class ProjectProjectReportFinancialOverviewControllerTest : UnitTest() {
     @MockK
     private lateinit var getPerPartnerCostCategoryBreakdown: GetPerPartnerCostCategoryBreakdownInteractor
 
+    @MockK
+    private lateinit var getReportCertificateLumpSumBreakdown: GetReportCertificateLumpSumsBreakdownInteractor
+
     @InjectMockKs
     private lateinit var controller: ProjectReportFinancialOverviewController
 
@@ -275,6 +323,7 @@ class ProjectProjectReportFinancialOverviewControllerTest : UnitTest() {
             getReportCertificateCoFinancingBreakdown,
             getReportCertificateCostCategoryBreakdown,
             getPerPartnerCostCategoryBreakdown,
+            getReportCertificateLumpSumBreakdown
         )
     }
 
@@ -292,6 +341,14 @@ class ProjectProjectReportFinancialOverviewControllerTest : UnitTest() {
             dummyCostCategory
         assertThat(controller.getCostCategoriesBreakdown(projectId = PROJECT_ID, reportId = REPORT_ID))
             .isEqualTo(expectedDummyCostCategory)
+    }
+
+    @Test
+    fun getLumpSumsBreakdown() {
+        every { getReportCertificateLumpSumBreakdown.get(projectId = PROJECT_ID, reportId = REPORT_ID) } returns
+            dummyLumpSum
+        assertThat(controller.getLumpSumsBreakdown(projectId = PROJECT_ID, reportId = REPORT_ID))
+            .isEqualTo(expectedDummyLumpSum)
     }
 
     @Test

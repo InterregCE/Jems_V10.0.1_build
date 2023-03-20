@@ -19,4 +19,5 @@ interface ProjectPartnerReportLumpSumPersistence {
         afterControl: Map<Long, ExpenditureLumpSumCurrent>,
     )
 
+    fun getLumpSumCumulativeAfterControl(reportIds: Set<Long>): Map<Int, BigDecimal>
 }

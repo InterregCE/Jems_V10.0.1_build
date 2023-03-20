@@ -72,6 +72,8 @@ fun PaymentEntity.toDetailModel(
     projectAcronym = projectFull.acronym,
     paymentClaimNo = 0,
     paymentClaimSubmissionDate = projectFull.contractedDecision?.updated,
+    lumpSumId = lumpSum.programmeLumpSum.id,
+    orderNr = orderNr,
     paymentApprovalDate = lumpSum.paymentEnabledDate,
     totalEligibleAmount = lumpSum.programmeLumpSum.cost,
     fundId = fund.id,

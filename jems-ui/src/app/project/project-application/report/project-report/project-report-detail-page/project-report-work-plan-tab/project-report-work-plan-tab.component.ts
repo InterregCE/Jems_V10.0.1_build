@@ -48,7 +48,7 @@ export class ProjectReportWorkPlanTabComponent {
 
   data$: Observable<{
     reportEditable: boolean;
-    workPackages: Array<ProjectReportWorkPackageDTO>;
+    workPackages: ProjectReportWorkPackageDTO[];
   }>;
 
   isUploadDone: boolean;
@@ -113,7 +113,7 @@ export class ProjectReportWorkPlanTabComponent {
   }
 
 
-  private convertWorkPackageFormToDTO(): Array<UpdateProjectReportWorkPackageDTO> {
+  private convertWorkPackageFormToDTO(): UpdateProjectReportWorkPackageDTO[] {
     return this.workPackages.getRawValue().map(workPackageForm => ({
       id: workPackageForm.id,
       completed: workPackageForm.completed,
@@ -127,7 +127,7 @@ export class ProjectReportWorkPlanTabComponent {
     } as UpdateProjectReportWorkPackageDTO));
   }
 
-  private convertActivitiesFormToDTO(activities: any[]): Array<UpdateProjectReportWorkPackageActivityDTO> {
+  private convertActivitiesFormToDTO(activities: any[]): UpdateProjectReportWorkPackageActivityDTO[] {
     return activities.map(activitiesForm => ({
       id: activitiesForm.id,
       status: activitiesForm.status,
@@ -136,7 +136,7 @@ export class ProjectReportWorkPlanTabComponent {
     } as UpdateProjectReportWorkPackageActivityDTO));
   }
 
-  private convertDeliverablesFormToDTO(deliverables: any[]): Array<UpdateProjectReportWorkPackageActivityDeliverableDTO> {
+  private convertDeliverablesFormToDTO(deliverables: any[]): UpdateProjectReportWorkPackageActivityDeliverableDTO[] {
     return deliverables.map(deliverablesForm => ({
       id: deliverablesForm.id,
       currentReport: deliverablesForm.currentReport,
@@ -144,7 +144,7 @@ export class ProjectReportWorkPlanTabComponent {
     } as UpdateProjectReportWorkPackageActivityDeliverableDTO));
   }
 
-  private convertOutputsFormToDTO(outputs: any[]): Array<UpdateProjectReportWorkPackageOutputDTO> {
+  private convertOutputsFormToDTO(outputs: any[]): UpdateProjectReportWorkPackageOutputDTO[] {
     return outputs.map(outputsForm => ({
       id: outputsForm.id,
       currentReport: outputsForm.currentReport,
@@ -152,7 +152,7 @@ export class ProjectReportWorkPlanTabComponent {
     } as UpdateProjectReportWorkPackageOutputDTO));
   }
 
-  resetForm(workPackagesDTO: Array<ProjectReportWorkPackageDTO>, reportEditable: boolean) {
+  resetForm(workPackagesDTO: ProjectReportWorkPackageDTO[], reportEditable: boolean) {
     this.workPackages.clear();
     workPackagesDTO.map((dto: ProjectReportWorkPackageDTO) => this.extractWorkPackageFormFromDTO(dto))
       .forEach(workPackages => this.workPackages.push(workPackages));

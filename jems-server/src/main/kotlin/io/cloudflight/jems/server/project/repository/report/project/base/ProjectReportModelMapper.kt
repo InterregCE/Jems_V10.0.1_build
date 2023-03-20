@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.repository.report.project.base
 
+import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.project.entity.contracting.reporting.ProjectContractingReportingEntity
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportCoFinancingEntity
@@ -7,6 +8,7 @@ import io.cloudflight.jems.server.project.entity.report.project.ProjectReportCoF
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateCostCategoryEntity
+import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateLumpSumEntity
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSummary
@@ -14,6 +16,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.base.Proj
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedFund
+import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportLumpSum
 import java.math.BigDecimal
 
 
@@ -181,3 +184,17 @@ fun ReportCertificateCostCategory.toCreateEntity(report: ProjectReportEntity) =
         sumPreviouslyReported = previouslyReported.sum,
 
         )
+
+fun ProjectReportLumpSum.toEntity(
+    report: ProjectReportEntity,
+    lumpSumResolver: (Long) -> ProgrammeLumpSumEntity,
+) = ReportProjectCertificateLumpSumEntity(
+    reportEntity = report,
+    programmeLumpSum = lumpSumResolver.invoke(lumpSumId),
+    orderNr = orderNr,
+    periodNumber = period,
+    total = total,
+    current = BigDecimal.ZERO,
+    previouslyReported = previouslyReported,
+    previouslyPaid = previouslyPaid,
+)
