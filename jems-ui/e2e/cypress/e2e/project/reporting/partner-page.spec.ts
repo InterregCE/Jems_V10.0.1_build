@@ -4,23 +4,23 @@ import partner from "../../../fixtures/api/application/partner/partner.json";
 import {loginByRequest} from "../../../support/login.commands";
 
 context('Partner reports tests', () => {
-  it.only('TB-745 Partner page', function () {
+  it.only('TB-745 Partner user can deactivate multiple partners and changes are displayed only after approval', function () {
     cy.fixture('project/reporting/TB-745.json').then(testData => {
       cy.fixture('api/application/application.json').then(application => {
         prepareTestData(testData, application);
 
         cy.createApprovedApplication(application, user.programmeUser.email).then(applicationId => {
-          const partnerIdsToDisable = [2, 3];
+          const partnerIndexesToDisable = [2, 3];
 
-          enableModification(applicationId);
-          disableSelectedPartners(application, applicationId, partnerIdsToDisable);
-          verifyPartnerChangesBeforeApproving(application, applicationId, partnerIdsToDisable);
+          openModification(applicationId);
+          disableSelectedPartners(application, applicationId, partnerIndexesToDisable);
+          verifyPartnerChangesBeforeApproving(application, applicationId, partnerIndexesToDisable);
           cy.approveModification(applicationId, testData.approvalInfo, user.programmeUser.email);
 
           cy.loginByRequest(user.admin.email).then(() => {
             cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false})
               .then(() => {
-                partnerIdsToDisable.forEach(id => {
+                partnerIndexesToDisable.forEach(id => {
                   cy.get('mat-expansion-panel-header:contains("Partner details")')
                     .next('div')
                     .find(`li:contains("${application.partners[id].details.abbreviation}")`)
@@ -28,27 +28,28 @@ context('Partner reports tests', () => {
                     .should('exist');
                 });
 
-                verifyIconsInProjectPrivileges(application, partnerIdsToDisable, true);
+                verifyIconsInProjectPrivileges(application, partnerIndexesToDisable, true);
               });
           });
 
-          enableModification(applicationId);
+          openModification(applicationId);
           loginByRequest(user.applicantUser.email).then(() => {
             cy.createFullPartner(applicationId, partner);
             submitProjectApp(applicationId);
           });
 
           cy.loginByRequest(user.admin.email).then(() => {
-            cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false})
-            verifyPartnerAvailability(false);
+            verifyPartnerAvailability(applicationId, false);
           });
 
           cy.approveModification(applicationId, testData.approvalInfo, user.programmeUser.email);
 
           cy.loginByRequest(user.admin.email).then(() => {
-            cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false})
-            verifyPartnerAvailability(true);
+            verifyPartnerAvailability(applicationId, true);
           });
+
+          openModification(applicationId);
+          verify30PartnersLimit(applicationId);
         });
       });
     });
@@ -92,7 +93,7 @@ function preparePartnersList(testData, application) {
   }
 }
 
-function enableModification(applicationId) {
+function openModification(applicationId) {
   cy.loginByRequest(user.programmeUser.email);
 
   cy.visit(`app/project/detail/${applicationId}/modification`, {failOnStatusCode: false})
@@ -110,7 +111,7 @@ function enableModification(applicationId) {
 
 function disableSelectedPartners(application, applicationId, partnerIdsToDisable) {
   cy.loginByRequest(user.applicantUser.email);
-  cy.visit(`app/project/detail/${applicationId}/applicationFormPartner`, {failOnStatusCode: false})
+  cy.visit(`app/project/detail/${applicationId}/applicationFormPartner`, {failOnStatusCode: false});
   disablePartnersByIds(application, partnerIdsToDisable);
   submitProjectApp(applicationId);
 }
@@ -291,7 +292,32 @@ function verifyPartnerAvailabilityInProjectPrivileges(shouldPartnerBeDisplayed) 
     });
 }
 
-function verifyPartnerAvailability(shouldPartnerBeDisplayed) {
+function verifyPartnerAvailability(applicationId, shouldPartnerBeDisplayed) {
+  cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
+
   verifyPartnerInPartnerDetails(shouldPartnerBeDisplayed);
   verifyPartnerAvailabilityInProjectPrivileges(shouldPartnerBeDisplayed);
+}
+
+function verify30PartnersLimit(applicationId) {
+  loginByRequest(user.applicantUser.email).then(() => {
+    cy.visit(`app/project/detail/${applicationId}/applicationFormPartner`, {failOnStatusCode: false});
+    cy.contains('Add new partner')
+      .click()
+    cy.contains('button', 'Partner')
+      .click();
+    cy.get(`[name='abbreviation']`)
+      .type('PP31');
+    cy.get(`[name='legalStatusId']`)
+      .click()
+    cy.contains('Public')
+      .click();
+    cy.contains('button', 'Create')
+      .click();
+
+    cy.contains('Failed to create the project partner (error code: S-CPP)')
+      .should('be.visible');
+    cy.contains('It is not possible to add more than "30" partner to the project application (error code: S-CPP-005)')
+      .should('be.visible');
+  });
 }
