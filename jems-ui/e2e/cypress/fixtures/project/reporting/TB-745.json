@@ -1,24 +1,4 @@
 {
-  "fundingAmounts": {
-    "totalERDF": "240.249,58",
-    "totalCBC": "8.800,12",
-    "total": "440.276,21",
-    "totalBudgetOverview": [
-      "94.361,37",
-      "29.587,03",
-      "39.937,03",
-      "120.000,00",
-      "41.234,56",
-      "110.000,00",
-      "4.845,78",
-      "0,00",
-      "310,44",
-      "440.276,21"
-    ],
-    "automaticPublicContribution": "0,00",
-    "totalPublicContribution": "25.062,09",
-    "privateContribution": "166.164,42"
-  },
   "partner": {
     "details": {
       "abbreviation": "Lead Partner",
@@ -833,10 +813,5 @@
         ]
       }
     }
-  },
-  "approvalInfo": {
-    "note": "API modification approved",
-    "date": "2023-03-14",
-    "entryIntoForceDate": "2023-03-14"
   }
 }

@@ -1,10 +1,11 @@
 import user from "../../../fixtures/users.json";
 import call from "../../../fixtures/api/call/1.step.call.json";
 import partner from "../../../fixtures/api/application/partner/partner.json";
+import approvalInfo from "../../../fixtures/api/application/modification/approval.info.json";
 import {loginByRequest} from "../../../support/login.commands";
 
 context('Partner reports tests', () => {
-  it.only('TB-745 Partner user can deactivate multiple partners and changes are displayed only after approval', function () {
+  it('TB-745 Partner user can deactivate multiple partners and changes are displayed only after approval', function () {
     cy.fixture('project/reporting/TB-745.json').then(testData => {
       cy.fixture('api/application/application.json').then(application => {
         prepareTestData(testData, application);
@@ -15,7 +16,7 @@ context('Partner reports tests', () => {
           openModification(applicationId);
           disableSelectedPartners(application, applicationId, partnerIndexesToDisable);
           verifyPartnerChangesBeforeApproving(application, applicationId, partnerIndexesToDisable);
-          cy.approveModification(applicationId, testData.approvalInfo, user.programmeUser.email);
+          cy.approveModification(applicationId, approvalInfo, user.programmeUser.email);
 
           cy.loginByRequest(user.admin.email).then(() => {
             cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false})
@@ -42,7 +43,7 @@ context('Partner reports tests', () => {
             verifyPartnerAvailability(applicationId, false);
           });
 
-          cy.approveModification(applicationId, testData.approvalInfo, user.programmeUser.email);
+          cy.approveModification(applicationId, approvalInfo, user.programmeUser.email);
 
           cy.loginByRequest(user.admin.email).then(() => {
             verifyPartnerAvailability(applicationId, true);
