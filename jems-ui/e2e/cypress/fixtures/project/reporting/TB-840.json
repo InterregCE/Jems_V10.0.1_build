@@ -1,0 +1,41 @@
+{
+  "partnerUser1": {
+    "email": "randomize",
+    "name": "Partner 1",
+    "surname": "User 1",
+    "userRoleId": 3,
+    "userStatus": "ACTIVE"
+  },
+  "partnerUser2": {
+    "email": "randomize",
+    "name": "Partner 2",
+    "surname": "User 2",
+    "userRoleId": 3,
+    "userStatus": "ACTIVE"
+  },
+  "partnerUser3": {
+    "email": "randomize",
+    "name": "Partner 3",
+    "surname": "User 3",
+    "userRoleId": 3,
+    "userStatus": "ACTIVE"
+  },
+  "firstUser": [
+    {
+      "userEmail": "randomize",
+      "level": "EDIT"
+    }
+  ],
+  "secondUser": [
+    {
+      "userEmail": "randomize",
+      "level": "EDIT"
+    }
+  ],
+  "thirdUser": [
+    {
+      "userEmail": "randomize",
+      "level": "EDIT"
+    }
+  ]
+}

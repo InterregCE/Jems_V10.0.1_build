@@ -31,7 +31,8 @@
     "pic": "111111111",
     "legalStatusId": 3,
     "vat": "444444",
-    "vatRecovery": "Partly"
+    "vatRecovery": "Partly",
+    "active": true
   },
   "address": [
     {
