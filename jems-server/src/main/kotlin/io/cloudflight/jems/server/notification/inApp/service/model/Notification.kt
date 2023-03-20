@@ -1,9 +1,11 @@
-package io.cloudflight.jems.server.notification.model
+package io.cloudflight.jems.server.notification.inApp.service.model
+
+import java.time.ZonedDateTime
 
 data class Notification(
-    val email: String,
     val subject: String,
     val body: String,
     val type: NotificationType,
+    val time: ZonedDateTime,
     val project: NotificationProject?,
 )

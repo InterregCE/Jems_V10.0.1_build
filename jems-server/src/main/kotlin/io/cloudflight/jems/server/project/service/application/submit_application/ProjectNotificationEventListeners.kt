@@ -4,12 +4,12 @@ import io.cloudflight.jems.server.call.service.model.ProjectNotificationConfigur
 import io.cloudflight.jems.server.call.service.notificationConfigurations.CallNotificationConfigurationsPersistence
 import io.cloudflight.jems.server.common.event.JemsMailEvent
 import io.cloudflight.jems.server.common.model.Variable
-import io.cloudflight.jems.server.notification.NotificationPersistence
-import io.cloudflight.jems.server.notification.model.Notification
-import io.cloudflight.jems.server.notification.model.NotificationType
+import io.cloudflight.jems.server.notification.inApp.service.NotificationPersistence
+import io.cloudflight.jems.server.notification.inApp.service.model.Notification
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType
 import io.cloudflight.jems.server.notification.mail.service.model.MailNotificationInfo
-import io.cloudflight.jems.server.notification.model.NotificationProject
-import io.cloudflight.jems.server.notification.model.NotificationType.Companion.toNotificationType
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationProject
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.Companion.toNotificationType
 import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.event.TransactionalEventListener
+import java.time.ZonedDateTime
 
 data class ProjectNotificationEvent(
     val context: Any,
@@ -91,11 +92,12 @@ data class ProjectNotificationEventListeners(
         val emailsToNotify =
             managers union leadPartnerCollaborators union nonLeadPartnerCollaborators union programmeUsers
 
-        val notifications = emailsToNotify.map { email -> notification.buildNotificationFor(email, event.projectSummary) }
-        val emailEvents = notification.buildEmailFor(emailsToNotify, event.projectSummary)
+        val time = ZonedDateTime.now()
+        val userNotification = notification.buildNotificationFor(event.projectSummary, time)
+        val userEmailNotification = userNotification.buildEmailFor(emailsToNotify)
 
-        notificationPersistence.saveNotifications(notifications)
-        eventPublisher.publishEvent(emailEvents)
+        notificationPersistence.saveNotifications(userNotification, emailsToNotify)
+        eventPublisher.publishEvent(userEmailNotification)
     }
 
     private fun Set<PartnerCollaborator>.partnerCollaboratorEmails() = mapTo(HashSet()) { it.userEmail }
@@ -104,29 +106,32 @@ data class ProjectNotificationEventListeners(
     private fun List<CollaboratorAssignedToProject>.onlyThoseWithManage() =
         filter { it.level == ProjectCollaboratorLevel.MANAGE }
 
-    private fun ProjectSummary.toProject() = NotificationProject(id, customIdentifier, acronym)
+    private fun ProjectSummary.toProject() = NotificationProject(callId, callName, id, customIdentifier, acronym)
 
-    private fun ProjectNotificationConfiguration.buildNotificationFor(email: String, projectSummary: ProjectSummary) = Notification(
-        email = email,
+    private fun ProjectNotificationConfiguration.buildNotificationFor(
+        projectSummary: ProjectSummary,
+        time: ZonedDateTime,
+    ) = Notification(
         subject = emailSubject,
         body = emailBody,
-        type = NotificationType.valueOf(id.name),
+        type = id,
+        time = time,
         project = projectSummary.toProject(),
     )
 
-    private fun ProjectNotificationConfiguration.buildEmailFor(emails: Set<String>, projectSummary: ProjectSummary) = JemsMailEvent(
+    private fun Notification.buildEmailFor(emails: Set<String>) = JemsMailEvent(
         emailTemplateFileName = "notification-project.html",
         mailNotificationInfo = MailNotificationInfo(
-            subject = emailSubject,
+            subject = subject,
             templateVariables =
             setOf(
-                Variable("projectId", projectSummary.id),
-                Variable("projectIdentifier", projectSummary.customIdentifier),
-                Variable("projectAcronym", projectSummary.acronym),
-                Variable("body", emailBody),
+                Variable("projectId", project!!.projectId),
+                Variable("projectIdentifier", project.projectIdentifier),
+                Variable("projectAcronym", project.projectAcronym),
+                Variable("body", body),
             ),
             recipients = emails,
-            messageType = id.toString(),
+            messageType = type.toString(),
         ),
     )
 

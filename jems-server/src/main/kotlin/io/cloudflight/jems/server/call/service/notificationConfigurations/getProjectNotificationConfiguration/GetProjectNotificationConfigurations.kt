@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.call.service.notificationConfigurations.getPr
 import io.cloudflight.jems.server.call.service.model.ProjectNotificationConfiguration
 import io.cloudflight.jems.server.call.service.notificationConfigurations.CallNotificationConfigurationsPersistence
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.notification.model.NotificationType
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 

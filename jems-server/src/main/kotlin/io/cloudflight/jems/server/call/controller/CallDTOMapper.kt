@@ -25,7 +25,7 @@ import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.call.service.model.PreSubmissionPlugins
 import io.cloudflight.jems.server.call.service.model.ProjectNotificationConfiguration
 import io.cloudflight.jems.server.common.CommonDTOMapper
-import io.cloudflight.jems.server.notification.model.NotificationType
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType
 import io.cloudflight.jems.server.programme.controller.costoption.toDto
 import io.cloudflight.jems.server.programme.controller.priority.toDto
 import io.cloudflight.jems.server.programme.controller.stateaid.toDto

@@ -9,11 +9,11 @@ import io.cloudflight.jems.server.call.service.notificationConfigurations.CallNo
 import io.cloudflight.jems.server.common.event.JemsAuditEvent
 import io.cloudflight.jems.server.common.event.JemsMailEvent
 import io.cloudflight.jems.server.common.model.Variable
-import io.cloudflight.jems.server.notification.NotificationPersistence
+import io.cloudflight.jems.server.notification.inApp.service.NotificationPersistence
 import io.cloudflight.jems.server.notification.mail.service.model.MailNotificationInfo
-import io.cloudflight.jems.server.notification.model.Notification
-import io.cloudflight.jems.server.notification.model.NotificationProject
-import io.cloudflight.jems.server.notification.model.NotificationType
+import io.cloudflight.jems.server.notification.inApp.service.model.Notification
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationProject
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType
 import io.cloudflight.jems.server.project.entity.partneruser.PartnerCollaboratorLevel
 import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -153,7 +153,7 @@ class ProjectNotificationEventListenersTest: UnitTest() {
             id = PROJECT_ID,
             customIdentifier = "01",
             callId = CALL_ID,
-            callName = "",
+            callName = "call",
             acronym = "project acronym",
             status = status,
         )
@@ -201,8 +201,9 @@ class ProjectNotificationEventListenersTest: UnitTest() {
         every { partnerCollaboratorPersistence.findByProjectAndPartners(PROJECT_ID, setOf(2L)) } returns setOf(leadPartnerCollaborator)
         every { partnerCollaboratorPersistence.findByProjectAndPartners(PROJECT_ID, setOf(3L)) } returns setOf(partnerCollaborator)
         every { userProjectPersistence.getUsersForProject(PROJECT_ID) } returns setOf(programmeUser)
-        val slotNotifications = slot<List<Notification>>()
-        every { notificationPersistence.saveNotifications(capture(slotNotifications)) } returns Unit
+        val slotNotification = slot<Notification>()
+        val emails = slot<Set<String>>()
+        every { notificationPersistence.saveNotifications(capture(slotNotification), capture(emails)) } returns Unit
 
         val applicationEvent = ProjectNotificationEvent(
             context = this,
@@ -230,22 +231,16 @@ class ProjectNotificationEventListenersTest: UnitTest() {
                 ),
             )
         )
-        assertThat(slotNotifications.captured).containsExactly(
+        assertThat(slotNotification.captured).isEqualTo(
             Notification(
-                email = "lp.collaborator@jems.eu",
                 subject = "Application Step 1 Submitted",
                 body = "test step 1",
                 type = notifType,
-                project = NotificationProject(projectId = 5L, projectIdentifier = "01", projectAcronym = "project acronym"),
-            ),
-            Notification(
-                email = "john.doe@ce.eu",
-                subject = "Application Step 1 Submitted",
-                body = "test step 1",
-                type = notifType,
-                project = NotificationProject(projectId = 5L, projectIdentifier = "01", projectAcronym = "project acronym"),
+                time = slotNotification.captured.time,
+                project = NotificationProject(CALL_ID, "call", projectId = 5L, projectIdentifier = "01", projectAcronym = "project acronym"),
             ),
         )
+        assertThat(emails.captured).containsExactly("lp.collaborator@jems.eu", "john.doe@ce.eu")
     }
 
 
@@ -261,8 +256,9 @@ class ProjectNotificationEventListenersTest: UnitTest() {
         every { partnerCollaboratorPersistence.findByProjectAndPartners(PROJECT_ID, setOf(2L)) } returns setOf(leadPartnerCollaborator)
         every { partnerCollaboratorPersistence.findByProjectAndPartners(PROJECT_ID, setOf(3L)) } returns setOf(partnerCollaborator)
         every { userProjectPersistence.getUsersForProject(PROJECT_ID) } returns setOf(programmeUser)
-        val slotNotifications = slot<List<Notification>>()
-        every { notificationPersistence.saveNotifications(capture(slotNotifications)) } returns Unit
+        val slotNotification = slot<Notification>()
+        val emails = slot<Set<String>>()
+        every { notificationPersistence.saveNotifications(capture(slotNotification), capture(emails)) } returns Unit
 
         val applicationEvent = ProjectNotificationEvent(
             context = this,
@@ -290,29 +286,16 @@ class ProjectNotificationEventListenersTest: UnitTest() {
                 ),
             )
         )
-        assertThat(slotNotifications.captured).containsExactly(
+        assertThat(slotNotification.captured).isEqualTo(
             Notification(
-                email = "manager@jems.eu",
                 subject = "Application Submitted",
                 body = "test",
                 type = notifType,
-                project = NotificationProject(projectId = 5L, projectIdentifier = "01", projectAcronym = "project acronym"),
-            ),
-            Notification(
-                email = "lp.collaborator@jems.eu",
-                subject = "Application Submitted",
-                body = "test",
-                type = notifType,
-                project = NotificationProject(projectId = 5L, projectIdentifier = "01", projectAcronym = "project acronym"),
-            ),
-            Notification(
-                email = "pp1.collaborator@jems.eu",
-                subject = "Application Submitted",
-                body = "test",
-                type = notifType,
-                project = NotificationProject(projectId = 5L, projectIdentifier = "01", projectAcronym = "project acronym"),
+                time = slotNotification.captured.time,
+                project = NotificationProject(CALL_ID, "call", projectId = 5L, projectIdentifier = "01", projectAcronym = "project acronym"),
             ),
         )
+        assertThat(emails.captured).containsExactly("manager@jems.eu", "lp.collaborator@jems.eu", "pp1.collaborator@jems.eu")
     }
 
     @Test

@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.notification.model
+package io.cloudflight.jems.server.notification.inApp.service.model
 
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 
