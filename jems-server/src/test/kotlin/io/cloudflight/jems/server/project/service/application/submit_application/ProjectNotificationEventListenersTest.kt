@@ -28,6 +28,9 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRo
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
 import io.cloudflight.jems.server.project.service.projectuser.UserProjectCollaboratorPersistence
 import io.cloudflight.jems.server.project.service.projectuser.UserProjectPersistence
+import io.cloudflight.jems.server.user.service.UserPersistence
+import io.cloudflight.jems.server.user.service.UserRolePersistence
+import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.UserSummary
@@ -36,6 +39,7 @@ import io.cloudflight.jems.server.user.service.model.assignment.PartnerCollabora
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
+import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.slot
 import io.mockk.verify
@@ -55,8 +59,8 @@ class ProjectNotificationEventListenersTest: UnitTest() {
             id = NotificationType.ProjectSubmittedStep1,
             active = true,
             sendToManager = false,
-            sendToLeadPartner = true,
-            sendToProjectPartners = false,
+            sendToLeadPartner = false,
+            sendToProjectPartners = true,
             sendToProjectAssigned = true,
             emailSubject = "Application Step 1 Submitted",
             emailBody = "test step 1"
@@ -67,7 +71,7 @@ class ProjectNotificationEventListenersTest: UnitTest() {
             active = true,
             sendToManager = true,
             sendToLeadPartner = true,
-            sendToProjectPartners = true,
+            sendToProjectPartners = false,
             sendToProjectAssigned = false,
             emailSubject = "Application Submitted",
             emailBody = "test"
@@ -149,6 +153,15 @@ class ProjectNotificationEventListenersTest: UnitTest() {
             userStatus = UserStatus.ACTIVE
         )
 
+        val programmeUserGlobal = UserSummary(
+            id = 118L,
+            email = "bruno.mars@dcshoes.com",
+            name = "bruno",
+            surname = "mars",
+            userRole = UserRoleSummary(id = 1151L, name = "aaaadmin", isDefault = false),
+            userStatus = UserStatus.ACTIVE,
+        )
+
         private fun summary(status: ApplicationStatus) = ProjectSummary(
             id = PROJECT_ID,
             customIdentifier = "01",
@@ -160,25 +173,31 @@ class ProjectNotificationEventListenersTest: UnitTest() {
     }
 
     @RelaxedMockK
-    lateinit var eventPublisher: ApplicationEventPublisher
+    private lateinit var eventPublisher: ApplicationEventPublisher
 
-    @RelaxedMockK
-    lateinit var callNotificationConfigPersistence: CallNotificationConfigurationsPersistence
+    @MockK
+    private lateinit var callNotificationConfigPersistence: CallNotificationConfigurationsPersistence
 
-    @RelaxedMockK
-    lateinit var userProjectCollaboratorPersistence: UserProjectCollaboratorPersistence
+    @MockK
+    private lateinit var userProjectCollaboratorPersistence: UserProjectCollaboratorPersistence
 
-    @RelaxedMockK
-    lateinit var partnerCollaboratorPersistence: UserPartnerCollaboratorPersistence
+    @MockK
+    private lateinit var partnerCollaboratorPersistence: UserPartnerCollaboratorPersistence
 
-    @RelaxedMockK
-    lateinit var partnerPersistence: PartnerPersistence
+    @MockK
+    private lateinit var partnerPersistence: PartnerPersistence
 
-    @RelaxedMockK
-    lateinit var userProjectPersistence: UserProjectPersistence
+    @MockK
+    private lateinit var userProjectPersistence: UserProjectPersistence
 
-    @RelaxedMockK
-    lateinit var notificationPersistence: NotificationPersistence
+    @MockK
+    private lateinit var notificationPersistence: NotificationPersistence
+
+    @MockK
+    private lateinit var userPersistence: UserPersistence
+
+    @MockK
+    private lateinit var userRolePersistence: UserRolePersistence
 
     @InjectMockKs
     lateinit var projectNotificationEventListeners: ProjectNotificationEventListeners
@@ -196,11 +215,13 @@ class ProjectNotificationEventListenersTest: UnitTest() {
         val auditSlot = slot<JemsMailEvent>()
 
         every { callNotificationConfigPersistence.getActiveNotificationOfType(CALL_ID, notifType) } returns step1_submitted_notification_config
-        every { userProjectCollaboratorPersistence.getUserIdsForProject(PROJECT_ID) } returns listOf(projectManager, projectCollaborator)
         every { partnerPersistence.findTop30ByProjectId(PROJECT_ID) } returns listOf(leadPartner, partner)
-        every { partnerCollaboratorPersistence.findByProjectAndPartners(PROJECT_ID, setOf(2L)) } returns setOf(leadPartnerCollaborator)
         every { partnerCollaboratorPersistence.findByProjectAndPartners(PROJECT_ID, setOf(3L)) } returns setOf(partnerCollaborator)
         every { userProjectPersistence.getUsersForProject(PROJECT_ID) } returns setOf(programmeUser)
+        every { userRolePersistence.findRoleIdsHavingAndNotHavingPermissions(
+            UserRolePermission.getGlobalProjectRetrievePermissions(), emptySet()
+        ) } returns setOf(1151L)
+        every { userPersistence.findAllWithRoleIdIn(setOf(1151L)) } returns listOf(programmeUserGlobal)
         val slotNotification = slot<Notification>()
         val emails = slot<Set<String>>()
         every { notificationPersistence.saveNotifications(capture(slotNotification), capture(emails)) } returns Unit
@@ -213,10 +234,12 @@ class ProjectNotificationEventListenersTest: UnitTest() {
         projectNotificationEventListeners.publishJemsMailEvent(applicationEvent)
 
         verify(exactly = 1) { eventPublisher.publishEvent(capture(auditSlot)) }
+        verify(exactly = 0) { userProjectCollaboratorPersistence.getUserIdsForProject(any()) }
+        verify(exactly = 0) { partnerCollaboratorPersistence.findByProjectAndPartners(PROJECT_ID, setOf(2L)) }
 
         assertThat(auditSlot.captured).isEqualTo(
             JemsMailEvent(
-                "notification-project.html",
+                "notification.html",
                 MailNotificationInfo(
                     subject = "Application Step 1 Submitted",
                     templateVariables =
@@ -226,7 +249,7 @@ class ProjectNotificationEventListenersTest: UnitTest() {
                         Variable("projectAcronym", "project acronym"),
                         Variable("body", "test step 1"),
                     ),
-                    recipients = setOf("john.doe@ce.eu", "lp.collaborator@jems.eu"),
+                    recipients = setOf("pp1.collaborator@jems.eu", "john.doe@ce.eu", "bruno.mars@dcshoes.com"),
                     messageType = notifType.name
                 ),
             )
@@ -240,9 +263,8 @@ class ProjectNotificationEventListenersTest: UnitTest() {
                 project = NotificationProject(CALL_ID, "call", projectId = 5L, projectIdentifier = "01", projectAcronym = "project acronym"),
             ),
         )
-        assertThat(emails.captured).containsExactly("lp.collaborator@jems.eu", "john.doe@ce.eu")
+        assertThat(emails.captured).containsExactly("pp1.collaborator@jems.eu", "john.doe@ce.eu", "bruno.mars@dcshoes.com")
     }
-
 
     @Test
     fun `submitting application should trigger mail event`() {
@@ -254,8 +276,6 @@ class ProjectNotificationEventListenersTest: UnitTest() {
         every { userProjectCollaboratorPersistence.getUserIdsForProject(PROJECT_ID) } returns listOf(projectManager, projectCollaborator)
         every { partnerPersistence.findTop30ByProjectId(PROJECT_ID) } returns listOf(leadPartner, partner)
         every { partnerCollaboratorPersistence.findByProjectAndPartners(PROJECT_ID, setOf(2L)) } returns setOf(leadPartnerCollaborator)
-        every { partnerCollaboratorPersistence.findByProjectAndPartners(PROJECT_ID, setOf(3L)) } returns setOf(partnerCollaborator)
-        every { userProjectPersistence.getUsersForProject(PROJECT_ID) } returns setOf(programmeUser)
         val slotNotification = slot<Notification>()
         val emails = slot<Set<String>>()
         every { notificationPersistence.saveNotifications(capture(slotNotification), capture(emails)) } returns Unit
@@ -268,10 +288,12 @@ class ProjectNotificationEventListenersTest: UnitTest() {
         projectNotificationEventListeners.publishJemsMailEvent(applicationEvent)
 
         verify(exactly = 1) { eventPublisher.publishEvent(capture(auditSlot)) }
+        verify(exactly = 0) { partnerCollaboratorPersistence.findByProjectAndPartners(PROJECT_ID, setOf(3L)) }
+        verify(exactly = 0) { userProjectPersistence.getUsersForProject(any()) }
 
         assertThat(auditSlot.captured).isEqualTo(
             JemsMailEvent(
-                "notification-project.html",
+                "notification.html",
                 MailNotificationInfo(
                     subject = "Application Submitted",
                     templateVariables =
@@ -281,7 +303,7 @@ class ProjectNotificationEventListenersTest: UnitTest() {
                         Variable("projectAcronym", "project acronym"),
                         Variable("body", "test"),
                     ),
-                    recipients = setOf("manager@jems.eu", "pp1.collaborator@jems.eu", "lp.collaborator@jems.eu"),
+                    recipients = setOf("manager@jems.eu", "lp.collaborator@jems.eu"),
                     messageType = notifType.name
                 ),
             )
@@ -295,7 +317,7 @@ class ProjectNotificationEventListenersTest: UnitTest() {
                 project = NotificationProject(CALL_ID, "call", projectId = 5L, projectIdentifier = "01", projectAcronym = "project acronym"),
             ),
         )
-        assertThat(emails.captured).containsExactly("manager@jems.eu", "lp.collaborator@jems.eu", "pp1.collaborator@jems.eu")
+        assertThat(emails.captured).containsExactly("manager@jems.eu", "lp.collaborator@jems.eu")
     }
 
     @Test
