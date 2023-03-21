@@ -7,11 +7,11 @@ import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
+import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectPartnerReportIdentificationSummary
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportIdentificationTargetGroup
-import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportSpendingProfileReportedValues
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportSpendingProfile
-import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectPartnerReportIdentificationSummary
+import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportSpendingProfileReportedValues
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
 import io.cloudflight.jems.server.project.service.report.project.identification.ProjectReportIdentificationPersistence
@@ -25,7 +25,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 
-internal class GetProjectReportIdentificationTest: UnitTest() {
+internal class GetProjectReportIdentificationTest : UnitTest() {
 
     companion object {
         private const val PROJECT_ID = 1L
@@ -41,7 +41,6 @@ internal class GetProjectReportIdentificationTest: UnitTest() {
             differenceFromPlanPercentage = BigDecimal.ZERO,
             nextReportForecast = BigDecimal(250)
         )
-
         private val identification = ProjectReportIdentification(
             targetGroups = listOf(
                 ProjectReportIdentificationTargetGroup(
@@ -69,7 +68,6 @@ internal class GetProjectReportIdentificationTest: UnitTest() {
             nextReportForecast = BigDecimal(250),
             periodDetail = null
         )
-
     }
 
     @MockK

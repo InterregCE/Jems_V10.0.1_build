@@ -2,11 +2,9 @@ package io.cloudflight.jems.server.project.repository.report.project.identificat
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.common.entity.extractField
-import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportIdentificationTargetGroupEntity
 import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportSpendingProfileEntity
-import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportSpendingProfileId
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportIdentificationTargetGroup
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportSpendingProfileReportedValues

@@ -1,6 +1,7 @@
 package io.cloudflight.jems.api.project.report.project
 
 import io.cloudflight.jems.api.project.dto.report.project.identification.ProjectReportIdentificationDTO
+import io.cloudflight.jems.api.project.dto.report.project.identification.resultIndicator.ProjectReportResultIndicatorOverviewDTO
 import io.cloudflight.jems.api.project.dto.report.project.identification.UpdateProjectReportIdentificationDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
@@ -31,4 +32,11 @@ interface ProjectReportIdentificationApi {
         @PathVariable reportId: Long,
         @RequestBody identification: UpdateProjectReportIdentificationDTO
     ): ProjectReportIdentificationDTO
+
+    @ApiOperation("Returns project report result indicator overview")
+    @GetMapping("${ENDPOINT_API_PROJECT_REPORT_IDENTIFICATION}/byReportId/{reportId}/resultIndicator")
+    fun getResultIndicatorOverview(
+        @PathVariable projectId: Long,
+        @PathVariable reportId: Long,
+    ): List<ProjectReportResultIndicatorOverviewDTO>
 }

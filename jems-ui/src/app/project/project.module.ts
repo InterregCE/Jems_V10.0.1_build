@@ -521,6 +521,7 @@ import { ProjectBreakdownInvestmentComponent } from './project-application/repor
 import {
   ProjectBreakdownPerPartnerComponent
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-financial-overview-tab/project-breakdown-per-partner/project-breakdown-per-partner.component';
+import { ProjectReportIdentificationExtensionResultOutputComponent } from './project-application/report/project-report/project-report-detail-page/project-report-identification-tab/project-report-identification-extension/project-report-identification-extension-result-output/project-report-identification-extension-result-output.component';
 
 @NgModule({
   declarations: [
@@ -701,6 +702,7 @@ import {
     ProjectBreakdownUnitCostComponent,
     ProjectBreakdownInvestmentComponent,
     ProjectBreakdownPerPartnerComponent,
+    ProjectReportIdentificationExtensionResultOutputComponent,
   ],
   imports: [
     SharedModule,

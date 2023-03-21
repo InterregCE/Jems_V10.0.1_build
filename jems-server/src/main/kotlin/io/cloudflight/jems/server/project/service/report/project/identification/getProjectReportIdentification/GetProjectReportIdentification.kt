@@ -19,13 +19,19 @@ import java.math.BigDecimal
 class GetProjectReportIdentification(
     private val projectReportIdentificationPersistence: ProjectReportIdentificationPersistence,
     private val projectReportCertificatePersistence: ProjectReportCertificatePersistence,
-    private val projectReportPersistence: ProjectReportPersistence
-): GetProjectReportIdentificationInteractor {
+    private val projectReportPersistence: ProjectReportPersistence,
+) : GetProjectReportIdentificationInteractor {
 
     @CanRetrieveProjectReport
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetProjectReportIdentificationException::class)
     override fun getIdentification(projectId: Long, reportId: Long): ProjectReportIdentification {
+        return projectReportIdentificationPersistence.getReportIdentification(projectId, reportId).apply {
+            spendingProfiles = getProjectReportSpendingProfiles(projectId, reportId)
+        }
+    }
+
+    private fun getProjectReportSpendingProfiles(projectId: Long, reportId: Long): List<ProjectReportSpendingProfile> {
         val isClosed = projectReportPersistence.getReportById(projectId, reportId).status.isClosed()
         val reportedValues: Map<Long, ProjectReportSpendingProfileReportedValues> = projectReportIdentificationPersistence
             .getSpendingProfileReportedValues(reportId)
@@ -56,10 +62,7 @@ class GetProjectReportIdentification(
                 )
             )
         }.sortedWith(compareByDescending<ProjectReportSpendingProfile> { it.partnerRole }.thenBy { it.partnerNumber })
-
-        val reportIdentification = projectReportIdentificationPersistence.getReportIdentification(projectId, reportId)
-        reportIdentification.spendingProfiles = profiles
-        return reportIdentification
+        return profiles
     }
 
     private fun getCurrentlyReportedValue(

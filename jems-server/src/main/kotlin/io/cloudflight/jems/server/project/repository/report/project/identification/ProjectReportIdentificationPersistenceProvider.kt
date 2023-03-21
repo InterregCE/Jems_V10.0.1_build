@@ -68,7 +68,7 @@ class ProjectReportIdentificationPersistenceProvider(
             highlights = translatedValues.map { InputTranslation(it.language(), it.highlights) }.toSet(),
             deviations = translatedValues.map { InputTranslation(it.language(), it.deviations) }.toSet(),
             partnerProblems = translatedValues.map { InputTranslation(it.language(), it.partnerProblems) }.toSet(),
-            spendingProfiles = listOf()
+            spendingProfiles = listOf(),
         )
     }
 
