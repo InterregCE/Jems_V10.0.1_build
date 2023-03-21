@@ -27,15 +27,6 @@ fun List<ProjectReportSpendingProfileEntity>.toReportedValuesModel() = map {
     )
 }
 
-fun ProjectReportSpendingProfileReportedValues.toReportedValuesEntity(
-    projectReport: ProjectReportEntity,
-    partner: ProjectPartnerEntity
-) = ProjectReportSpendingProfileEntity(
-        id = ProjectReportSpendingProfileId(projectReport, partner.id),
-        previouslyReported = previouslyReported,
-        currentlyReported = currentlyReported
-    )
-
 fun toProjectReportIdentification(
     projectReportEntity: ProjectReportEntity,
     targetGroupEntities: List<ProjectReportIdentificationTargetGroupEntity>

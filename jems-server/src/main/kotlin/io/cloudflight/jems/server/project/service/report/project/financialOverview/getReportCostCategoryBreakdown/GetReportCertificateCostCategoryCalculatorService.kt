@@ -23,16 +23,17 @@ class GetReportCertificateCostCategoryCalculatorService(
      */
     @Transactional(readOnly = true)
     fun getSubmittedOrCalculateCurrent(projectId: Long, reportId: Long): CertificateCostCategoryBreakdown {
-        val isSubmitted = reportPersistence.getReportById(projectId = projectId, reportId).status.isClosed()
+        val reportSatus = reportPersistence.getReportById(projectId = projectId, reportId).status
         val data = reportCertificateCostCategoryPersistence.getCostCategories(projectId = projectId, reportId = reportId)
 
         val costCategories = data.toLinesModel()
 
-        if (!isSubmitted) {
-            val certificates = reportCertificatePersistence.listCertificatesOfProjectReport(reportId)
+        if (reportSatus.isOpen()) {
+            val partnerReportIds = reportCertificatePersistence.listCertificatesOfProjectReport(reportId)
+                .mapTo(HashSet()) { it.id }
 
             val currentValues =
-                reportExpenditureCostCategoryPersistence.getCostCategoriesCumulativeTotalEligible(certificates.map {it.id}.toSet())
+                reportExpenditureCostCategoryPersistence.getCostCategoriesCumulativeTotalEligible(partnerReportIds)
 
             costCategories.fillInCurrent(current = currentValues)
         }

@@ -2,6 +2,7 @@ package io.cloudflight.jems.api.project.report.project
 
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.CertificateCoFinancingBreakdownDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.CertificateCostCategoryBreakdownDTO
+import io.cloudflight.jems.api.project.dto.report.project.financialOverview.PerPartnerCostCategoryBreakdownDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.web.bind.annotation.GetMapping
@@ -27,4 +28,12 @@ interface ProjectReportFinancialOverviewApi {
         @PathVariable projectId: Long,
         @PathVariable reportId: Long,
     ): CertificateCostCategoryBreakdownDTO
+
+    @ApiOperation("Returns Project Report breakdown into cost categories per partner")
+    @GetMapping("${ENDPOINT_API_PROJECT_REPORT_IDENTIFICATION}/perPartner")
+    fun getCostCategoriesPerPartnerBreakdown(
+        @PathVariable projectId: Long,
+        @PathVariable reportId: Long,
+    ): PerPartnerCostCategoryBreakdownDTO
+
 }

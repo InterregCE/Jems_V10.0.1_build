@@ -59,7 +59,7 @@ class ProjectReportPersistenceProvider(
 
     @Transactional
     override fun updateSpendingProfile(reportId: Long, currentValuesByPartnerId: Map<Long, BigDecimal>) {
-        val spendingProfiles = projectReportSpendingProfileRepository.findAllByIdProjectReportId(reportId)
+        val spendingProfiles = projectReportSpendingProfileRepository.findAllByIdProjectReportIdOrderByPartnerNumber(reportId)
         spendingProfiles.forEach { sp ->
             sp.currentlyReported = currentValuesByPartnerId.getOrDefault(sp.id.partnerId, BigDecimal.ZERO)
         }

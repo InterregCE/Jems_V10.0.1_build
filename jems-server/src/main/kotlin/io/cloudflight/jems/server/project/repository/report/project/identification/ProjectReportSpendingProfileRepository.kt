@@ -10,7 +10,7 @@ import java.math.BigDecimal
 interface ProjectReportSpendingProfileRepository :
     JpaRepository<ProjectReportSpendingProfileEntity, Long> {
 
-    fun findAllByIdProjectReportId(projectReportId: Long): List<ProjectReportSpendingProfileEntity>
+    fun findAllByIdProjectReportIdOrderByPartnerNumber(projectReportId: Long): List<ProjectReportSpendingProfileEntity>
 
     fun deleteByIdProjectReportIdAndIdPartnerId(projectReportId: Long, partnerId: Long)
 

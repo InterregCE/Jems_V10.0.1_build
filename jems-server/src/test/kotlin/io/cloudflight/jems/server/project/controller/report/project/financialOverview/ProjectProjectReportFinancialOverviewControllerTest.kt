@@ -1,20 +1,31 @@
 package io.cloudflight.jems.server.project.controller.report.project.financialOverview
 
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
+import io.cloudflight.jems.api.project.dto.report.project.financialOverview.BudgetCostsCalculationResultFullDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.CertificateCoFinancingBreakdownDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.CertificateCoFinancingBreakdownLineDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.CertificateCostCategoryBreakdownDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.CertificateCostCategoryBreakdownLineDTO
+import io.cloudflight.jems.api.project.dto.report.project.financialOverview.PerPartnerCostCategoryBreakdownDTO
+import io.cloudflight.jems.api.project.dto.report.project.financialOverview.PerPartnerCostCategoryBreakdownLineDTO
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.CertificateCoFinancingBreakdown
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.CertificateCoFinancingBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.CertificateCostCategoryBreakdown
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.CertificateCostCategoryBreakdownLine
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.perPartner.PerPartnerCostCategoryBreakdown
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.perPartner.PerPartnerCostCategoryBreakdownLine
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCoFinancingBreakdown.GetReportCertificateCoFinancingBreakdownInteractor
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCostCategoryBreakdown.GetReportCertificateCostCategoryBreakdownInteractor
+import io.cloudflight.jems.server.project.service.report.project.financialOverview.perPartner.GetPerPartnerCostCategoryBreakdownInteractor
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 
@@ -114,16 +125,158 @@ class ProjectProjectReportFinancialOverviewControllerTest : UnitTest() {
             unitCost = expectedDummyCostCategoryLine,
             total = expectedDummyCostCategoryLine,
         )
+
+        private val dummyCostCategoryPartner = PerPartnerCostCategoryBreakdown(
+            partners = listOf(
+                PerPartnerCostCategoryBreakdownLine(
+                    partnerId = 15L,
+                    partnerNumber = 5,
+                    partnerAbbreviation = "abbr",
+                    partnerRole = ProjectPartnerRole.PARTNER,
+                    country = "country",
+                    officeAndAdministrationOnStaffCostsFlatRate = null,
+                    officeAndAdministrationOnDirectCostsFlatRate = 12,
+                    travelAndAccommodationOnStaffCostsFlatRate = 18,
+                    staffCostsFlatRate = 79,
+                    otherCostsOnStaffCostsFlatRate = 24,
+                    current = BudgetCostsCalculationResultFull(
+                        staff = BigDecimal.valueOf(11L),
+                        office = BigDecimal.valueOf(12L),
+                        travel = BigDecimal.valueOf(13L),
+                        external = BigDecimal.valueOf(14L),
+                        equipment = BigDecimal.valueOf(15L),
+                        infrastructure = BigDecimal.valueOf(16L),
+                        other = BigDecimal.valueOf(17L),
+                        lumpSum = BigDecimal.valueOf(18L),
+                        unitCost = BigDecimal.valueOf(19L),
+                        sum = BigDecimal.valueOf(20L),
+                    ),
+                    afterControl = BudgetCostsCalculationResultFull(
+                        staff = BigDecimal.valueOf(21L),
+                        office = BigDecimal.valueOf(22L),
+                        travel = BigDecimal.valueOf(23L),
+                        external = BigDecimal.valueOf(24L),
+                        equipment = BigDecimal.valueOf(25L),
+                        infrastructure = BigDecimal.valueOf(26L),
+                        other = BigDecimal.valueOf(27L),
+                        lumpSum = BigDecimal.valueOf(28L),
+                        unitCost = BigDecimal.valueOf(29L),
+                        sum = BigDecimal.valueOf(30L),
+                    ),
+                )
+            ),
+            totalCurrent = BudgetCostsCalculationResultFull(
+                staff = BigDecimal.valueOf(31L),
+                office = BigDecimal.valueOf(32L),
+                travel = BigDecimal.valueOf(33L),
+                external = BigDecimal.valueOf(34L),
+                equipment = BigDecimal.valueOf(35L),
+                infrastructure = BigDecimal.valueOf(36L),
+                other = BigDecimal.valueOf(37L),
+                lumpSum = BigDecimal.valueOf(38L),
+                unitCost = BigDecimal.valueOf(39L),
+                sum = BigDecimal.valueOf(40L),
+            ),
+            totalAfterControl = BudgetCostsCalculationResultFull(
+                staff = BigDecimal.valueOf(41L),
+                office = BigDecimal.valueOf(42L),
+                travel = BigDecimal.valueOf(43L),
+                external = BigDecimal.valueOf(44L),
+                equipment = BigDecimal.valueOf(45L),
+                infrastructure = BigDecimal.valueOf(46L),
+                other = BigDecimal.valueOf(47L),
+                lumpSum = BigDecimal.valueOf(48L),
+                unitCost = BigDecimal.valueOf(49L),
+                sum = BigDecimal.valueOf(50L),
+            ),
+        )
+
+        private val expectedCostCategoryPartner = PerPartnerCostCategoryBreakdownDTO(
+            partners = listOf(
+                PerPartnerCostCategoryBreakdownLineDTO(
+                    partnerId = 15L,
+                    partnerNumber = 5,
+                    partnerAbbreviation = "abbr",
+                    partnerRole = ProjectPartnerRoleDTO.PARTNER,
+                    country = "country",
+                    officeAndAdministrationOnStaffCostsFlatRate = null,
+                    officeAndAdministrationOnDirectCostsFlatRate = 12,
+                    travelAndAccommodationOnStaffCostsFlatRate = 18,
+                    staffCostsFlatRate = 79,
+                    otherCostsOnStaffCostsFlatRate = 24,
+                    current = BudgetCostsCalculationResultFullDTO(
+                        staff = BigDecimal.valueOf(11L),
+                        office = BigDecimal.valueOf(12L),
+                        travel = BigDecimal.valueOf(13L),
+                        external = BigDecimal.valueOf(14L),
+                        equipment = BigDecimal.valueOf(15L),
+                        infrastructure = BigDecimal.valueOf(16L),
+                        other = BigDecimal.valueOf(17L),
+                        lumpSum = BigDecimal.valueOf(18L),
+                        unitCost = BigDecimal.valueOf(19L),
+                        sum = BigDecimal.valueOf(20L),
+                    ),
+                    afterControl = BudgetCostsCalculationResultFullDTO(
+                        staff = BigDecimal.valueOf(21L),
+                        office = BigDecimal.valueOf(22L),
+                        travel = BigDecimal.valueOf(23L),
+                        external = BigDecimal.valueOf(24L),
+                        equipment = BigDecimal.valueOf(25L),
+                        infrastructure = BigDecimal.valueOf(26L),
+                        other = BigDecimal.valueOf(27L),
+                        lumpSum = BigDecimal.valueOf(28L),
+                        unitCost = BigDecimal.valueOf(29L),
+                        sum = BigDecimal.valueOf(30L),
+                    ),
+                )
+            ),
+            totalCurrent = BudgetCostsCalculationResultFullDTO(
+                staff = BigDecimal.valueOf(31L),
+                office = BigDecimal.valueOf(32L),
+                travel = BigDecimal.valueOf(33L),
+                external = BigDecimal.valueOf(34L),
+                equipment = BigDecimal.valueOf(35L),
+                infrastructure = BigDecimal.valueOf(36L),
+                other = BigDecimal.valueOf(37L),
+                lumpSum = BigDecimal.valueOf(38L),
+                unitCost = BigDecimal.valueOf(39L),
+                sum = BigDecimal.valueOf(40L),
+            ),
+            totalAfterControl = BudgetCostsCalculationResultFullDTO(
+                staff = BigDecimal.valueOf(41L),
+                office = BigDecimal.valueOf(42L),
+                travel = BigDecimal.valueOf(43L),
+                external = BigDecimal.valueOf(44L),
+                equipment = BigDecimal.valueOf(45L),
+                infrastructure = BigDecimal.valueOf(46L),
+                other = BigDecimal.valueOf(47L),
+                lumpSum = BigDecimal.valueOf(48L),
+                unitCost = BigDecimal.valueOf(49L),
+                sum = BigDecimal.valueOf(50L),
+            ),
+        )
     }
 
     @MockK
-    lateinit var getReportCertificateCoFinancingBreakdown: GetReportCertificateCoFinancingBreakdownInteractor
+    private lateinit var getReportCertificateCoFinancingBreakdown: GetReportCertificateCoFinancingBreakdownInteractor
 
     @MockK
-    lateinit var getReportCertificateCostCategoryBreakdownInteractor: GetReportCertificateCostCategoryBreakdownInteractor
+    private lateinit var getReportCertificateCostCategoryBreakdown: GetReportCertificateCostCategoryBreakdownInteractor
+
+    @MockK
+    private lateinit var getPerPartnerCostCategoryBreakdown: GetPerPartnerCostCategoryBreakdownInteractor
 
     @InjectMockKs
     private lateinit var controller: ProjectReportFinancialOverviewController
+
+    @BeforeEach
+    fun resetMocks() {
+        clearMocks(
+            getReportCertificateCoFinancingBreakdown,
+            getReportCertificateCostCategoryBreakdown,
+            getPerPartnerCostCategoryBreakdown,
+        )
+    }
 
     @Test
     fun getCoFinancingBreakdown() {
@@ -135,9 +288,18 @@ class ProjectProjectReportFinancialOverviewControllerTest : UnitTest() {
 
     @Test
     fun getCostCategoriesBreakdown() {
-        every { getReportCertificateCostCategoryBreakdownInteractor.get(projectId = PROJECT_ID, reportId = REPORT_ID) } returns
+        every { getReportCertificateCostCategoryBreakdown.get(projectId = PROJECT_ID, reportId = REPORT_ID) } returns
             dummyCostCategory
         assertThat(controller.getCostCategoriesBreakdown(projectId = PROJECT_ID, reportId = REPORT_ID))
             .isEqualTo(expectedDummyCostCategory)
     }
+
+    @Test
+    fun getCostCategoriesPerPartnerBreakdown() {
+        every { getPerPartnerCostCategoryBreakdown.get(projectId = PROJECT_ID, reportId = REPORT_ID) } returns
+            dummyCostCategoryPartner
+        assertThat(controller.getCostCategoriesPerPartnerBreakdown(projectId = PROJECT_ID, reportId = REPORT_ID))
+            .isEqualTo(expectedCostCategoryPartner)
+    }
+
 }

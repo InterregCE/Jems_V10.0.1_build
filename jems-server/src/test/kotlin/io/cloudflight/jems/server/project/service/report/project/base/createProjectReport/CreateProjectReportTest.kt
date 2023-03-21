@@ -9,7 +9,6 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
-import io.cloudflight.jems.server.plugin.services.ProjectDataProviderImplTest
 import io.cloudflight.jems.server.project.service.ProjectDescriptionPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
@@ -24,6 +23,8 @@ import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddress
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddressType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.create.CreateProjectPartnerReportWorkPackageActivityDeliverable
@@ -36,6 +37,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.base.crea
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedFund
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportBudget
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportCreateModel
+import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportPartnerCreateModel
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportResultCreate
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackage
@@ -100,9 +102,14 @@ internal class CreateProjectReportTest : UnitTest() {
         private fun leadPartner(): ProjectPartnerDetail {
             val mock = mockk<ProjectPartnerDetail>()
             every { mock.role } returns ProjectPartnerRole.LEAD_PARTNER
+            every { mock.abbreviation } returns "LP abbr"
             every { mock.nameInEnglish } returns "lead-en"
             every { mock.nameInOriginalLanguage } returns "lead-orig"
-            every { mock.id } returns 1L
+            every { mock.id } returns 11L
+            every { mock.sortNumber } returns 6
+            every { mock.addresses } returns listOf(
+                ProjectPartnerAddress(ProjectPartnerAddressType.Organization, country = "country-6")
+            )
             return mock
         }
 
@@ -472,7 +479,16 @@ internal class CreateProjectReportTest : UnitTest() {
                     specification = setOf(InputTranslation(SystemLanguage.EN, "en 2"), InputTranslation(SystemLanguage.DE, "de 2")),
                 ),
             ),
-            previouslyReportedSpendingProfileByPartner = mapOf(11L to BigDecimal.valueOf(83L, 1)),
+            partners = listOf(
+                ProjectReportPartnerCreateModel(
+                    partnerId = 11L,
+                    partnerNumber = 6,
+                    partnerAbbreviation = "LP abbr",
+                    partnerRole = ProjectPartnerRole.LEAD_PARTNER,
+                    country = "country-6",
+                    previouslyReported = BigDecimal.valueOf(83L, 1),
+                )
+            ),
             results = listOf(
                 ProjectReportResultCreate(
                     resultNumber = 1,
