@@ -6,11 +6,9 @@ import io.cloudflight.jems.server.common.event.JemsMailEvent
 import io.cloudflight.jems.server.common.model.Variable
 import io.cloudflight.jems.server.notification.inApp.service.NotificationPersistence
 import io.cloudflight.jems.server.notification.inApp.service.model.Notification
-import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType
 import io.cloudflight.jems.server.notification.mail.service.model.MailNotificationInfo
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationProject
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.Companion.toNotificationType
-import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
@@ -19,6 +17,9 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRo
 import io.cloudflight.jems.server.project.service.projectStatusChanged
 import io.cloudflight.jems.server.project.service.projectuser.UserProjectCollaboratorPersistence
 import io.cloudflight.jems.server.project.service.projectuser.UserProjectPersistence
+import io.cloudflight.jems.server.user.service.UserPersistence
+import io.cloudflight.jems.server.user.service.UserRolePersistence
+import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.cloudflight.jems.server.user.service.model.assignment.CollaboratorAssignedToProject
 import io.cloudflight.jems.server.user.service.model.assignment.PartnerCollaborator
@@ -43,7 +44,9 @@ data class ProjectNotificationEventListeners(
     private val partnerCollaboratorPersistence: UserPartnerCollaboratorPersistence,
     private val partnerPersistence: PartnerPersistence,
     private val userProjectPersistence: UserProjectPersistence,
-    private val notificationPersistence: NotificationPersistence
+    private val notificationPersistence: NotificationPersistence,
+    private val userPersistence: UserPersistence,
+    private val userRolePersistence: UserRolePersistence,
 ) {
 
     @TransactionalEventListener
@@ -69,8 +72,7 @@ data class ProjectNotificationEventListeners(
         } ?: return
 
         val managers = if (!notification.sendToManager) emptySet() else
-            userProjectCollaboratorPersistence.getUserIdsForProject(projectId)
-                .onlyThoseWithManage().emails()
+            userProjectCollaboratorPersistence.getUserIdsForProject(projectId).emails()
 
         val partnerIdsByType = partnerPersistence.findTop30ByProjectId(projectId).groupBy({ it.role }, { it.id })
         val leadPartnerId = partnerIdsByType[ProjectPartnerRole.LEAD_PARTNER]?.firstOrNull()
@@ -86,8 +88,7 @@ data class ProjectNotificationEventListeners(
                     .partnerCollaboratorEmails()
 
         val programmeUsers = if (!notification.sendToProjectAssigned) emptySet() else
-            userProjectPersistence.getUsersForProject(projectId)
-                .emails()
+            userProjectPersistence.getUsersForProject(projectId).emails() union getUsersWithProjectRetrievePermissions().emails()
 
         val emailsToNotify =
             managers union leadPartnerCollaborators union nonLeadPartnerCollaborators union programmeUsers
@@ -101,10 +102,8 @@ data class ProjectNotificationEventListeners(
     }
 
     private fun Set<PartnerCollaborator>.partnerCollaboratorEmails() = mapTo(HashSet()) { it.userEmail }
-    private fun Set<UserSummary>.emails() = mapTo(HashSet()) { it.email }
+    private fun Collection<UserSummary>.emails() = mapTo(HashSet()) { it.email }
     private fun List<CollaboratorAssignedToProject>.emails() = mapTo(HashSet()) { it.userEmail }
-    private fun List<CollaboratorAssignedToProject>.onlyThoseWithManage() =
-        filter { it.level == ProjectCollaboratorLevel.MANAGE }
 
     private fun ProjectSummary.toProject() = NotificationProject(callId, callName, id, customIdentifier, acronym)
 
@@ -120,7 +119,7 @@ data class ProjectNotificationEventListeners(
     )
 
     private fun Notification.buildEmailFor(emails: Set<String>) = JemsMailEvent(
-        emailTemplateFileName = "notification-project.html",
+        emailTemplateFileName = "notification.html",
         mailNotificationInfo = MailNotificationInfo(
             subject = subject,
             templateVariables =
@@ -133,6 +132,13 @@ data class ProjectNotificationEventListeners(
             recipients = emails,
             messageType = type.toString(),
         ),
+    )
+
+    private fun getUsersWithProjectRetrievePermissions() = userPersistence.findAllWithRoleIdIn(
+        roleIds = userRolePersistence.findRoleIdsHavingAndNotHavingPermissions(
+            needsToHaveAtLeastOneFrom = UserRolePermission.getGlobalProjectRetrievePermissions(),
+            needsNotToHaveAnyOf = emptySet(),
+        )
     )
 
 }
