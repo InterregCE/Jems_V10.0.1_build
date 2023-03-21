@@ -112,6 +112,8 @@ context('Call management tests', () => {
       cy.contains('mat-option', 'Standard pre condition check').click();
       cy.contains('div', 'Partner report pre-submission check plugin').find('mat-select').click();
       cy.contains('mat-option', 'Report (Example) Check').click();
+      cy.contains('div', 'Control report risk based sampling').find('mat-select').click();
+      cy.contains('mat-option', 'Control risk based sampling -').click();
       cy.contains('Save changes').click();
       cy.contains('Application form configuration was saved successfully').should('be.visible');
       cy.contains('Application form configuration was saved successfully').should('not.exist');
@@ -133,37 +135,37 @@ context('Call management tests', () => {
 
     it("TB-754 Create a new 2-step call", function () {
       cy.contains('button', 'Add new call').click();
-      
+
       cy.contains('div', 'Call name').find('input').type(this.callName);
       cy.contains('div', 'Period length').find('input').type('3');
-      
+
       // Date validations
       cy.contains('mat-checkbox', 'Use 2-step application form procedure for this call').find('input').check({force: true});
       cy.contains('mat-form-field', 'Start date (MM/DD/YYYY h:mm A)').find('button').click();
       cy.contains('td', '2').click();
       cy.contains('button', 'done').click();
-      
+
       cy.contains('mat-form-field', 'End date (MM/DD/YYYY h:mm A)').find('button').click();
       cy.contains('td', '10').click({force: true});
       cy.contains('button', 'done').click();
-      
+
       cy.contains('mat-form-field', 'End date Step 1 (MM/DD/YYYY h:mm A)').find('button').click();
       cy.contains('td', '11').should('have.attr', 'aria-disabled', 'true');
       cy.contains('td', '1').should('have.attr', 'aria-disabled', 'true');
       cy.contains('td', '5').click({force: true});
       cy.contains('button', 'done').click();
-      
+
       cy.contains('mat-form-field', 'Start date (MM/DD/YYYY h:mm A)').find('button').click();
       cy.get('button[aria-label="Previous Month"]').click();
       cy.contains('td', '1').click({force: true});
       cy.contains('button', 'done').click();
-      
+
       cy.contains('mat-form-field', 'End date (MM/DD/YYYY h:mm A)').find('button').click();
       cy.get('button[aria-label="Next Month"]').click();
       cy.get('button[aria-label="Next Month"]').click();
       cy.contains('td', '20').click({force: true});
       cy.contains('button', 'done').click();
-      
+
       cy.contains('mat-form-field', 'End date Step 1 (MM/DD/YYYY h:mm A)').find('button').click();
       cy.get('button[aria-label="Next Month"]').click();
       cy.contains('td', '20').click({force: true});
@@ -191,39 +193,48 @@ context('Call management tests', () => {
     it("TB-876 Edit and publish a 2-step call", function () {
       cy.contains(this.callName).click();
       cy.get('input[name="name"]').should('have.value', this.callName);
-      
+
       cy.contains('Application form configuration').click();
       cy.contains('button', '1 & 2').should('be.visible');
       cy.contains('button', '2 only').should('be.visible');
-      
+
       cy.get('input.mat-slide-toggle-input').should('have.attr', 'disabled');
       cy.contains('tr', 'Project title').contains('button', '1 & 2').click();
       cy.contains('button', 'Save changes').click();
       cy.contains('Application form configuration was saved successfully.').should('be.visible');
-      
+
       cy.contains('Pre-submission check settings').click();
       cy.get('jems-form mat-select').should('have.length', 3);
-      
-      
+
+
       cy.contains('div', 'Select a pre-submission check plugin for step one').click();
       cy.contains('mat-option', 'No-Check').should('be.visible');
       cy.contains('mat-option', 'Blocked').should('be.visible');
       cy.contains('mat-option', 'Standard pre condition check').should('be.visible').click();
-      
+
       cy.contains('div', 'Select a pre-submission check plugin').click();
       cy.contains('mat-option', 'No-Check').should('be.visible');
       cy.contains('mat-option', 'Blocked').should('be.visible');
       cy.contains('mat-option', 'Standard pre condition check').should('be.visible').click();
-      
+
       cy.contains('div', 'Partner report pre-submission check plugin').click();
       cy.contains('mat-option', 'No-Check').should('be.visible');
       cy.contains('mat-option', 'Blocked').should('be.visible');
       cy.contains('mat-option', 'Report (Example) Check').should('be.visible').click();
-      
+
+      cy.contains('div', 'Partner report pre-submission check plugin').click();
+      cy.contains('mat-option', 'No-Check').should('be.visible');
+      cy.contains('mat-option', 'Blocked').should('be.visible');
+      cy.contains('mat-option', 'Report (Example) Check').should('be.visible').click();
+
+      cy.contains('div', 'Control report risk based sampling').click();
+      cy.contains('mat-option', 'No-Check').should('be.visible');
+      cy.contains('mat-option', 'Control risk based sampling -').should('be.visible').click();
+
       cy.contains('button', 'Save changes').click();
       cy.contains('Application form configuration was saved successfully.').should('be.visible');
       cy.contains('Application form configuration was saved successfully.').should('not.exist');
-      
+
       cy.contains('General call settings').click();
       cy.contains('button', 'Publish call').should('be.visible').click();
       cy.contains('button', 'Confirm').should('be.visible').click();
