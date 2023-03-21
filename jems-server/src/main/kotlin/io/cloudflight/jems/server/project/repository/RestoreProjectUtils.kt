@@ -9,7 +9,6 @@ import java.util.stream.Collectors
 import java.util.stream.Stream
 import javax.persistence.EntityManager
 import javax.sql.DataSource
-import kotlin.streams.toList
 
 @Component
 class RestoreProjectUtils(private val entityManager: EntityManager, private val datasource: DataSource) {
@@ -83,7 +82,7 @@ class RestoreProjectUtils(private val entityManager: EntityManager, private val 
                           ON fks.constraint_schema = kcu.table_schema
                               AND fks.table_name = kcu.table_name
                               AND fks.constraint_name = kcu.constraint_name
-            WHERE fks.constraint_schema = '${datasource.connection.catalog}'
+            WHERE fks.constraint_schema = '${getDatabaseCatalog()}'
             GROUP BY fks.constraint_schema,
                      fks.table_name,
                      fks.unique_constraint_schema,
@@ -156,4 +155,10 @@ class RestoreProjectUtils(private val entityManager: EntityManager, private val 
                     } else pathRelations
                 }
         }.firstOrNull { it.isNotEmpty() } ?: emptyList()
+
+    private fun getDatabaseCatalog(): String? {
+        datasource.connection.use { connection ->
+            return connection.catalog
+        }
+    }
 }
