@@ -90,6 +90,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
         reportPartnerCheckPluginKey = "check-off",
         projectDefinedUnitCostAllowed = true,
         projectDefinedLumpSumAllowed = false,
+        controlReportSamplingCheckPluginKey = "control-report-sampling-check-off"
     )
     private val projectStatus = ProjectStatusHistoryEntity(
         status = ApplicationStatus.APPROVED,

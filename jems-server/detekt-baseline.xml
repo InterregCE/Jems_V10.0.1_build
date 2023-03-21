@@ -150,6 +150,7 @@
     <ID>PackageNaming:AssignUserToProjectInteractor.kt$package io.cloudflight.jems.server.project.service.projectuser.assign_user_to_project</ID>
     <ID>PackageNaming:AssociatedOrganizationPersistenceProvider.kt$package io.cloudflight.jems.server.project.repository.partner.associated_organization</ID>
     <ID>PackageNaming:CoFinancingOverviewCalculator.kt$package io.cloudflight.jems.server.project.service.cofinancing.get_project_cofinancing_overview</ID>
+    <ID>PackageNaming:ControlReportSamplingCheckOff.kt$package io.cloudflight.jems.server.plugin.pre_submission_check</ID>
     <ID>PackageNaming:CreateCall.kt$package io.cloudflight.jems.server.call.service.create_call</ID>
     <ID>PackageNaming:CreateCallExceptions.kt$package io.cloudflight.jems.server.call.service.create_call</ID>
     <ID>PackageNaming:CreateCallInteractor.kt$package io.cloudflight.jems.server.call.service.create_call</ID>

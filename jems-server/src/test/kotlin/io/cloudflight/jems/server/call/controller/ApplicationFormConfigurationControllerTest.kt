@@ -87,7 +87,8 @@ class ApplicationFormConfigurationControllerTest : UnitTest() {
             firstStepPreSubmissionCheckPluginKey = null,
             reportPartnerCheckPluginKey = null,
             projectDefinedUnitCostAllowed = false,
-            projectDefinedLumpSumAllowed = true
+            projectDefinedLumpSumAllowed = true,
+            controlReportSamplingCheckPluginKey = null
         )
 
         private val configDTO = mutableSetOf(

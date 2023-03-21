@@ -127,6 +127,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
             unParkedFrom = unParkedFrom,
             reportOfOrigin = if (unParkedFrom == null) null else report,
             originalNumber = if (unParkedFrom == null) null else 14,
+            partOfSampleLocked = false
         ).apply {
             translatedValues.add(
                 PartnerReportExpenditureCostTranslEntity(
@@ -376,6 +377,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
             unParkedFrom = unParkedFrom,
             reportOfOrigin = reportOfOrigin,
             originalNumber = if (reportOfOrigin == null) null else 42,
+            partOfSampleLocked = false
         )
 
         private fun parkedFromExpected() = ProjectPartnerReportExpenditureCost(
@@ -850,4 +852,18 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
                 parkingMetadata = ExpenditureParkingMetadata(2L, 21, 4),
             ))
     }
+
+    @Test
+    fun `markAsSampledAndLock for expenditures`() {
+        val report = mockk<ProjectPartnerReportEntity>()
+        every { report.id } returns 60L
+        every { report.number } returns 61
+        val expenditure = dummyExpenditure(14L, report)
+        every { reportExpenditureRepository.findAllById(setOf(14L)) } returns listOf(expenditure)
+        every { reportExpenditureRepository.save(any()) } returnsArgument 0
+        persistence.markAsSampledAndLock(setOf(14L))
+        assertThat(expenditure.partOfSample).isTrue
+        assertThat(expenditure.partOfSampleLocked).isTrue
+    }
+
 }

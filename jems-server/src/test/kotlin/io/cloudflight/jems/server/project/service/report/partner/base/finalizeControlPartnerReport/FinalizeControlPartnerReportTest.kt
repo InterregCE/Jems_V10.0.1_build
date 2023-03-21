@@ -154,6 +154,7 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
             verificationComment = null,
             parked = false,
             parkingMetadata = null,
+            partOfSampleLocked = false
         )
 
         private val expenditure2 = ProjectPartnerReportExpenditureVerification(
@@ -182,6 +183,7 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
             verificationComment = null,
             parked = false,
             parkingMetadata = null,
+            partOfSampleLocked = false
         )
 
         private val controlOverview = ControlOverview(

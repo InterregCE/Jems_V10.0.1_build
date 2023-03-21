@@ -140,6 +140,7 @@ class GetBudgetFundsPerPeriodInteractorTest : UnitTest() {
         reportPartnerCheckPluginKey = null,
         projectDefinedUnitCostAllowed = false,
         projectDefinedLumpSumAllowed = true,
+        controlReportSamplingCheckPluginKey = null
     )
 
     private val spfCallDetail = CallDetail(
@@ -188,6 +189,7 @@ class GetBudgetFundsPerPeriodInteractorTest : UnitTest() {
         reportPartnerCheckPluginKey = null,
         projectDefinedUnitCostAllowed = false,
         projectDefinedLumpSumAllowed = true,
+        controlReportSamplingCheckPluginKey = null
     )
 
     @MockK

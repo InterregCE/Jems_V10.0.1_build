@@ -388,6 +388,7 @@ class ProjectPartnerTestUtil {
             reportPartnerCheckPluginKey = "check-off",
             projectDefinedUnitCostAllowed = true,
             projectDefinedLumpSumAllowed = false,
+            controlReportSamplingCheckPluginKey = "control-report-sampling-check-off"
         )
         val projectStatus = ProjectStatusHistoryEntity(
             status = ApplicationStatus.APPROVED,

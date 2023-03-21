@@ -9,11 +9,7 @@ import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.PreSubmissionPlugins
-import io.cloudflight.jems.server.plugin.JemsPluginRegistry
-import io.cloudflight.jems.server.plugin.PreConditionCheckSamplePlugin
-import io.cloudflight.jems.server.plugin.PreConditionCheckSamplePluginKey
-import io.cloudflight.jems.server.plugin.ReportCheckPluginKey
-import io.cloudflight.jems.server.plugin.ReportPartnerCheckSamplePlugin
+import io.cloudflight.jems.server.plugin.*
 import io.cloudflight.jems.server.plugin.pre_submission_check.PreSubmissionCheckOff
 import io.mockk.clearMocks
 import io.mockk.every
@@ -37,6 +33,7 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
             every { call.preSubmissionCheckPluginKey } returns null
             every { call.firstStepPreSubmissionCheckPluginKey } returns null
             every { call.reportPartnerCheckPluginKey } returns null
+            every { call.controlReportSamplingCheckPluginKey } returns null
             return call
         }
     }
@@ -74,6 +71,7 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
         every { call.firstStepPreSubmissionCheckPluginKey } returns "no-check"
         every { call.preSubmissionCheckPluginKey } returns "no-check"
         every { call.reportPartnerCheckPluginKey } returns "no-check"
+        every { call.controlReportSamplingCheckPluginKey } returns "no-check"
 
         assertThat(updatePreSubmissionCheckSettings.update(
             callId = 1L,
@@ -81,12 +79,18 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
                 pluginKey = "jems-pre-condition-check-off",
                 firstStepPluginKey = PreConditionCheckSamplePluginKey,
                 reportPartnerCheckPluginKey = ReportCheckPluginKey,
+                controlReportSamplingCheckPluginKey = ControlReportSamplingCheckPluginKey,
             )
         )).isEqualTo(call)
 
         verify(exactly = 1) { persistence.updateProjectCallPreSubmissionCheckPlugin(
             callId = 1L,
-            pluginKeys = PreSubmissionPlugins("jems-pre-condition-check-off", PreConditionCheckSamplePluginKey, ReportCheckPluginKey),
+            pluginKeys = PreSubmissionPlugins(
+                "jems-pre-condition-check-off",
+                PreConditionCheckSamplePluginKey,
+                ReportCheckPluginKey,
+                ControlReportSamplingCheckPluginKey
+            ),
         ) }
 
         val slotAudit = slot<AuditCandidateEvent>()
@@ -98,7 +102,8 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
                 description = "Configuration of published call id=1 name='Test' changed: Plugin selection was changed\n" +
                         "PreSubmissionCheckFirstStep changed from 'no-check' to 'key-1',\n" +
                         "PreSubmissionCheck changed from 'no-check' to 'jems-pre-condition-check-off',\n" +
-                        "PreSubmissionCheckPartnerReport changed from 'no-check' to 'key-3'"
+                        "PreSubmissionCheckPartnerReport changed from 'no-check' to 'key-3',\n" +
+                        "PreSubmissionCheckControlReportSampling changed from 'no-check' to 'key-4'"
             )
         )
     }
@@ -121,6 +126,7 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
                 pluginKey = "missing",
                 firstStepPluginKey = PreConditionCheckSamplePluginKey,
                 reportPartnerCheckPluginKey = ReportCheckPluginKey,
+                controlReportSamplingCheckPluginKey = ControlReportSamplingCheckPluginKey
             )
         )).isEqualTo(call)
 
@@ -145,6 +151,7 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
                 pluginKey = PreConditionCheckSamplePluginKey,
                 firstStepPluginKey = "missing",
                 reportPartnerCheckPluginKey = ReportCheckPluginKey,
+                controlReportSamplingCheckPluginKey = ControlReportSamplingCheckPluginKey
             )
         )).isEqualTo(call)
 
@@ -170,6 +177,7 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
                 pluginKey = "missing",
                 firstStepPluginKey = "missing",
                 reportPartnerCheckPluginKey = "missing",
+                controlReportSamplingCheckPluginKey = "missing"
             )
         )).isEqualTo(call)
 
@@ -191,6 +199,7 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
         every { call.firstStepPreSubmissionCheckPluginKey } returns null
         every { call.preSubmissionCheckPluginKey } returns "no-check"
         every { call.reportPartnerCheckPluginKey } returns "blocked"
+        every { call.controlReportSamplingCheckPluginKey } returns "no-check"
 
         assertThat(updatePreSubmissionCheckSettings.update(
             callId = 17L,
@@ -198,13 +207,14 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
                 pluginKey = PreConditionCheckSamplePluginKey,
                 firstStepPluginKey = "",
                 reportPartnerCheckPluginKey = ReportCheckPluginKey,
+                controlReportSamplingCheckPluginKey = ControlReportSamplingCheckPluginKey
             )
         )).isEqualTo(call)
 
         verify(exactly = 1) {
             persistence.updateProjectCallPreSubmissionCheckPlugin(
                 17L,
-                PreSubmissionPlugins(PreConditionCheckSamplePluginKey, "", ReportCheckPluginKey)
+                PreSubmissionPlugins(PreConditionCheckSamplePluginKey, "", ReportCheckPluginKey, ControlReportSamplingCheckPluginKey)
             )
         }
 
@@ -216,7 +226,8 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
                 entityRelatedId = 17L,
                 description = "Configuration of not-published call id=17 name='Test2' changed: Plugin selection was changed\n" +
                         "PreSubmissionCheck changed from 'no-check' to 'key-1',\n" +
-                        "PreSubmissionCheckPartnerReport changed from 'blocked' to 'key-3'"
+                        "PreSubmissionCheckPartnerReport changed from 'blocked' to 'key-3',\n" +
+                        "PreSubmissionCheckControlReportSampling changed from 'no-check' to 'key-4'"
             )
         )
     }
@@ -238,6 +249,7 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
             newPluginsConfig = PreSubmissionPlugins(
                 pluginKey = "missing",
                 reportPartnerCheckPluginKey = ReportCheckPluginKey,
+                controlReportSamplingCheckPluginKey = ControlReportSamplingCheckPluginKey
             )
         )).isEqualTo(call)
 
@@ -263,6 +275,7 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
             newPluginsConfig = PreSubmissionPlugins(
                 pluginKey = PreConditionCheckSamplePluginKey,
                 reportPartnerCheckPluginKey = "missing",
+                controlReportSamplingCheckPluginKey = ControlReportSamplingCheckPluginKey
             )
         )).isEqualTo(call)
 

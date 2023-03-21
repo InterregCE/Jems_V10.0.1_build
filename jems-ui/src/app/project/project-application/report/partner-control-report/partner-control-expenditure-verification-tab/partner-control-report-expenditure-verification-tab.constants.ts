@@ -34,6 +34,7 @@ export class PartnerControlReportExpenditureConstants {
     declaredAmountInEur: 'declaredAmountInEur',
 
     partOfSample: 'partOfSample',
+    partOfSampleLocked: 'partOfSampleLocked',
     certifiedAmount: 'certifiedAmount',
     deductedAmount: 'deductedAmount',
     typologyOfErrorId: 'typologyOfErrorId',

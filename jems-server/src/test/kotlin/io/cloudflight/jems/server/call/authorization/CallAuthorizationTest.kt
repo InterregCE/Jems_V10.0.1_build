@@ -67,7 +67,8 @@ internal class CallAuthorizationTest {
             firstStepPreSubmissionCheckPluginKey = null,
             reportPartnerCheckPluginKey = null,
             projectDefinedUnitCostAllowed = false,
-            projectDefinedLumpSumAllowed = true
+            projectDefinedLumpSumAllowed = true,
+            controlReportSamplingCheckPluginKey = null,
         )
 
         assertTrue(

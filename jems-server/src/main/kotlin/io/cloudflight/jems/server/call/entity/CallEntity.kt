@@ -116,6 +116,9 @@ class CallEntity(
     var reportPartnerCheckPluginKey: String,
 
     @field:NotNull
+    var controlReportSamplingCheckPluginKey: String,
+
+    @field:NotNull
     var projectDefinedUnitCostAllowed: Boolean,
 
     @field:NotNull

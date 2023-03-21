@@ -18,6 +18,7 @@ import io.cloudflight.jems.plugin.contract.models.report.partner.contribution.Pr
 import io.cloudflight.jems.plugin.contract.models.report.partner.contribution.ProjectPartnerReportContributionOverviewData
 import io.cloudflight.jems.plugin.contract.models.report.partner.contribution.ProjectPartnerReportContributionRowData
 import io.cloudflight.jems.plugin.contract.models.report.partner.contribution.ProjectPartnerReportContributionWrapperData
+import io.cloudflight.jems.plugin.contract.models.report.partner.expenditure.ExpenditureParkingMetadataDTO
 import io.cloudflight.jems.plugin.contract.models.report.partner.expenditure.ProjectPartnerReportExpenditureCostData
 import io.cloudflight.jems.plugin.contract.models.report.partner.expenditure.ReportBudgetCategoryData
 import io.cloudflight.jems.plugin.contract.models.report.partner.financialOverview.ExpenditureCoFinancingBreakdownData
@@ -367,6 +368,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
             currencyConversionRate = BigDecimal.valueOf(0.84),
             declaredAmountAfterSubmission = BigDecimal.valueOf(8.4),
             attachment = JemsFileMetadataData(47L, "file.xlsx", DATE_TIME_1),
+            parkingMetadata = ExpenditureParkingMetadataDTO(75L, 4, 3)
         )
 
         private val dummyLineCoFin = ExpenditureCoFinancingBreakdownLine(

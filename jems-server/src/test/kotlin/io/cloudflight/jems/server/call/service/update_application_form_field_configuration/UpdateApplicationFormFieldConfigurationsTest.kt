@@ -71,6 +71,7 @@ class UpdateApplicationFormFieldConfigurationsTest : UnitTest() {
         reportPartnerCheckPluginKey = null,
         projectDefinedUnitCostAllowed = false,
         projectDefinedLumpSumAllowed = true,
+        controlReportSamplingCheckPluginKey = null
     )
 
 

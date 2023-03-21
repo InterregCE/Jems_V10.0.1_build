@@ -33,6 +33,7 @@ data class ProjectPartnerReportExpenditureVerification(
     val attachment: JemsFileMetadata?,
 
     var partOfSample: Boolean,
+    var partOfSampleLocked: Boolean,
     var certifiedAmount: BigDecimal,
     var deductedAmount: BigDecimal,
     var typologyOfErrorId: Long?,

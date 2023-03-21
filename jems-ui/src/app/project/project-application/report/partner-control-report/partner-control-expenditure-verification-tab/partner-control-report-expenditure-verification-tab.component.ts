@@ -350,6 +350,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
         costCategory: this.formBuilder.control(reportExpenditureControl.costCategory),
         investmentId: this.formBuilder.control(reportExpenditureControl.investmentId),
         attachment: this.formBuilder.control(reportExpenditureControl.attachment, []),
+        partOfSampleLocked: this.formBuilder.control(reportExpenditureControl.partOfSampleLocked),
         partOfSample: this.formBuilder.control(reportExpenditureControl.partOfSample),
         declaredAmountInEur: this.formBuilder.control(reportExpenditureControl.declaredAmountAfterSubmission),
         certifiedAmount: this.formBuilder.control(this.getCertifiedAmount(reportExpenditureControl)),

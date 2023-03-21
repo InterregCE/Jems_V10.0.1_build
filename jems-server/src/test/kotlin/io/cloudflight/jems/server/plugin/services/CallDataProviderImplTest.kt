@@ -79,6 +79,7 @@ internal class CallDataProviderImplTest : UnitTest() {
             reportPartnerCheckPluginKey = null,
             projectDefinedUnitCostAllowed = false,
             projectDefinedLumpSumAllowed = true,
+            controlReportSamplingCheckPluginKey = null
         )
 
         private val programmeLanguages = listOf(

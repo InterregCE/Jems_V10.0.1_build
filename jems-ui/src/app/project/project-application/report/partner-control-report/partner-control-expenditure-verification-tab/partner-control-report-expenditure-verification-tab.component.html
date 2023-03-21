@@ -324,7 +324,7 @@
                             <mat-header-cell class="left-separator" *matHeaderCellDef>{{'project.application.partner.report.control.expenditure.table.header.part.of.sample' | translate}}</mat-header-cell>
                             <mat-cell class="justify-start left-separator" *matCellDef="let control;let expenditureIndex=index" [formGroupName]="expenditureIndex" >
                                 <mat-slide-toggle color="primary"
-                                                  [disabled] = "control.get(constants.FORM_CONTROL_NAMES.parked).value || control.get(constants.FORM_CONTROL_NAMES.deductedAmount).value !== 0"
+                                                  [disabled] = "control.get(constants.FORM_CONTROL_NAMES.parked).value || control.get(constants.FORM_CONTROL_NAMES.deductedAmount).value !== 0 || control.get(constants.FORM_CONTROL_NAMES.partOfSampleLocked).value"
                                                   [formControlName]="constants.FORM_CONTROL_NAMES.partOfSample">
                                 </mat-slide-toggle>
                             </mat-cell>

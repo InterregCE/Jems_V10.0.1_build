@@ -72,6 +72,7 @@ class CallControllerTest : UnitTest() {
         private const val ID = 1L
         private const val PLUGIN_KEY = "pluginKey"
         private const val PLUGIN_KEY_REPORT = "pluginKey-report"
+        private const val PLUGIN_KEY_CONTROL_SAMPLING = "pluginKey-control-sampling"
 
         private val call = CallSummary(
             id = ID,
@@ -130,7 +131,8 @@ class CallControllerTest : UnitTest() {
             firstStepPreSubmissionCheckPluginKey = PLUGIN_KEY,
             reportPartnerCheckPluginKey = PLUGIN_KEY_REPORT,
             projectDefinedUnitCostAllowed = false,
-            projectDefinedLumpSumAllowed = true
+            projectDefinedLumpSumAllowed = true,
+            controlReportSamplingCheckPluginKey = PLUGIN_KEY_CONTROL_SAMPLING
         )
 
         private val callDto = CallDTO(
@@ -180,7 +182,8 @@ class CallControllerTest : UnitTest() {
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = PLUGIN_KEY,
             firstStepPreSubmissionCheckPluginKey = PLUGIN_KEY,
-            reportPartnerCheckPluginKey = PLUGIN_KEY_REPORT
+            reportPartnerCheckPluginKey = PLUGIN_KEY_REPORT,
+            controlReportSamplingCheckPluginKey = PLUGIN_KEY_CONTROL_SAMPLING
         )
 
         private val callUpdateDto = CallUpdateRequestDTO(
@@ -377,6 +380,7 @@ class CallControllerTest : UnitTest() {
                     pluginKey = PLUGIN_KEY,
                     firstStepPluginKey = PLUGIN_KEY,
                     reportPartnerCheckPluginKey = PLUGIN_KEY_REPORT,
+                    controlReportSamplingCheckPluginKey = PLUGIN_KEY_CONTROL_SAMPLING
                 )
             )
         ).isEqualTo(callDetailDto)
@@ -386,6 +390,7 @@ class CallControllerTest : UnitTest() {
                 pluginKey = PLUGIN_KEY,
                 firstStepPluginKey = PLUGIN_KEY,
                 reportPartnerCheckPluginKey = PLUGIN_KEY_REPORT,
+                controlReportSamplingCheckPluginKey = PLUGIN_KEY_CONTROL_SAMPLING
             )
         )
     }
