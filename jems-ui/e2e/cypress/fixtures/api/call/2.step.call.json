@@ -110,7 +110,8 @@
     "pluginKey": "standard-pre-condition-check-plugin",
     "reportPartnerCheckPluginKey": "report-example-check",
     "callHasTwoSteps": true,
-    "firstStepPluginKey": "standard-pre-condition-check-plugin"
+    "firstStepPluginKey": "standard-pre-condition-check-plugin",
+    "controlReportSamplingCheckPluginKey ": "control-report-sampling"
   },
   "applicationFormConfiguration": [
     {
