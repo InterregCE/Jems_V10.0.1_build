@@ -11,10 +11,12 @@ import io.cloudflight.jems.server.project.entity.report.project.identification.P
 import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportIdentificationTargetGroupTranslEntity
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.project.base.ProjectReportRepository
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportIdentificationUpdate
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectReportSpendingProfileReportedValues
 import io.cloudflight.jems.server.project.service.report.project.identification.ProjectReportIdentificationPersistence
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
@@ -29,6 +31,10 @@ class ProjectReportIdentificationPersistenceProvider(
     private val projectPartnerReportRepository: ProjectPartnerReportRepository
 ): ProjectReportIdentificationPersistence {
 
+    companion object {
+        private val log = LoggerFactory.getLogger(ProjectReportIdentificationPersistenceProvider::class.java)
+    }
+
     @Transactional(readOnly = true)
     override fun getReportIdentification(projectId: Long, reportId: Long): ProjectReportIdentification {
         val projectReport = projectReportRepository.getByIdAndProjectId(reportId, projectId)
@@ -40,7 +46,7 @@ class ProjectReportIdentificationPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getSpendingProfileReportedValues(reportId: Long): List<ProjectReportSpendingProfileReportedValues> {
-        return spendingProfileRepository.findAllByIdProjectReportId(reportId).toReportedValuesModel()
+        return spendingProfileRepository.findAllByIdProjectReportIdOrderByPartnerNumber(reportId).toReportedValuesModel()
     }
 
     @Transactional(readOnly = true)
@@ -73,7 +79,7 @@ class ProjectReportIdentificationPersistenceProvider(
     @Transactional
     override fun updateSpendingProfile(reportId: Long, currentValuesByPartnerId: Map<Long, BigDecimal>) {
         val spendingProfilesById =
-            spendingProfileRepository.findAllByIdProjectReportId(reportId).associateBy { it.id.partnerId }
+            spendingProfileRepository.findAllByIdProjectReportIdOrderByPartnerNumber(reportId).associateBy { it.id.partnerId }
         currentValuesByPartnerId.forEach { (partnerId, partnerCurrentValue) ->
             spendingProfilesById.getById(partnerId).let {
                 when {
@@ -84,7 +90,8 @@ class ProjectReportIdentificationPersistenceProvider(
                             partnerId = partnerId,
                             currentValue = partnerCurrentValue
                         )
-                    )
+                    ).also { log.error("We are persisting current partner value for partner ${it.id.partnerId} " +
+                        "(project reportId=$reportId) that was not available during creation") }
                 }
             }
         }
@@ -172,6 +179,10 @@ class ProjectReportIdentificationPersistenceProvider(
             projectReport = projectReportRepository.getById(reportId),
             partnerId = partnerId,
         ),
+        partnerNumber = 0,
+        partnerAbbreviation = "",
+        partnerRole = ProjectPartnerRole.PARTNER,
+        country = null,
         previouslyReported = BigDecimal.ZERO,
         currentlyReported = currentValue,
     )

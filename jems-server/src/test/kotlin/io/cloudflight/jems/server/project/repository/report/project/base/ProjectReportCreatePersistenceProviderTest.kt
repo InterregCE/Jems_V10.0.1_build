@@ -45,6 +45,7 @@ import io.cloudflight.jems.server.project.service.contracting.model.reporting.Co
 import io.cloudflight.jems.server.project.service.model.ProjectHorizontalPrinciples
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.create.CreateProjectPartnerReportWorkPackageActivityDeliverable
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.create.CreateProjectPartnerReportWorkPackageOutput
@@ -54,6 +55,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.base.crea
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedFund
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportBudget
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportCreateModel
+import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportPartnerCreateModel
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportResultCreate
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanStatus
@@ -407,6 +409,17 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
         every { partnerReportRepository.findAllByPartnerIdInAndProjectReportNullAndStatus(setOf(8789L), ReportStatus.Certified) } returns
             listOf(partnerReport)
 
+        val partners = listOf(
+            ProjectReportPartnerCreateModel(
+                partnerId = 8789L,
+                partnerNumber = 8,
+                partnerAbbreviation = "P8-part",
+                partnerRole = ProjectPartnerRole.PARTNER,
+                country = "country-8",
+                previouslyReported = BigDecimal.valueOf(421L, 2),
+            )
+        )
+
         assertThat(
             persistence.createReportAndFillItToEmptyCertificates(
                 ProjectReportCreateModel(
@@ -414,7 +427,7 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                     reportBudget = budget,
                     workPackages = workPackages(),
                     targetGroups = projectRelevanceBenefits(),
-                    previouslyReportedSpendingProfileByPartner = mapOf(8789L to BigDecimal.valueOf(421L, 2)),
+                    partners = partners,
                     results = projectResult(),
                     horizontalPrinciples = projectManagement,
                 )
@@ -497,6 +510,10 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
         assertThat(slotSpending.captured).hasSize(1)
         assertThat(slotSpending.captured.first().id.partnerId).isEqualTo(8789L)
         assertThat(slotSpending.captured.first().previouslyReported).isEqualTo(BigDecimal.valueOf(421L, 2))
+        assertThat(slotSpending.captured.first().partnerNumber).isEqualTo(8)
+        assertThat(slotSpending.captured.first().partnerAbbreviation).isEqualTo("P8-part")
+        assertThat(slotSpending.captured.first().partnerRole).isEqualTo(ProjectPartnerRole.PARTNER)
+        assertThat(slotSpending.captured.first().country).isEqualTo("country-8")
         assertThat(slotSpending.captured.first().currentlyReported).isZero()
 
         assertThat(slotCoFinancing.captured).hasSize(1)

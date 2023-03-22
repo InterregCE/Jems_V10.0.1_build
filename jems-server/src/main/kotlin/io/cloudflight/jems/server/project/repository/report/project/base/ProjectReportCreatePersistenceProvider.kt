@@ -1,12 +1,10 @@
 package io.cloudflight.jems.server.project.repository.report.project.base
 
-import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.programme.repository.indicator.ResultIndicatorRepository
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.repository.indicator.OutputIndicatorRepository
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportIdentificationTargetGroupEntity
-import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportIdentificationTargetGroupTranslEntity
 import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportSpendingProfileEntity
 import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportSpendingProfileId
 import io.cloudflight.jems.server.project.entity.report.project.resultPrinciple.ProjectReportHorizontalPrincipleEntity
@@ -32,6 +30,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.ReportSta
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportCreateModel
+import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportPartnerCreateModel
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportResultCreate
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageCreate
@@ -68,7 +67,7 @@ class ProjectReportCreatePersistenceProvider(
 
         persistWorkPlan(reportToCreate.workPackages, reportPersisted)
         persistTargetGroups(reportToCreate.targetGroups, reportPersisted)
-        persistPreviousSpendingProfiles(reportToCreate.previouslyReportedSpendingProfileByPartner, reportPersisted)
+        persistPartners(reportToCreate.partners, reportPersisted)
         persistCoFinancing(reportToCreate.reportBudget.coFinancing, reportPersisted)
         persistCostCategories(reportToCreate.reportBudget.costCategorySetup, reportPersisted)
         persistResultsAndHorizontalPrinciples(reportToCreate.results, reportToCreate.horizontalPrinciples, reportPersisted)
@@ -118,14 +117,18 @@ class ProjectReportCreatePersistenceProvider(
         }
     }
 
-    private fun persistPreviousSpendingProfiles(
-        previouslyReportedSpendingProfileByPartner: Map<Long, BigDecimal>,
+    private fun persistPartners(
+        partners: List<ProjectReportPartnerCreateModel>,
         reportPersisted: ProjectReportEntity,
     ) {
-        val spendingProfiles = previouslyReportedSpendingProfileByPartner.map {
+        val spendingProfiles = partners.map {
             ProjectReportSpendingProfileEntity(
-                id = ProjectReportSpendingProfileId(reportPersisted, it.key),
-                previouslyReported = it.value,
+                id = ProjectReportSpendingProfileId(reportPersisted, it.partnerId),
+                partnerNumber = it.partnerNumber,
+                partnerAbbreviation = it.partnerAbbreviation,
+                partnerRole = it.partnerRole,
+                country = it.country,
+                previouslyReported = it.previouslyReported,
                 currentlyReported = BigDecimal.ZERO,
             )
         }

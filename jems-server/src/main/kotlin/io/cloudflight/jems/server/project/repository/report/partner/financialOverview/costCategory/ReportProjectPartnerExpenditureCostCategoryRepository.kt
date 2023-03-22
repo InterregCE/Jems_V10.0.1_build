@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.repository.report.partner.financialOv
 
 import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.partner.financialOverview.ReportProjectPartnerExpenditureCostCategoryEntity
+import io.cloudflight.jems.server.project.repository.report.partner.model.PerPartnerCertificateCostCategory
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
@@ -16,8 +17,7 @@ interface ReportProjectPartnerExpenditureCostCategoryRepository :
         reportId: Long,
     ): ReportProjectPartnerExpenditureCostCategoryEntity
 
-    @Query(
-        """
+    @Query("""
         SELECT new io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull(
             COALESCE(SUM(report.staffCurrent), 0),
             COALESCE(SUM(report.officeCurrent), 0),
@@ -32,12 +32,10 @@ interface ReportProjectPartnerExpenditureCostCategoryRepository :
         )
         FROM #{#entityName} report
         WHERE report.reportEntity.id IN :reportIds
-    """
-    )
+    """)
     fun findCumulativeForReportIds(reportIds: Set<Long>): BudgetCostsCalculationResultFull
 
-    @Query(
-        """
+    @Query("""
         SELECT new io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull(
             COALESCE(SUM(report.staffCurrentParked), 0),
             COALESCE(SUM(report.officeCurrentParked), 0),
@@ -52,12 +50,10 @@ interface ReportProjectPartnerExpenditureCostCategoryRepository :
         )
         FROM #{#entityName} report
         WHERE report.reportEntity.id IN :reportIds
-    """
-    )
+    """)
     fun findParkedCumulativeForReportIds(reportIds: Set<Long>): BudgetCostsCalculationResultFull
 
-    @Query(
-        """
+    @Query("""
         SELECT new io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull(
             COALESCE(SUM(report.staffTotalEligibleAfterControl), 0),
             COALESCE(SUM(report.officeTotalEligibleAfterControl), 0),
@@ -72,7 +68,42 @@ interface ReportProjectPartnerExpenditureCostCategoryRepository :
         )
         FROM #{#entityName} report
         WHERE report.reportEntity.id IN :reportIds
-    """
-    )
+    """)
     fun findCumulativeForReportIdsTotalAfterEligible(reportIds: Set<Long>): BudgetCostsCalculationResultFull
+
+    @Query("""
+        SELECT new io.cloudflight.jems.server.project.repository.report.partner.model.PerPartnerCertificateCostCategory(
+            report.reportEntity.partnerId,
+            report.officeAndAdministrationOnStaffCostsFlatRate,
+            report.officeAndAdministrationOnDirectCostsFlatRate,
+            report.travelAndAccommodationOnStaffCostsFlatRate,
+            report.staffCostsFlatRate,
+            report.otherCostsOnStaffCostsFlatRate,
+            SUM(report.staffCurrent),
+            SUM(report.officeCurrent),
+            SUM(report.travelCurrent),
+            SUM(report.externalCurrent),
+            SUM(report.equipmentCurrent),
+            SUM(report.infrastructureCurrent),
+            SUM(report.otherCurrent),
+            SUM(report.lumpSumCurrent),
+            SUM(report.unitCostCurrent),
+            SUM(report.sumCurrent),
+            SUM(report.staffTotalEligibleAfterControl),
+            SUM(report.officeTotalEligibleAfterControl),
+            SUM(report.travelTotalEligibleAfterControl),
+            SUM(report.externalTotalEligibleAfterControl),
+            SUM(report.equipmentTotalEligibleAfterControl),
+            SUM(report.infrastructureTotalEligibleAfterControl),
+            SUM(report.otherTotalEligibleAfterControl),
+            SUM(report.lumpSumTotalEligibleAfterControl),
+            SUM(report.unitCostTotalEligibleAfterControl),
+            SUM(report.sumTotalEligibleAfterControl)
+        )
+        FROM #{#entityName} report
+        WHERE report.reportEntity.projectReport.id = :projectReportId AND report.reportEntity.projectReport.projectId = :projectId
+        GROUP BY report.reportEntity.partnerId
+    """)
+    fun findPartnerOverviewForProjectReport(projectId: Long, projectReportId: Long): List<PerPartnerCertificateCostCategory>
+
 }

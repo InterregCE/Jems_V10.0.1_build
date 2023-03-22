@@ -3,12 +3,19 @@ package io.cloudflight.jems.server.project.repository.report.project.financialOv
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateCostCategoryEntity
+import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportSpendingProfileEntity
+import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportSpendingProfileId
+import io.cloudflight.jems.server.project.repository.report.partner.financialOverview.costCategory.ReportProjectPartnerExpenditureCostCategoryRepository
+import io.cloudflight.jems.server.project.repository.report.partner.model.PerPartnerCertificateCostCategory
+import io.cloudflight.jems.server.project.repository.report.project.identification.ProjectReportSpendingProfileRepository
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCurrentValuesWrapper
 import io.cloudflight.jems.server.project.service.budget.model.ExpenditureCostCategoryCurrentlyReportedWithReIncluded
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.CertificateCostCategoryCurrentlyReported
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.CertificateCostCategoryPreviouslyReported
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.perPartner.PerPartnerCostCategoryBreakdownLine
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -147,10 +154,88 @@ class ProjectReportCertificateCostCategoryPersistenceProviderTest : UnitTest() {
             ),
         )
 
+        private fun partnerProfile() = ProjectReportSpendingProfileEntity(
+            ProjectReportSpendingProfileId(mockk(), 45L),
+            partnerNumber = 4,
+            partnerAbbreviation = "abbr-4",
+            partnerRole = ProjectPartnerRole.LEAD_PARTNER,
+            country = "my country",
+            previouslyReported = BigDecimal.TEN,
+            currentlyReported = BigDecimal.ONE,
+        )
+
+        private fun perPartnerSum() = PerPartnerCertificateCostCategory(
+            partnerId = 45L,
+            officeAndAdministrationOnStaffCostsFlatRate = null,
+            officeAndAdministrationOnDirectCostsFlatRate = 12,
+            travelAndAccommodationOnStaffCostsFlatRate = 18,
+            staffCostsFlatRate = 79,
+            otherCostsOnStaffCostsFlatRate = 24,
+            staffCurrent = BigDecimal.valueOf(20),
+            officeCurrent = BigDecimal.valueOf(21),
+            travelCurrent = BigDecimal.valueOf(22),
+            externalCurrent = BigDecimal.valueOf(23),
+            equipmentCurrent = BigDecimal.valueOf(24),
+            infrastructureCurrent = BigDecimal.valueOf(25),
+            otherCurrent = BigDecimal.valueOf(26),
+            lumpSumCurrent = BigDecimal.valueOf(27),
+            unitCostCurrent = BigDecimal.valueOf(28),
+            sumCurrent = BigDecimal.valueOf(29),
+            staffAfterControl = BigDecimal.valueOf(30),
+            officeAfterControl = BigDecimal.valueOf(31),
+            travelAfterControl = BigDecimal.valueOf(32),
+            externalAfterControl = BigDecimal.valueOf(33),
+            equipmentAfterControl = BigDecimal.valueOf(34),
+            infrastructureAfterControl = BigDecimal.valueOf(35),
+            otherAfterControl = BigDecimal.valueOf(36),
+            lumpSumAfterControl = BigDecimal.valueOf(37),
+            unitCostAfterControl = BigDecimal.valueOf(38),
+            sumAfterControl = BigDecimal.valueOf(39),
+        )
+        private val expectedPerPartner = PerPartnerCostCategoryBreakdownLine(
+            partnerId = 45L,
+            partnerNumber = 4,
+            partnerAbbreviation = "abbr-4",
+            partnerRole = ProjectPartnerRole.LEAD_PARTNER,
+            country = "my country",
+            officeAndAdministrationOnStaffCostsFlatRate = null,
+            officeAndAdministrationOnDirectCostsFlatRate = 12,
+            travelAndAccommodationOnStaffCostsFlatRate = 18,
+            staffCostsFlatRate = 79,
+            otherCostsOnStaffCostsFlatRate = 24,
+            current = BudgetCostsCalculationResultFull(
+                staff = BigDecimal.valueOf(20),
+                office = BigDecimal.valueOf(21),
+                travel = BigDecimal.valueOf(22),
+                external = BigDecimal.valueOf(23),
+                equipment = BigDecimal.valueOf(24),
+                infrastructure = BigDecimal.valueOf(25),
+                other = BigDecimal.valueOf(26),
+                lumpSum = BigDecimal.valueOf(27),
+                unitCost = BigDecimal.valueOf(28),
+                sum = BigDecimal.valueOf(29),
+            ),
+            afterControl = BudgetCostsCalculationResultFull(
+                staff = BigDecimal.valueOf(30),
+                office = BigDecimal.valueOf(31),
+                travel = BigDecimal.valueOf(32),
+                external = BigDecimal.valueOf(33),
+                equipment = BigDecimal.valueOf(34),
+                infrastructure = BigDecimal.valueOf(35),
+                other = BigDecimal.valueOf(36),
+                lumpSum = BigDecimal.valueOf(37),
+                unitCost = BigDecimal.valueOf(38),
+                sum = BigDecimal.valueOf(39),
+            ),
+        )
     }
 
     @MockK
     private lateinit var certificateCostCategoryRepository: ReportProjectCertificateCostCategoryRepository
+    @MockK
+    private lateinit var spendingProfileRepository: ProjectReportSpendingProfileRepository
+    @MockK
+    private lateinit var expenditureCostCategoryRepository: ReportProjectPartnerExpenditureCostCategoryRepository
 
     @InjectMockKs
     private lateinit var persistence: ProjectReportCertificateCostCategoryPersistenceProvider
@@ -173,6 +258,15 @@ class ProjectReportCertificateCostCategoryPersistenceProviderTest : UnitTest() {
         every { certificateCostCategoryRepository.findCumulativeForReportIds(setOf(42L, 43L)) } returns
             expenditurePreviouslyReportedWithParked.previouslyReported
         assertThat(persistence.getCostCategoriesCumulative(setOf(42L, 43L))).isEqualTo(expenditurePreviouslyReportedWithParked)
+    }
+
+    @Test
+    fun getCostCategoriesPerPartner() {
+        every { spendingProfileRepository.findAllByIdProjectReportIdOrderByPartnerNumber(projectReportId = 6L) } returns
+            listOf(partnerProfile())
+        every { expenditureCostCategoryRepository.findPartnerOverviewForProjectReport(PROJECT_ID, projectReportId = 6L) } returns
+            listOf(perPartnerSum())
+        assertThat(persistence.getCostCategoriesPerPartner(PROJECT_ID, reportId = 6L)).containsExactly(expectedPerPartner)
     }
 
     @Test

@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectHorizontalPrinciples
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddressType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReport
@@ -15,6 +16,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.ProjectRe
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportUpdate
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportCreateModel
+import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportPartnerCreateModel
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportResultCreate
 import io.cloudflight.jems.server.project.service.report.partner.base.createProjectPartnerReport.toCreateEntity
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportCreatePersistence
@@ -102,7 +104,7 @@ class CreateProjectReport(
                 lastWorkPlan = lastSubmittedReportIdWithWorkPlan?.let { workPlanPersistence.getReportWorkPlanById(projectId, it) } ?: emptyList(),
             ),
             targetGroups = targetGroups,
-            previouslyReportedSpendingProfileByPartner = getPreviouslyReportedByPartner(submittedReportIds),
+            partners = getPreviouslyReportedByPartner(submittedReportIds, partners),
             results = projectResults,
             horizontalPrinciples = projectManagement?.projectHorizontalPrinciples ?: emptyPrinciples,
         )
@@ -112,8 +114,21 @@ class CreateProjectReport(
         }.toServiceModel({ periodNumber -> periods[periodNumber]!! })
     }
 
-    private fun getPreviouslyReportedByPartner(submittedReportIds: Set<Long>): Map<Long, BigDecimal> {
-        return projectReportIdentificationPersistence.getSpendingProfileCumulative(submittedReportIds)
+    private fun getPreviouslyReportedByPartner(
+        submittedReportIds: Set<Long>,
+        partners: Collection<ProjectPartnerDetail>
+    ): List<ProjectReportPartnerCreateModel> {
+        val previouslyReported = projectReportIdentificationPersistence.getSpendingProfileCumulative(submittedReportIds)
+        return partners.map {
+            ProjectReportPartnerCreateModel(
+                partnerId = it.id,
+                partnerNumber = it.sortNumber!!,
+                partnerAbbreviation = it.abbreviation,
+                partnerRole = it.role,
+                country = it.addresses.firstOrNull { it.type == ProjectPartnerAddressType.Organization }?.country,
+                previouslyReported = previouslyReported[it.id] ?: BigDecimal.ZERO,
+            )
+        }
     }
 
     private fun validateMaxAmountOfReports(currentAmount: Int) {
