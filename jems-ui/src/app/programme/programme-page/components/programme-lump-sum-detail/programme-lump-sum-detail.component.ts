@@ -106,11 +106,6 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditFormComponent imple
         untilDestroyed(this)
     ).subscribe();
 
-    this.programmeEditableStateStore.isFastTrackEditableDependingOnReports$.pipe(
-      tap(isFastTrackLocked => this.isFastTrackLumpSumLocked = isFastTrackLocked),
-      untilDestroyed(this)
-    ).subscribe();
-
     combineLatest([
       this.programmeEditableStateStore.isFastTrackEditableDependingOnReports$,
       this.programmeEditableStateStore.isFastTrackLumpSumReadyForPayment(this.programmeLumpSumId)
