@@ -28,4 +28,15 @@ interface ProjectPartnerReportUnitCostRepository : JpaRepository<PartnerReportUn
     """)
     fun findCumulativeForReportIds(reportIds: Set<Long>): List<Triple<Long, BigDecimal, BigDecimal>>
 
+    @Query("""
+        SELECT new kotlin.Pair(
+            unitCost.programmeUnitCost.id,
+            COALESCE(SUM(unitCost.totalEligibleAfterControl), 0)
+        )
+        FROM #{#entityName} unitCost
+        WHERE unitCost.reportEntity.id IN :reportIds
+        GROUP BY unitCost.programmeUnitCost.id
+    """)
+    fun findCumulativeForReportIdsAfterControl(reportIds: Set<Long>): List<Pair<Long, BigDecimal>>
+
 }

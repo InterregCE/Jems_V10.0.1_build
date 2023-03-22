@@ -6,4 +6,5 @@ data class ProjectReportBudget(
     val coFinancing: PreviouslyProjectReportedCoFinancing,
     val costCategorySetup: ReportCertificateCostCategory,
     val availableLumpSums: List<ProjectReportLumpSum>,
+    val unitCosts: Set<ProjectReportUnitCostBase>
 )

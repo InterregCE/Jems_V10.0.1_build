@@ -288,7 +288,7 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
     }
 
     private fun mockBudgetUpdates(partnerId: Long, slots: Map<BudgetCategoryDTO, CapturingSlot<Set<Long>>>) {
-        every { projectPartnerBudgetCostsPersistence.getBudgetStaffCosts(partnerId) } returns listOf(oldStaffCost)
+        every { projectPartnerBudgetCostsPersistence.getBudgetStaffCosts(setOf(partnerId)) } returns listOf(oldStaffCost)
         every { projectPartnerBudgetCostsUpdatePersistence
             .deleteAllBudgetStaffCostsExceptFor(partnerId, capture(slots[BudgetCategoryDTO.StaffCosts]!!))
         } answers { }
@@ -296,7 +296,7 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
             .createOrUpdateBudgetStaffCosts(PROJECT_ID, partnerId, any())
         } returnsArgument 2
 
-        every { projectPartnerBudgetCostsPersistence.getBudgetEquipmentCosts(partnerId) } returns listOf(oldEquipmentCost)
+        every { projectPartnerBudgetCostsPersistence.getBudgetEquipmentCosts(setOf(partnerId)) } returns listOf(oldEquipmentCost)
         every { projectPartnerBudgetCostsUpdatePersistence
             .deleteAllBudgetEquipmentCostsExceptFor(partnerId, capture(slots[BudgetCategoryDTO.EquipmentCosts]!!))
         } answers { }
@@ -304,7 +304,7 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
             .createOrUpdateBudgetEquipmentCosts(PROJECT_ID, partnerId, any())
         } returnsArgument 2
 
-        every { projectPartnerBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(partnerId) } returns listOf(oldExternalCost)
+        every { projectPartnerBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(setOf(partnerId)) } returns listOf(oldExternalCost)
         every { projectPartnerBudgetCostsUpdatePersistence
             .deleteAllBudgetExternalExpertiseAndServicesCostsExceptFor(partnerId, capture(slots[BudgetCategoryDTO.ExternalCosts]!!))
         } answers { }
@@ -312,7 +312,7 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
             .createOrUpdateBudgetExternalExpertiseAndServicesCosts(PROJECT_ID, partnerId, any())
         } returnsArgument 2
 
-        every { projectPartnerBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(partnerId) } returns listOf(oldInfraCost)
+        every { projectPartnerBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(setOf(partnerId)) } returns listOf(oldInfraCost)
         every { projectPartnerBudgetCostsUpdatePersistence
             .deleteAllBudgetInfrastructureAndWorksCostsExceptFor(partnerId, capture(slots[BudgetCategoryDTO.InfrastructureCosts]!!))
         } answers { }
@@ -320,7 +320,7 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
             .createOrUpdateBudgetInfrastructureAndWorksCosts(PROJECT_ID, partnerId, any())
         } returnsArgument 2
 
-        every { projectPartnerBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(partnerId) } returns listOf(oldTravelCost)
+        every { projectPartnerBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(setOf(partnerId)) } returns listOf(oldTravelCost)
         every { projectPartnerBudgetCostsUpdatePersistence
             .deleteAllBudgetTravelAndAccommodationCostsExceptFor(partnerId, capture(slots[BudgetCategoryDTO.TravelAndAccommodationCosts]!!))
         } answers { }
@@ -328,7 +328,7 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
             .createOrUpdateBudgetTravelAndAccommodationCosts(PROJECT_ID, partnerId, any())
         } returnsArgument 2
 
-        every { projectPartnerBudgetCostsPersistence.getBudgetUnitCosts(partnerId) } returns listOf(oldMultiCost)
+        every { projectPartnerBudgetCostsPersistence.getBudgetUnitCosts(setOf(partnerId)) } returns listOf(oldMultiCost)
         every { projectPartnerBudgetCostsUpdatePersistence
             .deleteAllUnitCostsExceptFor(partnerId, capture(slots[BudgetCategoryDTO.Multiple]!!))
         } answers { }

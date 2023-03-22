@@ -6,10 +6,12 @@ import io.cloudflight.jems.api.project.dto.description.ProjectHorizontalPrincipl
 import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
+import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.indicator.OutputIndicatorEntity
 import io.cloudflight.jems.server.programme.entity.indicator.ResultIndicatorEntity
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeLumpSumRepository
+import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeUnitCostRepository
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.repository.indicator.OutputIndicatorRepository
 import io.cloudflight.jems.server.programme.repository.indicator.ResultIndicatorRepository
@@ -21,6 +23,7 @@ import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEnt
 import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateCostCategoryEntity
 import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateLumpSumEntity
+import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateUnitCostEntity
 import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportIdentificationTargetGroupEntity
 import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportSpendingProfileEntity
 import io.cloudflight.jems.server.project.entity.report.project.resultPrinciple.ProjectReportHorizontalPrincipleEntity
@@ -36,6 +39,7 @@ import io.cloudflight.jems.server.project.repository.report.project.ProjectRepor
 import io.cloudflight.jems.server.project.repository.report.project.financialOverview.coFinancing.ReportProjectCertificateCoFinancingRepository
 import io.cloudflight.jems.server.project.repository.report.project.financialOverview.costCategory.ReportProjectCertificateCostCategoryRepository
 import io.cloudflight.jems.server.project.repository.report.project.financialOverview.lumpSums.ReportProjectCertificateLumpSumRepository
+import io.cloudflight.jems.server.project.repository.report.project.financialOverview.unitCosts.ReportProjectCertificateUnitCostRepository
 import io.cloudflight.jems.server.project.repository.report.project.identification.ProjectReportIdentificationTargetGroupRepository
 import io.cloudflight.jems.server.project.repository.report.project.identification.ProjectReportSpendingProfileRepository
 import io.cloudflight.jems.server.project.repository.report.project.resultPrinciple.ProjectReportHorizontalPrincipleRepository
@@ -62,6 +66,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.base.crea
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportPartnerCreateModel
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportResultCreate
+import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportUnitCostBase
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanStatus
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageActivityCreate
@@ -254,6 +259,14 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                     previouslyReported = BigDecimal.ONE,
                     previouslyPaid = BigDecimal.ZERO
                 )
+            ),
+            unitCosts = setOf(
+                ProjectReportUnitCostBase(
+                    unitCostId = 1L,
+                    numberOfUnits = BigDecimal.ONE,
+                    totalCost = BigDecimal.TEN,
+                    previouslyReported = BigDecimal.ONE
+                )
             )
         )
 
@@ -345,6 +358,12 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
     @MockK
     private lateinit var programmeLumpSumRepository: ProgrammeLumpSumRepository
 
+    @MockK
+    private lateinit var programmeUnitCostRepository: ProgrammeUnitCostRepository
+
+    @MockK
+    private lateinit var reportProjectCertificateUnitCostRepository: ReportProjectCertificateUnitCostRepository
+
     @InjectMockKs
     private lateinit var persistence: ProjectReportCreatePersistenceProvider
 
@@ -371,6 +390,8 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
             horizontalPrincipleRepository,
             reportProjectCertificateLumpSumRepository,
             programmeLumpSumRepository,
+            programmeUnitCostRepository,
+            reportProjectCertificateUnitCostRepository,
         )
     }
 
@@ -429,6 +450,12 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
         every { programmeLumpSumRepository.getById(1L) } returns lumpSumEntity
         val lumpSumSlot = slot<Iterable<ReportProjectCertificateLumpSumEntity>>()
         every { reportProjectCertificateLumpSumRepository.saveAll(capture(lumpSumSlot)) } returnsArgument 0
+
+        // unit costs
+        val unitCostEntity = mockk<ProgrammeUnitCostEntity>()
+        every { programmeUnitCostRepository.getById(1L) } returns unitCostEntity
+        val unitCostSlot = slot<Iterable<ReportProjectCertificateUnitCostEntity>>()
+        every { reportProjectCertificateUnitCostRepository.saveAll(capture(unitCostSlot)) } returnsArgument 0
 
         // fill certificates
         val partner = mockk<ProjectPartnerEntity>()
@@ -606,6 +633,11 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
         assertThat(lumpSumSlot.captured.first().total).isEqualTo(BigDecimal.TEN)
         assertThat(lumpSumSlot.captured.first().previouslyReported).isEqualTo(BigDecimal.ONE)
         assertThat(lumpSumSlot.captured.first().previouslyPaid).isEqualTo(BigDecimal.ZERO)
+
+        assertThat(unitCostSlot.captured).hasSize(1)
+        assertThat(unitCostSlot.captured.first().reportEntity).isEqualTo(saveSlot.captured)
+        assertThat(unitCostSlot.captured.first().total).isEqualTo(BigDecimal.TEN)
+        assertThat(unitCostSlot.captured.first().previouslyReported).isEqualTo(BigDecimal.ONE)
 
         assertThat(partnerReport.projectReport).isEqualTo(saveSlot.captured)
     }

@@ -19,11 +19,13 @@ import io.cloudflight.jems.server.project.service.report.model.project.financial
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportLumpSumPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportUnitCostPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateLumpSumPersistence
+import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateUnitCostPersistence
 import io.cloudflight.jems.server.project.service.report.project.identification.ProjectReportIdentificationPersistence
 import io.cloudflight.jems.server.project.service.report.project.workPlan.ProjectReportWorkPlanPersistence
 import io.mockk.clearMocks
@@ -164,6 +166,10 @@ internal class SubmitProjectReportTest : UnitTest() {
     @MockK
     lateinit var reportWorkPlanPersistence: ProjectReportWorkPlanPersistence
     @MockK
+    lateinit var reportExpenditureUnitCostPersistence: ProjectPartnerReportUnitCostPersistence
+    @MockK
+    lateinit var reportCertificateUnitCostPersistence: ProjectReportCertificateUnitCostPersistence
+    @MockK
     lateinit var auditPublisher: ApplicationEventPublisher
 
     @InjectMockKs
@@ -207,6 +213,9 @@ internal class SubmitProjectReportTest : UnitTest() {
 
         every { reportLumpSumPersistence.getLumpSumCumulativeAfterControl(setOf(42L)) } returns mapOf(Pair(1, BigDecimal.TEN))
         every { reportCertificateLumpSumPersistence.updateCurrentlyReportedValues(any(), any(), any()) } returnsArgument 0
+
+        every { reportExpenditureUnitCostPersistence.getUnitCostCumulativeAfterControl(setOf(42L)) } returns mapOf(Pair(1L, BigDecimal.TEN))
+        every { reportCertificateUnitCostPersistence.updateCurrentlyReportedValues(any(), any(), any()) } returnsArgument 0
 
         submitReport.submit(PROJECT_ID, REPORT_ID)
 

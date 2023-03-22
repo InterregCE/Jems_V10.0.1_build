@@ -6,6 +6,7 @@ import {
   CertificateCoFinancingBreakdownDTO,
   CertificateCostCategoryBreakdownDTO,
   CertificateLumpSumBreakdownDTO,
+  CertificateUnitCostBreakdownDTO,
   ProjectPartnerReportUnitCostDTO
 } from '@cat/api';
 import {map} from 'rxjs/operators';
@@ -27,6 +28,7 @@ export class ProjectReportFinancialOverviewTabComponent {
     perCoFinancing: CertificateCoFinancingBreakdownDTO;
     perCostCategory: CertificateCostCategoryBreakdownDTO;
     perLumpSum: CertificateLumpSumBreakdownDTO;
+    perUnitCost: CertificateUnitCostBreakdownDTO;
     allowedCostCategories: Map<CategoryEnum | 'LumpSum' | 'UnitCost', boolean>;
     funds: CallFundRateDTO[];
   }>;
@@ -38,13 +40,15 @@ export class ProjectReportFinancialOverviewTabComponent {
       financialOverviewStore.perCoFinancing$,
       financialOverviewStore.perCostCategory$,
       financialOverviewStore.perLumpSum$,
+      financialOverviewStore.perUnitCost$,
       financialOverviewStore.allowedCostCategories$,
       financialOverviewStore.callFunds$,
     ]).pipe(
-      map(([perCoFinancing, perCostCategory, perLumpSum, allowedCostCategories, funds]: any) => ({
+      map(([perCoFinancing, perCostCategory, perLumpSum, perUnitCost, allowedCostCategories, funds]: any) => ({
         perCoFinancing,
         perCostCategory,
         perLumpSum,
+        perUnitCost,
         allowedCostCategories,
         funds,
       })),

@@ -13,12 +13,12 @@ class GetBudgetCosts(private val persistence: ProjectPartnerBudgetCostsPersisten
     @CanRetrieveProjectPartner
     override fun getBudgetCosts(partnerId: Long, version: String?) =
         BudgetCosts(
-            staffCosts = persistence.getBudgetStaffCosts(partnerId, version),
-            travelCosts = persistence.getBudgetTravelAndAccommodationCosts(partnerId, version),
-            externalCosts = persistence.getBudgetExternalExpertiseAndServicesCosts(partnerId, version),
-            equipmentCosts = persistence.getBudgetEquipmentCosts(partnerId, version),
-            infrastructureCosts = persistence.getBudgetInfrastructureAndWorksCosts(partnerId, version),
-            unitCosts = persistence.getBudgetUnitCosts(partnerId, version),
-            spfCosts = persistence.getBudgetSpfCosts(partnerId, version)
+            staffCosts = persistence.getBudgetStaffCosts(setOf(partnerId), version),
+            travelCosts = persistence.getBudgetTravelAndAccommodationCosts(setOf(partnerId), version),
+            externalCosts = persistence.getBudgetExternalExpertiseAndServicesCosts(setOf(partnerId), version),
+            equipmentCosts = persistence.getBudgetEquipmentCosts(setOf(partnerId), version),
+            infrastructureCosts = persistence.getBudgetInfrastructureAndWorksCosts(setOf(partnerId), version),
+            unitCosts = persistence.getBudgetUnitCosts(setOf(partnerId), version),
+            spfCosts = persistence.getBudgetSpfCosts(setOf(partnerId), version)
         )
 }

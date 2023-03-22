@@ -37,9 +37,10 @@ import io.cloudflight.jems.server.project.service.report.model.project.base.crea
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedFund
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportBudget
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportCreateModel
-import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportPartnerCreateModel
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportLumpSum
+import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportPartnerCreateModel
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportResultCreate
+import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportUnitCostBase
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackage
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageActivity
@@ -277,6 +278,14 @@ internal class CreateProjectReportTest : UnitTest() {
                     previouslyReported = BigDecimal.ONE,
                     previouslyPaid = BigDecimal.ZERO
                 )
+            ),
+            unitCosts = setOf(
+                ProjectReportUnitCostBase(
+                    unitCostId = 1L,
+                    numberOfUnits = BigDecimal.ONE,
+                    totalCost = BigDecimal.TEN,
+                    previouslyReported = BigDecimal.ONE
+                )
             )
         )
 
@@ -443,6 +452,14 @@ internal class CreateProjectReportTest : UnitTest() {
                         total = BigDecimal.TEN,
                         previouslyReported = BigDecimal.ONE,
                         previouslyPaid = BigDecimal.ZERO
+                    )
+                ),
+                unitCosts = setOf(
+                    ProjectReportUnitCostBase(
+                        unitCostId = 1L,
+                        numberOfUnits = BigDecimal.ONE,
+                        totalCost = BigDecimal.TEN,
+                        previouslyReported = BigDecimal.ONE
                     )
                 )
             ),

@@ -19,4 +19,5 @@ interface ProjectPartnerReportUnitCostPersistence {
         afterControl: Map<Long, ExpenditureUnitCostCurrent>,
     )
 
+    fun getUnitCostCumulativeAfterControl(reportIds: Set<Long>): Map<Long, BigDecimal>
 }
