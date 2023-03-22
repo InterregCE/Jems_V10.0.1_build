@@ -250,7 +250,7 @@ internal class GetReportCertificateCostCategoryCalculatorServiceTest: UnitTest()
     private lateinit var reportExpenditureCostCategoryPersistence: ProjectPartnerReportExpenditureCostCategoryPersistence
 
     @InjectMockKs
-    private lateinit var service: GetReportCertificateCostCategoryCalculatorService
+    private lateinit var service: GetReportCertificateCostCategoryBreakdownCalculator
 
     @BeforeEach
     fun reset() {

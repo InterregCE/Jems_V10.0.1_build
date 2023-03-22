@@ -8,8 +8,8 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class GetReportCertificateLumpSumBreakdown(
-    private val reportCertificateLumpSumCalculatorService: GetReportCertificateLumpSumCalculatorService,
-) : GetReportCertificateLumpSumsBreakdownInteractor {
+    private val reportCertificateLumpSumCalculatorService: GetReportCertificateLumpSumBreakdownCalculator,
+) : GetReportCertificateLumpSumBreakdownInteractor {
 
     @CanRetrieveProjectReport
     @Transactional(readOnly = true)

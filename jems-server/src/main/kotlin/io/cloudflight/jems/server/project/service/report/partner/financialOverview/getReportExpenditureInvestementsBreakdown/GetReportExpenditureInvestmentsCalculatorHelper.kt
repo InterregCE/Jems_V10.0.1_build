@@ -16,10 +16,6 @@ fun Collection<ExpenditureInvestmentBreakdownLine>.fillInCurrent(current: Map<Lo
     }
 }
 
-fun List<ExpenditureInvestmentBreakdownLine>.fillInOverviewFields() = apply {
-    forEach { it.fillInOverviewFields() }
-}
-
 private fun emptyLine() = ExpenditureInvestmentBreakdownLine(
     reportInvestmentId = 0L,
     investmentId = 0L,
@@ -47,14 +43,7 @@ fun List<ExpenditureInvestmentBreakdownLine>.sumUp() =
         resultingTotalLine.previouslyReportedParked += investment.previouslyReportedParked
         resultingTotalLine.currentReportReIncluded += investment.currentReportReIncluded
         return@fold resultingTotalLine
-    }.fillInOverviewFields()
-
-private fun ExpenditureInvestmentBreakdownLine.fillInOverviewFields() = apply {
-    totalReportedSoFar = previouslyReported.plus(currentReport)
-    totalReportedSoFarPercentage = if (totalEligibleBudget.compareTo(BigDecimal.ZERO) == 0) BigDecimal.ZERO else
-        totalReportedSoFar.multiply(BigDecimal.valueOf(100)).divide(totalEligibleBudget, 2, RoundingMode.HALF_UP)
-    remainingBudget = totalEligibleBudget.minus(totalReportedSoFar)
-}
+    }
 
 fun Collection<ProjectPartnerReportExpenditureCost>.getCurrentForInvestments() =
     filter { it.investmentId != null }

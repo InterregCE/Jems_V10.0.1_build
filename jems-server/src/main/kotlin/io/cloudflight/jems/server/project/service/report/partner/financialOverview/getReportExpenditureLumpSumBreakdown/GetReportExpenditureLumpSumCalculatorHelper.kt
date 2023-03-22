@@ -15,10 +15,6 @@ fun Collection<ExpenditureLumpSumBreakdownLine>.fillInCurrent(current: Map<Long,
     }
 }
 
-fun List<ExpenditureLumpSumBreakdownLine>.fillInOverviewFields() = apply {
-    forEach { it.fillInOverviewFields() }
-}
-
 private fun emptyLine() = ExpenditureLumpSumBreakdownLine(
     reportLumpSumId = 0L,
     lumpSumId = 0L,
@@ -43,14 +39,7 @@ fun List<ExpenditureLumpSumBreakdownLine>.sumUp() =
         resultingTotalLine.previouslyReportedParked += lumpSum.previouslyReportedParked
         resultingTotalLine.currentReportReIncluded += lumpSum.currentReportReIncluded
         return@fold resultingTotalLine
-    }.fillInOverviewFields()
-
-private fun ExpenditureLumpSumBreakdownLine.fillInOverviewFields() = apply {
-    totalReportedSoFar = previouslyReported.plus(currentReport)
-    totalReportedSoFarPercentage = if (totalEligibleBudget.compareTo(BigDecimal.ZERO) == 0) BigDecimal.ZERO else
-        totalReportedSoFar.multiply(BigDecimal.valueOf(100)).divide(totalEligibleBudget, 2, RoundingMode.HALF_UP)
-    remainingBudget = totalEligibleBudget.minus(totalReportedSoFar)
-}
+    }
 
 fun Collection<ProjectPartnerReportExpenditureCost>.getCurrentForLumpSums() =
     filter { it.lumpSumId != null }

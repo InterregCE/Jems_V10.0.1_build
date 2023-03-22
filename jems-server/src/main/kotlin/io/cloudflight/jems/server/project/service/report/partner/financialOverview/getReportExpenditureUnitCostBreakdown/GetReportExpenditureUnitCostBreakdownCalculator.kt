@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureUnitCostBreakdown
 
 import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
+import io.cloudflight.jems.server.project.service.report.fillInOverviewFields
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.unitCost.ExpenditureUnitCostBreakdown
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
@@ -33,7 +34,7 @@ class GetReportExpenditureUnitCostBreakdownCalculator(
 
         return ExpenditureUnitCostBreakdown(
             unitCosts = unitCostLines,
-            total = unitCostLines.sumUp(),
+            total = unitCostLines.sumUp().fillInOverviewFields(),
         )
     }
 

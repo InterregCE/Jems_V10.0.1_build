@@ -13,6 +13,7 @@ import io.cloudflight.jems.server.project.service.budget.calculator.BudgetCostCa
 import io.cloudflight.jems.server.project.service.budget.calculator.calculateBudget
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
+import io.cloudflight.jems.server.project.service.report.fillInOverviewFields
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
@@ -154,16 +155,6 @@ fun ExpenditureCostCategoryBreakdown.fillInOverviewFields() = apply {
     unitCost.fillInOverviewFields()
     total.fillInOverviewFields()
 }
-
-private fun ExpenditureCostCategoryBreakdownLine.fillInOverviewFields() = apply {
-    totalReportedSoFar = previouslyReported.plus(currentReport)
-    totalReportedSoFarPercentage = totalReportedSoFar.percentageOf(totalEligibleBudget)
-    remainingBudget = totalEligibleBudget.minus(totalReportedSoFar)
-}
-
-fun BigDecimal.percentageOf(total: BigDecimal): BigDecimal =
-    if (total.compareTo(BigDecimal.ZERO) == 0) BigDecimal.ZERO
-    else this.multiply(BigDecimal.valueOf(100)).divide(total, 2, RoundingMode.HALF_UP)
 
 private fun ReportBudgetCategory.translateCostCategory(): BudgetCostCategory {
     return when (this) {

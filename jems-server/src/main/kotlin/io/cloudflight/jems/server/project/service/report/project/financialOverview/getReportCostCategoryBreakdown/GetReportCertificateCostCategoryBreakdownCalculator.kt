@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class GetReportCertificateCostCategoryCalculatorService(
+class GetReportCertificateCostCategoryBreakdownCalculator(
     private val reportPersistence: ProjectReportPersistence,
     private val reportCertificateCostCategoryPersistence: ProjectReportCertificateCostCategoryPersistence,
     private val reportCertificatePersistence: ProjectReportCertificatePersistence,

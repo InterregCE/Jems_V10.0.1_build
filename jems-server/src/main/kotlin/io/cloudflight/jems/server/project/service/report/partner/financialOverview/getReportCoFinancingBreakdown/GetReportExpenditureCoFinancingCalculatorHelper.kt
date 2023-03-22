@@ -6,6 +6,7 @@ import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCon
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
+import io.cloudflight.jems.server.project.service.report.fillInOverviewFields
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.ProjectPartnerReportContributionOverview
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.*
 import java.math.BigDecimal
@@ -111,19 +112,12 @@ fun ExpenditureCoFinancingBreakdown.fillInCurrentReIncluded(currentReIncluded: R
 }
 
 fun ExpenditureCoFinancingBreakdown.fillInOverviewFields() = apply {
-    funds.forEach { it.fillInOverviewFields() }
+    funds.fillInOverviewFields()
     partnerContribution.fillInOverviewFields()
     publicContribution.fillInOverviewFields()
     automaticPublicContribution.fillInOverviewFields()
     privateContribution.fillInOverviewFields()
     total.fillInOverviewFields()
-}
-
-private fun ExpenditureCoFinancingBreakdownLine.fillInOverviewFields() = apply {
-    totalReportedSoFar = previouslyReported.plus(currentReport)
-    totalReportedSoFarPercentage = if (totalEligibleBudget.compareTo(BigDecimal.ZERO) == 0) BigDecimal.ZERO else
-        totalReportedSoFar.multiply(BigDecimal.valueOf(100)).divide(totalEligibleBudget, 2, RoundingMode.HALF_UP)
-    remainingBudget = totalEligibleBudget.minus(totalReportedSoFar)
 }
 
 fun BigDecimal.applyPercentage(percentage: BigDecimal, roundingMode: RoundingMode = RoundingMode.DOWN): BigDecimal = this.multiply(

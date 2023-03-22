@@ -19,7 +19,7 @@ internal class GetReportCertificateCostCategoryBreakdownTest: UnitTest() {
     }
 
     @MockK
-    private lateinit var reportCertificateCostCategoryCalculatorService: GetReportCertificateCostCategoryCalculatorService
+    private lateinit var reportCertificateCostCategoryCalculatorService: GetReportCertificateCostCategoryBreakdownCalculator
 
     @InjectMockKs
     private lateinit var interactor: GetReportCertificateCostCategoryBreakdown

@@ -19,7 +19,7 @@ class GetPerPartnerCostCategoryBreakdown(
         val data = reportCertificateCostCategoryPersistence.getCostCategoriesPerPartner(projectId, reportId = reportId)
 
         return PerPartnerCostCategoryBreakdown(
-            partners = data,
+            partners = data.sortedBy { it.partnerNumber },
             totalCurrent = data.sumOf { it.current },
             totalAfterControl = data.sumOf { it.afterControl },
         )

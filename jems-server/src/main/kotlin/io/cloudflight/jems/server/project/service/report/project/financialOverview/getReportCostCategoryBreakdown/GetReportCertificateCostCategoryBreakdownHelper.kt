@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCostCategoryBreakdown
 
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
+import io.cloudflight.jems.server.project.service.report.fillInOverviewFields
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.CertificateCostCategoryBreakdown
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.CertificateCostCategoryBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
@@ -85,14 +86,4 @@ fun CertificateCostCategoryBreakdown.fillInOverviewFields() = apply {
     unitCost.fillInOverviewFields()
     total.fillInOverviewFields()
 }
-
-private fun CertificateCostCategoryBreakdownLine.fillInOverviewFields() = apply {
-    totalReportedSoFar = previouslyReported.plus(currentReport)
-    totalReportedSoFarPercentage = totalReportedSoFar.percentageOf(totalEligibleBudget)
-    remainingBudget = totalEligibleBudget.minus(totalReportedSoFar)
-}
-
-fun BigDecimal.percentageOf(total: BigDecimal): BigDecimal =
-    if (total.compareTo(BigDecimal.ZERO) == 0) BigDecimal.ZERO
-    else this.multiply(BigDecimal.valueOf(100)).divide(total, 2, RoundingMode.HALF_UP)
 
