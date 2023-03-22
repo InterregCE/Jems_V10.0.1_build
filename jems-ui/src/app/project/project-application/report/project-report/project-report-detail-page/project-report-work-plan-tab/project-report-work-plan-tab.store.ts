@@ -18,9 +18,9 @@ import {Log} from '@common/utils/log';
 
 @Injectable({providedIn: 'root'})
 export class ProjectReportWorkPlanTabStore {
-  workPackages$: Observable<Array<ProjectReportWorkPackageDTO>>;
+  workPackages$: Observable<ProjectReportWorkPackageDTO[]>;
 
-  savedWorkPackages$ = new Subject<Array<ProjectReportWorkPackageDTO>>();
+  savedWorkPackages$ = new Subject<ProjectReportWorkPackageDTO[]>();
 
   constructor(
     private readonly routingService: RoutingService,
@@ -45,7 +45,7 @@ export class ProjectReportWorkPlanTabStore {
     return merge(initialData$, this.savedWorkPackages$);
   }
 
-  updateWorkPlan(workPackages: Array<UpdateProjectReportWorkPackageDTO>) {
+  updateWorkPlan(workPackages: UpdateProjectReportWorkPackageDTO[]) {
     return combineLatest([
       this.projectStore.projectId$,
       this.projectReportDetailPageStore.projectReportId$,

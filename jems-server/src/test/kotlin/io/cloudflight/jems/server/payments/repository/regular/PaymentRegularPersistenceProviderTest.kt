@@ -256,6 +256,8 @@ class PaymentRegularPersistenceProviderTest: UnitTest() {
             paymentClaimNo = 0,
             fundName = "OTHER",
             fundId = fundId,
+            lumpSumId = 50L,
+            orderNr = 13,
             amountApprovedPerFund = BigDecimal(100),
             amountPaidPerFund = BigDecimal.ZERO,
             paymentApprovalDate = currentTime,

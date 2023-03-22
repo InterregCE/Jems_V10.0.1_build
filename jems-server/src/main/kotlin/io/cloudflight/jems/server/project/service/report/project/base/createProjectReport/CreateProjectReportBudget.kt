@@ -12,12 +12,14 @@ import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerF
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedFund
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportBudget
+import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.CertificateCostCategoryPreviouslyReported
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.applyPercentage
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCostCategoryPersistence
+import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateLumpSumPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
@@ -33,7 +35,8 @@ class CreateProjectReportBudget(
     private val reportCertificateCoFinancingPersistence: ProjectReportCertificateCoFinancingPersistenceProvider,
     private val paymentPersistence: PaymentRegularPersistence,
     private val reportCertificateCostCategoryPersistence: ProjectReportCertificateCostCategoryPersistence,
-    private val getPartnerBudgetPerFundService: GetPartnerBudgetPerFundService
+    private val getPartnerBudgetPerFundService: GetPartnerBudgetPerFundService,
+    private val reportCertificateLumpSumPersistence: ProjectReportCertificateLumpSumPersistence
 ) {
 
     @Transactional
@@ -71,6 +74,10 @@ class CreateProjectReportBudget(
             costCategorySetup = costCategorySetup(
                 budget = costCategoryBreakdownFromAF,
                 previouslyReported = previouslyReportedCostCategories
+            ),
+            availableLumpSums = lumpSums.toProjectReportLumpSums(
+                previouslyReported = reportCertificateLumpSumPersistence.getLumpSumCumulative(submittedReportIds),
+                previouslyPaid = installmentsPaid.byLumpSum()
             )
         )
     }
@@ -257,4 +264,32 @@ class CreateProjectReportBudget(
             sum = budget.sumOf { it.totalCosts },
         )
     }
+
+    private fun List<ProjectLumpSum>.toProjectReportLumpSums(
+        previouslyReported: Map<Int, BigDecimal>,
+        previouslyPaid: Map<Long?, Map<Int?, BigDecimal>>,
+    ) = map {
+        val lumpSumPartnerShare = it.lumpSumContributions.sumOf { contribution -> contribution.amount }
+
+        var fromPrevious = previouslyReported.get(it.orderNr) ?: ZERO
+        if (it.isReady()) {
+            fromPrevious += lumpSumPartnerShare
+        }
+
+        ProjectReportLumpSum(
+            lumpSumId = it.programmeLumpSumId,
+            orderNr = it.orderNr,
+            period = it.period,
+            total = lumpSumPartnerShare,
+            previouslyReported = fromPrevious,
+            previouslyPaid = previouslyPaid.get(it.programmeLumpSumId)?.get(it.orderNr) ?: ZERO,
+        )
+    }
+
+    private fun List<PaymentToProject>.byLumpSum() =
+        groupBy { it.lumpSumId }
+            .mapValues { (_, installments) ->
+                installments.groupBy { it.orderNr }
+                    .mapValues { (_, installments) -> installments.sumOf { it.amountPaidPerFund } }
+            }
 }

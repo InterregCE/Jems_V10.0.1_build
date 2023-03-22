@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.repository.report.project.base
 
+import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeLumpSumRepository
 import io.cloudflight.jems.server.programme.repository.indicator.ResultIndicatorRepository
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.repository.indicator.OutputIndicatorRepository
@@ -14,6 +15,7 @@ import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartn
 import io.cloudflight.jems.server.project.repository.report.project.ProjectReportCoFinancingRepository
 import io.cloudflight.jems.server.project.repository.report.project.financialOverview.coFinancing.ReportProjectCertificateCoFinancingRepository
 import io.cloudflight.jems.server.project.repository.report.project.financialOverview.costCategory.ReportProjectCertificateCostCategoryRepository
+import io.cloudflight.jems.server.project.repository.report.project.financialOverview.lumpSums.ReportProjectCertificateLumpSumRepository
 import io.cloudflight.jems.server.project.repository.report.project.identification.ProjectReportIdentificationTargetGroupRepository
 import io.cloudflight.jems.server.project.repository.report.project.identification.ProjectReportSpendingProfileRepository
 import io.cloudflight.jems.server.project.repository.report.project.resultPrinciple.ProjectReportHorizontalPrincipleRepository
@@ -23,6 +25,7 @@ import io.cloudflight.jems.server.project.repository.report.project.workPlan.Pro
 import io.cloudflight.jems.server.project.repository.report.project.workPlan.ProjectReportWorkPackageActivityRepository
 import io.cloudflight.jems.server.project.repository.report.project.workPlan.ProjectReportWorkPackageOutputRepository
 import io.cloudflight.jems.server.project.repository.report.project.workPlan.ProjectReportWorkPackageRepository
+import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.model.ProjectHorizontalPrinciples
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
@@ -31,6 +34,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.base.Proj
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportCreateModel
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportPartnerCreateModel
+import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportResultCreate
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageCreate
@@ -59,6 +63,8 @@ class ProjectReportCreatePersistenceProvider(
     private val outputIndicatorRepository: OutputIndicatorRepository,
     private val projectResultRepository: ProjectReportProjectResultRepository,
     private val horizontalPrincipleRepository: ProjectReportHorizontalPrincipleRepository,
+    private val reportProjectCertificateLumpSumRepository: ReportProjectCertificateLumpSumRepository,
+    private val programmeLumpSumRepository: ProgrammeLumpSumRepository,
 ) : ProjectReportCreatePersistence {
 
     @Transactional
@@ -70,6 +76,7 @@ class ProjectReportCreatePersistenceProvider(
         persistPartners(reportToCreate.partners, reportPersisted)
         persistCoFinancing(reportToCreate.reportBudget.coFinancing, reportPersisted)
         persistCostCategories(reportToCreate.reportBudget.costCategorySetup, reportPersisted)
+        persistAvailableLumpSums(reportToCreate.reportBudget.availableLumpSums, reportPersisted)
         persistResultsAndHorizontalPrinciples(reportToCreate.results, reportToCreate.horizontalPrinciples, reportPersisted)
 
         fillProjectReportToAllEmptyCertificates(projectId = reportToCreate.reportBase.projectId, reportPersisted)
@@ -178,5 +185,13 @@ class ProjectReportCreatePersistenceProvider(
             )
         )
     }
+
+    private fun persistAvailableLumpSums(
+        lumpSums: List<ProjectReportLumpSum>,
+        report: ProjectReportEntity,
+    ) =
+        reportProjectCertificateLumpSumRepository.saveAll(
+            lumpSums.map { ls -> ls.toEntity(report, lumpSumResolver = { programmeLumpSumRepository.getById(it) }) }
+        )
 
 }

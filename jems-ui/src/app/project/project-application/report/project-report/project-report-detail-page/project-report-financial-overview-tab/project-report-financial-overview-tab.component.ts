@@ -4,7 +4,9 @@ import {combineLatest, Observable} from 'rxjs';
 import {
   CallFundRateDTO,
   CertificateCoFinancingBreakdownDTO,
-  CertificateCostCategoryBreakdownDTO, ProjectPartnerReportUnitCostDTO
+  CertificateCostCategoryBreakdownDTO,
+  CertificateLumpSumBreakdownDTO,
+  ProjectPartnerReportUnitCostDTO
 } from '@cat/api';
 import {map} from 'rxjs/operators';
 import {
@@ -24,6 +26,7 @@ export class ProjectReportFinancialOverviewTabComponent {
   data$: Observable<{
     perCoFinancing: CertificateCoFinancingBreakdownDTO;
     perCostCategory: CertificateCostCategoryBreakdownDTO;
+    perLumpSum: CertificateLumpSumBreakdownDTO;
     allowedCostCategories: Map<CategoryEnum | 'LumpSum' | 'UnitCost', boolean>;
     funds: CallFundRateDTO[];
   }>;
@@ -34,12 +37,14 @@ export class ProjectReportFinancialOverviewTabComponent {
     this.data$ = combineLatest([
       financialOverviewStore.perCoFinancing$,
       financialOverviewStore.perCostCategory$,
+      financialOverviewStore.perLumpSum$,
       financialOverviewStore.allowedCostCategories$,
       financialOverviewStore.callFunds$,
     ]).pipe(
-      map(([perCoFinancing, perCostCategory, allowedCostCategories, funds]: any) => ({
+      map(([perCoFinancing, perCostCategory, perLumpSum, allowedCostCategories, funds]: any) => ({
         perCoFinancing,
         perCostCategory,
+        perLumpSum,
         allowedCostCategories,
         funds,
       })),

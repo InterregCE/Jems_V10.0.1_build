@@ -18,10 +18,12 @@ import io.cloudflight.jems.server.project.service.report.model.project.financial
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportLumpSumPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCostCategoryPersistence
+import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateLumpSumPersistence
 import io.cloudflight.jems.server.project.service.report.project.identification.ProjectReportIdentificationPersistence
 import io.cloudflight.jems.server.project.service.report.project.workPlan.ProjectReportWorkPlanPersistence
 import io.mockk.clearMocks
@@ -152,9 +154,13 @@ internal class SubmitProjectReportTest : UnitTest() {
     @MockK
     lateinit var reportExpenditureCoFinancingPersistence: ProjectPartnerReportExpenditureCoFinancingPersistence
     @MockK
+    lateinit var reportCertificateLumpSumPersistence: ProjectReportCertificateLumpSumPersistence
+    @MockK
     lateinit var reportCertificateCostCategoryPersistence: ProjectReportCertificateCostCategoryPersistence
     @MockK
     lateinit var reportExpenditureCostCategoryPersistence: ProjectPartnerReportExpenditureCostCategoryPersistence
+    @MockK
+    lateinit var reportLumpSumPersistence: ProjectPartnerReportLumpSumPersistence
     @MockK
     lateinit var reportWorkPlanPersistence: ProjectReportWorkPlanPersistence
     @MockK
@@ -198,6 +204,9 @@ internal class SubmitProjectReportTest : UnitTest() {
         every { reportCertificateCostCategoryPersistence.getCostCategories(PROJECT_ID, REPORT_ID) } returns certificateCostCategory
         every { reportExpenditureCostCategoryPersistence.getCostCategoriesCumulativeTotalEligible(setOf(42L)) } returns budgetCostFull
         every { reportCertificateCostCategoryPersistence.updateCurrentlyReportedValues(any(), any(), any()) } returnsArgument 0
+
+        every { reportLumpSumPersistence.getLumpSumCumulativeAfterControl(setOf(42L)) } returns mapOf(Pair(1, BigDecimal.TEN))
+        every { reportCertificateLumpSumPersistence.updateCurrentlyReportedValues(any(), any(), any()) } returnsArgument 0
 
         submitReport.submit(PROJECT_ID, REPORT_ID)
 

@@ -15,4 +15,9 @@
             [allowedCostCategories]="data.allowedCostCategories">
     </jems-project-report-cost-category>
 
+    <ng-container *ngIf="data.perLumpSum.lumpSums.length > 0">
+        <h3>{{ 'project.application.project.report.financial.breakdown.lump.sum' | translate}}</h3>
+        <jems-project-breakdown-lump-sum [breakdown]="data.perLumpSum">
+        </jems-project-breakdown-lump-sum>
+    </ng-container>
 </jems-form>

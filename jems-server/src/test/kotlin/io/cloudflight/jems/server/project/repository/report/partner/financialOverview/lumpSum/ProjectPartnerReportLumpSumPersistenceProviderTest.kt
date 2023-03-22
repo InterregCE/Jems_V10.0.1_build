@@ -163,4 +163,17 @@ class ProjectPartnerReportLumpSumPersistenceProviderTest : UnitTest() {
         assertThat(lumpSum_91.totalEligibleAfterControl).isEqualByComparingTo(BigDecimal.valueOf(50))
     }
 
+    @Test
+    fun getLumpSumCumulativeAfterControl() {
+        every { repository.findCumulativeAfterControlForReportIds(setOf(22L)) } returns listOf(
+            Pair(
+                4,
+                BigDecimal.TEN,
+            )
+        )
+        val result = persistence.getLumpSumCumulativeAfterControl(setOf(22L))
+        assertThat(result.keys).containsExactly(4)
+        assertThat(result.get(4)).isEqualTo(BigDecimal.TEN)
+    }
+
 }

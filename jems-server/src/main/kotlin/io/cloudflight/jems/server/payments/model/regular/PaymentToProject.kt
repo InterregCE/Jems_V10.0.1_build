@@ -10,6 +10,8 @@ data class PaymentToProject (
     val projectAcronym: String,
     val paymentClaimNo: Int = 0,
     val paymentClaimSubmissionDate: ZonedDateTime?,
+    val lumpSumId: Long? = null,
+    val orderNr: Int? = null,
     val paymentApprovalDate: ZonedDateTime?,
     val totalEligibleAmount: BigDecimal,
     val fundId: Long,

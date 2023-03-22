@@ -38,6 +38,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.base.crea
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportBudget
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportCreateModel
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportPartnerCreateModel
+import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportResultCreate
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackage
@@ -266,6 +267,16 @@ internal class CreateProjectReportTest : UnitTest() {
                     unitCost = BigDecimal.valueOf(187),
                     sum = BigDecimal.valueOf(197),
                 )
+            ),
+            availableLumpSums = listOf(
+                ProjectReportLumpSum(
+                    lumpSumId = 1L,
+                    orderNr = 1,
+                    period = 1,
+                    total = BigDecimal.TEN,
+                    previouslyReported = BigDecimal.ONE,
+                    previouslyPaid = BigDecimal.ZERO
+                )
             )
         )
 
@@ -424,6 +435,16 @@ internal class CreateProjectReportTest : UnitTest() {
                         sum = BigDecimal.valueOf(197),
                     ),
                 ),
+                availableLumpSums = listOf(
+                    ProjectReportLumpSum(
+                        lumpSumId = 1L,
+                        orderNr = 1,
+                        period = 1,
+                        total = BigDecimal.TEN,
+                        previouslyReported = BigDecimal.ONE,
+                        previouslyPaid = BigDecimal.ZERO
+                    )
+                )
             ),
             workPackages = listOf(
                 ProjectReportWorkPackageCreate(

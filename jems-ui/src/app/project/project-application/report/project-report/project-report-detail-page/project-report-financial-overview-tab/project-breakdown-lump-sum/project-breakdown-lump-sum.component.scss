@@ -1,4 +1,4 @@
-@use '../remove-custom-table-overrides';
+@use '../project-report-financial-overview-tab.component';
 
 .border-cell-right {
   border-right: .0625rem solid var(--table-border-color);
@@ -12,7 +12,6 @@
 .mat-column-previouslyReported,
 .mat-column-previouslyPaid,
 .mat-column-currentReport,
-.mat-column-totalEligibleAfterControl,
 .mat-column-totalReportedSoFar,
 .mat-column-totalReportedSoFarPercentage,
 .mat-column-remainingBudget {
@@ -23,7 +22,6 @@
 .mat-column-previouslyReported,
 .mat-column-previouslyPaid,
 .mat-column-currentReport,
-.mat-column-totalEligibleAfterControl,
 .mat-column-totalReportedSoFar,
 .mat-column-remainingBudget {
   min-width: 8rem;

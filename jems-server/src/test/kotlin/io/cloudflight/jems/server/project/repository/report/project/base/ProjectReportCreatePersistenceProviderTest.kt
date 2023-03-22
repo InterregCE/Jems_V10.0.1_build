@@ -5,9 +5,11 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.description.ProjectHorizontalPrinciplesEffect
 import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.indicator.OutputIndicatorEntity
 import io.cloudflight.jems.server.programme.entity.indicator.ResultIndicatorEntity
+import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeLumpSumRepository
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.repository.indicator.OutputIndicatorRepository
 import io.cloudflight.jems.server.programme.repository.indicator.ResultIndicatorRepository
@@ -18,6 +20,7 @@ import io.cloudflight.jems.server.project.entity.report.project.ProjectReportCoF
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateCostCategoryEntity
+import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateLumpSumEntity
 import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportIdentificationTargetGroupEntity
 import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportSpendingProfileEntity
 import io.cloudflight.jems.server.project.entity.report.project.resultPrinciple.ProjectReportHorizontalPrincipleEntity
@@ -32,6 +35,7 @@ import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartn
 import io.cloudflight.jems.server.project.repository.report.project.ProjectReportCoFinancingRepository
 import io.cloudflight.jems.server.project.repository.report.project.financialOverview.coFinancing.ReportProjectCertificateCoFinancingRepository
 import io.cloudflight.jems.server.project.repository.report.project.financialOverview.costCategory.ReportProjectCertificateCostCategoryRepository
+import io.cloudflight.jems.server.project.repository.report.project.financialOverview.lumpSums.ReportProjectCertificateLumpSumRepository
 import io.cloudflight.jems.server.project.repository.report.project.identification.ProjectReportIdentificationTargetGroupRepository
 import io.cloudflight.jems.server.project.repository.report.project.identification.ProjectReportSpendingProfileRepository
 import io.cloudflight.jems.server.project.repository.report.project.resultPrinciple.ProjectReportHorizontalPrincipleRepository
@@ -56,6 +60,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.base.crea
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportBudget
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportCreateModel
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportPartnerCreateModel
+import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportResultCreate
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanStatus
@@ -239,6 +244,16 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                     unitCost = BigDecimal.valueOf(187),
                     sum = BigDecimal.valueOf(197),
                 )
+            ),
+            availableLumpSums = listOf(
+                ProjectReportLumpSum(
+                    lumpSumId = 1L,
+                    orderNr = 1,
+                    period = 1,
+                    total = BigDecimal.TEN,
+                    previouslyReported = BigDecimal.ONE,
+                    previouslyPaid = BigDecimal.ZERO
+                )
             )
         )
 
@@ -324,6 +339,12 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
     @MockK
     private lateinit var horizontalPrincipleRepository: ProjectReportHorizontalPrincipleRepository
 
+    @MockK
+    private lateinit var reportProjectCertificateLumpSumRepository: ReportProjectCertificateLumpSumRepository
+
+    @MockK
+    private lateinit var programmeLumpSumRepository: ProgrammeLumpSumRepository
+
     @InjectMockKs
     private lateinit var persistence: ProjectReportCreatePersistenceProvider
 
@@ -348,6 +369,8 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
             outputIndicatorRepository,
             projectResultRepository,
             horizontalPrincipleRepository,
+            reportProjectCertificateLumpSumRepository,
+            programmeLumpSumRepository,
         )
     }
 
@@ -400,6 +423,12 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
         val slotPrinciple = slot<ProjectReportHorizontalPrincipleEntity>()
         every { projectResultRepository.saveAll(capture(slotResult)) } returnsArgument 0
         every { horizontalPrincipleRepository.save(capture(slotPrinciple)) } returnsArgument 0
+
+        // lump sums
+        val lumpSumEntity = mockk<ProgrammeLumpSumEntity>()
+        every { programmeLumpSumRepository.getById(1L) } returns lumpSumEntity
+        val lumpSumSlot = slot<Iterable<ReportProjectCertificateLumpSumEntity>>()
+        every { reportProjectCertificateLumpSumRepository.saveAll(capture(lumpSumSlot)) } returnsArgument 0
 
         // fill certificates
         val partner = mockk<ProjectPartnerEntity>()
@@ -571,6 +600,12 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
         assertThat(slotPrinciple.captured.equalOpportunitiesEffect).isEqualTo(ProjectHorizontalPrinciplesEffect.NegativeEffects)
         assertThat(slotPrinciple.captured.sexualEqualityEffect).isEqualTo(ProjectHorizontalPrinciplesEffect.Neutral)
         assertThat(slotPrinciple.captured.translatedValues).isEmpty()
+
+        assertThat(lumpSumSlot.captured).hasSize(1)
+        assertThat(lumpSumSlot.captured.first().reportEntity).isEqualTo(saveSlot.captured)
+        assertThat(lumpSumSlot.captured.first().total).isEqualTo(BigDecimal.TEN)
+        assertThat(lumpSumSlot.captured.first().previouslyReported).isEqualTo(BigDecimal.ONE)
+        assertThat(lumpSumSlot.captured.first().previouslyPaid).isEqualTo(BigDecimal.ZERO)
 
         assertThat(partnerReport.projectReport).isEqualTo(saveSlot.captured)
     }
