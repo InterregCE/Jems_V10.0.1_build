@@ -44,13 +44,14 @@ import org.mapstruct.factory.Mappers
 
 private val mapper = Mappers.getMapper(ReportPartnerDataProviderMapper::class.java)
 
-fun ProjectPartnerReport.toDataModel(): ProjectPartnerReportData = ProjectPartnerReportData(
+fun ProjectPartnerReport.toDataModel(projectId: Long): ProjectPartnerReportData = ProjectPartnerReportData(
     id = id,
     reportNumber = reportNumber,
     status = ReportStatusData.valueOf(status.name),
     version = version,
     firstSubmission = firstSubmission,
 
+    projectId = projectId,
     projectIdentifier = identification.projectIdentifier,
     projectAcronym = identification.projectAcronym,
     partnerNumber = identification.partnerNumber,

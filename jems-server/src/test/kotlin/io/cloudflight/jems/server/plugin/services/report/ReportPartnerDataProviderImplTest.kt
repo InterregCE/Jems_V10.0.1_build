@@ -55,6 +55,7 @@ import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatus
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatusType
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
+import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
@@ -128,6 +129,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
         private val DATE_1 = LocalDate.now()
         private val DATE_2 = LocalDate.now()
         private val UUID_1 = UUID.randomUUID()
+        private const val PROJECT_ID = 99L
 
         private val report = ProjectPartnerReport(
             id = 96L,
@@ -171,6 +173,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
 
         private val expectedReport = ProjectPartnerReportData(
             id = 96L,
+            projectId = 99L,
             reportNumber = 12,
             status = ReportStatusData.Draft,
             version = "6.5.1",
@@ -814,6 +817,8 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
     private lateinit var serviceProcurementSubcontract: GetProjectPartnerReportProcurementSubcontractService
     @MockK
     private lateinit var reportWorkPlanPersistence: ProjectPartnerReportWorkPlanPersistence
+    @MockK
+    private lateinit var partnerPersistence: PartnerPersistence
 
     @InjectMockKs
     private lateinit var dataProvider: ReportPartnerDataProviderImpl
@@ -821,6 +826,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
     @Test
     fun get() {
         every { reportPersistence.getPartnerReportById(partnerId = 21L, reportId = 96L) } returns report
+        every { partnerPersistence.getProjectIdForPartnerId(21L) } returns PROJECT_ID
         assertThat(dataProvider.get(21L, reportId = 96L)).isEqualTo(expectedReport)
     }
 

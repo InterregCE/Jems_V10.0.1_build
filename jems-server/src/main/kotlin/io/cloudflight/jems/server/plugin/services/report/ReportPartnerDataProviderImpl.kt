@@ -1,8 +1,10 @@
 package io.cloudflight.jems.server.plugin.services.report
 
+import io.cloudflight.jems.plugin.contract.models.report.partner.identification.ProjectPartnerReportData
 import io.cloudflight.jems.plugin.contract.models.report.partner.procurement.ProjectPartnerReportProcurementData
 import io.cloudflight.jems.plugin.contract.models.report.partner.workPlan.ProjectPartnerReportWorkPackageData
 import io.cloudflight.jems.plugin.contract.services.report.ReportPartnerDataProvider
+import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectPartnerReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partner.contribution.toModelData
@@ -41,11 +43,14 @@ class ReportPartnerDataProviderImpl(
     private val serviceProcurementBeneficial: GetProjectPartnerReportProcurementBeneficialService,
     private val serviceProcurementSubcontract: GetProjectPartnerReportProcurementSubcontractService,
     private val reportWorkPlanPersistence: ProjectPartnerReportWorkPlanPersistence,
+    private val partnerPersistence: PartnerPersistence
 ) : ReportPartnerDataProvider {
 
     @Transactional(readOnly = true)
-    override fun get(partnerId: Long, reportId: Long) =
-        reportPersistence.getPartnerReportById(partnerId = partnerId, reportId = reportId).toDataModel()
+    override fun get(partnerId: Long, reportId: Long): ProjectPartnerReportData {
+        val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
+        return reportPersistence.getPartnerReportById(partnerId = partnerId, reportId = reportId).toDataModel(projectId)
+    }
 
     @Transactional(readOnly = true)
     override fun getIdentification(partnerId: Long, reportId: Long) =
