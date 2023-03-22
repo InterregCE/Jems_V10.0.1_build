@@ -138,7 +138,7 @@
   "preSubmissionCheckSettings": {
     "pluginKey": "standard-pre-condition-check-plugin",
     "reportPartnerCheckPluginKey": "report-example-check",
-    "controlReportSamplingCheckPluginKey ": "control-report-sampling",
+    "controlReportSamplingCheckPluginKey": "control-report-sampling",
     "callHasTwoSteps": false
   },
   "applicationFormConfiguration": [
