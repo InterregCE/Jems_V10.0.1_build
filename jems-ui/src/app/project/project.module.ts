@@ -517,6 +517,9 @@ import {
 import { ProjectReportWorkPlanTabComponent } from './project-application/report/project-report/project-report-detail-page/project-report-work-plan-tab/project-report-work-plan-tab.component';
 import { ProjectBreakdownLumpSumComponent } from './project-application/report/project-report/project-report-detail-page/project-report-financial-overview-tab/project-breakdown-lump-sum/project-breakdown-lump-sum.component';
 import { ProjectBreakdownUnitCostComponent } from './project-application/report/project-report/project-report-detail-page/project-report-financial-overview-tab/project-breakdown-unit-cost/project-breakdown-unit-cost.component';
+import {
+  ProjectBreakdownPerPartnerComponent
+} from '@project/project-application/report/project-report/project-report-detail-page/project-report-financial-overview-tab/project-breakdown-per-partner/project-breakdown-per-partner.component';
 
 @NgModule({
   declarations: [
@@ -695,6 +698,7 @@ import { ProjectBreakdownUnitCostComponent } from './project-application/report/
     ProjectReportWorkPlanTabComponent,
     ProjectBreakdownLumpSumComponent,
     ProjectBreakdownUnitCostComponent,
+    ProjectBreakdownPerPartnerComponent,
   ],
   imports: [
     SharedModule,
