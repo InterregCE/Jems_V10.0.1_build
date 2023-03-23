@@ -18,4 +18,7 @@ class UserPartnerCollaboratorEntity(
     @Enumerated(EnumType.STRING)
     @field:NotNull
     val level: PartnerCollaboratorLevel,
+
+    @field:NotNull
+    var gdpr: Boolean
 )

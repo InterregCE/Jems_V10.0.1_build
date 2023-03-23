@@ -42,6 +42,7 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
         lumpSumId = 45L,
         unitCostId = 46L,
         costCategory = ReportBudgetCategory.TravelAndAccommodationCosts,
+        gdpr = false,
         investmentId = 89L,
         contractId = 54L,
         internalReferenceNumber = "145",
@@ -72,6 +73,7 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
         lumpSumId = 45L,
         unitCostId = 46L,
         costCategory = ReportBudgetCategory.TravelAndAccommodationCosts,
+        gdpr = false,
         investmentId = 89L,
         contractId = 54L,
         internalReferenceNumber = "145",
@@ -365,8 +367,8 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
             .updatePartnerControlReportExpenditureVerification(partnerId = 17L, reportId = 55, listOf(expectedUpdateWithoutSampled))
         } returns listOf(verificationToBeUpdated)
 
-        assertThat(updatePartnerReportExpenditureVerification
+        assertTrue(updatePartnerReportExpenditureVerification
             .updatePartnerReportExpenditureVerification(partnerId = 17L, reportId = 55, listOf(expenditureUpdateWithoutSampled))
-            .first().partOfSample).isTrue()
+            .first().partOfSample)
     }
 }

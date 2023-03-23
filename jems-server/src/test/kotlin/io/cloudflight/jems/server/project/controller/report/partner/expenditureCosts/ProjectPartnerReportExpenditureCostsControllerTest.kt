@@ -15,15 +15,15 @@ import io.cloudflight.jems.api.project.dto.report.partner.expenditure.verificati
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportInvestment
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportLumpSum
-import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportUnitCost
-import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
-import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportParkedExpenditure
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportParkedLinked
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportUnitCost
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.deleteParkedExpenditure.DeleteParkedExpenditureInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.getAvailableBudgetOptionsForReport.GetAvailableBudgetOptionsForReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.getAvailableInvestmentsForReport.GetAvailableInvestmentsForReportInteractor
@@ -42,6 +42,8 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
@@ -63,6 +65,7 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
         lumpSumId = null,
         unitCostId = null,
         costCategory = ReportBudgetCategory.ExternalCosts,
+        gdpr = false,
         investmentId = 10L,
         contractId = CONTRACT_ID,
         internalReferenceNumber = "internal-1",
@@ -83,6 +86,8 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
         parkingMetadata = ExpenditureParkingMetadata(reportOfOriginId = 14L, reportOfOriginNumber = 2, originalExpenditureNumber = 9),
     )
 
+    private val reportExpenditureCostGDPR = reportExpenditureCost.copy(gdpr = true)
+
     private val reportParkedExpenditure = ProjectPartnerReportParkedExpenditure(
         expenditure = reportExpenditureCost,
         lumpSum = ProjectPartnerReportParkedLinked(51L, 52L, 4, true),
@@ -99,6 +104,7 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
         lumpSumId = null,
         unitCostId = null,
         costCategory = BudgetCategoryDTO.ExternalCosts,
+        gdpr = false,
         investmentId = 10L,
         contractId = CONTRACT_ID,
         internalReferenceNumber = "internal-1",
@@ -118,6 +124,8 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
         attachment = ProjectReportFileMetadataDTO(500L, "file.txt", UPLOADED),
         parkingMetadata = ExpenditureParkingMetadataDTO(reportOfOriginId = 14L, reportOfOriginNumber = 2, originalExpenditureNumber = 9),
     )
+
+    private val reportExpenditureCostGDPRDTO = reportExpenditureCostDto.copy(gdpr = true)
 
     private val reportParkedExpenditureDto = ProjectPartnerReportParkedExpenditureDTO(
         expenditure = reportExpenditureCostDto,
@@ -282,6 +290,24 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
 
         assertThat(slotData.captured).hasSize(1)
         assertThat(slotData.captured.first()).isEqualTo(reportExpenditureCost)
+        assertFalse(slotData.captured.first().gdpr)
+    }
+    @Test
+    fun updatePartnerReportExpendituresWithGDPR() {
+        val slotData = slot<List<ProjectPartnerReportExpenditureCost>>()
+
+        every { updateProjectPartnerReportExpenditureInteractor.updatePartnerReportExpenditureCosts(
+            partnerId = PARTNER_ID,
+            reportId = 20L,
+            capture(slotData),
+        ) } returns listOf(reportExpenditureCostGDPR)
+
+        assertThat(controller.updatePartnerReportExpenditures(PARTNER_ID, reportId = 20L, listOf(reportExpenditureCostGDPRDTO)))
+            .containsExactly(reportExpenditureCostGDPRDTO)
+
+        assertThat(slotData.captured).hasSize(1)
+        assertThat(slotData.captured.first()).isEqualTo(reportExpenditureCostGDPR)
+        assertTrue(slotData.captured.first().gdpr)
     }
 
     @Test

@@ -14,6 +14,7 @@ export class PartnerControlReportExpenditureConstants {
     originalExpenditureNumber: 'originalExpenditureNumber',
     costOptions: 'costOptions',
     costCategory: 'costCategory',
+    costGDPR: 'costGDPR',
     investmentId: 'investmentId',
     contractId: 'contractId',
     internalReferenceNumber: 'internalReferenceNumber',

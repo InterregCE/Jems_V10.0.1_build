@@ -5,7 +5,6 @@ import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
 import io.cloudflight.jems.server.currency.service.model.CurrencyConversion
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
-import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
@@ -140,6 +139,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
             lumpSumId = 45L,
             unitCostId = null,
             costCategory = ReportBudgetCategory.Multiple,
+            gdpr = false,
             investmentId = null,
             contractId = null,
             internalReferenceNumber = null,
@@ -162,6 +162,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
             lumpSumId = null,
             unitCostId = 46L,
             costCategory = ReportBudgetCategory.Multiple,
+            gdpr = false,
             investmentId = null,
             contractId = null,
             internalReferenceNumber = null,
@@ -184,6 +185,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
             lumpSumId = null,
             unitCostId = null,
             costCategory = ReportBudgetCategory.StaffCosts,
+            gdpr = false,
             investmentId = null,
             contractId = null,
             internalReferenceNumber = null,
@@ -206,6 +208,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
             lumpSumId = null,
             unitCostId = null,
             costCategory = ReportBudgetCategory.ExternalCosts,
+            gdpr = false,
             investmentId = null,
             contractId = null,
             internalReferenceNumber = null,
@@ -228,6 +231,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
             lumpSumId = null,
             unitCostId = null,
             costCategory = ReportBudgetCategory.EquipmentCosts,
+            gdpr = false,
             investmentId = null,
             contractId = null,
             internalReferenceNumber = null,
@@ -250,6 +254,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
             lumpSumId = null,
             unitCostId = null,
             costCategory = ReportBudgetCategory.InfrastructureCosts,
+            gdpr = false,
             investmentId = null,
             contractId = null,
             internalReferenceNumber = null,
@@ -272,6 +277,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
             lumpSumId = null,
             unitCostId = null,
             costCategory = ReportBudgetCategory.Multiple,
+            gdpr = false,
             investmentId = null,
             contractId = null,
             internalReferenceNumber = null,

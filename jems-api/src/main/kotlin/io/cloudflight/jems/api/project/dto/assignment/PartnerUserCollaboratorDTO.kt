@@ -5,4 +5,5 @@ data class PartnerUserCollaboratorDTO(
     val userId: Long,
     val userEmail: String,
     val level: PartnerCollaboratorLevelDTO,
+    val gdpr: Boolean
 )

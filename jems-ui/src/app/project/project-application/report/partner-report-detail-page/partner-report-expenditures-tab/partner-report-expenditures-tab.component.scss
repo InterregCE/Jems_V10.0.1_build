@@ -110,3 +110,13 @@
   position: relative;
   margin-bottom: -0.25rem;
 }
+
+.mat-column-costGDPR {
+  padding-left: 0.4rem;
+  border-left: 1px solid var(--table-border-color);
+  border-right: 1px solid var(--table-border-color);
+}
+
+.custom-icon.gdpr {
+  margin-left: -0.25rem;
+}

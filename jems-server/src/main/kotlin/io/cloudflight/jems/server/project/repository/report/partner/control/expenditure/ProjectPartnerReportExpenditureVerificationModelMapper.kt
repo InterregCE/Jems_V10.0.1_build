@@ -13,6 +13,7 @@ fun Collection<PartnerReportExpenditureCostEntity>.toExtendedModel() = map {
         lumpSumId = it.reportLumpSum?.id,
         unitCostId = it.reportUnitCost?.id,
         costCategory = it.costCategory,
+        gdpr = it.gdpr,
         investmentId = it.reportInvestment?.id,
         contractId = it.procurementId,
         internalReferenceNumber = it.internalReferenceNumber,

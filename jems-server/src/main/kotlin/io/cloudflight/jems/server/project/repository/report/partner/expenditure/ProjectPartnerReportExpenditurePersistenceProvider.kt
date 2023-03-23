@@ -180,6 +180,7 @@ class ProjectPartnerReportExpenditurePersistenceProvider(
         reportLumpSum = if (newData.lumpSumId != null) lumpSums[newData.lumpSumId] else null
         reportUnitCost = if (newData.unitCostId != null) unitCosts[newData.unitCostId] else null
         costCategory = newData.costCategory
+        gdpr = newData.gdpr
         reportInvestment = if (newData.investmentId != null) investments[newData.investmentId] else null
         procurementId = newData.contractId
         internalReferenceNumber = newData.internalReferenceNumber

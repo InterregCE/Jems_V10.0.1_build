@@ -23,6 +23,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
@@ -59,6 +60,7 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
             unitCost: PartnerReportUnitCostEntity? = null,
             investment: PartnerReportInvestmentEntity? = null,
             unParkedFrom: PartnerReportExpenditureCostEntity? = null,
+            gdpr: Boolean
         ) = PartnerReportExpenditureCostEntity(
             id = id,
             number = 1,
@@ -66,6 +68,7 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
             reportLumpSum = lumpSum,
             reportUnitCost = unitCost,
             costCategory = ReportBudgetCategory.InfrastructureCosts,
+            gdpr = gdpr,
             reportInvestment = investment,
             procurementId = 18L,
             internalReferenceNumber = "irn",
@@ -102,13 +105,14 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
             )
         }
 
-        private fun dummyExpectedExpenditure(id: Long, lumpSumId: Long?, unitCostId: Long?, investmentId: Long?) =
+        private fun dummyExpectedExpenditure(id: Long, lumpSumId: Long?, unitCostId: Long?, investmentId: Long?, gdpr: Boolean) =
             ProjectPartnerReportExpenditureVerification(
                 id = id,
                 number = 1,
                 lumpSumId = lumpSumId,
                 unitCostId = unitCostId,
                 costCategory = ReportBudgetCategory.InfrastructureCosts,
+                gdpr = gdpr,
                 investmentId = investmentId,
                 contractId = 18L,
                 internalReferenceNumber = "irn",
@@ -173,7 +177,7 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
         every { unitCost.id } returns unitCostId
         every { investment.id } returns investmentId
 
-        val expenditure = dummyExpenditure(id = 14L, report, lumpSum, unitCost, investment, dummyExpenditure(id = 2L, report))
+        val expenditure = dummyExpenditure(id = 14L, report, lumpSum, unitCost, investment, dummyExpenditure(id = 2L, report, gdpr = false), false)
         every { reportExpenditureRepository.findTop150ByPartnerReportIdAndPartnerReportPartnerIdOrderById(
             reportId = 44L,
             partnerId = PARTNER_ID,
@@ -186,6 +190,40 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
                     lumpSumId = lumpSumId,
                     unitCostId = unitCostId,
                     investmentId = investmentId,
+                    gdpr = false
+                )
+            )
+    }
+
+    @Test
+    fun getPartnerControlReportExpenditureVerificationWithGDPR() {
+        val lumpSumId = 808L
+        val unitCostId = 809L
+        val investmentId = 810L
+        val report = mockk<ProjectPartnerReportEntity>()
+        every { report.id } returns 600L
+        every { report.number } returns 601
+        val lumpSum = mockk<PartnerReportLumpSumEntity>()
+        val unitCost = mockk<PartnerReportUnitCostEntity>()
+        val investment = mockk<PartnerReportInvestmentEntity>()
+        every { lumpSum.id } returns lumpSumId
+        every { unitCost.id } returns unitCostId
+        every { investment.id } returns investmentId
+
+        val expenditure = dummyExpenditure(id = 14L, report, lumpSum, unitCost, investment, dummyExpenditure(id = 2L, report, gdpr = true), gdpr = true)
+        every { reportExpenditureRepository.findTop150ByPartnerReportIdAndPartnerReportPartnerIdOrderById(
+            reportId = 44L,
+            partnerId = PARTNER_ID,
+        ) } returns mutableListOf(expenditure)
+
+        assertThat(persistence.getPartnerControlReportExpenditureVerification(PARTNER_ID, reportId = 44L))
+            .containsExactly(
+                dummyExpectedExpenditure(
+                    id = 14L,
+                    lumpSumId = lumpSumId,
+                    unitCostId = unitCostId,
+                    investmentId = investmentId,
+                    gdpr = true
                 )
             )
     }
@@ -203,7 +241,7 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
         every { unitCost.id } returns UNIT_COST_ID
         every { investment.id } returns INVESTMENT_ID
 
-        val entityToUpdate = dummyExpenditure(EXPENDITURE_TO_UPDATE, report, lumpSum, unitCost, investment)
+        val entityToUpdate = dummyExpenditure(EXPENDITURE_TO_UPDATE, report, lumpSum, unitCost, investment, gdpr = false)
 
         every { reportExpenditureRepository
             .findTop150ByPartnerReportIdAndPartnerReportPartnerIdOrderById(reportId = 58L, PARTNER_ID)
@@ -226,6 +264,7 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
         assertThat(result.first().lumpSumId).isEqualTo(lumpSum.id)
         assertThat(result.first().unitCostId).isEqualTo(unitCost.id)
         assertThat(result.first().costCategory).isEqualTo(ReportBudgetCategory.InfrastructureCosts)
+        assertFalse(result.first().gdpr)
         assertThat(result.first().investmentId).isEqualTo(investment.id)
         assertThat(result.first().internalReferenceNumber).isEqualTo("irn")
         assertThat(result.first().invoiceNumber).isEqualTo("invoice")

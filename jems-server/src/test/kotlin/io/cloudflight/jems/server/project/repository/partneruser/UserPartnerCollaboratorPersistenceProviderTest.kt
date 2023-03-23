@@ -72,7 +72,8 @@ internal class UserPartnerCollaboratorPersistenceProviderTest : UnitTest() {
                 userId = 2L,
                 partnerId = PARTNER_ID,
                 userEmail = "",
-                level = PartnerCollaboratorLevel.EDIT
+                level = PartnerCollaboratorLevel.EDIT,
+                gdpr = false
             )
         )
 
@@ -82,13 +83,44 @@ internal class UserPartnerCollaboratorPersistenceProviderTest : UnitTest() {
         every { collaboratorRepository.saveAll(capture(added)) } returnsArgument 0
 
         val usersToPersist = mapOf(
-            USER_ID to VIEW
+            USER_ID to Pair(VIEW, false)
         )
 
         persistence.changeUsersAssignedToPartner(PROJECT_ID, PARTNER_ID, usersToPersist)
 
         assertThat(deleted.captured).containsExactlyInAnyOrder(UserPartnerId(2L, PARTNER_ID))
         assertThat(added.captured.map { it.id.userId }).containsExactlyInAnyOrder(USER_ID)
+        assertThat(added.captured.map { it.gdpr }).containsExactlyInAnyOrder(false)
+        verify { collaboratorRepository.findByPartnerId(PARTNER_ID) }
+
+    }
+
+    @Test
+    fun changeUsersAssignedToPartnerWithGDPR() {
+        every { collaboratorRepository.findByPartnerId(PARTNER_ID) } returns setOf(
+            PartnerCollaborator (
+                userId = 2L,
+                partnerId = PARTNER_ID,
+                userEmail = "",
+                level = PartnerCollaboratorLevel.EDIT,
+                gdpr = false
+            )
+        )
+
+        val deleted = slot<Collection<UserPartnerId>>()
+        val added = slot<Collection<UserPartnerCollaboratorEntity>>()
+        every { collaboratorRepository.deleteAllByIdIn(capture(deleted)) } answers { }
+        every { collaboratorRepository.saveAll(capture(added)) } returnsArgument 0
+
+        val usersToPersist = mapOf(
+            USER_ID to Pair(VIEW, true)
+        )
+
+        persistence.changeUsersAssignedToPartner(PROJECT_ID, PARTNER_ID, usersToPersist)
+
+        assertThat(deleted.captured).containsExactlyInAnyOrder(UserPartnerId(2L, PARTNER_ID))
+        assertThat(added.captured.map { it.id.userId }).containsExactlyInAnyOrder(USER_ID)
+        assertThat(added.captured.map { it.gdpr }).containsExactlyInAnyOrder(true)
         verify { collaboratorRepository.findByPartnerId(PARTNER_ID) }
 
     }
@@ -97,7 +129,7 @@ internal class UserPartnerCollaboratorPersistenceProviderTest : UnitTest() {
     fun findByUserIdAndPartnerId() {
         val id = UserPartnerId(userId = 45L, partnerId = 7896L)
         every { collaboratorRepository.findById(id) } returns Optional
-            .of(UserPartnerCollaboratorEntity(id, 0L, VIEW))
+            .of(UserPartnerCollaboratorEntity(id, 0L, VIEW, false))
         assertThat(persistence.findByUserIdAndPartnerId(45L, 7896L).get()).isEqualTo(VIEW)
     }
 

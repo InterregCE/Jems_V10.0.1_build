@@ -33,6 +33,9 @@ class PartnerReportExpenditureCostEntity(
     @field:NotNull
     var costCategory: ReportBudgetCategory,
 
+    @field:NotNull
+    var gdpr: Boolean = false,
+
     @ManyToOne
     var reportInvestment: PartnerReportInvestmentEntity?,
 

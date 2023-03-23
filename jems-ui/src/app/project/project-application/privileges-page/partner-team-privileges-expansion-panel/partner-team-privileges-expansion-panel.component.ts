@@ -1,18 +1,26 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {PrivilegesPageStore} from '@project/project-application/privileges-page/privileges-page-store.service';
 import {FormService} from '@common/components/section/form/form.service';
-import {PartnerUserCollaboratorDTO, ProjectCallSettingsDTO, ProjectPartnerSummaryDTO, ProjectStatusDTO} from '@cat/api';
-import {ProjectApplicationFormSidenavService} from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
+import {
+  PartnerUserCollaboratorDTO,
+  ProjectCallSettingsDTO,
+  ProjectPartnerSummaryDTO,
+  ProjectUserCollaboratorDTO
+} from '@cat/api';
+import {
+  ProjectApplicationFormSidenavService
+} from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {FormArray, FormBuilder, Validators} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
 import {catchError, map, tap} from 'rxjs/operators';
 import {APIError} from '@common/models/APIError';
-import {of} from 'rxjs';
+import {combineLatest, Observable, of} from 'rxjs';
 import {Alert} from '@common/components/forms/alert';
 import {
   AFTER_APPROVED_STATUSES,
   ProjectStore
 } from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {SecurityService} from '../../../../security/security.service';
 import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
 
 @Component({
@@ -36,6 +44,7 @@ export class PartnerTeamPrivilegesExpansionPanelComponent implements OnInit {
     map(status => AFTER_APPROVED_STATUSES.includes(status))
   );
   isCallSpf$ = this.projectStore.projectCallType$.pipe(map((type) => type === CallTypeEnum.SPF));
+  isProjectCollaboratorNonManage$: Observable<boolean>;
 
   partnerForm = this.formBuilder.group({
     partnerCollaborators: this.formBuilder.array([], [])
@@ -54,13 +63,27 @@ export class PartnerTeamPrivilegesExpansionPanelComponent implements OnInit {
     private translateService: TranslateService,
     private changeDetectorRef: ChangeDetectorRef,
     public projectStore: ProjectStore,
+    public securityService: SecurityService
   ) {
+    this.isProjectCollaboratorNonManage$ = this.isProjectCollaboratorNonManage();
   }
 
   ngOnInit(): void {
     this.formService.init(this.partnerForm, this.pageStore.projectCollaboratorsEditable$);
     this.resetPartnerForm(this.collaborators);
     this.formService.resetEditable();
+  }
+
+  isProjectCollaboratorNonManage(): Observable<boolean> {
+    return combineLatest([
+      this.pageStore.projectCollaborators$,
+      this.securityService.currentUser
+    ]).pipe(
+        map(([projectCollaborators, currentUser]) =>
+            projectCollaborators.find(collaborator => collaborator.userId === currentUser?.id
+                && collaborator.level !== ProjectUserCollaboratorDTO.LevelEnum.MANAGE) != null
+        )
+    );
   }
 
   savePartnerCollaborators(partnerId: number): void {
@@ -96,7 +119,8 @@ export class PartnerTeamPrivilegesExpansionPanelComponent implements OnInit {
   addPartnerCollaborator(partnerCollaborator?: PartnerUserCollaboratorDTO): void {
     this.partnerCollaborators.push(this.formBuilder.group({
       userEmail: [partnerCollaborator?.userEmail, [Validators.required, Validators.pattern(/(?!^\s+$)^.*$/m), Validators.maxLength(255)]],
-      level: [partnerCollaborator?.level || this.PARTNER_LEVEL.VIEW, Validators.required]
+      level: [partnerCollaborator?.level || this.PARTNER_LEVEL.VIEW, Validators.required],
+      gdpr: [partnerCollaborator?.gdpr]
     }));
   }
 

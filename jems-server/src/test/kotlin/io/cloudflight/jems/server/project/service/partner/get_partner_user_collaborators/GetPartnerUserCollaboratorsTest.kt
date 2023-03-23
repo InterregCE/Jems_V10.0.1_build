@@ -28,7 +28,8 @@ internal class GetPartnerUserCollaboratorsTest : UnitTest() {
             userId = USER_ID,
             partnerId = PARTNER_ID,
             userEmail = "test",
-            level = PartnerCollaboratorLevel.EDIT
+            level = PartnerCollaboratorLevel.EDIT,
+            gdpr = false
         )
     }
 

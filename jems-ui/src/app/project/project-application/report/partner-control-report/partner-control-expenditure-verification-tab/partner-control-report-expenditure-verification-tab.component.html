@@ -37,6 +37,21 @@
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
 
+                        <ng-container matColumnDef="costGDPR" sticky>
+                            <mat-header-cell *matHeaderCellDef>
+                                <div class ="custom-icon gdpr">
+                                    <mat-icon>privacy_tip</mat-icon>
+                                </div>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                                <mat-checkbox
+                                        [disabled]="true"
+                                        [checked]="control.get(constants.FORM_CONTROL_NAMES.costGDPR).value === true">
+                                </mat-checkbox>
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        </ng-container>
+
                         <ng-container matColumnDef="costOptions" sticky>
                             <mat-header-cell *matHeaderCellDef>
                                         <span jemsText

@@ -27,7 +27,8 @@ class AuthorizationUtilServiceTest: UnitTest() {
             userId = PARTNER_COLLABORATOR_USER_ID,
             partnerId = PARTNER_COLLABORATOR_USER_ID,
             userEmail = "user05@jems.eu",
-            level = PartnerCollaboratorLevel.EDIT
+            level = PartnerCollaboratorLevel.EDIT,
+            gdpr = false
         )
     }
 

@@ -59,7 +59,7 @@ import org.springframework.context.ApplicationEventPublisher
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
-import java.util.*
+import java.util.UUID
 
 internal class SubmitProjectPartnerReportTest : UnitTest() {
 
@@ -92,6 +92,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             lumpSumId = null,
             unitCostId = null,
             costCategory = ReportBudgetCategory.StaffCosts,
+            gdpr = false,
             investmentId = 10L,
             contractId = 54L,
             internalReferenceNumber = "internal-1",
@@ -114,6 +115,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             lumpSumId = 22L,
             unitCostId = null,
             costCategory = ReportBudgetCategory.Multiple,
+            gdpr = false,
             investmentId = null,
             contractId = null,
             internalReferenceNumber = null,
@@ -136,6 +138,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             lumpSumId = null,
             unitCostId = 15L,
             costCategory = ReportBudgetCategory.InfrastructureCosts,
+            gdpr = true,
             investmentId = null,
             contractId = null,
             internalReferenceNumber = null,
@@ -158,6 +161,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             lumpSumId = null,
             unitCostId = null,
             costCategory = ReportBudgetCategory.StaffCosts,
+            gdpr = false,
             investmentId = 10L,
             contractId = 54L,
             internalReferenceNumber = "internal-1",
@@ -187,6 +191,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             lumpSumId = 22L,
             unitCostId = null,
             costCategory = ReportBudgetCategory.Multiple,
+            gdpr = false,
             investmentId = null,
             contractId = null,
             internalReferenceNumber = null,
@@ -216,6 +221,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             lumpSumId = null,
             unitCostId = 15L,
             costCategory = ReportBudgetCategory.InfrastructureCosts,
+            gdpr = true,
             investmentId = null,
             contractId = null,
             internalReferenceNumber = null,
