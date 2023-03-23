@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.service.report.project.financialOverview
+package io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportLumpSumBreakdown
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
@@ -11,7 +11,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.financial
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportLumpSumPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
-import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportLumpSumBreakdown.GetReportCertificateLumpSumCalculatorService
+import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateLumpSumPersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -51,6 +51,9 @@ internal class GetReportCertificateLumpSumBreakdownCalculatorTest : UnitTest() {
             previouslyReported = BigDecimal.valueOf(23),
             previouslyPaid = BigDecimal.ZERO,
             currentReport = BigDecimal.valueOf(39, 1),
+            totalReportedSoFar = BigDecimal.valueOf(1),
+            totalReportedSoFarPercentage = BigDecimal.valueOf(2),
+            remainingBudget = BigDecimal.valueOf(3),
         )
 
         private val lumpSum_2 = CertificateLumpSumBreakdownLine(
@@ -63,6 +66,9 @@ internal class GetReportCertificateLumpSumBreakdownCalculatorTest : UnitTest() {
             previouslyReported = BigDecimal.valueOf(7),
             previouslyPaid = BigDecimal.ZERO,
             currentReport = BigDecimal.valueOf(11, 1),
+            totalReportedSoFar = BigDecimal.valueOf(4),
+            totalReportedSoFarPercentage = BigDecimal.valueOf(5),
+            remainingBudget = BigDecimal.valueOf(6),
         )
 
         private val lumpSum_ft = CertificateLumpSumBreakdownLine(
@@ -75,6 +81,9 @@ internal class GetReportCertificateLumpSumBreakdownCalculatorTest : UnitTest() {
             previouslyReported = BigDecimal.ZERO,
             previouslyPaid = BigDecimal.valueOf(12),
             currentReport = BigDecimal.ZERO,
+            totalReportedSoFar = BigDecimal.valueOf(7),
+            totalReportedSoFarPercentage = BigDecimal.valueOf(8),
+            remainingBudget = BigDecimal.valueOf(9),
         )
 
         private val expectedDraftBreakdown = CertificateLumpSumBreakdown(
@@ -140,16 +149,16 @@ internal class GetReportCertificateLumpSumBreakdownCalculatorTest : UnitTest() {
     }
 
     @MockK
-    lateinit var reportPersistence: ProjectReportPersistence
+    private lateinit var reportPersistence: ProjectReportPersistence
     @MockK
-    lateinit var reportCertificateLumpSumPersistence: ProjectReportCertificateLumpSumPersistence
+    private lateinit var reportCertificateLumpSumPersistence: ProjectReportCertificateLumpSumPersistence
     @MockK
-    lateinit var reportCertificatePersistence: ProjectReportCertificatePersistence
+    private lateinit var reportCertificatePersistence: ProjectReportCertificatePersistence
     @MockK
-    lateinit var reportExpenditureLumpSumPersistence: ProjectPartnerReportLumpSumPersistence
+    private lateinit var reportExpenditureLumpSumPersistence: ProjectPartnerReportLumpSumPersistence
 
     @InjectMockKs
-    lateinit var calculator: GetReportCertificateLumpSumCalculatorService
+    private lateinit var calculator: GetReportCertificateLumpSumBreakdownCalculator
 
     @BeforeEach
     fun resetMocks() {
@@ -177,6 +186,8 @@ internal class GetReportCertificateLumpSumBreakdownCalculatorTest : UnitTest() {
             )
         } returns
             mapOf(Pair(1, BigDecimal.valueOf(39, 1)), Pair(2, BigDecimal.valueOf(11, 1)), Pair(3, BigDecimal.ZERO))
-        assertThat(calculator.getSubmittedOrCalculateCurrent(PROJECT_ID, reportId = reportId)).isEqualTo(expectedDraftBreakdown)
+        assertThat(calculator.getSubmittedOrCalculateCurrent(PROJECT_ID, reportId = reportId)).isEqualTo(
+            expectedDraftBreakdown
+        )
     }
 }

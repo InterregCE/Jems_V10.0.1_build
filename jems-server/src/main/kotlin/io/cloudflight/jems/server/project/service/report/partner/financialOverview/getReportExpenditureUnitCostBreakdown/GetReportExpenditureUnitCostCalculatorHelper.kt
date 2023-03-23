@@ -6,17 +6,12 @@ import io.cloudflight.jems.server.project.service.report.model.partner.financial
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.unitCost.ExpenditureUnitCostCurrent
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.unitCost.ExpenditureUnitCostCurrentWithReIncluded
 import java.math.BigDecimal
-import java.math.RoundingMode
 
 fun Collection<ExpenditureUnitCostBreakdownLine>.fillInCurrent(current: Map<Long, ExpenditureUnitCostCurrentWithReIncluded>) = apply {
     forEach {
         it.currentReport = current.get(it.reportUnitCostId)?.current ?: BigDecimal.ZERO
         it.currentReportReIncluded = current.get(it.reportUnitCostId)?.currentReIncluded ?: BigDecimal.ZERO
     }
-}
-
-fun List<ExpenditureUnitCostBreakdownLine>.fillInOverviewFields() = apply {
-    forEach { it.fillInOverviewFields() }
 }
 
 private fun emptyLine() = ExpenditureUnitCostBreakdownLine(
@@ -40,14 +35,7 @@ fun List<ExpenditureUnitCostBreakdownLine>.sumUp() =
         resultingTotalLine.previouslyReportedParked += unitCost.previouslyReportedParked
         resultingTotalLine.currentReportReIncluded += unitCost.currentReportReIncluded
         return@fold resultingTotalLine
-    }.fillInOverviewFields()
-
-private fun ExpenditureUnitCostBreakdownLine.fillInOverviewFields() = apply {
-    totalReportedSoFar = previouslyReported.plus(currentReport)
-    totalReportedSoFarPercentage = if (totalEligibleBudget.compareTo(BigDecimal.ZERO) == 0) BigDecimal.ZERO else
-        totalReportedSoFar.multiply(BigDecimal.valueOf(100)).divide(totalEligibleBudget, 2, RoundingMode.HALF_UP)
-    remainingBudget = totalEligibleBudget.minus(totalReportedSoFar)
-}
+    }
 
 fun Collection<ProjectPartnerReportExpenditureCost>.getCurrentForUnitCosts() =
     filter { it.unitCostId != null }

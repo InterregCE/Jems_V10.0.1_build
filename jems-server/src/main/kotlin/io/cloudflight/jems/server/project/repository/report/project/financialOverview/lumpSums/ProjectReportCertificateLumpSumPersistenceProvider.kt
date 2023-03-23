@@ -28,6 +28,9 @@ class ProjectReportCertificateLumpSumPersistenceProvider(
                 previouslyReported = it.previouslyReported,
                 previouslyPaid = it.previouslyPaid,
                 currentReport = it.current,
+                totalReportedSoFar = BigDecimal.ZERO,
+                totalReportedSoFarPercentage = BigDecimal.ZERO,
+                remainingBudget = BigDecimal.ZERO,
             ) }
 
 

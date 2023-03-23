@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureInvestementsBreakdown
 
 import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
+import io.cloudflight.jems.server.project.service.report.fillInOverviewFields
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.investments.ExpenditureInvestmentBreakdown
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
@@ -32,7 +33,7 @@ class GetReportExpenditureInvestmentsBreakdownCalculator(
 
         return ExpenditureInvestmentBreakdown(
             investments = investmentLines,
-            total = investmentLines.sumUp(),
+            total = investmentLines.sumUp().fillInOverviewFields(),
         )
     }
 

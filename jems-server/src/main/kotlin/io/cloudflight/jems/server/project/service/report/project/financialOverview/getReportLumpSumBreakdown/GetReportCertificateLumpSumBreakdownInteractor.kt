@@ -2,6 +2,6 @@ package io.cloudflight.jems.server.project.service.report.project.financialOverv
 
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.lumpSum.CertificateLumpSumBreakdown
 
-interface GetReportCertificateLumpSumsBreakdownInteractor {
+interface GetReportCertificateLumpSumBreakdownInteractor {
     fun get(projectId: Long, reportId: Long): CertificateLumpSumBreakdown
 }

@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCoFinancingBreakdown
 
+import io.cloudflight.jems.server.project.service.report.fillInOverviewFields
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.CertificateCoFinancingBreakdown
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.CertificateCoFinancingBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancing
@@ -61,17 +62,10 @@ fun CertificateCoFinancingBreakdown.fillInCurrent(current: ReportCertificateCoFi
 }
 
 fun CertificateCoFinancingBreakdown.fillInOverviewFields() = apply {
-    funds.forEach { it.fillInOverviewFields() }
+    funds.fillInOverviewFields()
     partnerContribution.fillInOverviewFields()
     publicContribution.fillInOverviewFields()
     automaticPublicContribution.fillInOverviewFields()
     privateContribution.fillInOverviewFields()
     total.fillInOverviewFields()
-}
-
-private fun CertificateCoFinancingBreakdownLine.fillInOverviewFields() = apply {
-    totalReportedSoFar = previouslyReported.plus(currentReport)
-    totalReportedSoFarPercentage = if (totalEligibleBudget.compareTo(BigDecimal.ZERO) == 0) BigDecimal.ZERO else
-        totalReportedSoFar.multiply(BigDecimal.valueOf(100)).divide(totalEligibleBudget, 2, RoundingMode.HALF_UP)
-    remainingBudget = totalEligibleBudget.minus(totalReportedSoFar)
 }

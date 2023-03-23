@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class GetReportCertificateCostCategoryBreakdown(
-    private val reportCertificateCostCategoryCalculatorService: GetReportCertificateCostCategoryCalculatorService,
+    private val reportCertificateCostCategoryCalculatorService: GetReportCertificateCostCategoryBreakdownCalculator,
 ) : GetReportCertificateCostCategoryBreakdownInteractor {
 
     @CanRetrieveProjectReport

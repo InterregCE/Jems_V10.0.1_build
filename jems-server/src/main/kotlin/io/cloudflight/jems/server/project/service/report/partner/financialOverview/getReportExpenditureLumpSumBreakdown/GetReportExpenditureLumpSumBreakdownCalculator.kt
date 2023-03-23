@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureLumpSumBreakdown
 
+import io.cloudflight.jems.server.project.service.report.fillInOverviewFields
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumBreakdown
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
@@ -28,7 +29,7 @@ class GetReportExpenditureLumpSumBreakdownCalculator(
 
         return ExpenditureLumpSumBreakdown(
             lumpSums = lumpSumLines,
-            total = lumpSumLines.sumUp(),
+            total = lumpSumLines.sumUp().fillInOverviewFields(),
         )
     }
 

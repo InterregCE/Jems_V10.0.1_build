@@ -6,7 +6,7 @@ import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerR
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.ProjectPartnerReportExpenditureVerificationPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.calculateCurrent
-import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.percentageOf
+import io.cloudflight.jems.server.project.service.report.percentageOf
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
@@ -44,11 +44,11 @@ class GetReportControlWorkOverviewService(
         return ControlWorkOverview(
             declaredByPartner = currentReportSum,
             inControlSample = controlSample,
-            inControlSamplePercentage = controlSample.percentageOf(currentReportSum),
+            inControlSamplePercentage = controlSample.percentageOf(currentReportSum) ?: BigDecimal.ZERO,
             parked = parkedSum,
             deductedByControl = currentReportSum.minus(eligibleAfterControl).minus(parkedSum),
             eligibleAfterControl = eligibleAfterControl,
-            eligibleAfterControlPercentage = eligibleAfterControl.percentageOf(currentReportSum),
+            eligibleAfterControlPercentage = eligibleAfterControl.percentageOf(currentReportSum) ?: BigDecimal.ZERO,
         )
     }
 

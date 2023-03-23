@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.model.project.financialOverview.lumpSum
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.server.project.service.report.model.BreakdownLine
 import java.math.BigDecimal
 
 data class CertificateLumpSumBreakdownLine(
@@ -10,11 +11,11 @@ data class CertificateLumpSumBreakdownLine(
     val period: Int?,
     val orderNr: Int,
 
-    var totalEligibleBudget: BigDecimal,
-    var previouslyReported: BigDecimal,
+    override var totalEligibleBudget: BigDecimal,
+    override var previouslyReported: BigDecimal,
     var previouslyPaid: BigDecimal,
-    var currentReport: BigDecimal,
-    var totalReportedSoFar: BigDecimal = BigDecimal.ZERO,
-    var totalReportedSoFarPercentage: BigDecimal = BigDecimal.ZERO,
-    var remainingBudget: BigDecimal = BigDecimal.ZERO,
-)
+    override var currentReport: BigDecimal,
+    override var totalReportedSoFar: BigDecimal,
+    override var totalReportedSoFarPercentage: BigDecimal,
+    override var remainingBudget: BigDecimal,
+) : BreakdownLine

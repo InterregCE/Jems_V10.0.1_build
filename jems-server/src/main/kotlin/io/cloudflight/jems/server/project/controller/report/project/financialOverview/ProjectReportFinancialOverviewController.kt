@@ -7,14 +7,14 @@ import io.cloudflight.jems.api.project.dto.report.project.financialOverview.PerP
 import io.cloudflight.jems.api.project.report.project.ProjectReportFinancialOverviewApi
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCostCategoryBreakdown.GetReportCertificateCostCategoryBreakdownInteractor
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCoFinancingBreakdown.GetReportCertificateCoFinancingBreakdownInteractor
-import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportLumpSumBreakdown.GetReportCertificateLumpSumsBreakdownInteractor
+import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportLumpSumBreakdown.GetReportCertificateLumpSumBreakdownInteractor
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.perPartner.GetPerPartnerCostCategoryBreakdownInteractor
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class ProjectReportFinancialOverviewController(
     private val getReportCertificateCoFinancingBreakdown: GetReportCertificateCoFinancingBreakdownInteractor,
-    private val getReportCertificateLumpSumBreakdown: GetReportCertificateLumpSumsBreakdownInteractor,
+    private val getReportCertificateLumpSumBreakdown: GetReportCertificateLumpSumBreakdownInteractor,
     private val getReportCertificateCostCategoryBreakdown: GetReportCertificateCostCategoryBreakdownInteractor,
     private val getPerPartnerCostCategoryBreakdown: GetPerPartnerCostCategoryBreakdownInteractor,
 ) : ProjectReportFinancialOverviewApi {

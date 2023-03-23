@@ -25,7 +25,7 @@ import io.cloudflight.jems.server.project.service.report.project.financialOvervi
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCostCategoryBreakdown.GetReportCertificateCostCategoryBreakdownInteractor
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.perPartner.GetPerPartnerCostCategoryBreakdownInteractor
 import io.mockk.clearMocks
-import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportLumpSumBreakdown.GetReportCertificateLumpSumsBreakdownInteractor
+import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportLumpSumBreakdown.GetReportCertificateLumpSumBreakdownInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -312,7 +312,7 @@ class ProjectProjectReportFinancialOverviewControllerTest : UnitTest() {
     private lateinit var getPerPartnerCostCategoryBreakdown: GetPerPartnerCostCategoryBreakdownInteractor
 
     @MockK
-    private lateinit var getReportCertificateLumpSumBreakdown: GetReportCertificateLumpSumsBreakdownInteractor
+    private lateinit var getReportCertificateLumpSumBreakdown: GetReportCertificateLumpSumBreakdownInteractor
 
     @InjectMockKs
     private lateinit var controller: ProjectReportFinancialOverviewController
