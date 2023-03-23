@@ -420,7 +420,7 @@ context('Project partners tests', () => {
   });
 
   context('Partner deletion/deactivation', () => {
-    it.only('TB-772 Applicant can add and delete partners in step 1 and 2', function () {
+    it('TB-772 Applicant can add and delete partners in step 1 and 2', function () {
       cy.fixture('project/application-form/project-partners/TB-772.json').then(testData => {
         cy.loginByRequest(user.applicantUser.email);
         cy.create2StepCall(call2step, user.programmeUser.email).then(callId => {
