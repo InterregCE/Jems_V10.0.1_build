@@ -47,6 +47,11 @@
                             </mat-button-toggle>
                         </mat-button-toggle-group>
 
+                        <mat-slide-toggle color="primary"
+                                          [disabled]="partnerForm.disabled || (isProjectCollaboratorNonManage$ | async)"
+                                          formControlName="gdpr" class="gdpr-toggle">
+                            <span>{{'project.application.form.section.sensitive.data.gdpr' | translate}}</span>
+                        </mat-slide-toggle>
                         <button *ngIf="partnerForm.enabled" type="button" mat-icon-button color="accent"
                                 (click)="partnerCollaborators.removeAt(i); formService.setDirty(true)">
                             <mat-icon>delete</mat-icon>

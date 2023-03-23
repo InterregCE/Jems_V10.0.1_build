@@ -8,6 +8,6 @@ interface AssignUserCollaboratorToPartnerInteractor {
     fun updateUserAssignmentsOnPartner(
         projectId: Long,
         partnerId: Long,
-        emailsWithLevel: Set<Pair<String, PartnerCollaboratorLevel>>
+        emailsWithLevel: Map<String, Pair<PartnerCollaboratorLevel, Boolean>>
     ): Set<PartnerCollaborator>
 }

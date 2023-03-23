@@ -329,6 +329,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
             lumpSumId = null,
             unitCostId = null,
             costCategory = ReportBudgetCategory.OfficeAndAdministrationCosts,
+            gdpr = false,
             investmentId = 49L,
             contractId = 28L,
             internalReferenceNumber = "irn",

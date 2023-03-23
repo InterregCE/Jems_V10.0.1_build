@@ -11,6 +11,7 @@ data class ProjectPartnerReportExpenditureCost(
     var number: Int,
     override var lumpSumId: Long?,
     var unitCostId: Long?,
+    var gdpr: Boolean,
     override var costCategory: ReportBudgetCategory,
     var investmentId: Long?,
     var contractId: Long?,

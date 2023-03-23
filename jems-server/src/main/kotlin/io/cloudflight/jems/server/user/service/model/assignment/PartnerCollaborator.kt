@@ -7,4 +7,5 @@ data class PartnerCollaborator(
     val partnerId: Long,
     val userEmail: String,
     val level: PartnerCollaboratorLevel,
+    val gdpr: Boolean
 )

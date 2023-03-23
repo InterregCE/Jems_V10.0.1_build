@@ -28,6 +28,23 @@
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
 
+                        <ng-container matColumnDef="costGDPR" sticky>
+                            <mat-header-cell *matHeaderCellDef>
+                                        <div class ="custom-icon gdpr">
+                                            <mat-icon>privacy_tip</mat-icon>
+                                        </div>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                                <mat-checkbox
+                                        [disabled]="!data.isGDPRCompliant || !data.isReportEditable"
+                                        (click)="$event.stopPropagation()"
+                                        (change)="toggleGDPR(i, control, !control.get(constants.FORM_CONTROL_NAMES.costGDPR).value)"
+                                        [checked]="control.get(constants.FORM_CONTROL_NAMES.costGDPR).value === true">
+                                </mat-checkbox>
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        </ng-container>
+
                         <ng-container matColumnDef="costOptions">
                             <mat-header-cell *matHeaderCellDef>
                                         <span jemsText
@@ -612,7 +629,7 @@
                                 <jems-partner-actions-cell
                                         *ngIf="control.get('id').value"
                                         [formControlName]="constants.FORM_CONTROL_NAMES.attachment"
-                                        [isReportEditable]="isReportEditable$ | async"
+                                        [isReportEditable]="editAllowed(control.get(constants.FORM_CONTROL_NAMES.costGDPR).value, data.isGDPRCompliant, data.canEdit, data.isMonitorUser) && data.isReportEditable"
                                         [isUploadDone]="isUploadDone"
                                         (upload)="onUploadFileToExpenditure($event, control.get('id').value, expenditureIndex)"
                                         (download)="onDownloadFile($event)"
@@ -626,13 +643,15 @@
                             <mat-header-cell *matHeaderCellDef></mat-header-cell>
                             <mat-cell *matCellDef="let control;let index=index" class="justify-end">
                                 <button mat-icon-button *ngIf="reportExpendituresForm.enabled"
-                                        [disabled]="!!control.get(constants.FORM_CONTROL_NAMES.attachment).value"
+                                        [disabled]="!!control.get('attachment').value ||
+                                        !data.isReportEditable ||
+                                        !editAllowed(control.get(constants.FORM_CONTROL_NAMES.costGDPR).value, data.isGDPRCompliant, data.canEdit, data.isMonitorUser)"
                                         (click)="removeItem(index)"
                                         class="delete-button"
                                         color="accent"
                                         tabindex="-1"
                                         type="button">
-                                    <mat-icon
+                                    <mat-icon *ngIf="editAllowed(control.get(constants.FORM_CONTROL_NAMES.costGDPR).value, data.isGDPRCompliant, data.canEdit, data.isMonitorUser)"
                                             matTooltip="{{ (attachment(index).value ? 'project.application.partner.report.attachment.delete.file.first' : null) | translate }}">
                                         {{ attachment(index).value ? 'delete_forever' : 'delete'}}
                                     </mat-icon>

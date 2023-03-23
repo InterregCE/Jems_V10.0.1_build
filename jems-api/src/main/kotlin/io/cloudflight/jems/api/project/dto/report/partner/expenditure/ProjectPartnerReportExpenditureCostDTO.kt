@@ -12,6 +12,7 @@ data class ProjectPartnerReportExpenditureCostDTO(
     val lumpSumId: Long?,
     val unitCostId: Long?,
     val costCategory: BudgetCategoryDTO,
+    val gdpr: Boolean,
     val investmentId: Long?,
     val contractId: Long?,
     val internalReferenceNumber: String?,

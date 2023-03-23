@@ -11,6 +11,21 @@
         </mat-cell>
     </ng-container>
 
+    <ng-container matColumnDef="costGDPR" sticky>
+        <mat-header-cell *matHeaderCellDef>
+            <div class ="custom-icon gdpr">
+                <mat-icon>privacy_tip</mat-icon>
+            </div>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let exp">
+            <mat-checkbox
+                    [disabled]="true"
+                    [checked]="exp.expenditure.gdpr === true">
+            </mat-checkbox>
+        </mat-cell>
+        <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+    </ng-container>
+
     <ng-container matColumnDef="costOptions">
         <mat-header-cell *matHeaderCellDef>
             <span jemsText maxLines="2">{{ 'project.application.partner.report.expenditures.tab.cost.lump.sum' | translate }}</span>

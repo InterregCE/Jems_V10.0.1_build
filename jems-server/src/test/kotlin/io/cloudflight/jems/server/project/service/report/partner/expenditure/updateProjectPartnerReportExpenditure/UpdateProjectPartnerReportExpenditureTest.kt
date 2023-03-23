@@ -47,6 +47,7 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
         lumpSumId = null,
         unitCostId = null,
         costCategory = ReportBudgetCategory.OfficeAndAdministrationCosts,
+        gdpr = false,
         investmentId = 50L,
         contractId = 26L,
         internalReferenceNumber = "irn",

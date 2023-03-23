@@ -102,3 +102,15 @@
 .grayed-out {
   color: var(--font-color-secondary);
 }
+
+.mat-column-costGDPR {
+  min-width: 0.5rem;
+  padding-left: 0.5rem;
+  padding-right: 1rem;
+  border-left: 1px solid var(--table-border-color);
+  border-right: 1px solid var(--table-border-color);
+}
+
+.custom-icon.gdpr {
+  margin-left: -0.25rem;
+}

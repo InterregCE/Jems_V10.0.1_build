@@ -37,6 +37,7 @@ internal class GetAvailableParkedExpenditureListTest : UnitTest() {
                 lumpSumId = 21L,
                 unitCostId = 541L,
                 costCategory = ReportBudgetCategory.OfficeAndAdministrationCosts,
+                gdpr = false,
                 investmentId = 49L,
                 contractId = 28L,
                 internalReferenceNumber = "irn",

@@ -19,7 +19,8 @@ interface UserPartnerCollaboratorRepository : JpaRepository<UserPartnerCollabora
             upc.id.userId,
             upc.id.partnerId,
             a.email,
-            upc.level)
+            upc.level,
+            upc.gdpr)
         FROM #{#entityName} AS upc
         LEFT JOIN project_partner pp on pp.id = upc.id.partnerId
         LEFT JOIN account a on a.id = upc.id.userId
@@ -33,7 +34,8 @@ interface UserPartnerCollaboratorRepository : JpaRepository<UserPartnerCollabora
             upc.id.userId,
             upc.id.partnerId,
             a.email,
-            upc.level)
+            upc.level,
+            upc.gdpr)
         FROM #{#entityName} AS upc
         LEFT JOIN project_partner pp on pp.id = upc.id.partnerId
         LEFT JOIN account a on a.id = upc.id.userId
@@ -47,7 +49,8 @@ interface UserPartnerCollaboratorRepository : JpaRepository<UserPartnerCollabora
             upc.id.userId,
             upc.id.partnerId,
             a.email,
-            upc.level)
+            upc.level,
+            upc.gdpr)
         FROM #{#entityName} AS upc
         LEFT JOIN project_partner pp on pp.id = upc.id.partnerId
         LEFT JOIN account a on a.id = upc.id.userId
@@ -61,7 +64,8 @@ interface UserPartnerCollaboratorRepository : JpaRepository<UserPartnerCollabora
             upc.id.userId,
             upc.id.partnerId,
             a.email,
-            upc.level)
+            upc.level,
+            upc.gdpr)
         FROM #{#entityName} AS upc
         LEFT JOIN account a on a.id = upc.id.userId
         WHERE upc.id.partnerId = :partnerId

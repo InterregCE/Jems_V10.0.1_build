@@ -21,9 +21,9 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAd
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerContact
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerMotivation
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerPaymentSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerStateAid
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerPaymentSummary
 import io.cloudflight.jems.server.user.service.model.assignment.PartnerCollaborator
 import org.mapstruct.Mapper
 import org.mapstruct.factory.Mappers
@@ -49,9 +49,7 @@ fun ProjectPartnerMotivationDTO.toModel() = partnerDTOMapper.map(this)
 fun Set<ProjectContactDTO>.toContactModel() = map { partnerDTOMapper.map(it)}.toSet()
 
 fun Set<PartnerCollaborator>.toDto() = map { partnerDTOMapper.map(it)}.toSet()
-fun Set<UpdatePartnerUserCollaboratorDTO>.toModel() = mapTo(HashSet()) {
-    Pair(it.userEmail, PartnerCollaboratorLevel.valueOf(it.level.name))
-}
+fun Set<UpdatePartnerUserCollaboratorDTO>.toModel() = this.associate { it.userEmail to Pair(partnerDTOMapper.map(it.level), it.gdpr) }
 
 fun PartnerCollaboratorLevel.toDto() = PartnerCollaboratorLevelDTO.valueOf(name)
 
@@ -75,6 +73,7 @@ abstract class ProjectPartnerDTOMapper {
     abstract fun map(partnerUser: PartnerCollaborator): PartnerUserCollaboratorDTO
 
     abstract fun map(partnerPaymentSummary: ProjectPartnerPaymentSummary): ProjectPartnerPaymentSummaryDTO
+    abstract fun map(partnerCollaboratorLevelDTO: PartnerCollaboratorLevelDTO): PartnerCollaboratorLevel
 
     fun map(projectPartnerMotivationDTO: ProjectPartnerMotivationDTO?): ProjectPartnerMotivation =
         ProjectPartnerMotivation(

@@ -134,14 +134,16 @@ class ProjectNotificationEventListenersTest: UnitTest() {
             userId = 41L,
             partnerId = 2L,
             userEmail = "lp.collaborator@jems.eu",
-            level = PartnerCollaboratorLevel.EDIT
+            level = PartnerCollaboratorLevel.EDIT,
+            gdpr = false
         )
 
         val partnerCollaborator = PartnerCollaborator(
             userId = 43L,
             partnerId = 3L,
             userEmail = "pp1.collaborator@jems.eu",
-            level = PartnerCollaboratorLevel.EDIT
+            level = PartnerCollaboratorLevel.EDIT,
+            gdpr = false
         )
 
         val programmeUser = UserSummary(

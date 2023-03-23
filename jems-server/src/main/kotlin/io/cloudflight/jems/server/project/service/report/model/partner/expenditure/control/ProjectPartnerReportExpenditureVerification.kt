@@ -13,6 +13,7 @@ data class ProjectPartnerReportExpenditureVerification(
     override var lumpSumId: Long?,
     val number: Int,
     val unitCostId: Long?,
+    var gdpr: Boolean,
     override val costCategory: ReportBudgetCategory,
     val investmentId: Long?,
     val contractId: Long?,

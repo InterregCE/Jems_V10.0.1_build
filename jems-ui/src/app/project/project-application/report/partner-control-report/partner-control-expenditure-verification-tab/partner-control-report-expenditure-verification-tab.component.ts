@@ -226,6 +226,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
     let columnsToDisplay: any[];
     const columnsToDisplayFirstPart = [
       'costItemID',
+      'costGDPR',
       'costCategory',
     ];
 
@@ -280,6 +281,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
     }
 
     this.columnsWidthsToDisplay.push(
+      {minInRem: 1, maxInRem: 1}, // cost GDPR
       {minInRem: 11, maxInRem: 11}, // cost category
     );
 
@@ -348,6 +350,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
         originalExpenditureNumber: this.formBuilder.control(reportExpenditureControl.parkingMetadata?.originalExpenditureNumber),
         costOptions: this.formBuilder.control(costOption),
         costCategory: this.formBuilder.control(reportExpenditureControl.costCategory),
+        costGDPR: this.formBuilder.control(reportExpenditureControl.gdpr),
         investmentId: this.formBuilder.control(reportExpenditureControl.investmentId),
         attachment: this.formBuilder.control(reportExpenditureControl.attachment, []),
         partOfSampleLocked: this.formBuilder.control(reportExpenditureControl.partOfSampleLocked),
