@@ -12,36 +12,38 @@
     <ng-content></ng-content>
 </jems-main-page-template>
 <ng-template #versionWarn>
-     <ng-container
+    <ng-container *ngIf="versionSelectData$ | async as data">
+    <ng-container
             *jemsHasPermission="PermissionsEnum.ProjectFileApplicationRetrieve; alternativeCondition pageStore.isThisUserOwner$ | async">
-        <jems-alert *ngIf="versionWarnData$ | async as data"
+        <jems-alert *ngIf="data.versionWarnData"
                     [type]="Alert.WARNING"
-                    [show]="!data.selectedIsCurrent && !isSelectedSameAsLastApproved(data.selected)">
+                    [show]="!data.versionWarnData.selectedIsCurrent && !data.isSelectedSameAsLastApproved">
             <div id="version-warn">
                 <span class="mt-2">{{'project.versions.warn.old.version' | translate}}&nbsp;</span>
                 <span class="mt-2">
-                    {{'project.versions.select.format' | translate : {version: data.selected?.version} }}
-                    <span class="ml-0" *ngIf="versionSelectData$ | async as data">
-                        {{getStatusStringForSelectedVersion(data.selectedVersion)}}
+                    {{'project.versions.select.format' | translate : {version: data.versionWarnData.selected?.version} }}
+                    <span class="ml-0">
+                        {{ data.stringForSelectedVersion }}
                     </span>
                 </span>
-                <button jemsText id="switch-to-current" mat-raised-button (click)="pageStore.changeVersion(data.current)">
+                <button jemsText id="switch-to-current" mat-raised-button (click)="pageStore.changeVersion(data.versionWarnData.current)">
                     {{'project.versions.warn.switch' | translate}}
                 </button>
             </div>
         </jems-alert>
     </ng-container>
-    <ng-container *ngIf="versionSelectData$ | async as data">
-        <div id="versionAndStatusInfo" *ngIf="isSelectedSameAsLastApproved(data.selectedVersion) || data.selectedVersion.current">
+    <ng-container>
+        <div id="versionAndStatusInfo" *ngIf="data.isSelectedSameAsLastApproved || data.selectedVersion.current">
             <span>{{'project.versions.select.label' | translate}}: </span>
             <span class="version-info">
                 <mat-icon class="{{getIconForProjectStatus(data.selectedVersion?.status)}}"></mat-icon>
                 {{'project.versions.select.format' | translate : {version: data.selectedVersion.version} }}
             </span>
             <span class="status-info">
-                {{getStatusStringForSelectedVersion(data.selectedVersion)}}
+                {{ data.stringForSelectedVersion }}
             </span>
         </div>
+    </ng-container>
     </ng-container>
 </ng-template>
 
