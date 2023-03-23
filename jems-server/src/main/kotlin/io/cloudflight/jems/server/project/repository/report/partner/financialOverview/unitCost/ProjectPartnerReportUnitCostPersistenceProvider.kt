@@ -57,4 +57,9 @@ class ProjectPartnerReportUnitCostPersistenceProvider(
             }
     }
 
+    @Transactional(readOnly = true)
+    override fun getUnitCostCumulativeAfterControl(reportIds: Set<Long>) =
+        reportUnitCostRepository.findCumulativeForReportIdsAfterControl(reportIds)
+            .associate { Pair(it.first, it.second) }
+
 }

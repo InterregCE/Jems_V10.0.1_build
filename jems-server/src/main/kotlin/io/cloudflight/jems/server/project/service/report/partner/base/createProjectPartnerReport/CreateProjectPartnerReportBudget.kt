@@ -87,12 +87,12 @@ class CreateProjectPartnerReportBudget(
 
         val lumpSums = lumpSumPersistence.getLumpSums(projectId, version = version)
 
-        val staffCosts = partnerBudgetCostsPersistence.getBudgetStaffCosts(partnerId, version)
-        val travelCosts = partnerBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(partnerId, version)
-        val externalAndEquipmentAndInfrastructure = partnerBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(partnerId, version)
-            .plus(partnerBudgetCostsPersistence.getBudgetEquipmentCosts(partnerId, version))
-            .plus(partnerBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(partnerId, version))
-        val unitCosts = partnerBudgetCostsPersistence.getBudgetUnitCosts(partnerId, version)
+        val staffCosts = partnerBudgetCostsPersistence.getBudgetStaffCosts(setOf(partnerId), version)
+        val travelCosts = partnerBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(setOf(partnerId), version)
+        val externalAndEquipmentAndInfrastructure = partnerBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(setOf(partnerId), version)
+            .plus(partnerBudgetCostsPersistence.getBudgetEquipmentCosts(setOf(partnerId), version))
+            .plus(partnerBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(setOf(partnerId), version))
+        val unitCosts = partnerBudgetCostsPersistence.getBudgetUnitCosts(setOf(partnerId), version)
 
         val installmentsPaid = paymentPersistence.findByPartnerId(partnerId).getOnlyPaid()
 

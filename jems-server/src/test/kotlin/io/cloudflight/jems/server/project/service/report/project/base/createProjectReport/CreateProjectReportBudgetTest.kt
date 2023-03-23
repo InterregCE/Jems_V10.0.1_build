@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.payments.service.regular.PaymentRegularPersistence
 import io.cloudflight.jems.server.project.repository.report.project.financialOverview.coFinancing.ProjectReportCertificateCoFinancingPersistenceProvider
+import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
 import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_funds.GetPartnerBudgetPerFundService
 import io.cloudflight.jems.server.project.service.budget.get_project_budget.GetProjectBudget
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
@@ -14,6 +15,8 @@ import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersiste
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
 import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerFund
+import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsPersistence
+import io.cloudflight.jems.server.project.service.partner.model.BudgetUnitCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedFund
@@ -22,9 +25,11 @@ import io.cloudflight.jems.server.project.service.report.model.project.financial
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateLumpSumPersistence
+import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateUnitCostPersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
@@ -32,6 +37,22 @@ import java.math.RoundingMode
 import java.time.ZonedDateTime
 
 internal class CreateProjectReportBudgetTest : UnitTest() {
+
+    private fun partners(): List<ProjectPartnerSummary> {
+        val partner = mockk<ProjectPartnerSummary>()
+        every { partner.id } returns 1L
+        return listOf(partner)
+    }
+
+    private fun budgetUnitCostEntries() = listOf(
+        BudgetUnitCostEntry(
+            id = 1L,
+            numberOfUnits = BigDecimal.ONE,
+            budgetPeriods = mutableSetOf(),
+            rowSum = BigDecimal.ONE,
+            unitCostId = 1L
+        )
+    )
 
     private fun lumpSums(partnerId: Long) = listOf(
         ProjectLumpSum(
@@ -161,6 +182,15 @@ internal class CreateProjectReportBudgetTest : UnitTest() {
     @MockK
     lateinit var reportCertificateLumpSumPersistence: ProjectReportCertificateLumpSumPersistence
 
+    @MockK
+    lateinit var partnerBudgetCostsPersistence: ProjectPartnerBudgetCostsPersistence
+
+    @MockK
+    lateinit var projectBudgetPersistence: ProjectBudgetPersistence
+
+    @MockK
+    lateinit var reportCertificateUnitCostPersistence: ProjectReportCertificateUnitCostPersistence
+
     @InjectMockKs
     lateinit var service: CreateProjectReportBudget
 
@@ -182,6 +212,14 @@ internal class CreateProjectReportBudgetTest : UnitTest() {
         every { reportCertificateCostCategoryPersistence.getCostCategoriesCumulative(setOf(1L)) } returns previouslyReportedCostCategory
         every { getPartnerBudgetPerFundService.getProjectPartnerBudgetPerFund(projectId, version) } returns projectBudgetPerFund
         every { reportCertificateLumpSumPersistence.getLumpSumCumulative(setOf(1L)) } returns mapOf(Pair(1, BigDecimal.TEN))
+        every { projectBudgetPersistence.getPartnersForProjectId(projectId, version) } returns partners()
+        every { partnerBudgetCostsPersistence.getBudgetStaffCosts(setOf(1L), version) } returns emptyList()
+        every { partnerBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(setOf(1L), version) } returns emptyList()
+        every { partnerBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(setOf(1L), version) } returns emptyList()
+        every { partnerBudgetCostsPersistence.getBudgetEquipmentCosts(setOf(1L), version) } returns emptyList()
+        every { partnerBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(setOf(1L), version) } returns emptyList()
+        every { partnerBudgetCostsPersistence.getBudgetUnitCosts(setOf(1L), version) } returns budgetUnitCostEntries()
+        every { reportCertificateUnitCostPersistence.getUnitCostsCumulative(setOf(1L)) } returns mapOf(Pair(1L, BigDecimal.TEN))
 
         val result = service.retrieveBudgetDataFor(
             projectId,

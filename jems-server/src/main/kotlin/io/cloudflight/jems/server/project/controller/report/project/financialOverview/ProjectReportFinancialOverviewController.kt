@@ -4,11 +4,13 @@ import io.cloudflight.jems.api.project.dto.report.project.financialOverview.Cert
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.CertificateCostCategoryBreakdownDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.CertificateLumpSumBreakdownDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.PerPartnerCostCategoryBreakdownDTO
+import io.cloudflight.jems.api.project.dto.report.project.financialOverview.CertificateUnitCostBreakdownDTO
 import io.cloudflight.jems.api.project.report.project.ProjectReportFinancialOverviewApi
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCostCategoryBreakdown.GetReportCertificateCostCategoryBreakdownInteractor
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCoFinancingBreakdown.GetReportCertificateCoFinancingBreakdownInteractor
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportLumpSumBreakdown.GetReportCertificateLumpSumBreakdownInteractor
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.perPartner.GetPerPartnerCostCategoryBreakdownInteractor
+import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportUnitCostBreakdown.GetReportCertificateUnitCostsBreakdownInteractor
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -17,6 +19,7 @@ class ProjectReportFinancialOverviewController(
     private val getReportCertificateLumpSumBreakdown: GetReportCertificateLumpSumBreakdownInteractor,
     private val getReportCertificateCostCategoryBreakdown: GetReportCertificateCostCategoryBreakdownInteractor,
     private val getPerPartnerCostCategoryBreakdown: GetPerPartnerCostCategoryBreakdownInteractor,
+    private val getReportCertificateUnitCostBreakdown: GetReportCertificateUnitCostsBreakdownInteractor,
 ) : ProjectReportFinancialOverviewApi {
 
     override fun getCoFinancingBreakdown(projectId: Long, reportId: Long): CertificateCoFinancingBreakdownDTO =
@@ -31,4 +34,6 @@ class ProjectReportFinancialOverviewController(
     override fun getCostCategoriesPerPartnerBreakdown(projectId: Long, reportId: Long): PerPartnerCostCategoryBreakdownDTO =
         getPerPartnerCostCategoryBreakdown.get(projectId = projectId, reportId = reportId).toDto()
 
+    override fun getUnitCostsBreakdown(projectId: Long, reportId: Long): CertificateUnitCostBreakdownDTO =
+        getReportCertificateUnitCostBreakdown.get(projectId = projectId, reportId = reportId).toDto()
 }

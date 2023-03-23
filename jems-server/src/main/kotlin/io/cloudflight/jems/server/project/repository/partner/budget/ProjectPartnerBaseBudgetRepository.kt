@@ -13,7 +13,7 @@ import java.sql.Timestamp
 @NoRepositoryBean
 interface ProjectPartnerBaseBudgetRepository<T : ProjectPartnerBudgetBase> : CrudRepository<T, Long> {
 
-    fun findAllByBasePropertiesPartnerIdOrderByIdAsc(partnerId: Long): List<T>
+    fun findAllByBasePropertiesPartnerIdInOrderByIdAsc(partnerIds: Set<Long>): List<T>
 
     @Query(
         """
@@ -24,12 +24,12 @@ interface ProjectPartnerBaseBudgetRepository<T : ProjectPartnerBudgetBase> : Cru
              FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP  :timestamp AS entity
              LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP  :timestamp AS translation ON entity.id = translation.source_entity_id
              LEFT JOIN #{#entityName}_period FOR SYSTEM_TIME AS OF TIMESTAMP  :timestamp AS period ON entity.id =  period.budget_id
-             WHERE  entity.partner_id = :partnerId
+             WHERE  entity.partner_id IN :partnerIds
              ORDER BY entity.id
              """,
         nativeQuery = true
     )
-    fun <T> findAllByPartnerIdAsOfTimestamp(partnerId: Long, timestamp: Timestamp, viewClass: Class<T>): List<T>
+    fun <T> findAllByPartnerIdAsOfTimestamp(partnerIds: Set<Long>, timestamp: Timestamp, viewClass: Class<T>): List<T>
 
     @Query("SELECT SUM(e.baseProperties.rowSum) FROM #{#entityName} e WHERE e.baseProperties.partnerId = :partnerId")
     fun sumTotalForPartner(partnerId: Long): BigDecimal?

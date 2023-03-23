@@ -720,27 +720,27 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
                 16 to ExpenditureLumpSumCurrent(current = BigDecimal.valueOf(200), currentParked = BigDecimal.TEN)
             )
         // unit costs
-        every { partnerBudgetCostsPersistence.getBudgetStaffCosts(partnerId, version) } returns staffCosts
+        every { partnerBudgetCostsPersistence.getBudgetStaffCosts(setOf(partnerId), version) } returns staffCosts
         every {
             partnerBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(
-                partnerId,
+                setOf(partnerId),
                 version
             )
         } returns travelCosts
         every {
             partnerBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(
-                partnerId,
+                setOf(partnerId),
                 version
             )
         } returns externalCosts
-        every { partnerBudgetCostsPersistence.getBudgetEquipmentCosts(partnerId, version) } returns equipmentCosts
+        every { partnerBudgetCostsPersistence.getBudgetEquipmentCosts(setOf(partnerId), version) } returns equipmentCosts
         every {
             partnerBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(
-                partnerId,
+                setOf(partnerId),
                 version
             )
         } returns infrastructureCosts
-        every { partnerBudgetCostsPersistence.getBudgetUnitCosts(partnerId, version) } returns unitCosts
+        every { partnerBudgetCostsPersistence.getBudgetUnitCosts(setOf(partnerId), version) } returns unitCosts
         every { reportUnitCostPersistence.getUnitCostCumulative(setOf(408L)) } returns
             mapOf(
                 6L to ExpenditureUnitCostCurrent(current = BigDecimal.TEN, currentParked = BigDecimal.ZERO),

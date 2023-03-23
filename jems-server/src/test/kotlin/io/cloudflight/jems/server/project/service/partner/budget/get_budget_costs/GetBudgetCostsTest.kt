@@ -33,23 +33,23 @@ internal class GetBudgetCostsTest : UnitTest() {
         val budgetUnitCostEntries = budgetUnitCostEntries()
         val budgetSpfCostEntries = budgetSpfCostEntries()
 
-        every { budgetCostsPersistence.getBudgetEquipmentCosts(partnerId) } returns budgetGeneralCostEntries
-        every { budgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(partnerId) } returns budgetGeneralCostEntries
-        every { budgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(partnerId) } returns budgetGeneralCostEntries
-        every { budgetCostsPersistence.getBudgetTravelAndAccommodationCosts(partnerId) } returns budgetTravelAndAccommodationCostEntries
-        every { budgetCostsPersistence.getBudgetStaffCosts(partnerId) } returns budgetStaffCostEntries
-        every { budgetCostsPersistence.getBudgetUnitCosts(partnerId) } returns budgetUnitCostEntries
-        every { budgetCostsPersistence.getBudgetSpfCosts(partnerId) } returns budgetSpfCostEntries
+        every { budgetCostsPersistence.getBudgetEquipmentCosts(setOf(partnerId)) } returns budgetGeneralCostEntries
+        every { budgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(setOf(partnerId)) } returns budgetGeneralCostEntries
+        every { budgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(setOf(partnerId)) } returns budgetGeneralCostEntries
+        every { budgetCostsPersistence.getBudgetTravelAndAccommodationCosts(setOf(partnerId)) } returns budgetTravelAndAccommodationCostEntries
+        every { budgetCostsPersistence.getBudgetStaffCosts(setOf(partnerId)) } returns budgetStaffCostEntries
+        every { budgetCostsPersistence.getBudgetUnitCosts(setOf(partnerId)) } returns budgetUnitCostEntries
+        every { budgetCostsPersistence.getBudgetSpfCosts(setOf(partnerId)) } returns budgetSpfCostEntries
 
         val result = getBudgetCosts.getBudgetCosts(partnerId)
 
-        verify(atLeast = 1) { budgetCostsPersistence.getBudgetEquipmentCosts(partnerId) }
-        verify(atLeast = 1) { budgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(partnerId) }
-        verify(atLeast = 1) { budgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(partnerId) }
-        verify(atLeast = 1) { budgetCostsPersistence.getBudgetTravelAndAccommodationCosts(partnerId) }
-        verify(atLeast = 1) { budgetCostsPersistence.getBudgetStaffCosts(partnerId) }
-        verify(atLeast = 1) { budgetCostsPersistence.getBudgetUnitCosts(partnerId) }
-        verify(atLeast = 1) { budgetCostsPersistence.getBudgetSpfCosts(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetEquipmentCosts(setOf(partnerId)) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(setOf(partnerId)) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(setOf(partnerId)) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetTravelAndAccommodationCosts(setOf(partnerId)) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetStaffCosts(setOf(partnerId)) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetUnitCosts(setOf(partnerId)) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetSpfCosts(setOf(partnerId)) }
         confirmVerified(budgetCostsPersistence)
 
         assertEquals(budgetStaffCostEntries, result.staffCosts)

@@ -131,19 +131,19 @@ class ProjectDataProviderImpl(
                 else valueOf(0, 2)
 
             val budgetCosts = BudgetCosts(
-                staffCosts = getBudgetCostsPersistence.getBudgetStaffCosts(partner.id, version),
-                travelCosts = getBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(partner.id, version),
+                staffCosts = getBudgetCostsPersistence.getBudgetStaffCosts(setOf(partner.id), version),
+                travelCosts = getBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(setOf(partner.id), version),
                 externalCosts = getBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(
-                    partner.id,
+                    setOf(partner.id),
                     version
                 ),
-                equipmentCosts = getBudgetCostsPersistence.getBudgetEquipmentCosts(partner.id, version),
+                equipmentCosts = getBudgetCostsPersistence.getBudgetEquipmentCosts(setOf(partner.id), version),
                 infrastructureCosts = getBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(
-                    partner.id,
+                    setOf(partner.id),
                     version
                 ),
-                unitCosts = getBudgetCostsPersistence.getBudgetUnitCosts(partner.id, version),
-                spfCosts = getBudgetCostsPersistence.getBudgetSpfCosts(partner.id, version)
+                unitCosts = getBudgetCostsPersistence.getBudgetUnitCosts(setOf(partner.id), version),
+                spfCosts = getBudgetCostsPersistence.getBudgetSpfCosts(setOf(partner.id), version)
             ).toDataModel()
             val budgetCalculationResult = getBudgetTotalCosts(budgetOptions, partner.id, version).toDataModel()
             val budget = PartnerBudgetData(

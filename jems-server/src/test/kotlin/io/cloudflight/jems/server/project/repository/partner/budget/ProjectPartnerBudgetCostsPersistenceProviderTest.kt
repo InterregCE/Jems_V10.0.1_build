@@ -20,8 +20,8 @@ class ProjectPartnerBudgetCostsPersistenceProviderTest : ProjectPartnerBudgetCos
             DynamicTest.dynamicTest(
                 "should return current version of budget ${it.name}"
             ) {
-                every { it.repository.findAllByBasePropertiesPartnerIdOrderByIdAsc(partnerId) } returns listOf(it.entity)
-                assertThat(it.callback.invoke(partnerId, null)).containsExactly(it.expectedResult)
+                every { it.repository.findAllByBasePropertiesPartnerIdInOrderByIdAsc(setOf(partnerId)) } returns listOf(it.entity)
+                assertThat(it.callback.invoke(setOf(partnerId), null)).containsExactly(it.expectedResult)
             }
         }
 
@@ -34,14 +34,14 @@ class ProjectPartnerBudgetCostsPersistenceProviderTest : ProjectPartnerBudgetCos
                 if (it.isForGettingUnitCosts) {
                     every {
                         (it.repository as ProjectPartnerBudgetUnitCostRepository)
-                            .findAllByPartnerIdAsOfTimestamp(partnerId, timestamp)
+                            .findAllByPartnerIdAsOfTimestamp(setOf(partnerId), timestamp)
                     } returns listOf(it.row as ProjectPartnerBudgetUnitCostRow)
                 } else {
                     every {
-                        it.repository.findAllByPartnerIdAsOfTimestamp(partnerId, timestamp, it.projectClass.java)
+                        it.repository.findAllByPartnerIdAsOfTimestamp(setOf(partnerId), timestamp, it.projectClass.java)
                     } returns listOf(it.row)
                 }
-                assertThat(it.callback.invoke(partnerId, version)).containsExactly(it.expectedResult)
+                assertThat(it.callback.invoke(setOf(partnerId), version)).containsExactly(it.expectedResult)
             }
         }
 

@@ -9,11 +9,13 @@ import io.cloudflight.jems.server.project.service.report.model.project.financial
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportLumpSumPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportUnitCostPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateLumpSumPersistence
+import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateUnitCostPersistence
 import io.cloudflight.jems.server.project.service.report.project.identification.ProjectReportIdentificationPersistence
 import io.cloudflight.jems.server.project.service.report.project.projectReportSubmitted
 import io.cloudflight.jems.server.project.service.report.project.workPlan.ProjectReportWorkPlanPersistence
@@ -33,6 +35,8 @@ class SubmitProjectReport(
     private val reportExpenditureCoFinancingPersistence: ProjectPartnerReportExpenditureCoFinancingPersistence,
     private val reportExpenditureCostCategoryPersistence: ProjectPartnerReportExpenditureCostCategoryPersistence,
     private val reportLumpSumPersistence: ProjectPartnerReportLumpSumPersistence,
+    private val reportExpenditureUnitCostPersistence: ProjectPartnerReportUnitCostPersistence,
+    private val reportCertificateUnitCostPersistence: ProjectReportCertificateUnitCostPersistence,
     private val reportWorkPlanPersistence: ProjectReportWorkPlanPersistence,
     private val auditPublisher: ApplicationEventPublisher,
 ) : SubmitProjectReportInteractor {
@@ -48,6 +52,7 @@ class SubmitProjectReport(
         saveCurrentSpendingProfile(reportId)
         saveCurrentCoFinancing(certificates, projectId, reportId)
         saveCurrentCostCategories(certificates, projectId, reportId)
+        saveCurrentUnitCosts(certificates, projectId, reportId)
         saveCurrentLumpSums(certificates, projectId, reportId)
 
         deleteWorkPlanTabDataIfNotNeeded(projectId, report)
@@ -121,6 +126,16 @@ class SubmitProjectReport(
             projectId = projectId,
             reportId = reportId,
             currentValues = currentValues
+        )
+    }
+
+    private fun saveCurrentUnitCosts(certificates: List<ProjectPartnerReportSubmissionSummary>, projectId: Long, reportId: Long) {
+        val currentValues = reportExpenditureUnitCostPersistence.getUnitCostCumulativeAfterControl(certificates.map {it.id}.toSet())
+
+        reportCertificateUnitCostPersistence.updateCurrentlyReportedValues(
+            projectId = projectId,
+            reportId = reportId,
+            currentValues = currentValues,
         )
     }
 

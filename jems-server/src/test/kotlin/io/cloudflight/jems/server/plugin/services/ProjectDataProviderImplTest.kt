@@ -838,7 +838,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         } returns listOf(partnerBudgetOptions)
         every { coFinancingPersistence.getCoFinancingAndContributions(projectPartner.id) } returns partnerCoFinancing
         every { programmeLegalStatusPersistence.getMax20Statuses() } returns legalStatuse
-        every { getBudgetCostsPersistence.getBudgetStaffCosts(projectPartner.id) } returns listOf(
+        every { getBudgetCostsPersistence.getBudgetStaffCosts(setOf(projectPartner.id)) } returns listOf(
             BudgetStaffCostEntry(
                 id = 3L,
                 numberOfUnits = BigDecimal.ONE,
@@ -851,11 +851,11 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 unitCostId = 4L
             )
         )
-        every { getBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(projectPartner.id) } returns emptyList()
-        every { getBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(projectPartner.id) } returns emptyList()
-        every { getBudgetCostsPersistence.getBudgetEquipmentCosts(projectPartner.id) } returns emptyList()
-        every { getBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(projectPartner.id) } returns emptyList()
-        every { getBudgetCostsPersistence.getBudgetUnitCosts(projectPartner.id) } returns emptyList()
+        every { getBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(setOf(projectPartner.id)) } returns emptyList()
+        every { getBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(setOf(projectPartner.id)) } returns emptyList()
+        every { getBudgetCostsPersistence.getBudgetEquipmentCosts(setOf(projectPartner.id)) } returns emptyList()
+        every { getBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(setOf(projectPartner.id)) } returns emptyList()
+        every { getBudgetCostsPersistence.getBudgetUnitCosts(setOf(projectPartner.id)) } returns emptyList()
         every {
             budgetCostsCalculator.calculateCosts(
                 any(),

@@ -18,12 +18,12 @@ interface ProjectPartnerBudgetUnitCostRepository :
              period.*
              FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP  :timestamp AS entity
              LEFT JOIN #{#entityName}_period FOR SYSTEM_TIME AS OF TIMESTAMP  :timestamp AS period ON entity.id =  period.budget_id
-             WHERE  entity.partner_id = :partnerId
+             WHERE  entity.partner_id IN :partnerIds
              ORDER BY entity.id
              """,
         nativeQuery = true
     )
-    fun findAllByPartnerIdAsOfTimestamp(partnerId: Long, timestamp: Timestamp): List<ProjectPartnerBudgetUnitCostRow>
+    fun findAllByPartnerIdAsOfTimestamp(partnerIds: Set<Long>, timestamp: Timestamp): List<ProjectPartnerBudgetUnitCostRow>
 
     @Query(
         """

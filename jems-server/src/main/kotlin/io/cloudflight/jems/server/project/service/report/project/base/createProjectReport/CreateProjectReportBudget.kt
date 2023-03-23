@@ -3,16 +3,20 @@ package io.cloudflight.jems.server.project.service.report.project.base.createPro
 import io.cloudflight.jems.server.payments.service.regular.PaymentRegularPersistence
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
 import io.cloudflight.jems.server.project.repository.report.project.financialOverview.coFinancing.ProjectReportCertificateCoFinancingPersistenceProvider
+import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
 import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_funds.GetPartnerBudgetPerFundService
 import io.cloudflight.jems.server.project.service.budget.get_project_budget.GetProjectBudget
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerFund
+import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsPersistence
+import io.cloudflight.jems.server.project.service.partner.model.BaseBudgetEntry
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedFund
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportBudget
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportLumpSum
+import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportUnitCostBase
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.CertificateCostCategoryPreviouslyReported
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
@@ -20,6 +24,7 @@ import io.cloudflight.jems.server.project.service.report.partner.financialOvervi
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateLumpSumPersistence
+import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateUnitCostPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
@@ -36,7 +41,10 @@ class CreateProjectReportBudget(
     private val paymentPersistence: PaymentRegularPersistence,
     private val reportCertificateCostCategoryPersistence: ProjectReportCertificateCostCategoryPersistence,
     private val getPartnerBudgetPerFundService: GetPartnerBudgetPerFundService,
-    private val reportCertificateLumpSumPersistence: ProjectReportCertificateLumpSumPersistence
+    private val reportCertificateLumpSumPersistence: ProjectReportCertificateLumpSumPersistence,
+    private val partnerBudgetCostsPersistence: ProjectPartnerBudgetCostsPersistence,
+    private val projectBudgetPersistence: ProjectBudgetPersistence,
+    private val reportCertificateUnitCostPersistence: ProjectReportCertificateUnitCostPersistence
 ) {
 
     @Transactional
@@ -48,6 +56,15 @@ class CreateProjectReportBudget(
             .mapTo(HashSet()) { it.first }
 
         val budget = getProjectBudget.getBudget(projectId, version)
+
+        val partnerIds = projectBudgetPersistence.getPartnersForProjectId(projectId = projectId, version).map {it.id!!}.toSet()
+
+        val staffCosts = partnerBudgetCostsPersistence.getBudgetStaffCosts(partnerIds, version)
+        val travelCosts = partnerBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(partnerIds, version)
+        val externalAndEquipmentAndInfrastructure = partnerBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(partnerIds, version)
+            .plus(partnerBudgetCostsPersistence.getBudgetEquipmentCosts(partnerIds, version))
+            .plus(partnerBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(partnerIds, version))
+        val unitCosts = partnerBudgetCostsPersistence.getBudgetUnitCosts(partnerIds, version)
 
         val lumpSums = lumpSumPersistence.getLumpSums(projectId, version = version)
         val sumOfPaymentReady = lumpSums.sumOfPaymentReady()
@@ -78,7 +95,14 @@ class CreateProjectReportBudget(
             availableLumpSums = lumpSums.toProjectReportLumpSums(
                 previouslyReported = reportCertificateLumpSumPersistence.getLumpSumCumulative(submittedReportIds),
                 previouslyPaid = installmentsPaid.byLumpSum()
-            )
+            ),
+            unitCosts = getSetOfUnitCostsWithTotalAndNumberOfUnits(
+                staffCosts
+                    .plus(travelCosts)
+                    .plus(externalAndEquipmentAndInfrastructure)
+                    .plus(unitCosts),
+                previouslyReported = reportCertificateUnitCostPersistence.getUnitCostsCumulative(submittedReportIds)
+            ),
         )
     }
 
@@ -292,4 +316,20 @@ class CreateProjectReportBudget(
                 installments.groupBy { it.orderNr }
                     .mapValues { (_, installments) -> installments.sumOf { it.amountPaidPerFund } }
             }
+
+    private fun getSetOfUnitCostsWithTotalAndNumberOfUnits(
+        budgetEntries: List<BaseBudgetEntry>,
+        previouslyReported: Map<Long, BigDecimal>,
+    ): Set<ProjectReportUnitCostBase> {
+        return budgetEntries.filter { it.unitCostId != null }
+            .groupBy { it.unitCostId!! }.entries
+            .mapTo(HashSet()) { (unitCostId, budgetEntries) ->
+                ProjectReportUnitCostBase(
+                    unitCostId = unitCostId,
+                    totalCost = budgetEntries.sumOf { it.rowSum!! },
+                    numberOfUnits = budgetEntries.sumOf { it.numberOfUnits },
+                    previouslyReported = previouslyReported.get(unitCostId) ?: ZERO,
+                )
+            }
+    }
 }
