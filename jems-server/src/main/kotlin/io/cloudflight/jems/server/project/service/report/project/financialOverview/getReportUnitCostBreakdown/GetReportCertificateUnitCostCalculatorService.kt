@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportUnitCostBreakdown
 
+import io.cloudflight.jems.server.project.service.report.fillInOverviewFields
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.unitCost.CertificateUnitCostBreakdown
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.unitCost.CertificateUnitCostBreakdownLine
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportUnitCostPersistence
@@ -9,7 +10,6 @@ import io.cloudflight.jems.server.project.service.report.project.financialOvervi
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
-import java.math.RoundingMode
 
 @Service
 class GetReportCertificateUnitCostCalculatorService(
@@ -47,17 +47,6 @@ class GetReportCertificateUnitCostCalculatorService(
         forEach {
             it.currentReport = current.get(it.unitCostId) ?: BigDecimal.ZERO
         }
-    }
-
-    fun List<CertificateUnitCostBreakdownLine>.fillInOverviewFields() = apply {
-        forEach { it.fillInOverviewFields() }
-    }
-
-    private fun CertificateUnitCostBreakdownLine.fillInOverviewFields() = apply {
-        totalReportedSoFar = previouslyReported.plus(currentReport)
-        totalReportedSoFarPercentage = if (totalEligibleBudget.compareTo(BigDecimal.ZERO) == 0) BigDecimal.ZERO else
-            totalReportedSoFar.multiply(BigDecimal.valueOf(100)).divide(totalEligibleBudget, 2, RoundingMode.HALF_UP)
-        remainingBudget = totalEligibleBudget.minus(totalReportedSoFar)
     }
 
     private fun emptyLine() = CertificateUnitCostBreakdownLine(

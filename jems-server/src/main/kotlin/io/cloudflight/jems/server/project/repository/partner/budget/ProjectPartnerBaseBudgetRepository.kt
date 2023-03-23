@@ -13,21 +13,7 @@ import java.sql.Timestamp
 @NoRepositoryBean
 interface ProjectPartnerBaseBudgetRepository<T : ProjectPartnerBudgetBase> : CrudRepository<T, Long> {
 
-    @Query(
-        """
-            SELECT
-             entity.*,
-             translation.*,
-             period.*
-             FROM #{#entityName} AS entity
-             LEFT JOIN #{#entityName}_transl AS translation ON entity.id = translation.source_entity_id
-             LEFT JOIN #{#entityName}_period AS period ON entity.id =  period.budget_id
-             WHERE  entity.partner_id IN :partnerIds
-             ORDER BY entity.id
-             """,
-        nativeQuery = true
-    )
-    fun findAllByPartnerIdOrderByIdAsc(partnerIds: Set<Long>): List<T>
+    fun findAllByBasePropertiesPartnerIdInOrderByIdAsc(partnerIds: Set<Long>): List<T>
 
     @Query(
         """

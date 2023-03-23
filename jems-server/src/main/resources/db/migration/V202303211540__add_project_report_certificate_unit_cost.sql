@@ -4,9 +4,9 @@ CREATE TABLE report_project_certificate_unit_cost
     report_id               INT UNSIGNED NOT NULL,
     programme_unit_cost_id  INT UNSIGNED NOT NULL,
 
-    total                   DECIMAL(17, 2) UNSIGNED NOT NULL DEFAULT 0.00,
-    current                 DECIMAL(17, 2) UNSIGNED NOT NULL DEFAULT 0.00,
-    previously_reported     DECIMAL(17, 2) UNSIGNED NOT NULL DEFAULT 0.00,
+    total                   DECIMAL(17, 2) NOT NULL DEFAULT 0.00,
+    current                 DECIMAL(17, 2) NOT NULL DEFAULT 0.00,
+    previously_reported     DECIMAL(17, 2) NOT NULL DEFAULT 0.00,
 
     CONSTRAINT fk_report_certificate_unit_cost_to_report_project
     FOREIGN KEY (report_id) REFERENCES report_project (id)

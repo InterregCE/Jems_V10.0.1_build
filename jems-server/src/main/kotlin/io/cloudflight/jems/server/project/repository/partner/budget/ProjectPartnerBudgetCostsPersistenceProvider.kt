@@ -43,7 +43,7 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
     override fun getBudgetStaffCosts(partnerIds: Set<Long>, version: String?): List<BudgetStaffCostEntry> =
         projectVersionUtils.fetch(version, getProjectIdForPartner(partnerIds.first(), version),
             currentVersionFetcher = {
-                budgetStaffCostRepository.findAllByPartnerIdOrderByIdAsc(partnerIds)
+                budgetStaffCostRepository.findAllByBasePropertiesPartnerIdInOrderByIdAsc(partnerIds)
                     .toBudgetStaffCostEntries()
             },
             previousVersionFetcher = { timestamp ->
@@ -57,7 +57,7 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
     override fun getBudgetTravelAndAccommodationCosts(partnerIds: Set<Long>, version: String?) =
         projectVersionUtils.fetch(version, getProjectIdForPartner(partnerIds.first(), version),
             currentVersionFetcher = {
-                budgetTravelRepository.findAllByPartnerIdOrderByIdAsc(partnerIds)
+                budgetTravelRepository.findAllByBasePropertiesPartnerIdInOrderByIdAsc(partnerIds)
                     .toBudgetTravelAndAccommodationCostEntries()
             },
             previousVersionFetcher = { timestamp ->
@@ -71,7 +71,7 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
     override fun getBudgetInfrastructureAndWorksCosts(partnerIds: Set<Long>, version: String?) =
         projectVersionUtils.fetch(version, getProjectIdForPartner(partnerIds.first(), version),
             currentVersionFetcher = {
-                budgetInfrastructureRepository.findAllByPartnerIdOrderByIdAsc(partnerIds)
+                budgetInfrastructureRepository.findAllByBasePropertiesPartnerIdInOrderByIdAsc(partnerIds)
                     .toBudgetGeneralEntryList()
             },
             previousVersionFetcher = { timestamp ->
@@ -85,7 +85,7 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
     override fun getBudgetUnitCosts(partnerIds: Set<Long>, version: String?): List<BudgetUnitCostEntry> =
         projectVersionUtils.fetch(version, getProjectIdForPartner(partnerIds.first(), version),
             currentVersionFetcher = {
-                budgetUnitCostRepository.findAllByPartnerIdOrderByIdAsc(partnerIds).toModel()
+                budgetUnitCostRepository.findAllByBasePropertiesPartnerIdInOrderByIdAsc(partnerIds).toModel()
             },
             previousVersionFetcher = { timestamp ->
                 budgetUnitCostRepository.findAllByPartnerIdAsOfTimestamp(partnerIds, timestamp)
@@ -97,7 +97,7 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
     override fun getBudgetExternalExpertiseAndServicesCosts(partnerIds: Set<Long>, version: String?) =
         projectVersionUtils.fetch(version, getProjectIdForPartner(partnerIds.first(), version),
             currentVersionFetcher = {
-                budgetExternalRepository.findAllByPartnerIdOrderByIdAsc(partnerIds)
+                budgetExternalRepository.findAllByBasePropertiesPartnerIdInOrderByIdAsc(partnerIds)
                     .toBudgetGeneralEntryList()
             },
             previousVersionFetcher = { timestamp ->
@@ -111,7 +111,7 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
     override fun getBudgetEquipmentCosts(partnerIds: Set<Long>, version: String?) =
         projectVersionUtils.fetch(version, getProjectIdForPartner(partnerIds.first(), version),
             currentVersionFetcher = {
-                budgetEquipmentRepository.findAllByPartnerIdOrderByIdAsc(partnerIds)
+                budgetEquipmentRepository.findAllByBasePropertiesPartnerIdInOrderByIdAsc(partnerIds)
                     .toBudgetGeneralEntryList()
             },
             previousVersionFetcher = { timestamp ->
@@ -125,7 +125,7 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
     override fun getBudgetSpfCosts(partnerIds: Set<Long>, version: String?) =
         projectVersionUtils.fetch(version, getProjectIdForPartner(partnerIds.first(), version),
             currentVersionFetcher = {
-                budgetSpfCostRepository.findAllByPartnerIdOrderByIdAsc(partnerIds)
+                budgetSpfCostRepository.findAllByBasePropertiesPartnerIdInOrderByIdAsc(partnerIds)
                     .toBudgetSpfCostEntries()
             },
             previousVersionFetcher = { timestamp ->

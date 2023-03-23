@@ -20,7 +20,7 @@ class ProjectPartnerBudgetCostsPersistenceProviderTest : ProjectPartnerBudgetCos
             DynamicTest.dynamicTest(
                 "should return current version of budget ${it.name}"
             ) {
-                every { it.repository.findAllByPartnerIdOrderByIdAsc(setOf(partnerId)) } returns listOf(it.entity)
+                every { it.repository.findAllByBasePropertiesPartnerIdInOrderByIdAsc(setOf(partnerId)) } returns listOf(it.entity)
                 assertThat(it.callback.invoke(setOf(partnerId), null)).containsExactly(it.expectedResult)
             }
         }
