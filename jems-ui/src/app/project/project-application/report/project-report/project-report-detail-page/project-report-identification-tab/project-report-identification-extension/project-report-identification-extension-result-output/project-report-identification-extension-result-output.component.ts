@@ -1,0 +1,30 @@
+import {Component, Input} from '@angular/core';
+import {ProjectReportOutputLineOverviewDTO, ProjectReportResultIndicatorOverviewDTO} from '@cat/api';
+import {MatTableDataSource} from '@angular/material/table';
+import {NumberService} from '@common/services/number.service';
+import {
+  ProjectReportIdentificationExtensionStore
+} from '@project/project-application/report/project-report/project-report-detail-page/project-report-identification-tab/project-report-identification-extension/project-report-identification-extension-store.service';
+
+@Component({
+  selector: 'jems-project-report-identification-extension-result-output',
+  templateUrl: './project-report-identification-extension-result-output.component.html',
+  styleUrls: ['./project-report-identification-extension-result-output.component.scss']
+})
+export class ProjectReportIdentificationExtensionResultOutputComponent {
+
+  constructor(readonly pageStore: ProjectReportIdentificationExtensionStore) {}
+
+  getDataSource(lines: Array<ProjectReportOutputLineOverviewDTO>) {
+    return new MatTableDataSource<ProjectReportOutputLineOverviewDTO>(lines);
+  }
+
+  displayedOutputColumns(id: number | undefined): string[] {
+    return !id ? ['identifier', 'targetValue', 'previouslyReported', 'currentReport', 'totalReportedSoFar']
+      : ['identifier', 'measurementUnit', 'targetValue', 'previouslyReported', 'currentReport', 'totalReportedSoFar'];
+  }
+
+  add(previouslyReported: number, currentReport: number) {
+    return NumberService.sum([previouslyReported, currentReport]);
+  }
+}

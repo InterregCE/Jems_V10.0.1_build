@@ -47,7 +47,7 @@ internal class ProjectReportIdentificationPersistenceProviderTest: UnitTest() {
             highlights = setOf(),
             partnerProblems = setOf(),
             deviations = setOf(),
-            spendingProfiles = listOf()
+            spendingProfiles = listOf(),
         )
 
         private val projectReportEntity = ProjectReportEntity(

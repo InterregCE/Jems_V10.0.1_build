@@ -280,11 +280,10 @@
                                 <div *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.PROGRAMME_OUTPUT_INDICATOR_AND_MEASUREMENT_UNIT"
                                      class="input-field-row mt-2">
                                     <mat-form-field class="input-field">
-                                        <mat-label
-                                                [innerText]="'project.application.project.report.tab.results.and.principles.result.indicator' | translate"></mat-label>
-                                        <input matInput disabled [value]="output.get(constants.OUTPUT_INDICATOR.name)?.value?.id &&
+                                        <mat-label [innerText]="'project.application.project.report.tab.work.plan.output.indicator' | translate"></mat-label>
+                                        <input matInput disabled [value]="output.get(constants.OUTPUT_INDICATOR.name)?.value && (
                                             output.get(constants.OUTPUT_INDICATOR.name)?.value?.identifier + ': ' +
-                                            (output.get(constants.OUTPUT_INDICATOR.name)?.value?.name | translateBySystemLanguage | async)">
+                                            (output.get(constants.OUTPUT_INDICATOR.name)?.value?.name | translateBySystemLanguage | async))">
                                     </mat-form-field>
                                     <mat-form-field class="input-field">
                                         <mat-label

@@ -4,11 +4,14 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackage
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageOnlyUpdate
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanStatus
+import io.cloudflight.jems.server.project.service.report.model.project.identification.overview.ProjectReportOutputLineOverview
 import java.math.BigDecimal
 
 interface ProjectReportWorkPlanPersistence {
 
     fun getReportWorkPlanById(projectId: Long, reportId: Long): List<ProjectReportWorkPackage>
+
+    fun getReportWorkPackageOutputsById(projectId: Long, reportId: Long): List<ProjectReportOutputLineOverview>
 
     fun existsByActivityId(projectId: Long, reportId: Long, workPackageId: Long, activityId: Long): Boolean
 

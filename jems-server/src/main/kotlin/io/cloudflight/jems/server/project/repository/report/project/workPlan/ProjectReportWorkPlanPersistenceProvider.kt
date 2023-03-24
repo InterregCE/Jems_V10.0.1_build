@@ -4,8 +4,8 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.entity.inLang
 import io.cloudflight.jems.server.common.entity.updateWith
-import io.cloudflight.jems.server.project.entity.report.project.workPlan.ProjectReportWorkPackageActivityTranslEntity
 import io.cloudflight.jems.server.project.entity.report.project.workPlan.ProjectReportWorkPackageActivityDeliverableTranslEntity
+import io.cloudflight.jems.server.project.entity.report.project.workPlan.ProjectReportWorkPackageActivityTranslEntity
 import io.cloudflight.jems.server.project.entity.report.project.workPlan.ProjectReportWorkPackageOutputTranslEntity
 import io.cloudflight.jems.server.project.entity.report.project.workPlan.ProjectReportWorkPackageTranslEntity
 import io.cloudflight.jems.server.project.repository.report.project.base.ProjectReportRepository
@@ -13,6 +13,7 @@ import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackage
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageOnlyUpdate
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanStatus
+import io.cloudflight.jems.server.project.service.report.model.project.identification.overview.ProjectReportOutputLineOverview
 import io.cloudflight.jems.server.project.service.report.project.workPlan.ProjectReportWorkPlanPersistence
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -52,6 +53,12 @@ class ProjectReportWorkPlanPersistenceProvider(
             retrieveOutputs = { wp -> outputsByWorkPackage[wp] ?: emptyList() },
         )
     }
+
+    @Transactional(readOnly = true)
+    override fun getReportWorkPackageOutputsById(projectId: Long, reportId: Long): List<ProjectReportOutputLineOverview> =
+        workPlanOutputRepository.findAllByWorkPackageEntityReportEntityOrderByNumber(
+            reportEntity = reportRepository.getByIdAndProjectId(id = reportId, projectId = projectId)
+        ).toOverviewModel()
 
     @Transactional(readOnly = true)
     override fun existsByActivityId(projectId: Long, reportId: Long, workPackageId: Long, activityId: Long) =

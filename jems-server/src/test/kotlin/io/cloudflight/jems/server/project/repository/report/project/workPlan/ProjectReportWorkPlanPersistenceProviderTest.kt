@@ -7,6 +7,8 @@ import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.programme.entity.indicator.OutputIndicatorEntity
 import io.cloudflight.jems.server.programme.entity.indicator.OutputIndicatorTranslEntity
+import io.cloudflight.jems.server.programme.entity.indicator.ResultIndicatorEntity
+import io.cloudflight.jems.server.programme.entity.indicator.ResultIndicatorTranslEntity
 import io.cloudflight.jems.server.programme.service.indicator.model.OutputIndicatorSummary
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.workPlan.ProjectReportWorkPackageActivityDeliverableEntity
@@ -21,6 +23,9 @@ import io.cloudflight.jems.server.project.repository.report.project.base.Project
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.project.identification.overview.ProjectReportOutputIndicatorOverview
+import io.cloudflight.jems.server.project.service.report.model.project.identification.overview.ProjectReportOutputLineOverview
+import io.cloudflight.jems.server.project.service.report.model.project.identification.overview.ProjectReportResultIndicatorOverview
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackage
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageActivity
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageActivityDeliverable
@@ -121,12 +126,12 @@ class ProjectReportWorkPlanPersistenceProviderTest : UnitTest() {
             )
         }
 
-        private fun indicator(): OutputIndicatorEntity {
+        private fun outputIndicatorEntity(): OutputIndicatorEntity {
             return OutputIndicatorEntity(
                 id = 447L,
                 identifier = "indic ident",
                 code = "indic code",
-                resultIndicatorEntity = mockk(),
+                resultIndicatorEntity = resultIndicatorEntity(),
                 programmePriorityPolicyEntity = null,
                 milestone = BigDecimal.valueOf(7556L, 2),
                 finalTarget = BigDecimal.valueOf(7556L, 2),
@@ -141,12 +146,30 @@ class ProjectReportWorkPlanPersistenceProviderTest : UnitTest() {
             }
         }
 
+        private fun resultIndicatorEntity(): ResultIndicatorEntity {
+            return ResultIndicatorEntity(
+                id = 536L,
+                identifier = "result ident",
+                code = "result code",
+                programmePriorityPolicyEntity = null,
+                baseline = BigDecimal.TEN,
+            ).apply {
+                translatedValues.add(
+                    ResultIndicatorTranslEntity(
+                        TranslationId(this, SystemLanguage.EN),
+                        name = "result name",
+                        measurementUnit = "measurement"
+                    )
+                )
+            }
+        }
+
         private fun output(id: Long, wp: ProjectReportWorkPackageEntity) = ProjectReportWorkPackageOutputEntity(
             id = id,
             workPackageEntity = wp,
             number = id.toInt(),
             deactivated = false,
-            programmeOutputIndicator = indicator(),
+            programmeOutputIndicator = outputIndicatorEntity(),
             periodNumber = 15,
             targetValue = BigDecimal.valueOf(1296L, 2),
             previouslyReported = BigDecimal.valueOf(1577L, 2),
@@ -207,9 +230,11 @@ class ProjectReportWorkPlanPersistenceProviderTest : UnitTest() {
                         number = outputId.toInt(),
                         title = setOf(InputTranslation(SystemLanguage.EN, "[$outputId] output title")),
                         deactivated = false,
-                        outputIndicator = OutputIndicatorSummary(447L, "indic ident", "indic code",
+                        outputIndicator = OutputIndicatorSummary(
+                            447L, "indic ident", "indic code",
                             name = setOf(InputTranslation(SystemLanguage.EN, "indicator name")),
-                            null, setOf(InputTranslation(SystemLanguage.EN, "measurement"))),
+                            null, setOf(InputTranslation(SystemLanguage.EN, "measurement"))
+                        ),
                         period = ProjectPeriod(15, 29, 30),
                         targetValue = BigDecimal.valueOf(1296L, 2),
                         previouslyReported = BigDecimal.valueOf(1577L, 2),
@@ -219,18 +244,60 @@ class ProjectReportWorkPlanPersistenceProviderTest : UnitTest() {
                     ),
                 ),
             )
+
+        private fun expectedOutput(outputId: Long) = listOf(
+            ProjectReportOutputLineOverview(
+                number = outputId.toInt(),
+                workPackageNumber = 15,
+                name = setOf(InputTranslation(SystemLanguage.EN, "[$outputId] output title")),
+                measurementUnit = setOf(InputTranslation(SystemLanguage.EN, "measurement")),
+                deactivated = false,
+                outputIndicator = outputIndicator,
+                targetValue = BigDecimal.valueOf(1296, 2),
+                previouslyReported = BigDecimal.valueOf(1577, 2),
+                currentReport = BigDecimal.valueOf(2875, 2),
+            )
+        )
+
+        private val resultIndicator = ProjectReportResultIndicatorOverview(
+            id = 536L,
+            identifier = "result ident",
+            name = setOf(InputTranslation(SystemLanguage.EN, "result name")),
+            measurementUnit = setOf(InputTranslation(SystemLanguage.EN, "measurement")),
+            baseline = BigDecimal.valueOf(10),
+            targetValue = BigDecimal.ZERO,
+            previouslyReported = BigDecimal.ZERO,
+            currentReport = BigDecimal.ZERO,
+        )
+
+        private val outputIndicator = ProjectReportOutputIndicatorOverview(
+            id = 447,
+            identifier = "indic ident",
+            name = setOf(InputTranslation(SystemLanguage.EN, "indicator name")),
+            measurementUnit = setOf(InputTranslation(SystemLanguage.EN, "measurement")),
+            resultIndicator = resultIndicator,
+            targetValue = BigDecimal.ZERO,
+            previouslyReported = BigDecimal.ZERO,
+            currentReport = BigDecimal.ZERO,
+        )
+
     }
 
     @MockK
     lateinit var reportRepository: ProjectReportRepository
+
     @MockK
     lateinit var workPlanRepository: ProjectReportWorkPackageRepository
+
     @MockK
     lateinit var workPlanActivityRepository: ProjectReportWorkPackageActivityRepository
+
     @MockK
     lateinit var workPlanActivityDeliverableRepository: ProjectReportWorkPackageActivityDeliverableRepository
+
     @MockK
     lateinit var workPlanOutputRepository: ProjectReportWorkPackageOutputRepository
+
     @MockK
     lateinit var projectPersistence: ProjectPersistence
 
@@ -280,6 +347,22 @@ class ProjectReportWorkPlanPersistenceProviderTest : UnitTest() {
     }
 
     @Test
+    fun getReportWorkPackageOutputsById() {
+        val report = mockk<ProjectReportEntity>()
+        every { report.applicationFormVersion } returns "5.13.1"
+        every { reportRepository.getByIdAndProjectId(id = 14L, projectId = PROJECT_ID) } returns report
+
+        val workPackage = wp(id = 15L, report = report)
+        val output = output(id = 35L, wp = workPackage)
+
+        every { workPlanOutputRepository.findAllByWorkPackageEntityReportEntityOrderByNumber(report) } returns
+            mutableListOf(output)
+
+        assertThat(persistence.getReportWorkPackageOutputsById(projectId = PROJECT_ID, reportId = 14L))
+            .usingRecursiveComparison().isEqualTo(expectedOutput(outputId = 35L))
+    }
+
+    @Test
     fun existsByActivityId() {
         val reportId = 200L
         val wpId = 220L
@@ -291,8 +374,9 @@ class ProjectReportWorkPlanPersistenceProviderTest : UnitTest() {
     fun existsByDeliverableId() {
         val reportId = 201L
         val wpId = 221L
-        every { workPlanActivityDeliverableRepository
-            .existsByDeliverableId(deliverableId = 150L, 15L, wpId, reportId, PROJECT_ID)
+        every {
+            workPlanActivityDeliverableRepository
+                .existsByDeliverableId(deliverableId = 150L, 15L, wpId, reportId, PROJECT_ID)
         } returns true
         assertThat(persistence.existsByDeliverableId(PROJECT_ID, reportId = reportId, wpId, activityId = 15L, deliverableId = 150L)).isTrue
     }
@@ -301,7 +385,7 @@ class ProjectReportWorkPlanPersistenceProviderTest : UnitTest() {
     fun existsByOutputId() {
         val reportId = 202L
         val wpId = 222L
-        every { workPlanOutputRepository.existsByOutputId(17L, wpId,  reportId = reportId, PROJECT_ID) } returns false
+        every { workPlanOutputRepository.existsByOutputId(17L, wpId, reportId = reportId, PROJECT_ID) } returns false
         assertThat(persistence.existsByOutputId(PROJECT_ID, reportId = reportId, wpId, outputId = 17L)).isFalse
     }
 

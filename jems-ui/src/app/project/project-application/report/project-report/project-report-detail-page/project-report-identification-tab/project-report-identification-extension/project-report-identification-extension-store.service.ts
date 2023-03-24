@@ -3,14 +3,13 @@ import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
 import {
   ProjectReportIdentificationDTO,
   ProjectReportIdentificationService,
+  ProjectReportResultIndicatorOverviewDTO,
   ProjectReportSummaryDTO,
   UpdateProjectReportIdentificationDTO
 } from '@cat/api';
 import {RoutingService} from '@common/services/routing.service';
-import {
-  ProjectStore
-} from '@project/project-application/containers/project-application-detail/services/project-store.service';
-import {shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {filter, startWith, switchMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 
 @Injectable({providedIn: 'root'})
@@ -20,6 +19,7 @@ export class ProjectReportIdentificationExtensionStore {
   projectReportId$: Observable<number>;
   updatedReportStatus$ = new Subject<ProjectReportSummaryDTO.StatusEnum>();
   projectReportIdentification$: Observable<ProjectReportIdentificationDTO>;
+  resultIndicatorOverview$: Observable<Array<ProjectReportResultIndicatorOverviewDTO>>;
 
   private updatedReportIdentification$ = new Subject<ProjectReportIdentificationDTO>();
 
@@ -28,6 +28,7 @@ export class ProjectReportIdentificationExtensionStore {
               private projectStore: ProjectStore) {
     this.projectReportId$ = this.projectReportId();
     this.projectReportIdentification$ = this.projectReportIdentification();
+    this.resultIndicatorOverview$ = this.resultIndicatorOverview();
   }
 
   private projectReportId(): Observable<any> {
@@ -59,6 +60,17 @@ export class ProjectReportIdentificationExtensionStore {
         this.projectReportIdentificationService.updateProjectReportIdentification(Number(partnerId), Number(reportId), identification)),
       tap(data => Log.info('Updated identification for project report', this, data)),
       tap(data => this.updatedReportIdentification$.next(data)),
+    );
+  }
+
+  public resultIndicatorOverview(): Observable<Array<ProjectReportResultIndicatorOverviewDTO>> {
+    return combineLatest([
+      this.projectStore.projectId$,
+      this.projectReportId$,
+    ]).pipe(
+      filter(([projectId, reportId]) => !!projectId && !!reportId),
+      switchMap(([projectId, reportId]) => this.projectReportIdentificationService.getResultIndicatorOverview(Number(projectId), Number(reportId))),
+      tap(data => Log.info('Loaded ResultIndicatorOverview', this, data)),
     );
   }
 

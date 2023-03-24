@@ -41,7 +41,7 @@ internal class UpdateProjectReportIdentificationTest: UnitTest() {
             ),
             partnerProblems = setOf(),
             deviations = setOf(),
-            spendingProfiles = listOf()
+            spendingProfiles = listOf(),
         )
 
         private val identificationUpdate = ProjectReportIdentificationUpdate(

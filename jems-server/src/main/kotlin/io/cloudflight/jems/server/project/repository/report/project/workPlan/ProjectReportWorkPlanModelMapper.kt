@@ -1,6 +1,10 @@
 package io.cloudflight.jems.server.project.repository.report.project.workPlan
 
 import io.cloudflight.jems.server.common.entity.extractField
+import io.cloudflight.jems.server.programme.entity.indicator.OutputIndicatorEntity
+import io.cloudflight.jems.server.programme.entity.indicator.ResultIndicatorEntity
+import io.cloudflight.jems.server.programme.repository.indicator.getMeasurementUnit
+import io.cloudflight.jems.server.programme.repository.indicator.getName
 import io.cloudflight.jems.server.programme.repository.indicator.toOutputIndicatorSummary
 import io.cloudflight.jems.server.project.entity.report.project.workPlan.ProjectReportWorkPackageActivityDeliverableEntity
 import io.cloudflight.jems.server.project.entity.report.project.workPlan.ProjectReportWorkPackageActivityEntity
@@ -8,10 +12,14 @@ import io.cloudflight.jems.server.project.entity.report.project.workPlan.Project
 import io.cloudflight.jems.server.project.entity.report.project.workPlan.ProjectReportWorkPackageOutputEntity
 import io.cloudflight.jems.server.project.repository.report.partner.toModel
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
+import io.cloudflight.jems.server.project.service.report.model.project.identification.overview.ProjectReportOutputIndicatorOverview
+import io.cloudflight.jems.server.project.service.report.model.project.identification.overview.ProjectReportOutputLineOverview
+import io.cloudflight.jems.server.project.service.report.model.project.identification.overview.ProjectReportResultIndicatorOverview
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackage
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageActivity
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageActivityDeliverable
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageOutput
+import java.math.BigDecimal
 
 fun List<ProjectReportWorkPackageEntity>.toModel(
     periods: Map<Int, ProjectPeriod>,
@@ -87,3 +95,39 @@ fun List<ProjectReportWorkPackageOutputEntity>.toOutputsModel(
         attachment = it.attachment?.toModel(),
     )
 }
+
+fun List<ProjectReportWorkPackageOutputEntity>.toOverviewModel() = map {
+    ProjectReportOutputLineOverview(
+        number = it.number,
+        workPackageNumber = it.workPackageEntity.number,
+        name = it.translatedValues.extractField { it.title },
+        measurementUnit = it.programmeOutputIndicator?.getMeasurementUnit() ?: emptySet(),
+        deactivated = it.deactivated,
+        outputIndicator = it.programmeOutputIndicator?.toModel(),
+        targetValue = it.targetValue,
+        currentReport = it.currentReport,
+        previouslyReported = it.previouslyReported,
+    )
+}
+
+fun OutputIndicatorEntity.toModel() = ProjectReportOutputIndicatorOverview(
+    id = id,
+    identifier = identifier,
+    name = getName(),
+    measurementUnit = getMeasurementUnit(),
+    resultIndicator = resultIndicatorEntity?.toModel(),
+    targetValue = BigDecimal.ZERO,
+    previouslyReported = BigDecimal.ZERO,
+    currentReport = BigDecimal.ZERO,
+)
+
+fun ResultIndicatorEntity.toModel() = ProjectReportResultIndicatorOverview(
+    id = id,
+    identifier = identifier,
+    name = getName(),
+    measurementUnit = getMeasurementUnit(),
+    baseline = baseline,
+    targetValue = BigDecimal.ZERO,
+    previouslyReported = BigDecimal.ZERO,
+    currentReport = BigDecimal.ZERO,
+)
