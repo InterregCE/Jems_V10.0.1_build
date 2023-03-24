@@ -5,5 +5,5 @@ import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalcul
 data class PerPartnerCostCategoryBreakdown(
     val partners: List<PerPartnerCostCategoryBreakdownLine>,
     val totalCurrent: BudgetCostsCalculationResultFull,
-    val totalAfterControl: BudgetCostsCalculationResultFull,
+    val totalDeduction: BudgetCostsCalculationResultFull,
 )

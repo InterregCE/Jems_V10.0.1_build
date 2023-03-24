@@ -76,17 +76,17 @@ fun List<PerPartnerCertificateCostCategory>.toModel(
                 unitCost = it.unitCostCurrent,
                 sum = it.sumCurrent,
             ),
-            afterControl = BudgetCostsCalculationResultFull(
-                staff = it.staffAfterControl,
-                office = it.officeAfterControl,
-                travel = it.travelAfterControl,
-                external = it.externalAfterControl,
-                equipment = it.equipmentAfterControl,
-                infrastructure = it.infrastructureAfterControl,
-                other = it.otherAfterControl,
-                lumpSum = it.lumpSumAfterControl,
-                unitCost = it.unitCostAfterControl,
-                sum = it.sumAfterControl,
+            deduction = BudgetCostsCalculationResultFull(
+                staff = it.staffDeduction,
+                office = it.officeDeduction,
+                travel = it.travelDeduction,
+                external = it.externalDeduction,
+                equipment = it.equipmentDeduction,
+                infrastructure = it.infrastructureDeduction,
+                other = it.otherDeduction,
+                lumpSum = it.lumpSumDeduction,
+                unitCost = it.unitCostDeduction,
+                sum = it.sumDeduction,
             ),
         )
     }

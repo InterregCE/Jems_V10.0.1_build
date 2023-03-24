@@ -58,7 +58,7 @@ internal class GetPerPartnerCostCategoryBreakdownTest: UnitTest() {
             staffCostsFlatRate = 79,
             otherCostsOnStaffCostsFlatRate = 24,
             current = current,
-            afterControl = afterControl,
+            deduction = afterControl,
         )
         private val perPartner_16 = PerPartnerCostCategoryBreakdownLine(
             partnerId = 16L,
@@ -72,7 +72,7 @@ internal class GetPerPartnerCostCategoryBreakdownTest: UnitTest() {
             staffCostsFlatRate = 12,
             otherCostsOnStaffCostsFlatRate = 15,
             current = current,
-            afterControl = afterControl,
+            deduction = afterControl,
         )
 
         private val expectedPerPartner = PerPartnerCostCategoryBreakdown(
@@ -89,7 +89,7 @@ internal class GetPerPartnerCostCategoryBreakdownTest: UnitTest() {
                     staffCostsFlatRate = 79,
                     otherCostsOnStaffCostsFlatRate = 24,
                     current = current.copy(),
-                    afterControl = afterControl.copy(),
+                    deduction = afterControl.copy(),
                 ),
                 PerPartnerCostCategoryBreakdownLine(
                     partnerId = 16L,
@@ -103,7 +103,7 @@ internal class GetPerPartnerCostCategoryBreakdownTest: UnitTest() {
                     staffCostsFlatRate = 12,
                     otherCostsOnStaffCostsFlatRate = 15,
                     current = current.copy(),
-                    afterControl = afterControl.copy(),
+                    deduction = afterControl.copy(),
                 ),
             ),
             totalCurrent = BudgetCostsCalculationResultFull(
@@ -118,7 +118,7 @@ internal class GetPerPartnerCostCategoryBreakdownTest: UnitTest() {
                 unitCost = BigDecimal.valueOf(38L),
                 sum = BigDecimal.valueOf(270L),
             ),
-            totalAfterControl = BudgetCostsCalculationResultFull(
+            totalDeduction = BudgetCostsCalculationResultFull(
                 staff = BigDecimal.valueOf(42L),
                 office = BigDecimal.valueOf(44L),
                 travel = BigDecimal.valueOf(46L),
@@ -146,7 +146,7 @@ internal class GetPerPartnerCostCategoryBreakdownTest: UnitTest() {
                 unitCost = BigDecimal.ZERO,
                 sum = BigDecimal.ZERO,
             ),
-            totalAfterControl = BudgetCostsCalculationResultFull(
+            totalDeduction = BudgetCostsCalculationResultFull(
                 staff = BigDecimal.ZERO,
                 office = BigDecimal.ZERO,
                 travel = BigDecimal.ZERO,

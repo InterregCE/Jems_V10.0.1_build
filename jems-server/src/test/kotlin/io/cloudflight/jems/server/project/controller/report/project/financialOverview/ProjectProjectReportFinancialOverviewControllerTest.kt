@@ -161,7 +161,7 @@ class ProjectProjectReportFinancialOverviewControllerTest : UnitTest() {
                         unitCost = BigDecimal.valueOf(19L),
                         sum = BigDecimal.valueOf(20L),
                     ),
-                    afterControl = BudgetCostsCalculationResultFull(
+                    deduction = BudgetCostsCalculationResultFull(
                         staff = BigDecimal.valueOf(21L),
                         office = BigDecimal.valueOf(22L),
                         travel = BigDecimal.valueOf(23L),
@@ -187,7 +187,7 @@ class ProjectProjectReportFinancialOverviewControllerTest : UnitTest() {
                 unitCost = BigDecimal.valueOf(39L),
                 sum = BigDecimal.valueOf(40L),
             ),
-            totalAfterControl = BudgetCostsCalculationResultFull(
+            totalDeduction = BudgetCostsCalculationResultFull(
                 staff = BigDecimal.valueOf(41L),
                 office = BigDecimal.valueOf(42L),
                 travel = BigDecimal.valueOf(43L),
@@ -226,7 +226,7 @@ class ProjectProjectReportFinancialOverviewControllerTest : UnitTest() {
                         unitCost = BigDecimal.valueOf(19L),
                         sum = BigDecimal.valueOf(20L),
                     ),
-                    afterControl = BudgetCostsCalculationResultFullDTO(
+                    deduction = BudgetCostsCalculationResultFullDTO(
                         staff = BigDecimal.valueOf(21L),
                         office = BigDecimal.valueOf(22L),
                         travel = BigDecimal.valueOf(23L),
@@ -252,7 +252,7 @@ class ProjectProjectReportFinancialOverviewControllerTest : UnitTest() {
                 unitCost = BigDecimal.valueOf(39L),
                 sum = BigDecimal.valueOf(40L),
             ),
-            totalAfterControl = BudgetCostsCalculationResultFullDTO(
+            totalDeduction = BudgetCostsCalculationResultFullDTO(
                 staff = BigDecimal.valueOf(41L),
                 office = BigDecimal.valueOf(42L),
                 travel = BigDecimal.valueOf(43L),

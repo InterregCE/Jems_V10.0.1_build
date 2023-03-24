@@ -21,7 +21,7 @@ class GetPerPartnerCostCategoryBreakdown(
         return PerPartnerCostCategoryBreakdown(
             partners = data.sortedBy { it.partnerNumber },
             totalCurrent = data.sumOf { it.current },
-            totalAfterControl = data.sumOf { it.afterControl },
+            totalDeduction = data.sumOf { it.deduction },
         )
     }
 
