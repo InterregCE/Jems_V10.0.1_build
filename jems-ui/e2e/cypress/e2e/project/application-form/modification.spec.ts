@@ -139,6 +139,7 @@ context('Application modification tests', () => {
           cy.startModification(applicationId, user.programmeUser.email);
           
           cy.visit(`/app/project/detail/${applicationId}`, {failOnStatusCode: false});
+          cy.contains('B - Project partners').should('not.be.visible');
           cy.contains('span', 'Application form').click();
           cy.contains('B - Project partners').should('be.visible').click();
           cy.contains('Partners overview').click();
@@ -160,7 +161,6 @@ context('Application modification tests', () => {
           cy.get(`li:contains("${testData.partner2.abbreviation}") mat-icon:contains("person_off")`).should('be.visible');
           
           cy.contains('li', 'Partners overview').contains(testData.partner2.abbreviation).click();
-          cy.wait(1000);
           cy.contains('You are currently viewing a deactivated partner.').should('be.visible');
           
           cy.contains('mat-form-field', '(current)').click();
