@@ -253,11 +253,11 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
     columnsToDisplay = columnsToDisplayFirstPart.concat(this.collapsedColumns);
 
     if (investments.length > 0) {
-      columnsToDisplay.splice(2, 0, 'investmentId');
+      columnsToDisplay.splice(3, 0, 'investmentId');
     }
 
     if (isCostOptionsAvailable) {
-      columnsToDisplay.splice(1, 0, 'costOptions');
+      columnsToDisplay.splice(2, 0, 'costOptions');
       columnsToDisplay.splice(12, 0, 'numberOfUnits');
       columnsToDisplay.splice(13, 0, 'pricePerUnit');
     }
@@ -276,14 +276,14 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
 
   private setColumnsWidths(investments: InvestmentSummary[], isCostOptionsAvailable: boolean) {
     this.columnsWidthsToDisplay = [{minInRem: 2.5, maxInRem: 2.5}];
+
+    this.columnsWidthsToDisplay.push({minInRem: 1, maxInRem: 1}) // cost GDPR
+
     if (isCostOptionsAvailable) {
       this.columnsWidthsToDisplay.push({minInRem: 11, maxInRem: 11}); // cost options
     }
 
-    this.columnsWidthsToDisplay.push(
-      {minInRem: 1, maxInRem: 1}, // cost GDPR
-      {minInRem: 11, maxInRem: 11}, // cost category
-    );
+    this.columnsWidthsToDisplay.push({minInRem: 11, maxInRem: 11}); // cost category
 
     this.collapsedColumnsWidths = [
       {minInRem: 8, maxInRem: 8},   // contract id
@@ -319,7 +319,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
     );
 
     if (investments.length > 0) {
-      this.columnsWidthsToDisplay.splice(2, 0, {minInRem: 11});
+      this.columnsWidthsToDisplay.splice(4, 0, {minInRem: 11});
     }
   }
 

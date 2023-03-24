@@ -470,10 +470,10 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       columnsToDisplay.push('actions');
     }
     if (investments.length > 0) {
-      columnsToDisplay.splice(2, 0, 'investmentId');
+      columnsToDisplay.splice(3, 0, 'investmentId');
     }
     if (isCostOptionsAvailable) {
-      columnsToDisplay.splice(1, 0, 'costOptions');
+      columnsToDisplay.splice(2, 0, 'costOptions');
       columnsToDisplay.splice(12, 0, 'numberOfUnits');
       columnsToDisplay.splice(13, 0, 'pricePerUnit');
     }
@@ -483,11 +483,12 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   private getTableConfig(investments: InvestmentSummary[], isEditable: boolean, isCostOptionsAvailable: boolean): TableConfig[] {
     const tableConfig: TableConfig[] = [{minInRem: 3, maxInRem: 3}]; // id
 
+    tableConfig.push({minInRem: 1, maxInRem: 1}) // cost GDPR
+
     if (isCostOptionsAvailable) {
       tableConfig.push({minInRem: 11, maxInRem: 16}); // cost options
     }
     tableConfig.push(
-      {minInRem: 1, maxInRem: 1}, // cost GDPR
       {minInRem: 11, maxInRem: 16}, // cost category
       {minInRem: 8, maxInRem: 8},   // contract id
       {minInRem: 5, maxInRem: 8},   // internal reference
@@ -518,7 +519,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       tableConfig.push({minInRem: 3, maxInRem: 3}); //delete
     }
     if (investments.length > 0) {
-      tableConfig.splice(2, 0, {minInRem: 11});
+      tableConfig.splice(4, 0, {minInRem: 11});
     }
     return tableConfig;
   }
