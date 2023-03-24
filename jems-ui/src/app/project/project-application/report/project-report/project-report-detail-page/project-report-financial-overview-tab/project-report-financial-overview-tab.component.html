@@ -26,4 +26,10 @@
         <jems-project-breakdown-unit-cost [breakdown]="data.perUnitCost">
         </jems-project-breakdown-unit-cost>
     </ng-container>
+
+    <ng-container *ngIf="data.perPartnerCostCategory.partners.length > 0">
+        <jems-project-breakdown-per-partner [breakdown]="data.perPartnerCostCategory" [allowedCostCategories]="data.allowedCostCategories">
+        </jems-project-breakdown-per-partner>
+    </ng-container>
+
 </jems-form>

@@ -1,0 +1,43 @@
+h3 {
+  margin-top: 2.5rem !important;
+}
+
+.mat-table {
+  overflow-x: auto;
+}
+
+.mat-header-row, .mat-row, .mat-footer-row {
+  display: inline-flex;
+  min-width: 100%;
+}
+
+.mat-column-partner {
+  min-width: 3rem;
+}
+
+.mat-column-staffCosts,
+.mat-column-officeAndAdministration,
+.mat-column-travelAndAccommodation,
+.mat-column-externalServices,
+.mat-column-equipment,
+.mat-column-infraAndWorks,
+.mat-column-otherCosts,
+.mat-column-lumpSum,
+.mat-column-unitCosts,
+.mat-column-totalBudget,{
+  min-width: 7rem;
+}
+
+.mat-column-unitCosts > span {
+  margin-right: 0.5rem;
+}
+
+.mat-column-country,
+.mat-column-organizationAbbreviation,
+.mat-column-externalServices {
+  min-width: 7.5rem;
+}
+
+.border-cell-right {
+  border-right: .0625rem solid var(--table-border-color);
+}
