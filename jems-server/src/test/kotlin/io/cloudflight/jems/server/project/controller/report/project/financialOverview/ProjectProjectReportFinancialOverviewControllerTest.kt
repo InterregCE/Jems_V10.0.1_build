@@ -6,6 +6,8 @@ import io.cloudflight.jems.api.project.dto.report.project.financialOverview.Cert
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.CertificateCoFinancingBreakdownLineDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.CertificateCostCategoryBreakdownDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.CertificateCostCategoryBreakdownLineDTO
+import io.cloudflight.jems.api.project.dto.report.project.financialOverview.CertificateInvestmentBreakdownDTO
+import io.cloudflight.jems.api.project.dto.report.project.financialOverview.CertificateInvestmentBreakdownLineDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.CertificateLumpSumBreakdownDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.CertificateLumpSumBreakdownLineDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.CertificateUnitCostBreakdownDTO
@@ -19,12 +21,15 @@ import io.cloudflight.jems.server.project.service.report.model.project.financial
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.CertificateCoFinancingBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.CertificateCostCategoryBreakdown
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.CertificateCostCategoryBreakdownLine
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.investment.CertificateInvestmentBreakdown
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.investment.CertificateInvestmentBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.lumpSum.CertificateLumpSumBreakdown
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.lumpSum.CertificateLumpSumBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.perPartner.PerPartnerCostCategoryBreakdown
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.perPartner.PerPartnerCostCategoryBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.unitCost.CertificateUnitCostBreakdown
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.unitCost.CertificateUnitCostBreakdownLine
+import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCertificateInvestmentsBreakdownInteractor.GetReportCertificateInvestmentsBreakdownInteractor
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCoFinancingBreakdown.GetReportCertificateCoFinancingBreakdownInteractor
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCostCategoryBreakdown.GetReportCertificateCostCategoryBreakdownInteractor
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportLumpSumBreakdown.GetReportCertificateLumpSumBreakdownInteractor
@@ -339,6 +344,46 @@ class ProjectProjectReportFinancialOverviewControllerTest : UnitTest() {
             unitCosts = listOf(expectedDummyUnitCostLine),
             total = expectedDummyUnitCostLine,
         )
+
+        private val dummyInvestmentLine = CertificateInvestmentBreakdownLine(
+            reportInvestmentId = 1L,
+            investmentId = 1L,
+            investmentNumber = 1,
+            workPackageNumber = 1,
+            deactivated = false,
+            title = setOf(),
+            totalEligibleBudget = BigDecimal.valueOf(1),
+            previouslyReported = BigDecimal.valueOf(2),
+            currentReport = BigDecimal.valueOf(3),
+            totalReportedSoFar = BigDecimal.valueOf(4),
+            totalReportedSoFarPercentage = BigDecimal.valueOf(5),
+            remainingBudget = BigDecimal.valueOf(6),
+        )
+
+        private val dummyInvestment = CertificateInvestmentBreakdown(
+            investments = listOf(dummyInvestmentLine),
+            total = dummyInvestmentLine,
+        )
+
+        private val expectedDummyInvestmentLine = CertificateInvestmentBreakdownLineDTO(
+            reportInvestmentId = 1L,
+            investmentId = 1L,
+            investmentNumber = 1,
+            workPackageNumber = 1,
+            deactivated = false,
+            title = setOf(),
+            totalEligibleBudget = BigDecimal.valueOf(1),
+            previouslyReported = BigDecimal.valueOf(2),
+            currentReport = BigDecimal.valueOf(3),
+            totalReportedSoFar = BigDecimal.valueOf(4),
+            totalReportedSoFarPercentage = BigDecimal.valueOf(5),
+            remainingBudget = BigDecimal.valueOf(6),
+        )
+
+        private val expectedDummyInvestment = CertificateInvestmentBreakdownDTO(
+            investments = listOf(expectedDummyInvestmentLine),
+            total = expectedDummyInvestmentLine,
+        )
     }
 
     @MockK
@@ -355,6 +400,9 @@ class ProjectProjectReportFinancialOverviewControllerTest : UnitTest() {
 
     @MockK
     private lateinit var getReportCertificateUnitCostBreakdown: GetReportCertificateUnitCostsBreakdownInteractor
+
+    @MockK
+    private lateinit var getReportCertificateInvestmentsBreakdown: GetReportCertificateInvestmentsBreakdownInteractor
 
     @InjectMockKs
     private lateinit var controller: ProjectReportFinancialOverviewController
@@ -408,6 +456,14 @@ class ProjectProjectReportFinancialOverviewControllerTest : UnitTest() {
             dummyUnitCost
         assertThat(controller.getUnitCostsBreakdown(projectId = PROJECT_ID, reportId = REPORT_ID))
             .isEqualTo(expectedDummyUnitCost)
+    }
+
+    @Test
+    fun getInvestmentsBreakdown() {
+        every { getReportCertificateInvestmentsBreakdown.get(projectId = PROJECT_ID, reportId = REPORT_ID) } returns
+            dummyInvestment
+        assertThat(controller.getInvestmentsBreakdown(projectId = PROJECT_ID, reportId = REPORT_ID))
+            .isEqualTo(expectedDummyInvestment)
     }
 
 }

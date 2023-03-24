@@ -11,6 +11,7 @@ import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddressType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.PartnerReportInvestmentSummary
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReport
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportUpdate
@@ -30,6 +31,7 @@ import io.cloudflight.jems.server.project.service.report.project.workPlan.Projec
 import io.cloudflight.jems.server.project.service.result.ProjectResultPersistence
 import io.cloudflight.jems.server.project.service.result.model.ProjectResult
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
+import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackageFull
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -97,7 +99,11 @@ class CreateProjectReport(
         val lastSubmittedReportIdWithWorkPlan = submittedReports.firstOrNull { it.second.hasWorkPlan() }?.first
         val reportToCreate = ProjectReportCreateModel(
             reportBase = data.toCreateModel(latestReportNumber, version, project, leadPartner),
-            reportBudget = createProjectReportBudget.retrieveBudgetDataFor(projectId = projectId, version = version),
+            reportBudget = createProjectReportBudget.retrieveBudgetDataFor(
+                projectId = projectId,
+                version = version,
+                investments = workPackages.extractInvestments()
+            ),
             workPackages = workPackages.toCreateEntity(
                 previouslyReportedDeliverables = workPlanPersistence.getDeliverableCumulative(submittedReportIds),
                 previouslyReportedOutputs = workPlanPersistence.getOutputCumulative(submittedReportIds),
@@ -106,7 +112,7 @@ class CreateProjectReport(
             targetGroups = targetGroups,
             partners = getPreviouslyReportedByPartner(submittedReportIds, partners),
             results = projectResults,
-            horizontalPrinciples = projectManagement?.projectHorizontalPrinciples ?: emptyPrinciples,
+            horizontalPrinciples = projectManagement?.projectHorizontalPrinciples ?: emptyPrinciples
         )
 
         return reportCreatePersistence.createReportAndFillItToEmptyCertificates(reportToCreate).also {
@@ -179,5 +185,17 @@ class CreateProjectReport(
             previouslyReported = previouslyReportedByNumber.getOrDefault(it.resultNumber, BigDecimal.ZERO),
         )
     }
+
+    private fun List<ProjectWorkPackageFull>.extractInvestments() = map { wp ->
+        wp.investments.map {
+            PartnerReportInvestmentSummary(
+                investmentId = it.id!!,
+                investmentNumber = it.investmentNumber,
+                workPackageNumber = wp.workPackageNumber,
+                title = it.title,
+                deactivated = it.deactivated,
+            )
+        }
+    }.flatten()
 
 }

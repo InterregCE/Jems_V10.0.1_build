@@ -2,6 +2,7 @@ package io.cloudflight.jems.api.project.report.project
 
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.CertificateCoFinancingBreakdownDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.CertificateCostCategoryBreakdownDTO
+import io.cloudflight.jems.api.project.dto.report.project.financialOverview.CertificateInvestmentBreakdownDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.PerPartnerCostCategoryBreakdownDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.CertificateLumpSumBreakdownDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.CertificateUnitCostBreakdownDTO
@@ -52,4 +53,11 @@ interface ProjectReportFinancialOverviewApi {
         @PathVariable projectId: Long,
         @PathVariable reportId: Long,
     ): CertificateUnitCostBreakdownDTO
+
+    @ApiOperation("Returns Project Report Expenditure breakdown into Investments")
+    @GetMapping("${ENDPOINT_API_PROJECT_REPORT_IDENTIFICATION}/investments")
+    fun getInvestmentsBreakdown(
+        @PathVariable projectId: Long,
+        @PathVariable reportId: Long,
+    ): CertificateInvestmentBreakdownDTO
 }

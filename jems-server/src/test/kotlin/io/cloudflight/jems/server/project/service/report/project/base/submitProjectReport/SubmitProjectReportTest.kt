@@ -18,12 +18,14 @@ import io.cloudflight.jems.server.project.service.report.model.project.financial
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportInvestmentPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportLumpSumPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportUnitCostPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCostCategoryPersistence
+import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateInvestmentPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateLumpSumPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateUnitCostPersistence
 import io.cloudflight.jems.server.project.service.report.project.identification.ProjectReportIdentificationPersistence
@@ -170,6 +172,10 @@ internal class SubmitProjectReportTest : UnitTest() {
     @MockK
     lateinit var reportCertificateUnitCostPersistence: ProjectReportCertificateUnitCostPersistence
     @MockK
+    lateinit var reportExpenditureInvestmentPersistence: ProjectPartnerReportInvestmentPersistence
+    @MockK
+    lateinit var reportCertificateInvestmentPersistence: ProjectReportCertificateInvestmentPersistence
+    @MockK
     lateinit var auditPublisher: ApplicationEventPublisher
 
     @InjectMockKs
@@ -217,6 +223,10 @@ internal class SubmitProjectReportTest : UnitTest() {
         every { reportExpenditureUnitCostPersistence.getUnitCostCumulativeAfterControl(setOf(42L)) } returns mapOf(Pair(1L, BigDecimal.TEN))
         every { reportCertificateUnitCostPersistence.updateCurrentlyReportedValues(any(), any(), any()) } returnsArgument 0
 
+        every { reportExpenditureInvestmentPersistence.getInvestmentsCumulativeAfterControl(setOf(42L)) } returns mapOf(Pair(1L, BigDecimal.TEN))
+        val investmentSlot = slot<Map<Long, BigDecimal>>()
+        every { reportCertificateInvestmentPersistence.updateCurrentlyReportedValues(PROJECT_ID, reportId = REPORT_ID, capture(investmentSlot)) } answers { }
+
         submitReport.submit(PROJECT_ID, REPORT_ID)
 
         verify(exactly = 1) { reportPersistence.submitReport(PROJECT_ID, REPORT_ID, any()) }
@@ -228,6 +238,12 @@ internal class SubmitProjectReportTest : UnitTest() {
                 project = AuditProject("256", "FG01_654", "acronym"),
                 entityRelatedId = REPORT_ID,
                 description = "[FG01_654]: Project report PR.4 submitted, certificates included: LP5-R.7"
+            )
+        )
+
+        assertThat(investmentSlot.captured).containsExactlyEntriesOf(
+            mapOf(
+                1L to BigDecimal.TEN
             )
         )
 

@@ -7,7 +7,6 @@ import io.cloudflight.jems.server.project.service.report.model.partner.financial
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportInvestmentPersistence
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
-import java.math.BigDecimal
 
 @Repository
 class ProjectPartnerReportInvestmentPersistenceProvider(
@@ -58,4 +57,10 @@ class ProjectPartnerReportInvestmentPersistenceProvider(
                 }
             }
     }
+
+    @Transactional(readOnly = true)
+    override fun getInvestmentsCumulativeAfterControl(reportIds: Set<Long>) =
+        reportInvestmentRepository.findCumulativeForReportIdsAfterControl(reportIds)
+            .associate { Pair(it.first, it.second) }
+
 }

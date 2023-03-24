@@ -5,6 +5,7 @@ import {
   CallFundRateDTO,
   CertificateCoFinancingBreakdownDTO,
   CertificateCostCategoryBreakdownDTO,
+  CertificateInvestmentBreakdownDTO,
   CertificateLumpSumBreakdownDTO,
   CertificateUnitCostBreakdownDTO,
   PerPartnerCostCategoryBreakdownDTO,
@@ -30,6 +31,7 @@ export class ProjectReportFinancialOverviewTabComponent {
     perCostCategory: CertificateCostCategoryBreakdownDTO;
     perLumpSum: CertificateLumpSumBreakdownDTO;
     perUnitCost: CertificateUnitCostBreakdownDTO;
+    perInvestment: CertificateInvestmentBreakdownDTO;
     allowedCostCategories: Map<CategoryEnum | 'LumpSum' | 'UnitCost', boolean>;
     funds: CallFundRateDTO[];
     perPartnerCostCategory: PerPartnerCostCategoryBreakdownDTO;
@@ -43,15 +45,17 @@ export class ProjectReportFinancialOverviewTabComponent {
       financialOverviewStore.perCostCategory$,
       financialOverviewStore.perLumpSum$,
       financialOverviewStore.perUnitCost$,
+      financialOverviewStore.perInvestment$,
       financialOverviewStore.allowedCostCategories$,
       financialOverviewStore.callFunds$,
       financialOverviewStore.perPartnerCostCategory$
     ]).pipe(
-      map(([perCoFinancing, perCostCategory, perLumpSum, perUnitCost, allowedCostCategories, funds, perPartnerCostCategory]: any) => ({
+      map(([perCoFinancing, perCostCategory, perLumpSum, perUnitCost, perInvestment, allowedCostCategories, funds, perPartnerCostCategory]: any) => ({
         perCoFinancing,
         perCostCategory,
         perLumpSum,
         perUnitCost,
+        perInvestment,
         allowedCostCategories,
         funds,
         perPartnerCostCategory

@@ -16,6 +16,7 @@ import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartn
 import io.cloudflight.jems.server.project.repository.report.project.ProjectReportCoFinancingRepository
 import io.cloudflight.jems.server.project.repository.report.project.financialOverview.coFinancing.ReportProjectCertificateCoFinancingRepository
 import io.cloudflight.jems.server.project.repository.report.project.financialOverview.costCategory.ReportProjectCertificateCostCategoryRepository
+import io.cloudflight.jems.server.project.repository.report.project.financialOverview.investment.ReportProjectCertificateInvestmentRepository
 import io.cloudflight.jems.server.project.repository.report.project.financialOverview.lumpSums.ReportProjectCertificateLumpSumRepository
 import io.cloudflight.jems.server.project.repository.report.project.financialOverview.unitCosts.ReportProjectCertificateUnitCostRepository
 import io.cloudflight.jems.server.project.repository.report.project.identification.ProjectReportIdentificationTargetGroupRepository
@@ -34,6 +35,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.ReportSta
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportCreateModel
+import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportInvestment
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportPartnerCreateModel
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportResultCreate
@@ -69,6 +71,7 @@ class ProjectReportCreatePersistenceProvider(
     private val programmeLumpSumRepository: ProgrammeLumpSumRepository,
     private val programmeUnitCostRepository: ProgrammeUnitCostRepository,
     private val reportProjectCertificateUnitCostRepository: ReportProjectCertificateUnitCostRepository,
+    private val reportInvestmentRepository: ReportProjectCertificateInvestmentRepository,
 ) : ProjectReportCreatePersistence {
 
     @Transactional
@@ -82,6 +85,7 @@ class ProjectReportCreatePersistenceProvider(
         persistCostCategories(reportToCreate.reportBudget.costCategorySetup, reportPersisted)
         persistAvailableLumpSums(reportToCreate.reportBudget.availableLumpSums, reportPersisted)
         persistUnitCosts(reportToCreate.reportBudget.unitCosts, reportPersisted)
+        persistAvailableInvestmentsToReport(reportToCreate.reportBudget.investments, report = reportPersisted)
         persistResultsAndHorizontalPrinciples(reportToCreate.results, reportToCreate.horizontalPrinciples, reportPersisted)
 
         fillProjectReportToAllEmptyCertificates(projectId = reportToCreate.reportBase.projectId, reportPersisted)
@@ -205,6 +209,14 @@ class ProjectReportCreatePersistenceProvider(
     ) =
         reportProjectCertificateUnitCostRepository.saveAll(
             unitCosts.map { ls -> ls.toEntity(report, unitCostResolver = { programmeUnitCostRepository.getById(it) }) }
+        )
+
+    private fun persistAvailableInvestmentsToReport(
+        investments: List<ProjectReportInvestment>,
+        report: ProjectReportEntity,
+    ) =
+        reportInvestmentRepository.saveAll(
+            investments.map { investment -> investment.toEntity(report = report) }
         )
 
 }
