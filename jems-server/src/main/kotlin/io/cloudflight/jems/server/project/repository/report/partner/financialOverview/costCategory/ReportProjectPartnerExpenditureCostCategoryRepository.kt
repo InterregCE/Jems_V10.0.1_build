@@ -89,16 +89,16 @@ interface ReportProjectPartnerExpenditureCostCategoryRepository :
             SUM(report.lumpSumCurrent),
             SUM(report.unitCostCurrent),
             SUM(report.sumCurrent),
-            SUM(report.staffTotalEligibleAfterControl),
-            SUM(report.officeTotalEligibleAfterControl),
-            SUM(report.travelTotalEligibleAfterControl),
-            SUM(report.externalTotalEligibleAfterControl),
-            SUM(report.equipmentTotalEligibleAfterControl),
-            SUM(report.infrastructureTotalEligibleAfterControl),
-            SUM(report.otherTotalEligibleAfterControl),
-            SUM(report.lumpSumTotalEligibleAfterControl),
-            SUM(report.unitCostTotalEligibleAfterControl),
-            SUM(report.sumTotalEligibleAfterControl)
+            SUM(report.staffTotal - report.staffTotalEligibleAfterControl - report.staffCurrentParked),
+            SUM(report.officeTotal - report.officeTotalEligibleAfterControl - report.officeCurrentParked),
+            SUM(report.travelTotal - report.travelTotalEligibleAfterControl - report.travelCurrentParked),
+            SUM(report.externalTotal - report.externalTotalEligibleAfterControl - report.externalCurrentParked),
+            SUM(report.equipmentTotal - report.equipmentTotalEligibleAfterControl - report.equipmentCurrentParked),
+            SUM(report.infrastructureTotal - report.infrastructureTotalEligibleAfterControl - report.infrastructureCurrentParked),
+            SUM(report.otherTotal - report.otherTotalEligibleAfterControl - report.otherCurrentParked),
+            SUM(report.lumpSumTotal - report.lumpSumTotalEligibleAfterControl - report.lumpSumCurrentParked),
+            SUM(report.unitCostTotal - report.unitCostTotalEligibleAfterControl - report.unitCostCurrentParked),
+            SUM(report.sumTotal - report.sumTotalEligibleAfterControl - report.sumCurrentParked)
         )
         FROM #{#entityName} report
         WHERE report.reportEntity.projectReport.id = :projectReportId AND report.reportEntity.projectReport.projectId = :projectId

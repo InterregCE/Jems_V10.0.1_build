@@ -17,5 +17,5 @@ data class PerPartnerCostCategoryBreakdownLine(
     val otherCostsOnStaffCostsFlatRate: Int?,
 
     val current: BudgetCostsCalculationResultFull,
-    val afterControl: BudgetCostsCalculationResultFull,
+    val deduction: BudgetCostsCalculationResultFull,
 )
