@@ -277,7 +277,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
   private setColumnsWidths(investments: InvestmentSummary[], isCostOptionsAvailable: boolean) {
     this.columnsWidthsToDisplay = [{minInRem: 2.5, maxInRem: 2.5}];
 
-    this.columnsWidthsToDisplay.push({minInRem: 1, maxInRem: 1}) // cost GDPR
+    this.columnsWidthsToDisplay.push({minInRem: 1, maxInRem: 1}); // cost GDPR
 
     if (isCostOptionsAvailable) {
       this.columnsWidthsToDisplay.push({minInRem: 11, maxInRem: 11}); // cost options

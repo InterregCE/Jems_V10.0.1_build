@@ -19,11 +19,13 @@ import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerB
 import io.cloudflight.jems.server.project.service.partner.model.BudgetUnitCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.PartnerReportInvestmentSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedFund
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.CertificateCostCategoryPreviouslyReported
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCostCategoryPersistence
+import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateInvestmentPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateLumpSumPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateUnitCostPersistence
 import io.mockk.every
@@ -191,6 +193,9 @@ internal class CreateProjectReportBudgetTest : UnitTest() {
     @MockK
     lateinit var reportCertificateUnitCostPersistence: ProjectReportCertificateUnitCostPersistence
 
+    @MockK
+    lateinit var reportInvestmentPersistence: ProjectReportCertificateInvestmentPersistence
+
     @InjectMockKs
     lateinit var service: CreateProjectReportBudget
 
@@ -220,10 +225,20 @@ internal class CreateProjectReportBudgetTest : UnitTest() {
         every { partnerBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(setOf(1L), version) } returns emptyList()
         every { partnerBudgetCostsPersistence.getBudgetUnitCosts(setOf(1L), version) } returns budgetUnitCostEntries()
         every { reportCertificateUnitCostPersistence.getUnitCostsCumulative(setOf(1L)) } returns mapOf(Pair(1L, BigDecimal.TEN))
+        every { reportInvestmentPersistence.getInvestmentCumulative(setOf(1L)) } returns mapOf(Pair(1L, BigDecimal.TEN))
 
         val result = service.retrieveBudgetDataFor(
             projectId,
-            version
+            version,
+            listOf(
+                PartnerReportInvestmentSummary(
+                    investmentId = 1L,
+                    investmentNumber = 1,
+                    workPackageNumber = 1,
+                    title = emptySet(),
+                    deactivated = false
+                )
+            )
         )
 
         assertThat(result.coFinancing.previouslyReportedSum).isEqualTo(BigDecimal(38.33).setScale(2, RoundingMode.HALF_EVEN))

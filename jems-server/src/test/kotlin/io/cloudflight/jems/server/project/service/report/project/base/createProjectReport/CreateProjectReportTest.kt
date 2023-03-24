@@ -37,6 +37,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.base.crea
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedFund
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportBudget
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportCreateModel
+import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportInvestment
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportPartnerCreateModel
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportResultCreate
@@ -286,6 +287,17 @@ internal class CreateProjectReportTest : UnitTest() {
                     totalCost = BigDecimal.TEN,
                     previouslyReported = BigDecimal.ONE
                 )
+            ),
+            investments = listOf(
+                ProjectReportInvestment(
+                    investmentId = 1L,
+                    investmentNumber = 1,
+                    workPackageNumber = 1,
+                    title = emptySet(),
+                    deactivated = false,
+                    total = BigDecimal.TEN,
+                    previouslyReported = BigDecimal.ONE
+                )
             )
         )
 
@@ -461,6 +473,17 @@ internal class CreateProjectReportTest : UnitTest() {
                         totalCost = BigDecimal.TEN,
                         previouslyReported = BigDecimal.ONE
                     )
+                ),
+                investments = listOf(
+                    ProjectReportInvestment(
+                        investmentId = 1L,
+                        investmentNumber = 1,
+                        workPackageNumber = 1,
+                        title = emptySet(),
+                        deactivated = false,
+                        total = BigDecimal.TEN,
+                        previouslyReported = BigDecimal.ONE
+                    )
                 )
             ),
             workPackages = listOf(
@@ -607,7 +630,7 @@ internal class CreateProjectReportTest : UnitTest() {
         every { reportPersistence.getSubmittedProjectReportIds(projectId) } returns listOf(Pair(11L, ContractingDeadlineType.Both))
         every { projectWorkPackagePersistence.getWorkPackagesWithAllDataByProjectId(projectId, "version") } returns listOf(workPackage)
         every { projectReportIdentificationPersistence.getSpendingProfileCumulative(any()) } returns mapOf(11L to BigDecimal.valueOf(83L, 1))
-        every { createProjectReportBudget.retrieveBudgetDataFor(any(), any())} returns budget
+        every { createProjectReportBudget.retrieveBudgetDataFor(any(), any(), any())} returns budget
         every { workPlanPersistence.getDeliverableCumulative(setOf(11L)) } returns
             mapOf(15 to mapOf(25 to mapOf(35 to BigDecimal.valueOf(502))))
         every { workPlanPersistence.getOutputCumulative(setOf(11L)) } returns

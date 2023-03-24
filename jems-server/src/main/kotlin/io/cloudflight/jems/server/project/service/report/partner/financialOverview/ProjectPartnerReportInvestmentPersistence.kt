@@ -18,4 +18,5 @@ interface ProjectPartnerReportInvestmentPersistence {
         afterControl: Map<Long, ExpenditureInvestmentCurrent>,
     )
 
+    fun getInvestmentsCumulativeAfterControl(reportIds: Set<Long>): Map<Long, BigDecimal>
 }
