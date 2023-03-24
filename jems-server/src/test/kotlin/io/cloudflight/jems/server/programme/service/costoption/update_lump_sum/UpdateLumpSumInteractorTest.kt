@@ -148,8 +148,10 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
     fun `update lump sum - OK`() {
         every { isProgrammeSetupLocked.isLocked() } returns false
         every { isProgrammeSetupLocked.isAnyReportCreated() } returns false
+        every { isProgrammeSetupLocked.isFastTrackLumpSumReadyForPayment(4L) } returns false
         every { persistence.getLumpSum(any()) } returns initialLumpSum
         every { persistence.updateLumpSum(any()) } returnsArgument 0
+
         val lumpSum = ProgrammeLumpSum(
             id = 4,
             name = setOf(InputTranslation(SystemLanguage.EN, "LS1")),
@@ -189,6 +191,7 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
     fun `update lump sum - not existing`() {
         every { isProgrammeSetupLocked.isLocked() } returns false
         every { isProgrammeSetupLocked.isAnyReportCreated() } returns false
+        every { isProgrammeSetupLocked.isFastTrackLumpSumReadyForPayment(777L) } returns false
         every { persistence.getLumpSum(any()) } returns initialLumpSum
         val lumpSum = ProgrammeLumpSum(
             id = 777,
@@ -211,6 +214,7 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
         every { persistence.updateLumpSum(any()) } returnsArgument 0
         every { isProgrammeSetupLocked.isLocked() } returns true
         every { isProgrammeSetupLocked.isAnyReportCreated() } returns false
+        every { isProgrammeSetupLocked.isFastTrackLumpSumReadyForPayment(4L) } returns false
         val lumpSum = ProgrammeLumpSum(
             id = 4,
             name = setOf(InputTranslation(SystemLanguage.EN, "LS1 changed")),
@@ -236,5 +240,15 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
         every { isProgrammeSetupLocked.isLocked() } returns true
 
         assertThrows<UpdateLumpSumWhenProgrammeSetupRestricted> {updateLumpSum.updateLumpSum(initialLumpSum.copy(cost = BigDecimal.TEN))}
+    }
+
+    @Test
+    fun `update lump sum - fast truck lump sum was already set as already ready for payment`() {
+        every { persistence.getLumpSum(any()) } returns initialLumpSum.copy(fastTrack = true)
+        every { isProgrammeSetupLocked.isLocked() } returns true
+        every { isProgrammeSetupLocked.isFastTrackLumpSumReadyForPayment(4L) } returns true
+        every { isProgrammeSetupLocked.isAnyReportCreated() } returns false
+
+        assertThrows<UpdateLumpSumWhenProgrammeSetupRestricted> {updateLumpSum.updateLumpSum(initialLumpSum)}
     }
 }
