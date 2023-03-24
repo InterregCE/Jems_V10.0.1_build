@@ -35,14 +35,16 @@ class AssignUserCollaboratorToPartner(
         partnerId: Long,
         emailsWithLevel: Map<String, Pair<PartnerCollaboratorLevel, Boolean>>
     ): Set<PartnerCollaborator> {
+        val emailsToLevelNormalized = emailsWithLevel.mapKeys { it.key.lowercase() }
         val allowedRoleIds = getAvailableRoleIds()
         val usersToBePersisted = userPersistence
-            .findAllByEmails(emails = emailsWithLevel.keys)
+            .findAllByEmails(emails = emailsToLevelNormalized.keys)
             .filter { it.userRole.id in allowedRoleIds }
-            .associateWith { emailsWithLevel[it.email.lowercase()]!! }
+            .map { it.copy(email = it.email.lowercase()) }
+            .associateWith { emailsToLevelNormalized[it.email]!! }
 
         validateAllUsersAreValid(
-            requestedUsers = emailsWithLevel.keys,
+            requestedUsers = emailsToLevelNormalized.keys,
             availableUsers = usersToBePersisted.keys.mapTo(HashSet()) { it.email },
         )
 
@@ -61,8 +63,10 @@ class AssignUserCollaboratorToPartner(
             needsNotToHaveAnyOf = emptySet(),
         )
 
-    private fun validateAllUsersAreValid(requestedUsers: Set<String>,
-                                         availableUsers: Set<String>) {
+    private fun validateAllUsersAreValid(
+        requestedUsers: Set<String>,
+        availableUsers: Set<String>,
+    ) {
         val notFoundUserEmails = requestedUsers.minus(availableUsers)
         if (notFoundUserEmails.isNotEmpty())
             throw UsersAreNotValid(emails = notFoundUserEmails)

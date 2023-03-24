@@ -15871,7 +15871,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "[\r\n    {\r\n        \"userEmail\": \"{{applicant_email}}\",\r\n        \"level\": \"EDIT\"\r\n    }\r\n]\r\n",
+							"raw": "[\r\n    {\r\n        \"userEmail\": \"{{applicant_email}}\",\r\n        \"level\": \"EDIT\",\r\n        \"gdpr\": true\r\n    }\r\n]\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
