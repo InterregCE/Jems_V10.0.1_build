@@ -13,14 +13,14 @@
   "author": "Cloudflight GmbH",
   "devDependencies": {
     "@faker-js/faker": "^7.6.0",
-    "@types/node": "^18.11.18",
+    "@types/node": "^18.15.7",
     "compare-pdf": "^1.1.8",
-    "cy2": "^4.0.5",
-    "cypress": "^12.3.0",
-    "date-and-time": "^2.4.2",
+    "cy2": "^4.0.6",
+    "cypress": "^12.8.1",
+    "date-and-time": "^2.4.3",
     "node-fetch": "^2.6.7",
     "node-xlsx": "^0.21.0",
-    "typescript": "^4.9.4",
+    "typescript": "^5.0.2",
     "wait-on": "^7.0.1"
   }
 }
