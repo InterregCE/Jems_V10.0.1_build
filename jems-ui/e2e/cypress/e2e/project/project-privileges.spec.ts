@@ -264,7 +264,7 @@ context('Project privileges tests', () => {
           })
 
           // removing users from one of the projects
-          cy.contains('mat-row', applicationId1).within(() => {
+          cy.contains('.mat-column-project-table-column-name-id', applicationId1).parent().within(() => {
             cy.contains('mat-icon', 'highlight_off').click();
           })
           cy.contains('button', 'Save changes').click();
