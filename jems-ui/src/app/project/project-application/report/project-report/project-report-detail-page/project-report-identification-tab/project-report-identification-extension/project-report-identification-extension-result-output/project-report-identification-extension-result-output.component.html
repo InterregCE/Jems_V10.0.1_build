@@ -9,24 +9,24 @@
                   [innerText]="'project.application.project.report.overview.programme.result.indicator.title.missing' | translate"></span>
         </h4>
 
-        <div class="result-indicator-container">
-            <div class="result-indicator-header" [ngClass]="{'missing': !resultOverview.id}">
+        <div class="result-indicator-container" jemsNoWidthLimit>
+            <div class="result-indicator-header">
                 <div class="result-header-inner">
                     <div class="identifier">
                         <ng-container *ngIf="resultOverview.id; else noOutputIndicator">
                             <span [innerText]="'project.application.project.report.overview.programme.result.indicator' | translate"></span>
-                            <div class="text-overflow-ellipsis"
-                                 [innerText]="(resultOverview.identifier + ': ' + (resultOverview.name | translateBySystemLanguage | async))"
+                            <div [innerText]="(resultOverview.identifier + ': ' + (resultOverview.name | translateBySystemLanguage | async))"
                                  [matTooltip]="(resultOverview.identifier + ': ' + (resultOverview.name | translateBySystemLanguage | async))">
                             </div>
                         </ng-container>
                         <ng-template #noOutputIndicator>
-                            <span [innerText]="'project.application.project.report.overview.programme.result.indicator.title.missing' | translate"></span>
+                            <span [innerText]="'project.application.project.report.overview.programme.result.indicator.title.missing' | translate"
+                                  [matTooltip]="'project.application.project.report.overview.programme.result.indicator.title.missing' | translate"></span>
                         </ng-template>
                     </div>
                     <div class="measurementUnit">
                         <span [innerText]="'project.application.project.report.overview.measurement.unit' | translate"></span>
-                        <div [innerText]="resultOverview.measurementUnit | translateByInputLanguage | async"></div>
+                        <div [innerText]="resultOverview.measurementUnit | translateBySystemLanguage | async"></div>
                     </div>
                     <div class="baseline text-right">
                         <span [innerText]="'project.application.project.report.overview.baseline' | translate"></span>
@@ -53,20 +53,23 @@
 
             <ng-container *ngFor="let outputOverview of resultOverview.outputOverviews">
 
-                <mat-table jemsNoWidthLimit jemsFormFieldWidth="full" class="table-container output mt-2"
+                <mat-table jemsNoWidthLimit class="table-container output mt-2"
                            [dataSource]="getDataSource(outputOverview.outputs)">
 
                     <ng-container matColumnDef="identifier">
                         <mat-header-cell *matHeaderCellDef>
                             <ng-container *ngIf="outputOverview.id; else noOutputIndicator">
-                                <span [innerText]="'project.application.project.report.overview.programme.output.indicator' | translate"></span>
+                                <span class="text-overflow-ellipsis"
+                                      [innerText]="'project.application.project.report.overview.programme.output.indicator' | translate"></span>
                                 <div class="text-overflow-ellipsis"
-                                     [innerText]="'Output ' + (outputOverview.identifier + ': ' + (outputOverview.name | translateBySystemLanguage | async))"
-                                     [matTooltip]="'Output ' + (outputOverview.identifier + ': ' + (outputOverview.name | translateBySystemLanguage | async))">
+                                     [innerText]="'Output ' + (outputOverview.identifier + ': ' + (outputOverview.name | translateByInputLanguage | async))"
+                                     [matTooltip]="'Output ' + (outputOverview.identifier + ': ' + (outputOverview.name | translateByInputLanguage | async))">
                                 </div>
                             </ng-container>
                             <ng-template #noOutputIndicator>
-                                <span [innerText]="'project.application.project.report.overview.programme.output.indicator.missing' | translate"></span>
+                                <span class="text-overflow-ellipsis"
+                                      [innerText]="'project.application.project.report.overview.programme.output.indicator.missing' | translate"
+                                      [matTooltip]="'project.application.project.report.overview.programme.output.indicator.missing' | translate"></span>
                             </ng-template>
                         </mat-header-cell>
                         <mat-cell *matCellDef="let line">
@@ -79,13 +82,18 @@
                     <ng-container matColumnDef="measurementUnit">
                         <mat-header-cell *matHeaderCellDef>
                             <ng-container *ngIf="outputOverview.id">
-                                <div [innerText]="outputOverview.measurementUnit | translateByInputLanguage | async"></div>
+                                <div [innerText]="outputOverview.measurementUnit | translateBySystemLanguage | async"></div>
                             </ng-container>
                         </mat-header-cell>
 
                         <mat-cell *matCellDef="let line">
-                            <div [innerText]="line.measurementUnit | translateByInputLanguage | async"></div>
+                            <div [innerText]="line.measurementUnit | translateBySystemLanguage | async"></div>
                         </mat-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="baseline">
+                        <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                        <mat-cell *matCellDef></mat-cell>
                     </ng-container>
 
                     <ng-container matColumnDef="targetValue">
@@ -124,8 +132,8 @@
                         </mat-cell>
                     </ng-container>
 
-                    <mat-header-row *matHeaderRowDef="displayedOutputColumns(outputOverview.id)"></mat-header-row>
-                    <mat-row *matRowDef="let row; columns: displayedOutputColumns(outputOverview.id)"></mat-row>
+                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
 
                 </mat-table>
             </ng-container>

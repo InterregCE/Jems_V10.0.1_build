@@ -13,15 +13,12 @@ import {
 })
 export class ProjectReportIdentificationExtensionResultOutputComponent {
 
+  displayedColumns: string[] = ['identifier', 'measurementUnit', 'baseline', 'targetValue', 'previouslyReported', 'currentReport', 'totalReportedSoFar'];
+
   constructor(readonly pageStore: ProjectReportIdentificationExtensionStore) {}
 
   getDataSource(lines: Array<ProjectReportOutputLineOverviewDTO>) {
     return new MatTableDataSource<ProjectReportOutputLineOverviewDTO>(lines);
-  }
-
-  displayedOutputColumns(id: number | undefined): string[] {
-    return !id ? ['identifier', 'targetValue', 'previouslyReported', 'currentReport', 'totalReportedSoFar']
-      : ['identifier', 'measurementUnit', 'targetValue', 'previouslyReported', 'currentReport', 'totalReportedSoFar'];
   }
 
   add(previouslyReported: number, currentReport: number) {

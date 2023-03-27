@@ -33,7 +33,7 @@ fun Map<ProjectReportResultIndicatorOverview, Map<ProjectReportOutputIndicatorOv
             currentReport = resultIndicator.currentReport,
             outputOverviews = outputIndicators.toOutputDto()
         )
-    }
+    }.sortedBy { it.id ?: Long.MAX_VALUE }
 
 fun Map<ProjectReportOutputIndicatorOverview, List<ProjectReportOutputLineOverview>>.toOutputDto() = map { (outputIndicator, outputs) ->
     ProjectReportOutputIndicatorOverviewDTO(
@@ -46,7 +46,7 @@ fun Map<ProjectReportOutputIndicatorOverview, List<ProjectReportOutputLineOvervi
         currentReport = outputIndicator.currentReport,
         outputs = outputs.map { it.toDto() },
     )
-}
+}.sortedBy { it.id ?: Long.MAX_VALUE }
 
 @Mapper
 interface ProjectReportIdentificationMapper {
