@@ -3,10 +3,7 @@ package io.cloudflight.jems.server.notification.inApp.repository
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.notification.inApp.entity.NotificationEntity
-import io.cloudflight.jems.server.notification.inApp.repository.NotificationPersistenceProvider
-import io.cloudflight.jems.server.notification.inApp.repository.NotificationRepository
-import io.cloudflight.jems.server.notification.inApp.repository.toModel
-import io.cloudflight.jems.server.notification.inApp.service.model.Notification
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationInApp
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationProject
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType
 import io.cloudflight.jems.server.notification.inApp.service.model.UserNotification
@@ -32,6 +29,7 @@ import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
+import java.util.UUID
 
 class NotificationPersistenceProviderTest : UnitTest() {
 
@@ -59,8 +57,8 @@ class NotificationPersistenceProviderTest : UnitTest() {
     @Test
     fun saveNotifications() {
         val userNotifyMe = mockk<UserEntity>()
-        every { userNotifyMe.email } returns "notify@me"
-        every { userRepository.findAllByEmailInIgnoreCaseOrderByEmail(setOf("notify@me")) } returns listOf(userNotifyMe)
+        every { userNotifyMe.email } returns "notify.me@inApp"
+        every { userRepository.findAllByEmailInIgnoreCaseOrderByEmail(setOf("notify.me@inApp")) } returns listOf(userNotifyMe)
 
         val call = mockk<CallEntity>()
         every { call.id } returns 504L
@@ -74,18 +72,26 @@ class NotificationPersistenceProviderTest : UnitTest() {
         val savedSlot = slot<Iterable<NotificationEntity>>()
         every { notificationRepository.saveAll(capture(savedSlot)) } returnsArgument 0
 
-        val toSave = Notification(
+        val toSave = NotificationInApp(
             subject = "subject",
             body = "body",
             type = NotificationType.ProjectSubmittedStep1,
             time = TIME,
-            project = NotificationProject(504L, "callName", 45L, "P0045", "45 acr"),
+            templateVariables = mutableMapOf(
+                "var1" to "val1",
+                "projectId" to 45L,
+                "projectIdentifier" to "P0045",
+                "projectAcronym" to "45 acr",
+            ),
+            recipientsInApp = setOf("notify.me@inApp"),
+            recipientsEmail = setOf("notify.me@email"),
+            emailTemplate = "template.html",
         )
 
         val expectedEpochSecond = 1679050521L
         val expectedNano = 123456789
 
-        persistence.saveNotifications(toSave, setOf("notify@me"))
+        persistence.saveNotification(toSave)
         assertThat(savedSlot.captured).hasSize(1)
         assertThat(savedSlot.captured.first().account).isEqualTo(userNotifyMe)
         assertThat(savedSlot.captured.first().created).isEqualTo(LocalDateTime.ofEpochSecond(expectedEpochSecond, expectedNano, ZoneOffset.UTC))
@@ -116,6 +122,8 @@ class NotificationPersistenceProviderTest : UnitTest() {
         every { project.call } returns call
         val notification = NotificationEntity(
             id = 7L,
+            groupIdentifier = UUID.randomUUID(),
+            instanceIdentifier = UUID.randomUUID(),
             account = user,
             created = time,
             project = project,

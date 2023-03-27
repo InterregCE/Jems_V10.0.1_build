@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.notification.inApp.service.model.NotificationT
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.user.entity.UserEntity
 import java.time.LocalDateTime
+import java.util.UUID
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
@@ -31,6 +32,12 @@ class NotificationEntity (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
+
+    @field:NotNull
+    val groupIdentifier: UUID,
+
+    @field:NotNull
+    val instanceIdentifier: UUID,
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @field:NotNull
