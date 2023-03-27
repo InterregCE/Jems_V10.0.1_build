@@ -10,62 +10,68 @@
                 (pageSizeChanged)="listStore.newPageSize$.next($event)">
         </jems-paginator>
 
-        <table id="notification-list-table" mat-table  matSort multiTemplateDataRows (matSortChange)="listStore.newSort$.next($event)" [dataSource]="data.page.content" >
+        <div jemsNoWidthLimit class="wrapper">
+        <table id="notification-list-table" mat-table matSort multiTemplateDataRows (matSortChange)="listStore.newSort$.next($event)" [dataSource]="data.page.content" >
             <ng-container matColumnDef="created">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header="created" class="text-left created-column">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header="created">
                     <span jemsText maxLines="2">{{ 'notification.table.column.time' | translate }}</span>
                 </th>
-                <td mat-cell *matCellDef="let notification" class="text-left created-column">
+                <td mat-cell *matCellDef="let notification">
                    {{notification.time | localeDate : 'L' : 'LT'}}
                 </td>
             </ng-container>
 
             <ng-container matColumnDef="call">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header="project.call.name" class="text-left call-column">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header="project.call.name">
                     <span jemsText maxLines="2">{{ 'project.detail.table.call.name' | translate }}</span>
                 </th>
-                <td mat-cell *matCellDef="let notification" class="text-left call-column">
+                <td mat-cell *matCellDef="let notification">
                     {{notification.project.callName}}
                 </td>
             </ng-container>
 
             <ng-container matColumnDef="project">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header="projectIdentifier" class="text-left project-column">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header="projectIdentifier">
                     <span jemsText maxLines="2">{{ 'call.detail.notifications.config.tab.project' | translate }}</span>
                 </th>
-                <td mat-cell *matCellDef="let notification" class="text-left project-column link">
-                    <span [routerLink]="'/app/project/detail/' + notification.project.projectId">{{notification.project.projectIdentifier}}</span>
+                <td mat-cell *matCellDef="let notification">
+                    {{ notification.project.projectIdentifier }}
                 </td>
             </ng-container>
 
             <ng-container matColumnDef="acronym">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header="projectAcronym" class="text-left acronym-column">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header="projectAcronym">
                     <span jemsText maxLines="2">{{ 'project.table.column.name.acronym' | translate }}</span>
                 </th>
-                <td mat-cell *matCellDef="let notification" class="text-left acronym-column link">
-                    <span [routerLink]="'/app/project/detail/' + notification.project.projectId">{{notification.project.projectAcronym}}</span>
+                <td mat-cell *matCellDef="let notification">
+                    <div class="flex-center">
+                        <a [routerLink]="'/app/project/detail/' + notification.project.projectId" queryParamsHandling="merge">
+                            <mat-icon class="mr-2 mt-1 mat-primary">launch</mat-icon>
+                        </a>
+                        <div class="ml-auto">{{ notification.project.projectAcronym }}</div>
+                    </div>
                 </td>
             </ng-container>
 
             <ng-container matColumnDef="partner">
-                <th mat-header-cell *matHeaderCellDef class="text-left partner-column">
+                <th mat-header-cell *matHeaderCellDef>
                     <span jemsText maxLines="2">{{ 'payments.detail.table.header.partner' | translate }}</span>
                 </th>
-                <td mat-cell *matCellDef="let notification" class="text-left partner-column">
+                <td mat-cell *matCellDef="let notification">
                   -
                 </td>
             </ng-container>
 
             <ng-container matColumnDef="subject">
-                <th mat-header-cell *matHeaderCellDef class="text-left subject-column">
+                <th mat-header-cell *matHeaderCellDef>
                     <span jemsText maxLines="2">{{ 'notification.table.column.subject' | translate }}</span>
                 </th>
-                <td mat-cell *matCellDef="let notification" class="text-left subject-column">
+                <td mat-cell *matCellDef="let notification">
                     {{notification.subject}}
                 </td>
             </ng-container>
 
-            <ng-container matColumnDef="expand">
+            <ng-container matColumnDef="expand" stickyEnd>
                 <th mat-header-cell *matHeaderCellDef class="text-right expand-column"></th>
                 <td mat-cell *matCellDef="let element; let index = index" class="text-right expand-column">
                     <button mat-icon-button aria-label="expand row" (click)="(expandedElement = expandedElement === element ? null : element); $event.stopPropagation()">
@@ -89,13 +95,12 @@
             <tr mat-header-row *matHeaderRowDef="displayedColumnsWithExpanded"></tr>
             <tr mat-row *matRowDef="let element; columns: displayedColumnsWithExpanded;"
                 class="notification-row"
-                [class.notification-expanded-row]="expandedElement === element"
-                (click)="expandedElement = expandedElement === element ? null : element">
+                [class.notification-expanded-row]="expandedElement === element">
             </tr>
             <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="notification-detail-row"></tr>
 
         </table>
-
+        </div>
         <jems-paginator
                 [length]="data.page.totalElements"
                 [currentPageIndex]="data.page.pageable.pageNumber"
