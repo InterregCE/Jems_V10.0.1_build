@@ -91,7 +91,7 @@ context('Project privileges tests', () => {
 
   it('TB-374 Add user to project using project privileges', () => {
     cy.fixture('project/project-privileges/TB-374.json').then(testData => {
-      
+
       // Preparation for the tests
       cy.loginByRequest(user.admin.email);
 
@@ -142,8 +142,8 @@ context('Project privileges tests', () => {
         cy.contains('button', 'Save changes').should('not.exist');
         cy.contains('annexes').click();
         cy.contains('button', 'Upload').should('not.exist');
-        cy.contains('mat-icon', 'download').should('be.visible');
-        cy.contains('mat-icon', 'edit').should('not.exist');
+        cy.get('jems-file-management').contains('mat-icon', 'download').should('be.visible');
+        cy.get('jems-file-management').contains('mat-icon', 'edit').should('not.exist');
         cy.contains('Check & Submit').click();
         cy.contains('button', 'Run pre-submission check').should('be.visible');
         cy.contains('button', 'Run pre-submission check').click();
@@ -242,17 +242,17 @@ context('Project privileges tests', () => {
 
           cy.contains('mat-row', firstApplicationAcronym).find('input').click();
           cy.contains('mat-option', testData.monitorUser1.email).click();
-            
+
           cy.contains('mat-row', firstApplicationAcronym).find('input').click();
           cy.contains('mat-option', testData.monitorUser2.email).click();
-            
+
           cy.contains('mat-row', secondApplicationAcronym).find('input').click();
           cy.contains('mat-option', testData.monitorUser1.email).click();
 
           cy.contains('button', 'Save changes').click();
           cy.contains('Users has been successfully assigned to project(s).').scrollIntoView().should('be.visible');
           cy.contains('Users has been successfully assigned to project(s).').should('not.exist');
-          
+
           // checking for the added users
           cy.contains('mat-row', firstApplicationAcronym).scrollIntoView().within(() => {
             cy.contains('mat-chip[selected]', testData.monitorUser1.email).should('be.visible');
