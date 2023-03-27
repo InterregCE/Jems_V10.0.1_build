@@ -135,7 +135,7 @@ context('Partners budget exports', () => {
             cy.contains('div', 'Export Plugin').find('mat-select').click();
             cy.contains('mat-option', 'Standard budget export').click();
             cy.get('div#export-config').contains('div', 'Project version').find('mat-select').click();
-            cy.contains('mat-option', 'V. 1.0').click();
+            cy.contains('mat-option', 'V.1.0').click();
 
             cy.contains('div#export-config button', 'Export').clickToDownload(`api/project/${applicationId}/export/budget?*version=1.0`, 'xlsx').then(exportFile => {
               cy.fixture('project/exports/partners-budget/TB-370-v1.xlsx', null).parseXLSX().then(testDataFile => {
@@ -147,7 +147,7 @@ context('Partners budget exports', () => {
 
             // export step 2 version
             cy.get('div#export-config').contains('div', 'Project version').find('mat-select').click();
-            cy.contains('mat-option', 'V. 2.0').click();
+            cy.contains('mat-option', 'V.2.0').click();
 
             cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/budget?*version=2.0`, 'xlsx').then(exportFile => {
               cy.fixture('project/exports/partners-budget/TB-370-v2.xlsx', null).parseXLSX().then(testDataFile => {
@@ -159,7 +159,7 @@ context('Partners budget exports', () => {
 
             // export current modification approved version
             cy.get('div#export-config').contains('div', 'Project version').find('mat-select').click();
-            cy.contains('mat-option', 'V. 3.0').click();
+            cy.contains('mat-option', 'V.3.0').click();
 
             cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/budget?*version=3.0`, 'xlsx').then(exportFile => {
               cy.fixture('project/exports/partners-budget/TB-370-v3.xlsx', null).parseXLSX().then(testDataFile => {
@@ -171,7 +171,7 @@ context('Partners budget exports', () => {
 
             // export modification rejected version
             cy.get('div#export-config').contains('div', 'Project version').find('mat-select').click();
-            cy.contains('mat-option', 'V. 4.0').click();
+            cy.contains('mat-option', 'V.4.0').click();
 
             cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/budget?*version=4.0`, 'xlsx').then(exportFile => {
               cy.fixture('project/exports/partners-budget/TB-370-v4.xlsx', null).parseXLSX().then(testDataFile => {
@@ -238,7 +238,7 @@ context('Partners budget exports', () => {
 
             // export step 1 version
             cy.get('div#export-config').contains('div', 'Project version').find('mat-select').click();
-            cy.contains('mat-option', 'V. 1.0').click();
+            cy.contains('mat-option', 'V.1.0').click();
 
             cy.contains('div#export-config button', 'Export').clickToDownload(`api/project/${applicationId}/export/budget?*version=1.0`, 'xlsx').then(exportFile => {
               cy.fixture('project/exports/partners-budget/TB-686-v1.xlsx', null).parseXLSX().then(testDataFile => {
@@ -304,7 +304,7 @@ context('Partners budget exports', () => {
 
             // export step 1 version
             cy.get('div#export-config').contains('div', 'Project version').find('mat-select').click();
-            cy.contains('mat-option', 'V. 1.0').click();
+            cy.contains('mat-option', 'V.1.0').click();
 
             cy.contains('div#export-config button', 'Export').clickToDownload(`api/project/${applicationId}/export/budget?*version=1.0`, 'xlsx').then(exportFile => {
               cy.fixture('project/exports/partners-budget/TB-368-v1.xlsx', null).parseXLSX().then(testDataFile => {
