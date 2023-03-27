@@ -786,13 +786,6 @@
         "stepSelectionLocked": false
       },
       {
-        "id": "application.config.project.project.or.initiative",
-        "visible": true,
-        "availableInStep": "STEP_TWO_ONLY",
-        "visibilityLocked": true,
-        "stepSelectionLocked": false
-      },
-      {
         "id": "application.config.project.partner.other.identifier.number.and.description",
         "visible": false,
         "availableInStep": "NONE",
