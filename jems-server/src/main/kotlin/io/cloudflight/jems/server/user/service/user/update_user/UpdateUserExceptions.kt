@@ -14,6 +14,12 @@ class UpdateUserException(cause: Throwable) : ApplicationException(
     cause = cause
 )
 
+class UpdateUserSettingsException(cause: Throwable) : ApplicationException(
+    code = UPDATE_USER_ERROR_CODE_PREFIX,
+    i18nMessage = I18nMessage("$UPDATE_USER_ERROR_KEY_PREFIX.settings.failed"),
+    cause = cause
+)
+
 class UserRoleNotFound : ApplicationNotFoundException(
     code = "$UPDATE_USER_ERROR_CODE_PREFIX-001",
     i18nMessage = I18nMessage("$UPDATE_USER_ERROR_KEY_PREFIX.user.role.not.found"),

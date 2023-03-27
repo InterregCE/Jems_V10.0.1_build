@@ -47,6 +47,7 @@ class ProjectPartnerReportProcurementAttachmentPersistenceProviderTest : UnitTes
                     name = "Admin",
                     password = "hash",
                     email = "admin@cloudflight.io",
+                    sendNotificationsToEmail = false,
                     surname = "Big",
                     userRole = mockk(),
                     userStatus = UserStatus.ACTIVE

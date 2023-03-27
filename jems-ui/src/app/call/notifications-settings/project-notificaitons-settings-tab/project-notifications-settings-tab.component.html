@@ -58,12 +58,17 @@
                             </ng-container>
                         </mat-panel-title>
                     </mat-expansion-panel-header>
-
                     <div jemsNoWidthLimit>
                         <div>
                             <mat-form-field jemsFormFieldWidth="two-thirds">
                                 <mat-label>{{'call.detail.notifications.config.email.subject.label' | translate}}</mat-label>
-                                <input formControlName="emailSubject" matInput name="emailSubject">
+                                <input #emailSubject formControlName="emailSubject" matInput name="emailSubject">
+                                <mat-hint [jemsHintFor]="emailSubject" [hide]="notificationTemplate?.get('emailSubject')?.errors !== null">
+                                    <jems-text-hint [currentLength]="emailSubject.value.length" [maxLength]="255"></jems-text-hint>
+                                </mat-hint>
+                                <mat-error>
+                                    <jems-form-field-errors [errors]="notificationTemplate?.get('emailSubject')?.errors"></jems-form-field-errors>
+                                </mat-error>
                             </mat-form-field>
                         </div>
 
@@ -76,6 +81,7 @@
                                                       [minRows]="5"
                                                       [maxRows]="30">
                             </jems-expandable-textarea>
+
                         </div>
                     </div>
                 </mat-expansion-panel>

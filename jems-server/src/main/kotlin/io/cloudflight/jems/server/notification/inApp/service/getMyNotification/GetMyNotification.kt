@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.notification.inApp.service.getMyNotification
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.notification.inApp.authorization.CanRetrieveNotifications
 import io.cloudflight.jems.server.notification.inApp.service.NotificationPersistence
 import io.cloudflight.jems.server.notification.inApp.service.model.UserNotification
 import org.springframework.data.domain.Page
@@ -14,7 +15,7 @@ class GetMyNotification(
     private val securityService: SecurityService,
 ) : GetMyNotificationInteractor {
 
-    // intentionally not secured
+    @CanRetrieveNotifications
     @Transactional(readOnly = true)
     override fun get(pageable: Pageable): Page<UserNotification> =
         persistence.getUserNotifications(securityService.getUserIdOrThrow(), pageable)

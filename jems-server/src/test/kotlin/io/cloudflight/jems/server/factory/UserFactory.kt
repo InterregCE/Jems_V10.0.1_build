@@ -72,6 +72,7 @@ class UserFactory(
                 UserEntity(
                     id = 0,
                     email = email,
+                    sendNotificationsToEmail = false,
                     password = passwordEncoder.encode(email),
                     name = email,
                     surname = email,

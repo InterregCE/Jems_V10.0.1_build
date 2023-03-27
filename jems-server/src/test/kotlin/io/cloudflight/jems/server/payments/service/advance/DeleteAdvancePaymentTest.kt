@@ -57,8 +57,8 @@ class DeleteAdvancePaymentTest: UnitTest() {
             abbreviation = setOf(InputTranslation(SystemLanguage.EN, "FUND")),
         )
         private val role = UserRoleEntity(1, "role")
-        private val paymentAuthorizedUser = UserEntity(9L, "savePaymentInfo@User", "name", "surname", role, "", UserStatus.ACTIVE)
-        private val paymentConfirmedUser = UserEntity(8L, "paymentConfirmed@User", "name", "surname", role, "", UserStatus.ACTIVE)
+        private val paymentAuthorizedUser = UserEntity(9L, "savePaymentInfo@User", false, "name", "surname", role, "", UserStatus.ACTIVE)
+        private val paymentConfirmedUser = UserEntity(8L, "paymentConfirmed@User", false, "name", "surname", role, "", UserStatus.ACTIVE)
 
         private val dummyCall = createTestCallEntity(10)
         private val project = ProjectFull(

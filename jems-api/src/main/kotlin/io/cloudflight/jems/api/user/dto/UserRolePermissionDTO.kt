@@ -77,6 +77,7 @@ enum class UserRolePermissionDTO(val key: String) {
     // region top navigation
     ProjectsWithOwnershipRetrieve("ProjectsWithOwnershipRetrieve"),
     CallPublishedRetrieve("CallPublishedRetrieve"),
+    NotificationsRetrieve("NotificationsRetrieve"),
 
     ProjectRetrieve("ProjectRetrieve"),
     ProjectRetrieveEditUserAssignments("ProjectRetrieveEditUserAssignments"),

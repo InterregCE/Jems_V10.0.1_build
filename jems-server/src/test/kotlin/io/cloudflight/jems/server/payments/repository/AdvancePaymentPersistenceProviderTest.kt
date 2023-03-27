@@ -101,8 +101,8 @@ class AdvancePaymentPersistenceProviderTest: UnitTest() {
         private val fundEntity = ProgrammeFundEntity(fundId, true)
         private val fund = ProgrammeFund(fundId, true)
         private val role = UserRoleEntity(1, "role")
-        private val paymentAuthorizedUser = UserEntity(4L, "savePaymentInfo@User", "name", "surname", role, "", UserStatus.ACTIVE)
-        private val paymentConfirmedUser = UserEntity(userId, "paymentConfirmed@User", "name", "surname", role, "", UserStatus.ACTIVE)
+        private val paymentAuthorizedUser = UserEntity(4L, "savePaymentInfo@User", false, "name", "surname", role, "", UserStatus.ACTIVE)
+        private val paymentConfirmedUser = UserEntity(userId, "paymentConfirmed@User", false, "name", "surname", role, "", UserStatus.ACTIVE)
         private val project = ProjectFull(
             id = projectId,
             customIdentifier = "identifier",
@@ -122,6 +122,7 @@ class AdvancePaymentPersistenceProviderTest: UnitTest() {
             name = paymentAuthorizedUser.name,
             password = paymentAuthorizedUser.password,
             email = paymentAuthorizedUser.email,
+            sendNotificationsToEmail = false,
             surname = paymentAuthorizedUser.surname,
             userRole = paymentAuthorizedUser.userRole,
             userStatus = UserStatus.ACTIVE
@@ -131,6 +132,7 @@ class AdvancePaymentPersistenceProviderTest: UnitTest() {
             name = paymentConfirmedUser.name,
             password = paymentConfirmedUser.password,
             email = paymentConfirmedUser.email,
+            sendNotificationsToEmail = false,
             surname = paymentConfirmedUser.surname,
             userRole = paymentConfirmedUser.userRole,
             userStatus = UserStatus.ACTIVE

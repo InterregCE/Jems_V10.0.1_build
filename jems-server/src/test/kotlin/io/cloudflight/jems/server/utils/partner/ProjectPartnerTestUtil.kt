@@ -192,6 +192,7 @@ fun projectPartnerEntity(
 fun userSummary(id: Long, roleId: Long) = UserSummary(
     id = id,
     email = "user@email.com",
+    sendNotificationsToEmail = false,
     name = "",
     surname = "",
     userRole = UserRoleSummary(roleId, "", false),
@@ -363,6 +364,7 @@ class ProjectPartnerTestUtil {
             name = "Name",
             password = "hash",
             email = "admin@admin.dev",
+            sendNotificationsToEmail = false,
             surname = "Surname",
             userRole = userRole,
             userStatus = UserStatus.ACTIVE
@@ -406,6 +408,7 @@ class ProjectPartnerTestUtil {
         val userSummary = UserSummary(
             id = 1,
             email = user.email,
+            sendNotificationsToEmail = false,
             name = user.name,
             surname = user.surname,
             userRole = UserRoleSummary(id = 1, name = "ADMIN"),

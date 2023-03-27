@@ -101,6 +101,7 @@ interface ProjectRepository : JpaRepository<ProjectEntity, Long>, QuerydslPredic
              account.name,
              account.surname,
              account.email,
+             account.send_notifications_to_email as sendNotificationsToEmail,
              account.user_status as userStatus,
              account.id as userId,
 

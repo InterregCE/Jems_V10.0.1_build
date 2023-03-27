@@ -10,6 +10,7 @@ import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.common.validator.PASSWORD_REGEX
 import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.model.UserRole
+import io.cloudflight.jems.server.user.service.model.UserSettings
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.UserWithPassword
 import io.cloudflight.jems.server.user.service.user.PASSWORD_ERROR_KEY
@@ -38,6 +39,7 @@ internal class ResetPasswordByTokenTest : UnitTest() {
     private val userWithPassword = UserWithPassword(
         id = user.id,
         email = user.email,
+        userSettings = UserSettings(sendNotificationsToEmail = false),
         name = user.name,
         surname = user.surname,
         userRole = UserRole(user.userRole.id, user.userRole.name, emptySet(), user.userRole.isDefault),

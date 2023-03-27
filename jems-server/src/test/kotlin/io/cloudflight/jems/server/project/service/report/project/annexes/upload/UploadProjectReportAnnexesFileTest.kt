@@ -16,6 +16,7 @@ import io.cloudflight.jems.server.user.repository.user.UserNotFound
 import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserRole
+import io.cloudflight.jems.server.user.service.model.UserSettings
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -39,14 +40,18 @@ class UploadProjectReportAnnexesFileTest : UnitTest() {
 
         private val currentUser = LocalCurrentUser(
             User(
-                USER_ID, "admin@test.net", "test", "test",
+                USER_ID, "admin@test.net",
+                userSettings = UserSettings(sendNotificationsToEmail = false),
+                "test", "test",
                 UserRole(1, "Role", emptySet()),
                 userStatus = UserStatus.ACTIVE
             ), "", Collections.emptyList()
         )
         private val invalidUser = LocalCurrentUser(
             User(
-                -1L, "admin@test.net", "test", "test",
+                -1L, "admin@test.net",
+                userSettings = UserSettings(sendNotificationsToEmail = false),
+                "test", "test",
                 UserRole(1, "Role", emptySet()),
                 userStatus = UserStatus.ACTIVE
             ), "", Collections.emptyList()

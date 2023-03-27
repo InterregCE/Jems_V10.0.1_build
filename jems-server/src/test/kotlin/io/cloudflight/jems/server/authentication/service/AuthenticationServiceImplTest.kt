@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.utils.failedLoginAttemptEntity
 import io.cloudflight.jems.server.utils.loginEmail
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserRole
+import io.cloudflight.jems.server.user.service.model.UserSettings
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.clearMocks
 import io.mockk.every
@@ -62,7 +63,7 @@ class AuthenticationServiceImplTest : UnitTest() {
 
         every { securityService.currentUser } returns LocalCurrentUser(
             User(
-                1, "admin@test.net", "test", "test",
+                1, "admin@test.net", UserSettings(sendNotificationsToEmail = false),"test", "test",
                 UserRole(1, "Role", emptySet()),
                 userStatus = UserStatus.ACTIVE
             ), "", Collections.emptyList()
@@ -110,7 +111,7 @@ class AuthenticationServiceImplTest : UnitTest() {
     fun `current user is returned`() {
         every { securityService.currentUser } returns LocalCurrentUser(
             User(
-                1, "test@test.net", "test", "test",
+                1, "test@test.net", UserSettings(sendNotificationsToEmail = false),"test", "test",
                 UserRole(1, "Role", emptySet()),
                 userStatus = UserStatus.ACTIVE
             ), "", Collections.emptyList()

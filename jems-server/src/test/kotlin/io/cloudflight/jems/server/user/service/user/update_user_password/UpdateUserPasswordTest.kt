@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.user.service.model.Password
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserRole
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
+import io.cloudflight.jems.server.user.service.model.UserSettings
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.UserWithPassword
 import io.mockk.clearMocks
@@ -37,6 +38,7 @@ internal class UpdateUserPasswordTest : UnitTest() {
         private val oldUser = UserWithPassword(
             id = USER_ID,
             email = "maintainer_old@interact.eu",
+            userSettings = UserSettings(sendNotificationsToEmail = false),
             name = "Michael_old",
             surname = "Schumacher_old",
             userRole = UserRole(

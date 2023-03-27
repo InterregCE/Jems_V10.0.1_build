@@ -1,0 +1,71 @@
+.mat-row {
+  max-height: 3rem;
+}
+
+tr.notification-detail-row {
+  height: 0;
+}
+
+tr.notification-row:not(.notification-expanded-row):hover {
+  background: whitesmoke;
+}
+
+tr.notification-element-row:not(.notification-expanded-row):active {
+  background: #efefef;
+}
+
+.notification-row td {
+  border-bottom-width: 0;
+}
+
+.element-detail {
+  overflow: hidden;
+  display: flex;
+}
+
+.notification-body {
+  padding: 1.5rem 0.5rem;
+}
+
+.link:hover{
+  cursor: pointer;
+}
+
+.created-column {
+  min-width: 1rem;
+  max-width: 2rem;
+}
+
+.call-column {
+  min-width: 3rem;
+  max-width: 5rem;
+}
+
+.project-column {
+  min-width: 2rem;
+  max-width: 2rem;
+}
+
+.acronym-column {
+  min-width: 2rem;
+  max-width: 4rem;
+}
+
+.partner-column {
+  min-width: 1rem;
+  max-width: 2rem;
+}
+
+.subject-column {
+  min-width: 10rem;
+  max-width: 30rem;
+}
+
+.expand-column {
+  min-width: 0.2rem;
+  max-width: 0.5rem;
+}
+
+.no-data {
+  margin-bottom: 1rem;
+}

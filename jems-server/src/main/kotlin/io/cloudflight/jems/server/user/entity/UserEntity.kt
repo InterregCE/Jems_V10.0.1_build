@@ -25,6 +25,9 @@ class UserEntity(
     var email: String,
 
     @field:NotNull
+    var sendNotificationsToEmail: Boolean,
+
+    @field:NotNull
     var name: String,
 
     @field:NotNull

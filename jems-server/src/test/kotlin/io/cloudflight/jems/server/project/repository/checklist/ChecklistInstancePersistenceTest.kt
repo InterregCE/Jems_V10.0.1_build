@@ -163,6 +163,7 @@ class ChecklistInstancePersistenceTest : UnitTest() {
     private val user = UserEntity(
         id = CREATOR_ID,
         email = "test@email.com",
+        sendNotificationsToEmail = false,
         name = "name",
         surname = "surname",
         userRole = UserRoleEntity(2L, "name"),

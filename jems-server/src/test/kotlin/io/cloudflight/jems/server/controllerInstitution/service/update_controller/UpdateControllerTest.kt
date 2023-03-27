@@ -113,6 +113,7 @@ class UpdateControllerTest : UnitTest() {
         val user1Summary = UserSummary(
             id = MONITOR_USER_1_ID,
             email = MONITOR_USER_1_EMAIL,
+            sendNotificationsToEmail = false,
             name = "user1",
             surname = "",
             userRole = UserRoleSummary(4, "Controller"),
@@ -146,6 +147,7 @@ class UpdateControllerTest : UnitTest() {
         val institutionUser1Summary = UserSummary(
             id = MONITOR_USER_1_ID,
             email = MONITOR_USER_1_EMAIL,
+            sendNotificationsToEmail = false,
             name = "user1",
             surname = "",
             userRole = UserRoleSummary(4, "Controller"),
@@ -253,6 +255,7 @@ class UpdateControllerTest : UnitTest() {
         val institution1UserSummary = UserSummary(
             id = MONITOR_USER_1_ID,
             email = MONITOR_USER_1_EMAIL,
+            sendNotificationsToEmail = false,
             name = "user1",
             surname = "",
             userRole = UserRoleSummary(4, "Controller"),
@@ -341,6 +344,7 @@ class UpdateControllerTest : UnitTest() {
             UserSummary(
                 id = MONITOR_USER_1_ID,
                 email = MONITOR_USER_1_EMAIL,
+                sendNotificationsToEmail = false,
                 name = "user1",
                 surname = "",
                 userRole = UserRoleSummary(4, "Controller"),
@@ -349,6 +353,7 @@ class UpdateControllerTest : UnitTest() {
             UserSummary(
                 id = MONITOR_USER_2_ID,
                 email = MONITOR_USER_2_EMAIL,
+                sendNotificationsToEmail = false,
                 name = "user2",
                 surname = "",
                 userRole = UserRoleSummary(4, "Controller"),

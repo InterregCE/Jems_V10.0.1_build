@@ -116,6 +116,7 @@ class PaymentRegularPersistenceProviderTest: UnitTest() {
         private val account = UserEntity(
             id = 1,
             email = "admin@admin.dev",
+            sendNotificationsToEmail = false,
             name = "Name",
             surname = "Surname",
             userRole = UserRoleEntity(id = 1, name = "ADMIN"),
@@ -162,8 +163,8 @@ class PaymentRegularPersistenceProviderTest: UnitTest() {
         )
 
         private val role = UserRoleEntity(1, "role")
-        private val savePaymentUser = UserEntity(4L, "savePaymentInfo@User", "name", "surname", role, "", UserStatus.ACTIVE)
-        private val paymentConfirmedUser = UserEntity(5L, "paymentConfirmed@User", "name", "surname", role, "", UserStatus.ACTIVE)
+        private val savePaymentUser = UserEntity(4L, "savePaymentInfo@User", false,"name", "surname", role, "", UserStatus.ACTIVE)
+        private val paymentConfirmedUser = UserEntity(5L, "paymentConfirmed@User", false, "name", "surname", role, "", UserStatus.ACTIVE)
         private val installmentEntity = PaymentPartnerInstallmentEntity(
             id = 3L,
             paymentPartner = partnerPaymentEntity,

@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.user.service.confirmation.UserConfirmationPers
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserChange
 import io.cloudflight.jems.server.user.service.model.UserRole
+import io.cloudflight.jems.server.user.service.model.UserSettings
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -68,6 +69,7 @@ internal class CreateUserTest : UnitTest() {
         val expectedUser = User(
             id = USER_ID,
             email = "maintainer@interact.eu",
+            userSettings = UserSettings(sendNotificationsToEmail = false),
             name = "Michael",
             surname = "Schumacher",
             userRole = UserRole(

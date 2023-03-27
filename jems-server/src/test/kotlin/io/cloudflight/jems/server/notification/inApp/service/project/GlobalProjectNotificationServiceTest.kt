@@ -73,7 +73,17 @@ class GlobalProjectNotificationServiceTest: UnitTest() {
         val projectManager = CollaboratorAssignedToProject(
             userId = 21L,
             userEmail = "project.manager@jems.eu",
-            level = ProjectCollaboratorLevel.MANAGE,
+            sendNotificationsToEmail = true,
+            userStatus = UserStatus.ACTIVE,
+            level = ProjectCollaboratorLevel.MANAGE
+        )
+
+        val projectManagerDeactivated = CollaboratorAssignedToProject(
+            userId = 211L,
+            userEmail = "project.manager.deactivated@jems.eu",
+            sendNotificationsToEmail = true,
+            userStatus = UserStatus.UNCONFIRMED,
+            level = ProjectCollaboratorLevel.MANAGE
         )
 
         private val leadPartner = ProjectPartnerDetail(
@@ -122,6 +132,8 @@ class GlobalProjectNotificationServiceTest: UnitTest() {
             userId = 41L,
             partnerId = 2L,
             userEmail = "lp.collaborator@jems.eu",
+            sendNotificationsToEmail = true,
+            userStatus = UserStatus.ACTIVE,
             level = PartnerCollaboratorLevel.EDIT,
             gdpr = false
         )
@@ -130,6 +142,28 @@ class GlobalProjectNotificationServiceTest: UnitTest() {
             userId = 43L,
             partnerId = 3L,
             userEmail = "pp.collaborator@jems.eu",
+            sendNotificationsToEmail = true,
+            userStatus = UserStatus.ACTIVE,
+            level = PartnerCollaboratorLevel.EDIT,
+            gdpr = false
+        )
+
+        val partnerCollaboratorActiveButFlagFalse = PartnerCollaborator(
+            userId = 43L,
+            partnerId = 3L,
+            userEmail = "pp.collaborator.noNotifications@jems.eu",
+            sendNotificationsToEmail = false,
+            userStatus = UserStatus.ACTIVE,
+            level = PartnerCollaboratorLevel.EDIT,
+            gdpr = false
+        )
+
+        val partnerCollaboratorDeactivated = PartnerCollaborator(
+            userId = 431L,
+            partnerId = 31L,
+            userEmail = "pp.collaborator.deactivated@jems.eu",
+            sendNotificationsToEmail = true,
+            userStatus = UserStatus.INACTIVE,
             level = PartnerCollaboratorLevel.EDIT,
             gdpr = false
         )
@@ -137,15 +171,27 @@ class GlobalProjectNotificationServiceTest: UnitTest() {
         val programmeUser = UserSummary(
             id = 101L,
             email = "programme@user",
+            sendNotificationsToEmail = true,
             name = "john",
             surname = "doe",
             userRole = UserRoleSummary(id = 2, name = "programme user", isDefault = true),
             userStatus = UserStatus.ACTIVE
         )
 
+        val programmeUserDeactivated = UserSummary(
+            id = 102L,
+            email = "john.doe.deactivated@ce.eu",
+            sendNotificationsToEmail = true,
+            name = "john",
+            surname = "deactivated",
+            userRole = UserRoleSummary(id = 2, name = "programme user", isDefault = true),
+            userStatus = UserStatus.INACTIVE
+        )
+
         val programmeUserGlobal = UserSummary(
             id = 118L,
             email = "global.retrieve@programme.user",
+            sendNotificationsToEmail = true,
             name = "bruno",
             surname = "mars",
             userRole = UserRoleSummary(id = 1151L, name = "aaaadmin", isDefault = false),
@@ -179,11 +225,15 @@ class GlobalProjectNotificationServiceTest: UnitTest() {
         every { projectPersistence.getCallIdOfProject(PROJECT_ID) } returns CALL_ID
         every { callNotificationConfigPersistence.getActiveNotificationOfType(CALL_ID, notifType) } returns step1submittedToAll
 
-        every { userProjectCollaboratorPersistence.getUserIdsForProject(PROJECT_ID) } returns listOf(projectManager)
+        every { userProjectCollaboratorPersistence.getUserIdsForProject(PROJECT_ID) } returns listOf(projectManager, projectManagerDeactivated)
         every { partnerPersistence.findTop30ByProjectId(PROJECT_ID) } returns listOf(leadPartner, partner)
         every { partnerCollaboratorPersistence.findByProjectAndPartners(PROJECT_ID, setOf(2L)) } returns setOf(leadPartnerCollaborator)
-        every { partnerCollaboratorPersistence.findByProjectAndPartners(PROJECT_ID, setOf(3L)) } returns setOf(partnerCollaborator)
-        every { userProjectPersistence.getUsersForProject(PROJECT_ID) } returns setOf(programmeUser)
+        every { partnerCollaboratorPersistence.findByProjectAndPartners(PROJECT_ID, setOf(3L)) } returns setOf(
+            partnerCollaborator,
+            partnerCollaboratorDeactivated,
+            partnerCollaboratorActiveButFlagFalse
+        )
+        every { userProjectPersistence.getUsersForProject(PROJECT_ID) } returns setOf(programmeUser, programmeUserDeactivated)
 
         every { userRolePersistence.findRoleIdsHavingAndNotHavingPermissions(
             UserRolePermission.getGlobalProjectRetrievePermissions(), emptySet()
@@ -211,8 +261,17 @@ class GlobalProjectNotificationServiceTest: UnitTest() {
                     "subject" to "Application Step 1 Submitted",
                     "body" to "test step 1",
                 ),
-                recipientsInApp = setOf("project.manager@jems.eu", "lp.collaborator@jems.eu",
-                    "pp.collaborator@jems.eu", "programme@user", "global.retrieve@programme.user"),
+                recipientsInApp = setOf(
+                    "lp.collaborator@jems.eu",
+                    "pp.collaborator@jems.eu",
+                    "global.retrieve@programme.user",
+                    "pp.collaborator.noNotifications@jems.eu",
+                    "programme@user",
+                    "project.manager@jems.eu",
+                    "pp.collaborator.deactivated@jems.eu",
+                    "project.manager.deactivated@jems.eu",
+                    "john.doe.deactivated@ce.eu"
+                ),
                 recipientsEmail = setOf("project.manager@jems.eu", "lp.collaborator@jems.eu",
                     "pp.collaborator@jems.eu", "programme@user", "global.retrieve@programme.user"),
                 emailTemplate = "notification.html",

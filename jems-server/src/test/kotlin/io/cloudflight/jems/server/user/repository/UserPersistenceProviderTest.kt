@@ -15,6 +15,7 @@ import io.cloudflight.jems.server.user.service.model.UserChange
 import io.cloudflight.jems.server.user.service.model.UserRole
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectSubmission
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
+import io.cloudflight.jems.server.user.service.model.UserSettings
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.mockk.every
@@ -38,6 +39,7 @@ internal class UserPersistenceProviderTest : UnitTest() {
         private val userEntity = UserEntity(
             id = USER_ID,
             email = "replace",
+            sendNotificationsToEmail = false,
             name = "replace",
             surname = "replace",
             password = "test",
@@ -47,6 +49,7 @@ internal class UserPersistenceProviderTest : UnitTest() {
         private val userEntityStatic = UserEntity(
             id = USER_ID,
             email = "replace",
+            sendNotificationsToEmail = false,
             name = "replace",
             surname = "replace",
             password = "test",
@@ -56,6 +59,7 @@ internal class UserPersistenceProviderTest : UnitTest() {
         private val userSummary = UserSummary(
             id = USER_ID,
             email = "replace",
+            sendNotificationsToEmail = false,
             name = "replace",
             surname = "replace",
             userRole = UserRoleSummary(id = ROLE_ID, name = "ruler", isDefault = false),
@@ -93,6 +97,7 @@ internal class UserPersistenceProviderTest : UnitTest() {
                 id = USER_ID,
                 name = change.name,
                 email = change.email,
+                userSettings = UserSettings(sendNotificationsToEmail = false),
                 surname = change.surname,
                 userRole = UserRole(change.userRoleId, userRoleEntity.name, setOf(ProjectSubmission)),
                 userStatus = UserStatus.ACTIVE

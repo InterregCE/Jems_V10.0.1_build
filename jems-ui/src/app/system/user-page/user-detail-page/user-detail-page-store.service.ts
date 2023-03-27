@@ -1,6 +1,14 @@
 import {Injectable} from '@angular/core';
 import {combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
-import {OutputCurrentUser, PasswordDTO, UserChangeDTO, UserDTO, UserRoleSummaryDTO, UserService} from '@cat/api';
+import {
+  OutputCurrentUser,
+  PasswordDTO,
+  UserChangeDTO,
+  UserDTO,
+  UserRoleSummaryDTO,
+  UserService, UserSettingsChangeDTO,
+  UserSettingsDTO
+} from '@cat/api';
 import {catchError, filter, map, shareReplay, switchMap, take, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -20,6 +28,8 @@ export class UserDetailPageStore {
   userSaveSuccess$ = new Subject<boolean>();
   passwordSaveError$ = new Subject<APIError | null>();
   passwordSaveSuccess$ = new Subject<boolean>();
+  userSettingsSaveError$ = new Subject<APIError | null>();
+  userSettingsSaveSuccess$ = new Subject<boolean>();
 
   user$: Observable<UserDTO>;
   currentUser$: Observable<OutputCurrentUser | null>;
@@ -72,6 +82,19 @@ export class UserDetailPageStore {
         tap(() => Log.info('User password changed successfully.', this)),
         catchError((error: HttpErrorResponse) => {
           this.passwordSaveError$.next(error.error);
+          throw error;
+        })
+      );
+  }
+
+  updateSettings(settings: UserSettingsChangeDTO): Observable<UserSettingsDTO> {
+    return (this.userService.updateUserSetting(settings))
+      .pipe(
+        tap(() => this.userSettingsSaveSuccess$.next(true)),
+        tap(() => this.userSettingsSaveError$.next(null)),
+        tap(() => Log.info('User settings changed successfully.', this)),
+        catchError((error: HttpErrorResponse) => {
+          this.userSettingsSaveError$.next(error.error);
           throw error;
         })
       );

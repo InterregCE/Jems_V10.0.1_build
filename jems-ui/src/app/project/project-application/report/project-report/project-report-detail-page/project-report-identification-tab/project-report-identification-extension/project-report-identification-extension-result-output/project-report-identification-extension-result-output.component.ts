@@ -17,7 +17,7 @@ export class ProjectReportIdentificationExtensionResultOutputComponent {
 
   constructor(readonly pageStore: ProjectReportIdentificationExtensionStore) {}
 
-  getDataSource(lines: Array<ProjectReportOutputLineOverviewDTO>) {
+  getDataSource(lines: ProjectReportOutputLineOverviewDTO[]) {
     return new MatTableDataSource<ProjectReportOutputLineOverviewDTO>(lines);
   }
 

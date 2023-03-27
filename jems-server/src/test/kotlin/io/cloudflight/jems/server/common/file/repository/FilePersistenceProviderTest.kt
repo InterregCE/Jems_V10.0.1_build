@@ -66,7 +66,7 @@ class FilePersistenceProviderTest: UnitTest() {
             name = "attachment.pdf",
             type = JemsFileType.Contribution,
             size = 47889L,
-            user = UserEntity(id = 45L, email = "admin@cloudflight.io", name = "Admin", surname = "Big",
+            user = UserEntity(id = 45L, email = "admin@cloudflight.io", name = "Admin", surname = "Big", sendNotificationsToEmail = false,
                 password = "##", userRole = mockk(), userStatus = mockk()),
             uploaded = LAST_WEEK,
             description = "desc",

@@ -1,0 +1,101 @@
+<ng-container *ngIf="data$ | async as data">
+
+    <ng-container *ngIf="data.page.totalElements">
+        <table mat-table  matSort multiTemplateDataRows (matSortChange)="listStore.newSort$.next($event)" [dataSource]="data.page.content" >
+            <ng-container matColumnDef="created">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header="created" class="text-left created-column">
+                    <span jemsText maxLines="2">{{ 'notification.table.column.time' | translate }}</span>
+                </th>
+                <td mat-cell *matCellDef="let notification" class="text-left created-column">
+                   {{notification.time | localeDate : 'L' : 'LT'}}
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="call">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header="project.call.name" class="text-left call-column">
+                    <span jemsText maxLines="2">{{ 'project.detail.table.call.name' | translate }}</span>
+                </th>
+                <td mat-cell *matCellDef="let notification" class="text-left call-column">
+                    {{notification.project.callName}}
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="project">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header="projectIdentifier" class="text-left project-column">
+                    <span jemsText maxLines="2">{{ 'call.detail.notifications.config.tab.project' | translate }}</span>
+                </th>
+                <td mat-cell *matCellDef="let notification" class="text-left project-column link">
+                    <span [routerLink]="'/app/project/detail/' + notification.project.projectId">{{notification.project.projectIdentifier}}</span>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="acronym">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header="projectAcronym" class="text-left acronym-column">
+                    <span jemsText maxLines="2">{{ 'project.table.column.name.acronym' | translate }}</span>
+                </th>
+                <td mat-cell *matCellDef="let notification" class="text-left acronym-column link">
+                    <span [routerLink]="'/app/project/detail/' + notification.project.projectId">{{notification.project.projectAcronym}}</span>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="partner">
+                <th mat-header-cell *matHeaderCellDef class="text-left partner-column">
+                    <span jemsText maxLines="2">{{ 'payments.detail.table.header.partner' | translate }}</span>
+                </th>
+                <td mat-cell *matCellDef="let notification" class="text-left partner-column">
+                  -
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="subject">
+                <th mat-header-cell *matHeaderCellDef class="text-left subject-column">
+                    <span jemsText maxLines="2">{{ 'notification.table.column.subject' | translate }}</span>
+                </th>
+                <td mat-cell *matCellDef="let notification" class="text-left subject-column">
+                    {{notification.subject}}
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="expand">
+                <th mat-header-cell *matHeaderCellDef class="text-right expand-column"></th>
+                <td mat-cell *matCellDef="let element; let index = index" class="text-right expand-column">
+                    <button mat-icon-button aria-label="expand row" (click)="(expandedElement = expandedElement === element ? null : element); $event.stopPropagation()">
+                        <mat-icon *ngIf="expandedElement !== element">keyboard_arrow_down</mat-icon>
+                        <mat-icon *ngIf="expandedElement === element">keyboard_arrow_up</mat-icon>
+                    </button>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="expandedDetail">
+                <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumnsWithExpanded.length">
+                    <div class="element-detail"
+                         [@detailExpand]="element === expandedElement ? 'expanded' : 'collapsed'">
+                        <div class="notification-body">
+                            {{element.body}}
+                        </div>
+                    </div>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumnsWithExpanded"></tr>
+            <tr mat-row *matRowDef="let element; columns: displayedColumnsWithExpanded;"
+                class="notification-row"
+                [class.notification-expanded-row]="expandedElement === element"
+                (click)="expandedElement = expandedElement === element ? null : element">
+            </tr>
+            <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="notification-detail-row"></tr>
+
+        </table>
+
+        <jems-paginator
+                [length]="data.page.totalElements"
+                [currentPageIndex]="data.page.pageable.pageNumber"
+                [currentPageSize]="data.page.pageable.pageSize"
+                (pageIndexChanged)="listStore.newPageIndex$.next($event)"
+                (pageSizeChanged)="listStore.newPageSize$.next($event)">
+        </jems-paginator>
+    </ng-container>
+    <ng-container *ngIf="!data.page.totalElements">{{'notification.table.no.data' | translate}}</ng-container>
+</ng-container>
+
+

@@ -16,6 +16,8 @@ interface UserProjectCollaboratorRepository : JpaRepository<UserProjectCollabora
         SELECT new io.cloudflight.jems.server.user.service.model.assignment.CollaboratorAssignedToProject(
             ap.id.userId,
             a.email,
+            a.sendNotificationsToEmail,
+            a.userStatus,
             ap.level)
         FROM #{#entityName} AS ap
         LEFT JOIN account a on a.id = ap.id.userId

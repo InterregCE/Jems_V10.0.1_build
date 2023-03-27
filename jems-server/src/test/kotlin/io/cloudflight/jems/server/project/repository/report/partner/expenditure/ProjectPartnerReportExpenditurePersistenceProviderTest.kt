@@ -537,7 +537,16 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
             name = "powerpoint.pptx",
             type = JemsFileType.Expenditure,
             size = 324L,
-            user = UserEntity(id = 210L, "email", name = "name", surname = "surname", mockk(), "", UserStatus.ACTIVE),
+            user = UserEntity(
+                id = 210L,
+                "email",
+                name = "name",
+                surname = "surname",
+                sendNotificationsToEmail = false,
+                userRole = mockk(),
+                password = "",
+                userStatus = UserStatus.ACTIVE
+            ),
             uploaded = time,
             description = "desc",
         )

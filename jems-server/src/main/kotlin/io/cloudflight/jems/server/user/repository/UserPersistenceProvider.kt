@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.user.repository
 
+import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.repository.user.UserNotFound
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import io.cloudflight.jems.server.user.repository.user.UserRoleNotFound
@@ -14,6 +15,9 @@ import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserChange
 import io.cloudflight.jems.server.user.service.model.UserSearchRequest
+import io.cloudflight.jems.server.user.service.model.UserSettings
+import io.cloudflight.jems.server.user.service.model.UserSettingsChange
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.cloudflight.jems.server.user.service.model.UserWithPassword
 import org.springframework.data.domain.Page
@@ -101,6 +105,14 @@ class UserPersistenceProvider(
     }
 
     @Transactional
+    override fun updateSetting(userSettings: UserSettingsChange): UserSettings {
+        val existingUser = userRepo.findById(userSettings.id).orElseThrow { UserNotFound() }
+        existingUser.sendNotificationsToEmail = disableNotificationsIfUserGotInactive(userSettings, existingUser)
+
+        return UserSettings(existingUser.sendNotificationsToEmail)
+    }
+
+    @Transactional
     override fun updatePassword(userId: Long, encodedPassword: String) {
         userRepo.findById(userId).orElseThrow { UserNotFound() }
             .password = encodedPassword
@@ -114,4 +126,11 @@ class UserPersistenceProvider(
     override fun emailExists(email: String): Boolean =
         userRepo.existsByEmail(email)
 
+
+    private fun disableNotificationsIfUserGotInactive(userSetting: UserSettingsChange, savedUser: UserEntity): Boolean {
+        return if(savedUser.userStatus == UserStatus.INACTIVE || savedUser.userStatus == UserStatus.UNCONFIRMED) {
+            false
+        } else
+            userSetting.sendNotificationsToEmail
+    }
 }

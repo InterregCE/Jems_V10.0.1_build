@@ -283,10 +283,11 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         private val endDate = ZonedDateTime.now().plusDays(5)
 
         private val userEntity =
-            UserEntity(3L, "email", "name", "surname", UserRoleEntity(4L, "role"), "password", UserStatus.ACTIVE)
+            UserEntity(3L, "email", false, "name", "surname", UserRoleEntity(4L, "role"), "password", UserStatus.ACTIVE)
         private val user = UserSummary(
             userEntity.id,
             userEntity.email,
+            userEntity.sendNotificationsToEmail,
             userEntity.name,
             userEntity.surname,
             UserRoleSummary(4L, "role"),
@@ -1712,6 +1713,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         val account = UserEntity(
             id = 1,
             email = "admin@admin.dev",
+            sendNotificationsToEmail = false,
             name = "Name",
             surname = "Surname",
             userRole = UserRoleEntity(id = 1, name = "ADMIN"),

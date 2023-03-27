@@ -5,10 +5,13 @@ import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.service.projectuser.UserProjectPersistence
 import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.authorization.CanUpdateUser
+import io.cloudflight.jems.server.user.service.authorization.CanUpdateUserSettings
 import io.cloudflight.jems.server.user.service.confirmation.UserConfirmationPersistence
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserChange
 import io.cloudflight.jems.server.user.service.model.UserRole
+import io.cloudflight.jems.server.user.service.model.UserSettings
+import io.cloudflight.jems.server.user.service.model.UserSettingsChange
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.user.validateUserCommon
 import org.springframework.context.ApplicationEventPublisher
@@ -39,6 +42,16 @@ class UpdateUser(
 
         return updatedUser
     }
+
+
+    @CanUpdateUserSettings
+    @Transactional
+    @ExceptionWrapper(UpdateUserSettingsException::class)
+    override fun updateUserSetting(userSettings: UserSettingsChange): UserSettings {
+        return persistence.updateSetting(userSettings)
+    }
+
+
 
     private fun validateUser(oldUser: User, newUser: UserChange) {
         validateUserCommon(generalValidator, newUser)

@@ -48,19 +48,11 @@ class ReturnApplicationToApplicantInteractorTest : UnitTest() {
             acronym = "project acronym",
             status = ApplicationStatus.SUBMITTED
         )
-        private val projectVersion = ProjectVersion(
-            version = "1.0",
-            projectId = PROJECT_ID,
-            createdAt = ZonedDateTime.now(),
-            user = UserEntity(1L, "some@applicant", "name", "surname", UserRoleEntity(1L, "applicant"), "", UserStatus.ACTIVE),
-            status = ApplicationStatus.DRAFT,
-            current = true
-        )
         private val projectVersionSummary = ProjectVersionSummary(
             version = "1.0",
             projectId = PROJECT_ID,
             createdAt = ZonedDateTime.now(),
-            user = UserEntity(1L, "some@applicant", "name", "surname", UserRoleEntity(1L, "applicant"), "", UserStatus.ACTIVE),
+            user = UserEntity(1L, "some@applicant", false, "name", "surname", UserRoleEntity(1L, "applicant"), "", UserStatus.ACTIVE),
         )
     }
 

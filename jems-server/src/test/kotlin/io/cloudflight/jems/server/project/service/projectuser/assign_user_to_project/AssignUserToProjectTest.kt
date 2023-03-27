@@ -56,11 +56,11 @@ internal class AssignUserToProjectTest : UnitTest() {
 
         private fun project(id: Long) = ProjectSummary(id, "cid", 1L, "call", "acronym", ApplicationStatus.STEP1_DRAFT)
 
-        val admin = UserSummary(USER_ADMIN_ID, "admin", "", "", role(ADMIN_ROLE_ID), UserStatus.ACTIVE)
-        val programmeUser = UserSummary(USER_PROGRAMME_ID, "programme", "", "", role(PROGRAMME_ROLE_ID), UserStatus.ACTIVE)
-        val monitorUser_1 = UserSummary(USER_MONITOR_ID_1, "monitor", "", "", role(MONITOR_ROLE_ID), UserStatus.ACTIVE)
-        val monitorUser_2 = UserSummary(USER_MONITOR_ID_2, "monitor", "", "", role(MONITOR_ROLE_ID), UserStatus.ACTIVE)
-        val applicantUser = UserSummary(USER_APPLICANT_ID, "applicant", "", "", role(APPLICANT_ROLE_ID), UserStatus.ACTIVE)
+        val admin = UserSummary(USER_ADMIN_ID, "admin", false, "", "", role(ADMIN_ROLE_ID), UserStatus.ACTIVE)
+        val programmeUser = UserSummary(USER_PROGRAMME_ID, "programme", false, "", "", role(PROGRAMME_ROLE_ID), UserStatus.ACTIVE)
+        val monitorUser_1 = UserSummary(USER_MONITOR_ID_1, "monitor", false, "", "", role(MONITOR_ROLE_ID), UserStatus.ACTIVE)
+        val monitorUser_2 = UserSummary(USER_MONITOR_ID_2, "monitor", false, "", "", role(MONITOR_ROLE_ID), UserStatus.ACTIVE)
+        val applicantUser = UserSummary(USER_APPLICANT_ID, "applicant", false, "", "", role(APPLICANT_ROLE_ID), UserStatus.ACTIVE)
     }
 
     @MockK

@@ -65,6 +65,7 @@ class ProjectServiceTest : UnitTest() {
     private val account = UserEntity(
         id = 1,
         email = "admin@admin.dev",
+        sendNotificationsToEmail = false,
         name = "Name",
         surname = "Surname",
         userRole = UserRoleEntity(id = 1, name = "ADMIN"),

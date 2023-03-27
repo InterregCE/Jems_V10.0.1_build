@@ -41,6 +41,7 @@ interface ProjectRow: TranslationView {
     // user summary
     val userId: Long
     val email: String
+    val sendNotificationsToEmail: Boolean
     val name: String
     val surname: String
     val userStatus: UserStatus

@@ -38,6 +38,7 @@
     <ID>LongParameterList:ProjectPartnerReportExportInteractor.kt$ProjectPartnerReportExportInteractor$( partnerId: Long, reportId: Long, pluginKey: String, exportLanguage: SystemLanguage, inputLanguage: SystemLanguage, localDateTime: LocalDateTime )</ID>
     <ID>LongParameterList:UploadFileToProjectPartnerReportWorkPlanInteractor.kt$UploadFileToProjectPartnerReportWorkPlanInteractor$( partnerId: Long, reportId: Long, workPackageId: Long, activityId: Long, deliverableId: Long, file: ProjectFile, )</ID>
     <ID>LongParameterList:UploadFileToProjectReportWorkPlanInteractor.kt$UploadFileToProjectReportWorkPlanInteractor$( projectId: Long, reportId: Long, workPackageId: Long, activityId: Long, deliverableId: Long, file: ProjectFile, )</ID>
+    <ID>MatchingDeclarationName:NotificationAuthorirization.kt$CanRetrieveNotifications</ID>
     <ID>MatchingDeclarationName:ProjectContractingManagementAuthorizationTest.kt$projectContractingAuthorizationTest : UnitTest</ID>
     <ID>MaxLineLength:AddWorkPackageInvestmentTestWorkPackageInvestmentBase.kt$AddWorkPackageInvestmentTestWorkPackageInvestmentBase$fun</ID>
     <ID>MaxLineLength:ApprovedApplicationWithConditionsStateTest.kt$ApprovedApplicationWithConditionsStateTest$every { projectWorkflowPersistence.updateProjectFundingDecision(PROJECT_ID, USER_ID, ApplicationStatus.APPROVED, any()) } returns ApplicationStatus.APPROVED</ID>
@@ -96,7 +97,6 @@
     <ID>MaxLineLength:ProjectWorkPackageAuthorizationTest.kt$ProjectWorkPackageAuthorizationTest$val user = LocalCurrentUser(userApplicant.copy(assignedProjects = setOf(12L)), "hash_pass", applicantUser.authorities union setOf(SimpleGrantedAuthority(ProjectFormRetrieve.name)))</ID>
     <ID>MaxLineLength:ProjectWorkPackageAuthorizationTest.kt$ProjectWorkPackageAuthorizationTest$val user = LocalCurrentUser(userApplicant.copy(assignedProjects = setOf(PROJECT_ID)), "hash_pass", applicantUser.authorities union setOf(SimpleGrantedAuthority(ProjectFormUpdate.name)))</ID>
     <ID>MaxLineLength:ProjectWorkflowPersistenceProvider.kt$ProjectWorkflowPersistenceProvider$if</ID>
-    <ID>MaxLineLength:ProjectWorkflowPersistenceTest.kt$ProjectWorkflowPersistenceTest$val userSummary = UserSummary(ProjectPartnerTestUtil.user.id, ProjectPartnerTestUtil.user.email, ProjectPartnerTestUtil.user.name, ProjectPartnerTestUtil.user.surname, UserRoleSummary(1L, "ADMIN"), UserStatus.ACTIVE)</ID>
     <ID>MaxLineLength:RefuseApplicationInteractorTest.kt$RefuseApplicationInteractorTest$assessmentStep2 = ProjectAssessment(assessmentQuality = ProjectAssessmentQuality(PROJECT_ID, 2, ProjectAssessmentQualityResult.RECOMMENDED_FOR_FUNDING))</ID>
     <ID>MaxLineLength:RestoreProjectUtils.kt$RestoreProjectUtils$"INSERT INTO ${path.first().childTable} SELECT * FROM ${path.first().childTable} FOR SYSTEM_TIME AS OF '$timestamp' WHERE ${path.first().childColumn} = :$projectIdParam"</ID>
     <ID>MaxLineLength:RestoreProjectUtils.kt$RestoreProjectUtils$"INSERT INTO ${path.first().childTable} SELECT * FROM ${path.first().childTable} FOR SYSTEM_TIME AS OF '$timestamp' WHERE (${path.first().childColumn}) IN ( "</ID>
@@ -602,7 +602,6 @@
     <ID>UnusedPrivateMember:ProjectPartnerFactory.kt$ProjectPartnerFactory$author: UserEntity</ID>
     <ID>UnusedPrivateMember:ProjectWorkPackageAuthorizationTest.kt$ProjectWorkPackageAuthorizationTest.Companion$private const val INVESTMENT_ID = 7L</ID>
     <ID>UnusedPrivateMember:ReturnApplicationToApplicantInteractorTest.kt$ReturnApplicationToApplicantInteractorTest$@InjectMockKs private lateinit var handBackToApplicant: HandBackToApplicant</ID>
-    <ID>UnusedPrivateMember:ReturnApplicationToApplicantInteractorTest.kt$ReturnApplicationToApplicantInteractorTest.Companion$private val projectVersion = ProjectVersion( version = "1.0", projectId = PROJECT_ID, createdAt = ZonedDateTime.now(), user = UserEntity(1L, "some@applicant", "name", "surname", UserRoleEntity(1L, "applicant"), "", UserStatus.ACTIVE), status = ApplicationStatus.DRAFT, current = true )</ID>
     <ID>UnusedPrivateMember:SaveProjectVersionTest.kt$SaveProjectVersionTest$private val newProjectVersion = ProjectVersion( "2.0", projectId, createdAt = ZonedDateTime.now(), user, ApplicationStatus.SUBMITTED, current = true )</ID>
     <ID>UnusedPrivateMember:UpdateCallTest.kt$UpdateCallTest$private fun provideNotAllowedChangesToPublishedCall(): Stream&lt;Arguments&gt;</ID>
     <ID>UnusedPrivateMember:UpdateFundsTest.kt$UpdateFundsTest$private fun providePreDefinedProgramFundTypes()</ID>

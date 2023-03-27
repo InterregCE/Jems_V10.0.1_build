@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.project.entity.partneruser.PartnerCollaborator
 import io.cloudflight.jems.server.project.entity.partneruser.PartnerCollaboratorLevel.VIEW
 import io.cloudflight.jems.server.project.entity.partneruser.UserPartnerCollaboratorEntity
 import io.cloudflight.jems.server.project.entity.partneruser.UserPartnerId
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.assignment.PartnerCollaborator
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -72,6 +73,8 @@ internal class UserPartnerCollaboratorPersistenceProviderTest : UnitTest() {
                 userId = 2L,
                 partnerId = PARTNER_ID,
                 userEmail = "",
+                sendNotificationsToEmail = false,
+                userStatus = UserStatus.ACTIVE,
                 level = PartnerCollaboratorLevel.EDIT,
                 gdpr = false
             )
@@ -102,6 +105,8 @@ internal class UserPartnerCollaboratorPersistenceProviderTest : UnitTest() {
                 userId = 2L,
                 partnerId = PARTNER_ID,
                 userEmail = "",
+                sendNotificationsToEmail = false,
+                userStatus = UserStatus.ACTIVE,
                 level = PartnerCollaboratorLevel.EDIT,
                 gdpr = false
             )

@@ -19,6 +19,8 @@ interface UserPartnerCollaboratorRepository : JpaRepository<UserPartnerCollabora
             upc.id.userId,
             upc.id.partnerId,
             a.email,
+            a.sendNotificationsToEmail,
+            a.userStatus,
             upc.level,
             upc.gdpr)
         FROM #{#entityName} AS upc
@@ -34,6 +36,8 @@ interface UserPartnerCollaboratorRepository : JpaRepository<UserPartnerCollabora
             upc.id.userId,
             upc.id.partnerId,
             a.email,
+            a.sendNotificationsToEmail,
+            a.userStatus,
             upc.level,
             upc.gdpr)
         FROM #{#entityName} AS upc
@@ -49,6 +53,8 @@ interface UserPartnerCollaboratorRepository : JpaRepository<UserPartnerCollabora
             upc.id.userId,
             upc.id.partnerId,
             a.email,
+            a.sendNotificationsToEmail,
+            a.userStatus,
             upc.level,
             upc.gdpr)
         FROM #{#entityName} AS upc
@@ -64,6 +70,8 @@ interface UserPartnerCollaboratorRepository : JpaRepository<UserPartnerCollabora
             upc.id.userId,
             upc.id.partnerId,
             a.email,
+            a.sendNotificationsToEmail,
+            a.userStatus,
             upc.level,
             upc.gdpr)
         FROM #{#entityName} AS upc
