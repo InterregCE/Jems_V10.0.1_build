@@ -1,16 +1,16 @@
 <ng-container *ngIf="indicatorOverviewLines$ | async as indicatorOverviewLines">
 
     <jems-alert [closable]="false" [show]="!indicatorOverviewLines?.length"
-               [type]="Alert.WARNING">
+                [type]="Alert.WARNING">
         <p>{{'project.application.form.a4.indicators.overview.table.not.available' | translate}}</p>
     </jems-alert>
 
-    <jems-multi-language-container *ngIf="indicatorOverviewLines?.length" >
-        <div class="overflow-auto">
+    <div class="overflow-auto">
+        <jems-multi-language-container *ngIf="indicatorOverviewLines?.length">
             <table [dataSource]="indicatorOverviewLines"
-               aria-label="Overview of project results and outputs in connection to indicators"
-               id="indicators-overview"
-               mat-table>
+                   aria-label="Overview of project results and outputs in connection to indicators"
+                   id="indicators-overview"
+                   mat-table>
                 <ng-container matColumnDef="resultIndicatorName">
                     <th *matHeaderCellDef mat-header-cell scope="col">
                         <span jemsText maxLines="2">{{ 'project.results.result.indicator' | translate }}</span>
@@ -21,7 +21,7 @@
                         class="border-cell-bottom"
                         mat-cell
                         matTooltipPosition="right">
-                        {{ data.resultIndicatorName | translateByInputLanguage | async }}
+                        {{ data.resultIndicatorName | translateBySystemLanguage | async }}
                     </td>
                 </ng-container>
 
@@ -33,7 +33,7 @@
                         [style.display]="getRowSpan('resultIndicator', i) ? '' : 'none'"
                         class="border-cell-bottom border-cell-right no-left-padding"
                         mat-cell>
-                        {{ data.resultIndicatorMeasurementUnit | translateByInputLanguage | async }}
+                        {{ data.resultIndicatorMeasurementUnit | translateBySystemLanguage | async }}
                     </td>
                 </ng-container>
 
@@ -73,7 +73,7 @@
                         class="border-cell-bottom border-cell-left"
                         mat-cell
                         matTooltipPosition="right">
-                        <span jemsText maxLines="2">{{ data.outputIndicatorName | translateByInputLanguage | async }}</span>
+                        <span jemsText maxLines="2">{{ data.outputIndicatorName | translateBySystemLanguage | async }}</span>
                     </td>
                 </ng-container>
 
@@ -85,7 +85,7 @@
                         [style.display]="getRowSpan('outputIndicator', i) ? '' : 'none'"
                         class="border-cell-bottom no-left-padding"
                         mat-cell>
-                        <span jemsText maxLines="2">{{ data.outputIndicatorMeasurementUnit | translateByInputLanguage | async }}</span>
+                        <span jemsText maxLines="2">{{ data.outputIndicatorMeasurementUnit | translateBySystemLanguage | async }}</span>
                     </td>
                 </ng-container>
 
@@ -117,7 +117,7 @@
                         <span jemsText maxLines="2">{{ 'project.application.form.work.package.output.title' | translate }}</span>
                     </th>
                     <td *matCellDef="let data; let i = index" class="border-cell-bottom">
-                        {{ data.projectOutputTitle | translateByInputLanguage | async }}
+                        {{ data.projectOutputTitle | translate }}
                     </td>
                 </ng-container>
 
@@ -133,8 +133,8 @@
                 <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
                 <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
             </table>
-        </div>
-    </jems-multi-language-container>
+        </jems-multi-language-container>
+    </div>
 
 </ng-container>
 
