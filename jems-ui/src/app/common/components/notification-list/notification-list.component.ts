@@ -30,7 +30,6 @@ export class NotificationListComponent implements OnInit{
 
   displayedColumns = ['created', 'call', 'project', 'acronym', 'partner', 'subject'];
   displayedColumnsWithExpanded = [...this.displayedColumns, 'expand'];
-  toggleStatesOfNotificationRows: boolean[] = [];
   expandedElement: NotificationDTO | null;
   data$: Observable<{
     page: PageNotificationDTO;
@@ -47,11 +46,4 @@ export class NotificationListComponent implements OnInit{
       );
   }
 
-  getNotificationRowToggleStateAtIndex(index: number): boolean {
-    return this.toggleStatesOfNotificationRows[index];
-  }
-
-  toggleNotificationRowAtIndex(index: number): void {
-    this.toggleStatesOfNotificationRows[index] = !this.toggleStatesOfNotificationRows[index];
-  }
 }
