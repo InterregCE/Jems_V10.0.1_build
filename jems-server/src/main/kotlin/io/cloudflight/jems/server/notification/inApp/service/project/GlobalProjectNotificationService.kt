@@ -1,17 +1,15 @@
 package io.cloudflight.jems.server.notification.inApp.service.project
 
 import io.cloudflight.jems.server.call.service.notificationConfigurations.CallNotificationConfigurationsPersistence
-import io.cloudflight.jems.server.common.event.JemsMailEvent
+import io.cloudflight.jems.server.common.event.JemsAsyncMailEvent
 import io.cloudflight.jems.server.common.model.Variable
 import io.cloudflight.jems.server.notification.inApp.service.NotificationPersistence
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationConfigurationWithRecipients
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationInApp
-import io.cloudflight.jems.server.notification.inApp.service.model.NotificationProject
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationProjectBase
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType
 import io.cloudflight.jems.server.notification.mail.service.model.MailNotificationInfo
 import io.cloudflight.jems.server.project.service.ProjectPersistence
-import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaboratorPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
@@ -109,7 +107,7 @@ class GlobalProjectNotificationService(
         )
     )
 
-    private fun NotificationInApp.buildSendEmailEvent() = JemsMailEvent(
+    private fun NotificationInApp.buildSendEmailEvent() = JemsAsyncMailEvent(
         emailTemplateFileName = emailTemplate!!,
         mailNotificationInfo = MailNotificationInfo(
             subject = subject,

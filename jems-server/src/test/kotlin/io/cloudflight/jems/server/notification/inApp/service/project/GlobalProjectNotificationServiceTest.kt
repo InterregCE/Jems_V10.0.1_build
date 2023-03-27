@@ -1,26 +1,18 @@
 package io.cloudflight.jems.server.notification.inApp.service.project
 
-import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.audit.model.AuditProject
-import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.call.service.model.ProjectNotificationConfiguration
 import io.cloudflight.jems.server.call.service.notificationConfigurations.CallNotificationConfigurationsPersistence
-import io.cloudflight.jems.server.common.event.JemsAuditEvent
-import io.cloudflight.jems.server.common.event.JemsMailEvent
+import io.cloudflight.jems.server.common.event.JemsAsyncMailEvent
 import io.cloudflight.jems.server.common.model.Variable
 import io.cloudflight.jems.server.notification.inApp.service.NotificationPersistence
 import io.cloudflight.jems.server.notification.mail.service.model.MailNotificationInfo
-import io.cloudflight.jems.server.notification.inApp.service.model.Notification
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationInApp
-import io.cloudflight.jems.server.notification.inApp.service.model.NotificationProject
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationProjectBase
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType
 import io.cloudflight.jems.server.project.entity.partneruser.PartnerCollaboratorLevel
 import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel
 import io.cloudflight.jems.server.project.service.ProjectPersistence
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaboratorPersistence
@@ -43,11 +35,8 @@ import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.slot
-import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
@@ -203,7 +192,7 @@ class GlobalProjectNotificationServiceTest: UnitTest() {
 
         val slotNotification = slot<NotificationInApp>()
         every { notificationPersistence.saveNotification(capture(slotNotification)) } answers { }
-        val slotEmail = slot<JemsMailEvent>()
+        val slotEmail = slot<JemsAsyncMailEvent>()
         every { eventPublisher.publishEvent(capture(slotEmail)) } answers { }
 
         val project = NotificationProjectBase(PROJECT_ID, "P005", "5 acr")
@@ -230,7 +219,7 @@ class GlobalProjectNotificationServiceTest: UnitTest() {
             )
         )
         assertThat(slotEmail.captured).isEqualTo(
-            JemsMailEvent(
+            JemsAsyncMailEvent(
                 emailTemplateFileName = "notification.html",
                 mailNotificationInfo = MailNotificationInfo(
                     subject = "Application Step 1 Submitted",
@@ -261,7 +250,7 @@ class GlobalProjectNotificationServiceTest: UnitTest() {
 
         val slotNotification = slot<NotificationInApp>()
         every { notificationPersistence.saveNotification(capture(slotNotification)) } answers { }
-        val slotEmail = slot<JemsMailEvent>()
+        val slotEmail = slot<JemsAsyncMailEvent>()
         every { eventPublisher.publishEvent(capture(slotEmail)) } answers { }
 
         val project = NotificationProjectBase(PROJECT_ID, "P005", "5 acr")
@@ -287,7 +276,7 @@ class GlobalProjectNotificationServiceTest: UnitTest() {
             )
         )
         assertThat(slotEmail.captured).isEqualTo(
-            JemsMailEvent(
+            JemsAsyncMailEvent(
                 emailTemplateFileName = "notification.html",
                 mailNotificationInfo = MailNotificationInfo(
                     subject = "Application Submitted",
