@@ -117,7 +117,7 @@
                         <span jemsText maxLines="2">{{ 'project.application.form.work.package.output.title' | translate }}</span>
                     </th>
                     <td *matCellDef="let data; let i = index" class="border-cell-bottom">
-                        {{ data.projectOutputTitle | translate }}
+                        {{ data.projectOutputTitle | translateByInputLanguage | async }}
                     </td>
                 </ng-container>
 

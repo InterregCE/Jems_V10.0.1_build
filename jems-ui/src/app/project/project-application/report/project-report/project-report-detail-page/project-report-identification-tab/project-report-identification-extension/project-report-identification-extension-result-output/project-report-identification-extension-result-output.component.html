@@ -9,134 +9,136 @@
                   [innerText]="'project.application.project.report.overview.programme.result.indicator.title.missing' | translate"></span>
         </h4>
 
-        <div class="result-indicator-container" jemsNoWidthLimit>
-            <div class="result-indicator-header">
-                <div class="result-header-inner">
-                    <div class="identifier">
-                        <ng-container *ngIf="resultOverview.id; else noOutputIndicator">
-                            <span [innerText]="'project.application.project.report.overview.programme.result.indicator' | translate"></span>
-                            <div [innerText]="(resultOverview.identifier + ': ' + (resultOverview.name | translateBySystemLanguage | async))"
-                                 [matTooltip]="(resultOverview.identifier + ': ' + (resultOverview.name | translateBySystemLanguage | async))">
-                            </div>
-                        </ng-container>
-                        <ng-template #noOutputIndicator>
-                            <span [innerText]="'project.application.project.report.overview.programme.result.indicator.title.missing' | translate"
-                                  [matTooltip]="'project.application.project.report.overview.programme.result.indicator.title.missing' | translate"></span>
-                        </ng-template>
-                    </div>
-                    <div class="measurementUnit">
-                        <span [innerText]="'project.application.project.report.overview.measurement.unit' | translate"></span>
-                        <div [innerText]="resultOverview.measurementUnit | translateBySystemLanguage | async"></div>
-                    </div>
-                    <div class="baseline text-right">
-                        <span [innerText]="'project.application.project.report.overview.baseline' | translate"></span>
-                        <div [innerText]="resultOverview.baseline | asMoney"></div>
-                    </div>
-                    <div class="targetValue text-right">
-                        <span [innerText]="'project.application.project.report.overview.target.value' | translate"></span>
-                        <div [innerText]="resultOverview.targetValue | asMoney"></div>
-                    </div>
-                    <div class="previouslyReported text-right">
-                        <span [innerText]="'project.application.project.report.overview.previously.reported' | translate"></span>
-                        <div [innerText]="resultOverview.previouslyReported | asMoney"></div>
-                    </div>
-                    <div class="currentReport text-right">
-                        <span [innerText]="'project.application.project.report.overview.current.report' | translate"></span>
-                        <div [innerText]="resultOverview.currentReport | asMoney"></div>
-                    </div>
-                    <div class="totalReportedSoFar text-right">
-                        <span [innerText]="'project.application.project.report.overview.total.reported' | translate"></span>
-                        <div [innerText]="add(resultOverview.previouslyReported, resultOverview.currentReport) | asMoney"></div>
-                    </div>
-                </div>
-            </div>
-
-            <ng-container *ngFor="let outputOverview of resultOverview.outputOverviews">
-
-                <mat-table jemsNoWidthLimit class="table-container output mt-2"
-                           [dataSource]="getDataSource(outputOverview.outputs)">
-
-                    <ng-container matColumnDef="identifier">
-                        <mat-header-cell *matHeaderCellDef>
-                            <ng-container *ngIf="outputOverview.id; else noOutputIndicator">
-                                <span class="text-overflow-ellipsis"
-                                      [innerText]="'project.application.project.report.overview.programme.output.indicator' | translate"></span>
-                                <div class="text-overflow-ellipsis"
-                                     [innerText]="'Output ' + (outputOverview.identifier + ': ' + (outputOverview.name | translateByInputLanguage | async))"
-                                     [matTooltip]="'Output ' + (outputOverview.identifier + ': ' + (outputOverview.name | translateByInputLanguage | async))">
+        <jems-multi-language-container>
+            <div class="result-indicator-container" jemsNoWidthLimit>
+                <div class="result-indicator-header">
+                    <div class="result-header-inner">
+                        <div class="identifier">
+                            <ng-container *ngIf="resultOverview.id; else noOutputIndicator">
+                                <span [innerText]="'project.application.project.report.overview.programme.result.indicator' | translate"></span>
+                                <div [innerText]="(resultOverview.identifier + ': ' + (resultOverview.name | translateBySystemLanguage | async))"
+                                     [matTooltip]="(resultOverview.identifier + ': ' + (resultOverview.name | translateBySystemLanguage | async))">
                                 </div>
                             </ng-container>
                             <ng-template #noOutputIndicator>
+                            <span [innerText]="'project.application.project.report.overview.programme.result.indicator.title.missing' | translate"
+                                  [matTooltip]="'project.application.project.report.overview.programme.result.indicator.title.missing' | translate"></span>
+                            </ng-template>
+                        </div>
+                        <div class="measurementUnit">
+                            <span [innerText]="'project.application.project.report.overview.measurement.unit' | translate"></span>
+                            <div [innerText]="resultOverview.measurementUnit | translateBySystemLanguage | async"></div>
+                        </div>
+                        <div class="baseline text-right">
+                            <span [innerText]="'project.application.project.report.overview.baseline' | translate"></span>
+                            <div [innerText]="resultOverview.baseline | asMoney"></div>
+                        </div>
+                        <div class="targetValue text-right">
+                            <span [innerText]="'project.application.project.report.overview.target.value' | translate"></span>
+                            <div [innerText]="resultOverview.targetValue | asMoney"></div>
+                        </div>
+                        <div class="previouslyReported text-right">
+                            <span [innerText]="'project.application.project.report.overview.previously.reported' | translate"></span>
+                            <div [innerText]="resultOverview.previouslyReported | asMoney"></div>
+                        </div>
+                        <div class="currentReport text-right">
+                            <span [innerText]="'project.application.project.report.overview.current.report' | translate"></span>
+                            <div [innerText]="resultOverview.currentReport | asMoney"></div>
+                        </div>
+                        <div class="totalReportedSoFar text-right">
+                            <span [innerText]="'project.application.project.report.overview.total.reported' | translate"></span>
+                            <div [innerText]="add(resultOverview.previouslyReported, resultOverview.currentReport) | asMoney"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <ng-container *ngFor="let outputOverview of resultOverview.outputOverviews">
+
+                    <mat-table jemsNoWidthLimit class="table-container output mt-2"
+                               [dataSource]="getDataSource(outputOverview.outputs)">
+
+                        <ng-container matColumnDef="identifier">
+                            <mat-header-cell *matHeaderCellDef>
+                                <ng-container *ngIf="outputOverview.id; else noOutputIndicator">
+                                <span class="text-overflow-ellipsis"
+                                      [innerText]="'project.application.project.report.overview.programme.output.indicator' | translate"></span>
+                                    <div class="text-overflow-ellipsis"
+                                         [innerText]="'Output ' + (outputOverview.identifier + ': ' + (outputOverview.name | translateBySystemLanguage | async))"
+                                         [matTooltip]="'Output ' + (outputOverview.identifier + ': ' + (outputOverview.name | translateBySystemLanguage | async))">
+                                    </div>
+                                </ng-container>
+                                <ng-template #noOutputIndicator>
                                 <span class="text-overflow-ellipsis"
                                       [innerText]="'project.application.project.report.overview.programme.output.indicator.missing' | translate"
                                       [matTooltip]="'project.application.project.report.overview.programme.output.indicator.missing' | translate"></span>
-                            </ng-template>
-                        </mat-header-cell>
-                        <mat-cell *matCellDef="let line">
-                            <mat-icon *ngIf="line.deactivated" class="inactive-icon">hide_source</mat-icon>
-                            <span [innerText]="'project.application.project.report.overview.output' |
-                                        translate : {workPackageNr: line.workPackageNumber, outputNr: line.number, name: (line.name | translateBySystemLanguage | async) ?? ''}"></span>
-                        </mat-cell>
-                    </ng-container>
+                                </ng-template>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let line">
+                                <mat-icon *ngIf="line.deactivated" class="inactive-icon">hide_source</mat-icon>
+                                <span [innerText]="'project.application.project.report.overview.output' |
+                                        translate : {workPackageNr: line.workPackageNumber, outputNr: line.number, name: (line.name | translateByInputLanguage | async) ?? ''}"></span>
+                            </mat-cell>
+                        </ng-container>
 
-                    <ng-container matColumnDef="measurementUnit">
-                        <mat-header-cell *matHeaderCellDef>
-                            <ng-container *ngIf="outputOverview.id">
-                                <div [innerText]="outputOverview.measurementUnit | translateBySystemLanguage | async"></div>
-                            </ng-container>
-                        </mat-header-cell>
+                        <ng-container matColumnDef="measurementUnit">
+                            <mat-header-cell *matHeaderCellDef>
+                                <ng-container *ngIf="outputOverview.id">
+                                    <div [innerText]="outputOverview.measurementUnit | translateBySystemLanguage | async"></div>
+                                </ng-container>
+                            </mat-header-cell>
 
-                        <mat-cell *matCellDef="let line">
-                            <div [innerText]="line.measurementUnit | translateBySystemLanguage | async"></div>
-                        </mat-cell>
-                    </ng-container>
+                            <mat-cell *matCellDef="let line">
+                                <div [innerText]="line.measurementUnit | translateBySystemLanguage | async"></div>
+                            </mat-cell>
+                        </ng-container>
 
-                    <ng-container matColumnDef="baseline">
-                        <mat-header-cell *matHeaderCellDef></mat-header-cell>
-                        <mat-cell *matCellDef></mat-cell>
-                    </ng-container>
+                        <ng-container matColumnDef="baseline">
+                            <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                            <mat-cell *matCellDef></mat-cell>
+                        </ng-container>
 
-                    <ng-container matColumnDef="targetValue">
-                        <mat-header-cell *matHeaderCellDef class="text-right">
-                            <div [innerText]="outputOverview.targetValue | asMoney"></div>
-                        </mat-header-cell>
-                        <mat-cell *matCellDef="let line" class="text-right">
-                            <div [innerText]="line.targetValue | asMoney"></div>
-                        </mat-cell>
-                    </ng-container>
+                        <ng-container matColumnDef="targetValue">
+                            <mat-header-cell *matHeaderCellDef class="text-right">
+                                <div [innerText]="outputOverview.targetValue | asMoney"></div>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let line" class="text-right">
+                                <div [innerText]="line.targetValue | asMoney"></div>
+                            </mat-cell>
+                        </ng-container>
 
-                    <ng-container matColumnDef="previouslyReported">
-                        <mat-header-cell *matHeaderCellDef class="text-right">
-                            <div [innerText]="outputOverview.previouslyReported | asMoney"></div>
-                        </mat-header-cell>
-                        <mat-cell *matCellDef="let line" class="text-right">
-                            <div [innerText]="line.previouslyReported | asMoney"></div>
-                        </mat-cell>
-                    </ng-container>
+                        <ng-container matColumnDef="previouslyReported">
+                            <mat-header-cell *matHeaderCellDef class="text-right">
+                                <div [innerText]="outputOverview.previouslyReported | asMoney"></div>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let line" class="text-right">
+                                <div [innerText]="line.previouslyReported | asMoney"></div>
+                            </mat-cell>
+                        </ng-container>
 
-                    <ng-container matColumnDef="currentReport">
-                        <mat-header-cell *matHeaderCellDef class="text-right">
-                            <div [innerText]="outputOverview.currentReport | asMoney"></div>
-                        </mat-header-cell>
-                        <mat-cell *matCellDef="let line" class="text-right">
-                            <div [innerText]="line.currentReport | asMoney"></div>
-                        </mat-cell>
-                    </ng-container>
+                        <ng-container matColumnDef="currentReport">
+                            <mat-header-cell *matHeaderCellDef class="text-right">
+                                <div [innerText]="outputOverview.currentReport | asMoney"></div>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let line" class="text-right">
+                                <div [innerText]="line.currentReport | asMoney"></div>
+                            </mat-cell>
+                        </ng-container>
 
-                    <ng-container matColumnDef="totalReportedSoFar">
-                        <mat-header-cell *matHeaderCellDef class="text-right">
-                            <div [innerText]="add(outputOverview.previouslyReported, outputOverview.currentReport) | asMoney"></div>
-                        </mat-header-cell>
-                        <mat-cell *matCellDef="let line" class="text-right">
-                            <div [innerText]="add(line.previouslyReported, line.currentReport) | asMoney"></div>
-                        </mat-cell>
-                    </ng-container>
+                        <ng-container matColumnDef="totalReportedSoFar">
+                            <mat-header-cell *matHeaderCellDef class="text-right">
+                                <div [innerText]="add(outputOverview.previouslyReported, outputOverview.currentReport) | asMoney"></div>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let line" class="text-right">
+                                <div [innerText]="add(line.previouslyReported, line.currentReport) | asMoney"></div>
+                            </mat-cell>
+                        </ng-container>
 
-                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+                        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                        <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
 
-                </mat-table>
-            </ng-container>
-        </div>
+                    </mat-table>
+                </ng-container>
+            </div>
+        </jems-multi-language-container>
     </div>
 </ng-container>
