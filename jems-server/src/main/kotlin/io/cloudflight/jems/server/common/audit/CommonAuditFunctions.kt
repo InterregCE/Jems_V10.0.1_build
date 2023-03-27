@@ -1,5 +1,8 @@
 package io.cloudflight.jems.server.common.audit
 
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.util.stream.Collectors
 
 fun Map<String, Pair<Any?, Any?>>.onlyNewChanges() = entries.stream()
@@ -30,6 +33,8 @@ private fun Any.toAuditString(): String {
         is String -> "'${this}'"
 
         is Boolean -> if (this) "enabled" else "disabled"
+
+        is ZonedDateTime -> this.withZoneSameInstant(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_DATE_TIME)
 
         else -> toString()
     }

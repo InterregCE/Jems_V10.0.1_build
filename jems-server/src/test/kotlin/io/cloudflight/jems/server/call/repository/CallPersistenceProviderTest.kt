@@ -67,6 +67,7 @@ import io.cloudflight.jems.server.user.repository.user.UserRepository
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import io.mockk.slot
@@ -75,6 +76,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
@@ -369,6 +371,9 @@ internal class CallPersistenceProviderTest {
     @MockK
     private lateinit var partnerRepository: ProjectPartnerRepository
 
+    @RelaxedMockK
+    lateinit var auditPublisher: ApplicationEventPublisher
+
     @InjectMockKs
     private lateinit var persistence: CallPersistenceProvider
 
@@ -400,6 +405,10 @@ internal class CallPersistenceProviderTest {
     @Test
     fun `should save set of application form field configurations for the call`() {
         val callEntity = callEntity(CALL_ID)
+        val oldConfigs = mutableSetOf(
+            ApplicationFormFieldConfigurationEntity(ApplicationFormFieldConfigurationId("fieldId-1", callEntity), FieldVisibilityStatus.NONE),
+            ApplicationFormFieldConfigurationEntity(ApplicationFormFieldConfigurationId("fieldId-2", callEntity), FieldVisibilityStatus.NONE)
+        )
         val newConfigs = mutableSetOf(
             ApplicationFormFieldConfiguration("fieldId-1", FieldVisibilityStatus.STEP_ONE_AND_TWO),
             ApplicationFormFieldConfiguration("fieldId-2", FieldVisibilityStatus.STEP_ONE_AND_TWO)
@@ -422,6 +431,7 @@ internal class CallPersistenceProviderTest {
         )
         every { callRepo.findById(CALL_ID) } returns Optional.of(callEntity)
         every { projectCallStateAidRepository.findAllByIdCallId(CALL_ID) } returns stateAidEntities(callEntity)
+        every { applicationFormFieldConfigurationRepository.findAllByCallId(CALL_ID) } returns oldConfigs
         every { applicationFormFieldConfigurationRepository.saveAll(any<MutableSet<ApplicationFormFieldConfigurationEntity>>()) } returns newConfigs.toEntities(
             callEntity
         ).toList()
@@ -617,7 +627,7 @@ internal class CallPersistenceProviderTest {
             assertThat(status).isEqualTo(expectedResultEntity.status)
             assertThat(type).isEqualTo(expectedResultEntity.type)
             assertThat(startDate).isEqualTo(expectedResultEntity.startDate)
-            assertThat(endDate).isEqualTo(expectedResultEntity.endDate)
+            assertThat(endDate).isEqualTo(expectedResultEntity.endDate.withSecond(0).withNano(0).plusMinutes(1).minusNanos(1000000))
             assertThat(lengthOfPeriod).isEqualTo(expectedResultEntity.lengthOfPeriod)
             assertThat(isAdditionalFundAllowed).isEqualTo(expectedResultEntity.isAdditionalFundAllowed)
             assertThat(prioritySpecificObjectives).containsExactlyInAnyOrderElementsOf(specificObjectives)
@@ -673,7 +683,7 @@ internal class CallPersistenceProviderTest {
             assertThat(status).isEqualTo(expectedResultEntity.status)
             assertThat(type).isEqualTo(expectedResultEntity.type)
             assertThat(startDate).isEqualTo(expectedResultEntity.startDate)
-            assertThat(endDate).isEqualTo(expectedResultEntity.endDate)
+            assertThat(endDate).isEqualTo(expectedResultEntity.endDate.withSecond(0).withNano(0).plusMinutes(1).minusNanos(1000000))
             assertThat(lengthOfPeriod).isEqualTo(expectedResultEntity.lengthOfPeriod)
             assertThat(isAdditionalFundAllowed).isEqualTo(expectedResultEntity.isAdditionalFundAllowed)
             assertThat(prioritySpecificObjectives).containsExactlyInAnyOrderElementsOf(specificObjectives)

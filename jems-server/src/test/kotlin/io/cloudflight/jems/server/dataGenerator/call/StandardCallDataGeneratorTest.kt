@@ -50,7 +50,7 @@ class StandardCallDataGeneratorTest(@LocalServerPort private val port: Int) : Da
     @Test
     @Order(1)
     @ExpectSelect(156)
-    @ExpectInsert(148)
+    @ExpectInsert(147)
     @ExpectUpdate(0)
     @ExpectDelete(1)
     fun `should create standard call`() {
@@ -76,7 +76,7 @@ class StandardCallDataGeneratorTest(@LocalServerPort private val port: Int) : Da
 
     @Test
     @Order(2)
-    @ExpectSelect(29)
+    @ExpectSelect(30)
     @ExpectInsert(0)
     @ExpectUpdate(2)
     @ExpectDelete(2)

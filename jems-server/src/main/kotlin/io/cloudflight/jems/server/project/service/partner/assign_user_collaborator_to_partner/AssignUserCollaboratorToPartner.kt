@@ -65,7 +65,7 @@ class AssignUserCollaboratorToPartner(
 
     private fun validateAllUsersAreValid(
         requestedUsers: Set<String>,
-        availableUsers: Set<String>,
+        availableUsers: Set<String>
     ) {
         val notFoundUserEmails = requestedUsers.minus(availableUsers)
         if (notFoundUserEmails.isNotEmpty())
