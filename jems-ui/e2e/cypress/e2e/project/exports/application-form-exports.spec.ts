@@ -138,7 +138,7 @@ context('Application form exports', () => {
             cy.contains('div', 'Export Plugin').find('mat-select').click();
             cy.contains('mat-option', 'Standard application form export').click();
             cy.get('div#export-config').contains('div', 'Project version').find('mat-select').click();
-            cy.contains('mat-option', 'V. 1.0').click();
+            cy.contains('mat-option', 'V.1.0').click();
 
             cy.contains('div#export-config button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?*version=1.0`, 'pdf').then(file => {
               const currentMaskV1 = [...comparePdfMask];
@@ -151,7 +151,7 @@ context('Application form exports', () => {
 
             // export step 2 version
             cy.get('div#export-config').contains('div', 'Project version').find('mat-select').click();
-            cy.contains('mat-option', 'V. 2.0').click();
+            cy.contains('mat-option', 'V.2.0').click();
 
             cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?*version=2.0`, 'pdf').then(file => {
               const templateFile = 'TB-367-export-template-v2.pdf';
@@ -169,7 +169,7 @@ context('Application form exports', () => {
 
             // export rejected version
             cy.get('div#export-config').contains('div', 'Project version').find('mat-select').click();
-            cy.contains('mat-option', 'V. 4.0').click();
+            cy.contains('mat-option', 'V.4.0').click();
 
             cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?*version=4.0`, 'pdf').then(file => {
               const templateFile = 'TB-367-export-template-v4.pdf';
@@ -246,7 +246,7 @@ context('Application form exports', () => {
 
             // export step 1 version
             cy.get('div#export-config').contains('div', 'Project version').find('mat-select').click();
-            cy.contains('mat-option', 'V. 1.0').click();
+            cy.contains('mat-option', 'V.1.0').click();
 
             cy.contains('div#export-config button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?*version=1.0`, 'pdf').then(file => {
               const templateFile = 'TB-373-export-template-v1.pdf';
@@ -317,7 +317,7 @@ context('Application form exports', () => {
 
             // export step 1 version
             cy.get('div#export-config').contains('div', 'Project version').find('mat-select').click();
-            cy.contains('mat-option', 'V. 1.0').click();
+            cy.contains('mat-option', 'V.1.0').click();
 
             cy.contains('div#export-config button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?*version=1.0`, 'pdf').then(file => {
               const templateFile = 'TB-545-export-template-v1.pdf';
