@@ -21,16 +21,12 @@ import io.cloudflight.jems.server.call.entity.CallTranslEntity
 import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.entity.FundSetupId
 import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
-import io.cloudflight.jems.server.call.entity.ProjectNotificationConfigurationEntity
-import io.cloudflight.jems.server.call.entity.ProjectNotificationConfigurationId
 import io.cloudflight.jems.server.call.repository.toModel
-import io.cloudflight.jems.server.call.repository.toNotificationModel
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.CallFundRate
 import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
-import io.cloudflight.jems.server.call.service.model.ProjectNotificationConfiguration
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeStrategyEntity
@@ -57,10 +53,10 @@ import io.cloudflight.jems.server.user.service.model.UserStatus
 import java.math.BigDecimal
 import java.time.ZoneId
 import java.time.ZonedDateTime
-import java.util.*
+import java.util.SortedSet
 
 val START = ZonedDateTime.now().withSecond(0).withNano(0)
-val END = ZonedDateTime.now().plusDays(5).withSecond(0).withNano(0).plusMinutes(1).minusNanos(1)
+val END = ZonedDateTime.now().plusDays(5).withSecond(0).withNano(0).plusMinutes(1).minusNanos(1000000)
 private const val STATE_AID_ID = 23L
 private const val LUMP_SUM_ID = 4L
 private const val UNIT_COST_ID = 3L

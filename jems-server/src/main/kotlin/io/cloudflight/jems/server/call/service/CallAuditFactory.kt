@@ -37,6 +37,23 @@ fun callPublished(context: Any, call: CallSummary) = AuditCandidateEvent(
         .build()
 )
 
+fun applicationFormConfigurationUpdated(
+    context: Any,
+    call: CallDetail,
+    changes: Map<String, Pair<Any?, Any?>>
+): AuditCandidateEvent {
+    val callStatus = if (call.isPublished()) "published" else "not-published"
+
+    return AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.CALL_CONFIGURATION_CHANGED)
+            .entityRelatedId(call.id)
+            .description("Configuration of $callStatus call id=${call.id} name='${call.name}' changed: Application form configuration was changed\n" +
+                    changes.fromOldToNewChanges())
+            .build()
+    )
+}
+
 fun preSubmissionCheckSettingsUpdated(
     context: Any,
     changesInPlugins: Map<String, Pair<String?, String>>,

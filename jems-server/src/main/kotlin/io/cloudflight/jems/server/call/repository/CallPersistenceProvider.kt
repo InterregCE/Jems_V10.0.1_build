@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.entity.CallFundRateEntity
 import io.cloudflight.jems.server.call.entity.FundSetupId
 import io.cloudflight.jems.server.call.service.CallPersistence
+import io.cloudflight.jems.server.call.service.applicationFormConfigurationUpdated
 import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.Call
@@ -13,6 +14,7 @@ import io.cloudflight.jems.server.call.service.model.CallCostOption
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.CallFundRate
 import io.cloudflight.jems.server.call.service.model.CallSummary
+import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.call.service.model.PreSubmissionPlugins
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
@@ -25,6 +27,7 @@ import io.cloudflight.jems.server.programme.repository.stateaid.ProgrammeStateAi
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.user.repository.user.UserRepository
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
@@ -45,6 +48,7 @@ class CallPersistenceProvider(
     private val applicationFormFieldConfigurationRepository: ApplicationFormFieldConfigurationRepository,
     private val projectPersistence: ProjectPersistence,
     private val partnerRepository: ProjectPartnerRepository,
+    private val auditPublisher: ApplicationEventPublisher
 ) : CallPersistence {
 
     @Transactional(readOnly = true)
@@ -258,14 +262,18 @@ class CallPersistenceProvider(
         callId: Long, applicationFormFieldConfigurations: MutableSet<ApplicationFormFieldConfiguration>
     ): CallDetail {
         val callEntity = findOrThrow(callId)
-
-        val configurations =
+        val existingConfigurations = applicationFormFieldConfigurationRepository.findAllByCallId(callId).toModel()
+        val newConfigurations =
             applicationFormFieldConfigurationRepository.saveAll(applicationFormFieldConfigurations.toEntities(callEntity))
                 .toMutableSet()
+        val changes = getDiff(existingConfigurations, newConfigurations.toModel())
+
         return callEntity.toDetailModel(
-            configurations,
+            newConfigurations,
             projectCallStateAidRepo.findAllByIdCallId(callId)
-        )
+        ).also {
+            auditPublisher.publishEvent(applicationFormConfigurationUpdated(this, it, changes))
+        }
     }
 
     @Transactional
@@ -327,7 +335,17 @@ class CallPersistenceProvider(
 
     private fun adjustTimeToLastNanoSec(call: Call) {
         call.startDate = call.startDate.withSecond(0).withNano(0)
-        call.endDateStep1 = call.endDateStep1?.withSecond(0)?.withNano(0)?.plusMinutes(1)?.minusNanos(1)
-        call.endDate = call.endDate.withSecond(0).withNano(0).plusMinutes(1).minusNanos(1)
+        call.endDateStep1 = call.endDateStep1?.withSecond(0)?.withNano(0)?.plusMinutes(1)?.minusNanos(1000000)
+        call.endDate = call.endDate.withSecond(0).withNano(0).plusMinutes(1).minusNanos(1000000)
+    }
+
+    private fun getDiff(old: MutableSet<ApplicationFormFieldConfiguration>, new: MutableSet<ApplicationFormFieldConfiguration>): Map<String, Pair<Any?, Any?>> {
+        val oldMap = old.associate { it.id to it.visibilityStatus }
+        val newMap = new.associate { it.id to it.visibilityStatus }
+
+        return (oldMap.keys union newMap.keys)
+            .associateWith { Pair(oldMap[it] ?: FieldVisibilityStatus.NONE, newMap[it] ?: FieldVisibilityStatus.NONE) }
+            .filter { (field, change) -> change.first != change.second }
+            .toSortedMap()
     }
 }
