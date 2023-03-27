@@ -95,7 +95,7 @@
         </div>
     </form>
 
-    <div class="user-settings">
+    <div class="user-settings" *ngIf="details.user?.id">
         <jems-user-settings class="user-settings"
                             [disabled]="false"
                             [userId]="details.user?.id"

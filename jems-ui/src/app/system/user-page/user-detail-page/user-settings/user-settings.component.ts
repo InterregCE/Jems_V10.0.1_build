@@ -70,7 +70,7 @@ export class UserSettingsComponent extends AbstractFormComponent implements OnIn
   resetForm() {
     this.settingsForm.reset();
     const controls: { [key: string]: any } = {
-      sendNotificationsToEmail: this.formBuilder.control(this.userSettings.sendNotificationsToEmail)
+      sendNotificationsToEmail: this.formBuilder.control(this.userSettings?.sendNotificationsToEmail ?? false)
     };
     this.settingsForm = this.formBuilder.group(controls);
   }

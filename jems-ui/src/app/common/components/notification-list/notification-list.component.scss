@@ -1,71 +1,72 @@
-.mat-row {
-  max-height: 3rem;
-}
 
-tr.notification-detail-row {
-  height: 0;
-}
 
-tr.notification-row:not(.notification-expanded-row):hover {
-  background: whitesmoke;
-}
+#notification-list-table {
+  width: 100%;
 
-tr.notification-element-row:not(.notification-expanded-row):active {
-  background: #efefef;
-}
+  .mat-row {
+    max-height: 3rem;
+    overflow: auto;
+  }
 
-.notification-row td {
-  border-bottom-width: 0;
-}
+  tr.notification-detail-row {
+    height: 0;
+  }
 
-.element-detail {
-  overflow: hidden;
-  display: flex;
-}
+  tr.notification-row:not(.notification-expanded-row):hover {
+    background: var(--table-backaground-color);
+  }
 
-.notification-body {
-  padding: 1.5rem 0.5rem;
-}
+  tr.notification-element-row:not(.notification-expanded-row):active {
+    background: var(--table-highlight-color);
+  }
 
-.link:hover{
-  cursor: pointer;
-}
+  .notification-row td {
+    border-bottom-width: 0;
+  }
 
-.created-column {
-  min-width: 1rem;
-  max-width: 2rem;
-}
+  .element-detail {
+    overflow: hidden;
+    display: flex;
+  }
 
-.call-column {
-  min-width: 3rem;
-  max-width: 5rem;
-}
+  .notification-body {
+    padding: 1.5rem 0.5rem;
+  }
 
-.project-column {
-  min-width: 2rem;
-  max-width: 2rem;
-}
+  .link:hover {
+    cursor: pointer;
+  }
 
-.acronym-column {
-  min-width: 2rem;
-  max-width: 4rem;
-}
+  .created-column {
+    min-width: 1rem;
+    max-width: 2rem;
+  }
 
-.partner-column {
-  min-width: 1rem;
-  max-width: 2rem;
-}
+  .call-column {
+    min-width: 3rem;
+    max-width: 5rem;
+  }
 
-.subject-column {
-  min-width: 10rem;
-  max-width: 30rem;
-}
+  .project-column {
+    min-width: 2rem;
+    max-width: 2rem;
+  }
 
-.expand-column {
-  min-width: 0.2rem;
-  max-width: 0.5rem;
-}
+  .acronym-column {
+    min-width: 2rem;
+    max-width: 4rem;
+  }
 
-.no-data {
-  margin-bottom: 1rem;
+  .partner-column {
+    min-width: 1rem;
+    max-width: 2rem;
+  }
+
+  .subject-column {
+    min-width: 10rem;
+  }
+
+  .expand-column {
+    width: 0.5rem;
+  }
 }
