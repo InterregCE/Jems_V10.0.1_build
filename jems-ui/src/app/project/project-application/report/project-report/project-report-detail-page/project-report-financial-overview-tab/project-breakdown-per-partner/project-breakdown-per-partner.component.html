@@ -118,7 +118,7 @@
         <mat-cell *matCellDef="let partner" class="text-right border-cell-right">
             <span>{{ partner.current.unitCost | asMoney }}</span>
         </mat-cell>
-        <mat-footer-cell class="text-right" *matFooterCellDef class="border-cell-right">
+        <mat-footer-cell *matFooterCellDef class="border-cell-right text-right">
             <span>{{ breakdown.totalCurrent.unitCost | asMoney }}</span>
         </mat-footer-cell>
     </ng-container>
@@ -257,7 +257,7 @@
         <mat-cell *matCellDef="let partner" class="text-right border-cell-right">
             <span>{{ partner.deduction.unitCost | asMoney }}</span>
         </mat-cell>
-        <mat-footer-cell class="text-right" *matFooterCellDef class="border-cell-right">
+        <mat-footer-cell *matFooterCellDef class="border-cell-right text-right">
             <span>{{ breakdown.totalDeduction.unitCost | asMoney }}</span>
         </mat-footer-cell>
     </ng-container>
