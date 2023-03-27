@@ -1,7 +1,16 @@
 <ng-container *ngIf="data$ | async as data">
 
     <ng-container *ngIf="data.page.totalElements">
-        <table mat-table  matSort multiTemplateDataRows (matSortChange)="listStore.newSort$.next($event)" [dataSource]="data.page.content" >
+
+        <jems-paginator
+                [length]="data.page.totalElements"
+                [currentPageIndex]="data.page.pageable.pageNumber"
+                [currentPageSize]="data.page.pageable.pageSize"
+                (pageIndexChanged)="listStore.newPageIndex$.next($event)"
+                (pageSizeChanged)="listStore.newPageSize$.next($event)">
+        </jems-paginator>
+
+        <table id="notification-list-table" mat-table  matSort multiTemplateDataRows (matSortChange)="listStore.newSort$.next($event)" [dataSource]="data.page.content" >
             <ng-container matColumnDef="created">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header="created" class="text-left created-column">
                     <span jemsText maxLines="2">{{ 'notification.table.column.time' | translate }}</span>
@@ -95,7 +104,8 @@
                 (pageSizeChanged)="listStore.newPageSize$.next($event)">
         </jems-paginator>
     </ng-container>
-    <ng-container *ngIf="!data.page.totalElements">{{'notification.table.no.data' | translate}}</ng-container>
+
+    <ng-container *ngIf="!data.page.totalElements"><p>{{'notification.table.no.data' | translate}}</p></ng-container>
 </ng-container>
 
 
