@@ -1,0 +1,142 @@
+{
+  "partnerUser1": {
+    "email": "randomize",
+    "name": "Partner 1",
+    "surname": "User 1",
+    "userRoleId": 3,
+    "userStatus": "ACTIVE"
+  },
+  "firstUser": [
+    {
+      "userEmail": "randomize",
+      "level": "EDIT"
+    }
+  ],
+  "cofinancing": {
+    "newPartnerContribution": {
+      "name": "Lead contribution 3",
+      "status": "Automatic Public",
+      "amount": 1610.50,
+      "partner": false
+    }
+  },
+  "reportContributionData": [
+    {
+      "amounts": [
+        {
+          "previouslyReported": 0,
+          "currentReport": 100.00
+        },
+        {
+          "previouslyReported": 0,
+          "currentReport": 110.66
+        },
+        {
+          "previouslyReported": 0,
+          "currentReport": 120.00
+        },
+        {
+          "previouslyReported": 0,
+          "currentReport": 130.34
+        },
+        {
+          "previouslyReported": 0,
+          "currentReport": 140.00
+        }
+      ],
+      "subTotals": {
+        "subTotalPublic": {
+          "currentReport": 100.00,
+          "previouslyReported": 0,
+          "totalReportedSoFar": 100
+        },
+        "subTotalAutomaticPublic": {
+          "currentReport": 120.00,
+          "previouslyReported": 0,
+          "totalReportedSoFar": 120.00
+        },
+        "subTotalPrivate": {
+          "currentReport": 241.00,
+          "previouslyReported": 0,
+          "totalReportedSoFar": 241.00
+        }
+      }
+    },
+    {
+      "amounts": [
+        {
+          "previouslyReported": 100.00,
+          "currentReport": 3502.04
+        },
+        {
+          "previouslyReported": 110.66,
+          "currentReport": 2000.00
+        },
+        {
+          "previouslyReported": 120.00,
+          "currentReport": 3700.00
+        },
+        {
+          "previouslyReported": 130.34,
+          "currentReport": 173.00
+        }
+      ]
+    },
+    {
+      "amounts": [
+        {
+          "previouslyReported": 3602.04,
+          "currentReport": 100.72,
+          "totalReportedSoFar": 3702.76
+        },
+        {
+          "previouslyReported": 2110.66,
+          "currentReport": 100.00,
+          "totalReportedSoFar": 2210.66
+        },
+        {
+          "previouslyReported": 3820.00,
+          "currentReport": 100.00,
+          "totalReportedSoFar": 3920.00
+        },
+        {
+          "previouslyReported": 0,
+          "currentReport": 100.00,
+          "totalReportedSoFar": 100.00
+        },
+        {
+          "previouslyReported": 303.34,
+          "currentReport": 100.00,
+          "totalReportedSoFar": 403.34
+        }
+      ],
+      "subTotals": {
+        "subTotalPublic": {
+          "currentReport": 100.72,
+          "previouslyReported": 3602.04,
+          "totalReportedSoFar": 3702.76
+        },
+        "subTotalAutomaticPublic": {
+          "currentReport": 200.00,
+          "previouslyReported": 3820.00,
+          "totalReportedSoFar": 4020.00
+        },
+        "subTotalPrivate": {
+          "currentReport": 200.00,
+          "previouslyReported": 2414.00,
+          "totalReportedSoFar": 2614.00
+        }
+      },
+      "total": {
+        "amountInAF": 15573.57,
+        "previouslyReported": 9834.00,
+        "currentReport": 500.00,
+        "totalReportedSoFar": 10334.00
+      }
+    }
+  ],
+  "applicationFormNewContributionData": {
+    "existingContributionNewAmount": 5003.09,
+    "newContributionAmount": 1610.50
+  }
+}
