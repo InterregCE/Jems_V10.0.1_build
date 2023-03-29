@@ -68,16 +68,17 @@ context('Assessments & decision tests', () => {
 
         cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
         cy.contains('Returned for conditions').should('be.visible');
-        cy.contains('(current) V. 2.0').should('be.visible');
-        
+        cy.contains('(current)').should('be.visible');
+        cy.contains('V.2.0').should('be.visible');
+
         cy.loginByRequest(user.applicantUser.email);
         cy.runPreSubmissionCheck(applicationId);
         cy.submitProjectApplication(applicationId);
-        
+
         cy.loginByRequest(user.programmeUser.email);
         cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
         cy.contains('Conditions submitted').should('be.visible');
-        
+
         cy.visit(`/app/project/detail/${applicationId}/assessmentAndDecision`, {failOnStatusCode: false});
         cy.contains('Update funding decision').click();
         cy.contains(testData.finaliseFunding.decision).click();
@@ -105,7 +106,7 @@ context('Assessments & decision tests', () => {
         cy.enterEligibilityAssessment(applicationId, application.assessments.eligibilityAssessment);
         cy.enterQualityAssessment(applicationId, application.assessments.qualityAssessment);
         cy.enterEligibilityDecision(applicationId, application.assessments.eligibilityDecision);
-        
+
         cy.loginByRequest(revertDecisionUser.email);
         cy.visit(`/app/project/detail/${applicationId}/assessmentAndDecision`, {failOnStatusCode: false});
         cy.contains('Enter eligibility decision').should('not.exist');
