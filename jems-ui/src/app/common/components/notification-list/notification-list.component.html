@@ -44,11 +44,11 @@
                     <span jemsText maxLines="2">{{ 'project.table.column.name.acronym' | translate }}</span>
                 </th>
                 <td mat-cell *matCellDef="let notification">
-                    <div class="flex-center">
+                    <div class="text-left d-flex-and-vcenter">
                         <a [routerLink]="'/app/project/detail/' + notification.project.projectId" queryParamsHandling="merge">
                             <mat-icon class="mr-2 mt-1 mat-primary">launch</mat-icon>
                         </a>
-                        <div class="ml-auto">{{ notification.project.projectAcronym }}</div>
+                        <div>{{ notification.project.projectAcronym }}</div>
                     </div>
                 </td>
             </ng-container>
