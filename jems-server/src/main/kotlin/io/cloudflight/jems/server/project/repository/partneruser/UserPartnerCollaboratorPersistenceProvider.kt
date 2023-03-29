@@ -38,6 +38,7 @@ class UserPartnerCollaboratorPersistenceProvider(
     override fun findByUserIdAndPartnerId(userId: Long, partnerId: Long): Optional<PartnerCollaboratorLevel> =
         collaboratorRepository.findById(UserPartnerId(userId = userId, partnerId = partnerId)).map { it.level }
 
+
     @Transactional
     override fun changeUsersAssignedToPartner(
         projectId: Long,
@@ -70,6 +71,6 @@ class UserPartnerCollaboratorPersistenceProvider(
         collaboratorRepository.deleteAllByProjectId(projectId)
 
     @Transactional(readOnly = true)
-    override fun findByPartnerId(partnerId: Long): Set<PartnerCollaborator> =
-        collaboratorRepository.findByPartnerId(partnerId)
+    override fun canUserSeePartnerSensitiveData(userId: Long, partnerId: Long): Boolean =
+        collaboratorRepository.existsByIdAndGdprTrue(UserPartnerId(userId, partnerId))
 }

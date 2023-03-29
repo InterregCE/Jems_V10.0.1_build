@@ -23,12 +23,15 @@ import {
 import {FileListComponent} from '@common/components/file-list/file-list.component';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import {PrivilegesPageStore} from '@project/project-application/privileges-page/privileges-page-store.service';
+import {PermissionService} from '../../../../../../security/permissions/permission.service';
 
 @UntilDestroy()
 @Component({
   selector: 'jems-report-annexes-table',
   templateUrl: './report-annexes-table.component.html',
   styleUrls: ['./report-annexes-table.component.scss'],
+  providers: [PrivilegesPageStore],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ReportAnnexesTableComponent {
@@ -46,6 +49,8 @@ export class ReportAnnexesTableComponent {
     reportStatus: ProjectPartnerReportSummaryDTO.StatusEnum;
     selectedCategory: CategoryInfo | undefined;
     canUserEdit: boolean;
+    userIsGdprCompliant: boolean;
+    userIsMonitorView: boolean;
   }>;
 
   constructor(
@@ -53,15 +58,20 @@ export class ReportAnnexesTableComponent {
     private projectPartnerReportService: ProjectPartnerReportService,
     private partnerReportDetailPageStore: PartnerReportDetailPageStore,
     private reportPageStore: PartnerReportPageStore,
+    private privilegesPageStore: PrivilegesPageStore,
+    public permissionService: PermissionService,
+
   ) {
     this.data$ = combineLatest([
       this.fileManagementStore.reportFileList$,
       this.fileManagementStore.reportStatus$,
       this.fileManagementStore.selectedCategory$,
       this.reportPageStore.userCanEditReport$,
+      this.privilegesPageStore.isCurrentUserGDPRCompliant$,
+      this.permissionService.hasPermission(UserRoleDTO.PermissionsEnum.ProjectReportingView)
     ])
       .pipe(
-        map(([files, reportStatus, selectedCategory, canEdit]) => ({
+        map(([files, reportStatus, selectedCategory, canEdit, userIsGdprCompliant, userIsMonitorView]) => ({
           files,
           fileList: files.content.map((file: JemsFileDTO) => ({
             id: file.id,
@@ -81,6 +91,8 @@ export class ReportAnnexesTableComponent {
           reportStatus,
           selectedCategory,
           canUserEdit: canEdit,
+          userIsGdprCompliant,
+          userIsMonitorView
         })),
       );
     this.fileManagementStore.getMaximumAllowedFileSize().pipe(untilDestroyed(this)).subscribe((maxAllowedSize) => this.maximumAllowedFileSizeInMB = maxAllowedSize);

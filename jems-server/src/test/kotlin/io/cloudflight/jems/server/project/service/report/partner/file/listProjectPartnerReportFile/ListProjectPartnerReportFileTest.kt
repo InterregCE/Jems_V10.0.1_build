@@ -6,6 +6,8 @@ import io.cloudflight.jems.server.common.file.service.model.JemsFile
 import io.cloudflight.jems.server.common.file.service.model.JemsFileSearchRequest
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
+import io.cloudflight.jems.server.project.service.report.partner.SensitiveDataAuthorizationService
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -28,6 +30,13 @@ class ListProjectPartnerReportFileTest : UnitTest() {
 
     @MockK
     lateinit var filePersistence: JemsFilePersistence
+
+    @MockK
+    lateinit var sensitiveDataAuthorization: SensitiveDataAuthorizationService
+
+    @MockK
+    lateinit var reportExpenditurePersistence: ProjectPartnerReportExpenditurePersistence
+
 
     @InjectMockKs
     lateinit var interactor: ListProjectPartnerReportFile
@@ -117,12 +126,17 @@ class ListProjectPartnerReportFileTest : UnitTest() {
         filterSubtypes: Set<JemsFileType>,
         expectedIndexSearch: String,
     ) {
+
+
         every { partnerPersistence.getProjectIdForPartnerId(partnerId, null) } returns PROJECT_ID
         val reportFile = mockk<JemsFile>()
 
         val indexPrefix = slot<String>()
         val filterSubtypesSlot = slot<Set<JemsFileType>>()
         val filterUsers = slot<Set<Long>>()
+
+        every { sensitiveDataAuthorization.canViewPartnerSensitiveData(partnerId) } returns true
+        every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(partnerId, reportFile.id) }
         every { filePersistence.listAttachments(any(), capture(indexPrefix), capture(filterSubtypesSlot), capture(filterUsers)) } returns
             PageImpl(listOf(reportFile))
 

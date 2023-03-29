@@ -7,7 +7,7 @@ import moment from 'moment/moment';
 import {CallListStore} from '@common/components/call-list/call-list-store.service';
 import {combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {ColumnWidth} from "@common/components/table/model/column-width";
+import {ColumnWidth} from '@common/components/table/model/column-width';
 
 @Component({
   selector: 'jems-call-list',

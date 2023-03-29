@@ -4,6 +4,6 @@ import java.time.ZonedDateTime
 
 data class JemsFileMetadata(
     val id: Long,
-    val name: String,
+    var name: String,
     val uploaded: ZonedDateTime,
 )

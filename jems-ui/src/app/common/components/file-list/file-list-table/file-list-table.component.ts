@@ -49,6 +49,12 @@ export class FileListTableComponent implements OnChanges, AfterViewInit {
   overrideUploadTranslation = 'file.table.column.name.timestamp';
 
   @Input()
+  canDownload = true;
+
+  @Input()
+  canEditDescription = true;
+
+  @Input()
   setDescriptionCallback: (data: FileDescriptionChange) => Observable<any>;
   @Input()
   deleteCallback: (file: FileListItem) => Observable<void>;

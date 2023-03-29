@@ -26,5 +26,5 @@ interface UserPartnerCollaboratorPersistence {
 
     fun deleteByProjectId(projectId: Long)
 
-    fun findByPartnerId(partnerId: Long): Set<PartnerCollaborator>
+    fun canUserSeePartnerSensitiveData(userId: Long, partnerId: Long): Boolean
 }

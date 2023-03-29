@@ -15,7 +15,7 @@ import {RoutingService} from '@common/services/routing.service';
 import {ActivatedRoute} from '@angular/router';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {LongDateFormatKey} from "moment";
+import {LongDateFormatKey} from 'moment';
 
 @UntilDestroy()
 

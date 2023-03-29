@@ -4,10 +4,10 @@ import java.time.ZonedDateTime
 
 data class JemsFile(
     val id: Long,
-    val name: String,
+    var name: String,
     val type: JemsFileType,
     val uploaded: ZonedDateTime,
     val author: UserSimple,
     val size: Long,
-    val description: String
+    var description: String
 )

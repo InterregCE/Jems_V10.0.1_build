@@ -20,4 +20,6 @@ interface ProjectPartnerReportExpenditureRepository : JpaRepository<PartnerRepor
     fun findByPartnerReportOrderByIdDesc(reportEntity: ProjectPartnerReportEntity): MutableList<PartnerReportExpenditureCostEntity>
 
     fun existsByPartnerReportPartnerIdAndPartnerReportIdAndId(partnerId: Long, reportId: Long, expenditureId: Long): Boolean
+
+    fun existsByPartnerReportPartnerIdAndAttachmentIdAndGdprTrue(partnerId: Long, fileId: Long): Boolean
 }

@@ -10,7 +10,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {combineLatest, Observable} from 'rxjs';
 import {ProgrammeSpecificObjectiveDTO, ProjectStatusDTO} from '@cat/api';
 import {TranslateService} from '@ngx-translate/core';
-import {ColumnWidth} from "@common/components/table/model/column-width";
+import {ColumnWidth} from '@common/components/table/model/column-width';
 
 @Component({
   selector: 'jems-project-application-list',

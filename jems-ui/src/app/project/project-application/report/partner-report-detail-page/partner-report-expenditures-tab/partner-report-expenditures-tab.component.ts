@@ -416,7 +416,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       this.pageStore.parkedExpenditures$,
       this.privilegesPageStore.isCurrentUserGDPRCompliant$,
       this.partnerReportPageStore.userCanEditReport$,
-      this.permissionService.hasPermission(PermissionsEnum.ProjectReportingEdit),
+      this.permissionService.hasPermission(PermissionsEnum.ProjectReportingView),
       this.isReportEditable$
     ]).pipe(
       map(([expendituresCosts, costCategories, investmentsSummary, contractIDs, tableConfiguration, reportCosts, parkedExpenditures, isCurrentUserGDPRCompliant, canEdit, isMonitorUser, isReportEditable]: any) => ({
@@ -877,12 +877,8 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     }
   }
 
-  uploadAllowed(valueGDPR: boolean, isGDPRCompliant: boolean, canEdit: boolean, isMonitorUser: boolean): boolean {
+  editAllowed(valueGDPR: boolean, isGDPRCompliant: boolean, canEdit: boolean, isMonitorUser: boolean): boolean {
      return isMonitorUser || (!valueGDPR && canEdit) || (valueGDPR && isGDPRCompliant);
-  }
-
-  deleteAllowed(valueGDPR: boolean, isGDPRCompliant: boolean, canEdit: boolean): boolean {
-    return (!valueGDPR && canEdit) || (valueGDPR && isGDPRCompliant);
   }
 
   toggleGDPR(index: number,  control: FormGroup, value: boolean): void {

@@ -84,4 +84,6 @@ interface UserPartnerCollaboratorRepository : JpaRepository<UserPartnerCollabora
     fun deleteAllByIdIn(id: Collection<UserPartnerId>)
 
     fun deleteAllByProjectId(projectId: Long)
+
+    fun existsByIdAndGdprTrue(id: UserPartnerId): Boolean
 }

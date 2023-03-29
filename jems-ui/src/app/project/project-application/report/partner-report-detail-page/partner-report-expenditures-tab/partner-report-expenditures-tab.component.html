@@ -31,7 +31,9 @@
                         <ng-container matColumnDef="costGDPR" sticky>
                             <mat-header-cell *matHeaderCellDef>
                                         <div class ="custom-icon gdpr">
-                                            <mat-icon>privacy_tip</mat-icon>
+                                            <mat-icon matTooltip="{{'project.application.partner.report.expenditures.tab.cost.checkbox.sensitive.info' | translate}}">
+                                                privacy_tip
+                                            </mat-icon>
                                         </div>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
@@ -365,8 +367,14 @@
 
                         <ng-container matColumnDef="description">
                             <mat-header-cell *matHeaderCellDef>
-                                        <span jemsText
-                                              maxLines="2">{{'project.application.partner.report.expenditures.tab.description' | translate}}</span>
+                                <span jemsText
+                                      maxLines="2">{{'project.application.partner.report.expenditures.tab.description' | translate}}</span>
+                                <span>
+                                    <mat-icon
+                                            matTooltip="{{'project.application.partner.report.expenditures.tab.cost.field.sensitive.info' | translate}}">
+                                        privacy_tip
+                                    </mat-icon>
+                                </span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <div *ngIf="expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.description).errors"
@@ -396,8 +404,14 @@
 
                         <ng-container matColumnDef="comment">
                             <mat-header-cell *matHeaderCellDef>
-                                        <span jemsText
-                                              maxLines="2">{{'project.application.partner.report.expenditures.tab.comment' | translate}}</span>
+                                <span jemsText
+                                      maxLines="2">{{'project.application.partner.report.expenditures.tab.comment' | translate}}</span>
+                                <span>
+                                    <mat-icon
+                                            matTooltip="{{'project.application.partner.report.expenditures.tab.cost.field.sensitive.info' | translate}}">
+                                        privacy_tip
+                                    </mat-icon>
+                                </span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <div *ngIf="expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.comment).errors"
@@ -624,12 +638,20 @@
                         </ng-container>
 
                         <ng-container matColumnDef="uploadFunction">
-                            <mat-header-cell *matHeaderCellDef>{{'project.application.partner.report.attachments' | translate}}</mat-header-cell>
+                            <mat-header-cell *matHeaderCellDef>{{'project.application.partner.report.attachments' | translate}}
+                                <span>
+                                    <mat-icon
+                                            matTooltip="{{'project.application.partner.report.expenditures.tab.cost.field.sensitive.info' | translate}}">
+                                        privacy_tip
+                                    </mat-icon>
+                                </span>
+                            </mat-header-cell>
                             <mat-cell class="justify-start" *matCellDef="let control;let expenditureIndex=index" [formGroupName]="expenditureIndex" >
                                 <jems-partner-actions-cell
                                         *ngIf="control.get('id').value"
                                         [formControlName]="constants.FORM_CONTROL_NAMES.attachment"
-                                        [isReportEditable]="uploadAllowed(control.get(constants.FORM_CONTROL_NAMES.costGDPR).value, data.isGDPRCompliant, data.canEdit, data.isMonitorUser) && data.isReportEditable"
+                                        [isReportEditable]="editAllowed(control.get(constants.FORM_CONTROL_NAMES.costGDPR).value, data.isGDPRCompliant, data.canEdit, data.isMonitorUser) && data.isReportEditable"
+                                        [canDownload]="editAllowed(control.get(constants.FORM_CONTROL_NAMES.costGDPR).value, data.isGDPRCompliant, data.canEdit, data.isMonitorUser)"
                                         [isUploadDone]="isUploadDone"
                                         (upload)="onUploadFileToExpenditure($event, control.get('id').value, expenditureIndex)"
                                         (download)="onDownloadFile($event)"
@@ -645,13 +667,13 @@
                                 <button mat-icon-button *ngIf="reportExpendituresForm.enabled"
                                         [disabled]="!!control.get('attachment').value ||
                                         !data.isReportEditable ||
-                                        !deleteAllowed(control.get(constants.FORM_CONTROL_NAMES.costGDPR).value, data.isGDPRCompliant, data.canEdit)"
+                                        !editAllowed(control.get(constants.FORM_CONTROL_NAMES.costGDPR).value, data.isGDPRCompliant, data.canEdit, data.isMonitorUser)"
                                         (click)="removeItem(index)"
                                         class="delete-button"
                                         color="accent"
                                         tabindex="-1"
                                         type="button">
-                                    <mat-icon *ngIf="deleteAllowed(control.get(constants.FORM_CONTROL_NAMES.costGDPR).value, data.isGDPRCompliant, data.canEdit)"
+                                    <mat-icon *ngIf="editAllowed(control.get(constants.FORM_CONTROL_NAMES.costGDPR).value, data.isGDPRCompliant, data.canEdit, data.isMonitorUser)"
                                             matTooltip="{{ (attachment(index).value ? 'project.application.partner.report.attachment.delete.file.first' : null) | translate }}">
                                         {{ attachment(index).value ? 'delete_forever' : 'delete'}}
                                     </mat-icon>

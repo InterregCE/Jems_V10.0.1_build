@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.report.partner.expenditure
 
+import io.cloudflight.jems.server.common.anonymize
 import io.cloudflight.jems.server.currency.service.model.CurrencyConversion
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportLumpSum
@@ -46,6 +47,23 @@ fun List<ProjectPartnerReportExpenditureCost>.reNumber(ignoreIds: Set<Long>): Li
         }
     }
     return this
+}
+
+fun ProjectPartnerReportExpenditureCost.anonymizeIfSensitive() {
+    if (this.gdpr) {
+        this.apply {
+            this.description = this.description.anonymize()
+            this.comment = this.comment.anonymize()
+            this.attachment?.anonymize()
+        }
+    }
+}
+
+
+fun List<ProjectPartnerReportExpenditureCost>.anonymizeSensitiveDataIf(canNotWorkWithSensitive: Boolean) {
+    if (canNotWorkWithSensitive) {
+        this.forEach { expenditureCost -> expenditureCost.anonymizeIfSensitive() }
+    }
 }
 
 inline fun <T> Collection<T>.filterInvalidCurrencies(defaultCurrency: String?, extractFunction: (T) -> String) =
