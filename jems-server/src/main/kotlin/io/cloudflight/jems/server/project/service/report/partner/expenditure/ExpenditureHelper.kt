@@ -19,11 +19,11 @@ fun List<ProjectPartnerReportExpenditureCost>.fillCurrencyRates(rates: Map<Strin
     }
 }
 
-fun List<ProjectPartnerReportExpenditureCost>.clearConversions(exceptParked: Map<Long, ProjectPartnerReportExpenditureCost>) = map {
+fun List<ProjectPartnerReportExpenditureCost>.clearConversions(exceptReIncluded: Map<Long, ProjectPartnerReportExpenditureCost>) = map {
     it.apply {
-        if (id in exceptParked.keys) {
-            currencyCode = exceptParked[id]!!.currencyCode
-            currencyConversionRate = exceptParked[id]!!.currencyConversionRate
+        if (id in exceptReIncluded.keys) {
+            currencyCode = exceptReIncluded[id]!!.currencyCode
+            currencyConversionRate = exceptReIncluded[id]!!.currencyConversionRate
             declaredAmountAfterSubmission = null
         } else {
             clearConversions()
@@ -35,14 +35,14 @@ fun List<ProjectPartnerReportExpenditureCost>.clearParking() = map {
     it.apply { it.parkingMetadata = null }
 }
 
-fun List<ProjectPartnerReportExpenditureCost>.reNumber(parkedIds: Set<Long>): List<ProjectPartnerReportExpenditureCost> {
+fun List<ProjectPartnerReportExpenditureCost>.reNumber(ignoreIds: Set<Long>): List<ProjectPartnerReportExpenditureCost> {
     var skippedParked = 0
     this.forEachIndexed { index, expenditure ->
-        if (expenditure.id !in parkedIds) {
-            expenditure.number = index.plus(1).minus(skippedParked)
-        } else {
+        if (expenditure.id in ignoreIds) {
             expenditure.number = 0
             skippedParked += 1
+        } else {
+            expenditure.number = index.plus(1).minus(skippedParked)
         }
     }
     return this
