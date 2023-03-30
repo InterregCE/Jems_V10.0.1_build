@@ -58,10 +58,7 @@ export class ContractReportingStore {
       .pipe(
         switchMap(projectId => this.projectContractingReportingService.getReportingSchedule(projectId)),
       );
-    return merge(initialData$, this.savedData$)
-      .pipe(
-        shareReplay(1)
-      );
+    return merge(initialData$, this.savedData$);
   }
 
   private userCanViewDeadlines(): Observable<boolean> {

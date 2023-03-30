@@ -70,3 +70,15 @@ class EmptyDeadlineDate : ApplicationUnprocessableException(
     i18nMessage = I18nMessage("$UPDATE_CONTRACTING_REPORTING_ERROR_KEY_PREFIX.empty.date"),
     message = "Deadline date can't be empty",
 )
+
+class LinkedDeadlineDeletionException : ApplicationUnprocessableException(
+    code = "$UPDATE_CONTRACTING_REPORTING_ERROR_CODE_PREFIX-008",
+    i18nMessage = I18nMessage("$UPDATE_CONTRACTING_REPORTING_ERROR_KEY_PREFIX.linked.deadline.deletion"),
+    message = "Deadline was linked to a project report",
+)
+
+class LinkedDeadlineUpdateException : ApplicationUnprocessableException(
+    code = "$UPDATE_CONTRACTING_REPORTING_ERROR_CODE_PREFIX-009",
+    i18nMessage = I18nMessage("$UPDATE_CONTRACTING_REPORTING_ERROR_KEY_PREFIX.submitted.report.linked.deadline.deletion"),
+    message = "Deadline was linked to a submitted project report",
+)

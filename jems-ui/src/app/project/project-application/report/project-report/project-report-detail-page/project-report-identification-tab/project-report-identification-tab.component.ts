@@ -2,8 +2,8 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {FormService} from '@common/components/section/form/form.service';
 import {combineLatest, Observable} from 'rxjs';
 import {
-  InputTranslation,
-  ProjectPeriodDTO, ProjectReportDTO, ProjectReportIdentificationDTO, ProjectReportUpdateDTO
+  ProjectContractingReportingScheduleDTO,
+  ProjectPeriodDTO, ProjectReportDTO, ProjectReportUpdateDTO
 } from '@cat/api';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {
@@ -21,6 +21,10 @@ import {
   ProjectReportPageStore
 } from '@project/project-application/report/project-report/project-report-page-store.service';
 import {LanguageStore} from '@common/services/language-store.service';
+import {
+  ContractReportingStore
+} from '@project/project-application/contracting/contract-reporting/contract-reporting.store';
+import {MatSelectChange} from '@angular/material/select/select';
 
 @Component({
   selector: 'jems-project-report-identification-tab',
@@ -38,6 +42,7 @@ export class ProjectReportIdentificationTabComponent {
   data$: Observable<{
     projectReport: ProjectReportDTO;
     periods: ProjectPeriodDTO[];
+    reportingDeadlines: ProjectContractingReportingScheduleDTO[];
   }>;
 
   form: FormGroup = this.formBuilder.group({
@@ -63,7 +68,7 @@ export class ProjectReportIdentificationTabComponent {
   selectedType: ProjectReportDTO.TypeEnum;
   selectedPeriod: ProjectPeriodDTO | undefined = undefined;
   availablePeriods: ProjectPeriodDTO[] = [];
-  availableDeadlines: string[] = [];
+  availableDeadlines: ProjectContractingReportingScheduleDTO[] = [];
 
   constructor(public pageStore: ProjectReportDetailPageStore,
               public formService: FormService,
@@ -73,18 +78,22 @@ export class ProjectReportIdentificationTabComponent {
               private activatedRoute: ActivatedRoute,
               private projectReportPageStore: ProjectReportPageStore,
               private projectSidenavService: ProjectApplicationFormSidenavService,
-              public languageStore: LanguageStore) {
+              public languageStore: LanguageStore,
+              public contractReportingStore: ContractReportingStore) {
     this.formService.init(this.form, this.reportId ? this.pageStore.reportEditable$ : this.projectReportPageStore.userCanEditReport$);
     this.data$ = combineLatest([
       pageStore.projectReport$,
       this.projectStore.projectPeriods$,
+      this.contractReportingStore.contractReportingDeadlines$
     ]).pipe(
-      tap(([projectReport, availablePeriods]) =>
-        this.availablePeriods = availablePeriods
-      ),
-      map(([projectReport, availablePeriods]) => ({
+      tap(([projectReport, availablePeriods, reportingDeadlines]) => {
+          this.availablePeriods = availablePeriods;
+          this.availableDeadlines = reportingDeadlines;
+      }),
+      map(([projectReport, availablePeriods, reportingDeadlines]) => ({
         projectReport,
         periods: availablePeriods,
+        reportingDeadlines
       })),
       tap((data) => this.resetForm(data.projectReport)),
     );
@@ -108,6 +117,10 @@ export class ProjectReportIdentificationTabComponent {
     });
     if (identification?.deadlineId === null || !this.reportId){
       this.form.get('deadlineId')?.patchValue(0);
+    } else if (identification?.deadlineId) {
+      this.form.get('type')?.disable();
+      this.form.get('periodNumber')?.disable();
+      this.form.get('reportingDate')?.disable();
     }
   }
 
@@ -115,6 +128,9 @@ export class ProjectReportIdentificationTabComponent {
     const data = {
       ...this.form.value,
       deadlineId: this.form.get('deadlineId')?.value < 1 ? null : this.form.get('deadlineId')?.value,
+      type: this.form.get('deadlineId')?.value < 1 ? this.form.get('type')?.value : null,
+      periodNumber: this.form.get('deadlineId')?.value < 1 ? this.form.get('periodNumber')?.value : null,
+      reportingDate: this.form.get('deadlineId')?.value < 1 ? this.form.get('reportingDate')?.value : null,
     } as ProjectReportUpdateDTO;
     if (!this.reportId) {
       this.projectReportPageStore.createProjectReport(data)
@@ -139,6 +155,21 @@ export class ProjectReportIdentificationTabComponent {
     } else {
       this.resetForm(report);
     }
+  }
+
+  getStartMonth(periodNumber: number): number {
+    return this.availablePeriods.find(p => p.number === periodNumber)?.start ?? 0;
+  }
+
+  getEndMonth(periodNumber: number): number {
+    return this.availablePeriods.find(p => p.number === periodNumber)?.end ?? 0;
+  }
+
+  deadlineChanged(change: MatSelectChange) {
+    const selectedDeadline = this.availableDeadlines.find(d => d.id === change.value as number);
+    this.form.patchValue({type: selectedDeadline?.type});
+    this.form.patchValue({periodNumber: selectedDeadline?.periodNumber});
+    this.form.patchValue({reportingDate: selectedDeadline?.date});
   }
 
   private redirectToProjectReportsOverview(): void {

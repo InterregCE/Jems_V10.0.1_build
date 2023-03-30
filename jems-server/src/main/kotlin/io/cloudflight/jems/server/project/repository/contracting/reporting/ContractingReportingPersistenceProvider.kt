@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.repository.contracting.reporting
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.contracting.reporting.ProjectContractingReportingEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
+import io.cloudflight.jems.server.project.repository.report.project.base.ProjectReportRepository
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ProjectContractingReportingSchedule
 import io.cloudflight.jems.server.project.service.contracting.reporting.ContractingReportingPersistence
 import org.springframework.stereotype.Repository
@@ -14,15 +15,23 @@ import kotlin.collections.HashSet
 class ContractingReportingPersistenceProvider(
     private val projectContractingReportingRepository: ProjectContractingReportingRepository,
     private val projectRepository: ProjectRepository,
+    private val projectReportRepository: ProjectReportRepository
 ): ContractingReportingPersistence {
 
     @Transactional(readOnly = true)
-    override fun getContractingReporting(projectId: Long): List<ProjectContractingReportingSchedule> =
-        projectContractingReportingRepository.findTop50ByProjectIdOrderByDeadline(projectId).toModel()
+    override fun getContractingReporting(projectId: Long): List<ProjectContractingReportingSchedule> {
+        val deadlineEntities = projectContractingReportingRepository.findTop50ByProjectIdOrderByDeadline(projectId)
+        val linkedReportsByDeadline = projectReportRepository.findAllByProjectIdAndDeadlineNotNull(projectId).groupBy { it.deadline?.id }
+        return deadlineEntities.map { deadline -> deadline.toModel(linkedReportsByDeadline[deadline.id]) }
+    }
+
 
     @Transactional(readOnly = true)
-    override fun getContractingReportingDeadline(projectId: Long, deadlineId: Long) =
-        projectContractingReportingRepository.findByProjectIdAndId(projectId, id = deadlineId).toModel()
+    override fun getContractingReportingDeadline(projectId: Long, deadlineId: Long): ProjectContractingReportingSchedule {
+        val linkedProjectReports = projectReportRepository.findAllByProjectIdAndDeadlineId(projectId, deadlineId)
+        return projectContractingReportingRepository.findByProjectIdAndId(projectId, id = deadlineId).toModel(linkedProjectReports)
+    }
+
 
     @Transactional
     override fun updateContractingReporting(
@@ -35,20 +44,23 @@ class ContractingReportingPersistenceProvider(
         val existingById = persistedDeadlines.associateBy { it.id }
         // remove those that were removed
         projectContractingReportingRepository.deleteAll(existingById.minus(toStayIds).values)
+        val maxDeadlineNumber = persistedDeadlines.maxByOrNull { it.number }?.number ?: 0
 
         val project = persistedDeadlines.firstOrNull()?.project ?: projectRepository.getById(projectId)
-
+        var newlyAddedCount = 0
         // update existing or create new ones
         deadlines.forEach { deadline ->
             existingById.getById(deadline.id).let {
                 when {
                     it.isPresent -> it.get().updateWith(deadline)
-                    else -> projectContractingReportingRepository.save(deadline.toEntity(project))
+                    else -> {
+                        projectContractingReportingRepository.save(deadline.toEntity(project, maxDeadlineNumber + newlyAddedCount + 1))
+                        newlyAddedCount ++
+                    }
                 }
             }
         }
-
-        return projectContractingReportingRepository.findTop50ByProjectIdOrderByDeadline(projectId).toModel()
+        return getContractingReporting(projectId)
     }
 
     @Transactional
@@ -78,13 +90,14 @@ class ContractingReportingPersistenceProvider(
         comment = newData.comment
     }
 
-    private fun ProjectContractingReportingSchedule.toEntity(project: ProjectEntity) =
+    private fun ProjectContractingReportingSchedule.toEntity(project: ProjectEntity, deadlineNumber: Int) =
         ProjectContractingReportingEntity(
             project = project,
             type = type,
             periodNumber = periodNumber,
             deadline = date,
             comment = comment,
+            number = deadlineNumber,
         )
 
 }

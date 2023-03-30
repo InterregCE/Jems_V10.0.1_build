@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.project.service.contracting.monitoring.Contrac
 import io.cloudflight.jems.server.project.service.contracting.reporting.ContractingReportingPersistence
 import io.cloudflight.jems.server.project.service.contracting.toLimits
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
+import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
@@ -24,7 +25,8 @@ class UpdateContractingReporting(
     private val projectPersistence: ProjectPersistenceProvider,
     private val versionPersistence: ProjectVersionPersistence,
     private val generalValidator: GeneralValidatorService,
-    private val contractingValidator: ContractingValidator
+    private val contractingValidator: ContractingValidator,
+    private val projectReportPersistence: ProjectReportPersistence
 ): UpdateContractingReportingInteractor {
 
     companion object {
@@ -49,7 +51,7 @@ class UpdateContractingReporting(
             throw ContractingStartDateIsMissing()
 
         val periods = project.periods.associateBy { it.number }
-        validateInputData(deadlines, periods, monitoring.startDate)
+        validateInputData(deadlines, periods, monitoring.startDate, projectId)
 
         return contractingReportingPersistence.updateContractingReporting(
             projectId = projectId,
@@ -79,6 +81,7 @@ class UpdateContractingReporting(
         deadlines: Collection<ProjectContractingReportingSchedule>,
         periods: Map<Int, ProjectPeriod>,
         startDate: LocalDate,
+        projectId: Long
     ) {
         if (deadlines.size > MAX_DEADLINES_AMOUNT)
             throw MaxAmountOfDeadlinesReached(MAX_DEADLINES_AMOUNT)
@@ -86,6 +89,18 @@ class UpdateContractingReporting(
         validatePeriods(deadlines, periods)
         validateDates(deadlines, periods, startDate)
         validateComments(deadlines)
+
+        val linkedDeadlines = projectReportPersistence.getReportLinkedDeadlineIdsWithIsReportSubmittedForProject(projectId)
+        if (linkedDeadlines.map { it.first }.minus(deadlines.map { it.id }).isNotEmpty())
+            throw LinkedDeadlineDeletionException()
+
+        val submittedDeadlineIds = linkedDeadlines.filter { it.second }.map { it.first }
+        val existingDeadlines = contractingReportingPersistence.getContractingReporting(projectId)
+        existingDeadlines.filter { submittedDeadlineIds.contains(it.id) }.forEach { existing ->
+            val deadline = deadlines.first { it.id == existing.id }
+            if (deadline.date != existing.date || deadline.periodNumber != existing.periodNumber || deadline.type != existing.type)
+                throw LinkedDeadlineUpdateException()
+        }
     }
 
     private fun validatePeriods(

@@ -21,6 +21,8 @@ export class ProjectPeriodsSelectComponent {
   label: string;
   @Input()
   required: boolean;
+  @Input()
+  disabled = false;
 
   @Output()
   selectionChanged = new EventEmitter<void>();

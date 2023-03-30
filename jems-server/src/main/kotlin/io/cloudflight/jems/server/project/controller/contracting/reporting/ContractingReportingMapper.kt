@@ -18,6 +18,9 @@ fun ProjectContractingReportingScheduleDTO.toModel() = ProjectContractingReporti
     periodNumber = periodNumber,
     date = date,
     comment = comment,
+    number = number,
+    linkedSubmittedProjectReportNumbers = linkedSubmittedProjectReportNumbers,
+    linkedDraftProjectReportNumbers = linkedDraftProjectReportNumbers
 )
 
 @Mapper

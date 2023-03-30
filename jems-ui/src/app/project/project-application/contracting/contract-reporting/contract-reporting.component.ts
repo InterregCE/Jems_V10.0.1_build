@@ -17,6 +17,8 @@ import {ContractingSectionLockStore} from '@project/project-application/contract
 import {ContractingSection} from '@project/project-application/contracting/contracting-section';
 import {Forms} from '@common/utils/forms';
 import {APIError} from '@common/models/APIError';
+import {TranslateByInputLanguagePipe} from '@common/pipe/translate-by-input-language.pipe';
+import {CustomTranslatePipe} from '@common/pipe/custom-translate-pipe';
 
 @UntilDestroy()
 @Component({
@@ -35,6 +37,8 @@ export class ContractReportingComponent implements OnInit {
   columnsToDisplay: string[] = [];
   Alert = Alert;
   error$ = new BehaviorSubject<APIError | null>(null);
+  isPotentialDataLossDueToUpdate = false;
+  TypeEnum = ProjectContractingReportingScheduleDTO.TypeEnum;
   data$: Observable<{
     periods: ProjectPeriodForMonitoringDTO[];
     reportingDeadlines: ProjectContractingReportingScheduleDTO[];
@@ -50,7 +54,8 @@ export class ContractReportingComponent implements OnInit {
               private contractMonitoringExtensionStore: ContractMonitoringExtensionStore,
               public formService: FormService,
               private dialog: MatDialog,
-              private contractingSectionLockStore: ContractingSectionLockStore) {
+              private contractingSectionLockStore: ContractingSectionLockStore,
+              private customTranslatePipe: CustomTranslatePipe) {
 
   }
 
@@ -98,7 +103,13 @@ export class ContractReportingComponent implements OnInit {
       deadlineComment: ['', Validators.maxLength(1000)],
       deadlinePeriodStartDate: [''],
       deadlinePeriodEndDate: [''],
-      isDeadlineApplicable: [true]
+      deadlineId: [0],
+      deadlineNumber: [0],
+      deadlineLinkedDraftProjectReportNumbers: [[]],
+      deadlineLinkedSubmittedProjectReportNumbers: [[]],
+      isDeadlineApplicable: [true],
+      initialDeadlineReportType: [''],
+      deadlineAnyLinkedProjectReportSubmitted: [false]
     });
     this.deadlines.push(item);
     this.tableData = [...this.deadlines.controls];
@@ -115,18 +126,25 @@ export class ContractReportingComponent implements OnInit {
       const isDeadlineApplicable = periods.some(p => p.number === reportingDeadline.periodNumber);
       const item = this.formBuilder.group({
         isDeadlineApplicable: [isDeadlineApplicable],
+        initialDeadlineReportType: [reportingDeadline.type],
+        deadlineId: [reportingDeadline.id],
+        deadlineNumber: [reportingDeadline.number],
+        deadlineLinkedDraftProjectReportNumbers: [reportingDeadline.linkedDraftProjectReportNumbers],
+        deadlineLinkedSubmittedProjectReportNumbers: [reportingDeadline.linkedSubmittedProjectReportNumbers],
         deadlineReportType: [reportingDeadline.type, Validators.required],
         deadlinePeriod: [isDeadlineApplicable ? reportingDeadline.periodNumber : '', Validators.required],
         deadlineDate: [isDeadlineApplicable ? reportingDeadline.date : '', Validators.required],
         deadlineComment: [reportingDeadline.comment, Validators.maxLength(1000)],
         deadlinePeriodStartDate: [periods.find(p => p.number === reportingDeadline.periodNumber)?.startDate],
         deadlinePeriodEndDate: [periods.find(p => p.number === reportingDeadline.periodNumber)?.endDate],
+        deadlineAnyLinkedProjectReportSubmitted: [reportingDeadline.linkedSubmittedProjectReportNumbers.length > 0]
       });
       this.deadlines.push(item);
     }
     if (!isEditable || isSectionLocked) {
       this.deadlines.disable();
     }
+    this.isPotentialDataLossDueToUpdate = false;
     this.tableData = [...this.deadlines.controls];
   }
 
@@ -136,6 +154,7 @@ export class ContractReportingComponent implements OnInit {
             tap(() => this.formService.setSuccess('project.application.contract.reporting.form.save.successful')),
             catchError(err => this.formService.setError(err)),
         ).subscribe();
+    this.isPotentialDataLossDueToUpdate = false;
   }
 
   delete(index: number): void {
@@ -148,6 +167,13 @@ export class ContractReportingComponent implements OnInit {
     const period = periods.find(p => p.number === periodNum);
     this.deadlines.at(index).patchValue({deadlinePeriodStartDate: period?.startDate});
     this.deadlines.at(index).patchValue({deadlinePeriodEndDate: period?.endDate});
+    this.formService.setDirty(true);
+  }
+
+  updateReportType(initialType: any, newValue: ProjectContractingReportingScheduleDTO.TypeEnum, isLinkedWithProjectReport: boolean): void {
+    if (isLinkedWithProjectReport && initialType && newValue != initialType as ProjectContractingReportingScheduleDTO.TypeEnum) {
+        this.isPotentialDataLossDueToUpdate = true;
+    }
     this.formService.setDirty(true);
   }
 
@@ -191,7 +217,6 @@ export class ContractReportingComponent implements OnInit {
     ).subscribe();
   }
 
-
   projectEndDateString(periods: ProjectPeriodForMonitoringDTO[]): string {
     const period = periods.find(p => p.number === (periods.length));
     return period ? period.endDate : '';
@@ -202,6 +227,13 @@ export class ContractReportingComponent implements OnInit {
     return period ? period.end.toString() : '';
   }
 
+  linkedProjectReportsText(numbers: number[]): string {
+    if (numbers.length === 0) {
+      return '';
+    }
+    const prefix = this.customTranslatePipe.transform('project.application.contract.reporting.column.linked.project.reports.abbrevation');
+    return numbers.map(n => prefix + n).join(', ');
+  }
 
   private initForm(isEditable: boolean, isSectionLocked: boolean): void {
     this.resetDeadlinesTableColumns(isEditable, isSectionLocked);
@@ -220,6 +252,10 @@ export class ContractReportingComponent implements OnInit {
           type: item.value.deadlineReportType,
           periodNumber: item.value.deadlinePeriod,
           comment: item.value.deadlineComment,
+          id: item.value.deadlineId,
+          number: item.value.deadlineNumber,
+          linkedSubmittedProjectReportNumbers: item.value.deadlineLinkedSubmittedProjectReportNumbers,
+          linkedDraftProjectReportNumbers: item.value.deadlineLinkedDraftProjectReportNumbers
         } as ProjectContractingReportingScheduleDTO);
       }
     }
@@ -229,7 +265,7 @@ export class ContractReportingComponent implements OnInit {
 
   private resetDeadlinesTableColumns(isEditable: boolean, isLocked: boolean) {
     this.columnsToDisplay = [];
-    this.columnsToDisplay.push('deadlineReportType', 'deadlinePeriod', 'deadlineDate', 'deadlineComment');
+    this.columnsToDisplay.push('deadlineNumber', 'deadlineReportType', 'deadlinePeriod', 'deadlineDate', 'deadlineComment', 'deadlineLinkedReportNumbers');
     if (isEditable && !isLocked) {
       this.columnsToDisplay.push('deadlineDelete');
     }

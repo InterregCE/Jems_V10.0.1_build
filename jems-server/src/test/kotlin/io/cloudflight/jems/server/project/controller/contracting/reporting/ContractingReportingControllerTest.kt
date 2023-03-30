@@ -27,6 +27,9 @@ internal class ContractingReportingControllerTest: UnitTest() {
             periodNumber = 4,
             date = YESTERDAY,
             comment = "dummy comment",
+            number = 1,
+            linkedSubmittedProjectReportNumbers = setOf(),
+            linkedDraftProjectReportNumbers = setOf()
         )
 
         private val reportingScheduleDto = ProjectContractingReportingScheduleDTO(
@@ -35,6 +38,9 @@ internal class ContractingReportingControllerTest: UnitTest() {
             periodNumber = 4,
             date = YESTERDAY,
             comment = "dummy comment",
+            number = 1,
+            linkedSubmittedProjectReportNumbers = setOf(),
+            linkedDraftProjectReportNumbers = setOf()
         )
 
         private val toCreateSchedule = ProjectContractingReportingScheduleDTO(
@@ -43,6 +49,9 @@ internal class ContractingReportingControllerTest: UnitTest() {
             periodNumber = 2,
             date = YESTERDAY,
             comment = "dummy comment",
+            number = 1,
+            linkedSubmittedProjectReportNumbers = setOf(),
+            linkedDraftProjectReportNumbers = setOf()
         )
 
         private val toCreateScheduleModel = ProjectContractingReportingSchedule(
@@ -51,6 +60,9 @@ internal class ContractingReportingControllerTest: UnitTest() {
             periodNumber = 2,
             date = YESTERDAY,
             comment = "dummy comment",
+            number = 1,
+            linkedSubmittedProjectReportNumbers = setOf(),
+            linkedDraftProjectReportNumbers = setOf()
         )
     }
 

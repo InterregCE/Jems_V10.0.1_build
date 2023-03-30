@@ -50,4 +50,17 @@ mat-button-toggle {
   jems-expandable-textarea .mat-form-field-infix {
     min-height: 1.8rem;
   }
+
+  .date-readonly {
+    .mat-form-field-flex {
+      background-color: inherit !important;
+      border-bottom-style: dotted !important;
+      border-width: thin !important;
+      border-color: rgb(220, 220, 220) !important;
+    }
+    .mat-form-field-underline {
+      display: none;
+    }
+  }
+
 }
