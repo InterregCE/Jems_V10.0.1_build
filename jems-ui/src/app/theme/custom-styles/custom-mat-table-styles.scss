@@ -48,8 +48,13 @@
   .additional-info-text {
     color: var(--table-header-text-color);
   }
+
+  .mat-sort-header-content {
+    text-align: left;
+  }
 }
 
 mat-cell.mat-table-sticky {
   z-index: 2 !important;
 }
+

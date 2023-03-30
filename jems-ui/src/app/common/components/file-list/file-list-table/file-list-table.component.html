@@ -30,7 +30,10 @@
                 <span jemsText maxLines="2">{{ overrideUploadTranslation | translate }}</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let file">
-                {{ file?.uploaded | localeDate: 'L' : 'LT'}}
+                <div class="date-time-cell">
+                    <div class="date">{{ file?.uploaded | localeDate: 'L'}}</div>
+                    <div class="time">{{ file?.uploaded | localeDate: 'LT'}}</div>
+                </div>
             </mat-cell>
         </ng-container>
 
