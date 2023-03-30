@@ -190,6 +190,11 @@ export class Permission {
           editPermissions: [PermissionsEnum.ProjectReportingEdit],
           editTooltip: 'permission.inspect.reporting'
         },
+          {
+              name: 'project.application.partner.reports.checklist.after.control',
+              mode: PermissionMode.TOGGLE_EDIT,
+              editPermissions: [PermissionsEnum.ProjectReportingChecklistAfterControl],
+          },
       ]
     },
     {
