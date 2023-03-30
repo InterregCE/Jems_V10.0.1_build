@@ -31,3 +31,8 @@ class PartnerWithDefaultEurCannotSelectOtherCurrency(otherUsedCurrencies: Set<St
         i18nArguments = mapOf("currencyCodes" to otherUsedCurrencies.joinToString(", "))
     ),
 )
+
+class ExpenditureSensitiveDataCannotBeUpdated: ApplicationUnprocessableException(
+    code = "$UPDATE_PROJECT_PARTNER_REPORT_EC_ERROR_CODE_PREFIX-004",
+    i18nMessage = I18nMessage("$UPDATE_PROJECT_PARTNER_REPORT_EC_ERROR_KEY_PREFIX.gdpr.expenditure.cannot.be.updated")
+)

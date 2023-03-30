@@ -877,8 +877,12 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     }
   }
 
-  editAllowed(valueGDPR: boolean, isGDPRCompliant: boolean, canEdit: boolean, isMonitorUser: boolean): boolean {
+  uploadAllowed(valueGDPR: boolean, isGDPRCompliant: boolean, canEdit: boolean, isMonitorUser: boolean): boolean {
      return isMonitorUser || (!valueGDPR && canEdit) || (valueGDPR && isGDPRCompliant);
+  }
+
+  deleteAllowed(valueGDPR: boolean, isGDPRCompliant: boolean, canEdit: boolean): boolean {
+    return (!valueGDPR && canEdit) || (valueGDPR && isGDPRCompliant);
   }
 
   toggleGDPR(index: number,  control: FormGroup, value: boolean): void {

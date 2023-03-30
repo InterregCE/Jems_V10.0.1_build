@@ -68,4 +68,8 @@ class UserPartnerCollaboratorPersistenceProvider(
     @Transactional
     override fun deleteByProjectId(projectId: Long) =
         collaboratorRepository.deleteAllByProjectId(projectId)
+
+    @Transactional(readOnly = true)
+    override fun findByPartnerId(partnerId: Long): Set<PartnerCollaborator> =
+        collaboratorRepository.findByPartnerId(partnerId)
 }

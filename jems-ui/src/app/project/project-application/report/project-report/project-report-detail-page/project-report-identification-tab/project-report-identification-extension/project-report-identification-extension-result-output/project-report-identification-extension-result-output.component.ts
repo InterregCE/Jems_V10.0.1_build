@@ -1,5 +1,5 @@
-import {Component, Input} from '@angular/core';
-import {ProjectReportOutputLineOverviewDTO, ProjectReportResultIndicatorOverviewDTO} from '@cat/api';
+import {Component} from '@angular/core';
+import {ProjectReportOutputLineOverviewDTO} from '@cat/api';
 import {MatTableDataSource} from '@angular/material/table';
 import {NumberService} from '@common/services/number.service';
 import {

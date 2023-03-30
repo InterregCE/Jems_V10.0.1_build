@@ -25,4 +25,6 @@ interface UserPartnerCollaboratorPersistence {
     fun findUserIdsByProjectId(projectId: Long): Set<Long>
 
     fun deleteByProjectId(projectId: Long)
+
+    fun findByPartnerId(partnerId: Long): Set<PartnerCollaborator>
 }
