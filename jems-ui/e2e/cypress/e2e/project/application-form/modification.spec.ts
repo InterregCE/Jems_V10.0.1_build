@@ -148,7 +148,8 @@ context('Application modification tests', () => {
           cy.startModification(applicationId, user.programmeUser.email);
           
           cy.visit(`/app/project/detail/${applicationId}`, {failOnStatusCode: false});
-          cy.contains('B - Project partners').should('not.be.visible');
+          cy.contains('span', 'Application form').should('be.visible');
+          cy.wait(2000);
           cy.contains('span', 'Application form').click();
           cy.contains('B - Project partners').should('be.visible').click();
           cy.contains('Partners overview').click();
