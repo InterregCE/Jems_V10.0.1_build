@@ -272,10 +272,10 @@ context('Project privileges tests', () => {
           cy.contains('Users has been successfully assigned to project(s).').should('not.exist');
 
           // checking for the removed users
-          cy.contains('mat-row', applicationId1).within(() => {
+          cy.contains('.mat-column-project-table-column-name-id', applicationId1).parent().within(() => {
             cy.get('mat-chip.mat-chip-selected-user').should('not.exist');
           })
-          cy.contains('mat-row', applicationId2).within(() => {
+          cy.contains('.mat-column-project-table-column-name-id', applicationId2).parent().within(() => {
             cy.contains('mat-chip.mat-chip-selected-user', testData.monitorUser1.email).should('exist');
           })
 
