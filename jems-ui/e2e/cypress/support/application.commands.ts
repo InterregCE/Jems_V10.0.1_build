@@ -67,6 +67,12 @@ declare global {
       createAssociatedOrganisation(applicationId: number, associatedOrganisation);
 
       createAssociatedOrganisations(applicationId: number, associatedOrganisation: any[]);
+
+      getProgrammeUnitCostsEnabledInCall(callId: number);
+
+      getProjectUnitCosts(applicationId: number);
+
+      getProjectProposedUnitCosts(applicationId: number);
     }
   }
 }
@@ -297,22 +303,41 @@ Cypress.Commands.add('createAssociatedOrganisations', (applicationId: number, as
   createAssociatedOrganisations(applicationId, associatedOrganisations);
 });
 
+Cypress.Commands.add('getProgrammeUnitCostsEnabledInCall', (callId: number) => {
+  cy.request({
+    method: 'GET',
+    url: `api/call/byId/${callId}`
+  }).then(response => response.body.unitCosts);
+});
+
+Cypress.Commands.add('getProjectUnitCosts', (applicationId: number) => {
+  cy.request({
+    method: 'GET',
+    url: `api/project/${applicationId}/budget/unitCosts`
+  }).then(response => response.body);
+});
+
+Cypress.Commands.add('getProjectProposedUnitCosts', (applicationId: number) => {
+  cy.request({
+    method: 'GET',
+    url: `api/project/${applicationId}/costOption/unitCost?version=1.0`
+  }).then(response => response.body);
+});
+
 function createApplication(applicationDetails) {
   applicationDetails.acronym = `${faker.hacker.adjective()} ${faker.hacker.noun()}`.substr(0, 25);
   return cy.request({
     method: 'POST',
     url: 'api/project',
     body: applicationDetails
-  }).then(response => {
-    return response.body.id;
-  });
+  }).then(response => response.body.id);
 }
 
 function updateApplicationSections(applicationId, application) {
 
   // A
   updateIdentification(applicationId, application.identification);
-  
+
   // Partial B
   createPartners(applicationId, application.partners);
 
@@ -330,7 +355,7 @@ function updateApplicationSections(applicationId, application) {
 
   // B
   application.partners.forEach(partner => {
-    cy.then(function() {
+    cy.then(function () {
       updatePartnerData(this[partner.details.abbreviation], partner);
     });
   });
