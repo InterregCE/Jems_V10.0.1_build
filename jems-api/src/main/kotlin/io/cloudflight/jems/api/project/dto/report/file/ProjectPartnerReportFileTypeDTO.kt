@@ -1,5 +1,8 @@
 package io.cloudflight.jems.api.project.dto.report.file
 
+/**
+ * TODO: Refactor this model and entity to common module.
+ */
 enum class ProjectPartnerReportFileTypeDTO {
     Payment,
       Regular,
@@ -42,4 +45,6 @@ enum class ProjectPartnerReportFileTypeDTO {
         ContractPartner,
           ContractPartnerDoc,
         ContractInternal,
+
+      SharedFolder,
 }

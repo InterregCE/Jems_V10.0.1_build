@@ -55,6 +55,9 @@ class JemsProjectFileService(
             JemsFileType.ContractDoc,
             JemsFileType.ContractPartnerDoc,
             JemsFileType.ContractInternal,
+
+            // Shared Folder
+            JemsFileType.SharedFolder,
         )
 
         fun JemsFileCreate.getDefaultMinioFullPath() = "$path$name"

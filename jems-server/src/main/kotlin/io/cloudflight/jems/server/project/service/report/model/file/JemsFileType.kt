@@ -46,7 +46,9 @@ enum class JemsFileType(
           ContractDoc(ContractSupport, false),
         ContractPartner(Contracting, false),
           ContractPartnerDoc(ContractPartner, true),
-        ContractInternal(Contracting, false);
+        ContractInternal(Contracting, false),
+
+      SharedFolder(Project, false);
 
     fun generatePath(vararg ids: Long): String {
         if (this.parent == null)

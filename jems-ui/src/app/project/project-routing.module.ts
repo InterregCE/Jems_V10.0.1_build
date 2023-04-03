@@ -254,6 +254,7 @@ import {
   ProjectReportWorkPlanTabComponent
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-work-plan-tab/project-report-work-plan-tab.component';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import {SharedFolderPageComponent} from '@project/project-application/shared-folder/shared-folder-page.component';
 
 export const routes: Routes = [
   {
@@ -540,6 +541,11 @@ export const routes: Routes = [
             data: {breadcrumb: 'project.breadcrumb.applicationForm.modification'},
           },
           {
+            path: 'sharedFolder',
+            component: SharedFolderPageComponent,
+            data: {breadcrumb: 'project.breadcrumb.applicationForm.shared.folder'}
+          },
+          {
             path: 'export',
             component: ExportComponent,
             data: {breadcrumb: 'project.breadcrumb.applicationForm.export'},
@@ -808,7 +814,7 @@ export const routes: Routes = [
           {
             path: 'applicationFormUnitCosts',
             data: {breadcrumb: 'project.breadcrumb.applicationForm.unit.costs'},
-            children : [
+            children: [
               {
                 path: '',
                 component: ProjectUnitCostsPageComponent,

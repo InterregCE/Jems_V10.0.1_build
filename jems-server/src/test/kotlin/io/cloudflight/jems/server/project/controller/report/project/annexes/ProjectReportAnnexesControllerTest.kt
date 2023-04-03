@@ -130,7 +130,7 @@ internal class ProjectReportAnnexesControllerTest : UnitTest() {
         every { setDescriptionToProjectReportFile.update(1L, 2L, 5L, "update desc") } answers { }
 
         controller.updateProjectReportAnnexesFileDescription(1L, 2L, 5L, "update desc")
-        verify(exactly = 1) { controller.updateProjectReportAnnexesFileDescription(1L, 2L, 5L, "update desc") }
+        verify(exactly = 1) { setDescriptionToProjectReportFile.update(1L, 2L, 5L, "update desc") }
     }
 
     @Test

@@ -33,7 +33,7 @@ class SetDescriptionToProjectReportFileTest : UnitTest() {
     lateinit var fileService: JemsProjectFileService
 
     @InjectMockKs
-    lateinit var interactor: SetToProjectReportFileDescriptionToProjectReportFile
+    lateinit var interactor: SetDescriptionToProjectReportFile
 
     @BeforeEach
     fun setup() {

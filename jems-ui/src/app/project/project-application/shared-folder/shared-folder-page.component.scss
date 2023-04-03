@@ -1,0 +1,19 @@
+$width-diff: 20rem;
+
+#shared-folder-files {
+  display: flex;
+
+  #shared-folder-files-tree {
+    width: auto;
+    border: 1px solid var(--table-border-color);
+  }
+
+  #shared-folder-files-table {
+    width: calc(100% - #{$width-diff});
+    flex: auto;
+  }
+}
+
+.overflow-auto {
+  overflow: visible;
+}
