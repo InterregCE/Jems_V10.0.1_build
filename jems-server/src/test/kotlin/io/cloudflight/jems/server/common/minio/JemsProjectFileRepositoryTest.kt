@@ -116,6 +116,8 @@ class JemsProjectFileRepositoryTest : UnitTest() {
         "ContractDoc",
         "ContractPartnerDoc",
         "ContractInternal",
+
+        "SharedFolder"
     ])
     fun persistProjectFileAndPerformAction(type: JemsFileType) {
         val expectedBucket = if (setOf(PaymentAttachment, PaymentAdvanceAttachment).contains(type)) "payment" else "application"
@@ -184,6 +186,8 @@ class JemsProjectFileRepositoryTest : UnitTest() {
         "ContractDoc",
         "ContractPartnerDoc",
         "ContractInternal",
+
+        "SharedFolder"
     ], mode = EnumSource.Mode.EXCLUDE)
     fun `persistProjectFileAndPerformAction wrong type`(type: JemsFileType) {
         val file = file(type = type)

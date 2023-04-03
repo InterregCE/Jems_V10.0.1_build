@@ -169,6 +169,12 @@ export class Permission {
           viewPermissions: [PermissionsEnum.ProjectCreatorCollaboratorsRetrieve],
           editPermissions: [PermissionsEnum.ProjectCreatorCollaboratorsUpdate],
         },
+        {
+          name: 'project.application.form.section.shared.folder',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.ProjectCreatorSharedFolderView],
+          editPermissions: [PermissionsEnum.ProjectCreatorSharedFolderEdit],
+        }
       ]
     }
   ];
@@ -361,6 +367,12 @@ export class Permission {
           viewPermissions: [PermissionsEnum.ProjectMonitorCollaboratorsRetrieve],
           editPermissions: [PermissionsEnum.ProjectMonitorCollaboratorsUpdate],
         },
+        {
+          name: 'project.application.form.section.shared.folder',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.ProjectMonitorSharedFolderView],
+          editPermissions: [PermissionsEnum.ProjectMonitorSharedFolderEdit],
+        }
       ]
     }
   ];

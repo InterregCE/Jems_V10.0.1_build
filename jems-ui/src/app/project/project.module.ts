@@ -522,6 +522,7 @@ import {
   ProjectBreakdownPerPartnerComponent
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-financial-overview-tab/project-breakdown-per-partner/project-breakdown-per-partner.component';
 import { ProjectReportIdentificationExtensionResultOutputComponent } from './project-application/report/project-report/project-report-detail-page/project-report-identification-tab/project-report-identification-extension/project-report-identification-extension-result-output/project-report-identification-extension-result-output.component';
+import { SharedFolderPageComponent } from './project-application/shared-folder/shared-folder-page.component';
 
 @NgModule({
   declarations: [
@@ -703,6 +704,7 @@ import { ProjectReportIdentificationExtensionResultOutputComponent } from './pro
     ProjectBreakdownInvestmentComponent,
     ProjectBreakdownPerPartnerComponent,
     ProjectReportIdentificationExtensionResultOutputComponent,
+    SharedFolderPageComponent,
   ],
   imports: [
     SharedModule,

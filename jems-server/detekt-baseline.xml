@@ -555,6 +555,7 @@
     <ID>ReturnCount:ProjectContractingAuthorization.kt$ProjectContractingAuthorization$private fun canView(needed: ContractingPermission, projectId: Long): Boolean</ID>
     <ID>ReturnCount:ProjectContractingPartnerAuthorization.kt$ProjectContractingPartnerAuthorization$fun hasPartnersPermission(projectId: Long): Boolean</ID>
     <ID>ReturnCount:ProjectDescriptionMapper.kt$fun getMappedStrategy(strategy: ProgrammeStrategy?): ProgrammeStrategy?</ID>
+    <ID>ReturnCount:ProjectSharedFolderAuthorization.kt$ProjectSharedFolderAuthorization$private fun hasSharedFolderPermission( needed: SharedFolderPermission, projectId: Long, ): Boolean</ID>
     <ID>ReturnCount:UserAuthorization.kt$UserAuthorization$private fun hasView(projectId: Long): Boolean</ID>
     <ID>ReturnCount:UserRoleAuditFactory.kt$private fun getAuditPermissionState(node: UserRolePermissionNode, permissions: Set&lt;UserRolePermission&gt;): String</ID>
     <ID>ThrowsCount:BudgetCostValidator.kt$BudgetCostValidator$final fun validateBaseEntries(budgetEntries: List&lt;BaseBudgetEntry&gt;)</ID>
@@ -572,6 +573,7 @@
     <ID>TooManyFunctions:ControllerInstitutionPersistenceProvider.kt$ControllerInstitutionPersistenceProvider : ControllerInstitutionPersistence</ID>
     <ID>TooManyFunctions:GeneralValidatorDefaultImpl.kt$GeneralValidatorDefaultImpl : GeneralValidatorService</ID>
     <ID>TooManyFunctions:GeneralValidatorService.kt$GeneralValidatorService</ID>
+    <ID>TooManyFunctions:JemsFilePersistenceProvider.kt$JemsFilePersistenceProvider : JemsFilePersistence</ID>
     <ID>TooManyFunctions:PartnerPersistence.kt$PartnerPersistence</ID>
     <ID>TooManyFunctions:PartnerPersistenceProvider.kt$PartnerPersistenceProvider : PartnerPersistence</ID>
     <ID>TooManyFunctions:ProjectAuditFactory.kt$io.cloudflight.jems.server.project.service.ProjectAuditFactory.kt</ID>

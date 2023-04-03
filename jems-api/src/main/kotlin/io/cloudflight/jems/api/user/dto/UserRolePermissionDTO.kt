@@ -10,6 +10,9 @@ enum class UserRolePermissionDTO(val key: String) {
 
     ProjectCreatorContractingReportingView("ProjectCreatorContractingReportingView"),
     ProjectCreatorContractingReportingEdit("ProjectCreatorContractingReportingEdit"),
+
+    ProjectCreatorSharedFolderView("ProjectCreatorSharedFolderView"),
+    ProjectCreatorSharedFolderEdit("ProjectCreatorSharedFolderEdit"),
     // endregion Creator
 
     // region Monitor
@@ -73,6 +76,9 @@ enum class UserRolePermissionDTO(val key: String) {
 
     ProjectMonitorCollaboratorsRetrieve("ProjectMonitorCollaboratorsRetrieve"),
     ProjectMonitorCollaboratorsUpdate("ProjectMonitorCollaboratorsUpdate"),
+
+    ProjectMonitorSharedFolderView("ProjectMonitorSharedFolderView"),
+    ProjectMonitorSharedFolderEdit("ProjectMonitorSharedFolderEdit"),
     // endregion Monitor
 
     // region top navigation

@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.common.file.service.toModel
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
@@ -81,6 +82,13 @@ class JemsFilePersistenceProvider(
             filterSubtypes = filterSubtypes,
             filterUserIds = filterUserIds,
         ).toModel()
+
+    @Transactional(readOnly = true)
+    override fun getProjectFileAuthor(projectId: Long, fileId: Long): UserSimple? =
+        projectFileMetadataRepository.findByProjectIdAndId(
+            projectId = projectId,
+            fileId = fileId
+        )?.user?.toModel()
 
     @Transactional(readOnly = true)
     override fun getFileAuthor(partnerId: Long, pathPrefix: String, fileId: Long) =

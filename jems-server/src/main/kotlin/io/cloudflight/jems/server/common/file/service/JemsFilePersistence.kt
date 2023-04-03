@@ -35,6 +35,8 @@ interface JemsFilePersistence {
         filterUserIds: Set<Long>,
     ): Page<JemsFile>
 
+    fun getProjectFileAuthor(projectId: Long, fileId: Long): UserSimple?
+
     fun getFileAuthor(partnerId: Long, pathPrefix: String, fileId: Long): UserSimple?
 
     fun downloadFile(partnerId: Long, fileId: Long): Pair<String, ByteArray>?
