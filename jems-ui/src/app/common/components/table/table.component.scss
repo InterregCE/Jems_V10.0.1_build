@@ -34,7 +34,7 @@ mat-footer-cell {
 }
 
 .id-column-width {
-  max-width: 4rem;
+  max-width: 6rem;
   padding-right: 2rem;
 }
 
@@ -44,7 +44,10 @@ mat-footer-cell {
 }
 
 .date-column-width {
-  max-width: 10rem;
+  width: 6.5rem;
+  min-width: 6.5rem;
+  max-width: 6.5rem;
+  text-align: left;
 }
 
 .wide-column-width {
@@ -62,6 +65,11 @@ mat-footer-cell {
 .small-column-width {
   min-width: 4rem;
   max-width: 7rem;
+}
+
+.deletion-column-width {
+  min-width: 2.5rem;
+  max-width: 2.5rem;
 }
 
 .medium-column-width {

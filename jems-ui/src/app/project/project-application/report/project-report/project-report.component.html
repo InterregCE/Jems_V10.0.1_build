@@ -85,7 +85,10 @@
                     <span jemsText maxLines="2">{{ 'project.application.project.report.table.creation.date' | translate }}</span>
                 </mat-header-cell>
                 <mat-cell *matCellDef="let projectReport" class="text-left">
-                    {{ projectReport.createdAt | localeDate: 'L' : 'LT' }}
+                    <div class="date-time-cell">
+                        <div class="date">{{ projectReport.createdAt | localeDate: 'L'}}</div>
+                        <div class="time">{{ projectReport.createdAt | localeDate: 'LT' }}</div>
+                    </div>
                 </mat-cell>
             </ng-container>
 
@@ -94,7 +97,10 @@
                     <span jemsText maxLines="2">{{ 'project.application.project.report.table.first.submission.date' | translate }}</span>
                 </mat-header-cell>
                 <mat-cell *matCellDef="let projectReport" class="text-left">
-                    {{ projectReport.firstSubmission | localeDate: 'L' : 'LT' }}
+                    <div class="date-time-cell">
+                        <div class="date">{{ projectReport.firstSubmission | localeDate: 'L'}}</div>
+                        <div class="time">{{ projectReport.firstSubmission | localeDate: 'LT'}}</div>
+                    </div>
                 </mat-cell>
             </ng-container>
 

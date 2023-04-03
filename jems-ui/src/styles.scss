@@ -35,3 +35,13 @@ body {
 ul li:empty {
   display: none;
 }
+
+// Used inside multiple table components - so placed here in the global styles
+.date-time-cell {
+  vertical-align: middle;
+  .time {
+    margin-top: -0.33rem;
+    font-size: 0.8em;
+    color: var(--font-color-secondary);
+  }
+}

@@ -20,5 +20,8 @@
 </ng-template>
 
 <ng-template #endDateCell let-call>
-    {{(call.endDateTimeStep1 || call.endDateTime) | localeDate : 'L' : 'LT'}}
+    <div class="date-time-cell">
+        <div class="date">{{(call.endDateTimeStep1 || call.endDateTime) | localeDate : 'L'}}</div>
+        <div class="time">{{(call.endDateTimeStep1 || call.endDateTime) | localeDate : 'LT'}}</div>
+    </div>
 </ng-template>

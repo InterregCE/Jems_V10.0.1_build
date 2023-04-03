@@ -4,22 +4,32 @@ import {ProjectPartnerReportSummaryDTO, ProjectPartnerSummaryDTO, UserRoleDTO} f
 import {ActivatedRoute} from '@angular/router';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {catchError, distinctUntilChanged, filter, finalize, map, switchMap, take, tap} from 'rxjs/operators';
-import {ProjectApplicationFormSidenavService} from '../containers/project-application-form-page/services/project-application-form-sidenav.service';
+import {
+  ProjectApplicationFormSidenavService
+} from '../containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {RoutingService} from '@common/services/routing.service';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
 import {APIError} from '@common/models/APIError';
 import {Alert} from '@common/components/forms/alert';
-import {PartnerReportDetailPageStore} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
+import {
+  PartnerReportDetailPageStore
+} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 import {TranslateService} from '@ngx-translate/core';
-import {MultiLanguageGlobalService} from '@common/components/forms/multi-language-container/multi-language-global.service';
+import {
+  MultiLanguageGlobalService
+} from '@common/components/forms/multi-language-container/multi-language-global.service';
 import {Forms} from '@common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
-import {PartnerControlReportStore} from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
+import {
+  PartnerControlReportStore
+} from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
 import {ColumnWidth} from '@common/components/table/model/column-width';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
-import {ProjectReportPageStore} from '@project/project-application/report/project-report/project-report-page-store.service';
+import {
+  ProjectReportPageStore
+} from '@project/project-application/report/project-report/project-report-page-store.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import StatusEnum = ProjectPartnerReportSummaryDTO.StatusEnum;
 
@@ -166,41 +176,49 @@ export class PartnerReportComponent {
           displayedColumn: 'project.application.partner.reports.table.id',
           columnType: ColumnType.CustomComponent,
           customCellTemplate: this.numberingCell,
+          columnWidth: ColumnWidth.IdColumn
         },
         {
           displayedColumn: 'project.application.partner.reports.table.status',
           columnType: ColumnType.CustomComponent,
           customCellTemplate: this.statusCell,
+          columnWidth: ColumnWidth.ChipColumn
         },
         {
           displayedColumn: 'project.application.partner.reports.table.included',
           columnType: ColumnType.CustomComponent,
           customCellTemplate: this.projectReportCell,
+          columnWidth: ColumnWidth.SmallColumn
         },
         {
           displayedColumn: 'project.application.partner.reports.table.version',
           elementProperty: 'linkedFormVersion',
-          customCellTemplate: this.versionCell
+          customCellTemplate: this.versionCell,
+          columnWidth: ColumnWidth.SmallColumn
         },
         {
           displayedColumn: 'project.application.partner.report.reporting.period',
           columnType: ColumnType.CustomComponent,
           customCellTemplate: this.periodCell,
+          columnWidth: ColumnWidth.MediumColumn
         },
         {
           displayedColumn: 'project.application.partner.reports.table.created.at',
           elementProperty: 'createdAt',
-          columnType: ColumnType.DateColumn
+          columnType: ColumnType.DateColumn,
+          columnWidth: ColumnWidth.DateColumn
         },
         {
           displayedColumn: 'project.application.partner.reports.table.first.submission',
           elementProperty: 'firstSubmission',
-          columnType: ColumnType.DateColumn
+          columnType: ColumnType.DateColumn,
+          columnWidth: ColumnWidth.DateColumn
         },
         ...(thereIsCertified) ? [{
           displayedColumn: 'project.application.partner.reports.table.control.end',
           elementProperty: 'controlEnd',
           columnType: ColumnType.DateColumn,
+          columnWidth: ColumnWidth.DateColumn
         }, {
           displayedColumn: 'project.application.partner.report.control.tab.overviewAndFinalize.total.eligible.after.control',
           elementProperty: 'totalEligibleAfterControl',
@@ -210,13 +228,13 @@ export class PartnerReportComponent {
           displayedColumn: 'project.application.partner.reports.table.control',
           columnType: ColumnType.CustomComponent,
           customCellTemplate: this.actionCell,
-          clickable: false
+          clickable: false,
         },
         ...(canEditReport && thereIsDraft) ? [{
           displayedColumn: 'common.delete.entry',
           customCellTemplate: this.deleteCell,
-          columnWidth: ColumnWidth.IdColumn,
-          clickable: false
+          columnWidth: ColumnWidth.DeletionColumn,
+          clickable: false,
         }] : [],
       ]
     });
