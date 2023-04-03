@@ -1,0 +1,26 @@
+[
+  {
+    "id": 0,
+    "contractName": "LP1 - Very important procurement",
+    "referenceNumber": "2137",
+    "contractDate": "2023-04-01",
+    "contractType": "Very trustful glance",
+    "contractAmount": 150,
+    "currencyCode": "EUR",
+    "supplierName": "Cloudflight Clothing",
+    "vatNumber": "444444",
+    "comment": "Yes, it is very important procurement, indeed."
+  },
+  {
+    "id": 0,
+    "contractName": "PP - Rather important procurement",
+    "referenceNumber": "2000",
+    "contractDate": "2023-03-01",
+    "contractType": "Nervous handshake",
+    "contractAmount": 300,
+    "currencyCode": "EUR",
+    "supplierName": "Cloudflight Bus Company",
+    "vatNumber": "3333333",
+    "comment": "I have nothing to say, your honor."
+  }
+]
