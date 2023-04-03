@@ -78,6 +78,7 @@ interface ProjectVersionRepository : JpaRepository<ProjectVersionEntity, Project
         projectVersion.created_at as createdAt,
         account.id as userId,
         account.email,
+        account.send_notifications_to_email as sendNotificationsToEmail,
         account.name,
         account.surname,
         account.user_status as userStatus,
