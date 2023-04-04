@@ -87,12 +87,11 @@ export class SharedFolderPageStore {
 
   private userCanEdit(): Observable<boolean> {
     return combineLatest([
-      // TODO: anything more complicated?
       this.permissionService.hasPermission(PermissionsEnum.ProjectCreatorSharedFolderEdit),
       this.permissionService.hasPermission(PermissionsEnum.ProjectMonitorSharedFolderEdit),
       this.projectStore.userIsEditOrManageCollaborator$,
     ]).pipe(
-      map(([hasCreatorPermission, hasMonitorPermission, isEditCollaborator]) => (hasCreatorPermission || hasMonitorPermission) && isEditCollaborator),
+      map(([hasCreatorPermission, hasMonitorPermission, isEditCollaborator]) => (hasCreatorPermission && isEditCollaborator) || hasMonitorPermission),
     );
   }
 

@@ -282,7 +282,6 @@ export class ProjectApplicationFormSidenavService {
     );
 
   private readonly canSeeSharedFolder$: Observable<boolean> = combineLatest([
-    // TODO: anything more complicated than this?
     this.permissionService.hasPermission(PermissionsEnum.ProjectCreatorSharedFolderView),
     this.permissionService.hasPermission(PermissionsEnum.ProjectMonitorSharedFolderView),
   ]).pipe(

@@ -44,7 +44,7 @@ class ProjectSharedFolderAuthorization(
             SharedFolderPermission.View -> project.getUserIdsWithViewLevel()
             SharedFolderPermission.Edit -> project.getUserIdsWithEditLevel()
         }
-        if (isActiveUserIdEqualToOneOf(projectUserIds) && hasPermissionForProject(needed.creator, projectId))
+        if (isActiveUserIdEqualToOneOf(projectUserIds) && hasNonProjectAuthority(needed.creator))
             return true
 
         // controllers
