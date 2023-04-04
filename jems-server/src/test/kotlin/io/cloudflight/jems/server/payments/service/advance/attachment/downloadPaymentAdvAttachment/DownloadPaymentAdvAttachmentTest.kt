@@ -2,9 +2,9 @@ package io.cloudflight.jems.server.payments.service.advance.attachment.downloadP
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.file.repository.JemsFilePersistenceProvider
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.payments.service.advance.attachment.downloadPaymentAdvanceAttachment.DownloadPaymentAdvanceAttachment
 import io.cloudflight.jems.server.payments.service.advance.attachment.downloadPaymentAdvanceAttachment.FileNotFound
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs

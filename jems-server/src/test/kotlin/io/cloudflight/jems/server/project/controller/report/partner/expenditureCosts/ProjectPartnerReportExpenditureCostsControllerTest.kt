@@ -1,9 +1,9 @@
 package io.cloudflight.jems.server.project.controller.report.partner.expenditureCosts
 
+import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.partner.budget.ProjectPartnerBudgetOptionsDto
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.BudgetCategoryDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportExpenditureCostDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportInvestmentDTO
@@ -13,9 +13,9 @@ import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPar
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportUnitCostDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.verification.ExpenditureParkingMetadataDTO
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportInvestment
@@ -121,7 +121,7 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
         currencyCode = "CZK",
         currencyConversionRate = BigDecimal.valueOf(24),
         declaredAmountAfterSubmission = BigDecimal.valueOf(1.3),
-        attachment = ProjectReportFileMetadataDTO(500L, "file.txt", UPLOADED),
+        attachment = JemsFileMetadataDTO(500L, "file.txt", UPLOADED),
         parkingMetadata = ExpenditureParkingMetadataDTO(reportOfOriginId = 14L, reportOfOriginNumber = 2, originalExpenditureNumber = 9),
     )
 
@@ -140,7 +140,7 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
     private val stream = ByteArray(5).inputStream()
 
     private val dummyFile = JemsFileMetadata(id = 90L, "file_name.ext", uploaded = UPLOADED)
-    private val dummyFileDto = ProjectReportFileMetadataDTO(id = 90L, "file_name.ext", uploaded = UPLOADED)
+    private val dummyFileDto = JemsFileMetadataDTO(id = 90L, "file_name.ext", uploaded = UPLOADED)
     private val dummyFileExpected = ProjectFile(stream, "file_name.ext", 50L)
     private fun dummyMultipartFile(name: String = "file_name.ext", originalName: String? = null): MultipartFile {
         val file = mockk<MultipartFile>()

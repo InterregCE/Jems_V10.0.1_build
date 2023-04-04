@@ -1,7 +1,7 @@
 package io.cloudflight.jems.api.project.report.partner
 
+import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.ProjectPartnerBudgetOptionsDto
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportExpenditureCostDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportInvestmentDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportLumpSumDTO
@@ -53,7 +53,7 @@ interface ProjectPartnerReportExpenditureCostsApi {
         @PathVariable reportId: Long,
         @PathVariable expenditureId: Long,
         @RequestPart("file") file: MultipartFile,
-    ): ProjectReportFileMetadataDTO
+    ): JemsFileMetadataDTO
 
     @ApiOperation("Returns all Lump Sums available for this report")
     @GetMapping("$ENDPOINT_API_PARTNER_REPORT_EXPENDITURE_COSTS/lumpSums")

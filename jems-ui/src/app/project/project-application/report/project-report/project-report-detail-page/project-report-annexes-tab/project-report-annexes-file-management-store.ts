@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {
-    PageProjectReportFileDTO,
+    PageJemsFileDTO,
     ProjectReportAnnexesService,
-    ProjectReportFileMetadataDTO,
+    JemsFileMetadataDTO,
     ProjectReportFileSearchRequestDTO,
     ProjectReportSummaryDTO,
     SettingsService
@@ -40,7 +40,7 @@ export class ProjectReportAnnexesFileManagementStore {
 
     projectId$: Observable<number>;
     reportId$: Observable<number>;
-    fileList$: Observable<PageProjectReportFileDTO>;
+    fileList$: Observable<PageJemsFileDTO>;
     fileCategories$: Observable<CategoryNode>;
     isEditable$: Observable<boolean>;
     isInDraft$: Observable<boolean>;
@@ -168,7 +168,7 @@ export class ProjectReportAnnexesFileManagementStore {
         return this.fileManagementStore.findRootForSection(reportFiles, section) || {};
     }
 
-    private fileList(): Observable<PageProjectReportFileDTO> {
+    private fileList(): Observable<PageJemsFileDTO> {
         return combineLatest([
             this.selectedCategory$,
             this.projectId$.pipe(map(id => Number(id))),
@@ -206,12 +206,12 @@ export class ProjectReportAnnexesFileManagementStore {
                 }),
                 catchError(error => {
                     this.error$.next(error.error);
-                    return of({} as PageProjectReportFileDTO);
+                    return of({} as PageJemsFileDTO);
                 })
             );
     }
 
-    uploadFile(file: File): Observable<ProjectReportFileMetadataDTO> {
+    uploadFile(file: File): Observable<JemsFileMetadataDTO> {
         const serviceId = uuid();
         this.routingService.confirmLeaveMap.set(serviceId, true);
         return combineLatest([
@@ -226,7 +226,7 @@ export class ProjectReportAnnexesFileManagementStore {
             tap(() => this.error$.next(null)),
             catchError(error => {
                 this.error$.next(error.error);
-                return of({} as ProjectReportFileMetadataDTO);
+                return of({} as JemsFileMetadataDTO);
             }),
             finalize(() => this.routingService.confirmLeaveMap.delete(serviceId))
         );

@@ -1,8 +1,8 @@
 package io.cloudflight.jems.api.project.dto.report.project.workPlan
 
+import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.ProjectPeriodDTO
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
 import java.math.BigDecimal
 
 data class ProjectReportWorkPackageActivityDeliverableDTO(
@@ -16,5 +16,5 @@ data class ProjectReportWorkPackageActivityDeliverableDTO(
     val currentReport: BigDecimal,
 
     val progress: Set<InputTranslation>,
-    val attachment: ProjectReportFileMetadataDTO?,
+    val attachment: JemsFileMetadataDTO?,
 )

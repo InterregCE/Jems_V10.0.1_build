@@ -1,20 +1,20 @@
 package io.cloudflight.jems.server.project.controller.report.project.resultPrinciple
 
+import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.ProjectPeriodDTO
 import io.cloudflight.jems.api.project.dto.description.InputProjectHorizontalPrinciples
 import io.cloudflight.jems.api.project.dto.description.ProjectHorizontalPrinciplesEffect.*
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.report.project.projectResults.ProjectReportProjectResultDTO
 import io.cloudflight.jems.api.project.dto.report.project.projectResults.ProjectReportResultPrincipleDTO
 import io.cloudflight.jems.api.project.dto.report.project.projectResults.UpdateProjectReportProjectResultDTO
 import io.cloudflight.jems.api.project.dto.report.project.projectResults.UpdateProjectReportResultPrincipleDTO
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.model.ProjectHorizontalPrinciples
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.project.projectResults.ProjectReportProjectResult
 import io.cloudflight.jems.server.project.service.report.model.project.projectResults.ProjectReportResultPrinciple
 import io.cloudflight.jems.server.project.service.report.project.resultPrinciple.attachment.delete.DeleteAttachmentFromProjectReportResultPrincipleInteractor
@@ -29,7 +29,6 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -82,7 +81,7 @@ class ProjectReportResultPrincipleControllerTest : UnitTest() {
                     periodDetail = ProjectPeriodDTO(0L, 4, 12, 24),
                     description = setOf(InputTranslation(SystemLanguage.NL, "NL-desc")),
                     measurementUnit = setOf(InputTranslation(SystemLanguage.EN, "test-measure-EN")),
-                    attachment = ProjectReportFileMetadataDTO(697L, name = "file.att", time),
+                    attachment = JemsFileMetadataDTO(697L, name = "file.att", time),
                     deactivated = false
                 )
             ),
@@ -172,14 +171,14 @@ class ProjectReportResultPrincipleControllerTest : UnitTest() {
 
         val result = controller.uploadAttachmentToResult(projectId, reportId, resultNumber, multipartFile)
 
-        Assertions.assertThat(result.id).isEqualTo(jemsFileMetadata.id)
-        Assertions.assertThat(result.name).isEqualTo(jemsFileMetadata.name)
-        Assertions.assertThat(result.uploaded).isEqualTo(jemsFileMetadata.uploaded)
+        assertThat(result.id).isEqualTo(jemsFileMetadata.id)
+        assertThat(result.name).isEqualTo(jemsFileMetadata.name)
+        assertThat(result.uploaded).isEqualTo(jemsFileMetadata.uploaded)
         val slot = slot<ProjectFile>()
         verify(exactly = 1) { uploadAttachment.upload(projectId, reportId, resultNumber, capture(slot)) }
-        Assertions.assertThat(slot.captured.stream).isEqualTo(multipartFile.inputStream)
-        Assertions.assertThat(slot.captured.name).isEqualTo(multipartFile.originalFilename)
-        Assertions.assertThat(slot.captured.size).isEqualTo(multipartFile.size)
+        assertThat(slot.captured.stream).isEqualTo(multipartFile.inputStream)
+        assertThat(slot.captured.name).isEqualTo(multipartFile.originalFilename)
+        assertThat(slot.captured.size).isEqualTo(multipartFile.size)
     }
 
     @Test
@@ -192,8 +191,8 @@ class ProjectReportResultPrincipleControllerTest : UnitTest() {
         every { downloadAttachment.download(projectId, reportId, resultNumber) } returns file
 
         val result = controller.downloadAttachmentFromResult(projectId, reportId, resultNumber)
-        Assertions.assertThat(result.body?.byteArray).isEqualTo(file.second)
-        Assertions.assertThat(result.headers[HttpHeaders.CONTENT_DISPOSITION]).containsExactly("attachment; filename=\"file-name\"")
+        assertThat(result.body?.byteArray).isEqualTo(file.second)
+        assertThat(result.headers[HttpHeaders.CONTENT_DISPOSITION]).containsExactly("attachment; filename=\"file-name\"")
     }
 
     @Test
@@ -208,17 +207,17 @@ class ProjectReportResultPrincipleControllerTest : UnitTest() {
     private fun compare(result: ProjectReportResultPrincipleDTO, expected: ProjectReportResultPrincipleDTO) {
         val projectResultActual = result.projectResults[0]
         val projectResultExpected = expected.projectResults[0]
-        Assertions.assertThat(result.projectResults.size).isEqualTo(expected.projectResults.size)
-        Assertions.assertThat(projectResultActual.resultNumber).isEqualTo(projectResultExpected.resultNumber)
-        Assertions.assertThat(projectResultActual.baseline).isEqualTo(projectResultExpected.baseline)
-        Assertions.assertThat(projectResultActual.targetValue).isEqualTo(projectResultExpected.targetValue)
-        Assertions.assertThat(projectResultActual.achievedInReportingPeriod).isEqualTo(projectResultExpected.achievedInReportingPeriod)
-        Assertions.assertThat(projectResultActual.cumulativeValue).isEqualTo(projectResultExpected.cumulativeValue)
+        assertThat(result.projectResults.size).isEqualTo(expected.projectResults.size)
+        assertThat(projectResultActual.resultNumber).isEqualTo(projectResultExpected.resultNumber)
+        assertThat(projectResultActual.baseline).isEqualTo(projectResultExpected.baseline)
+        assertThat(projectResultActual.targetValue).isEqualTo(projectResultExpected.targetValue)
+        assertThat(projectResultActual.achievedInReportingPeriod).isEqualTo(projectResultExpected.achievedInReportingPeriod)
+        assertThat(projectResultActual.cumulativeValue).isEqualTo(projectResultExpected.cumulativeValue)
 
         val effectActual = result.horizontalPrinciples
         val principlesExpected = expected.horizontalPrinciples
-        Assertions.assertThat(effectActual.sustainableDevelopmentCriteriaEffect).isEqualTo(principlesExpected.sustainableDevelopmentCriteriaEffect)
-        Assertions.assertThat(effectActual.equalOpportunitiesEffect).isEqualTo(principlesExpected.equalOpportunitiesEffect)
-        Assertions.assertThat(effectActual.sexualEqualityEffect).isEqualTo(principlesExpected.sexualEqualityEffect)
+        assertThat(effectActual.sustainableDevelopmentCriteriaEffect).isEqualTo(principlesExpected.sustainableDevelopmentCriteriaEffect)
+        assertThat(effectActual.equalOpportunitiesEffect).isEqualTo(principlesExpected.equalOpportunitiesEffect)
+        assertThat(effectActual.sexualEqualityEffect).isEqualTo(principlesExpected.sexualEqualityEffect)
     }
 }

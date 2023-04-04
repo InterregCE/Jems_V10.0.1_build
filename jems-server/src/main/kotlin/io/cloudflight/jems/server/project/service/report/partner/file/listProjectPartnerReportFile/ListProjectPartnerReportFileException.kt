@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.service.report.partner.file.listProje
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.common.exception.ApplicationException
 import io.cloudflight.jems.server.common.exception.ApplicationUnprocessableException
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 
 private const val LIST_PROJECT_PARTNER_REPORT_FILE_ERROR_CODE_PREFIX = "S-LPPRF"
 private const val LIST_PROJECT_PARTNER_REPORT_FILE_ERROR_KEY_PREFIX = "use.case.list.project.partner.report.file"

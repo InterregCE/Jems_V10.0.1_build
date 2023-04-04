@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.project.controller.report.partner
 
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
+import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
+import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.mockk.every
 import io.mockk.mockk
 import org.springframework.web.multipart.MultipartFile
@@ -14,7 +14,7 @@ private val stream = ByteArray(5).inputStream()
 
 val dummyFile = JemsFileMetadata(id = 90L, "file_name.ext", uploaded = UPLOADED)
 
-val dummyFileDto = ProjectReportFileMetadataDTO(id = 90L, "file_name.ext", uploaded = UPLOADED)
+val dummyFileDto = JemsFileMetadataDTO(id = 90L, "file_name.ext", uploaded = UPLOADED)
 
 val dummyFileExpected = ProjectFile(stream, "file_name.ext", 50L)
 

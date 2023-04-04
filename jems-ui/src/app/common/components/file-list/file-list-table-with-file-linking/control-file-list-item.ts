@@ -1,9 +1,9 @@
-import {ProjectReportFileDTO, ProjectReportFileMetadataDTO, UserSimpleDTO} from '@cat/api';
+import {JemsFileDTO, JemsFileMetadataDTO, UserSimpleDTO} from '@cat/api';
 
 export interface ControlFileListItem {
   id: number;
   name: string;
-  type: ProjectReportFileDTO.TypeEnum;
+  type: JemsFileDTO.TypeEnum;
   uploaded: Date;
   author: UserSimpleDTO;
   sizeString: string;
@@ -13,5 +13,5 @@ export interface ControlFileListItem {
   tooltipIfNotDeletable: string;
   iconIfNotDeletable: string;
   parentEntityId?: number;
-  attachment?: ProjectReportFileMetadataDTO;
+  attachment?: JemsFileMetadataDTO;
 }

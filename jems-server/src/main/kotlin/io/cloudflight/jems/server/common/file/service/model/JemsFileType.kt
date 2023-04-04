@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.service.report.model.file
+package io.cloudflight.jems.server.common.file.service.model
 
 enum class JemsFileType(
     private val parent: JemsFileType?,

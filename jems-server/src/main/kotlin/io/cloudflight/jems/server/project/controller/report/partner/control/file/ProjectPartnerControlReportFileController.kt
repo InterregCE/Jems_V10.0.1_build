@@ -1,17 +1,17 @@
 package io.cloudflight.jems.server.project.controller.report.partner.control.file
 
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
+import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
 import io.cloudflight.jems.api.project.report.partner.control.ProjectPartnerControlReportFileApi
 import io.cloudflight.jems.server.project.controller.report.partner.toDto
 import io.cloudflight.jems.server.project.controller.report.partner.toProjectFile
 import io.cloudflight.jems.server.project.service.report.partner.control.file.deleteFileAttachment.DeleteReportControlFileAttachmentInteractor
-import io.cloudflight.jems.server.project.service.report.partner.control.file.downloadFileAttachment.DownloadReportControlFileAttachmentInteractor
 import io.cloudflight.jems.server.project.service.report.partner.control.file.downloadFile.DownloadReportControlFileInteractor
+import io.cloudflight.jems.server.project.service.report.partner.control.file.downloadFileAttachment.DownloadReportControlFileAttachmentInteractor
 import io.cloudflight.jems.server.project.service.report.partner.control.file.generateCertificate.GenerateReportControlCertificateInteractor
-import io.cloudflight.jems.server.project.service.report.partner.control.file.uploadAttachmentToFile.UploadAttachmentToFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.control.file.generateExport.GenerateReportControlExportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.control.file.listFiles.ListReportControlFilesInteractor
 import io.cloudflight.jems.server.project.service.report.partner.control.file.setDescriptionToFile.SetDescriptionToFileInteractor
+import io.cloudflight.jems.server.project.service.report.partner.control.file.uploadAttachmentToFile.UploadAttachmentToFileInteractor
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpHeaders
@@ -98,7 +98,7 @@ class ProjectPartnerControlReportFileController(
         )
     }
 
-    override fun uploadReportCertificateSigned(partnerId: Long, reportId: Long, fileId: Long, file: MultipartFile): ProjectReportFileMetadataDTO {
+    override fun uploadReportCertificateSigned(partnerId: Long, reportId: Long, fileId: Long, file: MultipartFile): JemsFileMetadataDTO {
         return uploadFileToControlfile
             .uploadAttachment(partnerId, reportId, fileId = fileId, file.toProjectFile()).toDto()
     }

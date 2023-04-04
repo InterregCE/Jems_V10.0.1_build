@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.partner.file
 
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
+import io.cloudflight.jems.server.common.file.service.model.JemsFileCreate
+import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 
 interface ProjectPartnerReportFilePersistence {
 

@@ -1,8 +1,8 @@
 package io.cloudflight.jems.api.payments
 
+import io.cloudflight.jems.api.common.dto.file.JemsFileDTO
+import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
 import io.cloudflight.jems.api.payments.PaymentAdvanceApi.Companion.ENDPOINT_API_ADV_PAYMENTS
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileDTO
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -15,8 +15,8 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.multipart.MultipartFile
@@ -35,7 +35,7 @@ interface PaymentAdvanceAttachmentApi {
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
     )
     @GetMapping("$ENDPOINT_PAYMENT_ADV_ATTACHMENT/byPaymentId/{paymentId}")
-    fun listPaymentAttachments(@PathVariable paymentId: Long, pageable: Pageable): Page<ProjectReportFileDTO>
+    fun listPaymentAttachments(@PathVariable paymentId: Long, pageable: Pageable): Page<JemsFileDTO>
 
     @ApiOperation("Download advance payment attachment")
     @GetMapping(
@@ -54,6 +54,6 @@ interface PaymentAdvanceAttachmentApi {
 
     @ApiOperation("Upload attachment to advance payment")
     @PostMapping("$ENDPOINT_PAYMENT_ADV_ATTACHMENT/byPaymentId/{paymentId}", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
-    fun uploadAttachmentToPayment(@PathVariable paymentId: Long, @RequestPart("file") file: MultipartFile): ProjectReportFileMetadataDTO
+    fun uploadAttachmentToPayment(@PathVariable paymentId: Long, @RequestPart("file") file: MultipartFile): JemsFileMetadataDTO
 
 }

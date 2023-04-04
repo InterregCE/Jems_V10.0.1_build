@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.project.service.report.partner.control.file
 
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
+import io.cloudflight.jems.server.common.file.service.model.JemsFileCreate
+import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.project.service.report.model.partner.control.file.PartnerReportControlFile
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable

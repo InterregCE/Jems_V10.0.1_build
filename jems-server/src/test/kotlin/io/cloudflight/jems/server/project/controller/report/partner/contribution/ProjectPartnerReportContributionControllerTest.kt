@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.controller.report.partner.contribution
 
+import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.report.partner.contribution.ProjectPartnerReportContributionDTO
 import io.cloudflight.jems.api.project.dto.report.partner.contribution.ProjectPartnerReportContributionOverviewDTO
 import io.cloudflight.jems.api.project.dto.report.partner.contribution.ProjectPartnerReportContributionRowDTO
@@ -9,6 +9,7 @@ import io.cloudflight.jems.api.project.dto.report.partner.contribution.UpdatePro
 import io.cloudflight.jems.api.project.dto.report.partner.contribution.UpdateProjectPartnerReportContributionDTO
 import io.cloudflight.jems.api.project.dto.report.partner.contribution.UpdateProjectPartnerReportContributionDataDTO
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.project.controller.report.partner.dummyFile
 import io.cloudflight.jems.server.project.controller.report.partner.dummyFileDto
 import io.cloudflight.jems.server.project.controller.report.partner.dummyFileExpected
@@ -19,10 +20,9 @@ import io.cloudflight.jems.server.project.service.report.model.partner.contribut
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.ProjectPartnerReportContributionData
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.ProjectPartnerReportContributionOverview
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.ProjectPartnerReportContributionRow
-import io.cloudflight.jems.server.project.service.report.model.partner.contribution.update.UpdateProjectPartnerReportContributionExisting
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.update.UpdateProjectPartnerReportContributionCustom
+import io.cloudflight.jems.server.project.service.report.model.partner.contribution.update.UpdateProjectPartnerReportContributionExisting
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.update.UpdateProjectPartnerReportContributionWrapper
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.partner.contribution.getProjectPartnerReportContribution.GetProjectPartnerReportContributionInteractor
 import io.cloudflight.jems.server.project.service.report.partner.contribution.updateProjectPartnerReportContribution.UpdateProjectPartnerReportContributionInteractor
 import io.cloudflight.jems.server.project.service.report.partner.contribution.uploadFileToProjectPartnerReportContribution.UploadFileToProjectPartnerReportContributionInteractor
@@ -95,7 +95,7 @@ class ProjectPartnerReportContributionControllerTest : UnitTest() {
             currentlyReported = BigDecimal.ONE,
             totalReportedSoFar = BigDecimal.ONE,
         ),
-        attachment = ProjectReportFileMetadataDTO(510L, "file.txt", UPLOADED),
+        attachment = JemsFileMetadataDTO(510L, "file.txt", UPLOADED),
     )
 
     private val expectedOverview = ProjectPartnerReportContributionOverviewDTO(

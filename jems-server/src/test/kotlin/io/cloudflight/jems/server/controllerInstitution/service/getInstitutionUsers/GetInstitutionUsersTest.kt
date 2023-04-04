@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.controllerInstitution.service.getInstitutionUsers
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.file.service.model.UserSimple
 import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
-import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK

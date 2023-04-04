@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.service.report.model.file
+package io.cloudflight.jems.server.common.file.service.model
 
 import java.time.ZonedDateTime
 

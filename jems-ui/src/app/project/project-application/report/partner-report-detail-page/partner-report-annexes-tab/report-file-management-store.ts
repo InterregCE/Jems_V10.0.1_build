@@ -1,11 +1,11 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {
-  PageProjectReportFileDTO,
+  PageJemsFileDTO,
   ProjectPartnerReportDTO,
   ProjectPartnerReportService,
   ProjectPartnerReportSummaryDTO,
-  ProjectReportFileMetadataDTO,
+  JemsFileMetadataDTO,
   ProjectReportFileSearchRequestDTO,
   SettingsService
 } from '@cat/api';
@@ -42,7 +42,7 @@ import {FileListTableConstants} from '@common/components/file-list/file-list-tab
 })
 export class ReportFileManagementStore {
 
-  reportFileList$: Observable<PageProjectReportFileDTO>;
+  reportFileList$: Observable<PageJemsFileDTO>;
   fileCategories$: Observable<CategoryNode>;
   selectedCategory$ = new ReplaySubject<CategoryInfo | undefined>(1);
 
@@ -82,7 +82,7 @@ export class ReportFileManagementStore {
     this.newPageIndex$.next(0);
   }
 
-  uploadFile(file: File): Observable<ProjectReportFileMetadataDTO> {
+  uploadFile(file: File): Observable<JemsFileMetadataDTO> {
     const serviceId = uuid();
     this.routingService.confirmLeaveMap.set(serviceId, true);
     return this.selectedCategory$
@@ -95,7 +95,7 @@ export class ReportFileManagementStore {
         tap(() => this.error$.next(null)),
         catchError(error => {
           this.error$.next(error.error);
-          return of({} as ProjectReportFileMetadataDTO);
+          return of({} as JemsFileMetadataDTO);
         }),
         finalize(() => this.routingService.confirmLeaveMap.delete(serviceId))
       );
@@ -117,7 +117,7 @@ export class ReportFileManagementStore {
         tap(() => setTimeout(() => this.deleteSuccess$.next(false), 3000)),
         catchError(error => {
           this.error$.next(error.error);
-          return of({} as ProjectReportFileMetadataDTO);
+          return of({} as JemsFileMetadataDTO);
         })
       );
   }
@@ -152,7 +152,7 @@ export class ReportFileManagementStore {
     );
   }
 
-  private reportFileList(): Observable<PageProjectReportFileDTO> {
+  private reportFileList(): Observable<PageJemsFileDTO> {
     return combineLatest([
       this.selectedCategory$,
       this.partnerReportDetailPageStore.partnerId$,
@@ -188,7 +188,7 @@ export class ReportFileManagementStore {
         }),
         catchError(error => {
           this.error$.next(error.error);
-          return of({} as PageProjectReportFileDTO);
+          return of({} as PageJemsFileDTO);
         })
       );
   }

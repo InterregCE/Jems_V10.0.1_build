@@ -10,7 +10,7 @@ import {
   ProjectPartnerReportDTO,
   ProjectPartnerReportService,
   ProjectPartnerReportSummaryDTO,
-  ProjectReportFileDTO,
+  JemsFileDTO,
 } from '@cat/api';
 import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
 import {AcceptedFileTypesConstants} from '@project/common/components/file-management/accepted-file-types.constants';
@@ -62,7 +62,7 @@ export class PartnerControlReportDocumentTabComponent {
       this.partnerControlReportStore.canEditControlReport$,
     ]).pipe(
       map(([fileList, report, currentUserId, canEdit]) => ({
-        attachments: fileList.map((file: ProjectReportFileDTO) => ({
+        attachments: fileList.map((file: JemsFileDTO) => ({
           id: file.id,
           name: file.name,
           type: file.type,

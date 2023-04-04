@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.project.controller
 
+import io.cloudflight.jems.api.common.dto.file.JemsFileDTO
+import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
 import io.cloudflight.jems.api.project.ProjectSharedFolderFileApi
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileDTO
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
 import io.cloudflight.jems.server.project.controller.report.partner.toDto
 import io.cloudflight.jems.server.project.controller.report.project.toProjectFile
 import io.cloudflight.jems.server.project.service.sharedFolderFile.delete.DeleteFileFromSharedFolderInteractor
@@ -28,10 +28,10 @@ class ProjectSharedFolderFileController(
     private val downloadSharedFolderFile: DownloadSharedFolderFileInteractor,
 ) : ProjectSharedFolderFileApi {
 
-    override fun listSharedFolderFiles(projectId: Long, pageable: Pageable): Page<ProjectReportFileDTO> =
+    override fun listSharedFolderFiles(projectId: Long, pageable: Pageable): Page<JemsFileDTO> =
         listSharedFolderFiles.list(projectId, pageable).map { it.toDto() }
 
-    override fun uploadFileToSharedFolder(projectId: Long, file: MultipartFile): ProjectReportFileMetadataDTO =
+    override fun uploadFileToSharedFolder(projectId: Long, file: MultipartFile): JemsFileMetadataDTO =
         uploadFileToSharedFolder.upload(projectId, file.toProjectFile()).toDto()
 
     override fun setDescriptionToSharedFolderFile(projectId: Long, fileId: Long, description: String?) =

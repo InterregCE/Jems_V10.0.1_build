@@ -7,7 +7,7 @@ import {ActivatedRoute} from '@angular/router';
 import {
   ReportFileManagementStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-annexes-tab/report-file-management-store';
-import {PaymentAttachmentService, ProjectReportFileDTO, UserRoleDTO} from '@cat/api';
+import {PaymentAttachmentService, JemsFileDTO, UserRoleDTO} from '@cat/api';
 import {finalize, map, take} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {FileListComponent} from '@common/components/file-list/file-list.component';
@@ -57,7 +57,7 @@ export class PaymentsToProjectAttachmentsComponent implements OnChanges {
       map(([attachments, isPaymentEditable]) => ({
         attachments: {
           ...attachments,
-          content: attachments.content?.map((file: ProjectReportFileDTO) => ({
+          content: attachments.content?.map((file: JemsFileDTO) => ({
             id: file.id,
             name: file.name,
             type: file.type,

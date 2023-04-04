@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {
   ProjectPartnerReportContributionService,
   ProjectPartnerReportContributionWrapperDTO,
-  ProjectPartnerReportService, ProjectReportFileMetadataDTO,
+  ProjectPartnerReportService, JemsFileMetadataDTO,
   UpdateProjectPartnerReportContributionDataDTO,
 } from '@cat/api';
 import {BehaviorSubject, combineLatest, merge, Observable, Subject} from 'rxjs';
@@ -68,7 +68,7 @@ export class PartnerReportContributionStore {
     );
   }
 
-  uploadFile(file: File, contributionId: number): Observable<ProjectReportFileMetadataDTO> {
+  uploadFile(file: File, contributionId: number): Observable<JemsFileMetadataDTO> {
     return combineLatest([
       this.partnerId$.pipe(map(id => Number(id))),
       this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')

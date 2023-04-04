@@ -1,6 +1,6 @@
 package io.cloudflight.jems.api.project.report.partner
 
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
+import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.report.partner.contribution.ProjectPartnerReportContributionWrapperDTO
 import io.cloudflight.jems.api.project.dto.report.partner.contribution.UpdateProjectPartnerReportContributionDataDTO
 import io.cloudflight.jems.api.project.report.partner.ProjectPartnerReportApi.Companion.ENDPOINT_API_PROJECT_PARTNER_REPORT
@@ -48,6 +48,6 @@ interface ProjectPartnerReportContributionApi {
         @PathVariable reportId: Long,
         @PathVariable contributionId: Long,
         @RequestPart("file") file: MultipartFile,
-    ): ProjectReportFileMetadataDTO
+    ): JemsFileMetadataDTO
 
 }

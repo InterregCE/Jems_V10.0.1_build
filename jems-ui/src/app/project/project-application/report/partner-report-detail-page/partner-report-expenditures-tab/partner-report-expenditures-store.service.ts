@@ -11,7 +11,7 @@ import {
   ProjectPartnerReportLumpSumDTO,
   ProjectPartnerReportParkedExpenditureDTO,
   ProjectPartnerReportUnitCostDTO,
-  ProjectReportFileMetadataDTO
+  JemsFileMetadataDTO
 } from '@cat/api';
 
 import {PartnerReportDetailPageStore} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
@@ -206,7 +206,7 @@ export class PartnerReportExpendituresStore {
     return costCategories;
   }
 
-  uploadFile(file: File, expenditureId: number): Observable<ProjectReportFileMetadataDTO> {
+  uploadFile(file: File, expenditureId: number): Observable<JemsFileMetadataDTO> {
     return combineLatest([
       this.partnerId$.pipe(map(id => Number(id))),
       this.currentReport$

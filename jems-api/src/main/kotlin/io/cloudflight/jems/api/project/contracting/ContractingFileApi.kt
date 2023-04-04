@@ -1,8 +1,8 @@
 package io.cloudflight.jems.api.project.contracting
 
+import io.cloudflight.jems.api.common.dto.file.JemsFileDTO
+import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.contracting.file.ProjectContractingFileSearchRequestDTO
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileDTO
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -33,14 +33,14 @@ interface ContractingFileApi {
     fun uploadContractFile(
         @PathVariable projectId: Long,
         @RequestPart("file") file: MultipartFile,
-    ): ProjectReportFileMetadataDTO
+    ): JemsFileMetadataDTO
 
     @ApiOperation("Upload other contract document to contracting")
     @PostMapping("$ENDPOINT_API_CONTRACTING_FILE/contractDocument", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun uploadContractDocumentFile(
         @PathVariable projectId: Long,
         @RequestPart("file") file: MultipartFile,
-    ): ProjectReportFileMetadataDTO
+    ): JemsFileMetadataDTO
 
     @ApiOperation("Upload contract document to partner in contracting section")
     @PostMapping("$ENDPOINT_API_CONTRACTING_FILE/partnerDocument/{partnerId}", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
@@ -48,14 +48,14 @@ interface ContractingFileApi {
         @PathVariable projectId: Long,
         @PathVariable partnerId: Long,
         @RequestPart("file") file: MultipartFile,
-    ): ProjectReportFileMetadataDTO
+    ): JemsFileMetadataDTO
 
     @ApiOperation("Upload contract document to partner in contracting section")
     @PostMapping("$ENDPOINT_API_CONTRACTING_FILE/internal", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun uploadContractInternalFile(
         @PathVariable projectId: Long,
         @RequestPart("file") file: MultipartFile,
-    ): ProjectReportFileMetadataDTO
+    ): JemsFileMetadataDTO
 
     @ApiOperation("List contracting files")
     @ApiImplicitParams(
@@ -75,7 +75,7 @@ interface ContractingFileApi {
         @PathVariable(required = false) partnerId: Long? = null,
         pageable: Pageable,
         @RequestBody searchRequest: ProjectContractingFileSearchRequestDTO,
-    ): Page<ProjectReportFileDTO>
+    ): Page<JemsFileDTO>
 
     @ApiOperation("List contracting partner files")
     @ApiImplicitParams(
@@ -92,7 +92,7 @@ interface ContractingFileApi {
         @PathVariable partnerId: Long,
         pageable: Pageable,
         @RequestBody searchRequest: ProjectContractingFileSearchRequestDTO,
-    ): Page<ProjectReportFileDTO>
+    ): Page<JemsFileDTO>
 
     @ApiOperation("Update description of already uploaded file")
     @PutMapping(

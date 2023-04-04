@@ -1,7 +1,7 @@
 package io.cloudflight.jems.api.project.dto.report.partner.procurement.attachment
 
-import io.cloudflight.jems.api.project.dto.report.file.ProjectPartnerReportFileTypeDTO
-import io.cloudflight.jems.api.project.dto.report.file.UserSimpleDTO
+import io.cloudflight.jems.api.common.dto.file.JemsFileTypeDTO
+import io.cloudflight.jems.api.common.dto.file.UserSimpleDTO
 import java.time.ZonedDateTime
 
 data class ProjectReportProcurementFileDTO(
@@ -9,7 +9,7 @@ data class ProjectReportProcurementFileDTO(
     val reportId: Long,
     val createdInThisReport: Boolean,
     val name: String,
-    val type: ProjectPartnerReportFileTypeDTO,
+    val type: JemsFileTypeDTO,
     val uploaded: ZonedDateTime,
     val author: UserSimpleDTO,
     val size: Long,

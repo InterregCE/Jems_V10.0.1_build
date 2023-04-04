@@ -1,10 +1,10 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {AcceptedFileTypesConstants} from '@project/common/components/file-management/accepted-file-types.constants';
 import {
-  PageProjectReportFileDTO,
+  PageJemsFileDTO,
   ProjectPartnerReportService,
   ProjectPartnerReportSummaryDTO,
-  ProjectReportFileDTO,
+  JemsFileDTO,
   UserRoleDTO,
 } from '@cat/api';
 import {combineLatest, Observable, Subject} from 'rxjs';
@@ -41,7 +41,7 @@ export class ReportAnnexesTableComponent {
   fileSizeOverLimitError$ = new Subject<boolean>();
   isUploadInProgress = false;
   data$: Observable<{
-    files: PageProjectReportFileDTO;
+    files: PageJemsFileDTO;
     fileList: FileListItem[];
     reportStatus: ProjectPartnerReportSummaryDTO.StatusEnum;
     selectedCategory: CategoryInfo | undefined;
@@ -63,7 +63,7 @@ export class ReportAnnexesTableComponent {
       .pipe(
         map(([files, reportStatus, selectedCategory, canEdit]) => ({
           files,
-          fileList: files.content.map((file: ProjectReportFileDTO) => ({
+          fileList: files.content.map((file: JemsFileDTO) => ({
             id: file.id,
             name: file.name,
             type: file.type,
@@ -72,7 +72,7 @@ export class ReportAnnexesTableComponent {
             sizeString: file.sizeString,
             description: file.description,
             editable: reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Draft && canEdit,
-            deletable: file.type === ProjectReportFileDTO.TypeEnum.PartnerReport
+            deletable: file.type === JemsFileDTO.TypeEnum.PartnerReport
               && reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Draft
               && canEdit,
             tooltipIfNotDeletable: canEdit ? 'file.table.action.delete.disabled.for.tab.tooltip' : '',

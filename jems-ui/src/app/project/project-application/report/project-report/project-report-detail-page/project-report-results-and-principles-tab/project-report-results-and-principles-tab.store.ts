@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {combineLatest, merge, Observable, Subject} from 'rxjs';
 import {
-  ProjectReportFileMetadataDTO,
+  JemsFileMetadataDTO,
   ProjectReportResultPrincipleDTO,
   ProjectReportResultPrincipleService,
   ProjectReportService,
@@ -71,7 +71,7 @@ export class ProjectReportResultsAndPrinciplesTabStore {
         ));
   }
 
-  uploadFile(file: File, resultNumber: number): Observable<ProjectReportFileMetadataDTO> {
+  uploadFile(file: File, resultNumber: number): Observable<JemsFileMetadataDTO> {
     return combineLatest([
       this.projectStore.projectId$,
       this.projectReportDetailPageStore.projectReportId$,

@@ -1,8 +1,8 @@
-package io.cloudflight.jems.api.project.dto.report.file
+package io.cloudflight.jems.server.common.file.service.model
 
 import java.time.ZonedDateTime
 
-data class ProjectReportFileMetadataDTO(
+data class JemsFileMetadata(
     val id: Long,
     val name: String,
     val uploaded: ZonedDateTime,

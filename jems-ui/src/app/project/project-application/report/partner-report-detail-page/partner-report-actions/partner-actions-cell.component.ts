@@ -7,7 +7,7 @@ import {
   Input,
   Output
 } from '@angular/core';
-import {ProjectReportFileMetadataDTO} from '@cat/api';
+import {JemsFileMetadataDTO} from '@cat/api';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {Forms} from '@common/utils/forms';
 import {filter, take, tap} from 'rxjs/operators';
@@ -31,7 +31,7 @@ import {CustomTranslatePipe} from '@common/pipe/custom-translate-pipe';
 })
 export class PartnerActionsCellComponent implements ControlValueAccessor {
   acceptedFilesTypes = AcceptedFileTypesConstants.acceptedFilesTypes;
-  fileMetadata: ProjectReportFileMetadataDTO;
+  fileMetadata: JemsFileMetadataDTO;
   isUploadInProgress = false;
 
   @Input()
@@ -67,7 +67,7 @@ export class PartnerActionsCellComponent implements ControlValueAccessor {
     // Intentionally left blank
   }
 
-  writeValue(obj: ProjectReportFileMetadataDTO): void {
+  writeValue(obj: JemsFileMetadataDTO): void {
     this.fileMetadata = obj;
     this.changeDetectorRef.detectChanges();
   }

@@ -1,7 +1,7 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of, Subject} from 'rxjs';
 import {CategoryInfo, CategoryNode} from '@project/common/components/category-tree/categoryModels';
-import {ProjectReportFileDTO,} from '@cat/api';
+import {JemsFileDTO,} from '@cat/api';
 import {ContractingFilesStoreService} from '@project/project-application/services/contracting-files-store.service';
 import {AcceptedFileTypesConstants} from '@project/common/components/file-management/accepted-file-types.constants';
 import {I18nMessage} from '@common/models/I18nMessage';
@@ -11,7 +11,7 @@ import {FileListItem} from '@common/components/file-list/file-list-item';
 import {catchError, finalize, map, take} from 'rxjs/operators';
 import {PageFileList} from '@common/components/file-list/page-file-list';
 import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
-import FileTypeEnum = ProjectReportFileDTO.TypeEnum;
+import FileTypeEnum = JemsFileDTO.TypeEnum;
 
 @UntilDestroy()
 @Component({
@@ -126,7 +126,7 @@ export class ContractFilesComponent implements OnInit, OnChanges {
     });
   }
 
-  private transform(content: ProjectReportFileDTO[], isLocked: boolean): FileListItem[] {
+  private transform(content: JemsFileDTO[], isLocked: boolean): FileListItem[] {
     return content.map(file => ({
       id: file.id,
       name: file.name,

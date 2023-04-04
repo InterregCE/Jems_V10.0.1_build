@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.payments.controller
 
+import io.cloudflight.jems.api.common.dto.file.JemsFileDTO
+import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
 import io.cloudflight.jems.api.payments.PaymentAttachmentApi
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileDTO
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
 import io.cloudflight.jems.server.payments.service.regular.attachment.deletePaymentAttachment.DeletePaymentAttachmentInteractor
 import io.cloudflight.jems.server.payments.service.regular.attachment.downloadPaymentAttachment.DownloadPaymentAttachmentInteractor
 import io.cloudflight.jems.server.payments.service.regular.attachment.getPaymentAttchament.GetPaymentAttachmentInteractor
@@ -28,7 +28,7 @@ class PaymentAttachmentController(
     private val getPaymentAttachment: GetPaymentAttachmentInteractor,
 ) : PaymentAttachmentApi {
 
-    override fun listPaymentAttachments(paymentId: Long, pageable: Pageable): Page<ProjectReportFileDTO> =
+    override fun listPaymentAttachments(paymentId: Long, pageable: Pageable): Page<JemsFileDTO> =
         getPaymentAttachment.list(paymentId, pageable).map { it.toDto() }
 
     override fun downloadAttachment(fileId: Long): ResponseEntity<ByteArrayResource> =
@@ -46,7 +46,7 @@ class PaymentAttachmentController(
     override fun updateAttachmentDescription(fileId: Long, description: String?) =
         setDescriptionToPaymentAttachment.setDescription(fileId = fileId, description ?: "")
 
-    override fun uploadAttachmentToPayment(paymentId: Long, file: MultipartFile): ProjectReportFileMetadataDTO =
+    override fun uploadAttachmentToPayment(paymentId: Long, file: MultipartFile): JemsFileMetadataDTO =
         uploadPaymentAttachment.upload(paymentId = paymentId, file.toProjectFile()).toDto()
 
 }

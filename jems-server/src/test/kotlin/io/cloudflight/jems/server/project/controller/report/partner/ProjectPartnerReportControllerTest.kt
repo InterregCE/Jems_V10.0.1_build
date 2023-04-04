@@ -1,6 +1,9 @@
 package io.cloudflight.jems.server.project.controller.report.partner
 
 import io.cloudflight.jems.api.common.dto.I18nMessage
+import io.cloudflight.jems.api.common.dto.file.JemsFileDTO
+import io.cloudflight.jems.api.common.dto.file.JemsFileTypeDTO
+import io.cloudflight.jems.api.common.dto.file.UserSimpleDTO
 import io.cloudflight.jems.api.plugin.dto.MessageTypeDTO
 import io.cloudflight.jems.api.plugin.dto.PreConditionCheckMessageDTO
 import io.cloudflight.jems.api.plugin.dto.PreConditionCheckResultDTO
@@ -15,10 +18,7 @@ import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerVatRecoveryDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
-import io.cloudflight.jems.api.project.dto.report.file.ProjectPartnerReportFileTypeDTO
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileDTO
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileSearchRequestDTO
-import io.cloudflight.jems.api.project.dto.report.file.UserSimpleDTO
 import io.cloudflight.jems.api.project.dto.report.partner.PartnerReportIdentificationCoFinancingDTO
 import io.cloudflight.jems.api.project.dto.report.partner.PartnerReportIdentificationDTO
 import io.cloudflight.jems.api.project.dto.report.partner.ProjectPartnerReportDTO
@@ -30,6 +30,10 @@ import io.cloudflight.jems.plugin.contract.pre_condition_check.models.MessageTyp
 import io.cloudflight.jems.plugin.contract.pre_condition_check.models.PreConditionCheckMessage
 import io.cloudflight.jems.plugin.contract.pre_condition_check.models.PreConditionCheckResult
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.file.service.model.JemsFile
+import io.cloudflight.jems.server.common.file.service.model.JemsFileSearchRequest
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType
+import io.cloudflight.jems.server.common.file.service.model.UserSimple
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatus
@@ -40,10 +44,6 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.model.Proj
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileSearchRequest
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
-import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import io.cloudflight.jems.server.project.service.report.model.partner.PartnerReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
@@ -220,10 +220,10 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
             description = "desc"
         )
 
-        private val reportFileDto = ProjectReportFileDTO(
+        private val reportFileDto = JemsFileDTO(
             id = 478L,
             name = "attachment.pdf",
-            type = ProjectPartnerReportFileTypeDTO.Contribution,
+            type = JemsFileTypeDTO.Contribution,
             uploaded = YESTERDAY,
             author = UserSimpleDTO(45L, email = "admin@cloudflight.io", name = "Admin", surname = "Big"),
             size = 47889L,
@@ -443,8 +443,8 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
 
         val searchRequestDto = ProjectReportFileSearchRequestDTO(
             reportId = 80L,
-            treeNode = ProjectPartnerReportFileTypeDTO.PartnerReport,
-            filterSubtypes = setOf(ProjectPartnerReportFileTypeDTO.Activity),
+            treeNode = JemsFileTypeDTO.PartnerReport,
+            filterSubtypes = setOf(JemsFileTypeDTO.Activity),
         )
 
         assertThat(controller.listReportFiles(29L, Pageable.unpaged(), searchRequestDto).content)

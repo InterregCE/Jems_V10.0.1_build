@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.model.partner.contribution.withoutCalculations
 
+import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import java.math.BigDecimal
 import java.util.UUID
 

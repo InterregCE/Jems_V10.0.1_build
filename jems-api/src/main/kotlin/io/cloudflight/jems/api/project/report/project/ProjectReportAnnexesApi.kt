@@ -1,7 +1,7 @@
 package io.cloudflight.jems.api.project.report.project
 
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileDTO
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
+import io.cloudflight.jems.api.common.dto.file.JemsFileDTO
+import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileSearchRequestDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
@@ -44,7 +44,7 @@ interface ProjectReportAnnexesApi {
         @PathVariable reportId: Long,
         pageable: Pageable,
         @RequestBody searchRequest: ProjectReportFileSearchRequestDTO,
-    ): Page<ProjectReportFileDTO>
+    ): Page<JemsFileDTO>
 
     @ApiOperation("Upload file to project report annexes")
     @PostMapping(
@@ -55,7 +55,7 @@ interface ProjectReportAnnexesApi {
         @PathVariable projectId: Long,
         @PathVariable reportId: Long,
         @RequestPart("file") file: MultipartFile,
-    ): ProjectReportFileMetadataDTO
+    ): JemsFileMetadataDTO
 
     @ApiOperation("Update description of an existing file in project report annexes")
     @PutMapping(

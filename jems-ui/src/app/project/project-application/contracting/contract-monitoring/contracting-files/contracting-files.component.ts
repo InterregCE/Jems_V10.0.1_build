@@ -3,7 +3,7 @@ import {combineLatest, Observable, of, Subject} from 'rxjs';
 import {CategoryInfo, CategoryNode} from '@project/common/components/category-tree/categoryModels';
 import {I18nMessage} from '@common/models/I18nMessage';
 import {ContractingFilesStoreService} from '@project/project-application/services/contracting-files-store.service';
-import {ProjectPartnerSummaryDTO, ProjectReportFileDTO, UserRoleCreateDTO} from '@cat/api';
+import {ProjectPartnerSummaryDTO, JemsFileDTO, UserRoleCreateDTO} from '@cat/api';
 import {catchError, finalize, map, take, tap} from 'rxjs/operators';
 import {AcceptedFileTypesConstants} from '@project/common/components/file-management/accepted-file-types.constants';
 import {Alert} from '@common/components/forms/alert';
@@ -15,7 +15,7 @@ import {FileListItem} from '@common/components/file-list/file-list-item';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
 import {PageFileList} from '@common/components/file-list/page-file-list';
 import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
-import FileTypeEnum = ProjectReportFileDTO.TypeEnum;
+import FileTypeEnum = JemsFileDTO.TypeEnum;
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
 @UntilDestroy()
@@ -153,7 +153,7 @@ export class ContractingFilesComponent implements OnInit{
     };
   }
 
-  private transform(content: ProjectReportFileDTO[]): FileListItem[] {
+  private transform(content: JemsFileDTO[]): FileListItem[] {
     return content.map(file => ({
       id: file.id,
       name: file.name,

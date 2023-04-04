@@ -1,7 +1,7 @@
 package io.cloudflight.jems.api.project
 
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileDTO
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
+import io.cloudflight.jems.api.common.dto.file.JemsFileDTO
+import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -37,14 +37,14 @@ interface ProjectSharedFolderFileApi {
     fun listSharedFolderFiles(
         @PathVariable projectId: Long,
         pageable: Pageable,
-    ): Page<ProjectReportFileDTO>
+    ): Page<JemsFileDTO>
 
     @ApiOperation("Upload file to Shared Folder")
     @PostMapping("$ENDPOINT_API_PROJECT_SHARED_FOLDER/upload", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun uploadFileToSharedFolder(
         @PathVariable projectId: Long,
         @RequestPart("file") file: MultipartFile,
-    ): ProjectReportFileMetadataDTO
+    ): JemsFileMetadataDTO
 
     @ApiOperation("Download file from Shared Folder")
     @GetMapping("$ENDPOINT_API_PROJECT_SHARED_FOLDER/byFileId/{fileId}/download", produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE])

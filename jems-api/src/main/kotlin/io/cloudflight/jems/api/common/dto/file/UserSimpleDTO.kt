@@ -1,4 +1,4 @@
-package io.cloudflight.jems.api.project.dto.report.file
+package io.cloudflight.jems.api.common.dto.file
 
 data class UserSimpleDTO(
     val id: Long,

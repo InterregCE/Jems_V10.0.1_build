@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 import {combineLatest, Observable, Subject} from 'rxjs';
 import {finalize, map, take} from 'rxjs/operators';
 import {SharedFolderPageStore} from '@project/project-application/shared-folder/shared-folder-page.store';
-import {PageProjectReportFileDTO, ProjectReportFileDTO} from '@cat/api';
+import {PageJemsFileDTO, JemsFileDTO} from '@cat/api';
 import {FileListItem} from '@common/components/file-list/file-list-item';
 import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
 import {FileListComponent} from '@common/components/file-list/file-list.component';
@@ -20,7 +20,7 @@ import {Alert} from '@common/components/forms/alert';
 export class SharedFolderPageComponent {
 
   data$: Observable<{
-    files: PageProjectReportFileDTO;
+    files: PageJemsFileDTO;
     fileList: FileListItem[];
     userCanEdit: boolean;
   }>;
@@ -39,7 +39,7 @@ export class SharedFolderPageComponent {
     ]).pipe(
       map(([files, canEdit]) => ({
         files,
-        fileList: files.content.map((file: ProjectReportFileDTO) => ({
+        fileList: files.content.map((file: JemsFileDTO) => ({
           id: file.id,
           name: file.name,
           type: file.type,
