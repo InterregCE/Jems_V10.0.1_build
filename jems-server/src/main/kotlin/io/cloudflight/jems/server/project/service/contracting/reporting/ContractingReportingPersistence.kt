@@ -10,7 +10,7 @@ interface ContractingReportingPersistence {
 
     fun updateContractingReporting(
         projectId: Long,
-        deadlines: Collection<ProjectContractingReportingSchedule>,
+        deadlines: List<ProjectContractingReportingSchedule>,
     ): List<ProjectContractingReportingSchedule>
 
     fun clearPeriodAndDatesFor(ids: List<Long>)

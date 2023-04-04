@@ -39,5 +39,5 @@ interface ProjectReportPersistence {
 
     fun getSubmittedProjectReportIds(projectId: Long): List<Pair<Long, ContractingDeadlineType>>
 
-    fun getReportLinkedDeadlineIdsWithIsReportSubmittedForProject(projectId: Long): List<Pair<Long, Boolean>>
+    fun getDeadlinesWithLinkedReportStatus(projectId: Long): Map<Long, ProjectReportStatus>
 }

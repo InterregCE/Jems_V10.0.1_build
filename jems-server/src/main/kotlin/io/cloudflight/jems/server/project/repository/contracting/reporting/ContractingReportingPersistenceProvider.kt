@@ -36,7 +36,7 @@ class ContractingReportingPersistenceProvider(
     @Transactional
     override fun updateContractingReporting(
         projectId: Long,
-        deadlines: Collection<ProjectContractingReportingSchedule>,
+        deadlines: List<ProjectContractingReportingSchedule>,
     ): List<ProjectContractingReportingSchedule> {
         val toStayIds = deadlines.mapTo(HashSet()) { it.id }.minus(0L)
 
@@ -44,19 +44,15 @@ class ContractingReportingPersistenceProvider(
         val existingById = persistedDeadlines.associateBy { it.id }
         // remove those that were removed
         projectContractingReportingRepository.deleteAll(existingById.minus(toStayIds).values)
-        val maxDeadlineNumber = persistedDeadlines.maxByOrNull { it.number }?.number ?: 0
 
         val project = persistedDeadlines.firstOrNull()?.project ?: projectRepository.getById(projectId)
-        var newlyAddedCount = 0
+
         // update existing or create new ones
         deadlines.forEach { deadline ->
             existingById.getById(deadline.id).let {
                 when {
                     it.isPresent -> it.get().updateWith(deadline)
-                    else -> {
-                        projectContractingReportingRepository.save(deadline.toEntity(project, maxDeadlineNumber + newlyAddedCount + 1))
-                        newlyAddedCount ++
-                    }
+                    else -> projectContractingReportingRepository.save(deadline.toEntity(project))
                 }
             }
         }
@@ -90,14 +86,14 @@ class ContractingReportingPersistenceProvider(
         comment = newData.comment
     }
 
-    private fun ProjectContractingReportingSchedule.toEntity(project: ProjectEntity, deadlineNumber: Int) =
+    private fun ProjectContractingReportingSchedule.toEntity(project: ProjectEntity) =
         ProjectContractingReportingEntity(
             project = project,
             type = type,
             periodNumber = periodNumber,
             deadline = date,
             comment = comment,
-            number = deadlineNumber,
+            number = number,
         )
 
 }

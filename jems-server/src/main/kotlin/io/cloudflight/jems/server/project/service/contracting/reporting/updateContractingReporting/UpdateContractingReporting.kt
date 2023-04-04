@@ -51,11 +51,12 @@ class UpdateContractingReporting(
             throw ContractingStartDateIsMissing()
 
         val periods = project.periods.associateBy { it.number }
-        validateInputData(deadlines, periods, monitoring.startDate, projectId)
+        val existingDeadlines = contractingReportingPersistence.getContractingReporting(projectId).associateBy { it.id }
+        validateInputData(deadlines, existingDeadlines, periods, monitoring.startDate, projectId)
 
         return contractingReportingPersistence.updateContractingReporting(
             projectId = projectId,
-            deadlines = deadlines,
+            deadlines = deadlines.fillMissingNumbers(ignoreIds = existingDeadlines.keys),
         )
     }
 
@@ -79,6 +80,7 @@ class UpdateContractingReporting(
 
     private fun validateInputData(
         deadlines: Collection<ProjectContractingReportingSchedule>,
+        oldDeadlines: Map<Long, ProjectContractingReportingSchedule>,
         periods: Map<Int, ProjectPeriod>,
         startDate: LocalDate,
         projectId: Long
@@ -90,15 +92,15 @@ class UpdateContractingReporting(
         validateDates(deadlines, periods, startDate)
         validateComments(deadlines)
 
-        val linkedDeadlines = projectReportPersistence.getReportLinkedDeadlineIdsWithIsReportSubmittedForProject(projectId)
-        if (linkedDeadlines.map { it.first }.minus(deadlines.map { it.id }).isNotEmpty())
-            throw LinkedDeadlineDeletionException()
+        val linkedDeadlines = projectReportPersistence.getDeadlinesWithLinkedReportStatus(projectId)
+        val deletedLinkedDeadlineIds = linkedDeadlines.keys.minus(deadlines.ids())
+        if (deletedLinkedDeadlineIds.isNotEmpty())
+            throw LinkedDeadlineDeletedException(deletedLinkedDeadlineIds)
 
-        val submittedDeadlineIds = linkedDeadlines.filter { it.second }.map { it.first }
-        val existingDeadlines = contractingReportingPersistence.getContractingReporting(projectId)
-        existingDeadlines.filter { submittedDeadlineIds.contains(it.id) }.forEach { existing ->
-            val deadline = deadlines.first { it.id == existing.id }
-            if (deadline.date != existing.date || deadline.periodNumber != existing.periodNumber || deadline.type != existing.type)
+        val submittedDeadlineIds = linkedDeadlines.filter { it.value.isClosed() }.keys
+
+        deadlines.filter { it.id in submittedDeadlineIds }.forEach { new ->
+            if (forbiddenChangeAfterSubmission(new = new, old = oldDeadlines[new.id]!!))
                 throw LinkedDeadlineUpdateException()
         }
     }
@@ -136,4 +138,23 @@ class UpdateContractingReporting(
 
     private fun Map<Int, Pair<LocalDate, LocalDate>>.startLimit(periodNumber: Int) = get(periodNumber)!!.first
     private fun Map<Int, Pair<LocalDate, LocalDate>>.endLimit(periodNumber: Int) = get(periodNumber)!!.second
+
+    private fun Collection<ProjectContractingReportingSchedule>.ids() = mapTo(HashSet()) { it.id }
+    private fun Collection<ProjectContractingReportingSchedule>.fillMissingNumbers(
+        ignoreIds: Set<Long>,
+    ): List<ProjectContractingReportingSchedule> {
+        var nextNumber = this.maxOfOrNull { it.number } ?: 1
+        return map { deadline ->
+            if (deadline.id !in ignoreIds) {
+                deadline.number = nextNumber
+                nextNumber++
+            }
+            return@map deadline
+        }
+    }
+
+    private fun forbiddenChangeAfterSubmission(
+        old: ProjectContractingReportingSchedule,
+        new: ProjectContractingReportingSchedule,
+    ) = old.date != new.date || old.periodNumber != new.periodNumber || old.type != new.type
 }

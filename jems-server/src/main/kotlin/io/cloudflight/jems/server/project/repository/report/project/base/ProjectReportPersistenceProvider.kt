@@ -95,12 +95,9 @@ class ProjectReportPersistenceProvider(
             .map { Pair(it.id, it.deadline?.type ?: it.type!!) }
 
     @Transactional(readOnly = true)
-    override fun getReportLinkedDeadlineIdsWithIsReportSubmittedForProject(projectId: Long): List<Pair<Long, Boolean>> {
-        val groupedDeadlines = projectReportRepository.findAllByProjectIdAndDeadlineNotNull(projectId).groupBy { it.deadline!!.id }
-        val list = mutableListOf<Pair<Long, Boolean>>()
-        groupedDeadlines.forEach { d -> list.add(Pair(d.key, d.value.any { ProjectReportStatus.SUBMITTED_STATUSES.contains(it.status) }))}
-        return list
-    }
-
+    override fun getDeadlinesWithLinkedReportStatus(projectId: Long): Map<Long, ProjectReportStatus> =
+        projectReportRepository.findAllByProjectIdAndDeadlineNotNull(projectId)
+            .groupBy { it.deadline!!.id }
+            .mapValues { it.value.maxOf { it.status } }
 
 }

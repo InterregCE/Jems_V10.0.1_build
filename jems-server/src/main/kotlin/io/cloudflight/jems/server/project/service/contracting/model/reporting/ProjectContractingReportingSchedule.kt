@@ -8,7 +8,7 @@ data class ProjectContractingReportingSchedule(
     val periodNumber: Int?,
     val date: LocalDate?,
     val comment: String,
-    val number: Int,
+    var number: Int,
     val linkedSubmittedProjectReportNumbers: Set<Int>,
     val linkedDraftProjectReportNumbers: Set<Int>,
 )

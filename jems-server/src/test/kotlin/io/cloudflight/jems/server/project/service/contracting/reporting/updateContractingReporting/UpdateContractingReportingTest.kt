@@ -462,7 +462,7 @@ class UpdateContractingReportingTest : UnitTest() {
                 linkedDraftProjectReportNumbers = setOf()
             ),
         )
-        assertThrows<LinkedDeadlineDeletionException> {
+        assertThrows<LinkedDeadlineDeletedException> {
             interactor.updateReportingSchedule(projectId, reporting)
         }
     }
