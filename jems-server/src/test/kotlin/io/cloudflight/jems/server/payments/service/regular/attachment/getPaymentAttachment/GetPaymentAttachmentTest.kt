@@ -2,8 +2,8 @@ package io.cloudflight.jems.server.payments.service.regular.attachment.getPaymen
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
+import io.cloudflight.jems.server.common.file.service.model.JemsFile
 import io.cloudflight.jems.server.payments.service.regular.attachment.getPaymentAttchament.GetPaymentAttachment
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs

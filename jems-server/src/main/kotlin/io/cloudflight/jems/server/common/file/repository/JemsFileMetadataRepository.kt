@@ -4,7 +4,7 @@ import com.querydsl.core.types.Predicate
 import com.querydsl.core.types.dsl.BooleanExpression
 import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.common.file.entity.QJemsFileMetadataEntity
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.EntityGraph

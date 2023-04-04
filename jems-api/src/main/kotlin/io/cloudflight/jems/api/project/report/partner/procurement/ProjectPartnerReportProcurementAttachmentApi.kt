@@ -1,6 +1,6 @@
 package io.cloudflight.jems.api.project.report.partner.procurement
 
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
+import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.report.partner.procurement.attachment.ProjectReportProcurementFileDTO
 import io.cloudflight.jems.api.project.report.partner.ProjectPartnerReportApi.Companion.ENDPOINT_API_PROJECT_PARTNER_REPORT
 import io.swagger.annotations.Api
@@ -38,6 +38,6 @@ interface ProjectPartnerReportProcurementAttachmentApi {
         @PathVariable reportId: Long,
         @PathVariable procurementId: Long,
         @RequestPart("file") file: MultipartFile,
-    ): ProjectReportFileMetadataDTO
+    ): JemsFileMetadataDTO
 
 }

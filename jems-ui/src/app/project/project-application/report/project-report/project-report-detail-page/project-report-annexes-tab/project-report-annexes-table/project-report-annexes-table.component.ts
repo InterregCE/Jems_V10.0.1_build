@@ -5,7 +5,7 @@ import {combineLatest, Observable, Subject} from 'rxjs';
 import {Alert} from '@common/components/forms/alert';
 import {CategoryInfo} from '@project/common/components/category-tree/categoryModels';
 import {FileListItem} from '@common/components/file-list/file-list-item';
-import {PageProjectReportFileDTO, ProjectReportAnnexesService, ProjectReportFileDTO} from '@cat/api';
+import {PageJemsFileDTO, ProjectReportAnnexesService, JemsFileDTO} from '@cat/api';
 import {finalize, map, switchMap, take} from 'rxjs/operators';
 import {FileListComponent} from '@common/components/file-list/file-list.component';
 import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
@@ -32,7 +32,7 @@ export class ProjectReportAnnexesTableComponent {
     isUploadInProgress = false;
 
     data$: Observable<{
-        files: PageProjectReportFileDTO;
+        files: PageJemsFileDTO;
         fileList: FileListItem[];
         canUserEdit: boolean;
         selectedCategory: CategoryInfo | undefined;
@@ -52,7 +52,7 @@ export class ProjectReportAnnexesTableComponent {
         ]).pipe(
             map(([files, selectedCategory, canEdit, isEditable, isInDraft]) => ({
                 files,
-                fileList: files.content.map((file: ProjectReportFileDTO) => ({
+                fileList: files.content.map((file: JemsFileDTO) => ({
                     id: file.id,
                     name: file.name,
                     type: file.type,
@@ -61,9 +61,9 @@ export class ProjectReportAnnexesTableComponent {
                     sizeString: file.sizeString,
                     description: file.description,
                     editable: isEditable && canEdit,
-                    deletable: isEditable && canEdit && (file.type == ProjectReportFileDTO.TypeEnum.ProjectReport),
-                    tooltipIfNotDeletable: isInDraft && canEdit && (file.type != ProjectReportFileDTO.TypeEnum.ProjectReport) ? 'file.table.action.delete.disabled.for.tab.tooltip' : '',
-                    iconIfNotDeletable: isInDraft && canEdit && (file.type != ProjectReportFileDTO.TypeEnum.ProjectReport) ? 'delete_forever' : ''
+                    deletable: isEditable && canEdit && (file.type == JemsFileDTO.TypeEnum.ProjectReport),
+                    tooltipIfNotDeletable: isInDraft && canEdit && (file.type != JemsFileDTO.TypeEnum.ProjectReport) ? 'file.table.action.delete.disabled.for.tab.tooltip' : '',
+                    iconIfNotDeletable: isInDraft && canEdit && (file.type != JemsFileDTO.TypeEnum.ProjectReport) ? 'delete_forever' : ''
                 })),
                 selectedCategory,
                 canUserEdit: canEdit

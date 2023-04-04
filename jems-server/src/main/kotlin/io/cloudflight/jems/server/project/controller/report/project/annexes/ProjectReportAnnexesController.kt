@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.controller.report.project.annexes
 
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileDTO
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
+import io.cloudflight.jems.api.common.dto.file.JemsFileDTO
+import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileSearchRequestDTO
 import io.cloudflight.jems.api.project.report.project.ProjectReportAnnexesApi
 import io.cloudflight.jems.server.project.controller.report.partner.toDto
@@ -35,7 +35,7 @@ class ProjectReportAnnexesController(
         reportId: Long,
         pageable: Pageable,
         searchRequest: ProjectReportFileSearchRequestDTO
-    ): Page<ProjectReportFileDTO> =
+    ): Page<JemsFileDTO> =
         listProjectReportAnnexes.list(
             projectId,
             reportId,
@@ -47,7 +47,7 @@ class ProjectReportAnnexesController(
         projectId: Long,
         reportId: Long,
         file: MultipartFile
-    ): ProjectReportFileMetadataDTO =
+    ): JemsFileMetadataDTO =
         uploadProjectReportAnnexesFile.upload(
             projectId,
             reportId,

@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {
   ProjectReportAnnexesService,
-  ProjectReportFileMetadataDTO,
+  JemsFileMetadataDTO,
   ProjectReportWorkPackageDTO,
   ProjectReportWorkPlanService,
   UpdateProjectReportWorkPackageDTO
@@ -56,7 +56,7 @@ export class ProjectReportWorkPlanTabStore {
     );
   }
 
-  uploadActivityFile(file: File, workPackageId: number, activityId: number): Observable<ProjectReportFileMetadataDTO> {
+  uploadActivityFile(file: File, workPackageId: number, activityId: number): Observable<JemsFileMetadataDTO> {
     return combineLatest([
       this.projectStore.projectId$,
       this.projectReportDetailPageStore.projectReportId$,
@@ -67,7 +67,7 @@ export class ProjectReportWorkPlanTabStore {
       ));
   }
 
-  uploadDeliverableFile(file: File, workPackageId: number, activityId: number, deliverableId: number): Observable<ProjectReportFileMetadataDTO> {
+  uploadDeliverableFile(file: File, workPackageId: number, activityId: number, deliverableId: number): Observable<JemsFileMetadataDTO> {
     return combineLatest([
       this.projectStore.projectId$,
       this.projectReportDetailPageStore.projectReportId$,
@@ -78,7 +78,7 @@ export class ProjectReportWorkPlanTabStore {
       ));
   }
 
-  uploadOutputFile(file: File, workPackageId: number, outputId: number): Observable<ProjectReportFileMetadataDTO> {
+  uploadOutputFile(file: File, workPackageId: number, outputId: number): Observable<JemsFileMetadataDTO> {
     return combineLatest([
       this.projectStore.projectId$,
       this.projectReportDetailPageStore.projectReportId$,

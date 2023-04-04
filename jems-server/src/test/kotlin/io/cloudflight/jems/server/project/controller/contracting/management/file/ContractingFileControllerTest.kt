@@ -1,10 +1,13 @@
 package io.cloudflight.jems.server.project.controller.contracting.management.file
 
+import io.cloudflight.jems.api.common.dto.file.JemsFileDTO
+import io.cloudflight.jems.api.common.dto.file.JemsFileTypeDTO
+import io.cloudflight.jems.api.common.dto.file.UserSimpleDTO
 import io.cloudflight.jems.api.project.dto.contracting.file.ProjectContractingFileSearchRequestDTO
-import io.cloudflight.jems.api.project.dto.report.file.ProjectPartnerReportFileTypeDTO
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileDTO
-import io.cloudflight.jems.api.project.dto.report.file.UserSimpleDTO
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.file.service.model.JemsFile
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType
+import io.cloudflight.jems.server.common.file.service.model.UserSimple
 import io.cloudflight.jems.server.project.controller.contracting.fileManagement.ContractingFileController
 import io.cloudflight.jems.server.project.controller.report.partner.dummyFile
 import io.cloudflight.jems.server.project.controller.report.partner.dummyFileDto
@@ -31,9 +34,6 @@ import io.cloudflight.jems.server.project.service.contracting.fileManagement.set
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.uploadFileToContracting.UploadFileToContractingInteractor
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingFileSearchRequest
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
-import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -68,10 +68,10 @@ class ContractingFileControllerTest : UnitTest() {
             description = "example desc"
         )
 
-        private val contractingFileDto = ProjectReportFileDTO(
+        private val contractingFileDto = JemsFileDTO(
             id = 478L,
             name = "attachment.pdf",
-            type = ProjectPartnerReportFileTypeDTO.Contract,
+            type = JemsFileTypeDTO.Contract,
             uploaded = YESTERDAY,
             author = UserSimpleDTO(45L, email = "admin@cloudflight.io", name = "Admin", surname = "Big"),
             size = 47889L,
@@ -89,10 +89,10 @@ class ContractingFileControllerTest : UnitTest() {
             description = "example desc"
         )
 
-        private val partnerFileDto = ProjectReportFileDTO(
+        private val partnerFileDto = JemsFileDTO(
             id = 479L,
             name = "partner-attachment.pdf",
-            type = ProjectPartnerReportFileTypeDTO.ContractPartnerDoc,
+            type = JemsFileTypeDTO.ContractPartnerDoc,
             uploaded = YESTERDAY,
             author = UserSimpleDTO(45L, email = "admin@cloudflight.io", name = "Admin", surname = "Big"),
             size = 47889L,
@@ -196,8 +196,8 @@ class ContractingFileControllerTest : UnitTest() {
             PageImpl(listOf(contractingFile))
 
         val searchRequestDto = ProjectContractingFileSearchRequestDTO(
-            treeNode = ProjectPartnerReportFileTypeDTO.ContractSupport,
-            filterSubtypes = setOf(ProjectPartnerReportFileTypeDTO.Contract),
+            treeNode = JemsFileTypeDTO.ContractSupport,
+            filterSubtypes = setOf(JemsFileTypeDTO.Contract),
         )
 
         assertThat(controller.listFiles(29L, partnerId, Pageable.unpaged(), searchRequestDto).content)
@@ -332,8 +332,8 @@ class ContractingFileControllerTest : UnitTest() {
             PageImpl(listOf(partnerFile))
 
         val searchRequestDto = ProjectContractingFileSearchRequestDTO(
-            treeNode = ProjectPartnerReportFileTypeDTO.ContractPartnerDoc,
-            filterSubtypes = setOf(ProjectPartnerReportFileTypeDTO.ContractPartnerDoc),
+            treeNode = JemsFileTypeDTO.ContractPartnerDoc,
+            filterSubtypes = setOf(JemsFileTypeDTO.ContractPartnerDoc),
         )
 
         assertThat(controller.listPartnerFiles(29L, 1L, Pageable.unpaged(), searchRequestDto).content)

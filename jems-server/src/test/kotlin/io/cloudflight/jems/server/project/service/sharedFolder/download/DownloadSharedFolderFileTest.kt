@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.service.sharedFolder.download
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.project.service.sharedFolderFile.download.DownloadSharedFolderFile
 import io.cloudflight.jems.server.project.service.sharedFolderFile.download.FileNotFound
 import io.mockk.clearMocks

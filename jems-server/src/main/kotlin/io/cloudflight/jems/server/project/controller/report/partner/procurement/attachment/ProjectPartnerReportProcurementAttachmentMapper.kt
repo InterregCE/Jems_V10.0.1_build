@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.controller.report.partner.procurement.attachment
 
-import io.cloudflight.jems.api.project.dto.report.file.ProjectPartnerReportFileTypeDTO
+import io.cloudflight.jems.api.common.dto.file.JemsFileTypeDTO
 import io.cloudflight.jems.api.project.dto.report.partner.procurement.attachment.ProjectReportProcurementFileDTO
 import io.cloudflight.jems.server.project.controller.report.partner.partnerReportMapper
 import io.cloudflight.jems.server.project.controller.report.partner.sizeToString
@@ -11,7 +11,7 @@ fun ProjectReportProcurementFile.toDto() = ProjectReportProcurementFileDTO(
     reportId = reportId,
     createdInThisReport = createdInThisReport,
     name = name,
-    type = ProjectPartnerReportFileTypeDTO.valueOf(type.name),
+    type = JemsFileTypeDTO.valueOf(type.name),
     uploaded = uploaded,
     author = partnerReportMapper.map(author),
     size = size,

@@ -1,6 +1,6 @@
 package io.cloudflight.jems.api.project.report.partner
 
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
+import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.report.partner.workPlan.ProjectPartnerReportWorkPackageDTO
 import io.cloudflight.jems.api.project.dto.report.partner.workPlan.UpdateProjectPartnerReportWorkPackageDTO
 import io.cloudflight.jems.api.project.report.partner.ProjectPartnerReportApi.Companion.ENDPOINT_API_PROJECT_PARTNER_REPORT
@@ -49,7 +49,7 @@ interface ProjectPartnerReportWorkPlanApi {
         @PathVariable workPackageId: Long,
         @PathVariable activityId: Long,
         @RequestPart("file") file: MultipartFile
-    ): ProjectReportFileMetadataDTO
+    ): JemsFileMetadataDTO
 
     @ApiOperation("Upload file to deliverable")
     @PostMapping(
@@ -63,7 +63,7 @@ interface ProjectPartnerReportWorkPlanApi {
         @PathVariable activityId: Long,
         @PathVariable deliverableId: Long,
         @RequestPart("file") file: MultipartFile
-    ): ProjectReportFileMetadataDTO
+    ): JemsFileMetadataDTO
 
     @ApiOperation("Upload file to output")
     @PostMapping(
@@ -76,6 +76,6 @@ interface ProjectPartnerReportWorkPlanApi {
         @PathVariable workPackageId: Long,
         @PathVariable outputId: Long,
         @RequestPart("file") file: MultipartFile
-    ): ProjectReportFileMetadataDTO
+    ): JemsFileMetadataDTO
 
 }

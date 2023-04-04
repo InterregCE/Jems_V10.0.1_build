@@ -1,11 +1,11 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {
-  PageProjectReportFileDTO,
+  PageJemsFileDTO,
   ProjectContractingFileManagementService,
   ProjectContractingFileSearchRequestDTO,
-  ProjectReportFileDTO,
-  ProjectReportFileMetadataDTO,
+  JemsFileDTO,
+  JemsFileMetadataDTO,
   SettingsService,
   UserRoleDTO
 } from '@cat/api';
@@ -29,7 +29,7 @@ import {
 import {PermissionService} from '../../../security/permissions/permission.service';
 import {ProjectUtil} from '@project/common/project-util';
 import {RoutingService} from '@common/services/routing.service';
-import FileTypeEnum = ProjectReportFileDTO.TypeEnum;
+import FileTypeEnum = JemsFileDTO.TypeEnum;
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {FileListItem} from '@common/components/file-list/file-list-item';
 
@@ -38,7 +38,7 @@ import {FileListItem} from '@common/components/file-list/file-list-item';
 })
 export class ContractingFilesStoreService {
 
-  fileList$: Observable<PageProjectReportFileDTO>;
+  fileList$: Observable<PageJemsFileDTO>;
   fileCategories$: Observable<CategoryNode>;
   selectedCategory$ = new ReplaySubject<CategoryInfo | undefined>(1);
   selectedCategoryPath$: Observable<I18nMessage[]>;
@@ -77,7 +77,7 @@ export class ContractingFilesStoreService {
     this.fileCategories$ = fileCategories;
   }
 
-  uploadFile(file: File): Observable<ProjectReportFileMetadataDTO> {
+  uploadFile(file: File): Observable<JemsFileMetadataDTO> {
     return this.selectedCategory$
       .pipe(
         take(1),
@@ -100,7 +100,7 @@ export class ContractingFilesStoreService {
         tap(() => this.error$.next(null)),
         catchError(error => {
           this.error$.next(error.error);
-          return of({} as ProjectReportFileMetadataDTO);
+          return of({} as JemsFileMetadataDTO);
         })
       );
   }
@@ -147,7 +147,7 @@ export class ContractingFilesStoreService {
       tap(() => setTimeout(() => this.deleteSuccess$.next(false), 3000)),
       catchError(error => {
         this.error$.next(error.error);
-        return of({} as ProjectReportFileMetadataDTO);
+        return of({} as JemsFileMetadataDTO);
       })
     );
   }
@@ -170,7 +170,7 @@ export class ContractingFilesStoreService {
       }),
       catchError(error => {
         this.error$.next(error.error);
-        return of({} as ProjectReportFileMetadataDTO);
+        return of({} as JemsFileMetadataDTO);
       })
     );
   }
@@ -191,7 +191,7 @@ export class ContractingFilesStoreService {
     );
   }
 
-  private fileList(): Observable<PageProjectReportFileDTO> {
+  private fileList(): Observable<PageJemsFileDTO> {
     return combineLatest([
       this.selectedCategory$,
       this.projectStore.projectId$,

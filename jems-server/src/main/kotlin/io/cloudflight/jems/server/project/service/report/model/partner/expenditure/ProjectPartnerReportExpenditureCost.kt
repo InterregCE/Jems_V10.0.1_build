@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.model.partner.expenditure
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
+import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.LocalDate

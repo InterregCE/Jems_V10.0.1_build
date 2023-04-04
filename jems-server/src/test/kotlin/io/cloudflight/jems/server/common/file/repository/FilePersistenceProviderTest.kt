@@ -4,9 +4,9 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.common.file.minio.MinioStorage
 import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
-import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
+import io.cloudflight.jems.server.common.file.service.model.JemsFile
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType
+import io.cloudflight.jems.server.common.file.service.model.UserSimple
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.mockk.clearMocks
 import io.mockk.every

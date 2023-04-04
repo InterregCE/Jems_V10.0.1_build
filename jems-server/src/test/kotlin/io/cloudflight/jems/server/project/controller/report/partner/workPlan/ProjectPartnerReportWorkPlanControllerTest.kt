@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.project.controller.report.partner.workPlan
 
+import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.report.partner.workPlan.ProjectPartnerReportWorkPackageActivityDTO
 import io.cloudflight.jems.api.project.dto.report.partner.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableDTO
 import io.cloudflight.jems.api.project.dto.report.partner.workPlan.ProjectPartnerReportWorkPackageDTO
@@ -11,8 +11,8 @@ import io.cloudflight.jems.api.project.dto.report.partner.workPlan.UpdateProject
 import io.cloudflight.jems.api.project.dto.report.partner.workPlan.UpdateProjectPartnerReportWorkPackageActivityDeliverableDTO
 import io.cloudflight.jems.api.project.dto.report.partner.workPlan.UpdateProjectPartnerReportWorkPackageDTO
 import io.cloudflight.jems.api.project.dto.report.partner.workPlan.UpdateProjectPartnerReportWorkPackageOutputDTO
+import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackage
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackageActivity
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackageActivityDeliverable
@@ -107,7 +107,7 @@ class ProjectPartnerReportWorkPlanControllerTest {
                             contribution = true,
                             evidence = false,
                             deactivated = false,
-                            attachment = ProjectReportFileMetadataDTO(
+                            attachment = JemsFileMetadataDTO(
                                 id = 980L,
                                 name = "cat.gif",
                                 uploaded = UPLOADED,
@@ -185,7 +185,7 @@ class ProjectPartnerReportWorkPlanControllerTest {
         private val stream = ByteArray(5).inputStream()
 
         private val dummyFile = JemsFileMetadata(id = 80L, "file_name.ext", uploaded = UPLOADED)
-        private val dummyFileDto = ProjectReportFileMetadataDTO(id = 80L, "file_name.ext", uploaded = UPLOADED)
+        private val dummyFileDto = JemsFileMetadataDTO(id = 80L, "file_name.ext", uploaded = UPLOADED)
         private val dummyFileExpected = ProjectFile(stream, "file_name.ext", 50L)
         private fun dummyMultipartFile(name: String = "file_name.ext", originalName: String? = null): MultipartFile {
             val file = mockk<MultipartFile>()

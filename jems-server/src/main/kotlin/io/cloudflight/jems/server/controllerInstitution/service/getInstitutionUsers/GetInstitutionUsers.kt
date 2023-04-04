@@ -1,9 +1,9 @@
 package io.cloudflight.jems.server.controllerInstitution.service.getInstitutionUsers
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import io.cloudflight.jems.server.common.file.service.model.UserSimple
 import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.project.authorization.CanViewPartnerReport
-import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 

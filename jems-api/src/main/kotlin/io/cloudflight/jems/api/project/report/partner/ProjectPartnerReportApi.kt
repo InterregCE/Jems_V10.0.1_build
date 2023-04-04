@@ -1,13 +1,13 @@
 package io.cloudflight.jems.api.project.report.partner
 
+import io.cloudflight.jems.api.common.dto.file.JemsFileDTO
+import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
 import io.cloudflight.jems.api.plugin.dto.PreConditionCheckResultDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
+import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileSearchRequestDTO
 import io.cloudflight.jems.api.project.dto.report.partner.ProjectPartnerReportDTO
 import io.cloudflight.jems.api.project.dto.report.partner.ProjectPartnerReportSummaryDTO
 import io.cloudflight.jems.api.project.dto.report.partner.ReportStatusDTO
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileDTO
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileSearchRequestDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -133,7 +133,7 @@ interface ProjectPartnerReportApi {
         @PathVariable partnerId: Long,
         @PathVariable reportId: Long,
         @RequestPart("file") file: MultipartFile,
-    ): ProjectReportFileMetadataDTO
+    ): JemsFileMetadataDTO
 
     @ApiOperation("List attachments")
     @ApiImplicitParams(
@@ -149,7 +149,7 @@ interface ProjectPartnerReportApi {
         @PathVariable partnerId: Long,
         pageable: Pageable,
         @RequestBody searchRequest: ProjectReportFileSearchRequestDTO,
-    ): Page<ProjectReportFileDTO>
+    ): Page<JemsFileDTO>
 
     @ApiOperation("Download file from partner control report")
     @GetMapping(
@@ -187,7 +187,7 @@ interface ProjectPartnerReportApi {
         @PathVariable partnerId: Long,
         @PathVariable reportId: Long,
         @RequestPart("file") file: MultipartFile,
-    ): ProjectReportFileMetadataDTO
+    ): JemsFileMetadataDTO
 
     @ApiOperation("List attachments of control report")
     @ApiImplicitParams(
@@ -200,6 +200,6 @@ interface ProjectPartnerReportApi {
         @PathVariable partnerId: Long,
         @PathVariable reportId: Long,
         pageable: Pageable,
-    ): Page<ProjectReportFileDTO>
+    ): Page<JemsFileDTO>
 
 }

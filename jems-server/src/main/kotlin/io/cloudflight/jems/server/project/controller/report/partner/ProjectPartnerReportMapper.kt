@@ -1,27 +1,27 @@
 package io.cloudflight.jems.server.project.controller.report.partner
 
+import io.cloudflight.jems.api.common.dto.file.JemsFileDTO
+import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
+import io.cloudflight.jems.api.common.dto.file.JemsFileTypeDTO
+import io.cloudflight.jems.api.common.dto.file.UserSimpleDTO
 import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerVatRecoveryDTO
-import io.cloudflight.jems.api.project.dto.report.file.ProjectPartnerReportFileTypeDTO
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileDTO
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileSearchRequestDTO
-import io.cloudflight.jems.api.project.dto.report.file.UserSimpleDTO
 import io.cloudflight.jems.api.project.dto.report.partner.PartnerReportIdentificationCoFinancingDTO
 import io.cloudflight.jems.api.project.dto.report.partner.PartnerReportIdentificationDTO
 import io.cloudflight.jems.api.project.dto.report.partner.ProjectPartnerReportDTO
 import io.cloudflight.jems.api.project.dto.report.partner.ProjectPartnerReportSummaryDTO
 import io.cloudflight.jems.api.project.dto.report.partner.ReportStatusDTO
 import io.cloudflight.jems.api.project.dto.report.partner.identification.ProjectPartnerReportPeriodDTO
+import io.cloudflight.jems.server.common.file.service.model.JemsFile
+import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
+import io.cloudflight.jems.server.common.file.service.model.JemsFileSearchRequest
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType
+import io.cloudflight.jems.server.common.file.service.model.UserSimple
 import io.cloudflight.jems.server.programme.controller.fund.toDto
 import io.cloudflight.jems.server.programme.controller.legalstatus.toDto
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileSearchRequest
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
-import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import io.cloudflight.jems.server.project.service.report.model.partner.PartnerReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
@@ -94,10 +94,10 @@ fun PartnerReportIdentification.toDto() = PartnerReportIdentificationDTO(
     }
 )
 
-fun JemsFile.toDto() = ProjectReportFileDTO(
+fun JemsFile.toDto() = JemsFileDTO(
     id = id,
     name = name,
-    type = ProjectPartnerReportFileTypeDTO.valueOf(type.name),
+    type = JemsFileTypeDTO.valueOf(type.name),
     uploaded = uploaded,
     author = author.toDto(),
     size = size,
@@ -129,6 +129,6 @@ fun UserSimple.toDto() = partnerReportMapper.map(this)
 
 @Mapper
 interface ProjectPartnerReportMapper {
-    fun map(model: JemsFileMetadata): ProjectReportFileMetadataDTO
+    fun map(model: JemsFileMetadata): JemsFileMetadataDTO
     fun map(model: UserSimple): UserSimpleDTO
 }

@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.payments.service.advance.attachment.getPaymen
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
+import io.cloudflight.jems.server.common.file.service.model.JemsFile
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs

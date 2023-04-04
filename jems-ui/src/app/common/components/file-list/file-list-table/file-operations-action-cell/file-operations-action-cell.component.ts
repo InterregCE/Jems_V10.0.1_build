@@ -1,16 +1,8 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  EventEmitter, forwardRef,
-  Input,
-  Output
-} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, forwardRef, Input, Output} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {AcceptedFileTypesConstants} from '@project/common/components/file-management/accepted-file-types.constants';
-import {ProjectReportFileMetadataDTO} from '@cat/api';
+import {JemsFileMetadataDTO} from '@cat/api';
 import {MatDialog} from '@angular/material/dialog';
-import {DatePipe} from '@angular/common';
 import {CustomTranslatePipe} from '@common/pipe/custom-translate-pipe';
 import {Forms} from '@common/utils/forms';
 import {filter, take, tap} from 'rxjs/operators';
@@ -31,7 +23,7 @@ import {LocaleDatePipe} from '@common/pipe/locale-date.pipe';
 })
 export class FileOperationsActionCellComponent implements ControlValueAccessor {
   acceptedFilesTypes = AcceptedFileTypesConstants.acceptedFilesTypes;
-  fileMetadata: ProjectReportFileMetadataDTO;
+  fileMetadata: JemsFileMetadataDTO;
   isUploadInProgress = false;
 
   @Input()
@@ -70,7 +62,7 @@ export class FileOperationsActionCellComponent implements ControlValueAccessor {
     // Intentionally left blank
   }
 
-  writeValue(obj: ProjectReportFileMetadataDTO): void {
+  writeValue(obj: JemsFileMetadataDTO): void {
     this.fileMetadata = obj;
     this.changeDetectorRef.detectChanges();
   }

@@ -1,6 +1,6 @@
 package io.cloudflight.jems.api.project.report.project
 
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
+import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.report.project.projectResults.ProjectReportResultPrincipleDTO
 import io.cloudflight.jems.api.project.dto.report.project.projectResults.UpdateProjectReportResultPrincipleDTO
 import io.swagger.annotations.Api
@@ -50,7 +50,7 @@ interface ProjectReportResultPrincipleApi {
         @PathVariable reportId: Long,
         @PathVariable resultNumber: Int,
         @RequestPart("file") file: MultipartFile
-    ): ProjectReportFileMetadataDTO
+    ): JemsFileMetadataDTO
 
     @ApiOperation("Download attachment from project report project result")
     @GetMapping(

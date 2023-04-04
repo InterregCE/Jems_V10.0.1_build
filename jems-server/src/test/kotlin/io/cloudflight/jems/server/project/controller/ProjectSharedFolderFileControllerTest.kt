@@ -1,18 +1,17 @@
 package io.cloudflight.jems.server.project.controller
 
-import io.cloudflight.jems.api.project.dto.report.file.ProjectPartnerReportFileTypeDTO
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileDTO
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileSearchRequestDTO
-import io.cloudflight.jems.api.project.dto.report.file.UserSimpleDTO
+import io.cloudflight.jems.api.common.dto.file.JemsFileDTO
+import io.cloudflight.jems.api.common.dto.file.JemsFileTypeDTO
+import io.cloudflight.jems.api.common.dto.file.UserSimpleDTO
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.file.service.model.JemsFile
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType
+import io.cloudflight.jems.server.common.file.service.model.UserSimple
 import io.cloudflight.jems.server.project.controller.report.partner.dummyFile
 import io.cloudflight.jems.server.project.controller.report.partner.dummyFileDto
 import io.cloudflight.jems.server.project.controller.report.partner.dummyFileExpected
 import io.cloudflight.jems.server.project.controller.report.partner.dummyMultipartFile
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
-import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import io.cloudflight.jems.server.project.service.sharedFolderFile.delete.DeleteFileFromSharedFolder
 import io.cloudflight.jems.server.project.service.sharedFolderFile.description.SetDescriptionToSharedFolderFile
 import io.cloudflight.jems.server.project.service.sharedFolderFile.download.DownloadSharedFolderFile
@@ -52,10 +51,10 @@ internal class ProjectSharedFolderFileControllerTest: UnitTest() {
         description = "desc"
     )
 
-    private val projectReportFileDTO = ProjectReportFileDTO(
+    private val jemsFileDTO = JemsFileDTO(
         id = FILE_ID,
         name = "shared-folder-file.pdf",
-        type = ProjectPartnerReportFileTypeDTO.ProjectReport,
+        type = JemsFileTypeDTO.ProjectReport,
         uploaded = YESTERDAY,
         author = UserSimpleDTO(45L, email = "admin@cloudflight.io", name = "Admin", surname = "Big"),
         size = 47889L,
@@ -87,7 +86,7 @@ internal class ProjectSharedFolderFileControllerTest: UnitTest() {
             PageImpl(listOf(shareFolderFile))
 
         Assertions.assertThat(controller.listSharedFolderFiles(PROJECT_ID, Pageable.unpaged()).content)
-            .containsExactly(projectReportFileDTO)
+            .containsExactly(jemsFileDTO)
     }
 
     @Test

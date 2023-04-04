@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.project.resultPrinciple.attachment.delete
 
 import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.project.service.report.model.project.projectResults.ProjectReportProjectResult
 import io.cloudflight.jems.server.project.service.report.model.project.projectResults.ProjectReportResultPrinciple
 import io.cloudflight.jems.server.project.service.report.project.resultPrinciple.ProjectReportResultPrinciplePersistence

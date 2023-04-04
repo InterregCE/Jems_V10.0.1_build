@@ -12,7 +12,7 @@ import {
   ProjectReportResultsAndPrinciplesTabStore
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-results-and-principles-tab/project-report-results-and-principles-tab.store';
 import {
-  ProjectReportFileMetadataDTO,
+  JemsFileMetadataDTO,
   ProjectReportProjectResultDTO,
   ProjectReportResultPrincipleDTO,
   UpdateProjectReportProjectResultDTO,
@@ -129,7 +129,7 @@ export class ProjectReportResultsAndPrinciplesTabComponent {
   }
 
   resetForm(resultsAndPrinciples: ProjectReportResultPrincipleDTO, reportEditable: boolean) {
-    const attachments: [ProjectReportFileMetadataDTO] = this.results.value.map((result: any) => result.attachment);
+    const attachments: [JemsFileMetadataDTO] = this.results.value.map((result: any) => result.attachment);
     this.initialCumulativeValues = resultsAndPrinciples.projectResults.map((result: ProjectReportProjectResultDTO) => result.cumulativeValue);
     this.results.clear();
     resultsAndPrinciples.projectResults.forEach((resultDTO: ProjectReportProjectResultDTO, index) => {

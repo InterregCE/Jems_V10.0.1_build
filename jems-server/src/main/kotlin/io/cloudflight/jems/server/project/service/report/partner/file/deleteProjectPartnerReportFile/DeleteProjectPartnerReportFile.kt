@@ -1,10 +1,10 @@
 package io.cloudflight.jems.server.project.service.report.partner.file.deleteProjectPartnerReportFile
 
-import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType.PartnerReport
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.PartnerReport
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 

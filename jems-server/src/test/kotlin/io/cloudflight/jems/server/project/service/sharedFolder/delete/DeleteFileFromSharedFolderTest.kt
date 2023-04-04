@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.service.sharedFolder.delete
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.project.service.sharedFolderFile.delete.DeleteFileFromSharedFolder
 import io.cloudflight.jems.server.project.service.sharedFolderFile.delete.FileNotFound
 import io.cloudflight.jems.server.project.service.sharedFolderFile.delete.UserIsNotOwnerOfFile

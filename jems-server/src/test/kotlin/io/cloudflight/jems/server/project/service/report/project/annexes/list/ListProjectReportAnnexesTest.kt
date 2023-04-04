@@ -2,9 +2,9 @@ package io.cloudflight.jems.server.project.service.report.project.annexes.list
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileSearchRequest
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.common.file.service.model.JemsFile
+import io.cloudflight.jems.server.common.file.service.model.JemsFileSearchRequest
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.project.service.report.partner.file.listProjectPartnerReportFile.InvalidSearchConfiguration
 import io.cloudflight.jems.server.project.service.report.partner.file.listProjectPartnerReportFile.InvalidSearchFilterConfiguration
 import io.mockk.every

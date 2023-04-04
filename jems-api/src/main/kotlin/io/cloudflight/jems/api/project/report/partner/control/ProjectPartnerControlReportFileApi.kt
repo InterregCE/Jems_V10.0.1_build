@@ -1,7 +1,7 @@
 package io.cloudflight.jems.api.project.report.partner.control
 
+import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.report.file.PartnerReportControlFileDTO
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
 import io.cloudflight.jems.api.project.report.partner.ProjectPartnerReportApi
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.multipart.MultipartFile
-import org.springframework.web.bind.annotation.RequestParam
 
 @Api("ProjectPartnerControl Report File API")
 interface ProjectPartnerControlReportFileApi {
@@ -90,7 +90,7 @@ interface ProjectPartnerControlReportFileApi {
         @PathVariable reportId: Long,
         @PathVariable fileId: Long,
         @RequestPart("file") file: MultipartFile,
-    ): ProjectReportFileMetadataDTO
+    ): JemsFileMetadataDTO
 
     @ApiOperation("Download control report certificate attachment")
     @GetMapping(

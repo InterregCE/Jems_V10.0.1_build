@@ -6,6 +6,7 @@ import io.cloudflight.jems.api.project.dto.description.ProjectHorizontalPrincipl
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
+import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.programme.entity.indicator.ResultIndicatorEntity
 import io.cloudflight.jems.server.programme.entity.indicator.ResultIndicatorTranslEntity
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
@@ -16,7 +17,6 @@ import io.cloudflight.jems.server.project.entity.report.project.resultPrinciple.
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectHorizontalPrinciples
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.project.projectResults.ProjectReportProjectResult
 import io.cloudflight.jems.server.project.service.report.model.project.projectResults.ProjectReportResultPrinciple
 import io.cloudflight.jems.server.project.service.report.model.project.projectResults.ProjectReportResultPrincipleUpdate

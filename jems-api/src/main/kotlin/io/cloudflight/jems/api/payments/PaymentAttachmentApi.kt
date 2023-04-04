@@ -1,8 +1,8 @@
 package io.cloudflight.jems.api.payments
 
+import io.cloudflight.jems.api.common.dto.file.JemsFileDTO
+import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
 import io.cloudflight.jems.api.payments.PaymentsApi.Companion.ENDPOINT_API_PAYMENTS
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileDTO
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -35,7 +35,7 @@ interface PaymentAttachmentApi {
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
     )
     @GetMapping("$ENDPOINT_PAYMENT_ATTACHMENT/byPaymentId/{paymentId}")
-    fun listPaymentAttachments(@PathVariable paymentId: Long, pageable: Pageable): Page<ProjectReportFileDTO>
+    fun listPaymentAttachments(@PathVariable paymentId: Long, pageable: Pageable): Page<JemsFileDTO>
 
     @ApiOperation("Download payment attachment")
     @GetMapping("$ENDPOINT_PAYMENT_ATTACHMENT/byFileId/{fileId}", produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE])
@@ -51,6 +51,6 @@ interface PaymentAttachmentApi {
 
     @ApiOperation("Upload attachment to payment")
     @PostMapping("$ENDPOINT_PAYMENT_ATTACHMENT/byPaymentId/{paymentId}", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
-    fun uploadAttachmentToPayment(@PathVariable paymentId: Long, @RequestPart("file") file: MultipartFile): ProjectReportFileMetadataDTO
+    fun uploadAttachmentToPayment(@PathVariable paymentId: Long, @RequestPart("file") file: MultipartFile): JemsFileMetadataDTO
 
 }

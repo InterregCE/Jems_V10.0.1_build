@@ -1,12 +1,12 @@
 package io.cloudflight.jems.server.project.controller.report.partner.control.expenditure
 
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
+import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.BudgetCategoryDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.verification.ExpenditureParkingMetadataDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.verification.ProjectPartnerControlReportExpenditureVerificationDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.verification.ProjectPartnerControlReportExpenditureVerificationUpdateDTO
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
+import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
@@ -119,7 +119,7 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
         currencyCode = "CZK",
         currencyConversionRate = BigDecimal.valueOf(24),
         declaredAmountAfterSubmission = BigDecimal.valueOf(1.3),
-        attachment = ProjectReportFileMetadataDTO(500L, "file.txt", UPLOADED),
+        attachment = JemsFileMetadataDTO(500L, "file.txt", UPLOADED),
         partOfSample = false,
         certifiedAmount = BigDecimal.valueOf(1.3),
         deductedAmount = BigDecimal.ZERO,
@@ -153,7 +153,7 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
         currencyCode = "CZK",
         currencyConversionRate = BigDecimal.valueOf(24),
         declaredAmountAfterSubmission = BigDecimal.valueOf(1.3),
-        attachment = ProjectReportFileMetadataDTO(500L, "file.txt", UPLOADED),
+        attachment = JemsFileMetadataDTO(500L, "file.txt", UPLOADED),
         partOfSample = true,
         certifiedAmount = BigDecimal.valueOf(1),
         deductedAmount = BigDecimal.valueOf(0.3),

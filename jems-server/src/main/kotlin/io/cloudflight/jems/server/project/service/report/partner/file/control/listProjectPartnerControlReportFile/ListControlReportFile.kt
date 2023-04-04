@@ -2,11 +2,11 @@ package io.cloudflight.jems.server.project.service.report.partner.file.control.l
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
+import io.cloudflight.jems.server.common.file.service.model.JemsFile
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType.ControlDocument
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType.PartnerControlReport
 import io.cloudflight.jems.server.project.authorization.CanViewPartnerControlReportFile
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.ControlDocument
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.PartnerControlReport
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service

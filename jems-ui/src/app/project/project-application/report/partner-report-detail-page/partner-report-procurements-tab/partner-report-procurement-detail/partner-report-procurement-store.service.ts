@@ -12,7 +12,7 @@ import {
   ProjectPartnerReportProcurementSubcontractDTO,
   ProjectPartnerReportProcurementSubcontractorService,
   ProjectPartnerReportService,
-  ProjectReportFileMetadataDTO,
+  JemsFileMetadataDTO,
   ProjectReportProcurementFileDTO,
 } from '@cat/api';
 import {BehaviorSubject, combineLatest, merge, Observable, of, Subject} from 'rxjs';
@@ -230,7 +230,7 @@ export class PartnerReportProcurementStore {
     );
   }
 
-  uploadProcurementFile(file: File): Observable<ProjectReportFileMetadataDTO> {
+  uploadProcurementFile(file: File): Observable<JemsFileMetadataDTO> {
     const serviceId = uuid();
     this.routingService.confirmLeaveMap.set(serviceId, true);
     return combineLatest([
@@ -248,7 +248,7 @@ export class PartnerReportProcurementStore {
       tap(() => this.routingService.confirmLeaveMap.delete(serviceId)),
       catchError(error => {
         this.error$.next(error.error);
-        return of({} as ProjectReportFileMetadataDTO);
+        return of({} as JemsFileMetadataDTO);
       }),
     );
   }

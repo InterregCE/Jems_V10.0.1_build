@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.service.report.partner.file.listProjectPartnerReportFile
 
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 
 fun validateSearchConfiguration(
     treeNode: JemsFileType,

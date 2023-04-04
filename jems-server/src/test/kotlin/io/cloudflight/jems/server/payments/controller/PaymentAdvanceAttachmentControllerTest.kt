@@ -1,20 +1,20 @@
 package io.cloudflight.jems.server.payments.controller
 
-import io.cloudflight.jems.api.project.dto.report.file.ProjectPartnerReportFileTypeDTO
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileDTO
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
-import io.cloudflight.jems.api.project.dto.report.file.UserSimpleDTO
+import io.cloudflight.jems.api.common.dto.file.JemsFileDTO
+import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
+import io.cloudflight.jems.api.common.dto.file.JemsFileTypeDTO
+import io.cloudflight.jems.api.common.dto.file.UserSimpleDTO
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.file.service.model.JemsFile
+import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType
+import io.cloudflight.jems.server.common.file.service.model.UserSimple
 import io.cloudflight.jems.server.payments.service.advance.attachment.deletePaymentAdvanceAttachment.DeletePaymentAdvAttachmentInteractor
 import io.cloudflight.jems.server.payments.service.advance.attachment.downloadPaymentAdvanceAttachment.DownloadPaymentAdvAttachmentInteractor
 import io.cloudflight.jems.server.payments.service.advance.attachment.getPaymentAdvanceAttachment.GetPaymentAdvAttachmentInteractor
 import io.cloudflight.jems.server.payments.service.advance.attachment.setDescriptionToPaymentAdvAttachment.SetDescriptionToPaymentAdvAttachmentInteractor
 import io.cloudflight.jems.server.payments.service.advance.attachment.uploadPaymentAdvanceAttachment.UploadPaymentAdvAttachmentInteractor
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
-import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import io.cloudflight.jems.server.utils.FILE_NAME
 import io.cloudflight.jems.server.utils.file
 import io.mockk.clearMocks
@@ -49,10 +49,10 @@ class PaymentAdvanceAttachmentControllerTest : UnitTest() {
             description = "desc $id"
         )
 
-        private fun expectedAttachment(id: Long) = ProjectReportFileDTO(
+        private fun expectedAttachment(id: Long) = JemsFileDTO(
             id = id,
             name = "name $id",
-            type = ProjectPartnerReportFileTypeDTO.PaymentAttachment,
+            type = JemsFileTypeDTO.PaymentAttachment,
             uploaded = UPLOADED_DATE,
             author = UserSimpleDTO(9L, "dummy@email", name = "Dummy", surname = "Surname"),
             size = 653225L,
@@ -66,7 +66,7 @@ class PaymentAdvanceAttachmentControllerTest : UnitTest() {
             uploaded = UPLOADED_DATE,
         )
 
-        private val expectedMetadata = ProjectReportFileMetadataDTO(
+        private val expectedMetadata = JemsFileMetadataDTO(
             id = 904L,
             name = FILE_NAME,
             uploaded = UPLOADED_DATE,

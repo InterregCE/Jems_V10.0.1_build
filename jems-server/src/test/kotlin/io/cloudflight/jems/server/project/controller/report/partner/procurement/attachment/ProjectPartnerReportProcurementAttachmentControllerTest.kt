@@ -1,14 +1,14 @@
 package io.cloudflight.jems.server.project.controller.report.partner.procurement.attachment
 
-import io.cloudflight.jems.api.project.dto.report.file.ProjectPartnerReportFileTypeDTO
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
-import io.cloudflight.jems.api.project.dto.report.file.UserSimpleDTO
+import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
+import io.cloudflight.jems.api.common.dto.file.JemsFileTypeDTO
+import io.cloudflight.jems.api.common.dto.file.UserSimpleDTO
 import io.cloudflight.jems.api.project.dto.report.partner.procurement.attachment.ProjectReportProcurementFileDTO
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType
+import io.cloudflight.jems.server.common.file.service.model.UserSimple
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
-import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectReportProcurementFile
 import io.cloudflight.jems.server.project.service.report.partner.procurement.attachment.getProjectPartnerReportProcurementAttachment.GetProjectPartnerReportProcurementAttachmentInteractor
 import io.cloudflight.jems.server.project.service.report.partner.procurement.attachment.uploadFileToProjectPartnerReportProcurementAttachment.UploadFileToProjectPartnerReportProcurementAttachmentInteractor
@@ -45,7 +45,7 @@ class ProjectPartnerReportProcurementAttachmentControllerTest : UnitTest() {
             reportId = reportId,
             createdInThisReport = true,
             name = "name 270",
-            type = ProjectPartnerReportFileTypeDTO.ProcurementAttachment,
+            type = JemsFileTypeDTO.ProcurementAttachment,
             uploaded = YEARS_AGO_10,
             author = UserSimpleDTO(45L, "dummy@email", name = "Dummy", surname = "Surname"),
             size = 653245L,
@@ -59,7 +59,7 @@ class ProjectPartnerReportProcurementAttachmentControllerTest : UnitTest() {
             uploaded = YEARS_AGO_10,
         )
 
-        private val expectedMetadata = ProjectReportFileMetadataDTO(
+        private val expectedMetadata = JemsFileMetadataDTO(
             id = 904L,
             name = FILE_NAME,
             uploaded = YEARS_AGO_10,

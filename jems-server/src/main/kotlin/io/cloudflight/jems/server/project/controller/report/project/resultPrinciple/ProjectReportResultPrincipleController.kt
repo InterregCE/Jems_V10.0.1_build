@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.controller.report.project.resultPrinciple
 
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
+import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.report.project.projectResults.ProjectReportResultPrincipleDTO
 import io.cloudflight.jems.api.project.dto.report.project.projectResults.UpdateProjectReportResultPrincipleDTO
 import io.cloudflight.jems.api.project.report.project.ProjectReportResultPrincipleApi
@@ -35,7 +35,7 @@ class ProjectReportResultPrincipleController(
         resultPrinciple: UpdateProjectReportResultPrincipleDTO
     ): ProjectReportResultPrincipleDTO = updateResultPrinciple.update(projectId, reportId, resultPrinciple.toModel()).toDto()
 
-    override fun uploadAttachmentToResult(projectId: Long, reportId: Long, resultNumber: Int, file: MultipartFile): ProjectReportFileMetadataDTO =
+    override fun uploadAttachmentToResult(projectId: Long, reportId: Long, resultNumber: Int, file: MultipartFile): JemsFileMetadataDTO =
         uploadAttachment.upload(projectId, reportId, resultNumber, file = file.toProjectFile()).toDto()
 
     override fun deleteAttachmentFromResult(projectId: Long, reportId: Long, resultNumber: Int) =

@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of, Subject} from 'rxjs';
 import {
-  PageProjectReportFileDTO,
+  PageJemsFileDTO,
   PaymentAdvanceAttachmentService,
-  ProjectReportFileMetadataDTO,
+  JemsFileMetadataDTO,
   UserRoleDTO
 } from '@cat/api';
 import {catchError, distinctUntilChanged, map, startWith, switchMap, take, tap} from 'rxjs/operators';
@@ -25,7 +25,7 @@ export class AdvancePaymentAttachmentsStore {
   public static ADVANCE_PAYMENT_DETAIL_PATH = '/advancePayments/';
 
   paymentId$ = new BehaviorSubject<number>(0);
-  attachments$: Observable<PageProjectReportFileDTO>;
+  attachments$: Observable<PageJemsFileDTO>;
   filesChanged$ = new Subject<void>();
   error$ = new Subject<APIError | null>();
   paymentEditable$: Observable<boolean>;
@@ -44,7 +44,7 @@ export class AdvancePaymentAttachmentsStore {
     this.paymentEditable$ = this.paymentEditable();
   }
 
-  public getAttachments(): Observable<PageProjectReportFileDTO> {
+  public getAttachments(): Observable<PageJemsFileDTO> {
     return combineLatest([
       this.routingService.routeParameterChanges(AdvancePaymentAttachmentsStore.ADVANCE_PAYMENT_DETAIL_PATH, 'advancePaymentId')
         .pipe(map(id => Number(id))),
@@ -68,12 +68,12 @@ export class AdvancePaymentAttachmentsStore {
       tap(data => Log.info('Fetched payment attachments by id', this, data)),
       catchError(error => {
         this.error$.next(error.error);
-        return of({} as PageProjectReportFileDTO);
+        return of({} as PageJemsFileDTO);
       })
     );
   }
 
-  uploadPaymentFile(file: File): Observable<ProjectReportFileMetadataDTO> {
+  uploadPaymentFile(file: File): Observable<JemsFileMetadataDTO> {
     const serviceId = uuid();
     this.routingService.confirmLeaveMap.set(serviceId, true);
     return this.routingService.routeParameterChanges(AdvancePaymentAttachmentsStore.ADVANCE_PAYMENT_DETAIL_PATH, 'advancePaymentId')
@@ -88,7 +88,7 @@ export class AdvancePaymentAttachmentsStore {
           tap(() => this.routingService.confirmLeaveMap.delete(serviceId)),
           catchError(error => {
             this.error$.next(error.error);
-            return of({} as ProjectReportFileMetadataDTO);
+            return of({} as JemsFileMetadataDTO);
           }),
       );
   }

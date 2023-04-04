@@ -1,26 +1,21 @@
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {Component, OnInit} from '@angular/core';
 import {ContractingFilesStoreService} from '@project/project-application/services/contracting-files-store.service';
-import {
-  ProjectPartnerStore
-} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
+import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
-import {
-  ProjectStore
-} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {combineLatest, Observable, of, Subject} from 'rxjs';
 import {AcceptedFileTypesConstants} from '@project/common/components/file-management/accepted-file-types.constants';
 import {I18nMessage} from '@common/models/I18nMessage';
 import {PageFileList} from '@common/components/file-list/page-file-list';
 import {Alert} from '@common/components/forms/alert';
 import {ContractPartnerStore} from '@project/project-application/contracting/contract-partner/contract-partner.store';
-import {ProjectPartnerSummaryDTO, ProjectReportFileDTO} from '@cat/api';
+import {JemsFileDTO, ProjectPartnerSummaryDTO} from '@cat/api';
 import {catchError, finalize, map, take, tap} from 'rxjs/operators';
 import {CategoryInfo, CategoryNode} from '@project/common/components/category-tree/categoryModels';
 import {FileListItem} from '@common/components/file-list/file-list-item';
 import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
-import {ContractingSectionLockStore} from '@project/project-application/contracting/contracting-section-lock.store';
-import FileTypeEnum = ProjectReportFileDTO.TypeEnum;
+import FileTypeEnum = JemsFileDTO.TypeEnum;
 
 @UntilDestroy()
 @Component({
@@ -148,7 +143,7 @@ export class PartnerFilesComponent implements OnInit {
     );
   }
 
-  private transform(content: ProjectReportFileDTO[], isEditable: boolean): FileListItem[] {
+  private transform(content: JemsFileDTO[], isEditable: boolean): FileListItem[] {
     return content.map(file => ({
       id: file.id,
       name: file.name,
