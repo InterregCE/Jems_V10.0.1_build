@@ -1039,6 +1039,7 @@
           "activities": [
             {
               "cypressReferenceStateAid": "Lead Partner Activity",
+              "cypressReferencePartner": "Lead Partner v1",
               "title": [
                 {
                   "translation": "API generated activity 1 title DE",
@@ -1092,6 +1093,7 @@
               "partnerIds": []
             },
             {
+              "cypressReferencePartner": "Lead Partner v1",
               "title": [
                 {
                   "translation": "API generated activity 2 title DE",
