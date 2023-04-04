@@ -144,8 +144,8 @@
     <ID>PackageNaming:AssignUserCollaboratorToProjectEventListeners.kt$package io.cloudflight.jems.server.project.service.projectuser.assign_user_collaborator_to_project</ID>
     <ID>PackageNaming:AssignUserCollaboratorToProjectException.kt$package io.cloudflight.jems.server.project.service.projectuser.assign_user_collaborator_to_project</ID>
     <ID>PackageNaming:AssignUserCollaboratorToProjectInteractor.kt$package io.cloudflight.jems.server.project.service.projectuser.assign_user_collaborator_to_project</ID>
-    <ID>PackageNaming:AssignUserEventListeners.kt$package io.cloudflight.jems.server.project.service.projectuser.assign_user_to_project</ID>
     <ID>PackageNaming:AssignUserToProject.kt$package io.cloudflight.jems.server.project.service.projectuser.assign_user_to_project</ID>
+    <ID>PackageNaming:AssignUserToProjectEventListeners.kt$package io.cloudflight.jems.server.project.service.projectuser.assign_user_to_project</ID>
     <ID>PackageNaming:AssignUserToProjectException.kt$package io.cloudflight.jems.server.project.service.projectuser.assign_user_to_project</ID>
     <ID>PackageNaming:AssignUserToProjectInteractor.kt$package io.cloudflight.jems.server.project.service.projectuser.assign_user_to_project</ID>
     <ID>PackageNaming:AssociatedOrganizationPersistenceProvider.kt$package io.cloudflight.jems.server.project.repository.partner.associated_organization</ID>

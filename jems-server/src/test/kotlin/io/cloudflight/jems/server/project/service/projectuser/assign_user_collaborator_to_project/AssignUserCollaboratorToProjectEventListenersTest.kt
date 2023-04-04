@@ -1,16 +1,15 @@
-package io.cloudflight.jems.server.project.service.projectuser.assign_user_to_project
+package io.cloudflight.jems.server.project.service.projectuser.assign_user_collaborator_to_project
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.common.event.JemsAuditEvent
-import io.cloudflight.jems.server.config.AppProperties
+import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
-import io.cloudflight.jems.server.user.service.model.UserRoleSummary
 import io.cloudflight.jems.server.user.service.model.UserStatus
-import io.cloudflight.jems.server.user.service.model.UserSummary
+import io.cloudflight.jems.server.user.service.model.assignment.CollaboratorAssignedToProject
 import io.mockk.clearAllMocks
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.RelaxedMockK
@@ -21,23 +20,19 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
 
-internal class AssignUserEventListenersTest : UnitTest() {
+internal class AssignUserCollaboratorToProjectEventListenersTest : UnitTest() {
 
     companion object {
         val project = ProjectSummary(1L, "cid", 1L, "call", "acronym", ApplicationStatus.STEP1_DRAFT)
-        val userRole = UserRoleSummary(2L, "role", false)
-        val user = UserSummary(3L, "email", sendNotificationsToEmail = false, "", "", userRole, UserStatus.ACTIVE)
-        val otherUser = UserSummary(4L, "other@email", sendNotificationsToEmail = false, "", "", userRole, UserStatus.ACTIVE)
+        val user = CollaboratorAssignedToProject(3L, "email", sendNotificationsToEmail = false, UserStatus.ACTIVE, ProjectCollaboratorLevel.EDIT)
+        val otherUser = CollaboratorAssignedToProject(4L, "other@email", sendNotificationsToEmail = false, UserStatus.ACTIVE, ProjectCollaboratorLevel.VIEW)
     }
 
     @RelaxedMockK
     lateinit var eventPublisher: ApplicationEventPublisher
 
-    @RelaxedMockK
-    lateinit var AppProperties: AppProperties
-
     @InjectMockKs
-    lateinit var assignUserEventListeners: AssignUserEventListeners
+    lateinit var assignUserCollaboratorToProjectEventListeners: AssignUserCollaboratorToProjectEventListeners
 
     @AfterEach
     internal fun tearDown() {
@@ -45,35 +40,35 @@ internal class AssignUserEventListenersTest : UnitTest() {
     }
 
     @Test
-    fun `assigning a user triggers an audit log`() {
+    fun `assigning a collaborator triggers an audit log`() {
         val auditSlot = slot<JemsAuditEvent>()
-        val assignUserEvent = AssignUserEvent(project, listOf(user, otherUser))
+        val assignUserCollaboratorToProjectEvent = AssignUserCollaboratorToProjectEvent(project, listOf(user, otherUser))
 
-        assignUserEventListeners.publishJemsAuditEvent(assignUserEvent)
+        assignUserCollaboratorToProjectEventListeners.publishJemsAuditEvent(assignUserCollaboratorToProjectEvent)
 
         verify { eventPublisher.publishEvent(capture(auditSlot)) }
         assertThat(auditSlot.captured.auditCandidate).isEqualTo(
             AuditCandidate(
-                action = AuditAction.PROJECT_USER_ASSIGNMENT_PROGRAMME,
+                action = AuditAction.PROJECT_USER_ASSIGNMENT_APPLICANTS,
                 project = AuditProject(project.id.toString(), project.customIdentifier, project.acronym),
-                description = "Project can be accessed by: ${user.email}: role, ${otherUser.email}: role"
+                description = "[Applicant form users] List of users:: [${user.userEmail}: EDIT, ${otherUser.userEmail}: VIEW]"
             )
         )
     }
 
     @Test
-    fun `removing assignments triggers an audit log`() {
+    fun `removing collaborator triggers an audit log`() {
         val auditSlot = slot<JemsAuditEvent>()
-        val assignUserEvent = AssignUserEvent(project, emptyList())
+        val assignUserCollaboratorToProjectEvent = AssignUserCollaboratorToProjectEvent(project, emptyList())
 
-        assignUserEventListeners.publishJemsAuditEvent(assignUserEvent)
+        assignUserCollaboratorToProjectEventListeners.publishJemsAuditEvent(assignUserCollaboratorToProjectEvent)
 
         verify { eventPublisher.publishEvent(capture(auditSlot)) }
         assertThat(auditSlot.captured.auditCandidate).isEqualTo(
             AuditCandidate(
-                action = AuditAction.PROJECT_USER_ASSIGNMENT_PROGRAMME,
+                action = AuditAction.PROJECT_USER_ASSIGNMENT_APPLICANTS,
                 project = AuditProject(project.id.toString(), project.customIdentifier, project.acronym),
-                description = "Project can be accessed by: "
+                description = "[Applicant form users] List of users:: []"
             )
         )
     }

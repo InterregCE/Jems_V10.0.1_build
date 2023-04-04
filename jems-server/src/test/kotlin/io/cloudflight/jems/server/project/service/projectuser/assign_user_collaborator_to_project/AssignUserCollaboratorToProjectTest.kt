@@ -5,8 +5,8 @@ import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaborator
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
-import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.project.service.projectuser.UserProjectCollaboratorPersistence
+import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.UserRolePersistence
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectCreate
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
@@ -124,7 +124,7 @@ internal class AssignUserCollaboratorToProjectTest : UnitTest() {
             USER_APPLICANT_ID to ProjectCollaboratorLevel.MANAGE,
         ))
 
-        verify(exactly = 1) { eventPublisher.publishEvent(AssignUserCollaboratorEvent(
+        verify(exactly = 1) { eventPublisher.publishEvent(AssignUserCollaboratorToProjectEvent(
             project = projectSummary,
             collaborators = expectedResult,
         )) }
