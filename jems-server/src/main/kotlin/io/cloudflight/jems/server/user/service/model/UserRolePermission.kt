@@ -11,8 +11,8 @@ enum class UserRolePermission(val key: String, val projectRelated: Boolean = fal
     ProjectCreatorContractingReportingView("ProjectCreatorContractingReportingView"),
     ProjectCreatorContractingReportingEdit("ProjectCreatorContractingReportingEdit"),
 
-    ProjectCreatorSharedFolderView("ProjectCreatorSharedFolderView", true),
-    ProjectCreatorSharedFolderEdit("ProjectCreatorSharedFolderEdit", true),
+    ProjectCreatorSharedFolderView("ProjectCreatorSharedFolderView"),
+    ProjectCreatorSharedFolderEdit("ProjectCreatorSharedFolderEdit"),
     // endregion Creator
 
     // region Monitor
