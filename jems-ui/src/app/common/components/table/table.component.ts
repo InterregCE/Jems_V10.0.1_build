@@ -15,6 +15,7 @@ import {RoutingService} from '@common/services/routing.service';
 import {ActivatedRoute} from '@angular/router';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {LongDateFormatKey} from "moment";
 
 @UntilDestroy()
 
@@ -109,6 +110,14 @@ export class TableComponent implements OnInit, OnChanges {
       return this.moneyPipe.transform(elementValue);
     }
     return elementValue;
+  }
+
+  formatOnlyTimeOrDate(column: ColumnConfiguration, element: any, dateFormat: LongDateFormatKey) {
+    if (!column.elementProperty) {
+      return element;
+    }
+    const elementValue = Tools.getChainedProperty(element, column.elementProperty, '');
+    return this.localeDatePipe.transform(elementValue, dateFormat);
   }
 
   getI18nArgs(column: ColumnConfiguration, element: any): any {

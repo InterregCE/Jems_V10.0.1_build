@@ -79,15 +79,15 @@
                      [title]="column.tooltip ? (formatColumnTooltip(column, row) | translate) : ''">
                     <div #dateColumn *ngIf="column.columnType === ColumnType.DateColumn; else dateTimeColumn">
                         <div class="date-time-cell">
-                            <div class="date">{{ row | localeDate : 'L'}}</div>
-                            <div class="time">{{ row | localeDate : 'LT'}}</div>
+                            <div class="date">{{ formatOnlyTimeOrDate(column, row, 'L')}}</div>
+                            <div class="time">{{ formatOnlyTimeOrDate(column, row, 'LT')}}</div>
                         </div>
                     </div>
                     <ng-template #dateTimeColumn>
                          <div  *ngIf="column.columnType === ColumnType.DateColumnWithSeconds; else defaultColumn"
                             class="date-time-cell">
-                            <div class="date">{{ row | localeDate : 'L'}}</div>
-                            <div class="time">{{ row | localeDate : 'LTS'}}</div>
+                            <div class="date">{{ formatOnlyTimeOrDate(column, row, 'L')}}</div>
+                            <div class="time">{{ formatOnlyTimeOrDate(column, row, 'LTS')}}</div>
                          </div>
                     </ng-template>
                     <ng-template #defaultColumn>
