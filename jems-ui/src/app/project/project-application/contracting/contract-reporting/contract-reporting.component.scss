@@ -50,4 +50,32 @@ mat-button-toggle {
   jems-expandable-textarea .mat-form-field-infix {
     min-height: 1.8rem;
   }
+
+  .date-readonly {
+    .mat-form-field-flex {
+      background-color: inherit !important;
+      border-bottom-style: dotted !important;
+      border-width: thin !important;
+      border-color: rgb(220, 220, 220) !important;
+    }
+    .mat-form-field-underline {
+      display: none;
+    }
+  }
+}
+
+#deadline-dates-table mat-cell {
+  align-items: flex-start;
+}
+
+.report-type-cell {
+  flex-direction: column;
+}
+
+mat-cell.mat-column-deadlineDelete, .report-type-cell {
+  padding-top: 1.15rem;
+}
+
+.number-cell, .linked-report-cell {
+  padding-top: 1.75rem;
 }

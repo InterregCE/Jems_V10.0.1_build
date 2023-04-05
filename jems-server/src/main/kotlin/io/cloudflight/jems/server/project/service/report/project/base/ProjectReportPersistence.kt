@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.project.base
 
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
+import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportDeadline
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
@@ -38,4 +39,5 @@ interface ProjectReportPersistence {
 
     fun getSubmittedProjectReportIds(projectId: Long): List<Pair<Long, ContractingDeadlineType>>
 
+    fun getDeadlinesWithLinkedReportStatus(projectId: Long): Map<Long, ProjectReportStatus>
 }

@@ -94,4 +94,10 @@ class ProjectReportPersistenceProvider(
         projectReportRepository.findAllByProjectIdAndStatusInOrderByNumberDesc(projectId, statuses = ProjectReportStatus.SUBMITTED_STATUSES)
             .map { Pair(it.id, it.deadline?.type ?: it.type!!) }
 
+    @Transactional(readOnly = true)
+    override fun getDeadlinesWithLinkedReportStatus(projectId: Long): Map<Long, ProjectReportStatus> =
+        projectReportRepository.findAllByProjectIdAndDeadlineNotNull(projectId)
+            .groupBy { it.deadline!!.id }
+            .mapValues { it.value.maxOf { it.status } }
+
 }

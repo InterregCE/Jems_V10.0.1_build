@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.project.service.contracting.monitoring.Contrac
 import io.cloudflight.jems.server.project.service.contracting.reporting.ContractingReportingPersistence
 import io.cloudflight.jems.server.project.service.contracting.toLimits
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
+import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
@@ -24,7 +25,8 @@ class UpdateContractingReporting(
     private val projectPersistence: ProjectPersistenceProvider,
     private val versionPersistence: ProjectVersionPersistence,
     private val generalValidator: GeneralValidatorService,
-    private val contractingValidator: ContractingValidator
+    private val contractingValidator: ContractingValidator,
+    private val projectReportPersistence: ProjectReportPersistence
 ): UpdateContractingReportingInteractor {
 
     companion object {
@@ -49,11 +51,12 @@ class UpdateContractingReporting(
             throw ContractingStartDateIsMissing()
 
         val periods = project.periods.associateBy { it.number }
-        validateInputData(deadlines, periods, monitoring.startDate)
+        val existingDeadlines = contractingReportingPersistence.getContractingReporting(projectId).associateBy { it.id }
+        validateInputData(deadlines, existingDeadlines, periods, monitoring.startDate, projectId)
 
         return contractingReportingPersistence.updateContractingReporting(
             projectId = projectId,
-            deadlines = deadlines,
+            deadlines = deadlines.fillMissingNumbers(ignoreIds = existingDeadlines.keys),
         )
     }
 
@@ -77,8 +80,10 @@ class UpdateContractingReporting(
 
     private fun validateInputData(
         deadlines: Collection<ProjectContractingReportingSchedule>,
+        oldDeadlines: Map<Long, ProjectContractingReportingSchedule>,
         periods: Map<Int, ProjectPeriod>,
         startDate: LocalDate,
+        projectId: Long
     ) {
         if (deadlines.size > MAX_DEADLINES_AMOUNT)
             throw MaxAmountOfDeadlinesReached(MAX_DEADLINES_AMOUNT)
@@ -86,6 +91,18 @@ class UpdateContractingReporting(
         validatePeriods(deadlines, periods)
         validateDates(deadlines, periods, startDate)
         validateComments(deadlines)
+
+        val linkedDeadlines = projectReportPersistence.getDeadlinesWithLinkedReportStatus(projectId)
+        val deletedLinkedDeadlineIds = linkedDeadlines.keys.minus(deadlines.ids())
+        if (deletedLinkedDeadlineIds.isNotEmpty())
+            throw LinkedDeadlineDeletedException(deletedLinkedDeadlineIds)
+
+        val submittedDeadlineIds = linkedDeadlines.filter { it.value.isClosed() }.keys
+
+        deadlines.filter { it.id in submittedDeadlineIds }.forEach { new ->
+            if (forbiddenChangeAfterSubmission(new = new, old = oldDeadlines[new.id]!!))
+                throw LinkedDeadlineUpdateException()
+        }
     }
 
     private fun validatePeriods(
@@ -121,4 +138,24 @@ class UpdateContractingReporting(
 
     private fun Map<Int, Pair<LocalDate, LocalDate>>.startLimit(periodNumber: Int) = get(periodNumber)!!.first
     private fun Map<Int, Pair<LocalDate, LocalDate>>.endLimit(periodNumber: Int) = get(periodNumber)!!.second
+
+    private fun Collection<ProjectContractingReportingSchedule>.ids() = mapTo(HashSet()) { it.id }
+
+    private fun Collection<ProjectContractingReportingSchedule>.fillMissingNumbers(
+        ignoreIds: Set<Long>,
+    ): List<ProjectContractingReportingSchedule> {
+        var nextNumber = this.maxOfOrNull { it.number + 1 } ?: 1
+        return map { deadline ->
+            if (deadline.id !in ignoreIds) {
+                deadline.number = nextNumber
+                nextNumber++
+            }
+            return@map deadline
+        }
+    }
+
+    private fun forbiddenChangeAfterSubmission(
+        old: ProjectContractingReportingSchedule,
+        new: ProjectContractingReportingSchedule,
+    ) = old.date != new.date || old.periodNumber != new.periodNumber || old.type != new.type
 }

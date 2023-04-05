@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.ProjectRe
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -21,5 +22,9 @@ interface ProjectReportRepository : JpaRepository<ProjectReportEntity, Long> {
     fun countAllByProjectId(projectId: Long): Int
 
     fun findAllByProjectIdAndStatusInOrderByNumberDesc(projectId: Long, statuses: Set<ProjectReportStatus>): List<ProjectReportEntity>
+
+    fun findAllByProjectIdAndDeadlineNotNull(projectId: Long): List<ProjectReportEntity>
+
+    fun findAllByProjectIdAndDeadlineId(projectId: Long, deadlineId: Long): List<ProjectReportEntity>
 
 }

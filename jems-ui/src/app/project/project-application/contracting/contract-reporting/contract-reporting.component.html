@@ -3,7 +3,7 @@
                             [subTitleText]="'project.application.contract.reporting.title' | translate "
                             [isVersionedData]="false">
 
-    <jems-alert *ngIf="error$ | async as error"
+    <jems-alert  *ngIf="error$ | async as error"
                 [show]="!!error.i18nMessage?.i18nKey"
                 [type]="Alert.ERROR">
         <jems-api-error-content [error]="error"></jems-api-error-content>
@@ -36,32 +36,40 @@
                            [value]="data.projectDuration">
                 </mat-form-field>
             </div>
+
             <mat-table *ngIf="data.canView && tableData.length > 0" jemsNoWidthLimit
                        id="deadline-dates-table"
                        class="mt-3 mb-3"
-                       [jemsTableConfig]="[{minInRem:24, maxInRem:24}, {minInRem:12, maxInRem:12}, {minInRem:9, maxInRem:9}, {minInRem:9}, {minInRem:3, maxInRem:3}]"
+                       [jemsTableConfig]="[{minInRem:2, maxInRem:2}, {minInRem:24, maxInRem:24}, {minInRem:12, maxInRem:12}, {minInRem:9, maxInRem:9}, {minInRem:9}, {minInRem:5, maxInRem:6}, {minInRem:3, maxInRem:3}]"
                        [dataSource]="tableData"
                        formArrayName="deadlines">
+
+                <ng-container matColumnDef="deadlineNumber">
+                    <mat-header-cell *matHeaderCellDef>
+                        <span jemsText>{{'project.application.contract.reporting.column.id' | translate}}</span>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i" class="justify-center number-cell">
+                        <span *ngIf="control.get('deadlineNumber').value"> {{control.get('deadlineNumber').value}}</span>
+                    </mat-cell>
+                </ng-container>
 
                 <ng-container matColumnDef="deadlineReportType" stickyEnd>
                     <mat-header-cell *matHeaderCellDef>
                         <span jemsText>{{'project.application.contract.reporting.column.typeOfReport' | translate}}</span>
                     </mat-header-cell>
-                    <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                        <mat-button-toggle-group
-                                (change)="formService.setDirty(true)"
-                                formControlName="deadlineReportType">
+                    <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i" class="report-type-cell">
+                        <mat-button-toggle-group formControlName="deadlineReportType" [disabled]="control.get('deadlineAnyLinkedProjectReportSubmitted').value">
                             <mat-button-toggle
                                     class="content-toggle"
                                     value="Content"
-                                    (change)="formService.setDirty(true)">
+                                    (change)="updateReportType(control.get('initialDeadlineReportType').value, TypeEnum.Content, (control.get('deadlineLinkedDraftProjectReportNumbers').value?.length > 0 || control.get('deadlineLinkedSubmittedProjectReportNumbers').value?.length > 0), i)">
                                 <mat-icon>description</mat-icon>
                                 <span jemsText>{{'project.application.contract.reporting.toggle.onlyContent' | translate}}</span>
                             </mat-button-toggle>
                             <mat-button-toggle
                                     class="finance-toggle"
                                     value="Finance"
-                                    (change)="formService.setDirty(true)">
+                                    (change)="updateReportType(control.get('initialDeadlineReportType').value, TypeEnum.Finance, (control.get('deadlineLinkedDraftProjectReportNumbers').value?.length > 0 || control.get('deadlineLinkedSubmittedProjectReportNumbers').value?.length > 0), i)">
                                 <mat-icon>savings</mat-icon>
                                 <span jemsText>{{'project.application.contract.reporting.toggle.onlyFinance' | translate}}</span>
                             </mat-button-toggle>
@@ -73,6 +81,9 @@
                                 <span jemsText>{{'project.application.contract.reporting.toggle.both' | translate}}</span>
                             </mat-button-toggle>
                         </mat-button-toggle-group>
+                        <jems-alert [show]="control.get('isPotentialDataLossDueToUpdate').value" [type]="Alert.WARNING" [closable]="false" class="condensed">
+                            <span>{{'project.application.contract.reporting.report.type.potential.update.data.loss' | translate}}</span>
+                        </jems-alert>
                     </mat-cell>
                 </ng-container>
 
@@ -86,6 +97,7 @@
                                     [required]="true"
                                     [label]="'project.application.contract.reporting.column.period'"
                                     [periods]="data.periods"
+                                    [disabled]="control.get('deadlineAnyLinkedProjectReportSubmitted').value"
                                     [control]="control.get('deadlinePeriod')"
                                     (selectionChanged)="updateDatePicker(i, data.periods, control.get('deadlinePeriod').value)">
                             </jems-project-periods-select>
@@ -98,14 +110,16 @@
                         <span jemsText>{{'project.application.contract.reporting.column.date' | translate}}</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                        <mat-form-field jemsFormFieldWidth="full" [ngClass]="{'mat-form-field-invalid': control.get('deadlineDate').errors && control.get('isDeadlineApplicable').value}">
+                        <mat-form-field jemsFormFieldWidth="full"
+                                        [ngClass]="{'mat-form-field-invalid': control.get('deadlineDate').errors && control.get('isDeadlineApplicable').value, 'date-readonly': control.get('deadlineAnyLinkedProjectReportSubmitted').value}">
                             <mat-label>{{'project.application.contract.reporting.column.date' | translate}}</mat-label>
                             <input formControlName="deadlineDate" matInput
                                    [min]="control.get('deadlinePeriodStartDate').value"
                                    [matDatepicker]="deadlineDate"
-                                   required>
+                                   [readonly]="control.get('deadlineAnyLinkedProjectReportSubmitted').value"
+                                   [required]="!control.get('deadlineAnyLinkedProjectReportSubmitted').value">
                             <mat-datepicker-toggle matSuffix [for]="deadlineDate"></mat-datepicker-toggle>
-                            <mat-datepicker #deadlineDate></mat-datepicker>
+                            <mat-datepicker [disabled]="control.get('deadlineAnyLinkedProjectReportSubmitted').value" #deadlineDate></mat-datepicker>
                         </mat-form-field>
                     </mat-cell>
                 </ng-container>
@@ -118,9 +132,19 @@
                         <jems-expandable-textarea [control]="control.get('deadlineComment')"
                                                   [errors]="control.get('deadlineComment').errors"
                                                   [minRows]="1"
+                                                  [maxRows]="6"
                                                   [characterLimit]="1000"
                                                   jemsFormFieldWidth="full">
                         </jems-expandable-textarea>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="deadlineLinkedReportNumbers">
+                    <mat-header-cell *matHeaderCellDef>
+                        <span jemsText>{{'project.application.contract.reporting.column.linked.project.reports' | translate}}</span>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i" class="linked-report-cell">
+                        <span jemsNoWidthLimit> {{linkedProjectReportsText(control.get('deadlineLinkedDraftProjectReportNumbers').value.concat(control.get('deadlineLinkedSubmittedProjectReportNumbers').value))  }} </span>
                     </mat-cell>
                 </ng-container>
 
@@ -129,13 +153,15 @@
                         <span jemsText>{{'project.application.contract.reporting.action' | translate }}</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                        <button mat-icon-button color="accent"
-                                type="button"
-                                [disabled] = "i >= data.reportingDeadlines.length"
-                                (click)="$event.stopPropagation(); delete(i)"
-                                matTooltip="{{'project.application.contract.reporting.action.delete.tooltip' | translate}}">
-                            <mat-icon>delete</mat-icon>
-                        </button>
+                        <div matTooltip="{{ control.get('deadlineLinkedDraftProjectReportNumbers').value?.length > 0 || control.get('deadlineLinkedSubmittedProjectReportNumbers').value?.length > 0 ? ('project.application.contract.reporting.action.delete.linked.reports.info' | translate) : null }}">
+                            <button mat-icon-button color="accent"
+                                    type="button"
+                                    [disabled] = "i >= data.reportingDeadlines.length || control.get('deadlineLinkedDraftProjectReportNumbers').value?.length > 0 || control.get('deadlineLinkedSubmittedProjectReportNumbers').value?.length > 0"
+                                    (click)="$event.stopPropagation(); delete(i)"
+                                    matTooltip="{{'project.application.contract.reporting.action.delete.tooltip' | translate}}">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </div>
                     </mat-cell>
                 </ng-container>
 

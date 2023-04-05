@@ -17,6 +17,8 @@ import io.cloudflight.jems.server.project.service.contracting.reporting.Contract
 import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectVersion
+import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
+import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -41,6 +43,9 @@ class UpdateContractingReportingTest : UnitTest() {
             periodNumber = periodNr,
             date = date,
             comment = "",
+            number = 1,
+            linkedSubmittedProjectReportNumbers = setOf(),
+            linkedDraftProjectReportNumbers = setOf()
         )
 
         private fun invalidInput(isPeriodInvalid: Boolean) = ProjectContractingReportingSchedule(
@@ -49,6 +54,9 @@ class UpdateContractingReportingTest : UnitTest() {
             periodNumber =  if (isPeriodInvalid) null else 1,
             date = if (isPeriodInvalid) LocalDate.of(2022, 8, 9) else null,
             comment = "dummy comment",
+            number = 1,
+            linkedSubmittedProjectReportNumbers = setOf(),
+            linkedDraftProjectReportNumbers = setOf()
         )
     }
 
@@ -62,6 +70,8 @@ class UpdateContractingReportingTest : UnitTest() {
     lateinit var versionPersistence: ProjectVersionPersistence
     @MockK
     lateinit var generalValidator: GeneralValidatorService
+    @MockK
+    lateinit var projectReportPersistence: ProjectReportPersistence
     @MockK
     lateinit var validator: ContractingValidator
 
@@ -94,6 +104,8 @@ class UpdateContractingReportingTest : UnitTest() {
         every { monitoring.startDate } returns LocalDate.of(2022, 8, 9)
         every { contractingMonitoringPersistence.getContractingMonitoring(projectId) } returns monitoring
         every { contractingReportingPersistence.updateContractingReporting(projectId, any()) } returnsArgument 1
+        every { contractingReportingPersistence.getContractingReporting(projectId) } returns listOf()
+        every { projectReportPersistence.getDeadlinesWithLinkedReportStatus(projectId) } returns mapOf()
 
         val reporting = listOf(
             ProjectContractingReportingSchedule(
@@ -102,6 +114,9 @@ class UpdateContractingReportingTest : UnitTest() {
                 periodNumber = 1,
                 date = LocalDate.of(2022, 8, 9) /* first possible date */,
                 comment = "dummy comment 44",
+                number = 1,
+                linkedSubmittedProjectReportNumbers = setOf(),
+                linkedDraftProjectReportNumbers = setOf()
             ),
             ProjectContractingReportingSchedule(
                 id = 45L,
@@ -109,6 +124,9 @@ class UpdateContractingReportingTest : UnitTest() {
                 periodNumber = 1,
                 date = LocalDate.of(2023, 8, 8) /* last possible date */,
                 comment = "dummy comment 45",
+                number = 2,
+                linkedSubmittedProjectReportNumbers = setOf(),
+                linkedDraftProjectReportNumbers = setOf()
             ),
         )
         assertThat(interactor.updateReportingSchedule(projectId, reporting)).containsExactlyElementsOf(reporting)
@@ -166,6 +184,7 @@ class UpdateContractingReportingTest : UnitTest() {
         val monitoring = mockk<ProjectContractingMonitoring>()
         every { monitoring.startDate } returns LocalDate.of(2022, 8, 9)
         every { contractingMonitoringPersistence.getContractingMonitoring(projectId) } returns monitoring
+        every { contractingReportingPersistence.getContractingReporting(projectId) } returns listOf()
 
         // mock very long list without instantiation
         val reportingDeadlines = mockk<Collection<ProjectContractingReportingSchedule>>()
@@ -194,6 +213,7 @@ class UpdateContractingReportingTest : UnitTest() {
         val monitoring = mockk<ProjectContractingMonitoring>()
         every { monitoring.startDate } returns LocalDate.of(2022, 8, 9)
         every { contractingMonitoringPersistence.getContractingMonitoring(projectId) } returns monitoring
+        every { contractingReportingPersistence.getContractingReporting(projectId) } returns listOf()
 
         val reporting = listOf(
             ProjectContractingReportingSchedule(
@@ -202,6 +222,9 @@ class UpdateContractingReportingTest : UnitTest() {
                 periodNumber = 2,
                 date = LocalDate.of(2022, 8, 9),
                 comment = "dummy comment 44",
+                number = 1,
+                linkedSubmittedProjectReportNumbers = setOf(),
+                linkedDraftProjectReportNumbers = setOf()
             ),
         )
 
@@ -215,6 +238,7 @@ class UpdateContractingReportingTest : UnitTest() {
         val version = "V_1.4"
         every { validator.validateSectionLock(ProjectContractingSection.ProjectReportingSchedule, projectId) } returns Unit
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
+        every { contractingReportingPersistence.getContractingReporting(projectId) } returns listOf()
 
         val project = mockk<ProjectFull>()
         every { project.projectStatus.status } returns ApplicationStatus.APPROVED
@@ -228,6 +252,7 @@ class UpdateContractingReportingTest : UnitTest() {
         val monitoring = mockk<ProjectContractingMonitoring>()
         every { monitoring.startDate } returns LocalDate.of(2022, 1, 31)
         every { contractingMonitoringPersistence.getContractingMonitoring(projectId) } returns monitoring
+        every { projectReportPersistence.getDeadlinesWithLinkedReportStatus(projectId) } returns mapOf()
 
         val reporting = listOf(
             deadlineAt(1, LocalDate.of(2022, 1, 31)),
@@ -262,6 +287,7 @@ class UpdateContractingReportingTest : UnitTest() {
         val monitoring = mockk<ProjectContractingMonitoring>()
         every { monitoring.startDate } returns LocalDate.of(2022, 1, 31)
         every { contractingMonitoringPersistence.getContractingMonitoring(projectId) } returns monitoring
+        every { contractingReportingPersistence.getContractingReporting(projectId) } returns listOf()
 
         val reporting = listOf(
             deadlineAt(1, LocalDate.of(2022, 1, 30)),
@@ -294,6 +320,7 @@ class UpdateContractingReportingTest : UnitTest() {
         val monitoring = mockk<ProjectContractingMonitoring>()
         every { monitoring.startDate } returns LocalDate.of(2022, 1, 31)
         every { contractingMonitoringPersistence.getContractingMonitoring(projectId) } returns monitoring
+        every { contractingReportingPersistence.getContractingReporting(projectId) } returns listOf()
 
         val inputData = mutableListOf(invalidInput(true))
         assertThrows<EmptyPeriodNumber> {
@@ -319,6 +346,7 @@ class UpdateContractingReportingTest : UnitTest() {
         val monitoring = mockk<ProjectContractingMonitoring>()
         every { monitoring.startDate } returns LocalDate.of(2022, 1, 31)
         every { contractingMonitoringPersistence.getContractingMonitoring(projectId) } returns monitoring
+        every { contractingReportingPersistence.getContractingReporting(projectId) } returns listOf()
 
         val inputData = mutableListOf(invalidInput(false))
         assertThrows<EmptyDeadlineDate> {
@@ -339,6 +367,9 @@ class UpdateContractingReportingTest : UnitTest() {
                 periodNumber = 4,
                 date = LocalDate.of(2023, 2, 28),
                 comment = "dummy comment 100",
+                number = 1,
+                linkedSubmittedProjectReportNumbers = setOf(),
+                linkedDraftProjectReportNumbers = setOf()
             ),
         )
 
@@ -394,5 +425,87 @@ class UpdateContractingReportingTest : UnitTest() {
 
         interactor.checkNoLongerAvailablePeriodsAndDatesToRemove(projectId)
         verify(exactly = 1) { contractingReportingPersistence.clearPeriodAndDatesFor(invalidPeriodNumberList) }
+    }
+
+    @Test
+    fun `try to delete linked reporting schedule`() {
+        val projectId = 308L
+        val version = "V_3"
+        val reporting = listOf(
+            ProjectContractingReportingSchedule(
+                id = 44L,
+                type = ContractingDeadlineType.Content,
+                periodNumber = 1,
+                date = LocalDate.of(2022, 8, 9) /* first possible date */,
+                comment = "dummy comment 44",
+                number = 1,
+                linkedSubmittedProjectReportNumbers = setOf(),
+                linkedDraftProjectReportNumbers = setOf()
+            ),
+            ProjectContractingReportingSchedule(
+                id = 45L,
+                type = ContractingDeadlineType.Finance,
+                periodNumber = 1,
+                date = LocalDate.of(2023, 8, 8) /* last possible date */,
+                comment = "dummy comment 45",
+                number = 2,
+                linkedSubmittedProjectReportNumbers = setOf(1),
+                linkedDraftProjectReportNumbers = setOf()
+            ),
+        )
+        every { validator.validateSectionLock(ProjectContractingSection.ProjectReportingSchedule, projectId) } returns Unit
+        every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
+
+        val project = mockk<ProjectFull>()
+        every { project.projectStatus.status } returns ApplicationStatus.CONTRACTED
+        every { project.periods } returns listOf(ProjectPeriod(number = 1, start = 1, end = 12))
+        every { projectPersistence.getProject(projectId, version) } returns project
+
+        val monitoring = mockk<ProjectContractingMonitoring>()
+        every { monitoring.startDate } returns LocalDate.of(2022, 8, 9)
+        every { contractingMonitoringPersistence.getContractingMonitoring(projectId) } returns monitoring
+        every { contractingReportingPersistence.updateContractingReporting(projectId, any()) } returnsArgument 1
+        every { contractingReportingPersistence.getContractingReporting(projectId) } returns reporting
+        every { projectReportPersistence.getDeadlinesWithLinkedReportStatus(projectId) } returns mapOf(45L to ProjectReportStatus.Submitted)
+
+        assertThrows<LinkedDeadlineDeletedException> {
+            interactor.updateReportingSchedule(projectId, listOf(reporting[0]))
+        }
+    }
+
+    @Test
+    fun `try to updated submitted report linked reporting schedule`() {
+        val projectId = 308L
+        val version = "V_3"
+        val reportingSchedule = ProjectContractingReportingSchedule(
+            id = 99,
+            type = ContractingDeadlineType.Content,
+            periodNumber = 1,
+            date = LocalDate.of(2022, 8, 9) /* first possible date */,
+            comment = "dummy comment 44",
+            number = 1,
+            linkedSubmittedProjectReportNumbers = setOf(1),
+            linkedDraftProjectReportNumbers = setOf()
+        )
+
+        every { validator.validateSectionLock(ProjectContractingSection.ProjectReportingSchedule, projectId) } returns Unit
+        every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
+
+        val project = mockk<ProjectFull>()
+        every { project.projectStatus.status } returns ApplicationStatus.CONTRACTED
+        every { project.periods } returns listOf(ProjectPeriod(number = 1, start = 1, end = 12))
+        every { projectPersistence.getProject(projectId, version) } returns project
+
+        val monitoring = mockk<ProjectContractingMonitoring>()
+        every { monitoring.startDate } returns LocalDate.of(2022, 8, 9)
+        every { contractingMonitoringPersistence.getContractingMonitoring(projectId) } returns monitoring
+        every { contractingReportingPersistence.updateContractingReporting(projectId, any()) } returnsArgument 1
+        every { contractingReportingPersistence.getContractingReporting(projectId) } returns
+            listOf(reportingSchedule)
+        every { projectReportPersistence.getDeadlinesWithLinkedReportStatus(projectId) } returns mapOf(99L to ProjectReportStatus.Submitted)
+
+        assertThrows<LinkedDeadlineUpdateException> {
+            interactor.updateReportingSchedule(projectId, listOf(reportingSchedule.copy(type = ContractingDeadlineType.Finance)))
+        }
     }
 }

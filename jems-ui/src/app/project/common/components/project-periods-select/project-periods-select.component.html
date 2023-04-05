@@ -6,7 +6,7 @@
 </jems-alert>
 <mat-form-field jemsFormFieldWidth="full">
     <mat-label *ngIf="label">{{label | translate}}</mat-label>
-    <mat-select [disabled]="!periods.length"
+    <mat-select [disabled]="!periods.length || disabled"
                 [formControl]="control"
                 (selectionChange)="selectionChanged.emit()"
                 [required]="required">

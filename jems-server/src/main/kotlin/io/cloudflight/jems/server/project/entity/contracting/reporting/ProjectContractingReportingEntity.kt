@@ -37,4 +37,7 @@ class ProjectContractingReportingEntity(
     @field:NotNull
     var comment: String,
 
+    @field:NotNull
+    var number: Int,
+
 )
