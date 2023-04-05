@@ -389,7 +389,6 @@ class UpdateContractingReportingTest : UnitTest() {
                 "v4.0",
                 projectId,
                 ZonedDateTime.now(),
-                mockk(),
                 ApplicationStatus.APPROVED,
                 false
             ),
@@ -397,7 +396,6 @@ class UpdateContractingReportingTest : UnitTest() {
                 "v3.0",
                 projectId,
                 ZonedDateTime.now().minusDays(1),
-                mockk(),
                 ApplicationStatus.APPROVED,
                 false
             )

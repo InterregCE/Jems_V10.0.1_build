@@ -8,7 +8,6 @@ data class ProjectVersion(
     val version: String,
     val projectId: Long,
     val createdAt: ZonedDateTime,
-    val user: UserEntity,
     val status: ApplicationStatus,
     val current: Boolean,
 )

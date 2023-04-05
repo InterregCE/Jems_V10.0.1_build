@@ -368,7 +368,6 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 "1.0",
                 project.id!!,
                 ZonedDateTime.now(),
-                userEntity,
                 ApplicationStatus.SUBMITTED,
                 true
             )
@@ -1710,21 +1709,9 @@ internal class ProjectDataProviderImplTest : UnitTest() {
 
     @Test
     fun `should return list of project versions`() {
-        val account = UserEntity(
-            id = 1,
-            email = "admin@admin.dev",
-            sendNotificationsToEmail = false,
-            name = "Name",
-            surname = "Surname",
-            userRole = UserRoleEntity(id = 1, name = "ADMIN"),
-            password = "hash_pass",
-            userStatus = UserStatus.ACTIVE
-        )
-
         val createdAt = ZonedDateTime.now()
-
         val versions = listOf(
-            ProjectVersion("1.0", 1L, createdAt, account, ApplicationStatus.DRAFT, true)
+            ProjectVersion("1.0", 1L, createdAt, ApplicationStatus.DRAFT, true)
         )
         val versionsData = listOf(
             ProjectVersionData("1.0", 1L, createdAt, ApplicationStatusData.DRAFT)

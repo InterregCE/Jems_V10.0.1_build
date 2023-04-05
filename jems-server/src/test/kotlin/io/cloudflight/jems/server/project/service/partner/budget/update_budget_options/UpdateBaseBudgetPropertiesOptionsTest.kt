@@ -467,7 +467,6 @@ internal class UpdateBaseBudgetPropertiesOptionsTest : UnitTest() {
                 version = "1.0",
                 projectId = 1,
                 createdAt = ZonedDateTime.now(),
-                user = user,
                 status = ApplicationStatus.CONTRACTED,
                 current = true,
             )
