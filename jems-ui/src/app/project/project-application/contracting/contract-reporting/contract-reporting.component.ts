@@ -37,7 +37,6 @@ export class ContractReportingComponent implements OnInit {
   columnsToDisplay: string[] = [];
   Alert = Alert;
   error$ = new BehaviorSubject<APIError | null>(null);
-  isPotentialDataLossDueToUpdate = false;
   TypeEnum = ProjectContractingReportingScheduleDTO.TypeEnum;
   data$: Observable<{
     periods: ProjectPeriodForMonitoringDTO[];
@@ -109,7 +108,8 @@ export class ContractReportingComponent implements OnInit {
       deadlineLinkedSubmittedProjectReportNumbers: [[]],
       isDeadlineApplicable: [true],
       initialDeadlineReportType: [''],
-      deadlineAnyLinkedProjectReportSubmitted: [false]
+      deadlineAnyLinkedProjectReportSubmitted: [false],
+      isPotentialDataLossDueToUpdate: [false]
     });
     this.deadlines.push(item);
     this.tableData = [...this.deadlines.controls];
@@ -137,14 +137,14 @@ export class ContractReportingComponent implements OnInit {
         deadlineComment: [reportingDeadline.comment, Validators.maxLength(1000)],
         deadlinePeriodStartDate: [periods.find(p => p.number === reportingDeadline.periodNumber)?.startDate],
         deadlinePeriodEndDate: [periods.find(p => p.number === reportingDeadline.periodNumber)?.endDate],
-        deadlineAnyLinkedProjectReportSubmitted: [reportingDeadline.linkedSubmittedProjectReportNumbers.length > 0]
+        deadlineAnyLinkedProjectReportSubmitted: [reportingDeadline.linkedSubmittedProjectReportNumbers.length > 0],
+        isPotentialDataLossDueToUpdate: [false]
       });
       this.deadlines.push(item);
     }
     if (!isEditable || isSectionLocked) {
       this.deadlines.disable();
     }
-    this.isPotentialDataLossDueToUpdate = false;
     this.tableData = [...this.deadlines.controls];
   }
 
@@ -154,7 +154,6 @@ export class ContractReportingComponent implements OnInit {
             tap(() => this.formService.setSuccess('project.application.contract.reporting.form.save.successful')),
             catchError(err => this.formService.setError(err)),
         ).subscribe();
-    this.isPotentialDataLossDueToUpdate = false;
   }
 
   delete(index: number): void {
@@ -170,9 +169,9 @@ export class ContractReportingComponent implements OnInit {
     this.formService.setDirty(true);
   }
 
-  updateReportType(initialType: any, newValue: ProjectContractingReportingScheduleDTO.TypeEnum, isLinkedWithProjectReport: boolean): void {
+  updateReportType(initialType: any, newValue: ProjectContractingReportingScheduleDTO.TypeEnum, isLinkedWithProjectReport: boolean, index: number): void {
     if (isLinkedWithProjectReport && initialType && newValue != initialType as ProjectContractingReportingScheduleDTO.TypeEnum) {
-        this.isPotentialDataLossDueToUpdate = true;
+      this.deadlines.controls[index].get('isPotentialDataLossDueToUpdate')?.setValue(true);
     }
     this.formService.setDirty(true);
   }

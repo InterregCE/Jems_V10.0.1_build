@@ -62,5 +62,20 @@ mat-button-toggle {
       display: none;
     }
   }
+}
 
+#deadline-dates-table mat-cell {
+  align-items: flex-start;
+}
+
+.report-type-cell {
+  flex-direction: column;
+}
+
+mat-cell.mat-column-deadlineDelete, .report-type-cell {
+  padding-top: 1.15rem;
+}
+
+.number-cell, .linked-report-cell {
+  padding-top: 1.75rem;
 }

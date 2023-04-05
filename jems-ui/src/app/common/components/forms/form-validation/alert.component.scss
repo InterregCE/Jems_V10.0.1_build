@@ -39,3 +39,11 @@
     opacity: 0;
   }
 }
+
+:host.condensed {
+  font-size: 0.75rem;
+  .jems-alert {
+    padding: 0 0.5rem;
+    margin: 0.25rem 0;
+  }
+}

@@ -36,10 +36,7 @@
                            [value]="data.projectDuration">
                 </mat-form-field>
             </div>
-            <jems-alert jemsNoWidthLimit [show]="isPotentialDataLossDueToUpdate"
-                        [type]="Alert.WARNING">
-                <span>{{'project.application.contract.reporting.report.type.potential.update.data.loss' | translate}}</span>
-            </jems-alert>
+
             <mat-table *ngIf="data.canView && tableData.length > 0" jemsNoWidthLimit
                        id="deadline-dates-table"
                        class="mt-3 mb-3"
@@ -51,7 +48,7 @@
                     <mat-header-cell *matHeaderCellDef>
                         <span jemsText>{{'project.application.contract.reporting.column.id' | translate}}</span>
                     </mat-header-cell>
-                    <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i" class="justify-center">
+                    <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i" class="justify-center number-cell">
                         <span *ngIf="control.get('deadlineNumber').value"> {{control.get('deadlineNumber').value}}</span>
                     </mat-cell>
                 </ng-container>
@@ -60,19 +57,19 @@
                     <mat-header-cell *matHeaderCellDef>
                         <span jemsText>{{'project.application.contract.reporting.column.typeOfReport' | translate}}</span>
                     </mat-header-cell>
-                    <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                    <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i" class="report-type-cell">
                         <mat-button-toggle-group formControlName="deadlineReportType" [disabled]="control.get('deadlineAnyLinkedProjectReportSubmitted').value">
                             <mat-button-toggle
                                     class="content-toggle"
                                     value="Content"
-                                    (change)="updateReportType(control.get('initialDeadlineReportType').value, TypeEnum.Content, (control.get('deadlineLinkedDraftProjectReportNumbers').value?.length > 0 || control.get('deadlineLinkedSubmittedProjectReportNumbers').value?.length > 0))">
+                                    (change)="updateReportType(control.get('initialDeadlineReportType').value, TypeEnum.Content, (control.get('deadlineLinkedDraftProjectReportNumbers').value?.length > 0 || control.get('deadlineLinkedSubmittedProjectReportNumbers').value?.length > 0), i)">
                                 <mat-icon>description</mat-icon>
                                 <span jemsText>{{'project.application.contract.reporting.toggle.onlyContent' | translate}}</span>
                             </mat-button-toggle>
                             <mat-button-toggle
                                     class="finance-toggle"
                                     value="Finance"
-                                    (change)="updateReportType(control.get('initialDeadlineReportType').value, TypeEnum.Finance, (control.get('deadlineLinkedDraftProjectReportNumbers').value?.length > 0 || control.get('deadlineLinkedSubmittedProjectReportNumbers').value?.length > 0))">
+                                    (change)="updateReportType(control.get('initialDeadlineReportType').value, TypeEnum.Finance, (control.get('deadlineLinkedDraftProjectReportNumbers').value?.length > 0 || control.get('deadlineLinkedSubmittedProjectReportNumbers').value?.length > 0), i)">
                                 <mat-icon>savings</mat-icon>
                                 <span jemsText>{{'project.application.contract.reporting.toggle.onlyFinance' | translate}}</span>
                             </mat-button-toggle>
@@ -84,6 +81,9 @@
                                 <span jemsText>{{'project.application.contract.reporting.toggle.both' | translate}}</span>
                             </mat-button-toggle>
                         </mat-button-toggle-group>
+                        <jems-alert [show]="control.get('isPotentialDataLossDueToUpdate').value" [type]="Alert.WARNING" [closable]="false" class="condensed">
+                            <span>{{'project.application.contract.reporting.report.type.potential.update.data.loss' | translate}}</span>
+                        </jems-alert>
                     </mat-cell>
                 </ng-container>
 
@@ -132,6 +132,7 @@
                         <jems-expandable-textarea [control]="control.get('deadlineComment')"
                                                   [errors]="control.get('deadlineComment').errors"
                                                   [minRows]="1"
+                                                  [maxRows]="6"
                                                   [characterLimit]="1000"
                                                   jemsFormFieldWidth="full">
                         </jems-expandable-textarea>
@@ -142,7 +143,7 @@
                     <mat-header-cell *matHeaderCellDef>
                         <span jemsText>{{'project.application.contract.reporting.column.linked.project.reports' | translate}}</span>
                     </mat-header-cell>
-                    <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                    <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i" class="linked-report-cell">
                         <span jemsNoWidthLimit> {{linkedProjectReportsText(control.get('deadlineLinkedDraftProjectReportNumbers').value.concat(control.get('deadlineLinkedSubmittedProjectReportNumbers').value))  }} </span>
                     </mat-cell>
                 </ng-container>

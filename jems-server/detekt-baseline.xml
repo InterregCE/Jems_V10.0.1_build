@@ -561,7 +561,7 @@
     <ID>ThrowsCount:BudgetCostValidator.kt$BudgetCostValidator$final fun validateBaseEntries(budgetEntries: List&lt;BaseBudgetEntry&gt;)</ID>
     <ID>ThrowsCount:CreateOutputIndicator.kt$CreateOutputIndicator$private fun validateOutputIndicatorDetail(outputIndicator: OutputIndicator)</ID>
     <ID>ThrowsCount:CreateUser.kt$CreateUser$private fun validateUser(user: UserChange)</ID>
-    <ID>ThrowsCount:UpdateContractingReporting.kt$UpdateContractingReporting$private fun validateInputData( deadlines: Collection&lt;ProjectContractingReportingSchedule&gt;, periods: Map&lt;Int, ProjectPeriod&gt;, startDate: LocalDate, projectId: Long )</ID>
+    <ID>ThrowsCount:UpdateContractingReporting.kt$UpdateContractingReporting$private fun validateInputData( deadlines: Collection&lt;ProjectContractingReportingSchedule&gt;, oldDeadlines: Map&lt;Long, ProjectContractingReportingSchedule&gt;, periods: Map&lt;Int, ProjectPeriod&gt;, startDate: LocalDate, projectId: Long )</ID>
     <ID>ThrowsCount:UpdateProjectResults.kt$UpdateProjectResults$private fun validateProjectResultsWithProjectStatus(projectId: Long, projectResults: List&lt;ProjectResult&gt;)</ID>
     <ID>ThrowsCount:WorkPackageActivityValidation.kt$fun validateWorkPackageActivities(workPackageActivities: Collection&lt;WorkPackageActivity&gt;)</ID>
     <ID>TooGenericExceptionThrown:MockedMethodSignature.kt$MockedMethodSignature$throw Exception("sample exception!")</ID>

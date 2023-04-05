@@ -140,10 +140,11 @@ class UpdateContractingReporting(
     private fun Map<Int, Pair<LocalDate, LocalDate>>.endLimit(periodNumber: Int) = get(periodNumber)!!.second
 
     private fun Collection<ProjectContractingReportingSchedule>.ids() = mapTo(HashSet()) { it.id }
+
     private fun Collection<ProjectContractingReportingSchedule>.fillMissingNumbers(
         ignoreIds: Set<Long>,
     ): List<ProjectContractingReportingSchedule> {
-        var nextNumber = this.maxOfOrNull { it.number } ?: 1
+        var nextNumber = this.maxOfOrNull { it.number + 1 } ?: 1
         return map { deadline ->
             if (deadline.id !in ignoreIds) {
                 deadline.number = nextNumber
