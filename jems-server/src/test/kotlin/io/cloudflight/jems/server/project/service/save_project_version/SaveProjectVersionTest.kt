@@ -38,21 +38,13 @@ internal class SaveProjectVersionTest : UnitTest() {
         password = "hash_pass",
         userStatus = UserStatus.ACTIVE
     )
+
     private val currentProjectVersion = ProjectVersion(
         "1.0",
         projectId,
         createdAt = ZonedDateTime.now(),
-        user,
         ApplicationStatus.RETURNED_TO_APPLICANT,
         current = false
-    )
-    private val newProjectVersion = ProjectVersion(
-        "2.0",
-        projectId,
-        createdAt = ZonedDateTime.now(),
-        user,
-        ApplicationStatus.SUBMITTED,
-        current = true
     )
 
     private val newProjectVersionSummary = ProjectVersionSummary(

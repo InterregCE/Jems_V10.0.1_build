@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.project.repository.workpackage.output
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.entity.addTranslationEntities
 import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.common.entity.extractTranslation
@@ -16,6 +15,7 @@ import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageO
 import io.cloudflight.jems.server.project.service.result.model.OutputRow
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutputTranslatedValue
+import java.math.BigDecimal
 import kotlin.collections.HashSet
 
 fun WorkPackageOutput.toEntity(
@@ -88,7 +88,7 @@ fun List<OutputRowWithTranslations>.toModel() = this
             workPackageNumber = groupedRows.value.first().workPackageNumber,
             outputTitle = groupedRows.value.extractField { it.title },
             outputNumber = groupedRows.value.first().number,
-            outputTargetValue = groupedRows.value.first().targetValue,
+            outputTargetValue = groupedRows.value.first().targetValue ?: BigDecimal.ZERO,
             programmeOutputId = groupedRows.value.first().programmeOutputId,
             programmeResultId = groupedRows.value.first().programmeResultId,
         )

@@ -37,8 +37,6 @@ import io.cloudflight.jems.server.project.service.model.ProjectVersion
 import io.cloudflight.jems.server.project.service.model.ProjectVersionSummary
 import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentEligibility
 import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentQuality
-import io.cloudflight.jems.server.user.entity.UserEntity
-import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.repository.user.toUserSummary
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
 import io.cloudflight.jems.server.user.service.model.UserSummary
@@ -62,16 +60,6 @@ fun List<ProjectVersionRow>.toProjectVersion() =
             groupedRows.value.first().version,
             groupedRows.value.first().projectId,
             ZonedDateTime.of(groupedRows.value.first().createdAt.toLocalDateTime(), ZoneOffset.UTC),
-            UserEntity(
-                groupedRows.value.first().userId,
-                groupedRows.value.first().email,
-                groupedRows.value.first().sendNotificationsToEmail,
-                groupedRows.value.first().name,
-                groupedRows.value.first().surname,
-                UserRoleEntity(groupedRows.value.first().roleId, groupedRows.value.first().roleName),
-                "",
-                groupedRows.value.first().userStatus
-            ),
             groupedRows.value.first().status,
             current = groupedRows.value.first().rowEnd == null
         )
