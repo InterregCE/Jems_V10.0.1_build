@@ -2,13 +2,14 @@ import {Component} from '@angular/core';
 import {combineLatest, Observable, Subject} from 'rxjs';
 import {finalize, map, take} from 'rxjs/operators';
 import {SharedFolderPageStore} from '@project/project-application/shared-folder/shared-folder-page.store';
-import {PageJemsFileDTO, JemsFileDTO} from '@cat/api';
+import {JemsFileDTO, PageJemsFileDTO} from '@cat/api';
 import {FileListItem} from '@common/components/file-list/file-list-item';
 import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
 import {FileListComponent} from '@common/components/file-list/file-list.component';
 import {AcceptedFileTypesConstants} from '@project/common/components/file-management/accepted-file-types.constants';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {Alert} from '@common/components/forms/alert';
+import {SecurityService} from '../../../security/security.service';
 
 @UntilDestroy()
 @Component({
@@ -31,13 +32,15 @@ export class SharedFolderPageComponent {
   acceptedFilesTypes = AcceptedFileTypesConstants.acceptedFilesTypes;
   Alert = Alert;
 
-  constructor(public pageStore: SharedFolderPageStore) {
+  constructor(public pageStore: SharedFolderPageStore,
+              private readonly securityService: SecurityService) {
 
     this.data$ = combineLatest([
       this.pageStore.fileList$,
       this.pageStore.userCanEdit$,
+      this.securityService.currentUser.pipe(map(user => user?.id || 0)),
     ]).pipe(
-      map(([files, canEdit]) => ({
+      map(([files, canEdit, currentUserId]) => ({
         files,
         fileList: files.content.map((file: JemsFileDTO) => ({
           id: file.id,
@@ -47,8 +50,8 @@ export class SharedFolderPageComponent {
           author: file.author,
           sizeString: file.sizeString,
           description: file.description,
-          editable: canEdit,
-          deletable: canEdit,
+          editable: canEdit && file.author.id === currentUserId,
+          deletable: canEdit && file.author.id === currentUserId,
           tooltipIfNotDeletable: '',
           iconIfNotDeletable: ''
         })),

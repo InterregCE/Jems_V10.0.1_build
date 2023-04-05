@@ -41,15 +41,25 @@ export class ProjectUtil {
       || status === ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANTFORCONDITIONS;
   }
 
+  static isInSubmittedOrAnyStatusAfterSubmitted(statusOrProject: ProjectDetailDTO | ProjectStatusDTO): boolean {
+    const status = this.getStatus(statusOrProject);
+    return status == ProjectStatusDTO.StatusEnum.SUBMITTED
+      || status == ProjectStatusDTO.StatusEnum.CONDITIONSSUBMITTED
+      || status == ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANT
+      || status == ProjectStatusDTO.StatusEnum.RETURNEDTOAPPLICANTFORCONDITIONS
+      || status == ProjectStatusDTO.StatusEnum.ELIGIBLE
+      || status == ProjectStatusDTO.StatusEnum.INELIGIBLE
+      || status == ProjectStatusDTO.StatusEnum.APPROVEDWITHCONDITIONS
+      || status == ProjectStatusDTO.StatusEnum.NOTAPPROVED
+      || this.isInApprovedOrAnyStatusAfterApproved(statusOrProject);
+  }
+
   static isInApprovedOrAnyStatusAfterApproved(statusOrProject: ProjectDetailDTO | ProjectStatusDTO): boolean {
     const status = this.getStatus(statusOrProject);
     return status === ProjectStatusDTO.StatusEnum.APPROVED
-      || status === ProjectStatusDTO.StatusEnum.MODIFICATIONREJECTED
       || status === ProjectStatusDTO.StatusEnum.MODIFICATIONPRECONTRACTING
       || status === ProjectStatusDTO.StatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED
-      || status === ProjectStatusDTO.StatusEnum.CONTRACTED
-      || status === ProjectStatusDTO.StatusEnum.INMODIFICATION
-      || status === ProjectStatusDTO.StatusEnum.MODIFICATIONSUBMITTED;
+      || this.isContractedOrAnyStatusAfterContracted(statusOrProject);
   }
 
   static isContractedOrAnyStatusAfterContracted(statusOrProject: ProjectDetailDTO | ProjectStatusDTO | ProjectStatusDTO.StatusEnum): boolean {
