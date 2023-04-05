@@ -35,6 +35,7 @@ fun partnerReportSubmitted(
     context: Any,
     projectId: Long,
     report: ProjectPartnerReportSubmissionSummary,
+    isGdprSensitive: Boolean
 ): AuditCandidateEvent =
     AuditCandidateEvent(
         context = context,
@@ -45,14 +46,17 @@ fun partnerReportSubmitted(
                 acronym = report.projectAcronym,
             )
             .entityRelatedId(entityRelatedId = report.id)
-            .description("[" +
-                report.projectIdentifier +
-                "] [" +
-                (if (report.partnerRole == ProjectPartnerRole.LEAD_PARTNER) "LP" else "PP") +
-                "${report.partnerNumber}" +
-                "] Partner report R.${report.reportNumber} submitted")
+            .description(
+                "[" +
+                        report.projectIdentifier +
+                        "] [" +
+                        (if (report.partnerRole == ProjectPartnerRole.LEAD_PARTNER) "LP" else "PP") +
+                        "${report.partnerNumber}" +
+                        "] Partner report R.${report.reportNumber} submitted ${(if (isGdprSensitive) "[Contains sensitive data]" else "")}"
+            )
             .build()
     )
+
 
 fun partnerReportStartedControl(
     context: Any,

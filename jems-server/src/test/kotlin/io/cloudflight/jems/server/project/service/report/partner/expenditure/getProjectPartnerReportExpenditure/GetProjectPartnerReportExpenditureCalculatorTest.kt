@@ -1,16 +1,24 @@
 package io.cloudflight.jems.server.project.service.report.partner.expenditure.getProjectPartnerReportExpenditure
 
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.common.SENSITIVE_FILE_NAME_MAKS
+import io.cloudflight.jems.server.common.SENSITIVE_TRANSLATION_MAKS
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
 import io.cloudflight.jems.server.currency.service.model.CurrencyConversion
+import io.cloudflight.jems.server.project.authorization.AuthorizationUtil
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.SensitiveDataAuthorizationService
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
+import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -35,13 +43,13 @@ internal class GetProjectPartnerReportExpenditureCalculatorTest : UnitTest() {
         private val MONTH = LocalDate.now().monthValue
         private val MOMENT = ZonedDateTime.now()
 
-        private fun expenditure(id: Long) = ProjectPartnerReportExpenditureCost(
+        private fun expenditure(id: Long, sensitive: Boolean = false) = ProjectPartnerReportExpenditureCost(
             id = id,
             number = 1,
             lumpSumId = 45L,
             unitCostId = 46L,
             costCategory = ReportBudgetCategory.TravelAndAccommodationCosts,
-            gdpr = false,
+            gdpr = sensitive,
             investmentId = 89L,
             contractId = 54L,
             internalReferenceNumber = "145",
@@ -58,13 +66,13 @@ internal class GetProjectPartnerReportExpenditureCalculatorTest : UnitTest() {
             parkingMetadata = null,
         )
 
-        private fun filledInExpenditure(id: Long) = ProjectPartnerReportExpenditureCost(
+        private fun filledInExpenditure(id: Long, sensitive: Boolean = false) = ProjectPartnerReportExpenditureCost(
             id = id,
             number = 1,
             lumpSumId = 45L,
             unitCostId = 46L,
             costCategory = ReportBudgetCategory.TravelAndAccommodationCosts,
-            gdpr = false,
+            gdpr = sensitive,
             investmentId = 89L,
             contractId = 54L,
             internalReferenceNumber = "145",
@@ -99,6 +107,12 @@ internal class GetProjectPartnerReportExpenditureCalculatorTest : UnitTest() {
     @MockK
     lateinit var currencyPersistence: CurrencyPersistence
 
+    @MockK
+    lateinit var securityService: SecurityService
+
+    @MockK
+    lateinit var sensitiveDataAuthorization: SensitiveDataAuthorizationService
+
     @InjectMockKs
     lateinit var calculator: GetProjectPartnerReportExpenditureCalculator
 
@@ -118,6 +132,7 @@ internal class GetProjectPartnerReportExpenditureCalculatorTest : UnitTest() {
             listOf(expenditure(10L))
 
         every { currencyPersistence.findAllByIdYearAndIdMonth(year = YEAR, month = MONTH) } returns listOf(cstCurrency)
+        every { sensitiveDataAuthorization.canViewPartnerSensitiveData(PARTNER_ID) } returns true
 
         assertThat(calculator.getExpenditureCosts(PARTNER_ID, reportId = 74L))
             .containsExactly(filledInExpenditure(10L))
@@ -138,6 +153,8 @@ internal class GetProjectPartnerReportExpenditureCalculatorTest : UnitTest() {
         )
 
         every { currencyPersistence.findAllByIdYearAndIdMonth(year = YEAR, month = MONTH) } returns emptyList()
+        every { sensitiveDataAuthorization.canViewPartnerSensitiveData(PARTNER_ID) } returns true
+
 
         assertThat(calculator.getExpenditureCosts(PARTNER_ID, reportId = 76L)).containsExactly(
             filledInExpenditure(10L).copy(currencyConversionRate = null, declaredAmountAfterSubmission = null),
@@ -160,6 +177,9 @@ internal class GetProjectPartnerReportExpenditureCalculatorTest : UnitTest() {
         every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, reportId = 78L) } returns
             listOf(notFilledInExpenditure)
 
+        every { securityService.getUserIdOrThrow() } returns AuthorizationUtil.applicantUser.user.id
+        every { sensitiveDataAuthorization.canViewPartnerSensitiveData(PARTNER_ID) } returns true
+
         assertThat(calculator.getExpenditureCosts(PARTNER_ID, reportId = 78L))
             .containsExactly(notFilledInExpenditure)
 
@@ -174,5 +194,65 @@ internal class GetProjectPartnerReportExpenditureCalculatorTest : UnitTest() {
         assertThat(notFilledInExpenditure.declaredAmountAfterSubmission)
             .isEqualTo(BigDecimal.valueOf(1000, 2))
     }
+
+    @Test
+    fun `sensitive expenditure data is anonymized for Non GDPR collaborator`() {
+        val report = mockk<ProjectPartnerReport>()
+        val userId = AuthorizationUtil.applicantUser.user.id
+        every { report.status } returns ReportStatus.Submitted
+        every { reportPersistence.getPartnerReportById(PARTNER_ID, 82L) } returns report
+        every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, reportId = 82L) } returns
+                listOf(
+                    expenditure(10L, sensitive = true).copy(
+                        description = setOf(InputTranslation(language = SystemLanguage.EN, translation = "expenditure 10 description")),
+                        comment = setOf(InputTranslation(language = SystemLanguage.EN, translation = "expenditure 10 comment"))
+                    ),
+                    expenditure(11L).copy(
+                        description = setOf(InputTranslation(language = SystemLanguage.EN, translation = "expenditure 11 description")),
+                        comment = setOf(InputTranslation(language = SystemLanguage.EN, translation = "expenditure 11 comment"))
+                    ))
+
+        every { securityService.getUserIdOrThrow() } returns userId
+        every { securityService.currentUser?.hasPermission(UserRolePermission.ProjectReportingView) } returns false
+        every { sensitiveDataAuthorization.canViewPartnerSensitiveData(PARTNER_ID) } returns false
+
+        val expenditureCosts = calculator.getExpenditureCosts(PARTNER_ID, reportId = 82L)
+        assertThat(expenditureCosts.first().description).isEqualTo(
+            setOf(InputTranslation(language = SystemLanguage.EN, translation = SENSITIVE_TRANSLATION_MAKS)))
+        assertThat(expenditureCosts.first().comment).isEqualTo(
+            setOf(InputTranslation(language = SystemLanguage.EN, translation = SENSITIVE_TRANSLATION_MAKS)))
+        assertThat(expenditureCosts.first().attachment?.name).isEqualTo(SENSITIVE_FILE_NAME_MAKS)
+    }
+    @Test
+    fun `sensitive expenditure data visible for GDPR collaborator`() {
+        val report = mockk<ProjectPartnerReport>()
+        val userId = AuthorizationUtil.applicantUser.user.id
+        every { report.status } returns ReportStatus.Submitted
+        every { reportPersistence.getPartnerReportById(PARTNER_ID, 82L) } returns report
+        every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, reportId = 82L) } returns
+                listOf(
+                    expenditure(10L, sensitive = true).copy(
+                        description = setOf(InputTranslation(language = SystemLanguage.EN, translation = "expenditure 10 description")),
+                        comment = setOf(InputTranslation(language = SystemLanguage.EN, translation = "expenditure 10 comment"))
+                    ),
+                    expenditure(11L).copy(
+                        description = setOf(InputTranslation(language = SystemLanguage.EN, translation = "expenditure 11 description")),
+                        comment = setOf(InputTranslation(language = SystemLanguage.EN, translation = "expenditure 11 comment"))
+                    ))
+
+        every { securityService.getUserIdOrThrow() } returns userId
+        every { securityService.currentUser?.hasPermission(UserRolePermission.ProjectReportingView) } returns false
+        every { sensitiveDataAuthorization.canViewPartnerSensitiveData(PARTNER_ID) } returns true
+
+        val expenditureCosts = calculator.getExpenditureCosts(PARTNER_ID, reportId = 82L)
+        assertThat(expenditureCosts.first().description).isEqualTo(
+            setOf(InputTranslation(language = SystemLanguage.EN, translation = "expenditure 10 description"))
+        )
+        assertThat(expenditureCosts.first().comment).isEqualTo(
+            setOf(InputTranslation(language = SystemLanguage.EN, translation = "expenditure 10 comment"))
+        )
+        assertThat(expenditureCosts.first().attachment?.name).isEqualTo("file.txt")
+    }
+
 
 }

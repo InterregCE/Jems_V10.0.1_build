@@ -1,5 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.partner.file.listProjectPartnerReportFile
 
+import io.cloudflight.jems.server.common.SENSITIVE_FILE_NAME_MAKS
+import io.cloudflight.jems.server.common.SENSITIVE_TRANSLATION_MAKS
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.file.service.model.JemsFile
@@ -8,6 +10,8 @@ import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType.*
 import io.cloudflight.jems.server.project.authorization.CanViewPartnerReport
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
+import io.cloudflight.jems.server.project.service.report.partner.SensitiveDataAuthorizationService
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -16,7 +20,9 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class ListProjectPartnerReportFile(
     private val partnerPersistence: PartnerPersistence,
-    private val filePersistence: JemsFilePersistence
+    private val filePersistence: JemsFilePersistence,
+    private val reportExpenditurePersistence: ProjectPartnerReportExpenditurePersistence,
+    private val sensitiveDataAuthorization: SensitiveDataAuthorizationService
 ) : ListProjectPartnerReportFileInteractor {
 
     companion object {
@@ -53,7 +59,12 @@ class ListProjectPartnerReportFile(
             indexPrefix = filePathPrefix,
             filterSubtypes = searchRequest.filterSubtypes,
             filterUserIds = emptySet(),
-        )
+        ).also {
+            if (!sensitiveDataAuthorization.canViewPartnerSensitiveData(partnerId)) {
+                it.anonymizeSensitiveFileMetadata(partnerId, searchRequest.reportId)
+            }
+
+        }
     }
 
     private fun generateSearchString(
@@ -80,6 +91,28 @@ class ListProjectPartnerReportFile(
             { InvalidSearchConfiguration() },
             { invalidFilters -> InvalidSearchFilterConfiguration(invalidFilters) },
         )
+    }
+
+    fun Page<JemsFile>.anonymizeSensitiveFileMetadata(partnerId: Long, reportId: Long) {
+        val fileTypeToFiles =  this.content.groupBy { it.type }
+        for ((fileType, files) in fileTypeToFiles) {
+            when(fileType) {
+                Expenditure -> anonymizeExpenditureFileNames(files, partnerId, reportId)
+                else -> return
+            }
+        }
+
+    }
+
+    private fun anonymizeExpenditureFileNames(files: List<JemsFile>, partnerId: Long, reportId: Long) {
+       val gdprProtectedExpendituresFileIds = reportExpenditurePersistence.getPartnerReportExpenditureCosts(partnerId = partnerId, reportId = reportId)
+            .filter { it.gdpr }.map { it.attachment?.id }
+        files.forEach {
+            it.takeIf { it.id in gdprProtectedExpendituresFileIds }?.apply {
+                this.name = SENSITIVE_FILE_NAME_MAKS
+                this.description = SENSITIVE_TRANSLATION_MAKS
+            }
+        }
     }
 
 }

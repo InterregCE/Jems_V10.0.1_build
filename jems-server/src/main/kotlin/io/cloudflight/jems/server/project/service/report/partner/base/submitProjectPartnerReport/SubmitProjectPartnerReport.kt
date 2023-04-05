@@ -20,11 +20,11 @@ import io.cloudflight.jems.server.project.service.report.partner.contribution.ex
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.ProjectPartnerReportExpenditureVerificationPersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.fillCurrencyRates
-import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
-import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportInvestmentPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportLumpSumPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportUnitCostPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportInvestmentPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.generateCoFinCalculationInputData
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.getCurrentFrom
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.calculateCurrent
@@ -86,17 +86,17 @@ class SubmitProjectPartnerReport(
         saveCurrentLumpSums(expenditures.getCurrentForLumpSums(), partnerId = partnerId, reportId) // table 3
         saveCurrentUnitCosts(expenditures.getCurrentForUnitCosts(), partnerId = partnerId, reportId) // table 4
         saveCurrentInvestments(expenditures.getCurrentForInvestments(), partnerId = partnerId, reportId) // table 5
-
         return reportPersistence.submitReportById(
             partnerId = partnerId,
             reportId = reportId,
             submissionTime = ZonedDateTime.now()
-        ).also {
+        ).also { it ->
             auditPublisher.publishEvent(
                 partnerReportSubmitted(
                     context = this,
                     projectId = partnerPersistence.getProjectIdForPartnerId(id = partnerId, it.version),
                     report = it,
+                    isGdprSensitive = expenditures.any { it.gdpr }
                 )
             )
         }.status

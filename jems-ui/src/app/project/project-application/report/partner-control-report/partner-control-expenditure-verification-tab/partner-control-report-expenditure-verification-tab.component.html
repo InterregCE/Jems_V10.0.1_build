@@ -40,7 +40,9 @@
                         <ng-container matColumnDef="costGDPR" sticky>
                             <mat-header-cell *matHeaderCellDef>
                                 <div class ="custom-icon gdpr">
-                                    <mat-icon>privacy_tip</mat-icon>
+                                    <mat-icon matTooltip="{{'project.application.partner.report.expenditures.tab.cost.checkbox.sensitive.info' | translate}}">
+                                        privacy_tip
+                                    </mat-icon>
                                 </div>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
@@ -177,8 +179,14 @@
 
                         <ng-container matColumnDef="description">
                             <mat-header-cell *matHeaderCellDef>
-                                        <span jemsText
-                                              maxLines="2">{{'project.application.partner.report.expenditures.tab.description' | translate}}</span>
+                                <span jemsText
+                                      maxLines="2">{{'project.application.partner.report.expenditures.tab.description' | translate}}</span>
+                                <span>
+                                    <mat-icon
+                                            matTooltip="{{'project.application.partner.report.expenditures.tab.cost.field.sensitive.info' | translate}}">
+                                        privacy_tip
+                                    </mat-icon>
+                                </span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <div class="custom-wrapper"
@@ -194,8 +202,14 @@
 
                         <ng-container matColumnDef="comment">
                             <mat-header-cell *matHeaderCellDef>
-                                        <span jemsText
-                                              maxLines="2">{{'project.application.partner.report.expenditures.tab.comment' | translate}}</span>
+                                <span jemsText
+                                      maxLines="2">{{'project.application.partner.report.expenditures.tab.comment' | translate}}</span>
+                                <span>
+                                    <mat-icon
+                                            matTooltip="{{'project.application.partner.report.expenditures.tab.cost.field.sensitive.info' | translate}}">
+                                        privacy_tip
+                                    </mat-icon>
+                                </span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <div  class="custom-wrapper"
@@ -323,12 +337,20 @@
                         </ng-container>
 
                         <ng-container matColumnDef="uploadFunction">
-                            <mat-header-cell  *matHeaderCellDef>{{'project.application.partner.report.attachments' | translate}}</mat-header-cell>
+                            <mat-header-cell  *matHeaderCellDef>{{'project.application.partner.report.attachments' | translate}}
+                                <span>
+                                    <mat-icon
+                                            matTooltip="{{'project.application.partner.report.expenditures.tab.cost.field.sensitive.info' | translate}}">
+                                        privacy_tip
+                                    </mat-icon>
+                                </span>
+                            </mat-header-cell>
                             <mat-cell class="justify-start" *matCellDef="let control;let expenditureIndex=index" [formGroupName]="expenditureIndex" >
                                 <jems-partner-actions-cell
                                         *ngIf="control.get('id').value"
                                         [formControlName]="constants.FORM_CONTROL_NAMES.attachment"
                                         [isReportEditable]="false"
+                                        [canDownload]="canViewSensitiveData(control.get(constants.FORM_CONTROL_NAMES.costGDPR).value, data.isGdprCompliant, data.isMonitorUser)"
                                         (download)="onDownloadFile($event)">
                                 </jems-partner-actions-cell>
                             </mat-cell>

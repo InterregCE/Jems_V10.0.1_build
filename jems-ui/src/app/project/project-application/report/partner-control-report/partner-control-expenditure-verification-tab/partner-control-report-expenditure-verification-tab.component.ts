@@ -21,7 +21,7 @@ import {
   ProjectPartnerReportExpenditureCostDTO,
   ProjectPartnerReportLumpSumDTO,
   ProjectPartnerReportUnitCostDTO,
-  TypologyErrorsDTO
+  TypologyErrorsDTO, UserRoleDTO
 } from '@cat/api';
 import {
   InvestmentSummary
@@ -45,13 +45,16 @@ import {
 import {Alert} from '@common/components/forms/alert';
 import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 import {MatTable} from '@angular/material/table';
+import {PrivilegesPageStore} from '@project/project-application/privileges-page/privileges-page-store.service';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import {PermissionService} from '../../../../../security/permissions/permission.service';
 
 @UntilDestroy()
 @Component({
   selector: 'jems-partner-control-report-expenditure-verification-page',
   templateUrl: './partner-control-report-expenditure-verification-tab.component.html',
   styleUrls: ['./partner-control-report-expenditure-verification-tab.component.scss'],
-  providers: [FormService],
+  providers: [FormService, PrivilegesPageStore],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PartnerControlReportExpenditureVerificationTabComponent implements OnInit, AfterViewChecked {
@@ -72,6 +75,8 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
     contractIDs: IdNamePairDTO[];
     unitCosts: ProjectPartnerReportUnitCostDTO[];
     lumpSums: ProjectPartnerReportLumpSumDTO[];
+    isMonitorUser: boolean;
+    isGdprCompliant: boolean;
     typologyOfErrors: TypologyErrorsDTO[];
   }>;
   reportCosts$: Observable<{
@@ -103,7 +108,9 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
               private partnerReportDetailPageStore: PartnerReportDetailPageStore,
               private router: RoutingService,
               private customTranslatePipe: CustomTranslatePipe,
-              private translateByInputLanguagePipe: TranslateByInputLanguagePipe) {
+              private translateByInputLanguagePipe: TranslateByInputLanguagePipe,
+              private privilegesPageStore: PrivilegesPageStore,
+              private permissionService: PermissionService) {
   }
 
   ngOnInit(): void {
@@ -205,13 +212,17 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
       this.pageStore.investmentsSummary$,
       this.pageStore.contractIDs$,
       this.reportCosts$,
+      this.permissionService.hasPermission(PermissionsEnum.ProjectReportingView),
+      this.privilegesPageStore.isCurrentUserGDPRCompliant$
     ]).pipe(
-      map(([typologyOfErrors, expendituresCosts, costCategories, investmentsSummary, contractIDs, reportCosts]) => ({
+      map(([typologyOfErrors, expendituresCosts, costCategories, investmentsSummary, contractIDs, reportCosts, isMonitorUser, isGdprCompliant]: any) => ({
           typologyOfErrors,
           expendituresCosts,
           costCategories,
           investmentsSummary,
           contractIDs,
+          isMonitorUser,
+          isGdprCompliant,
           ...reportCosts,
         })
       ),
@@ -396,6 +407,11 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
       .pipe(take(1))
       .subscribe();
   }
+
+  canViewSensitiveData(valueGDPR: boolean, isGDPRCompliant: boolean, isMonitorUser: boolean): boolean {
+    return  !valueGDPR || (valueGDPR && (isGDPRCompliant || isMonitorUser));
+  }
+
 
   refreshListOfExpenditures(): void {
     this.pageStore.refreshExpenditures$.next(undefined);

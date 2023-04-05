@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.partner.file.setDescriptionToFile
 
 import io.cloudflight.jems.api.common.dto.I18nMessage
+import io.cloudflight.jems.server.common.exception.ApplicationAccessDeniedException
 import io.cloudflight.jems.server.common.exception.ApplicationException
 import io.cloudflight.jems.server.common.exception.ApplicationNotFoundException
 
@@ -16,4 +17,10 @@ class SetDescriptionToProjectPartnerReportFileException(cause: Throwable) : Appl
 class FileNotFound : ApplicationNotFoundException(
     code = "$SET_DESCRIPTION_TO_PROJECT_PARTNER_REPORT_FILE_ERROR_CODE_PREFIX-001",
     i18nMessage = I18nMessage("$SET_DESCRIPTION_TO_PROJECT_PARTNER_REPORT_FILE_ERROR_KEY_PREFIX.not.found"),
+)
+
+
+class SensitiveFileException: ApplicationAccessDeniedException(
+    code = "$SET_DESCRIPTION_TO_PROJECT_PARTNER_REPORT_FILE_ERROR_CODE_PREFIX-002",
+    i18nMessage = I18nMessage("$SET_DESCRIPTION_TO_PROJECT_PARTNER_REPORT_FILE_ERROR_KEY_PREFIX.sensitive.failed"),
 )

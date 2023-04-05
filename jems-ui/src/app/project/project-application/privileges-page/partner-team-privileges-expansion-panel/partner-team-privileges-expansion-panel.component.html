@@ -50,6 +50,11 @@
                         <mat-slide-toggle color="primary"
                                           [disabled]="partnerForm.disabled || (isProjectCollaboratorNonManage$ | async)"
                                           formControlName="gdpr" class="gdpr-toggle">
+                            <span class ="custom-icon gdpr">
+                                <mat-icon  matTooltip="{{'project.application.form.section.sensitive.data.gdpr.info' | translate}}">
+                                    privacy_tip
+                                </mat-icon>
+                            </span>
                             <span>{{'project.application.form.section.sensitive.data.gdpr' | translate}}</span>
                         </mat-slide-toggle>
                         <button *ngIf="partnerForm.enabled" type="button" mat-icon-button color="accent"

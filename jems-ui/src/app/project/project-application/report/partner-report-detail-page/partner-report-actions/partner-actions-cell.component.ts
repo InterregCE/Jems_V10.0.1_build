@@ -36,6 +36,10 @@ export class PartnerActionsCellComponent implements ControlValueAccessor {
 
   @Input()
   isReportEditable = true;
+
+  @Input()
+  canDownload = true;
+
   @Input()
   set isUploadDone(value: boolean){
     if (value) {
@@ -113,6 +117,12 @@ ${this.translatePipe
         filter(yes => yes),
         tap(() => this.delete.emit(id))
       ).subscribe();
+    }
+  }
+
+  downloadFile(fileId: number) {
+    if (this.canDownload) {
+      this.download.emit(fileId);
     }
   }
 }

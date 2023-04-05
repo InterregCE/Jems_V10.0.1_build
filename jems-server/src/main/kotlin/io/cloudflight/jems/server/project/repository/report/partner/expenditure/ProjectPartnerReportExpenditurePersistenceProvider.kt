@@ -6,10 +6,10 @@ import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.common.file.service.model.JemsFile
 import io.cloudflight.jems.server.common.file.service.toFullModel
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportExpenditureCostEntity
-import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportExpenditureCostTranslEntity
-import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportInvestmentEntity
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportLumpSumEntity
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportUnitCostEntity
+import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportInvestmentEntity
+import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportExpenditureCostTranslEntity
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.partner.control.expenditure.PartnerReportParkedExpenditureRepository
 import io.cloudflight.jems.server.project.repository.report.partner.financialOverview.costCategory.ReportProjectPartnerExpenditureCostCategoryRepository
@@ -120,13 +120,12 @@ class ProjectPartnerReportExpenditurePersistenceProvider(
     }
 
     @Transactional
-    override fun markAsSampledAndLock(expenditureIds: Set<Long>) {
-        var expenditures = reportExpenditureRepository.findAllById(expenditureIds)
-        expenditures.forEach {
+    override fun markAsSampledAndLock(expenditureIds: Set<Long>) =
+        reportExpenditureRepository.findAllById(expenditureIds).forEach {
             it.partOfSample = true
             it.partOfSampleLocked = true
         }
-    }
+    
 
     @Transactional(readOnly = true)
     override fun existsByExpenditureId(partnerId: Long, reportId: Long, expenditureId: Long) =
@@ -168,6 +167,10 @@ class ProjectPartnerReportExpenditurePersistenceProvider(
         reportCostCategoriesRepository.findFirstByReportEntityPartnerIdAndReportEntityId(partnerId, reportId)
             .toBudgetOptionsModel()
 
+
+    @Transactional(readOnly = true)
+    override fun existsByPartnerIdAndAttachmentIdAndGdprTrue(partnerId: Long, fileId: Long): Boolean =
+        reportExpenditureRepository.existsByPartnerReportPartnerIdAndAttachmentIdAndGdprTrue(partnerId = partnerId, fileId = fileId)
 
     private fun PartnerReportExpenditureCostEntity.updateWith(
         newData: ProjectPartnerReportExpenditureCost,

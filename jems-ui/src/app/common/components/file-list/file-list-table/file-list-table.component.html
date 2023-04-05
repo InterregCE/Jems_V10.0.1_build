@@ -62,7 +62,7 @@
             </mat-header-cell>
             <mat-cell *matCellDef="let file" class="justify-end">
 
-                <ng-container *ngIf="descriptionForm.value.id !== file.id">
+                <ng-container *ngIf="descriptionForm.value.id !== file.id && canEditDescription">
                     <span *ngIf="file.description" jemsText maxLines="2"
                           class="mr-1 text-left fill-space-left-to-button" [matTooltip]="file.description">{{ file.description }}</span>
                     <button (click)="editDescription(file)" *ngIf="file.editable"
@@ -102,8 +102,8 @@
                 <span jemsText maxLines="2">{{'file.table.column.name.action' | translate }}</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let file" class="text-center border-cell-left">
-
-                <button (click)="onDownload.emit(file)"
+                <button *ngIf="canDownload"
+                        (click)="onDownload.emit(file)"
                         color="primary"
                         mat-icon-button
                         matTooltip="{{'file.table.action.download.tooltip' | translate}}">

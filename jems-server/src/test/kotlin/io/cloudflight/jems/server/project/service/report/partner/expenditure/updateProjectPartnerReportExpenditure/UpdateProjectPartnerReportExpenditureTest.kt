@@ -4,11 +4,12 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.common.SENSITIVE_FILE_NAME_MAKS
+import io.cloudflight.jems.server.common.SENSITIVE_TRANSLATION_MAKS
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil
-import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaboratorPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.PartnerReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
@@ -17,8 +18,10 @@ import io.cloudflight.jems.server.project.service.report.model.partner.expenditu
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportInvestment
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.SensitiveDataAuthorizationService
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectPartnerReportProcurementPersistence
+import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -65,8 +68,8 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
         pricePerUnit = BigDecimal.ZERO,
         declaredAmount = BigDecimal.TEN,
         currencyCode = "GBP",
-        currencyConversionRate = BigDecimal.valueOf(0.84),
-        declaredAmountAfterSubmission = BigDecimal.valueOf(8.4),
+        currencyConversionRate = valueOf(0.84),
+        declaredAmountAfterSubmission = valueOf(8.4),
         attachment = JemsFileMetadata(47L, "file.xlsx", UPLOADED),
         parkingMetadata = ExpenditureParkingMetadata(reportOfOriginId = 14L, reportOfOriginNumber = 2, originalExpenditureNumber = 9),
     )
@@ -104,7 +107,7 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
     lateinit var reportProcurementPersistence: ProjectPartnerReportProcurementPersistence
 
     @MockK
-    lateinit var userPartnerCollaboratorPersistence: UserPartnerCollaboratorPersistence
+    lateinit var sensitiveDataAuthorization: SensitiveDataAuthorizationService
 
     @RelaxedMockK
     lateinit var generalValidator: GeneralValidatorService
@@ -122,7 +125,6 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
         every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isEmpty() }) } returns Unit
         every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isNotEmpty() }) } throws AppInputValidationException(emptyMap())
         every { securityService.currentUser } returns AuthorizationUtil.programmeUser
-        every { userPartnerCollaboratorPersistence.findByPartnerId(PARTNER_ID) } returns emptySet()
     }
 
     @Test
@@ -148,6 +150,8 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
         every { investment50.id } returns 50L
         every { reportExpenditurePersistence.getAvailableInvestments(PARTNER_ID, reportId = 84L) } returns listOf(investment50)
 
+        every { securityService.getUserIdOrThrow() } returns AuthorizationUtil.applicantUser.user.id
+        every { sensitiveDataAuthorization.isCurrentUserCollaboratorWithSensitiveFor(PARTNER_ID) } returns true
         every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, reportId = 84L) } returns
             listOf(reportExpenditureCost.copy(parkingMetadata = null))
 
@@ -184,6 +188,8 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
 
     @Test
     fun `update - successfully - not touching reIncluded-item currency`() {
+        every { securityService.getUserIdOrThrow() } returns AuthorizationUtil.applicantUser.user.id
+        every { sensitiveDataAuthorization.isCurrentUserCollaboratorWithSensitiveFor(PARTNER_ID) } returns true
         every { reportPersistence.getPartnerReportById(partnerId = PARTNER_ID, 85L) } returns
             reportWithCurrency(id = 85L, ReportStatus.Draft, "0.8", "GBP")
         every { reportPersistence.getReportIdsBefore(PARTNER_ID, 85L) } returns setOf(83L)
@@ -196,12 +202,11 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
         every { reportExpenditurePersistence.getAvailableInvestments(PARTNER_ID, reportId = 85L) } returns emptyList()
 
         val existing_8 = reportExpenditureCost.copy(id = 8L, number = 45 /* should be renumbered */, parkingMetadata = null)
-        val reIncluded_14 = parkedExpenditure(14L, "GBP", BigDecimal.valueOf(1275, 3))
+        val reIncluded_14 = parkedExpenditure(14L, "GBP", valueOf(1275, 3))
         every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, reportId = 85L) } returns listOf(
             existing_8,
             reIncluded_14,
         )
-
         every {
             reportExpenditurePersistence.updatePartnerReportExpenditureCosts(
                 partnerId = PARTNER_ID,
@@ -232,20 +237,20 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
                 parkingMetadata = null,
             ),
             reportExpenditureCost.copy(
-                id = 14L,
-                number = 0 /* numbering is skipped for re-included ones */,
-                internalReferenceNumber = "reincluded item, updated",
-                investmentId = null,
-                currencyConversionRate = valueOf(1275, 3),
-                declaredAmountAfterSubmission = null,
-                parkingMetadata = null,
-            ),
-            reportExpenditureCost.copy(
                 id = 0L /* created item */,
                 number = 2,
                 internalReferenceNumber = "first created",
                 investmentId = null,
                 currencyConversionRate = null,
+                declaredAmountAfterSubmission = null,
+                parkingMetadata = null,
+            ),
+            reportExpenditureCost.copy(
+                id = 14L,
+                number = 0 /* numbering is skipped for re-included ones */,
+                internalReferenceNumber = "reincluded item, updated",
+                investmentId = null,
+                currencyConversionRate = valueOf(1275, 3),
                 declaredAmountAfterSubmission = null,
                 parkingMetadata = null,
             ),
@@ -283,6 +288,8 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
                     )
                 )
 
+        every { securityService.getUserIdOrThrow() } returns AuthorizationUtil.applicantUser.user.id
+        every { sensitiveDataAuthorization.isCurrentUserCollaboratorWithSensitiveFor(PARTNER_ID) } returns true
         every {
             reportExpenditurePersistence.updatePartnerReportExpenditureCosts(
                 partnerId = PARTNER_ID,
@@ -394,7 +401,8 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
             reportId = 95L,
             procurementId = 1020L,
         )
-
+        every { securityService.getUserIdOrThrow() } returns AuthorizationUtil.applicantUser.user.id
+        every { sensitiveDataAuthorization.isCurrentUserCollaboratorWithSensitiveFor(PARTNER_ID) } returns true
         val result = updatePartnerReportExpenditureCosts.updatePartnerReportExpenditureCosts(
             PARTNER_ID,
             95L,
@@ -428,7 +436,8 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
             reportId = 96L + category.ordinal,
             procurementId = 500L,
         )
-
+        every { securityService.getUserIdOrThrow() } returns AuthorizationUtil.applicantUser.user.id
+        every { sensitiveDataAuthorization.isCurrentUserCollaboratorWithSensitiveFor(PARTNER_ID) } returns true
         val result = updatePartnerReportExpenditureCosts.updatePartnerReportExpenditureCosts(
             PARTNER_ID,
             96L + category.ordinal,
@@ -442,6 +451,269 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
             declaredAmountAfterSubmission = null,
             parkingMetadata = null,
         ))
+    }
+
+    @Test
+    fun `sensitive expenditure data is anonymized when non gdpr users add new expenditure`() {
+        val slotString = mutableListOf<String>()
+        val slotTranslations = mutableListOf<Set<InputTranslation>>()
+        val slotBigDecimal = mutableListOf<BigDecimal>()
+        val slotCurrencies = slot<Set<String>>()
+        every { generalValidator.maxLength(capture(slotString), any(), any()) } returns emptyMap()
+        every { generalValidator.maxLength(capture(slotTranslations), any(), any()) } returns emptyMap()
+        every { generalValidator.numberBetween(capture(slotBigDecimal), BigDecimal.ZERO, any(), any()) } returns emptyMap()
+        every { generalValidator.onlyValidCurrencies(capture(slotCurrencies), any()) } returns emptyMap()
+
+        every { reportPersistence.getPartnerReportById(partnerId = PARTNER_ID, 99L) } returns
+                reportWithCurrency(id = 99L, ReportStatus.Draft, "0.8", "GBP")
+        every { reportPersistence.getReportIdsBefore(PARTNER_ID, 99L) } returns emptySet()
+
+        every { reportProcurementPersistence.getProcurementContractNamesForReportIds(setOf(99L)) } returns emptySet()
+
+        every { reportExpenditurePersistence.getAvailableLumpSums(PARTNER_ID, reportId = 99L) } returns emptyList()
+        every { reportExpenditurePersistence.getAvailableUnitCosts(PARTNER_ID, reportId = 99L) } returns emptyList()
+
+        every { reportExpenditurePersistence.getAvailableInvestments(PARTNER_ID, reportId = 99L) } returns emptyList()
+
+        every { securityService.currentUser?.hasPermission(UserRolePermission.ProjectReportingEdit) } returns false
+        every { sensitiveDataAuthorization.isCurrentUserCollaboratorWithSensitiveFor(PARTNER_ID) } returns false
+
+        every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, reportId = 99L) } returns
+                listOf(
+                    reportExpenditureCost.copy(
+                        id = 254L,
+                        number = 1,
+                        gdpr = true,
+                        description = setOf(InputTranslation(language = SystemLanguage.EN, translation = "expenditure 254 description")),
+                        comment = setOf(InputTranslation(language = SystemLanguage.EN, translation = "expenditure 254 comment"))
+                    )
+                )
+
+        every {
+            reportExpenditurePersistence.updatePartnerReportExpenditureCosts(
+                partnerId = PARTNER_ID,
+                reportId = 99L,
+                any(),
+                doNotRenumber = false,
+            )
+        } returnsArgument 2
+
+        val attachmentUploadDateTime = ZonedDateTime.now()
+        val updatedExpenditureCosts = updatePartnerReportExpenditureCosts.updatePartnerReportExpenditureCosts(
+            PARTNER_ID,
+            99L,
+            listOf(
+                reportExpenditureCost.copy(
+                    id = 254L,
+                    gdpr = true,
+                    description = setOf(InputTranslation(language = SystemLanguage.EN, translation = SENSITIVE_TRANSLATION_MAKS)),
+                    comment = setOf(InputTranslation(language = SystemLanguage.EN, translation = SENSITIVE_TRANSLATION_MAKS)),
+                    attachment = JemsFileMetadata(47L, SENSITIVE_FILE_NAME_MAKS, UPLOADED),
+                ),
+                reportExpenditureCost.copy(
+                    id = 255L,
+                    gdpr = false,
+                    description = setOf(InputTranslation(language = SystemLanguage.EN, translation = "new expenditure 255 description")),
+                    comment = setOf(InputTranslation(language = SystemLanguage.EN, translation = "new expenditure 255 comment")),
+                    attachment = JemsFileMetadata(id = 1027L, name = "new-attachment.txt", uploaded = attachmentUploadDateTime)
+                )
+            )
+        )
+        assertThat(updatedExpenditureCosts[0].description).isEqualTo(
+            setOf(InputTranslation(language = SystemLanguage.EN, translation = SENSITIVE_TRANSLATION_MAKS)
+            )
+        )
+        assertThat(updatedExpenditureCosts[0].comment).isEqualTo(
+            setOf(InputTranslation(language = SystemLanguage.EN, translation = SENSITIVE_TRANSLATION_MAKS))
+        )
+
+        assertThat(updatedExpenditureCosts[0].attachment).isEqualTo(
+            JemsFileMetadata(47L, SENSITIVE_FILE_NAME_MAKS, UPLOADED),
+        )
+
+    }
+
+    @Test
+    fun `user collaborator with gdpr can edit expenditure sensitive data`() {
+        val slotString = mutableListOf<String>()
+        val slotTranslations = mutableListOf<Set<InputTranslation>>()
+        val slotBigDecimal = mutableListOf<BigDecimal>()
+        val slotCurrencies = slot<Set<String>>()
+        every { generalValidator.maxLength(capture(slotString), any(), any()) } returns emptyMap()
+        every { generalValidator.maxLength(capture(slotTranslations), any(), any()) } returns emptyMap()
+        every { generalValidator.numberBetween(capture(slotBigDecimal), BigDecimal.ZERO, any(), any()) } returns emptyMap()
+        every { generalValidator.onlyValidCurrencies(capture(slotCurrencies), any()) } returns emptyMap()
+
+        every { reportPersistence.getPartnerReportById(partnerId = PARTNER_ID, 99L) } returns
+                reportWithCurrency(id = 99L, ReportStatus.Draft, "0.8", "GBP")
+        every { reportPersistence.getReportIdsBefore(PARTNER_ID, 99L) } returns emptySet()
+
+        every { reportProcurementPersistence.getProcurementContractNamesForReportIds(setOf(99L)) } returns emptySet()
+
+        every { reportExpenditurePersistence.getAvailableLumpSums(PARTNER_ID, reportId = 99L) } returns emptyList()
+        every { reportExpenditurePersistence.getAvailableUnitCosts(PARTNER_ID, reportId = 99L) } returns emptyList()
+
+        every { reportExpenditurePersistence.getAvailableInvestments(PARTNER_ID, reportId = 99L) } returns emptyList()
+
+        every { securityService.currentUser?.hasPermission(UserRolePermission.ProjectReportingEdit) } returns false
+        every { sensitiveDataAuthorization.isCurrentUserCollaboratorWithSensitiveFor(PARTNER_ID) } returns true
+
+        every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, reportId = 99L) } returns
+                listOf(
+                    reportExpenditureCost.copy(
+                        id = 254L,
+                        number = 1,
+                        gdpr = true,
+                        description = setOf(InputTranslation(language = SystemLanguage.EN, translation = "expenditure 254 description")),
+                        comment = setOf(InputTranslation(language = SystemLanguage.EN, translation = "expenditure 254 comment"))
+                    )
+                )
+
+        every {
+            reportExpenditurePersistence.updatePartnerReportExpenditureCosts(
+                partnerId = PARTNER_ID,
+                reportId = 99L,
+                any(),
+                doNotRenumber = false,
+            )
+        } returnsArgument 2
+
+        val updatedExpenditureCosts = updatePartnerReportExpenditureCosts.updatePartnerReportExpenditureCosts(
+            PARTNER_ID,
+            99L,
+            listOf(
+                reportExpenditureCost.copy(
+                    id = 254L,
+                    gdpr = true,
+                    description = setOf(InputTranslation(language = SystemLanguage.EN, translation = "expenditure description changed")),
+                    comment = setOf(InputTranslation(language = SystemLanguage.EN, translation = "expenditure comment changed")),
+                    attachment = JemsFileMetadata(47L, "file.xlsx", UPLOADED),
+                )
+            )
+        )
+        assertThat(updatedExpenditureCosts[0].description).isEqualTo(
+            setOf(InputTranslation(language = SystemLanguage.EN, translation = "expenditure description changed")
+            )
+        )
+        assertThat(updatedExpenditureCosts[0].comment).isEqualTo(
+            setOf(InputTranslation(language = SystemLanguage.EN, translation = "expenditure comment changed"))
+        )
+
+        assertThat(updatedExpenditureCosts[0].attachment).isEqualTo(
+            JemsFileMetadata(47L, "file.xlsx", UPLOADED),
+        )
+
+    }
+
+    @Test
+    fun `update - gdpr flag changed by non gdpr user throws error`() {
+
+        val slotString = mutableListOf<String>()
+        val slotTranslations = mutableListOf<Set<InputTranslation>>()
+        val slotBigDecimal = mutableListOf<BigDecimal>()
+        val slotCurrencies = slot<Set<String>>()
+        every { generalValidator.maxLength(capture(slotString), any(), any()) } returns emptyMap()
+        every { generalValidator.maxLength(capture(slotTranslations), any(), any()) } returns emptyMap()
+        every { generalValidator.numberBetween(capture(slotBigDecimal), BigDecimal.ZERO, any(), any()) } returns emptyMap()
+        every { generalValidator.onlyValidCurrencies(capture(slotCurrencies), any()) } returns emptyMap()
+
+
+        every { reportPersistence.getPartnerReportById(PARTNER_ID, 102L) } returns
+                reportWithCurrency(id = 102L, ReportStatus.Draft, "0.8", "GBP")
+        every { reportPersistence.getReportIdsBefore(PARTNER_ID, 102L) } returns emptySet()
+
+        every { reportProcurementPersistence.getProcurementContractNamesForReportIds(setOf(102L)) } returns emptySet()
+
+        every { reportExpenditurePersistence.getAvailableLumpSums(PARTNER_ID, reportId = 102L) } returns emptyList()
+        every { reportExpenditurePersistence.getAvailableUnitCosts(PARTNER_ID, reportId = 102L) } returns emptyList()
+
+        every { reportExpenditurePersistence.getAvailableInvestments(PARTNER_ID, reportId = 102L) } returns emptyList()
+
+        every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, reportId = 102L) } returns
+                listOf(
+                    reportExpenditureCost.copy(
+                        id = 254L,
+                        number = 1,
+                        gdpr = true,
+                        description = setOf(InputTranslation(language = SystemLanguage.EN, translation = "expenditure 254 description")),
+                        comment = setOf(InputTranslation(language = SystemLanguage.EN, translation = "expenditure 254 comment"))
+                    )
+                )
+
+        every { securityService.currentUser?.hasPermission(UserRolePermission.ProjectReportingEdit) } returns false
+        every { sensitiveDataAuthorization.isCurrentUserCollaboratorWithSensitiveFor(PARTNER_ID) } returns false
+
+
+        assertThrows<ExpenditureSensitiveDataCannotBeUpdated> {
+            updatePartnerReportExpenditureCosts
+                .updatePartnerReportExpenditureCosts(PARTNER_ID, 102L,
+                    listOf(
+                        reportExpenditureCost.copy(
+                            id = 254L,
+                            number = 1,
+                            gdpr = false,
+                            description = setOf(InputTranslation(language = SystemLanguage.EN, translation = "expenditure 254 description")),
+                            comment = setOf(InputTranslation(language = SystemLanguage.EN, translation = "expenditure 254 comment"))
+                        )
+                    )
+                )
+        }
+    }
+
+
+    @Test
+    fun `update - gdpr flag changed by monitor user throws error`() {
+
+        val slotString = mutableListOf<String>()
+        val slotTranslations = mutableListOf<Set<InputTranslation>>()
+        val slotBigDecimal = mutableListOf<BigDecimal>()
+        val slotCurrencies = slot<Set<String>>()
+        every { generalValidator.maxLength(capture(slotString), any(), any()) } returns emptyMap()
+        every { generalValidator.maxLength(capture(slotTranslations), any(), any()) } returns emptyMap()
+        every { generalValidator.numberBetween(capture(slotBigDecimal), BigDecimal.ZERO, any(), any()) } returns emptyMap()
+        every { generalValidator.onlyValidCurrencies(capture(slotCurrencies), any()) } returns emptyMap()
+
+
+        every { reportPersistence.getPartnerReportById(PARTNER_ID, 102L) } returns
+                reportWithCurrency(id = 102L, ReportStatus.Draft, "0.8", "GBP")
+        every { reportPersistence.getReportIdsBefore(PARTNER_ID, 102L) } returns emptySet()
+
+        every { reportProcurementPersistence.getProcurementContractNamesForReportIds(setOf(102L)) } returns emptySet()
+
+        every { reportExpenditurePersistence.getAvailableLumpSums(PARTNER_ID, reportId = 102L) } returns emptyList()
+        every { reportExpenditurePersistence.getAvailableUnitCosts(PARTNER_ID, reportId = 102L) } returns emptyList()
+
+        every { reportExpenditurePersistence.getAvailableInvestments(PARTNER_ID, reportId = 102L) } returns emptyList()
+
+        every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, reportId = 102L) } returns
+                listOf(
+                    reportExpenditureCost.copy(
+                        id = 254L,
+                        number = 1,
+                        gdpr = true,
+                        description = setOf(InputTranslation(language = SystemLanguage.EN, translation = "expenditure 254 description")),
+                        comment = setOf(InputTranslation(language = SystemLanguage.EN, translation = "expenditure 254 comment"))
+                    )
+                )
+
+        every { securityService.currentUser?.hasPermission(UserRolePermission.ProjectReportingEdit) } returns true
+        every { sensitiveDataAuthorization.isCurrentUserCollaboratorWithSensitiveFor(PARTNER_ID) } returns false
+
+
+        assertThrows<ExpenditureSensitiveDataCannotBeUpdated> {
+            updatePartnerReportExpenditureCosts
+                .updatePartnerReportExpenditureCosts(PARTNER_ID, 102L,
+                    listOf(
+                        reportExpenditureCost.copy(
+                            id = 254L,
+                            number = 1,
+                            gdpr = false,
+                            description = setOf(InputTranslation(language = SystemLanguage.EN, translation = "expenditure 254 description")),
+                            comment = setOf(InputTranslation(language = SystemLanguage.EN, translation = "expenditure 254 comment"))
+                        )
+                    )
+                )
+        }
     }
 
     private fun mockGeneralStuffForTestingCategories(
