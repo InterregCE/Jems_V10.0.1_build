@@ -39,7 +39,7 @@ class AssignUserToProject(
                     userIdsToAssign = availableUsers.keys intersect it.userIdsToAdd,
                 )
                 eventPublisher.publishEvent(
-                    AssignUserEvent(
+                    AssignUserToProjectEvent(
                         project = projectPersistence.getProjectSummary(it.projectId),
                         users = automaticallyAssignedUsers.plus(userPersistence.findAllByIds(userIds)),
                     )

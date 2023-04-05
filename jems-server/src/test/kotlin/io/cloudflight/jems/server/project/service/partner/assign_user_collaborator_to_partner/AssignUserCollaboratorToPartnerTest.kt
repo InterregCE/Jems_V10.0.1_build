@@ -93,7 +93,7 @@ internal class AssignUserCollaboratorToPartnerTest : UnitTest() {
         assertThat(result).containsExactlyElementsOf(expectedResult)
         assertThat(allEmails.captured).containsExactlyInAnyOrder(user.email)
         assertThat(userData.captured).containsExactlyEntriesOf(mapOf(USER_ID to Pair(PartnerCollaboratorLevel.EDIT, false)))
-        verify(exactly = 1) { eventPublisher.publishEvent(AssignCollaboratorToPartnerEvent(
+        verify(exactly = 1) { eventPublisher.publishEvent(AssignUserCollaboratorToPartnerEvent(
             project = projectSummary(),
             partner = projectPartnerSummary(),
             collaborators = expectedResult,
@@ -129,7 +129,7 @@ internal class AssignUserCollaboratorToPartnerTest : UnitTest() {
         assertThat(result).containsExactlyElementsOf(expectedResult)
         assertThat(allEmails.captured).containsExactlyInAnyOrder(user.email)
         assertThat(userData.captured).containsExactlyEntriesOf(mapOf(USER_ID to Pair(PartnerCollaboratorLevel.EDIT, true)))
-        verify(exactly = 1) { eventPublisher.publishEvent(AssignCollaboratorToPartnerEvent(
+        verify(exactly = 1) { eventPublisher.publishEvent(AssignUserCollaboratorToPartnerEvent(
             project = projectSummary(),
             partner = projectPartnerSummary(),
             collaborators = expectedResult,

@@ -127,7 +127,7 @@ internal class AssignUserToProjectTest : UnitTest() {
         assertThat(userIdsToRemove[1]).isEmpty()
         assertThat(userIdsToAdd[1]).containsExactly(USER_MONITOR_ID_2)
 
-        val slotAudit = mutableListOf<AssignUserEvent>()
+        val slotAudit = mutableListOf<AssignUserToProjectEvent>()
         verify(exactly = 2) { eventPublisher.publishEvent(capture(slotAudit)) }
 
         assertThat(slotAudit[0].project.id).isEqualTo(1L)
