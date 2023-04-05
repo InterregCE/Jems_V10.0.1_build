@@ -71,7 +71,7 @@
             {{'lump.sum.is.fast.track' | translate}}
         </div>
         <mat-button-toggle-group
-                [disabled]="formState === FormState.VIEW || isFastTrackLumpSumLocked || (isProgrammeSetupLocked && !isCreate)">
+                [disabled]="formState === FormState.VIEW || (isFastTrackLumpSumLocked && !isCreate)">
             <mat-button-toggle
                     value="Yes"
                     [checked]="isFastTrack === 'Yes'"
