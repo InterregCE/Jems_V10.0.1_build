@@ -284,8 +284,12 @@ export class ProjectApplicationFormSidenavService {
   private readonly canSeeSharedFolder$: Observable<boolean> = combineLatest([
     this.permissionService.hasPermission(PermissionsEnum.ProjectCreatorSharedFolderView),
     this.permissionService.hasPermission(PermissionsEnum.ProjectMonitorSharedFolderView),
+    this.projectStore.currentVersionOfProjectStatus$,
   ]).pipe(
-    map(([hasCreatorPermission, hasMonitorPermission]) => hasCreatorPermission || hasMonitorPermission),
+    map(([hasCreatorPermission, hasMonitorPermission, projectStatus]) =>
+      (hasCreatorPermission || hasMonitorPermission)
+      && ProjectUtil.isInSubmittedOrAnyStatusAfterSubmitted(projectStatus)
+    ),
   );
 
   private readonly packages$: Observable<HeadlineRoute[]> =

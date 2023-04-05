@@ -1,8 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {BehaviorSubject, combineLatest, Observable, of, Subject} from 'rxjs';
-import {PageJemsFileDTO, JemsFileMetadataDTO, ProjectSharedFolderFileService, SettingsService, UserRoleCreateDTO} from '@cat/api';
-import {CategoryNode} from '@project/common/components/category-tree/categoryModels';
+import {JemsFileMetadataDTO, PageJemsFileDTO, ProjectSharedFolderFileService, SettingsService, UserRoleCreateDTO} from '@cat/api';
 import {Tables} from '@common/utils/tables';
 import {APIError} from '@common/models/APIError';
 import {catchError, distinctUntilChanged, filter, finalize, map, startWith, switchMap, take, tap} from 'rxjs/operators';
@@ -20,7 +19,6 @@ export class SharedFolderPageStore {
   projectId$ = this.projectStore.projectId$;
   projectTitle$ = this.projectStore.projectTitle$;
   fileList$: Observable<PageJemsFileDTO>;
-  fileCategories$: Observable<CategoryNode>;
   userCanEdit$: Observable<boolean>;
 
   newPageSize$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_SIZE);
@@ -38,16 +36,7 @@ export class SharedFolderPageStore {
               private readonly permissionService: PermissionService) {
     this.projectId$ = this.projectStore.projectId$;
     this.fileList$ = this.fileList();
-    this.fileCategories$ = this.getCategories();
     this.userCanEdit$ = this.userCanEdit();
-  }
-
-  private getCategories(): Observable<CategoryNode> {
-    return new BehaviorSubject({
-      name: {i18nKey: 'project.application.form.section.shared.folder'},
-      info: {type: 'SHARED_FOLDER'},
-      children: []
-    } as CategoryNode).asObservable();
   }
 
   private fileList(): Observable<PageJemsFileDTO> {

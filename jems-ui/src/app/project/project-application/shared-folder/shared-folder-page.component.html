@@ -5,6 +5,7 @@
                             [isVersionedData]="false">
 
     <div jemsFormLayout>
+        <h3 [innerText]="'project.application.form.section.shared.folder' | translate"></h3>
         <span [innerText]="'shared.folder.description' | translate"></span>
     </div>
 
@@ -14,10 +15,6 @@
     </h3>
 
     <div id="shared-folder-files" class="overflow-auto">
-        <jems-category-tree class="mr-3" id="shared-folder-files-tree"
-                            [categories]="pageStore.fileCategories$ | async">
-        </jems-category-tree>
-
         <div id="shared-folder-files-table">
             <jems-file-list-table [fileList]="data.fileList"
                                   [sortingEnabled]="true"
