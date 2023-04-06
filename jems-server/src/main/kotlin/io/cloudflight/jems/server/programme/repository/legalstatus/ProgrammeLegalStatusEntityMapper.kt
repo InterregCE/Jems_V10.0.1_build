@@ -5,7 +5,6 @@ import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusTranslationEntity
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatus
-import org.apache.lucene.queries.function.valuesource.MultiFunction.description
 
 fun Iterable<ProgrammeLegalStatusEntity>.toModel() = map { it.toStatusModel() }
 

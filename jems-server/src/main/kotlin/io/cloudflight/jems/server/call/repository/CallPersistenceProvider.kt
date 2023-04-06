@@ -345,7 +345,7 @@ class CallPersistenceProvider(
 
         return (oldMap.keys union newMap.keys)
             .associateWith { Pair(oldMap[it] ?: FieldVisibilityStatus.NONE, newMap[it] ?: FieldVisibilityStatus.NONE) }
-            .filter { (field, change) -> change.first != change.second }
+            .filterValues { change -> change.first != change.second }
             .toSortedMap()
     }
 }

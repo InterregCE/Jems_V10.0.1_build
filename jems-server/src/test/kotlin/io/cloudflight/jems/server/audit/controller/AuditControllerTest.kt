@@ -38,6 +38,7 @@ class AuditControllerTest: UnitTest() {
         )
 
         private val auditDto = AuditDTO(
+            id = "ID_of_audit",
             timestamp = time,
             action = AuditAction.QUALITY_ASSESSMENT_CONCLUDED,
             project = AuditProjectDTO(id = "PORJECT_ID_5", customIdentifier = "CUST-ID5", name = "Project name"),

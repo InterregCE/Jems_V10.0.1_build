@@ -8,6 +8,8 @@ import io.cloudflight.jems.server.config.AUDIT_PROPERTY_PREFIX
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Service
+import java.time.Instant
+import java.time.ZonedDateTime
 
 @Service
 @ConditionalOnProperty(
@@ -28,16 +30,17 @@ class AuditServiceImpl(
         try {
             val auditId = auditPersistence.saveAudit(
                 Audit(
+                    timestamp = ZonedDateTime.now(),
                     action = audit.action,
                     project = audit.project,
-                    // todo check if it works properly
-                    user = if (securityService.currentUser != null) securityService.currentUser!!.toEsUser() else optionalUser,
-                    description = audit.description
+                    user = optionalUser ?: securityService.currentUser!!.toEsUser(),
+                    entityRelatedId = audit.entityRelatedId,
+                    description = audit.description,
                 )
             )
-            logger.info("Audit event with id=$auditId persisted to ES.")
+            logger.info("Audit event with id=$auditId persisted to ES. (${audit.action})")
         } catch (e: Exception) {
-            logger.error("Audit event cannot be persisted into ES.", e)
+            logger.error("Audit event cannot be persisted into ES. (${audit.action})", e)
         }
     }
 

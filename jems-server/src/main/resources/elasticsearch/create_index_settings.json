@@ -1,0 +1,26 @@
+{
+  "number_of_shards": 3,
+  "number_of_replicas": 2,
+  "max_ngram_diff": 50,
+  "analysis": {
+    "analyzer": {
+      "email_analyzer": {
+        "type": "custom",
+        "tokenizer": "email_tokenizer"
+      }
+    },
+    "tokenizer": {
+      "email_tokenizer": {
+        "type": "ngram",
+        "min_gram": 2,
+        "max_gram": 50,
+        "token_chars": [
+          "letter",
+          "digit",
+          "symbol",
+          "punctuation"
+        ]
+      }
+    }
+  }
+}
