@@ -5,7 +5,7 @@ import {
   ProjectPartnerReportService,
   ProjectPartnerReportSummaryDTO,
   JemsFileDTO,
-  UserRoleDTO,
+  UserRoleDTO, ProjectPartnerReportExpenditureCostDTO,
 } from '@cat/api';
 import {combineLatest, Observable, Subject} from 'rxjs';
 import {CategoryInfo} from '@project/common/components/category-tree/categoryModels';
@@ -25,6 +25,9 @@ import {PartnerReportPageStore} from '@project/project-application/report/partne
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {PrivilegesPageStore} from '@project/project-application/privileges-page/privileges-page-store.service';
 import {PermissionService} from '../../../../../../security/permissions/permission.service';
+import {
+  PartnerReportExpendituresStore
+} from '@project/project-application/report/partner-report-detail-page/partner-report-expenditures-tab/partner-report-expenditures-store.service';
 
 @UntilDestroy()
 @Component({
@@ -49,8 +52,6 @@ export class ReportAnnexesTableComponent {
     reportStatus: ProjectPartnerReportSummaryDTO.StatusEnum;
     selectedCategory: CategoryInfo | undefined;
     canUserEdit: boolean;
-    userIsGdprCompliant: boolean;
-    userIsMonitorView: boolean;
   }>;
 
   constructor(
@@ -60,6 +61,7 @@ export class ReportAnnexesTableComponent {
     private reportPageStore: PartnerReportPageStore,
     private privilegesPageStore: PrivilegesPageStore,
     public permissionService: PermissionService,
+    public expendituresStore: PartnerReportExpendituresStore,
 
   ) {
     this.data$ = combineLatest([
@@ -68,32 +70,39 @@ export class ReportAnnexesTableComponent {
       this.fileManagementStore.selectedCategory$,
       this.reportPageStore.userCanEditReport$,
       this.privilegesPageStore.isCurrentUserGDPRCompliant$,
-      this.permissionService.hasPermission(UserRoleDTO.PermissionsEnum.ProjectReportingView)
+      this.permissionService.hasPermission(UserRoleDTO.PermissionsEnum.ProjectReportingEdit),
+      this.permissionService.hasPermission(UserRoleDTO.PermissionsEnum.ProjectReportingView),
+      this.expendituresStore.expendituresCosts$
     ])
       .pipe(
-        map(([files, reportStatus, selectedCategory, canEdit, userIsGdprCompliant, userIsMonitorView]) => ({
-          files,
-          fileList: files.content.map((file: JemsFileDTO) => ({
-            id: file.id,
-            name: file.name,
-            type: file.type,
-            uploaded: file.uploaded,
-            author: file.author,
-            sizeString: file.sizeString,
-            description: file.description,
-            editable: reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Draft && canEdit,
-            deletable: file.type === JemsFileDTO.TypeEnum.PartnerReport
-              && reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Draft
-              && canEdit,
-            tooltipIfNotDeletable: canEdit ? 'file.table.action.delete.disabled.for.tab.tooltip' : '',
-            iconIfNotDeletable: canEdit ? 'delete_forever' : ''
-          })),
-          reportStatus,
-          selectedCategory,
-          canUserEdit: canEdit,
-          userIsGdprCompliant,
-          userIsMonitorView
-        })),
+        map(([files, reportStatus, selectedCategory, canEdit, userIsGdprCompliant, userIsMonitorEdit, userIsMonitorView, expenditureCosts]: any) =>  {
+          const sensitiveFileIds = expenditureCosts
+              .filter((expenditure: ProjectPartnerReportExpenditureCostDTO) => expenditure.gdpr)
+              .map((sensitive: ProjectPartnerReportExpenditureCostDTO) => sensitive.attachment.id);
+              return ({
+                files,
+                fileList: files.content.map((file: JemsFileDTO) => ({
+                  id: file.id,
+                  name: file.name,
+                  type: file.type,
+                  uploaded: file.uploaded,
+                  author: file.author,
+                  sizeString: file.sizeString,
+                  description: file.description,
+                  editable: this.isFileEditable(file.id, sensitiveFileIds, reportStatus, userIsGdprCompliant, userIsMonitorEdit, canEdit),
+                  deletable: file.type === JemsFileDTO.TypeEnum.PartnerReport
+                      && reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Draft
+                      && canEdit,
+                  downloadable: this.isFileSensitive(file.id, sensitiveFileIds) ? (userIsGdprCompliant || userIsMonitorView): true,
+                  tooltipIfNotDeletable: canEdit ? 'file.table.action.delete.disabled.for.tab.tooltip' : '',
+                  iconIfNotDeletable: canEdit ? 'delete_forever' : ''
+                })),
+                reportStatus,
+                selectedCategory,
+                canUserEdit: canEdit,
+              });
+            }
+        ),
       );
     this.fileManagementStore.getMaximumAllowedFileSize().pipe(untilDestroyed(this)).subscribe((maxAllowedSize) => this.maximumAllowedFileSizeInMB = maxAllowedSize);
   }
@@ -138,4 +147,20 @@ export class ReportAnnexesTableComponent {
       ),
     );
   };
+
+  isFileEditable(
+      fileId: number,
+      sensitiveFileIds: number[],
+      reportStatus: ProjectPartnerReportSummaryDTO.StatusEnum,
+      userIsGdprCompliant: boolean,
+      userIsMonitorEdit: boolean,
+      canEdit: boolean) {
+
+    return reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Draft &&
+        (this.isFileSensitive(fileId, sensitiveFileIds) ? (userIsGdprCompliant || userIsMonitorEdit) : canEdit);
+  }
+
+  isFileSensitive(fileId: number, sensitiveFileIds: number[]) {
+    return sensitiveFileIds.includes(Number(fileId));
+  }
 }

@@ -73,7 +73,8 @@ export class PartnerControlReportDocumentTabComponent {
           editable: PartnerControlReportDocumentTabComponent.isEditable(report) && canEdit && file.author.id === currentUserId,
           deletable: PartnerControlReportDocumentTabComponent.isDeletable(report) && canEdit && file.author.id === currentUserId,
           tooltipIfNotDeletable: '',
-          iconIfNotDeletable: ''
+          iconIfNotDeletable: '',
+          downloadable: true
         })),
         isControlReportEditable: PartnerControlReportDocumentTabComponent.isEditable(report) && canEdit,
         categories: {

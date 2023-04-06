@@ -98,7 +98,7 @@ class ListProjectPartnerReportFile(
         for ((fileType, files) in fileTypeToFiles) {
             when(fileType) {
                 Expenditure -> anonymizeExpenditureFileNames(files, partnerId, reportId)
-                else -> return
+                else -> {}
             }
         }
 

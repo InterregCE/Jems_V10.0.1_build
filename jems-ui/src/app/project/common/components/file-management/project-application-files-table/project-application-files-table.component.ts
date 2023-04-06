@@ -92,6 +92,7 @@ export class ProjectApplicationFilesTableComponent {
             ),
             tooltipIfNotDeletable: '',
             iconIfNotDeletable: '',
+            downloadable: true
           })),
           selectedCategory
         })),
