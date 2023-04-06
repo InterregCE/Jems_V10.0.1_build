@@ -217,7 +217,7 @@ context('Partner reports tests', () => {
         cy.createCall(call).then(callId => {
           application.details.projectCallId = callId;
           cy.publishCall(callId);
-        });
+        }); 
 
         cy.loginByRequest(user.admin.email);
         testData.partnerUser1.email = faker.internet.email();
@@ -286,8 +286,8 @@ context('Partner reports tests', () => {
           cy.contains('Financial overview').click({force: true});
           const declaredAmountWithFlatRateValue = (declaredAmount * partner.budget.options.otherCostsOnStaffCostsFlatRate) / 100;
           const declaredAmountWithFlatRateFormatted = new Intl.NumberFormat('de-DE').format(declaredAmountWithFlatRateValue);
-          cy.get('jems-partner-breakdown-cost-category').contains('Staff costs').parents().should('contain', declaredAmountFormatted);
-          cy.get('jems-partner-breakdown-cost-category').contains('Other costs').parents().should('contain', declaredAmountWithFlatRateFormatted);
+          cy.get('jems-partner-breakdown-cost-category').contains('Staff costs').parent().should('contain', declaredAmountFormatted);
+          cy.get('jems-partner-breakdown-cost-category').contains('Other costs').parent().should('contain', declaredAmountWithFlatRateFormatted);
 
           cy.loginByRequest(testData.partnerUser2.email);
           cy.visit(`app/project/detail/${applicationId}/reporting/${secondPartnerId}/reports`, {failOnStatusCode: false});
@@ -296,7 +296,7 @@ context('Partner reports tests', () => {
 
           cy.contains('Financial overview').click({force: true});
           const lumpSumFormatted = new Intl.NumberFormat('de-DE').format(application.lumpSums[1].lumpSumContributions[1].amount);
-          cy.get('jems-partner-breakdown-cost-category').contains('Lump sum').parents().should('contain', lumpSumFormatted);
+          cy.get('jems-partner-breakdown-cost-category').contains('Lump sum').parent().should('contain', lumpSumFormatted);
 
           cy.loginByRequest(testData.partnerUser1.email);
           cy.visit(`app/project/detail/${applicationId}/reporting/${firstPartnerId}/reports`, {failOnStatusCode: false});
@@ -306,8 +306,10 @@ context('Partner reports tests', () => {
           cy.contains('Financial overview').click({force: true});
           const unitCostExternalFormatted = new Intl.NumberFormat('de-DE').format(application.partners[0].budget.external[1].pricePerUnit);
           const unitCostsFormatted = new Intl.NumberFormat('de-DE').format(application.partners[0].budget.unit[0].rowSum / 2);
-          cy.get('jems-partner-breakdown-cost-category').contains('External expertise and services').parents().should('contain', unitCostExternalFormatted);
-          cy.get('jems-partner-breakdown-cost-category').contains('Unit Costs').parents().should('contain', unitCostsFormatted);
+          console.log(unitCostExternalFormatted)
+          console.log(unitCostsFormatted)
+          cy.get('jems-partner-breakdown-cost-category').contains('External expertise and services').parent().should('contain', unitCostExternalFormatted);
+          cy.get('jems-partner-breakdown-cost-category').contains('Unit Costs').parent().should('contain', unitCostsFormatted);
 
           submitPartnerReport();
           cy.visit(`app/project/detail/${applicationId}/reporting/${firstPartnerId}/reports`, {failOnStatusCode: false});
@@ -315,8 +317,8 @@ context('Partner reports tests', () => {
           createUnitCostsAsExpenditures();
 
           cy.contains('Financial overview').click({force: true});
-          cy.get('jems-partner-breakdown-cost-category').contains('External expertise and services').siblings().eq(2).should('contain', unitCostExternalFormatted);
-          cy.get('jems-partner-breakdown-cost-category').contains('External expertise and services').siblings().eq(3).should('contain', unitCostExternalFormatted);
+          cy.get('mat-row:contains("External expertise and services") .mat-column-previouslyReported').should('contain', unitCostExternalFormatted);
+          cy.get('mat-row:contains("External expertise and services") .mat-column-currentReport').should('contain', unitCostExternalFormatted);
 
           cy.loginByRequest(testData.partnerUser2.email);
           cy.visit(`app/project/detail/${applicationId}/reporting/${secondPartnerId}/reports`, {failOnStatusCode: false});
@@ -327,8 +329,8 @@ context('Partner reports tests', () => {
           createLumpSumAsExpenditure();
 
           cy.contains('Financial overview').click({force: true});
-          cy.get('jems-partner-breakdown-cost-category').contains('Lump sum').siblings().eq(2).should('contain', lumpSumFormatted);
-          cy.get('jems-partner-breakdown-cost-category').contains('Lump sum').siblings().eq(3).should('contain', lumpSumFormatted);
+          cy.get('mat-row:contains("Lump sum") .mat-column-previouslyReported').should('contain', lumpSumFormatted);
+          cy.get('mat-row:contains("Lump sum") .mat-column-currentReport').should('contain', lumpSumFormatted);
 
           cy.loginByRequest(testData.partnerUser3.email);
           cy.visit(`app/project/detail/${applicationId}/reporting/${thirdPartnerId}/reports`, {failOnStatusCode: false});
@@ -339,10 +341,10 @@ context('Partner reports tests', () => {
           createCostAsExpenditure(declaredAmountFormatted);
 
           cy.contains('Financial overview').click({force: true});
-          cy.get('jems-partner-breakdown-cost-category').contains('Staff costs').siblings().eq(2).should('contain', declaredAmountFormatted);
-          cy.get('jems-partner-breakdown-cost-category').contains('Staff costs').siblings().eq(3).should('contain', declaredAmountFormatted);
-          cy.get('jems-partner-breakdown-cost-category').contains('Other costs').siblings().eq(2).should('contain', declaredAmountWithFlatRateFormatted);
-          cy.get('jems-partner-breakdown-cost-category').contains('Other costs').siblings().eq(3).should('contain', declaredAmountWithFlatRateFormatted);
+          cy.get('mat-row:contains("Staff costs") .mat-column-previouslyReported').should('contain', declaredAmountFormatted);
+          cy.get('mat-row:contains("Staff costs") .mat-column-currentReport').should('contain', declaredAmountFormatted);
+          cy.get('mat-row:contains("Other costs") .mat-column-previouslyReported').should('contain', declaredAmountWithFlatRateFormatted);
+          cy.get('mat-row:contains("Other costs") .mat-column-currentReport').should('contain', declaredAmountWithFlatRateFormatted);
         });
       });
     });
