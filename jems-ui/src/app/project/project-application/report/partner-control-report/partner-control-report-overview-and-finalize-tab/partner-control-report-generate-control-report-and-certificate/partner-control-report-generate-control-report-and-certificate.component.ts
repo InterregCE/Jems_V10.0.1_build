@@ -88,6 +88,7 @@ export class PartnerControlReportGenerateControlReportAndCertificateComponent {
           description: file.generatedFile.description,
           editable: isUserAllowedToEditReport,
           deletable: false,
+          downloadable: true,
           tooltipIfNotDeletable: '',
           iconIfNotDeletable: '',
           parentEntityId: file.id,

@@ -62,6 +62,7 @@ export class ProjectReportAnnexesTableComponent {
                     description: file.description,
                     editable: isEditable && canEdit,
                     deletable: isEditable && canEdit && (file.type == JemsFileDTO.TypeEnum.ProjectReport),
+                    downloadable: true,
                     tooltipIfNotDeletable: isInDraft && canEdit && (file.type != JemsFileDTO.TypeEnum.ProjectReport) ? 'file.table.action.delete.disabled.for.tab.tooltip' : '',
                     iconIfNotDeletable: isInDraft && canEdit && (file.type != JemsFileDTO.TypeEnum.ProjectReport) ? 'delete_forever' : ''
                 })),

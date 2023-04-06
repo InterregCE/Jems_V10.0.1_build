@@ -52,6 +52,7 @@ export class SharedFolderPageComponent {
           description: file.description,
           editable: canEdit && file.author.id === currentUserId,
           deletable: canEdit && file.author.id === currentUserId,
+          downloadable: true,
           tooltipIfNotDeletable: '',
           iconIfNotDeletable: ''
         })),
