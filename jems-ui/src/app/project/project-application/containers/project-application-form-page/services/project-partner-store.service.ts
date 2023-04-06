@@ -53,8 +53,7 @@ export class ProjectPartnerStore {
               private projectStore: ProjectStore,
               private routingService: RoutingService,
               private projectVersionStore: ProjectVersionStore,
-              private projectPartnerReportService: ProjectPartnerReportService,
-              private projectContractingPartnersService: ProjectContractingPartnersService) {
+              private projectPartnerReportService: ProjectPartnerReportService) {
     this.isProjectEditable$ = this.projectStore.projectEditable$;
     this.projectCallType$ = this.projectStore.projectCallType$;
     this.isProjectCallTypeSpf$ = this.projectCallType$.pipe(map(type => type === CallTypeEnum.SPF));

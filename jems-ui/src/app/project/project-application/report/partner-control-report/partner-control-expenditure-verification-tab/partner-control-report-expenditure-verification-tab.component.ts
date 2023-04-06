@@ -1,11 +1,4 @@
-import {
-  AfterViewChecked,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
+import {AfterViewChecked, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild,} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {catchError, map, take, tap} from 'rxjs/operators';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -21,18 +14,13 @@ import {
   ProjectPartnerReportExpenditureCostDTO,
   ProjectPartnerReportLumpSumDTO,
   ProjectPartnerReportUnitCostDTO,
-  TypologyErrorsDTO, UserRoleDTO
+  TypologyErrorsDTO,
+  UserRoleDTO
 } from '@cat/api';
-import {
-  InvestmentSummary
-} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
+import {InvestmentSummary} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
 import {CurrencyCodesEnum} from '@common/services/currency.store';
-import {
-  PartnerFileManagementStore
-} from '@project/project-application/report/partner-report-detail-page/partner-file-management-store';
-import {
-  PartnerReportDetailPageStore
-} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
+import {PartnerFileManagementStore} from '@project/project-application/report/partner-report-detail-page/partner-file-management-store';
+import {PartnerReportDetailPageStore} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 import {RoutingService} from '@common/services/routing.service';
 import {CustomTranslatePipe} from '@common/pipe/custom-translate-pipe';
 import {TranslateByInputLanguagePipe} from '@common/pipe/translate-by-input-language.pipe';
@@ -45,16 +33,16 @@ import {
 import {Alert} from '@common/components/forms/alert';
 import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 import {MatTable} from '@angular/material/table';
-import {PrivilegesPageStore} from '@project/project-application/privileges-page/privileges-page-store.service';
-import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {PermissionService} from '../../../../../security/permissions/permission.service';
+import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @UntilDestroy()
 @Component({
   selector: 'jems-partner-control-report-expenditure-verification-page',
   templateUrl: './partner-control-report-expenditure-verification-tab.component.html',
   styleUrls: ['./partner-control-report-expenditure-verification-tab.component.scss'],
-  providers: [FormService, PrivilegesPageStore],
+  providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PartnerControlReportExpenditureVerificationTabComponent implements OnInit, AfterViewChecked {
@@ -105,11 +93,11 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
               private formBuilder: FormBuilder,
               private formService: FormService,
               private partnerFileManagementStore: PartnerFileManagementStore,
+              private partnerReportPageStore: PartnerReportPageStore,
               private partnerReportDetailPageStore: PartnerReportDetailPageStore,
               private router: RoutingService,
               private customTranslatePipe: CustomTranslatePipe,
               private translateByInputLanguagePipe: TranslateByInputLanguagePipe,
-              private privilegesPageStore: PrivilegesPageStore,
               private permissionService: PermissionService) {
   }
 
@@ -213,7 +201,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
       this.pageStore.contractIDs$,
       this.reportCosts$,
       this.permissionService.hasPermission(PermissionsEnum.ProjectReportingView),
-      this.privilegesPageStore.isCurrentUserGDPRCompliant$
+      this.partnerReportPageStore.userCanViewGdpr$
     ]).pipe(
       map(([typologyOfErrors, expendituresCosts, costCategories, investmentsSummary, contractIDs, reportCosts, isMonitorUser, isGdprCompliant]: any) => ({
           typologyOfErrors,
@@ -409,7 +397,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
   }
 
   canViewSensitiveData(valueGDPR: boolean, isGDPRCompliant: boolean, isMonitorUser: boolean): boolean {
-    return  !valueGDPR || (valueGDPR && (isGDPRCompliant || isMonitorUser));
+    return !valueGDPR || (valueGDPR && (isGDPRCompliant || isMonitorUser));
   }
 
 
