@@ -31,7 +31,8 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDe
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerMotivation
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
-import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
+import io.cloudflight.jems.server.project.service.report.model.partner.PartnerReportIdentification
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.user.service.authorization.UserAuthorization
@@ -59,6 +60,7 @@ internal class DeleteControlChecklistInstanceTest : UnitTest() {
     private val reportId = 3L
     private val projectId = 5L
     private val controlReportId = 2
+    private val TODAY = ZonedDateTime.now()
 
     private val controlChecklistDetail = ChecklistInstanceDetail(
         id = checklistId,
@@ -68,6 +70,7 @@ internal class DeleteControlChecklistInstanceTest : UnitTest() {
         name = "name",
         creatorEmail = "a@a",
         creatorId = creatorId,
+        createdAt = TODAY,
         relatedToId = reportId,
         finishedDate = null,
         minScore = BigDecimal(0),
@@ -108,6 +111,7 @@ internal class DeleteControlChecklistInstanceTest : UnitTest() {
         name = "name",
         creatorEmail = "a@a",
         creatorId = creatorId,
+        createdAt = TODAY,
         relatedToId = reportId,
         finishedDate = null,
         consolidated = false,
@@ -157,10 +161,29 @@ internal class DeleteControlChecklistInstanceTest : UnitTest() {
         )
     )
 
-    private fun getProjectPartnerReportStatusAndVersion(status: ReportStatus) =
-        ProjectPartnerReportStatusAndVersion(
+    private fun getProjectPartnerReport(status: ReportStatus) =
+        ProjectPartnerReport(
+            id = 2,
+            reportNumber = 1,
             status = status,
-            version = "1.0"
+            version = "1.0",
+            firstSubmission = null,
+            controlEnd = TODAY,
+            identification = PartnerReportIdentification(
+                projectIdentifier = "projectIdentifier",
+                projectAcronym = "projectAcronym",
+                partnerNumber = 2,
+                partnerAbbreviation = "",
+                partnerRole = ProjectPartnerRole.PARTNER,
+                nameInOriginalLanguage = null,
+                nameInEnglish = null,
+                legalStatus = null,
+                partnerType = null,
+                vatRecovery = null,
+                country = null,
+                currency = null,
+                coFinancing = emptyList(),
+            )
         )
 
     @MockK
@@ -187,8 +210,8 @@ internal class DeleteControlChecklistInstanceTest : UnitTest() {
     @Test
     fun `delete control checklist - OK`() {
         every{
-            reportPersistence.getPartnerReportStatusAndVersion(partnerId, reportId)
-        } returns getProjectPartnerReportStatusAndVersion(ReportStatus.InControl)
+            reportPersistence.getPartnerReportById(partnerId, reportId)
+        } returns getProjectPartnerReport(ReportStatus.InControl)
         every { securityService.currentUser?.user?.id } returns creatorId
         every { securityService.getUserIdOrThrow() } returns user.id
         every {
@@ -204,6 +227,8 @@ internal class DeleteControlChecklistInstanceTest : UnitTest() {
         every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
         every { partnerPersistence.getById(partnerId) } returns projectPartner
         every { reportPersistence.getPartnerReportById(partnerId, reportId).reportNumber } returns controlReportId
+        every { reportPersistence.getPartnerReportById(partnerId, reportId).status } returns ReportStatus.InControl
+        every { reportPersistence.getPartnerReportById(partnerId, reportId).controlEnd } returns TODAY
         deleteControlChecklistInstance.deleteById(partnerId, reportId, checklistId)
         verify { persistence.deleteById(checklistId) }
 
@@ -228,8 +253,8 @@ internal class DeleteControlChecklistInstanceTest : UnitTest() {
             )
         } throws GetChecklistInstanceDetailNotFoundException()
         every{
-            reportPersistence.getPartnerReportStatusAndVersion(partnerId, reportId)
-        } returns getProjectPartnerReportStatusAndVersion(ReportStatus.InControl)
+            reportPersistence.getPartnerReportById(partnerId, reportId)
+        } returns getProjectPartnerReport(ReportStatus.InControl)
         every { securityService.currentUser?.user?.id } returns creatorId
         every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
         every { partnerPersistence.getById(partnerId) } returns projectPartner
@@ -248,8 +273,8 @@ internal class DeleteControlChecklistInstanceTest : UnitTest() {
             )
         } returns controlChecklistDetailWithFinishStatus
         every{
-            reportPersistence.getPartnerReportStatusAndVersion(partnerId, reportId)
-        } returns getProjectPartnerReportStatusAndVersion(ReportStatus.InControl)
+            reportPersistence.getPartnerReportById(partnerId, reportId)
+        } returns getProjectPartnerReport(ReportStatus.InControl)
         every { securityService.currentUser?.user?.id } returns 1
         every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
         every { partnerPersistence.getById(partnerId) } returns projectPartner
@@ -273,8 +298,8 @@ internal class DeleteControlChecklistInstanceTest : UnitTest() {
             )
         } returns controlChecklistDetailWithFinishStatus
         every{
-            reportPersistence.getPartnerReportStatusAndVersion(partnerId, reportId)
-        } returns getProjectPartnerReportStatusAndVersion(status)
+            reportPersistence.getPartnerReportById(partnerId, reportId)
+        } returns getProjectPartnerReport(status)
         every { securityService.currentUser?.user?.id } returns 1
         every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
         every { partnerPersistence.getById(partnerId) } returns projectPartner

@@ -1,18 +1,18 @@
 import {Injectable} from '@angular/core';
 import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
 import {
-  ControllerInstitutionsApiService,
-  ControlOverviewDTO,
-  PartnerUserCollaboratorDTO,
-  ProjectPartnerControlReportChangeDTO,
-  ProjectPartnerControlReportDTO,
-  ProjectPartnerDetailDTO,
-  ProjectPartnerReportControlOverviewService,
-  ProjectPartnerReportIdentificationService,
-  ProjectPartnerReportSummaryDTO,
-  ProjectPartnerService,
-  ProjectPartnerUserCollaboratorService,
-  UserSimpleDTO,
+    ControllerInstitutionsApiService,
+    ControlOverviewDTO,
+    PartnerUserCollaboratorDTO,
+    ProjectPartnerControlReportChangeDTO,
+    ProjectPartnerControlReportDTO,
+    ProjectPartnerDetailDTO,
+    ProjectPartnerReportControlOverviewService,
+    ProjectPartnerReportIdentificationService,
+    ProjectPartnerReportSummaryDTO,
+    ProjectPartnerService,
+    ProjectPartnerUserCollaboratorService, UserRoleDTO,
+    UserSimpleDTO,
 } from '@cat/api';
 import {RoutingService} from '@common/services/routing.service';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
@@ -25,12 +25,15 @@ import {Log} from '@common/utils/log';
 import {
   PartnerReportDetailPageStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import {PermissionService} from '../../../../security/permissions/permission.service';
 
 @Injectable({providedIn: 'root'})
 export class PartnerControlReportStore {
 
   partnerControlReport$: Observable<ProjectPartnerControlReportDTO>;
   controlReportEditable$: Observable<boolean>;
+  checklistInControlReportEditable$: Observable<boolean>;
   controlReportFinalized$: Observable<boolean>;
   partner$: Observable<ProjectPartnerDetailDTO>;
   controlInstitutionUsers$: Observable<UserSimpleDTO[]>;
@@ -82,10 +85,12 @@ export class PartnerControlReportStore {
     private partnerService: ProjectPartnerService,
     private partnerUserCollaboratorService: ProjectPartnerUserCollaboratorService,
     private controllerInstitutionsService: ControllerInstitutionsApiService,
-    private projectPartnerReportControlOverviewService: ProjectPartnerReportControlOverviewService
+    private projectPartnerReportControlOverviewService: ProjectPartnerReportControlOverviewService,
+    private permissionService: PermissionService,
   ) {
     this.partnerControlReport$ = this.partnerControlReport();
     this.controlReportEditable$ = this.controlReportEditable();
+    this.checklistInControlReportEditable$ = this.checklistInControlReportEditable();
     this.controlReportFinalized$ = this.controlReportFinalized();
     this.partner$ = this.partner();
     this.partnerId$ = this.partnerId();
@@ -103,6 +108,20 @@ export class PartnerControlReportStore {
         map(([canEdit, status]) => canEdit && status === ProjectPartnerReportSummaryDTO.StatusEnum.InControl)
       );
   }
+
+    private checklistInControlReportEditable(): Observable<boolean> {
+        return combineLatest([
+            this.reportPageStore.institutionUserCanViewControlReports$,
+            this.partnerReportDetailPageStore.reportStatus$,
+            this.permissionService.hasPermission(PermissionsEnum.ProjectReportingChecklistAfterControl)
+        ])
+            .pipe(
+                map(([canView, status, canEditChecklistsAfterControl]) =>
+                    canView
+                    && status === ProjectPartnerReportSummaryDTO.StatusEnum.Certified
+                    && canEditChecklistsAfterControl)
+            );
+    }
 
   private controlReportFinalized(): Observable<boolean> {
     return this.partnerReportDetailPageStore.reportStatus$.pipe(

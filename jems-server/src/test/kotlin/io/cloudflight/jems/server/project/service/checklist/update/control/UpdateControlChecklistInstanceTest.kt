@@ -37,11 +37,11 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDe
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerMotivation
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
-import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
+import io.cloudflight.jems.server.project.service.report.model.partner.PartnerReportIdentification
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.user.service.authorization.UserAuthorization
-import io.cloudflight.jems.server.utils.user
 import io.mockk.MockKAnnotations
 import io.mockk.clearMocks
 import io.mockk.every
@@ -71,6 +71,7 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
     private val projectId = 7L
     private val controlReportId = 2
     private val controlChecklistDetail = controlChecklistInstanceDetail()
+    private val TODAY = ZonedDateTime.now()
 
     private fun controlChecklistInstanceDetail(status: ChecklistInstanceStatus = ChecklistInstanceStatus.DRAFT) =
         ChecklistInstanceDetail(
@@ -82,6 +83,7 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
             relatedToId = reportId,
             creatorEmail = creatorEmail,
             creatorId = creatorId,
+            createdAt = TODAY,
             finishedDate = null,
             minScore = BigDecimal(0),
             maxScore = BigDecimal(10),
@@ -144,6 +146,7 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
         name = "name",
         creatorEmail = creatorEmail,
         creatorId = creatorId,
+        createdAt = TODAY,
         relatedToId = reportId,
         finishedDate = null,
         minScore = BigDecimal(0),
@@ -177,6 +180,7 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
         name = "name",
         relatedToId = reportId,
         finishedDate = null,
+        createdAt = TODAY,
         minScore = BigDecimal(0),
         maxScore = BigDecimal(10),
         allowsDecimalScore = false,
@@ -195,6 +199,7 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
         name = "name",
         relatedToId = reportId,
         finishedDate = null,
+        createdAt = TODAY,
         minScore = BigDecimal(0),
         maxScore = BigDecimal(10),
         consolidated = false,
@@ -244,10 +249,29 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
         )
     )
 
-    private fun getProjectPartnerReportStatusAndVersion(status: ReportStatus) =
-        ProjectPartnerReportStatusAndVersion(
+    private fun getProjectPartnerReport(status: ReportStatus) =
+        ProjectPartnerReport(
+            id = 2,
+            reportNumber = 1,
             status = status,
-            version = "1.0"
+            version = "1.0",
+            firstSubmission = null,
+            controlEnd = TODAY,
+            identification = PartnerReportIdentification(
+                projectIdentifier = "projectIdentifier",
+                projectAcronym = "projectAcronym",
+                partnerNumber = 2,
+                partnerAbbreviation = "",
+                partnerRole = ProjectPartnerRole.PARTNER,
+                nameInOriginalLanguage = null,
+                nameInEnglish = null,
+                legalStatus = null,
+                partnerType = null,
+                vatRecovery = null,
+                country = null,
+                currency = null,
+                coFinancing = emptyList(),
+            )
         )
 
     @MockK
@@ -307,8 +331,8 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
             ChecklistInstanceStatus.DRAFT
         )
         every{
-            reportPersistence.getPartnerReportStatusAndVersion(partnerId, reportId)
-        } returns getProjectPartnerReportStatusAndVersion(ReportStatus.InControl)
+            reportPersistence.getPartnerReportById(partnerId, reportId)
+        } returns getProjectPartnerReport(ReportStatus.InControl)
         Assertions.assertThat(updateControlChecklistInstance.update(partnerId, reportId, controlChecklistDetail))
             .isEqualTo(controlChecklistDetail)
     }
@@ -327,8 +351,8 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
             ChecklistInstanceStatus.DRAFT
         )
         every{
-            reportPersistence.getPartnerReportStatusAndVersion(partnerId, reportId)
-        } returns getProjectPartnerReportStatusAndVersion(ReportStatus.InControl)
+            reportPersistence.getPartnerReportById(partnerId, reportId)
+        } returns getProjectPartnerReport(ReportStatus.InControl)
 
         assertThrows<UpdateControlChecklistInstanceStatusNotAllowedException> {
             updateControlChecklistInstance.update(
@@ -354,8 +378,8 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
             ChecklistInstanceStatus.DRAFT
         )
         every{
-            reportPersistence.getPartnerReportStatusAndVersion(partnerId, reportId)
-        } returns getProjectPartnerReportStatusAndVersion(ReportStatus.InControl)
+            reportPersistence.getPartnerReportById(partnerId, reportId)
+        } returns getProjectPartnerReport(ReportStatus.InControl)
 
         assertThrows<UpdateControlChecklistInstanceStatusNotAllowedException> {
             updateControlChecklistInstance.update(
@@ -382,8 +406,8 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
             ChecklistInstanceStatus.DRAFT
         )
         every{
-            reportPersistence.getPartnerReportStatusAndVersion(partnerId, reportId)
-        } returns getProjectPartnerReportStatusAndVersion(status)
+            reportPersistence.getPartnerReportById(partnerId, reportId)
+        } returns getProjectPartnerReport(status)
 
         assertThrows<UpdateControlChecklistInstanceStatusNotAllowedException> {
             updateControlChecklistInstance.update(
@@ -399,14 +423,16 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
         val auditSlot = slot<AuditCandidateEvent>()
         every { securityService.currentUser?.user?.id } returns creatorId
         every{
-            reportPersistence.getPartnerReportStatusAndVersion(partnerId, reportId)
-        } returns getProjectPartnerReportStatusAndVersion(ReportStatus.InControl)
+            reportPersistence.getPartnerReportById(partnerId, reportId)
+        } returns getProjectPartnerReport(ReportStatus.InControl)
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
         every { persistence.update(controlChecklistDetail) } returns controlChecklistDetail
         every { securityService.getUserIdOrThrow() } returns creatorId
         every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
         every { partnerPersistence.getById(partnerId) } returns projectPartner
         every { reportPersistence.getPartnerReportById(partnerId, reportId).reportNumber } returns controlReportId
+        every { reportPersistence.getPartnerReportById(partnerId, reportId).status } returns ReportStatus.InControl
+        every { reportPersistence.getPartnerReportById(partnerId, reportId).controlEnd } returns TODAY
         every {
             persistence.getChecklistDetail(
                 checklistId,
@@ -446,8 +472,8 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
             )
         } returns controlChecklistDetail
         every{
-            reportPersistence.getPartnerReportStatusAndVersion(partnerId, reportId)
-        } returns getProjectPartnerReportStatusAndVersion(ReportStatus.InControl)
+            reportPersistence.getPartnerReportById(partnerId, reportId)
+        } returns getProjectPartnerReport(ReportStatus.InControl)
         assertThrows<UpdateControlChecklistInstanceStatusNotAllowedException> {
             updateControlChecklistInstance.update(
                 partnerId,
@@ -458,7 +484,7 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
     }
 
     @ParameterizedTest
-    @EnumSource(value = ReportStatus::class, names = ["InControl"], mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = ReportStatus::class, names = ["InControl", "Certified"], mode = EnumSource.Mode.EXCLUDE)
     fun `update - report control is locked`(status: ReportStatus) {
         every {
             persistence.getChecklistDetail(
@@ -468,8 +494,8 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
             )
         } returns controlChecklistDetail
         every{
-            reportPersistence.getPartnerReportStatusAndVersion(partnerId, reportId)
-        } returns getProjectPartnerReportStatusAndVersion(status)
+            reportPersistence.getPartnerReportById(partnerId, reportId)
+        } returns getProjectPartnerReport(status)
         assertThrows<UpdateControlChecklistInstanceStatusNotAllowedException> {
             updateControlChecklistInstance.update(
                 partnerId,
@@ -490,8 +516,8 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
             )
         } returns controlChecklistDetailWithErrorOnTextInput
         every{
-            reportPersistence.getPartnerReportStatusAndVersion(partnerId, reportId)
-        } returns getProjectPartnerReportStatusAndVersion(ReportStatus.InControl)
+            reportPersistence.getPartnerReportById(partnerId, reportId)
+        } returns getProjectPartnerReport(ReportStatus.InControl)
 
         assertThrows<AppInputValidationException> {
             updateControlChecklistInstance.update(
@@ -513,8 +539,8 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
         } returns controlChecklistDetailWithErrorOnOptionsToggle
         every { persistence.update(controlChecklistDetailWithErrorOnOptionsToggle) } returns controlChecklistDetailWithErrorOnOptionsToggle
         every{
-            reportPersistence.getPartnerReportStatusAndVersion(partnerId, reportId)
-        } returns getProjectPartnerReportStatusAndVersion(ReportStatus.InControl)
+            reportPersistence.getPartnerReportById(partnerId, reportId)
+        } returns getProjectPartnerReport(ReportStatus.InControl)
 
         assertThrows<AppInputValidationException> {
             updateControlChecklistInstance.update(
@@ -536,8 +562,8 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
             )
         } returns controlChecklistDetailWithErrorOnScore
         every{
-            reportPersistence.getPartnerReportStatusAndVersion(partnerId, reportId)
-        } returns getProjectPartnerReportStatusAndVersion(ReportStatus.InControl)
+            reportPersistence.getPartnerReportById(partnerId, reportId)
+        } returns getProjectPartnerReport(ReportStatus.InControl)
 
         assertThrows<AppInputValidationException> {
             updateControlChecklistInstance.update(
@@ -554,8 +580,8 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
             controlChecklistInstance(ChecklistInstanceStatus.FINISHED)
         every { persistence.getChecklistSummary(checklistId) } returns controlChecklistInstance(ChecklistInstanceStatus.DRAFT)
         every{
-            reportPersistence.getPartnerReportStatusAndVersion(partnerId, reportId)
-        } returns getProjectPartnerReportStatusAndVersion(ReportStatus.InControl)
+            reportPersistence.getPartnerReportById(partnerId, reportId)
+        } returns getProjectPartnerReport(ReportStatus.InControl)
 
         Assertions.assertThat(updateControlChecklistInstance.updateDescription(partnerId, reportId, checklistId, "test"))
             .isEqualTo(controlChecklistInstance(ChecklistInstanceStatus.FINISHED))
@@ -565,8 +591,8 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
     fun `update description - invalid case`() {
         every { persistence.getChecklistSummary(checklistId) } returns controlChecklistInstance(ChecklistInstanceStatus.DRAFT)
         every{
-            reportPersistence.getPartnerReportStatusAndVersion(partnerId, reportId)
-        } returns getProjectPartnerReportStatusAndVersion(ReportStatus.InControl)
+            reportPersistence.getPartnerReportById(partnerId, reportId)
+        } returns getProjectPartnerReport(ReportStatus.InControl)
 
         assertThrows<UpdateControlChecklistInstanceNotFoundException> {
             updateControlChecklistInstance.updateDescription(

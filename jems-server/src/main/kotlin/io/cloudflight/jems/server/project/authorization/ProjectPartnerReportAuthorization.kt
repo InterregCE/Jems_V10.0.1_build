@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatu
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaboratorPersistence
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
+import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
 import java.util.Optional
@@ -31,6 +32,10 @@ annotation class CanViewPartnerReport
 @Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("@projectPartnerReportAuthorization.canEditPartnerControlReport(#partnerId, #reportId)")
 annotation class CanEditPartnerControlReport
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@projectPartnerReportAuthorization.canEditPartnerControlReportChecklist(#partnerId, #reportId)")
+annotation class CanEditPartnerControlReportChecklist
 
 @Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("@projectPartnerReportAuthorization.canViewPartnerControlReport(#partnerId, #reportId)")
@@ -98,6 +103,26 @@ class ProjectPartnerReportAuthorization(
                 partnerId = partnerId,
             )
         )
+
+    fun canEditPartnerControlReportChecklist(partnerId: Long, reportId: Long): Boolean {
+        val report = reportPersistence.getPartnerReportById(partnerId, reportId)
+        val reportIsFinalized = report.status.isFinalized()
+        val userAccessLevelFromInstitution = controllerInstitutionPersistence.getControllerUserAccessLevelForPartner(
+            userId = securityService.getUserIdOrThrow(),
+            partnerId = partnerId,
+        )
+        val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
+        val inControlPermissions = userAccessLevelFromInstitution == UserInstitutionAccessLevel.Edit
+        val finalizedPermissions = (userAccessLevelFromInstitution != null)
+                && hasPermission(UserRolePermission.ProjectReportingChecklistAfterControl, projectId)
+
+        return if (reportIsFinalized) {
+            finalizedPermissions
+        } else {
+            inControlPermissions
+        }
+    }
+
 
     fun canEditPartnerControlReport(partnerId: Long, reportId: Long): Boolean =
         reportPersistence.exists(partnerId, reportId = reportId) &&

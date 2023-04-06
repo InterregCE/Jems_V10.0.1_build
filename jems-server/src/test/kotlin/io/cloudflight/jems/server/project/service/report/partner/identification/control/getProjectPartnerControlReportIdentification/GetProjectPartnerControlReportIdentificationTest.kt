@@ -70,6 +70,7 @@ internal class GetProjectPartnerControlReportIdentificationTest : UnitTest() {
                 currency = null,
                 coFinancing = emptyList(),
             ),
+            controlEnd = null
         )
 
         private val identification = ProjectPartnerReportIdentification(
@@ -140,7 +141,8 @@ internal class GetProjectPartnerControlReportIdentificationTest : UnitTest() {
             ),
             type = ReportType.PartnerReport,
             designatedController = designatedController,
-            reportVerification = reportVerification
+            reportVerification = reportVerification,
+            reportControlEnd = null
         )
     }
 

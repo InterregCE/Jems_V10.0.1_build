@@ -69,10 +69,25 @@ export class PartnerControlReportControlChecklistPageStore {
   }
 
   private checklistEditable(): Observable<boolean> {
-    return combineLatest([this.checklist$, this.securityService.currentUserDetails, this.reportControlStore.controlReportEditable$])
+    return combineLatest([
+        this.checklist$,
+        this.securityService.currentUserDetails,
+        this.reportControlStore.controlReportEditable$,
+        this.reportControlStore.checklistInControlReportEditable$,
+        this.reportControlStore.partnerControlReport$
+    ])
       .pipe(
-        map(([checklist, user, reportEditable]) =>
-          checklist.status === ChecklistInstanceDetailDTO.StatusEnum.DRAFT && user?.email === checklist.creatorEmail && reportEditable)
+        map(([
+            checklist,
+             user,
+             reportEditable,
+            checklistEditableAfterControl,
+            controlReport
+         ]) =>
+          checklist.status === ChecklistInstanceDetailDTO.StatusEnum.DRAFT
+            && user?.email === checklist.creatorEmail
+            && (reportEditable || (checklistEditableAfterControl && checklist.createdAt > controlReport.reportControlEnd))
+        )
       );
   }
 }

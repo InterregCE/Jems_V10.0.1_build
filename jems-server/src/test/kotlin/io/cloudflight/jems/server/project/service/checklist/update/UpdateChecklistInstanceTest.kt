@@ -41,6 +41,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.context.ApplicationEventPublisher
 import java.math.BigDecimal
+import java.time.ZonedDateTime
 
 internal class UpdateChecklistInstanceTest : UnitTest() {
 
@@ -48,6 +49,7 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
     private val RELATED_TO_ID = 2L
     private val PROGRAMME_CHECKLIST_ID = 4L
     private val CREATOR_ID = 1L
+    private val TODAY = ZonedDateTime.now()
 
     private val checkLisDetail = checklistInstanceDetail()
 
@@ -61,6 +63,7 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
             relatedToId = RELATED_TO_ID,
             creatorEmail = "a@a",
             creatorId = CREATOR_ID,
+            createdAt = TODAY,
             finishedDate = null,
             minScore = BigDecimal(0),
             maxScore = BigDecimal(10),
@@ -123,6 +126,7 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
         name = "name",
         creatorEmail = "a@a",
         creatorId = CREATOR_ID,
+        createdAt = TODAY,
         relatedToId = RELATED_TO_ID,
         finishedDate = null,
         minScore = BigDecimal(0),
@@ -155,6 +159,7 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
         name = "name",
         relatedToId = RELATED_TO_ID,
         finishedDate = null,
+        createdAt = TODAY,
         minScore = BigDecimal(0),
         maxScore = BigDecimal(10),
         allowsDecimalScore = false,
@@ -173,6 +178,7 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
         name = "name",
         relatedToId = RELATED_TO_ID,
         finishedDate = null,
+        createdAt = TODAY,
         minScore = BigDecimal(0),
         maxScore = BigDecimal(10),
         consolidated = false,

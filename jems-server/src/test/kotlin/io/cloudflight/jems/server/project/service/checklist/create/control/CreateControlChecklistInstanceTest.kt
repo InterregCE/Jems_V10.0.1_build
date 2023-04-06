@@ -36,6 +36,7 @@ import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import java.math.BigDecimal
+import java.time.ZonedDateTime
 
 internal class CreateControlChecklistInstanceTest : UnitTest() {
 
@@ -45,6 +46,7 @@ internal class CreateControlChecklistInstanceTest : UnitTest() {
     private val programmeChecklistId = 4L
     private val partnerId = 5L
     private val reportId = 6L
+    private val TODAY = ZonedDateTime.now()
 
     private val createControlChecklist = CreateChecklistInstanceModel(
         relatedToId,
@@ -60,6 +62,7 @@ internal class CreateControlChecklistInstanceTest : UnitTest() {
         relatedToId = reportId,
         creatorEmail = "a@a",
         creatorId = creatorId,
+        createdAt = TODAY,
         finishedDate = null,
         minScore = BigDecimal(0),
         maxScore = BigDecimal(10),
@@ -144,7 +147,7 @@ internal class CreateControlChecklistInstanceTest : UnitTest() {
     }
 
     @ParameterizedTest
-    @EnumSource(value = ReportStatus::class, names = ["InControl"], mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = ReportStatus::class, names = ["InControl", "Certified"], mode = EnumSource.Mode.EXCLUDE)
     fun `create control checklist - failed - report is locked`(status: ReportStatus) {
         every{
             reportPersistence.getPartnerReportStatusAndVersion(partnerId, reportId)

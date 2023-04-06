@@ -34,6 +34,7 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import java.math.BigDecimal
+import java.time.ZonedDateTime
 
 internal class ControlChecklistInstanceControllerTest: UnitTest() {
 
@@ -41,6 +42,7 @@ internal class ControlChecklistInstanceControllerTest: UnitTest() {
         const val partnerId = 1L
         const val reportId = 20L
         const val checklistId = 5L
+        private val TODAY = ZonedDateTime.now()
     }
 
     private val checklist = ChecklistInstance(
@@ -65,7 +67,8 @@ internal class ControlChecklistInstanceControllerTest: UnitTest() {
         programmeChecklistId = 1L,
         visible = false,
         description = "test",
-        finishedDate = null
+        finishedDate = null,
+        createdAt = null,
     )
 
     private val checklistDetail = ChecklistInstanceDetail(
@@ -81,6 +84,7 @@ internal class ControlChecklistInstanceControllerTest: UnitTest() {
         allowsDecimalScore = false,
         creatorEmail = "a@a",
         creatorId = 200L,
+        createdAt = TODAY,
         consolidated = false,
         visible = true,
         components = mutableListOf(
@@ -114,6 +118,7 @@ internal class ControlChecklistInstanceControllerTest: UnitTest() {
         finishedDate = null,
         name = "test",
         creatorEmail = "a@a",
+        createdAt = TODAY,
         minScore = BigDecimal(0),
         maxScore = BigDecimal(10),
         allowsDecimalScore = false,

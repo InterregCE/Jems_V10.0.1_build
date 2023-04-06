@@ -40,6 +40,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.context.ApplicationEventPublisher
 import java.math.BigDecimal
+import java.time.ZonedDateTime
 
 internal class UpdateContractingChecklistInstanceTest : UnitTest() {
 
@@ -49,6 +50,7 @@ internal class UpdateContractingChecklistInstanceTest : UnitTest() {
     private val creatorEmail = "a@a"
     private val notCreatorEmail = "b@b"
     private val projectId = 7L
+    private val TODAY = ZonedDateTime.now()
 
     private val contractingChecklistDetail = contractingChecklistInstanceDetail()
 
@@ -62,6 +64,7 @@ internal class UpdateContractingChecklistInstanceTest : UnitTest() {
             relatedToId = projectId,
             creatorEmail = creatorEmail,
             creatorId = creatorId,
+            createdAt = TODAY,
             finishedDate = null,
             minScore = BigDecimal(0),
             maxScore = BigDecimal(10),
@@ -124,6 +127,7 @@ internal class UpdateContractingChecklistInstanceTest : UnitTest() {
         name = "name",
         creatorEmail = creatorEmail,
         creatorId = creatorId,
+        createdAt = TODAY,
         relatedToId = projectId,
         finishedDate = null,
         minScore = BigDecimal(0),
@@ -159,6 +163,7 @@ internal class UpdateContractingChecklistInstanceTest : UnitTest() {
         name = "name",
         relatedToId = projectId,
         finishedDate = null,
+        createdAt = TODAY,
         minScore = BigDecimal(0),
         maxScore = BigDecimal(10),
         allowsDecimalScore = false,
@@ -177,6 +182,7 @@ internal class UpdateContractingChecklistInstanceTest : UnitTest() {
         name = "name",
         relatedToId = projectId,
         finishedDate = null,
+        createdAt = TODAY,
         minScore = BigDecimal(0),
         maxScore = BigDecimal(10),
         consolidated = false,

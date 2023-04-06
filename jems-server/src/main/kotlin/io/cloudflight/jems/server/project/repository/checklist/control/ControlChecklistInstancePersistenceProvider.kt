@@ -15,6 +15,7 @@ import io.cloudflight.jems.server.project.service.checklist.model.CreateChecklis
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import java.time.ZonedDateTime
 
 @Repository
 class ControlChecklistInstancePersistenceProvider(
@@ -37,7 +38,8 @@ class ControlChecklistInstancePersistenceProvider(
                 relatedToId = reportId,
                 finishedDate = null,
                 programmeChecklist = programmeChecklist,
-                components = programmeChecklist.components?.map { it.toInstanceEntity() }?.toMutableSet()
+                components = programmeChecklist.components?.map { it.toInstanceEntity() }?.toMutableSet(),
+                createdAt = ZonedDateTime.now()
             ).also {
                 it.components?.forEach { component -> component.checklistComponentId.checklist = it }
             }

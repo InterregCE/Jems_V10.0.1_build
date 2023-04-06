@@ -18,6 +18,7 @@ data class ProjectPartnerControlReport(
     val reportPeriodStart: LocalDate?,
     val reportPeriodEnd: LocalDate?,
     val reportFirstSubmission: ZonedDateTime,
+    val reportControlEnd: ZonedDateTime?,
     val controllerFormats: Set<ReportFileFormat>,
     val type: ReportType,
     val designatedController: ReportDesignatedController,

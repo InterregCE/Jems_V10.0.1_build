@@ -29,11 +29,13 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.context.ApplicationEventPublisher
 import java.math.BigDecimal
+import java.time.ZonedDateTime
 
 internal class DeleteChecklistInstanceTest : UnitTest() {
 
     private val CHECKLIST_ID = 100L
     private val CREATOR_ID = 1L
+    private val TODAY = ZonedDateTime.now()
 
     private val checkLisDetail = ChecklistInstanceDetail(
         id = CHECKLIST_ID,
@@ -43,6 +45,7 @@ internal class DeleteChecklistInstanceTest : UnitTest() {
         name = "name",
         creatorEmail = "a@a",
         creatorId = CREATOR_ID,
+        createdAt = TODAY,
         relatedToId = 1L,
         finishedDate = null,
         minScore = BigDecimal(0),
@@ -83,6 +86,7 @@ internal class DeleteChecklistInstanceTest : UnitTest() {
         name = "name",
         creatorEmail = "a@a",
         creatorId = CREATOR_ID,
+        createdAt = TODAY,
         relatedToId = 1L,
         finishedDate = null,
         consolidated = false,

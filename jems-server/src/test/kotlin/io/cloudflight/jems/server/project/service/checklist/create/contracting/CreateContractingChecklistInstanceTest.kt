@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import java.math.BigDecimal
+import java.time.ZonedDateTime
 
 internal class CreateContractingChecklistInstanceTest : UnitTest() {
 
@@ -37,6 +38,7 @@ internal class CreateContractingChecklistInstanceTest : UnitTest() {
     private val creatorId = 3L
     private val programmeChecklistId = 4L
     private val projectId = 5L
+    private val TODAY = ZonedDateTime.now()
 
     private val createContractingChecklist = CreateChecklistInstanceModel(
         projectId,
@@ -52,6 +54,7 @@ internal class CreateContractingChecklistInstanceTest : UnitTest() {
         relatedToId = projectId,
         creatorEmail = "a@a",
         creatorId = creatorId,
+        createdAt = TODAY,
         finishedDate = null,
         minScore = BigDecimal(0),
         maxScore = BigDecimal(10),

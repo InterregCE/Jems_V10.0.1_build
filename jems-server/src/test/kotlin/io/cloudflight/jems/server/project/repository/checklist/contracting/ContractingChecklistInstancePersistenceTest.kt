@@ -25,6 +25,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.mockkStatic
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions
@@ -39,6 +40,7 @@ class ContractingChecklistInstancePersistenceTest : UnitTest() {
     private val projectId = 1L
     private val creatorId = 2L
     private val programmeChecklistId = 3L
+    private val TODAY = ZonedDateTime.now()
 
     private val createdContractingChecklistDetail = ChecklistInstanceDetail(
         id = 0,
@@ -48,6 +50,7 @@ class ContractingChecklistInstancePersistenceTest : UnitTest() {
         name = "name",
         creatorEmail = "test@email.com",
         creatorId = creatorId,
+        createdAt = TODAY,
         relatedToId = projectId,
         finishedDate = null,
         consolidated = false,
@@ -164,10 +167,12 @@ class ContractingChecklistInstancePersistenceTest : UnitTest() {
 
     @Test
     fun create() {
+        mockkStatic(ZonedDateTime::class)
         val checklistSlot = slot<ChecklistInstanceEntity>()
         every { repository.save(capture(checklistSlot)) } returnsArgument 0
         every { programmeChecklistRepository.getById(programmeChecklistId) } returns programmeChecklist
         every { userRepo.getById(creatorId) } returns user
+        every { ZonedDateTime.now() } returns TODAY
         Assertions.assertThat(persistence.create(createContractingChecklist, creatorId, projectId))
             .usingRecursiveComparison()
             .isEqualTo(createdContractingChecklistDetail)

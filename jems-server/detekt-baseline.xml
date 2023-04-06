@@ -3,6 +3,7 @@
   <ManuallySuppressedIssues></ManuallySuppressedIssues>
   <CurrentIssues>
     <ID>ComplexCondition:CallValidator.kt$CallValidator$call.is2StepProcedureEnabled() &amp;&amp; (call.endDateStep1 == null || call.endDateStep1!!.isBefore(call.startDate) || call.endDateStep1!!.isAfter(call.endDate))</ID>
+    <ID>ComplexCondition:DeleteControlChecklistInstance.kt$DeleteControlChecklistInstance$report.status.controlNotStartedYet() || isChecklistCreatedAfterControl(checklistToBeDeleted, report.controlEnd) || checklistToBeDeleted.status == ChecklistInstanceStatus.FINISHED || (securityService.currentUser?.user?.id != checklistToBeDeleted.creatorId)</ID>
     <ID>ComplexCondition:GetChecklistInstanceDetail.kt$GetChecklistInstanceDetail$(isNotAllowedToUpdate(relatedToId, checklistDetail) &amp;&amp; (checkListIsNotVisible(checklistDetail) || !canViewSelectedAssessmentsList(relatedToId))) || checklistDetail.relatedToId != relatedToId</ID>
     <ID>ComplexCondition:PartnerBudgetPerFundCalculator.kt$PartnerBudgetPerFundCalculator$toDivide == BigDecimal.ZERO || divisor == BigDecimal.ZERO || toDivide == BigDecimal(BigInteger("0"), 2) || divisor == BigDecimal(BigInteger("0"), 2)</ID>
     <ID>ComplexCondition:ProgrammeUnitCostValidation.kt$costPerUnit == null || costPerUnit &lt;= BigDecimal.ZERO || costPerUnit &gt; MAX_COST || costPerUnit.scale() &gt; 2</ID>
@@ -10,6 +11,8 @@
     <ID>ComplexCondition:ProjectCooperationCriteriaEntity.kt$ProjectCooperationCriteriaEntity$projectJointDevelopment || projectJointImplementation || projectJointStaffing || projectJointFinancing</ID>
     <ID>ComplexCondition:ProjectFilePersistenceProvider.kt$ProjectFilePersistenceProvider$fileCategory.type == ProjectFileCategoryType.ALL &amp;&amp; projectFileCategoryRepository.existsByProjectFileProjectIdAndProjectFileName(projectId, fileName) || fileCategory.type != ProjectFileCategoryType.ALL &amp;&amp; projectFileCategoryRepository.fileNameExistsInCategory( projectId, fileName, fileCategory.getCategoryTypeString() )</ID>
     <ID>ComplexCondition:UpdateCall.kt$UpdateCall$startDateChanged || lengthOfPeriodChanged || isAdditionalFundAllowedDisabled || specificObjectivesRemoved || strategiesRemoved || fundsRemoved || stateAidsRemoved</ID>
+    <ID>ComplexCondition:UpdateControlChecklistInstance.kt$UpdateControlChecklistInstance$report.status.controlNotStartedYet() || isChecklistCreatedAfterControl(existing, report.controlEnd) || existing.status != checklist.status || (securityService.currentUser?.user?.id != existing.creatorId)</ID>
+    <ID>ComplexCondition:UpdateControlChecklistInstance.kt$UpdateControlChecklistInstance$report.status.controlNotStartedYet() || isChecklistCreatedAfterControl(existing, report.controlEnd) || statusNotChanged || isFinishedNotByAuthor</ID>
     <ID>ComplexCondition:UpdateLumpSum.kt$UpdateLumpSum$existingLumpSum.cost?.compareTo(updatedLumpSum.cost) != 0 || existingLumpSum.splittingAllowed != updatedLumpSum.splittingAllowed || existingLumpSum.phase != updatedLumpSum.phase || existingLumpSum.categories != updatedLumpSum.categories</ID>
     <ID>ComplexCondition:UploadProjectFile.kt$UploadProjectFile$fileTypeCategory.type == ProjectFileCategoryType.ALL || fileTypeCategory.type == ProjectFileCategoryType.PARTNER &amp;&amp; fileTypeCategory.id == null || fileTypeCategory.type == ProjectFileCategoryType.INVESTMENT &amp;&amp; fileTypeCategory.id == null</ID>
     <ID>ComplexMethod:ApplicationStateFactory.kt$ApplicationStateFactory$fun getInstance(projectSummary: ProjectSummary)</ID>
@@ -605,7 +608,6 @@
     <ID>UnusedPrivateMember:ProjectPartnerFactory.kt$ProjectPartnerFactory$author: UserEntity</ID>
     <ID>UnusedPrivateMember:ProjectWorkPackageAuthorizationTest.kt$ProjectWorkPackageAuthorizationTest.Companion$private const val INVESTMENT_ID = 7L</ID>
     <ID>UnusedPrivateMember:ReturnApplicationToApplicantInteractorTest.kt$ReturnApplicationToApplicantInteractorTest$@InjectMockKs private lateinit var handBackToApplicant: HandBackToApplicant</ID>
-    <ID>UnusedPrivateMember:SaveProjectVersionTest.kt$SaveProjectVersionTest$private val newProjectVersion = ProjectVersion( "2.0", projectId, createdAt = ZonedDateTime.now(), user, ApplicationStatus.SUBMITTED, current = true )</ID>
     <ID>UnusedPrivateMember:UpdateCallTest.kt$UpdateCallTest$private fun provideNotAllowedChangesToPublishedCall(): Stream&lt;Arguments&gt;</ID>
     <ID>UnusedPrivateMember:UpdateFundsTest.kt$UpdateFundsTest$private fun providePreDefinedProgramFundTypes()</ID>
     <ID>UnusedPrivateMember:UpdateLegalStatusInteractorTest.kt$UpdateLegalStatusInteractorTest$private fun providePreDefinedLegalStatusTypes()</ID>

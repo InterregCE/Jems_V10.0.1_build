@@ -25,6 +25,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
+import java.time.ZonedDateTime
 
 internal class GetChecklistInstanceDetailTest : UnitTest() {
 
@@ -32,6 +33,7 @@ internal class GetChecklistInstanceDetailTest : UnitTest() {
     private val RELATED_TO_ID = 2L
     private val PROGRAMME_CHECKLIST_ID = 4L
     private val CREATOR_ID = 1L
+    private val TODAY = ZonedDateTime.now()
 
     private val checkLisDetail = ChecklistInstanceDetail(
         id = CHECKLIST_ID,
@@ -41,6 +43,7 @@ internal class GetChecklistInstanceDetailTest : UnitTest() {
         name = "name",
         creatorEmail = "a@a",
         creatorId = CREATOR_ID,
+        createdAt = TODAY,
         relatedToId = RELATED_TO_ID,
         finishedDate = null,
         consolidated = false,

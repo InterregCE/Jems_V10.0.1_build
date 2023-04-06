@@ -30,6 +30,7 @@ fun toModelObject(
     reportPeriodStart = identification.startDate,
     reportPeriodEnd = identification.endDate,
     reportFirstSubmission = report.firstSubmission!!,
+    reportControlEnd = report.controlEnd,
     controllerFormats = identification.controllerFormats,
     type = identification.type,
     designatedController = designatedController,

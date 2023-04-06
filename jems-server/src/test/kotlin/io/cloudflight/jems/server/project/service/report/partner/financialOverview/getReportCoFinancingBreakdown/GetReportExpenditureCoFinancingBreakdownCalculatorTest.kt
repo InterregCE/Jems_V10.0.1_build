@@ -34,7 +34,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.time.ZonedDateTime
-import java.util.*
+import java.util.UUID
 
 internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest() {
 
@@ -63,6 +63,7 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
                 version = "V_4.5",
                 identification = identification,
                 firstSubmission = LAST_YEAR,
+                controlEnd = null
             )
         }
 

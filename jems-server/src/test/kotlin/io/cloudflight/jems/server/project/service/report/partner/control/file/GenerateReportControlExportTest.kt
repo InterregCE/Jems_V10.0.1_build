@@ -87,7 +87,8 @@ class GenerateReportControlExportTest : UnitTest() {
                 vatRecovery = null,
                 country = null,
                 currency = null
-            )
+            ),
+            controlEnd = null
         )
     }
 
