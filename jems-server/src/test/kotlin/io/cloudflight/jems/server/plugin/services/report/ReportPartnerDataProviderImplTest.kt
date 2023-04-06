@@ -126,6 +126,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
 
     companion object {
         private val DATE_TIME_1 = ZonedDateTime.now()
+        private val DATE_TIME_2 = ZonedDateTime.now().plusDays(1)
         private val DATE_1 = LocalDate.now()
         private val DATE_2 = LocalDate.now()
         private val UUID_1 = UUID.randomUUID()
@@ -137,7 +138,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
             status = ReportStatus.Draft,
             version = "6.5.1",
             firstSubmission = DATE_TIME_1,
-            controlEnd = DATE_TIME_1,
+            controlEnd = DATE_TIME_2,
 
             identification = PartnerReportIdentification(
                 projectIdentifier = "identifier",
@@ -179,6 +180,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
             status = ReportStatusData.Draft,
             version = "6.5.1",
             firstSubmission = DATE_TIME_1,
+            controlEnd = DATE_TIME_2,
 
             projectIdentifier = "identifier",
             projectAcronym = "acr",
