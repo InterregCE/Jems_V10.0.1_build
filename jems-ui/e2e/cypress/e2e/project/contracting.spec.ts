@@ -139,7 +139,7 @@ context('Application contracting tests', () => {
   });
 
   it('TB-873 Fast Track Lump Sum can be set as Ready for payment', () => {
-    cy.fixture('project/contracting/TB-750.json').then(testData => {
+    cy.fixture('project/contracting/TB-873.json').then(testData => {
       cy.loginByRequest(user.applicantUser.email);
       cy.createApprovedApplication(application, user.programmeUser.email).then(applicationId => {
         cy.loginByRequest(user.programmeUser.email);
