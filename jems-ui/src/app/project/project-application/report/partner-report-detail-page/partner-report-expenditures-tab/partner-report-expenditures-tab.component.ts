@@ -881,6 +881,10 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
      return isMonitorUser || (!valueGDPR && canEdit) || (valueGDPR && isGDPRCompliant);
   }
 
+  deleteAllowed(valueGDPR: boolean, isGDPRCompliant: boolean, canEdit: boolean): boolean {
+    return  (!valueGDPR && canEdit) || (valueGDPR && isGDPRCompliant);
+  }
+
   toggleGDPR(index: number,  control: FormGroup, value: boolean): void {
     this.items.at(index).get('costGDPR')?.setValue(value);
     control.patchValue({costGDPR: value});

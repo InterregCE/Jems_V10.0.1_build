@@ -667,7 +667,7 @@
                                 <button mat-icon-button *ngIf="reportExpendituresForm.enabled"
                                         [disabled]="!!control.get('attachment').value ||
                                         !data.isReportEditable ||
-                                        !editAllowed(control.get(constants.FORM_CONTROL_NAMES.costGDPR).value, data.isGDPRCompliant, data.canEdit, data.isMonitorUser)"
+                                        !deleteAllowed(control.get(constants.FORM_CONTROL_NAMES.costGDPR).value, data.isGDPRCompliant, data.canEdit)"
                                         (click)="removeItem(index)"
                                         class="delete-button"
                                         color="accent"
