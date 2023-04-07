@@ -3,6 +3,8 @@ package io.cloudflight.jems.server.project.service.report.partner.file.deletePro
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
+import io.cloudflight.jems.server.project.service.report.partner.SensitiveDataAuthorizationService
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -26,6 +28,12 @@ class DeleteProjectPartnerReportFileTest : UnitTest() {
     @MockK
     lateinit var filePersistence: JemsFilePersistence
 
+    @MockK
+    lateinit var reportExpenditurePersistence: ProjectPartnerReportExpenditurePersistence
+
+    @MockK
+    lateinit var sensitiveDataAuthorization: SensitiveDataAuthorizationService
+
     @InjectMockKs
     lateinit var interactor: DeleteProjectPartnerReportFile
     @BeforeEach
@@ -39,6 +47,8 @@ class DeleteProjectPartnerReportFileTest : UnitTest() {
     fun delete() {
         val projectId = 96L
         val fileId = 10L
+        every { reportExpenditurePersistence.existsByPartnerIdAndAttachmentIdAndGdprTrue(partnerId = PARTNER_ID, fileId = fileId) } returns false
+        every { sensitiveDataAuthorization.canEditPartnerSensitiveData(PARTNER_ID) } returns true
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID) } returns projectId
         val searchIndexSlot = slot<String>()
         every { filePersistence.existsFile(PARTNER_ID, capture(searchIndexSlot), fileId) } returns true
@@ -53,10 +63,26 @@ class DeleteProjectPartnerReportFileTest : UnitTest() {
     fun `delete - not existing`() {
         val projectId = 94L
         val fileId = -1L
+        every { reportExpenditurePersistence.existsByPartnerIdAndAttachmentIdAndGdprTrue(partnerId = PARTNER_ID, fileId = fileId) } returns false
+        every { sensitiveDataAuthorization.canEditPartnerSensitiveData(PARTNER_ID) } returns true
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID) } returns projectId
         every { filePersistence.existsFile(PARTNER_ID, any(), fileId) } returns false
         assertThrows<FileNotFound> { interactor.delete(PARTNER_ID, 5L, -1L) }
         verify(exactly = 0) { filePersistence.deleteFile(any<Long>(), any()) }
+    }
+
+
+    @Test
+    fun `delete sensitive file throws error for non gdpr user`() {
+        val partnerId = 129L
+        val fileId = 784L
+
+        every { sensitiveDataAuthorization.canEditPartnerSensitiveData(partnerId) } returns false
+        every { reportExpenditurePersistence.existsByPartnerIdAndAttachmentIdAndGdprTrue(
+            partnerId, fileId = fileId) } returns true
+
+        assertThrows<SensitiveFileException> {
+            interactor.delete(partnerId, 871L, fileId = fileId) }
     }
 
 }

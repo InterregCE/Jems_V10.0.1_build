@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.partner.file.deleteProjectPartnerReportFile
 
 import io.cloudflight.jems.api.common.dto.I18nMessage
+import io.cloudflight.jems.server.common.exception.ApplicationAccessDeniedException
 import io.cloudflight.jems.server.common.exception.ApplicationException
 import io.cloudflight.jems.server.common.exception.ApplicationNotFoundException
 
@@ -16,4 +17,10 @@ class DeleteProjectPartnerReportFileException(cause: Throwable) : ApplicationExc
 class FileNotFound : ApplicationNotFoundException(
     code = "$DELETE_PROJECT_PARTNER_REPORT_FILE_ERROR_CODE_PREFIX-001",
     i18nMessage = I18nMessage("$DELETE_PROJECT_PARTNER_REPORT_FILE_ERROR_KEY_PREFIX.not.found"),
+)
+
+
+class SensitiveFileException : ApplicationAccessDeniedException(
+    code = "$DELETE_PROJECT_PARTNER_REPORT_FILE_ERROR_CODE_PREFIX-002",
+    i18nMessage = I18nMessage("$DELETE_PROJECT_PARTNER_REPORT_FILE_ERROR_KEY_PREFIX.sensitive.failed"),
 )
