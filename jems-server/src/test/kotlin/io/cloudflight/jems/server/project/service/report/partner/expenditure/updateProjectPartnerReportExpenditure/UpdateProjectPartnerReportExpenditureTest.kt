@@ -94,6 +94,7 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
             version = version,
             identification = identification,
             firstSubmission = UPLOADED,
+            controlEnd = null
         )
     }
 

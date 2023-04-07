@@ -49,6 +49,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.ZonedDateTime
 
 class ChecklistInstanceControllerTest : UnitTest() {
 
@@ -56,6 +57,7 @@ class ChecklistInstanceControllerTest : UnitTest() {
     private val RELATED_TO_ID = 2L
     private val PROGRAMME_CHECKLIST_ID = 4L
     private val CREATOR_ID = 1L
+    private val TODAY = ZonedDateTime.now()
 
     private val createChecklist = CreateChecklistInstanceModel(
         RELATED_TO_ID,
@@ -80,6 +82,7 @@ class ChecklistInstanceControllerTest : UnitTest() {
         allowsDecimalScore = false,
         creatorEmail = "a@a",
         creatorId = CREATOR_ID,
+        createdAt = TODAY,
         consolidated = false,
         visible = true,
         components = mutableListOf(
@@ -113,6 +116,7 @@ class ChecklistInstanceControllerTest : UnitTest() {
         finishedDate = null,
         name = "test",
         creatorEmail = "a@a",
+        createdAt = TODAY,
         minScore = BigDecimal(0),
         maxScore = BigDecimal(10),
         allowsDecimalScore = false,
@@ -175,7 +179,8 @@ class ChecklistInstanceControllerTest : UnitTest() {
         creatorEmail = "test@email.com",
         relatedToId = RELATED_TO_ID,
         programmeChecklistId = PROGRAMME_CHECKLIST_ID,
-        description = "test"
+        description = "test",
+        createdAt = null,
     )
 
 

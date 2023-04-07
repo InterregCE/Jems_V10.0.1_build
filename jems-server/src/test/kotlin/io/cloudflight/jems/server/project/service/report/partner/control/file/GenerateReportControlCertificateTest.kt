@@ -86,7 +86,8 @@ class GenerateReportControlCertificateTest : UnitTest() {
                 vatRecovery = null,
                 country = null,
                 currency = null
-            )
+            ),
+            controlEnd = null
         )
     }
 

@@ -91,6 +91,7 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
         private val YESTERDAY = ZonedDateTime.now().minusDays(1)
         private val LAST_WEEK = LocalDate.now().minusWeeks(1)
         private val NEXT_WEEK = LocalDate.now().plusWeeks(1)
+        private val TODAY = ZonedDateTime.now()
 
         private val reportSummary = ProjectPartnerReportSummary(
             id = 754,
@@ -144,6 +145,7 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
             status = reportSummary.status,
             version = reportSummary.version,
             firstSubmission = YESTERDAY,
+            controlEnd = TODAY,
             identification = PartnerReportIdentification(
                 projectIdentifier = "projectIdentifier",
                 projectAcronym = "projectAcronym",

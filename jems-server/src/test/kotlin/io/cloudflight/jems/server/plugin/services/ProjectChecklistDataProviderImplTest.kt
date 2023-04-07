@@ -20,11 +20,13 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.ZonedDateTime
 
 internal class ProjectChecklistDataProviderImplTest : UnitTest() {
 
     companion object {
         private val TODAY = LocalDate.now()
+        private val TODAY_ZONED = ZonedDateTime.now()
 
         private val detail = ChecklistInstanceDetail(
             id = 14L,
@@ -34,6 +36,7 @@ internal class ProjectChecklistDataProviderImplTest : UnitTest() {
             name = "name",
             creatorEmail = "creator@email",
             creatorId = 32L,
+            createdAt = TODAY_ZONED,
             finishedDate = TODAY,
             relatedToId = 18L,
             consolidated = true,

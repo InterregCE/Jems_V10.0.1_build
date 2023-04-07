@@ -49,7 +49,8 @@ class GetReportControlOverviewServiceTest: UnitTest() {
             status = ReportStatus.Certified,
             version = "v1.0",
             firstSubmission = mockk(),
-            identification = mockk()
+            identification = mockk(),
+            controlEnd = null
         )
 
         private val lastCertifiedControlOverview = ControlOverview(

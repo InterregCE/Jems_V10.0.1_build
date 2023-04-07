@@ -82,6 +82,7 @@ internal class UpdateProjectPartnerControlReportIdentificationTest : UnitTest() 
                 currency = null,
                 coFinancing = emptyList(),
             ),
+            controlEnd = null
         )
 
         val identification = ProjectPartnerReportIdentification(
@@ -171,7 +172,8 @@ internal class UpdateProjectPartnerControlReportIdentificationTest : UnitTest() 
             controllerFormats = setOf(ReportFileFormat.Originals),
             type = ReportType.FinalReport,
             designatedController = designatedController,
-            reportVerification = reportVerification
+            reportVerification = reportVerification,
+            reportControlEnd = null
         )
 
     }

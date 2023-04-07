@@ -24,12 +24,14 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
+import java.time.ZonedDateTime
 
 internal class DeleteProjectPartnerReportTest: UnitTest()  {
 
     companion object {
         private const val PROJECT_ID = 500L
         private const val PARTNER_ID = 420L
+        private val TODAY = ZonedDateTime.now()
     }
 
     @MockK
@@ -103,6 +105,7 @@ internal class DeleteProjectPartnerReportTest: UnitTest()  {
             status = status,
             version = "v1.0",
             firstSubmission = null,
+            controlEnd = TODAY,
             identification = PartnerReportIdentification(
                 projectIdentifier = "identifier",
                 projectAcronym = "acronym",

@@ -8,6 +8,7 @@ data class ProjectPartnerReport(
     val status: ReportStatus,
     val version: String,
     val firstSubmission: ZonedDateTime?,
+    val controlEnd: ZonedDateTime?,
 
     val identification: PartnerReportIdentification
 )

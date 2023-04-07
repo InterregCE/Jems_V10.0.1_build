@@ -1,10 +1,10 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {
-  ChecklistInstanceDTO,
-  ControllerInstitutionsApiService,
-  IdNamePairDTO,
-  ProgrammeChecklistDetailDTO, UserDTO,
+    ChecklistInstanceDTO,
+    ControllerInstitutionsApiService,
+    IdNamePairDTO,
+    ProgrammeChecklistDetailDTO, ProjectPartnerReportSummaryDTO, UserDTO, UserRoleDTO,
 } from '@cat/api';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {
@@ -28,6 +28,11 @@ import {ChecklistItem} from '@common/components/checklist/checklist-item';
 import {AlertMessage} from '@common/components/file-list/file-list-table/alert-message';
 import {Alert} from '@common/components/forms/alert';
 import {SecurityService} from '../../../../security/security.service';
+import {
+    PartnerControlReportStore
+} from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import {PermissionService} from '../../../../security/permissions/permission.service';
 
 @Component({
   selector: 'jems-control-checklist-instance-list',
@@ -47,7 +52,7 @@ export class ControlChecklistInstanceListComponent implements OnInit {
   @Input()
   relatedId: number;
   @Input()
-  isReportEditable: boolean;
+  controlReportControlFinalizedDate: Date;
 
   partnerId = Number(this.routingService.getParameter(this.activatedRoute, 'partnerId'));
   reportId = Number(this.routingService.getParameter(this.activatedRoute, 'reportId'));
@@ -87,6 +92,7 @@ export class ControlChecklistInstanceListComponent implements OnInit {
               private dialog: MatDialog,
               private controllerInstitutionService: ControllerInstitutionsApiService,
               private partnerReportDetailPageStore: PartnerReportDetailPageStore,
+              private permissionService: PermissionService,
               private securityService: SecurityService) {
     this.projectId = this.activatedRoute.snapshot.params.projectId;
     this.checklistUtils = new ChecklistUtilsComponent();
@@ -107,9 +113,19 @@ export class ControlChecklistInstanceListComponent implements OnInit {
   }
 
   private userCanEditControlChecklists(): Observable<boolean> {
-    return this.institutionUserControlReportLevel()
+    return combineLatest([
+        this.institutionUserControlReportLevel(),
+        this.partnerReportDetailPageStore.reportStatus$,
+        this.permissionService.hasPermission(PermissionsEnum.ProjectReportingChecklistAfterControl)
+    ])
       .pipe(
-        map((level) => level === 'Edit')
+        map(([level, reportStatus, canEditChecklistsAfterControl]) =>
+            (level === 'Edit' && reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.InControl)
+            ||
+            ((level === 'Edit' || level === 'View')
+                && reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Certified
+                && canEditChecklistsAfterControl)
+        )
       );
   }
 
@@ -227,5 +243,9 @@ export class ControlChecklistInstanceListComponent implements OnInit {
   resetDescription() {
     this.descriptionForm.value.editable = false;
     this.descriptionForm.reset();
+  }
+
+  isAfterControlChecklist(createdAt: Date): boolean {
+      return createdAt > this.controlReportControlFinalizedDate;
   }
 }

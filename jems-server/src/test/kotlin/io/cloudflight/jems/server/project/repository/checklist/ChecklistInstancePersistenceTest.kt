@@ -23,6 +23,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.mockkStatic
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
@@ -32,7 +33,7 @@ import java.io.File
 import java.math.BigDecimal
 import java.time.ZoneId
 import java.time.ZonedDateTime
-import java.util.*
+import java.util.Optional
 
 @Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class ChecklistInstancePersistenceTest : UnitTest() {
@@ -41,6 +42,7 @@ class ChecklistInstancePersistenceTest : UnitTest() {
     private val RELATED_TO_ID = 2L
     private val CREATOR_ID = 3L
     private val PROGRAMME_CHECKLIST_ID = 4L
+    private val TODAY = ZonedDateTime.now()
 
     private val checkLisDetail = ChecklistInstanceDetail(
         id = ID,
@@ -51,6 +53,7 @@ class ChecklistInstancePersistenceTest : UnitTest() {
         relatedToId = RELATED_TO_ID,
         creatorEmail = "test@email.com",
         creatorId = CREATOR_ID,
+        createdAt = TODAY,
         finishedDate = null,
         consolidated = false,
         visible = false,
@@ -90,6 +93,7 @@ class ChecklistInstancePersistenceTest : UnitTest() {
         name = "name",
         creatorEmail = "test@email.com",
         creatorId = CREATOR_ID,
+        createdAt = TODAY,
         relatedToId = RELATED_TO_ID,
         finishedDate = null,
         consolidated = false,
@@ -177,6 +181,7 @@ class ChecklistInstancePersistenceTest : UnitTest() {
         description = "test",
         finishedDate = null,
         relatedToId = RELATED_TO_ID,
+        createdAt = TODAY,
         programmeChecklist = programmeChecklist,
         creator = user,
         components = mutableSetOf(
@@ -222,6 +227,7 @@ class ChecklistInstancePersistenceTest : UnitTest() {
         type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
         name = "name",
         creatorEmail = "test@email.com",
+        createdAt = TODAY,
         relatedToId = RELATED_TO_ID,
         programmeChecklistId = PROGRAMME_CHECKLIST_ID,
         visible = false,
@@ -310,6 +316,8 @@ class ChecklistInstancePersistenceTest : UnitTest() {
         every { repository.save(capture(checklistSlot)) } returnsArgument 0
         every { programmeChecklistRepository.getById(PROGRAMME_CHECKLIST_ID) } returns programmeChecklist
         every { userRepo.getById(CREATOR_ID) } returns user
+        mockkStatic(ZonedDateTime::class)
+        every { ZonedDateTime.now() } returns TODAY
         assertThat(persistence.create(createChecklist, CREATOR_ID))
             .usingRecursiveComparison()
             .isEqualTo(createdCheckLisDetail)

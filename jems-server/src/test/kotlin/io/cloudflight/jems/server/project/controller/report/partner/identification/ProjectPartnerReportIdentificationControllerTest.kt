@@ -55,6 +55,7 @@ class ProjectPartnerReportIdentificationControllerTest : UnitTest() {
         private val YESTERDAY = LocalDate.now().minusDays(1)
         private val TOMORROW = LocalDate.now().plusDays(1)
         private val LAST_WEEK = ZonedDateTime.now().minusWeeks(1)
+        private val TODAY = ZonedDateTime.now()
 
         private val dummyPeriod = ProjectPartnerReportPeriod(number = 3, periodBudget = BigDecimal.ONE, BigDecimal.TEN, 7, 9)
 
@@ -185,7 +186,8 @@ class ProjectPartnerReportIdentificationControllerTest : UnitTest() {
             ),
             type = ReportType.FinalReport,
             designatedController = designatedController,
-            reportVerification = reportVerification
+            reportVerification = reportVerification,
+            reportControlEnd = TODAY
         )
 
         private val expectedDesignatedController = ReportDesignatedControllerDTO(
@@ -237,7 +239,8 @@ class ProjectPartnerReportIdentificationControllerTest : UnitTest() {
             ),
             type = ReportTypeDTO.FinalReport,
             designatedController = expectedDesignatedController,
-            reportVerification = expectedReportVerification
+            reportVerification = expectedReportVerification,
+            reportControlEnd = TODAY
         )
     }
 

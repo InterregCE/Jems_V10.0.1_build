@@ -197,7 +197,8 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
         status = ReportStatus.InControl,
         version = "v1.0",
         firstSubmission = ZonedDateTime.now(),
-        identification = mockk()
+        identification = mockk(),
+        controlEnd = null
     )
 
     @MockK

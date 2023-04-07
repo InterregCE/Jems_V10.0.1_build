@@ -43,6 +43,7 @@ internal class DeleteParkedExpenditureTest : UnitTest() {
                 version = "V6",
                 firstSubmission = ZonedDateTime.now(),
                 identification = identification,
+                controlEnd = null
             )
         }
     }
