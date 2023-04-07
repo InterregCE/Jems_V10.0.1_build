@@ -162,49 +162,7 @@ export class ProjectPageTemplateComponent implements AfterViewInit {
   }
 
   private getStatusStringForSelectedVersion(projectStatus: ProjectStatusDTO, selectedVersion: ProjectVersionDTO): string {
-    let date = '';
-    let statusString: string = this.customTranslatePipe.transform('common.label.projectapplicationstatus.'+selectedVersion.status);
-
-    switch (selectedVersion.status) {
-      case ProjectStatusEnum.APPROVED:
-      case ProjectStatusEnum.MODIFICATIONREJECTED:
-      case ProjectStatusEnum.CONTRACTED:
-        if (projectStatus.entryIntoForceDate) { // project was in modification
-          date = this.localelDatePipe.transform(projectStatus.entryIntoForceDate, 'L');
-          statusString += ', ' + this.customTranslatePipe.transform('project.versions.warn.modification');
-        }
-        else if (projectStatus.decisionDate) {  // project has been initially set to approved
-          date = this.localelDatePipe.transform(projectStatus.decisionDate, 'L');
-          statusString += ', ' + this.customTranslatePipe.transform('project.versions.warn.decision');
-        }
-        else {  // project has been initially set to contracted
-          date = this.localelDatePipe.transform(selectedVersion.createdAt, 'L');
-        }
-        break;
-      case ProjectStatusEnum.SUBMITTED:
-      case ProjectStatusEnum.STEP1SUBMITTED:
-      case ProjectStatusEnum.CONDITIONSSUBMITTED:
-      case ProjectStatusEnum.MODIFICATIONSUBMITTED:
-      case ProjectStatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED:
-        date = this.localelDatePipe.transform(selectedVersion.createdAt, 'L');
-        break;
-      case ProjectStatusEnum.APPROVEDWITHCONDITIONS:
-      case ProjectStatusEnum.NOTAPPROVED:
-      case ProjectStatusEnum.INELIGIBLE:
-      case ProjectStatusEnum.ELIGIBLE:
-      case ProjectStatusEnum.STEP1APPROVED:
-      case ProjectStatusEnum.STEP1APPROVEDWITHCONDITIONS:
-      case ProjectStatusEnum.STEP1NOTAPPROVED:
-      case ProjectStatusEnum.STEP1INELIGIBLE:
-      case ProjectStatusEnum.STEP1ELIGIBLE:
-        date = this.localelDatePipe.transform(projectStatus.decisionDate, 'L');
-        statusString += ', ' + this.customTranslatePipe.transform('project.versions.warn.decision');
-        break;
-      default: // show no date on editable states or while waiting for a decision
-        break;
-    }
-
-    return statusString + ' ' + date;
+    return this.customTranslatePipe.transform('common.label.projectapplicationstatus.'+selectedVersion.status);
   }
 
 }
