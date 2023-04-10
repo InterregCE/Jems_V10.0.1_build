@@ -42,10 +42,15 @@
     <div class="project-row">
         <span class="header p-1 pt-3 pr-3">{{'project.detail.table.call.name' | translate}}</span>
         <span class="p-1 pt-3">
-            <a *jemsHasPermission="[PermissionsEnum.CallRetrieve, PermissionsEnum.ProjectCreate]"
-               [routerLink]="[CALL_PATH, project?.callSettings?.callId]">
-                {{project?.callSettings?.callName}}
-            </a>
+            <ng-container>
+                <a *ngIf="(canUserAccessCall$ | async); else callNoLink" [routerLink]="[CALL_PATH, project?.callSettings?.callId]">
+                    {{project?.callSettings?.callName}}
+                </a>
+                <ng-template #callNoLink>
+                        <span>{{project?.callSettings?.callName}}</span>
+                </ng-template>
+            </ng-container>
+
             <span [class.expiration]="ProjectUtil.isDraft(project) || ProjectUtil.isStep1Draft(project)">
                 {{'project.detail.overview.call.expiration' | translate : getCallInfo()}}
             </span>
