@@ -102,13 +102,16 @@
                 <span jemsText maxLines="2">{{'file.table.column.name.action' | translate }}</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let file" class="text-center border-cell-left">
-                <button *ngIf="file.downloadable"
-                        (click)="onDownload.emit(file)"
-                        color="primary"
-                        mat-icon-button
-                        matTooltip="{{'file.table.action.download.tooltip' | translate}}">
-                    <mat-icon fontSet="material-icons-outlined">file_download</mat-icon>
-                </button>
+                <span matTooltip="{{ (file.name === SENSITIVE_FILE_NAME_MASK ? 'file.table.action.can.not.download.sensitive' : 'file.table.action.download.tooltip') | translate }}">
+                    <button [disabled]="file.name === SENSITIVE_FILE_NAME_MASK"
+                            (click)="onDownload.emit(file)"
+                            color="primary"
+                            mat-icon-button>
+                        <mat-icon fontSet="material-icons-outlined">
+                            {{ file.name === SENSITIVE_FILE_NAME_MASK ? 'file_download_off' : 'file_download' }}
+                        </mat-icon>
+                    </button>
+                </span>
 
                 <span *ngIf="file.deletable || (file.tooltipIfNotDeletable !== '' && file.iconIfNotDeletable !== '')"
                       [matTooltip]="((file.deletable ? 'file.table.action.delete.tooltip' : file.tooltipIfNotDeletable) | translate)">

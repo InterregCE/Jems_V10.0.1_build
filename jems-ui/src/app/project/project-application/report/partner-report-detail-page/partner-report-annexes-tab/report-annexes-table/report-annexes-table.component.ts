@@ -17,13 +17,12 @@ import {
 } from '@project/project-application/report/partner-report-detail-page/partner-report-annexes-tab/report-file-management-store';
 import {FileListItem} from '@common/components/file-list/file-list-item';
 import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
+import {FileListTableConstants} from '@common/components/file-list/file-list-table/file-list-table-constants';
 import {
   PartnerReportDetailPageStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 import {FileListComponent} from '@common/components/file-list/file-list.component';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
-import {PrivilegesPageStore} from '@project/project-application/privileges-page/privileges-page-store.service';
-import {PermissionService} from '../../../../../../security/permissions/permission.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @UntilDestroy()
@@ -31,12 +30,9 @@ import PermissionsEnum = UserRoleDTO.PermissionsEnum;
   selector: 'jems-report-annexes-table',
   templateUrl: './report-annexes-table.component.html',
   styleUrls: ['./report-annexes-table.component.scss'],
-  providers: [PrivilegesPageStore],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ReportAnnexesTableComponent {
-
-  private static SENSITIVE_FILE_NAME_MASK = '*********.***';
 
   Alert = Alert;
   PermissionsEnum = PermissionsEnum;
@@ -58,21 +54,15 @@ export class ReportAnnexesTableComponent {
     private projectPartnerReportService: ProjectPartnerReportService,
     private partnerReportDetailPageStore: PartnerReportDetailPageStore,
     private reportPageStore: PartnerReportPageStore,
-    private privilegesPageStore: PrivilegesPageStore,
-    public permissionService: PermissionService
-
   ) {
     this.data$ = combineLatest([
       this.fileManagementStore.reportFileList$,
       this.fileManagementStore.reportStatus$,
       this.fileManagementStore.selectedCategory$,
       this.reportPageStore.userCanEditReport$,
-      this.privilegesPageStore.isCurrentUserGDPRCompliant$,
-      this.permissionService.hasPermission(UserRoleDTO.PermissionsEnum.ProjectReportingEdit),
-      this.permissionService.hasPermission(UserRoleDTO.PermissionsEnum.ProjectReportingView),
     ])
       .pipe(
-        map(([files, reportStatus, selectedCategory, canEdit, userIsGdprCompliant, userIsMonitorEdit, userIsMonitorView]: any) =>  {
+        map(([files, reportStatus, selectedCategory, canEdit]: any) =>  {
               return ({
                 files,
                 fileList: files.content.map((file: JemsFileDTO) => ({
@@ -83,11 +73,10 @@ export class ReportAnnexesTableComponent {
                   author: file.author,
                   sizeString: file.sizeString,
                   description: file.description,
-                  editable: this.isFileEditable(file.name, reportStatus, userIsGdprCompliant, userIsMonitorEdit, canEdit),
+                  editable: this.isNotAnonymized(file) && reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Draft && canEdit,
                   deletable: file.type === JemsFileDTO.TypeEnum.PartnerReport
                       && reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Draft
                       && canEdit,
-                  downloadable: this.isFileSensitive(file.name) ? (userIsGdprCompliant || userIsMonitorView): true,
                   tooltipIfNotDeletable: canEdit ? 'file.table.action.delete.disabled.for.tab.tooltip' : '',
                   iconIfNotDeletable: canEdit ? 'delete_forever' : ''
                 })),
@@ -142,18 +131,8 @@ export class ReportAnnexesTableComponent {
     );
   };
 
-  isFileEditable(
-      fileName: string,
-      reportStatus: ProjectPartnerReportSummaryDTO.StatusEnum,
-      userIsGdprCompliant: boolean,
-      userIsMonitorEdit: boolean,
-      canEdit: boolean) {
-
-    return reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Draft &&
-        (this.isFileSensitive(fileName) ? (userIsGdprCompliant || userIsMonitorEdit) : canEdit);
+  isNotAnonymized(file: JemsFileDTO): boolean {
+    return file.name !== FileListTableConstants.SENSITIVE_FILE_NAME_MASK;
   }
 
-  isFileSensitive(fileName: string) {
-    return fileName === ReportAnnexesTableComponent.SENSITIVE_FILE_NAME_MASK;
-  }
 }
