@@ -56,6 +56,7 @@ fun ChecklistInstanceDetail.toDataModel() = ChecklistInstanceData(
     type = ChecklistTypeData.valueOf(type!!.name),
     creatorEmail = creatorEmail!!,
     creatorId = creatorId!!,
+    createdAt = createdAt,
     relatedToId = relatedToId,
     finishedDate = finishedDate,
     consolidated = consolidated ?: false,

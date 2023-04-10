@@ -62,6 +62,7 @@ internal class ProjectChecklistDataProviderImplTest : UnitTest() {
             name = "name",
             creatorEmail = "creator@email",
             creatorId = 32L,
+            createdAt = TODAY_ZONED,
             finishedDate = TODAY,
             relatedToId = 18L,
             consolidated = true,

@@ -50,6 +50,7 @@ fun ProjectPartnerReport.toDataModel(projectId: Long): ProjectPartnerReportData 
     status = ReportStatusData.valueOf(status.name),
     version = version,
     firstSubmission = firstSubmission,
+    controlEnd = controlEnd,
 
     projectId = projectId,
     projectIdentifier = identification.projectIdentifier,
