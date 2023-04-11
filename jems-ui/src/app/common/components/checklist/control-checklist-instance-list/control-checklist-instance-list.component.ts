@@ -246,6 +246,9 @@ export class ControlChecklistInstanceListComponent implements OnInit {
   }
 
   isAfterControlChecklist(createdAt: Date): boolean {
+      if (this.controlReportControlFinalizedDate === null) {
+          return true;
+      }
       return createdAt > this.controlReportControlFinalizedDate;
   }
 }
