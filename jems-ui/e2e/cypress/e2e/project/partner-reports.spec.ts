@@ -151,6 +151,452 @@ context('Partner reports tests', () => {
     });
   });
 
+  it('TB-740 Partner user can report public procurements', function () {
+    cy.fixture('project/reporting/TB-740.json').then(testData => {
+      cy.loginByRequest(user.programmeUser.email);
+      cy.createCall(call).then(callId => {
+        application.details.projectCallId = callId;
+        cy.publishCall(callId);
+
+        cy.loginByRequest(user.applicantUser.email);
+
+        // update second partner address to the non-EU address
+        application.partners[1].address = testData.address;
+
+        cy.createContractedApplication(application, user.programmeUser.email)
+          .then(applicationId => {
+            const partnerId1 = this[application.partners[0].details.abbreviation];
+            const partnerId2 = this[application.partners[1].details.abbreviation];
+
+            cy.loginByRequest(user.applicantUser.email);
+            cy.assignPartnerCollaborators(applicationId, partnerId1, testData.partnerCollaborator);
+            cy.assignPartnerCollaborators(applicationId, partnerId2, testData.partnerCollaborator);
+
+            cy.addPartnerReport(partnerId2)
+              .then(reportId => {
+                cy.addPublicProcurement(partnerId2, reportId, partnerProcurement[1])
+                  .then(procurement => {
+                    cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId2}/reports/${reportId}/procurements/${procurement.id}`, {failOnStatusCode: false});
+
+                    // Partners with other currency than Euro (or no currency at all) can select any currency for their procurement
+                    cy.get('#currency')
+                      .click();
+                    cy.contains('mat-option', 'AMD')
+                      .click();
+                    cy.contains('button', 'Save changes')
+                      .click();
+                    cy.contains('Procurement saved successfully')
+                      .should('be.visible');
+
+                    // Any partner can select any currency for subcontracts
+                    addSubcontractors(testData);
+                  });
+              });
+
+            cy.addPartnerReport(partnerId1)
+              .then(reportId => {
+                cy.addPublicProcurement(partnerId1, reportId, partnerProcurement[0])
+                  .then(procurement => {
+                    cy.updatePartnerReportIdentification(partnerId1, reportId, partnerReportIdentification);
+                    cy.updatePartnerReportExpenditures(partnerId1, reportId, partnerReportExpenditures)
+                      .then(response => {
+                        for (let i = 0; i < response.length; i++) {
+                          partnerParkedExpenditures[i].id = response[i].id;
+                        }
+                      });
+                    // add beneficial owner, subcontractor and attachment description
+                    cy.addBeneficialOwnerToProcurement(partnerId1, reportId, procurement.id, testData.beneficialOwners[0]);
+                    cy.addSubcontractorToProcurement(partnerId1, reportId, procurement.id, testData.subcontracts[0])
+                    cy.addAttachmentToProcurement('fileToUpload.txt', 'project/reporting/', partnerId1, reportId, procurement.id);
+                    cy.runPreSubmissionPartnerReportCheck(partnerId1, reportId);
+                    cy.submitPartnerReport(partnerId1, reportId);
+                  })
+              });
+
+            cy.addPartnerReport(partnerId1)
+              .then(reportId => {
+                const partnerProcurmentNameFromPreviousReport = partnerProcurement[0].contractName;
+                partnerProcurement[0].contractName += " FOR REMOVAL";
+                cy.addPublicProcurement(partnerId1, reportId, partnerProcurement[0])
+                  .then(procurement => {
+                    cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId1}/reports/${reportId}/procurements`, {failOnStatusCode: false});
+
+                    // New procurement with same name as an already existing one can't be created
+                    cy.contains('mat-icon', 'add')
+                      .click()
+                    cy.get('input[name="contractName"]')
+                      .type(partnerProcurement[0].contractName);
+                    cy.get('input[name="vatNumber"]')
+                      .type(partnerProcurement[0].vatNumber);
+                    cy.contains('button', 'Create')
+                      .click();
+                    cy.contains('use.case.create.project.partner.report.procurement.contractName.needs.to.be.unique (error code: S-CPPRP-003)')
+                      .should('be.visible');
+
+                    // Partners with EURO currency should be able to save only EUR as currency for their procurement
+                    cy.get('#currency')
+                      .click();
+                    cy.contains('mat-option', 'AMD')
+                      .click();
+                    cy.contains('button', 'Create')
+                      .click();
+                    cy.contains('use.case.create.project.partner.report.procurement.invalid.currency (error code: S-CPPRP-004)')
+                      .should('be.visible');
+                    cy.contains('button', 'Discard changes')
+                      .click();
+
+                    // Add 2 new beneficial owner
+                    cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId1}/reports/${reportId}/procurements/${procurement.id}`, {failOnStatusCode: false});
+
+                    cy.contains('button', 'Add beneficial owner')
+                      .scrollIntoView()
+                      .click();
+
+                    cy.get('[formarrayname="beneficialOwners"] [formcontrolname="firstName"]')
+                      .eq(0)
+                      .type(testData.beneficialOwners[0].firstName);
+
+                    cy.get('[formarrayname="beneficialOwners"] [formcontrolname="lastName"]')
+                      .eq(0)
+                      .type(testData.beneficialOwners[0].lastName);
+
+                    cy.get('[formarrayname="beneficialOwners"] [formcontrolname="birth"]')
+                      .eq(0)
+                      .type("03/09/1984"); // used hardcoded value due to date locale formatting
+
+                    cy.get('[formarrayname="beneficialOwners"] [formcontrolname="vatNumber"]')
+                      .eq(0)
+                      .type(testData.beneficialOwners[0].vatNumber);
+
+                    cy.contains('Add beneficial owner')
+                      .click();
+
+                    cy.get('[formarrayname="beneficialOwners"] [formcontrolname="firstName"]')
+                      .eq(1)
+                      .type(testData.beneficialOwners[1].firstName);
+
+                    cy.get('[formarrayname="beneficialOwners"] [formcontrolname="lastName"]')
+                      .eq(1)
+                      .type(testData.beneficialOwners[1].lastName);
+
+                    cy.get('[formarrayname="beneficialOwners"] [formcontrolname="birth"]')
+                      .eq(1)
+                      .type("03/09/1964"); // used hardcoded value due to date locale formatting
+
+                    cy.get('[formarrayname="beneficialOwners"] [formcontrolname="vatNumber"]')
+                      .eq(1)
+                      .type(testData.beneficialOwners[1].vatNumber);
+
+                    cy.contains('button', 'Save changes')
+                      .click();
+
+                    cy.contains('Beneficial owner(s) saved successfully')
+                      .should('be.visible');
+
+                    // and delete the second one
+                    cy.get('[formarrayname="beneficialOwners"]')
+                      .contains('mat-icon', 'delete')
+                      .click();
+
+                    cy.contains('button', 'Save changes')
+                      .click();
+
+                    cy.contains('Beneficial owner(s) saved successfully')
+                      .should('be.visible');
+
+                    // Add 2 new subcontracts
+                    addSubcontractors(testData);
+
+                    // and delete the second one
+                    cy.get('[formarrayname="subcontracts"]')
+                      .contains('mat-icon', 'delete')
+                      .click();
+
+                    cy.contains('button', 'Save changes')
+                      .click();
+
+                    cy.contains('Subcontract(s) saved successfully')
+                      .should('be.visible');
+
+                    // Upload an attachment, then changes it's description and delete the attachment
+                    // file can be uploaded
+                    cy.get('jems-partner-procurement-attachment input')
+                      .scrollIntoView()
+                      .invoke('show')
+                      .selectFile('cypress/fixtures/project/reporting/fileToUpload.txt')
+                      .invoke('hide');
+
+                    // description can be changed
+                    cy.get('jems-file-list-table')
+                      .contains('mat-icon', 'edit')
+                      .scrollIntoView()
+                      .click();
+
+                    cy.get('[label="file.table.column.name.description"] textarea')
+                      .type('Description test for the attachment');
+
+                    cy.contains('button', 'Save')
+                      .click();
+
+                    cy.contains('File description for \'fileToUpload.txt\' has been updated.')
+                      .should('be.visible');
+
+                    cy.contains('File description for \'fileToUpload.txt\' has been updated.')
+                      .should('not.exist');
+
+                    // file can be deleted
+                    cy.get('jems-file-list-table')
+                      .contains('mat-icon', 'delete')
+                      .scrollIntoView()
+                      .click();
+
+                    cy.contains('button', 'Confirm')
+                      .click();
+
+                    cy.contains("File \'fileToUpload.txt\' has been deleted successfully.")
+                      .should('be.visible');
+
+                    cy.contains('There are no files uploaded.')
+                      .should('be.visible');
+
+                    cy.contains('File \'fileToUpload.txt\' has been deleted successfully.')
+                      .should('not.exist');
+
+                    // Navigate back to the public procurements list
+                    cy.contains('mat-icon', 'arrow_circle_left')
+                      .click();
+
+                    // Created public procurement is visible in the list
+                    cy.contains(partnerProcurement[0].contractName).should('be.visible');
+
+                    // Go to List of expenditure (LoE) and link an expenditure item with the procurement
+                    // The new procurement shown in dropdown and can be linked to an expenditure item
+                    cy.contains('List of expenditures')
+                      .click();
+
+                    cy.contains('add expenditure')
+                      .click();
+
+                    cy.contains('#expenditure-costs-table mat-select', 'Please select a cost category')
+                      .click();
+
+                    cy.contains('mat-option', 'Travel and accommodation')
+                      .click();
+
+                    cy.get(`#expenditure-costs-table mat-cell.mat-column-contractId`)
+                      .scrollIntoView()
+                      .click();
+
+                    cy.contains('mat-option', 'LP1 - Very important procurement FOR REMOVAL')
+                      .click();
+
+                    cy.contains('Save changes')
+                      .click();
+
+                    // Delete the procurement
+                    cy.contains('Public procurements')
+                      .click();
+
+                    // Only the procurement created in the current partner report can be deleted
+                    cy.get('mat-row')
+                      .eq(1)
+                      .contains('mat-icon', 'delete')
+                      .should('not.exist');
+
+                    cy.get('mat-row')
+                      .eq(0)
+                      .contains('mat-icon', 'delete')
+                      .should('be.visible')
+                      .click();
+
+                    cy.contains('Confirm')
+                      .click();
+
+                    // links to procurement are deleted from LoE
+                    cy.contains('List of expenditures')
+                      .click();
+
+                    cy.get(`#expenditure-costs-table mat-cell.mat-column-contractId`)
+                      .scrollIntoView()
+                      .should('contain.text', 'N/A');
+
+                    // Open a procurement created in previous report
+                    // Info, beneficial owner, subcontractor and attachment description for a procurement
+                    // created in a previous report can't be edited
+                    cy.contains('Public procurements')
+                      .click();
+
+                    cy.contains(partnerProcurmentNameFromPreviousReport)
+                      .click();
+
+                    // info validation
+                    cy.get('jems-partner-procurement-identification input[name="reportNumber"]')
+                      .should('be.disabled');
+
+                    cy.get('jems-partner-procurement-identification input[name="contractName"]')
+                      .should('be.disabled');
+
+                    cy.get('jems-partner-procurement-identification input[name="referenceNumber"]')
+                      .should('be.disabled');
+
+                    cy.get('jems-partner-procurement-identification input[name="contractDate"]')
+                      .should('be.disabled');
+
+                    cy.get('jems-partner-procurement-identification input[name="contractType"]')
+                      .should('be.disabled');
+
+                    cy.get('jems-partner-procurement-identification input[name="contractAmount"]')
+                      .should('be.disabled');
+
+                    cy.get('mat-select[formcontrolname="currencyCode"]')
+                      .should('have.class', 'mat-select-disabled');
+
+                    cy.get('jems-partner-procurement-identification input[name="supplierName"]')
+                      .should('be.disabled');
+
+                    cy.get('jems-partner-procurement-identification input[name="vatNumber"]')
+                      .should('be.disabled');
+
+                    cy.get('[label="project.application.partner.report.procurements.table.comment"] textarea')
+                      .should('be.disabled');
+
+                    // beneficial owners validation
+                    cy.get('jems-partner-procurement-beneficial .mat-column-firstName input')
+                      .should('not.exist');
+
+                    cy.get('jems-partner-procurement-beneficial .mat-column-lastName input')
+                      .should('not.exist');
+
+                    cy.get('jems-partner-procurement-beneficial .mat-column-birth input')
+                      .should('not.exist');
+
+                    cy.get('jems-partner-procurement-beneficial .mat-column-vatNumber input')
+                      .should('not.exist');
+
+                    cy.get('jems-partner-procurement-beneficial .mat-column-vatNumber input')
+                      .should('not.exist');
+
+                    // subcontractors validation
+                    cy.get('jems-partner-procurement-subcontract .mat-column-contractName input')
+                      .should('not.exist');
+
+                    cy.get('jems-partner-procurement-subcontract .mat-column-referenceNumber input')
+                      .should('not.exist');
+
+                    cy.get('jems-partner-procurement-subcontract .mat-column-contractDate input')
+                      .should('not.exist');
+
+                    cy.get('jems-partner-procurement-subcontract .mat-column-contractAmount input')
+                      .should('not.exist');
+
+                    cy.get('jems-partner-procurement-subcontract .mat-column-currencyCode mat-select')
+                      .should('not.exist');
+
+                    cy.get('jems-partner-procurement-subcontract .mat-column-supplierName input')
+                      .should('not.exist');
+
+                    cy.get('jems-partner-procurement-subcontract .mat-column-vatNumber input')
+                      .should('not.exist');
+
+                    cy.get('jems-partner-procurement-attachment .mat-column-description mat-icon')
+                      .should('not.exist');
+
+                    // new beneficial owner can be added/deleted
+                    // add beneficial owner
+                    cy.contains('button', 'Add beneficial owner')
+                      .scrollIntoView()
+                      .click();
+
+                    cy.get('[formarrayname="beneficialOwners"] [formcontrolname="firstName"]')
+                      .eq(0)
+                      .type(testData.beneficialOwners[0].firstName);
+
+                    cy.get('[formarrayname="beneficialOwners"] [formcontrolname="lastName"]')
+                      .eq(0)
+                      .type(testData.beneficialOwners[0].lastName);
+
+                    cy.get('[formarrayname="beneficialOwners"] [formcontrolname="birth"]')
+                      .eq(0)
+                      .type("03/09/1984"); // used hardcoded value due to date locale formatting
+
+                    cy.get('[formarrayname="beneficialOwners"] [formcontrolname="vatNumber"]')
+                      .eq(0)
+                      .type(testData.beneficialOwners[0].vatNumber);
+
+                    cy.contains('button', 'Save changes')
+                      .click();
+
+                    cy.contains('Beneficial owner(s) saved successfully')
+                      .should('be.visible');
+
+                    // delete beneficial owner
+                    cy.get('[formarrayname="beneficialOwners"]')
+                      .contains('mat-icon', 'delete')
+                      .click();
+
+                    cy.contains('button', 'Save changes')
+                      .click();
+
+                    cy.contains('Beneficial owner(s) saved successfully')
+                      .should('be.visible');
+
+                    // new subcontractor can be added/deleted
+                    addSubcontractors(testData);
+
+                    // delete the second subcontractor
+                    cy.get('[formarrayname="subcontracts"]')
+                      .contains('mat-icon', 'delete')
+                      .click();
+
+                    cy.contains('button', 'Save changes')
+                      .click();
+
+                    cy.contains('Subcontract(s) saved successfully')
+                      .should('be.visible');
+
+                    // new attachment can be added/deleted
+                    cy.get('jems-partner-procurement-attachment input')
+                      .scrollIntoView()
+                      .invoke('show')
+                      .selectFile('cypress/fixtures/project/reporting/fileToUpload.txt')
+                      .invoke('hide');
+
+                    // description can be changed
+                    cy.get('jems-file-list-table')
+                      .contains('mat-icon', 'edit')
+                      .scrollIntoView()
+                      .click();
+
+                    cy.get('[label="file.table.column.name.description"] textarea')
+                      .type('Description test for the attachment');
+
+                    cy.contains('button', 'Save')
+                      .click();
+
+                    cy.contains('File description for \'fileToUpload.txt\' has been updated.')
+                      .should('be.visible');
+
+                    cy.contains('File description for \'fileToUpload.txt\' has been updated.')
+                      .should('not.exist');
+
+                    // file can be deleted
+                    cy.get('jems-file-list-table')
+                      .contains('mat-icon', 'delete')
+                      .scrollIntoView()
+                      .click();
+
+                    cy.contains('button', 'Confirm')
+                      .click();
+
+                    cy.contains("File \'fileToUpload.txt\' has been deleted successfully.")
+                      .should('be.visible');
+                  });
+              });
+          });
+      });
+    });
+  });
+
   it('TB-745 Partner user can deactivate multiple partners and changes are displayed only after approval', function () {
     cy.fixture('project/reporting/TB-745.json').then(testData => {
       cy.fixture('api/application/application.json').then(application => {
@@ -217,7 +663,7 @@ context('Partner reports tests', () => {
         cy.createCall(call).then(callId => {
           application.details.projectCallId = callId;
           cy.publishCall(callId);
-        }); 
+        });
 
         cy.loginByRequest(user.admin.email);
         testData.partnerUser1.email = faker.internet.email();
@@ -370,19 +816,6 @@ context('Partner reports tests', () => {
   //endregion
 
   //region TB-738 METHODS
-  function updatePartnerReportDetails(partnerId1, reportId) {
-    cy.addPublicProcurement(partnerId1, reportId, partnerProcurement[0])
-    cy.updatePartnerReportIdentification(partnerId1, reportId, partnerReportIdentification);
-    cy.updatePartnerReportExpenditures(partnerId1, reportId, partnerReportExpenditures)
-      .then(response => {
-        for (let i = 0; i < response.length; i++) {
-          partnerParkedExpenditures[i].id = response[i].id;
-        }
-      });
-    cy.runPreSubmissionPartnerReportCheck(partnerId1, reportId);
-    cy.submitPartnerReport(partnerId1, reportId);
-  }
-
   function createControllerUser(testData, partnerId1) {
     cy.loginByRequest(user.admin.email);
     testData.controllerRole.name = `controllerRole_${faker.random.alphaNumeric(5)}`;
@@ -405,6 +838,19 @@ context('Partner reports tests', () => {
             cy.assignInstitution(testData.controllerAssignment);
           });
       });
+  }
+
+  function updatePartnerReportDetails(partnerId, reportId) {
+    cy.addPublicProcurement(partnerId, reportId, partnerProcurement[0])
+    cy.updatePartnerReportIdentification(partnerId, reportId, partnerReportIdentification);
+    cy.updatePartnerReportExpenditures(partnerId, reportId, partnerReportExpenditures)
+      .then(response => {
+        for (let i = 0; i < response.length; i++) {
+          partnerParkedExpenditures[i].id = response[i].id;
+        }
+      });
+    cy.runPreSubmissionPartnerReportCheck(partnerId, reportId);
+    cy.submitPartnerReport(partnerId, reportId);
   }
 
   function performControlWork(testData, reportId, partnerId1) {
@@ -776,31 +1222,31 @@ context('Partner reports tests', () => {
 
   function uploadFiles() {
     // upload file to lump sum expenditure
-    uploadFile(0, 0);
+    uploadFileToExpenditure(0, 0);
     replaceUploadedFile(0, 0);
 
     // upload file to unit cost expenditure
-    uploadFile(1, 1);
+    uploadFileToExpenditure(1, 1);
     replaceUploadedFile(1, 1);
 
     // upload file to regular expenditure
-    uploadFile(2, 2);
+    uploadFileToExpenditure(2, 2);
     replaceUploadedFile(2, 2);
 
     // upload file to reincluded lump sum expenditure
-    uploadFile(6, 3);
+    uploadFileToExpenditure(6, 3);
     replaceUploadedFile(6, 3);
 
     // upload file to reincluded unit cost expenditure
-    uploadFile(7, 4);
+    uploadFileToExpenditure(7, 4);
     replaceUploadedFile(7, 4);
 
     // upload file to reincluded regular expenditure
-    uploadFile(8, 5);
+    uploadFileToExpenditure(8, 5);
     replaceUploadedFile(8, 5);
   }
 
-  function uploadFile(rowIndex, attachmentIndex) {
+  function uploadFileToExpenditure(rowIndex, attachmentIndex) {
     cy.get('#expenditure-costs-table mat-cell.mat-column-uploadFunction input')
       .eq(rowIndex)
       .scrollIntoView()
@@ -886,6 +1332,90 @@ context('Partner reports tests', () => {
 
     cy.contains('Save changes')
       .should('not.exist');
+  }
+
+  //endregion
+
+  //region TB-740 METHODS
+  function addSubcontractors(testData) {
+    // Add 2 new subcontracts
+    cy.contains('button', 'Add subcontractor')
+      .scrollIntoView()
+      .click();
+
+    cy.get('[formarrayname="subcontracts"] [formcontrolname="contractName"]')
+      .eq(0)
+      .type(testData.subcontracts[0].contractName);
+
+    cy.get('[formarrayname="subcontracts"] [formcontrolname="referenceNumber"]')
+      .eq(0)
+      .type(testData.subcontracts[0].referenceNumber);
+
+    cy.get('[formarrayname="subcontracts"] [formcontrolname="contractDate"]')
+      .eq(0)
+      .type("03/09/2023"); // used hardcoded value due to date locale formatting
+
+    cy.get('[formarrayname="subcontracts"] [formcontrolname="contractAmount"]')
+      .eq(0)
+      .type(testData.subcontracts[0].contractAmount);
+
+    cy.get('[formarrayname="subcontracts"] [formcontrolname="currencyCode"]')
+      .eq(0)
+      .click();
+
+    cy.get('.mat-option-text')
+      .contains(testData.subcontracts[0].currencyCode)
+      .click();
+
+    cy.get('[formarrayname="subcontracts"] [formcontrolname="supplierName"]')
+      .eq(0)
+      .type(testData.subcontracts[0].supplierName);
+
+    cy.get('[formarrayname="subcontracts"] [formcontrolname="vatNumber"]')
+      .eq(0)
+      .type(testData.subcontracts[0].vatNumber);
+
+    cy.contains('button', 'Add subcontractor')
+      .scrollIntoView()
+      .click();
+
+    cy.get('[formarrayname="subcontracts"] [formcontrolname="contractName"]')
+      .eq(1)
+      .type(testData.subcontracts[1].contractName);
+
+    cy.get('[formarrayname="subcontracts"] [formcontrolname="referenceNumber"]')
+      .eq(1)
+      .type(testData.subcontracts[1].referenceNumber);
+
+    cy.get('[formarrayname="subcontracts"] [formcontrolname="contractDate"]')
+      .eq(1)
+      .type("03/09/2023"); // used hardcoded value due to date locale formatting
+
+    cy.get('[formarrayname="subcontracts"] [formcontrolname="contractAmount"]')
+      .eq(1)
+      .type(testData.subcontracts[1].contractAmount);
+
+    cy.get('[formarrayname="subcontracts"] [formcontrolname="currencyCode"]')
+      .eq(1)
+      .click();
+
+    cy.get('.mat-option-text')
+      .contains(testData.subcontracts[1].currencyCode)
+      .click();
+
+    cy.get('[formarrayname="subcontracts"] [formcontrolname="supplierName"]')
+      .eq(1)
+      .type(testData.subcontracts[1].supplierName);
+
+    cy.get('[formarrayname="subcontracts"] [formcontrolname="vatNumber"]')
+      .eq(1)
+      .type(testData.subcontracts[1].vatNumber);
+
+    cy.contains('button', 'Save changes')
+      .click();
+
+    cy.contains('Subcontract(s) saved successfully')
+      .should('be.visible');
   }
 
   //endregion

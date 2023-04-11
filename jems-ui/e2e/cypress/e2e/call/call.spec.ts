@@ -204,7 +204,7 @@ context('Call management tests', () => {
       cy.contains('Application form configuration was saved successfully.').should('be.visible');
 
       cy.contains('Pre-submission check settings').click();
-      cy.get('jems-form mat-select').should('have.length', 3);
+      cy.get('jems-form mat-select').should('have.length', 4);
 
 
       cy.contains('div', 'Select a pre-submission check plugin for step one').click();

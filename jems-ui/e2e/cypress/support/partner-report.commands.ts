@@ -20,6 +20,12 @@ declare global {
 
       addPublicProcurement(partnerId: number, reportId: number, procurementDetails)
 
+      addBeneficialOwnerToProcurement(partnerId: number, reportId: number, procurementId: number, beneficialOwnerDetails: any);
+
+      addSubcontractorToProcurement(partnerId: number, reportId: number, procurementId: number, subcontractorDetails: any);
+
+      addAttachmentToProcurement(fileName:string, filePath: string, partnerId: number, reportId: number, procurementId: number);
+
       getRegularLumpSums(applicationId: number)
 
       getFastTrackLumpSums(applicationId: number)
@@ -132,6 +138,41 @@ Cypress.Commands.add('getUnitCostsByPartnerAndReportIds', (partnerId: number, re
   cy.request({
     method: 'GET',
     url: `api/project/report/partner/expenditure/byPartnerId/${partnerId}/byReportId/${reportId}/unitCosts`
+  }).then(response => response.body);
+});
+
+Cypress.Commands.add('addBeneficialOwnerToProcurement', (partnerId: number, reportId: number, procurementId: number, beneficialOwnerDetails: any) => {
+  cy.request({
+    method: 'PUT',
+    url: `api/project/report/partner/procurement/beneficialOwner/byPartnerId/${partnerId}/byReportId/${reportId}/byProcurementId/${procurementId}`,
+    body: [beneficialOwnerDetails]
+  }).then(response => response.body);
+});
+
+Cypress.Commands.add('addAttachmentToProcurement', (fileName: string, filePath: string, partnerId: number, reportId: number, procurementId: number) => {
+  const filePathWithFileName = filePath + fileName;
+  const fileType = "application/text";
+
+  cy.fixture(filePathWithFileName, "binary")
+    .then((txtBin) => Cypress.Blob.binaryStringToBlob(txtBin))
+    .then((blob) => {
+      const formData = new FormData();
+      formData.append("file", blob, fileName);
+      formData.append("file_type", fileType);
+
+      cy.request({
+        method: 'POST',
+        url: `api/project/report/partner/procurement/attachment/byPartnerId/${partnerId}/byReportId/${reportId}/byProcurementId/${procurementId}`,
+        body: formData
+      })
+    })
+})
+
+Cypress.Commands.add('addSubcontractorToProcurement', (partnerId: number, reportId: number, procurementId: number, subcontractorDetails: any) => {
+  cy.request({
+    method: 'PUT',
+    url: `api/project/report/partner/procurement/subcontractor/byPartnerId/${partnerId}/byReportId/${reportId}/byProcurementId/${procurementId}`,
+    body: [subcontractorDetails]
   }).then(response => response.body);
 });
 
