@@ -1,0 +1,84 @@
+{
+  "partnerCollaborator": [
+    {
+      "userEmail": "applicant.user@jems.eu",
+      "level": "EDIT"
+    }
+  ],
+  "partnerProcurement": {
+    "id": 0,
+    "contractName": "LP1 - Very important procurement",
+    "referenceNumber": "2137",
+    "contractDate": "2023-04-01",
+    "contractType": "Very trustful glance",
+    "contractAmount": 150,
+    "currencyCode": "EUR",
+    "supplierName": "Cloudflight Clothing",
+    "vatNumber": "444444",
+    "comment": "Yes, it is very important procurement, indeed."
+  },
+  "address": [
+    {
+      "type": "Organization",
+      "country": "Afghanistan (AF)",
+      "nutsRegion2": "Afghanistan (AF00)",
+      "nutsRegion3": "Afghanistan (AF000)",
+      "street": "Partnerstreet",
+      "houseNumber": "2",
+      "postalCode": "1020",
+      "city": "Partner city",
+      "homepage": "partner@test.com"
+    },
+    {
+      "type": "Department",
+      "country": "Afghanistan (AF)",
+      "nutsRegion2": "Afghanistan (AF00)",
+      "nutsRegion3": "Afghanistan (AF000)",
+      "street": "Departmentstreet",
+      "houseNumber": "5",
+      "postalCode": "4020",
+      "city": "Department city",
+      "homepage": ""
+    }
+  ],
+  "beneficialOwners": [
+    {
+      "birth": "1968-04-01",
+      "createdInThisReport": true,
+      "firstName": "Haywood",
+      "id": 0,
+      "lastName": "Floyd",
+      "vatNumber": "333333"
+    },
+    {
+      "birth": "1984-06-25",
+      "createdInThisReport": true,
+      "firstName": "George",
+      "id": 0,
+      "lastName": "Orwell",
+      "vatNumber": "222222"
+    }
+  ],
+  "subcontracts": [
+    {
+      "createdInThisReport": true,
+      "contractName": "Master Chief helmet",
+      "referenceNumber": "HALO-3",
+      "contractDate": "2022-03-09",
+      "contractAmount": 100,
+      "currencyCode": "USD",
+      "supplierName": "Bungie",
+      "vatNumber": "111333"
+    },
+    {
+      "createdInThisReport": true,
+      "contractName": "Mario mustache",
+      "referenceNumber": "MAR10",
+      "contractDate": "2022-03-09",
+      "contractAmount": 150,
+      "currencyCode": "JPY",
+      "supplierName": "Nintendo",
+      "vatNumber": "222111"
+    }
+  ]
+}
