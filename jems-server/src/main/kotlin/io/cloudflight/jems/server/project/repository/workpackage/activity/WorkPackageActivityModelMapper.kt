@@ -154,7 +154,7 @@ fun List<WorkPackageDeliverableRow>.toDeliverableHistoricalData() =
             title = groupedRows.value.extractField { it.title },
             deactivated = groupedRows.value.first().deactivated ?: false
         )
-    }
+    }.sortedBy { it.deliverableNumber }
 
 fun List<WorkPackageActivityRow>.toTimePlanActivityHistoricalData() =
     this.groupBy { Pair(it.activityNumber, it.workPackageId) }.map { groupedRows ->
