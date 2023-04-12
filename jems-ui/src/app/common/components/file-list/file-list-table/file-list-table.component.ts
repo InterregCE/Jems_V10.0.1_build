@@ -23,6 +23,7 @@ import {catchError, filter, finalize, take, tap} from 'rxjs/operators';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {SecurityService} from '../../../../security/security.service';
 import {v4 as uuid} from 'uuid';
+import {FileListTableConstants} from './file-list-table-constants';
 
 @UntilDestroy()
 @Component({
@@ -33,6 +34,7 @@ import {v4 as uuid} from 'uuid';
 })
 export class FileListTableComponent implements OnChanges, AfterViewInit {
   Alert = Alert;
+  SENSITIVE_FILE_NAME_MASK = FileListTableConstants.SENSITIVE_FILE_NAME_MASK;
 
   displayedColumns: string[] = ['name', 'location', 'uploadDate', 'user', 'size', 'description', 'action'];
   dataSource = new MatTableDataSource<FileListItem>();
