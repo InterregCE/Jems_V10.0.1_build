@@ -1,6 +1,4 @@
-import {
-  ProjectStore
-} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {combineLatest, merge, Observable, Subject} from 'rxjs';
 import {
   PartnerUserCollaboratorDTO,
@@ -17,24 +15,20 @@ import {Log} from '@common/utils/log';
 import {Injectable} from '@angular/core';
 import {PermissionService} from '../../../security/permissions/permission.service';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
-import {
-  ProjectPartnerStore
-} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
-import {SecurityService} from '../../../security/security.service';
-import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
+import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import StatusEnum = ProjectStatusDTO.StatusEnum;
 
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class PrivilegesPageStore {
 
   projectCollaborators$: Observable<ProjectUserCollaboratorDTO[]>;
   partnerCollaborators$: Observable<Map<ProjectPartnerSummaryDTO, PartnerUserCollaboratorDTO[]>>;
   partnerCollaboratorsList$: Observable<PartnerUserCollaboratorDTO[]>;
+  currentUserPartnerCollaborations$: Observable<PartnerUserCollaboratorDTO[]>;
   projectTitle$: Observable<string>;
   projectCollaboratorsEditable$: Observable<boolean>;
   partnerTeamsVisible$: Observable<boolean>;
-  isCurrentUserGDPRCompliant$: Observable<boolean>;
 
   private partnerSummariesOfLastApprovedVersion$: Observable<ProjectPartnerSummaryDTO[]>;
   private savedProjectCollaborators$ = new Subject<ProjectUserCollaboratorDTO[]>();
@@ -46,28 +40,14 @@ export class PrivilegesPageStore {
               private partnerUserCollaboratorService: ProjectPartnerUserCollaboratorService,
               private permissionService: PermissionService,
               private partnerStore: ProjectPartnerStore,
-              private projectVersionStore: ProjectVersionStore,
-              private securityService: SecurityService,
-              private partnerReportStore: PartnerReportPageStore) {
+              private projectVersionStore: ProjectVersionStore) {
     this.partnerSummariesOfLastApprovedVersion$ = this.partnerSummariesOfLastApprovedVersion();
     this.projectCollaborators$ = this.projectCollaborators();
     this.partnerCollaborators$ = this.partnerCollaborators();
     this.projectTitle$ = this.projectStore.projectTitle$;
     this.projectCollaboratorsEditable$ = this.projectCollaboratorsEditable();
     this.partnerTeamsVisible$ = this.partnerTeamsVisible();
-    this.isCurrentUserGDPRCompliant$ = this.isCurrentUserGDPRCompliant();
-  }
-
-  isCurrentUserGDPRCompliant(): Observable<boolean> {
-    return combineLatest([
-        this.partnerCollaboratorsList$,
-        this.securityService.currentUser,
-        this.partnerReportStore.userCanEditReport$
-    ]).pipe(
-        map(([partnerCollaborators , currentUser, canEdit]) => {
-          return !!partnerCollaborators.find(element => element.userId === currentUser?.id)?.gdpr && canEdit;
-        })
-    );
+    this.currentUserPartnerCollaborations$ = this.currentUserPartnerCollaborations();
   }
 
   saveProjectCollaborators(collaborators: ProjectUserCollaboratorDTO[]): Observable<ProjectUserCollaboratorDTO[]> {
@@ -90,7 +70,7 @@ export class PrivilegesPageStore {
         switchMap(projectId => this.partnerUserCollaboratorService.updatePartnerUserCollaborators(
           partnerId,
           projectId,
-          collaborators.map(collaborator => ({...collaborator, userEmail: collaborator.userEmail?.trim(), gdpr: collaborator.gdpr}))
+          collaborators.map(collaborator => ({...collaborator, userEmail: collaborator.userEmail?.trim()}))
         )),
         tap(saved => this.savedPartnerProjectCollaborators$.next([partnerId, saved])),
         tap(saved => Log.info('Updated project partner collaborators', this, saved))
@@ -132,14 +112,14 @@ export class PrivilegesPageStore {
                           savedCollaborators: [number, PartnerUserCollaboratorDTO[]] | any,
                           level: ProjectUserCollaboratorDTO.LevelEnum,
                           permissions: string[]
-                          ): Map<ProjectPartnerSummaryDTO, PartnerUserCollaboratorDTO[]> {
+  ): Map<ProjectPartnerSummaryDTO, PartnerUserCollaboratorDTO[]> {
     const teams = new Map<ProjectPartnerSummaryDTO, PartnerUserCollaboratorDTO[]>();
     partners.forEach(partner => {
       const collaborators = savedCollaborators.length && savedCollaborators[0] === partner.id
         ? savedCollaborators[1]
         : allCollaborators.filter(partnerCollaborator => partnerCollaborator.partnerId === partner.id);
       teams.set(partner, (collaborators.length || level === ProjectUserCollaboratorDTO.LevelEnum.MANAGE || permissions.includes(PermissionsEnum.ProjectMonitorCollaboratorsUpdate)
-      || permissions.includes(PermissionsEnum.ProjectMonitorCollaboratorsRetrieve))
+        || permissions.includes(PermissionsEnum.ProjectMonitorCollaboratorsRetrieve))
         ? collaborators : null as any);
     });
     return teams;
@@ -179,5 +159,12 @@ export class PrivilegesPageStore {
           StatusEnum.CONTRACTED
         ].includes(status.status)),
       );
+  }
+
+  private currentUserPartnerCollaborations(): Observable<PartnerUserCollaboratorDTO[]> {
+    return this.projectStore.projectId$.pipe(
+      take(1),
+      switchMap(projectId => this.partnerUserCollaboratorService.listCurrentUserPartnerCollaborations(projectId)),
+    );
   }
 }

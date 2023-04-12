@@ -23,6 +23,7 @@ import {
 } from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 import {FileListComponent} from '@common/components/file-list/file-list.component';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
+import {PermissionService} from '../../../../../../security/permissions/permission.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @UntilDestroy()
@@ -54,12 +55,16 @@ export class ReportAnnexesTableComponent {
     private projectPartnerReportService: ProjectPartnerReportService,
     private partnerReportDetailPageStore: PartnerReportDetailPageStore,
     private reportPageStore: PartnerReportPageStore,
+    public permissionService: PermissionService
   ) {
     this.data$ = combineLatest([
       this.fileManagementStore.reportFileList$,
       this.fileManagementStore.reportStatus$,
       this.fileManagementStore.selectedCategory$,
       this.reportPageStore.userCanEditReport$,
+      this.reportPageStore.userCanViewGdpr$,
+      this.permissionService.hasPermission(UserRoleDTO.PermissionsEnum.ProjectReportingEdit),
+      this.permissionService.hasPermission(UserRoleDTO.PermissionsEnum.ProjectReportingView),
     ])
       .pipe(
         map(([files, reportStatus, selectedCategory, canEdit]: any) =>  {

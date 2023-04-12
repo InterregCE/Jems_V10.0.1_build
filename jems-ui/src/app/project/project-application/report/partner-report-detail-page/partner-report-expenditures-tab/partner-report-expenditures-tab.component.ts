@@ -1,12 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  ElementRef,
-  OnInit,
-  QueryList,
-  ViewChildren
-} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, QueryList, ViewChildren} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {catchError, finalize, map, take, tap} from 'rxjs/operators';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -32,17 +24,11 @@ import {
   UserRoleDTO,
 } from '@cat/api';
 import {BudgetCostCategoryEnum} from '@project/model/lump-sums/BudgetCostCategoryEnum';
-import {
-  InvestmentSummary
-} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
+import {InvestmentSummary} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
 import {CurrencyCodesEnum} from '@common/services/currency.store';
 import {NumberService} from '@common/services/number.service';
-import {
-  PartnerFileManagementStore
-} from '@project/project-application/report/partner-report-detail-page/partner-file-management-store';
-import {
-  PartnerReportDetailPageStore
-} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
+import {PartnerFileManagementStore} from '@project/project-application/report/partner-report-detail-page/partner-file-management-store';
+import {PartnerReportDetailPageStore} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 import {RoutingService} from '@common/services/routing.service';
 import {v4 as uuid} from 'uuid';
 import {MatSelect} from '@angular/material/select';
@@ -50,7 +36,6 @@ import {MatDatepicker} from '@angular/material/datepicker';
 import {CustomTranslatePipe} from '@common/pipe/custom-translate-pipe';
 import {TranslateByInputLanguagePipe} from '@common/pipe/translate-by-input-language.pipe';
 import {SecurityService} from 'src/app/security/security.service';
-import {PrivilegesPageStore} from '@project/project-application/privileges-page/privileges-page-store.service';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
@@ -60,7 +45,7 @@ import PermissionsEnum = UserRoleDTO.PermissionsEnum;
   selector: 'jems-partner-expenditures-cost',
   templateUrl: './partner-report-expenditures-tab.component.html',
   styleUrls: ['./partner-report-expenditures-tab.component.scss'],
-  providers: [FormService, PrivilegesPageStore],
+  providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PartnerReportExpendituresTabComponent implements OnInit {
@@ -123,7 +108,6 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
               private customTranslatePipe: CustomTranslatePipe,
               private translateByInputLanguagePipe: TranslateByInputLanguagePipe,
               public securityService: SecurityService,
-              public privilegesPageStore: PrivilegesPageStore,
               public permissionService: PermissionService,
               private partnerReportPageStore: PartnerReportPageStore) {
     this.isReportEditable$ = this.pageStore.isEditable$;
@@ -414,7 +398,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       this.tableConfiguration$,
       this.reportCosts$,
       this.pageStore.parkedExpenditures$,
-      this.privilegesPageStore.isCurrentUserGDPRCompliant$,
+      this.partnerReportPageStore.userCanViewGdpr$,
       this.partnerReportPageStore.userCanEditReport$,
       this.permissionService.hasPermission(PermissionsEnum.ProjectReportingView),
       this.isReportEditable$
