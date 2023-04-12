@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.plugin.services
 
 import io.cloudflight.jems.plugin.contract.models.project.checklist.*
-import io.cloudflight.jems.server.common.gson.toJson
+import io.cloudflight.jems.server.programme.service.checklist.model.toJson
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistComponentInstance
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.ChecklistInstanceMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.ProgrammeChecklistMetadata

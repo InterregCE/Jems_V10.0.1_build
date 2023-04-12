@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.project.repository.checklist
 
-import io.cloudflight.jems.server.common.gson.*
 import io.cloudflight.jems.server.programme.entity.checklist.ProgrammeChecklistComponentEntity
 import io.cloudflight.jems.server.programme.repository.checklist.toModelMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistComponentInstance
@@ -8,10 +7,15 @@ import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInsta
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.ChecklistInstanceMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.ProgrammeChecklistMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.toJson
 import io.cloudflight.jems.server.project.entity.checklist.ChecklistComponentInstanceEntity
 import io.cloudflight.jems.server.project.entity.checklist.ChecklistComponentInstanceId
 import io.cloudflight.jems.server.project.entity.checklist.ChecklistInstanceEntity
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
+import io.cloudflight.jems.server.project.service.checklist.model.toHeadlineInstance
+import io.cloudflight.jems.server.project.service.checklist.model.toOptionsToggleInstance
+import io.cloudflight.jems.server.project.service.checklist.model.toScoreInstance
+import io.cloudflight.jems.server.project.service.checklist.model.toTextInputInstance
 
 fun ChecklistInstanceEntity.toModel(): ChecklistInstance =
     ChecklistInstance(

@@ -1,7 +1,8 @@
-package io.cloudflight.jems.server.common.gson
+package io.cloudflight.jems.server.project.service.checklist.model
 
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineInstanceMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleInstanceMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.gson
 import io.cloudflight.jems.server.project.service.checklist.model.metadata.ScoreInstanceMetadata
 import io.cloudflight.jems.server.project.service.checklist.model.metadata.TextInputInstanceMetadata
 
@@ -18,4 +19,3 @@ fun String?.toHeadlineInstance(): HeadlineInstanceMetadata = gson.fromJson(this,
 fun String?.toScoreInstance(): ScoreInstanceMetadata {
     return gson.fromJson(this, ScoreInstanceMetadata::class.java)
 }
-

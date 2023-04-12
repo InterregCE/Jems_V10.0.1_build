@@ -105,9 +105,9 @@ class UserPersistenceProvider(
     }
 
     @Transactional
-    override fun updateSetting(userSettings: UserSettingsChange): UserSettings {
-        val existingUser = userRepo.findById(userSettings.id).orElseThrow { UserNotFound() }
-        existingUser.sendNotificationsToEmail = disableNotificationsIfUserGotInactive(userSettings, existingUser)
+    override fun updateSetting(userSetting: UserSettingsChange): UserSettings {
+        val existingUser = userRepo.findById(userSetting.id).orElseThrow { UserNotFound() }
+        existingUser.sendNotificationsToEmail = disableNotificationsIfUserGotInactive(userSetting, existingUser)
 
         return UserSettings(existingUser.sendNotificationsToEmail)
     }

@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.common.gson
+package io.cloudflight.jems.server.programme.service.checklist.model
 
 import com.google.gson.Gson
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineMetadata
@@ -23,4 +23,3 @@ fun String?.toScore(): ScoreMetadata {
 fun String?.toHeadline(): HeadlineMetadata = gson.fromJson(this, HeadlineMetadata::class.java)
 
 fun Any?.toJson(): String = gson.toJson(this)
-

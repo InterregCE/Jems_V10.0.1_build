@@ -1,12 +1,18 @@
 package io.cloudflight.jems.server.config
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient
+import co.elastic.clients.json.jackson.JacksonJsonpMapper
+import co.elastic.clients.transport.rest_client.RestClientTransport
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import org.apache.http.HttpHost
 import org.elasticsearch.client.RestClient
-import org.elasticsearch.client.RestHighLevelClient
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+
 
 const val AUDIT_PROPERTY_PREFIX = "audit-service"
 const val AUDIT_ENABLED = "enabled"
@@ -23,8 +29,21 @@ class ElasticsearchConfig {
 
     lateinit var urlAndPort: String
 
-    @Bean(destroyMethod = "close")
-    fun client(): RestHighLevelClient =
-        RestHighLevelClient(RestClient.builder(HttpHost.create(urlAndPort)))
-
+    @Bean
+    fun client(): ElasticsearchClient =
+        ElasticsearchClient(
+            RestClientTransport(
+                RestClient.builder(HttpHost.create(urlAndPort))
+//                    .setHttpClientConfigCallback { hc -> hc
+//                        .setSSLContext()
+//                        .setDefaultCredentialsProvider()
+//                    }.build(),
+                    .build(),
+                JacksonJsonpMapper(
+                    ObjectMapper()
+                        .registerModule(JavaTimeModule())
+                        .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+                )
+            )
+        )
 }

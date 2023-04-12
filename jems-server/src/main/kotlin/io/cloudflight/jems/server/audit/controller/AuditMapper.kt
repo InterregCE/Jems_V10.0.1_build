@@ -14,20 +14,19 @@ import org.springframework.data.domain.Pageable
 
 fun Page<Audit>.toDto() = map {
     AuditDTO(
+        id = it.id,
         timestamp = it.timestamp,
         action = it.action,
         project = it.project?.tDto(),
-        user = it.user.tDto(),
+        user = it.user?.tDto(),
         description = it.description,
     )
 }
 
-fun AuditUser?.tDto() = let { user ->
-    if (user == null) null else AuditUserDTO(
-        id = user.id,
-        email = user.email,
-    )
-}
+fun AuditUser.tDto() = AuditUserDTO(
+    id = id,
+    email = email,
+)
 
 fun AuditProject.tDto() = AuditProjectDTO(
     id = id,
@@ -46,7 +45,7 @@ fun AuditSearchRequestDTO?.toModel(pageable: Pageable) =
             userEmail = AuditFilter(values = userEmails.filterNotNullTo(HashSet())),
             action = AuditFilter(values = actions.map { it?.name }.filterNotNullTo(HashSet())),
             projectId = AuditFilter(values = projectIds.filterNotNullTo(HashSet())),
-            timeFrom = timeFrom,
-            timeTo = timeTo,
+            timeFrom = timeFrom?.withSecond(0)?.withNano(0),
+            timeTo = timeTo?.withSecond(0)?.plusMinutes(1)?.minusNanos(1),
             pageable = pageable,
         )

@@ -1,10 +1,5 @@
 package io.cloudflight.jems.server.programme.repository.checklist
 
-import io.cloudflight.jems.server.common.gson.toHeadline
-import io.cloudflight.jems.server.common.gson.toJson
-import io.cloudflight.jems.server.common.gson.toOptionsToggle
-import io.cloudflight.jems.server.common.gson.toScore
-import io.cloudflight.jems.server.common.gson.toTextInput
 import io.cloudflight.jems.server.programme.entity.checklist.ProgrammeChecklistComponentEntity
 import io.cloudflight.jems.server.programme.entity.checklist.ProgrammeChecklistEntity
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklist
@@ -13,6 +8,11 @@ import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChe
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistDetail
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistRow
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.ProgrammeChecklistMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.toHeadline
+import io.cloudflight.jems.server.programme.service.checklist.model.toJson
+import io.cloudflight.jems.server.programme.service.checklist.model.toOptionsToggle
+import io.cloudflight.jems.server.programme.service.checklist.model.toScore
+import io.cloudflight.jems.server.programme.service.checklist.model.toTextInput
 
 fun ProgrammeChecklistEntity.toModel(): ProgrammeChecklist =
     ProgrammeChecklist(
