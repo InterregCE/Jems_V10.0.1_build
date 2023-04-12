@@ -43,6 +43,8 @@ export class ContractMonitoringExtensionStore {
     return this.projectStore.projectId$
       .pipe(
         switchMap(projectId => this.projectContractingMonitoringService.updateContractingMonitoring(projectId, item)),
+        // trigger new project fetch, because for ProjectContractedOnDate
+        tap(() => this.projectStore.projectStatusChanged$.next()),
         tap(saved => Log.info('Saved contract monitoring', saved)),
       );
   }

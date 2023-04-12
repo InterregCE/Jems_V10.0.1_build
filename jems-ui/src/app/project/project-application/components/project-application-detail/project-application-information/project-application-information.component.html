@@ -89,7 +89,7 @@
     <div *ngIf="project?.contractedDecision" class="project-row">
         <span class="header p-1 pr-3">{{'project.table.column.name.contracted' | translate}}</span>
         <span class="p-1">
-            {{ project?.contractedDecision?.updated | localeDate }}
+            {{ project?.contractedOnDate | localeDate }}
         </span>
     </div>
 </div>

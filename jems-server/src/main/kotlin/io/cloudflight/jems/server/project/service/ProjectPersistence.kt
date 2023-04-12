@@ -10,6 +10,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectSearchRequest
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import java.time.LocalDate
 
 interface ProjectPersistence {
 
@@ -36,4 +37,6 @@ interface ProjectPersistence {
     fun createProjectWithStatus(acronym: String, status: ApplicationStatus, userId: Long, callId: Long): ProjectDetail
 
     fun updateProjectCustomIdentifier(projectId: Long, customIdentification: String)
+
+    fun updateProjectContractedOnDates(projectId: Long, contractedOnDate: LocalDate?)
 }

@@ -34,6 +34,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import java.sql.Timestamp
+import java.time.LocalDate
 
 @Repository
 class ProjectPersistenceProvider(
@@ -190,6 +191,11 @@ class ProjectPersistenceProvider(
     @Transactional
     override fun updateProjectCustomIdentifier(projectId: Long, customIdentification: String) {
         getProjectOrThrow(projectId).customIdentifier = customIdentification
+    }
+
+    @Transactional
+    override fun updateProjectContractedOnDates(projectId: Long, contractedOnDate: LocalDate?) {
+        getProjectOrThrow(projectId).contractedOnDate = contractedOnDate
     }
 
     private fun getProjectOrThrow(projectId: Long) =

@@ -59,6 +59,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal.ZERO
 import java.math.BigDecimal.valueOf
+import java.time.ZoneId
 
 @Service
 class ProjectDataProviderImpl(
@@ -230,7 +231,7 @@ class ProjectDataProviderImpl(
                 submissionDateStepOne = project.firstSubmissionStep1?.updated,
                 firstSubmissionDate = project.firstSubmission?.updated,
                 lastResubmissionDate = project.lastResubmission?.updated,
-                contractedDate = project.contractedDecision?.updated,
+                contractedDate = project.contractedOnDate?.atStartOfDay(ZoneId.systemDefault()),
                 assessmentStep1 = project.assessmentStep1?.toDataModel(),
                 assessmentStep2 = project.assessmentStep2?.toDataModel()
             ),

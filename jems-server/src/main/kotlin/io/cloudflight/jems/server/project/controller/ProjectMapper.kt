@@ -99,7 +99,8 @@ fun ProjectDetail.toDto() = ProjectDetailDTO(
     step2Active = projectStatus.status.isInStep2(),
     firstStepDecision = assessmentStep1?.toDto(),
     secondStepDecision = assessmentStep2?.toDto(),
-    contractedDecision = contractedDecision?.toDto()
+    contractedDecision = contractedDecision?.toDto(),
+    contractedOnDate = contractedOnDate
 )
 
 fun ProjectForm.toDto() = ProjectDetailFormDTO(
