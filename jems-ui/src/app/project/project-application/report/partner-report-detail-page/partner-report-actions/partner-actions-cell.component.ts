@@ -15,6 +15,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {AcceptedFileTypesConstants} from '@project/common/components/file-management/accepted-file-types.constants';
 import {DatePipe} from '@angular/common';
 import {CustomTranslatePipe} from '@common/pipe/custom-translate-pipe';
+import {FileListTableConstants} from "@common/components/file-list/file-list-table/file-list-table-constants";
 
 @Component({
   selector: 'jems-partner-actions-cell',
@@ -33,12 +34,10 @@ export class PartnerActionsCellComponent implements ControlValueAccessor {
   acceptedFilesTypes = AcceptedFileTypesConstants.acceptedFilesTypes;
   fileMetadata: JemsFileMetadataDTO;
   isUploadInProgress = false;
+  anonymizedName = FileListTableConstants.SENSITIVE_FILE_NAME_MASK;
 
   @Input()
   isReportEditable = true;
-
-  @Input()
-  canDownload = true;
 
   @Input()
   set isUploadDone(value: boolean){
@@ -120,9 +119,10 @@ ${this.translatePipe
     }
   }
 
-  downloadFile(fileId: number) {
-    if (this.canDownload) {
-      this.download.emit(fileId);
+  downloadFile(file: JemsFileMetadataDTO) {
+    if (file.name !== this.anonymizedName) {
+      this.download.emit(file.id);
     }
   }
+
 }
