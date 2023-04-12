@@ -35,6 +35,7 @@ import {
     ProjectReportIdentificationExtensionStore
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-identification-tab/project-report-identification-extension/project-report-identification-extension-store.service';
 
+
 @Injectable({providedIn: 'root'})
 export class ProjectReportAnnexesFileManagementStore {
 
@@ -127,7 +128,7 @@ export class ProjectReportAnnexesFileManagementStore {
     private fileCategories(section: CategoryInfo): Observable<CategoryNode> {
         return this.currentProjectReport$.pipe(
             map((projectReport: ProjectReportSummaryDTO) =>
-                this.getCategories(section, projectReport.reportNumber)
+                this.getCategories(section, projectReport.reportNumber, projectReport.type)
             ),
             tap(filters => this.setParent(filters)),
         );
@@ -142,6 +143,7 @@ export class ProjectReportAnnexesFileManagementStore {
 
     private getCategories(section: CategoryInfo,
                           reportNumber: number,
+                          type: ProjectReportSummaryDTO.TypeEnum
     ): CategoryNode {
         const reportFiles: CategoryNode = {
             name: {
@@ -152,19 +154,20 @@ export class ProjectReportAnnexesFileManagementStore {
             children: []
         };
 
-        reportFiles.children?.push(
+        if (type === ProjectReportSummaryDTO.TypeEnum.Content || type === ProjectReportSummaryDTO.TypeEnum.Both) {
+          reportFiles.children?.push(
             {
-                name: {i18nKey: 'project.application.project.report.annexes.file.tree.work.plan.category'},
-                info: {type: ProjectReportCategoryTypeEnum.WORKPLAN},
-                children: []
+              name: {i18nKey: 'project.application.project.report.annexes.file.tree.work.plan.category'},
+              info: {type: ProjectReportCategoryTypeEnum.WORKPLAN},
+              children: []
             },
             {
-                name: {i18nKey: 'project.application.project.report.annexes.file.tree.project.results.horizontal.principles.category'},
-                info: {type: ProjectReportCategoryTypeEnum.PROJECT_RESULTS},
-                children: []
+              name: {i18nKey: 'project.application.project.report.annexes.file.tree.project.results.horizontal.principles.category'},
+              info: {type: ProjectReportCategoryTypeEnum.PROJECT_RESULTS},
+              children: []
             }
-        );
-
+          );
+        }
         return this.fileManagementStore.findRootForSection(reportFiles, section) || {};
     }
 
@@ -181,18 +184,19 @@ export class ProjectReportAnnexesFileManagementStore {
                 map(sort => `${sort.active},${sort.direction}`),
                 distinctUntilChanged(),
             ),
+            this.currentProjectReport$,
             this.filesChanged$.pipe(startWith(null)),
         ])
             .pipe(
                 filter(([projectId, reportId]: any) => !!projectId && !!reportId),
-                switchMap(([selectedCategory, projectId, reportId, pageIndex, pageSize, sort]) =>
+                switchMap(([selectedCategory, projectId, reportId, pageIndex, pageSize, sort, projectReport]) =>
                     this.projectReportAnnexesService.getProjectReportAnnexes(
                         projectId,
                         Number(reportId),
                         {
                             reportId: Number(reportId),
                             treeNode: this.getTreeNodeFromCategory(selectedCategory),
-                            filterSubtypes: [ /* can be used in future for filtering */],
+                            filterSubtypes: projectReport.type === ProjectReportSummaryDTO.TypeEnum.Finance ? [ProjectReportFileSearchRequestDTO.FilterSubtypesEnum.ProjectReport] : [],
                         } as ProjectReportFileSearchRequestDTO,
                         pageIndex,
                         pageSize,

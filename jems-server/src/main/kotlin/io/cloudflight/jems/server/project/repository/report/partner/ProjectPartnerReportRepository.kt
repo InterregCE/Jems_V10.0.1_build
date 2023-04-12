@@ -141,4 +141,6 @@ interface ProjectPartnerReportRepository : JpaRepository<ProjectPartnerReportEnt
     )
     fun findTotalAfterControlPerPartner(projectReportId: Long): List<Pair<Long, BigDecimal>>
 
+    fun findAllByProjectReportDeadlineIdIn(deadlineIds: Set<Long>): List<ProjectPartnerReportEntity>
+
 }

@@ -17,4 +17,6 @@ interface ContractingReportingPersistence {
 
     fun getScheduleIdsWhosePeriodsAndDatesNotProper(projectId: Long, newMaxDuration: Int): List<Long>
 
+    fun getReportIdsByDeadlineId(projectId: Long, deadlineId: Long): List<Long>
+
 }

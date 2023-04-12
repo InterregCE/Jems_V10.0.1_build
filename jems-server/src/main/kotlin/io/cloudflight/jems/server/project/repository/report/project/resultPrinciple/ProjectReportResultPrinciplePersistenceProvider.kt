@@ -2,6 +2,8 @@ package io.cloudflight.jems.server.project.repository.report.project.resultPrinc
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.server.common.entity.TranslationId
+import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
+import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.project.entity.report.project.resultPrinciple.ProjectReportHorizontalPrincipleEntity
 import io.cloudflight.jems.server.project.entity.report.project.resultPrinciple.ProjectReportHorizontalPrincipleTranslEntity
 import io.cloudflight.jems.server.project.entity.report.project.resultPrinciple.ProjectReportProjectResultEntity
@@ -20,15 +22,14 @@ class ProjectReportResultPrinciplePersistenceProvider(
     private val projectPersistence: ProjectPersistence,
     private val projectResultRepository: ProjectReportProjectResultRepository,
     private val horizontalPrincipleRepository: ProjectReportHorizontalPrincipleRepository,
+    private val fileService: JemsProjectFileService
 ) : ProjectReportResultPrinciplePersistence {
 
     @Transactional(readOnly = true)
     override fun getProjectResultPrinciples(projectId: Long, reportId: Long): ProjectReportResultPrinciple {
         val projectResults = projectResultRepository.findByProjectReportId(reportId = reportId)
         val periods = fetchAvailablePeriodsFor(projectResults)
-
         val horizontalPrinciples = horizontalPrincipleRepository.getByProjectReportId(reportId)
-
         return toResultPrincipleModel(projectResults, horizontalPrinciples, periodResolver = { periods[it] })
     }
 
@@ -51,6 +52,16 @@ class ProjectReportResultPrinciplePersistenceProvider(
     @Transactional(readOnly = true)
     override fun getResultCumulative(reportIds: Set<Long>): Map<Int, BigDecimal> =
         projectResultRepository.getCumulativeValues(reportIds).toMap()
+
+    @Transactional
+    override fun deleteProjectResultPrinciples(reportId: Long) {
+        val projectResults = projectResultRepository.findByProjectReportId(reportId)
+        projectResults.onEach {
+            it.attachment.deleteIfPresent()
+        }
+        projectResultRepository.deleteAll(projectResults)
+        horizontalPrincipleRepository.deleteById(reportId)
+    }
 
     private fun fetchAvailablePeriodsFor(results: List<ProjectReportProjectResultEntity>) =
         if (results.isEmpty()) emptyMap() else
@@ -112,6 +123,12 @@ class ProjectReportResultPrinciplePersistenceProvider(
                     sexualEqualityMap[it],
                 )
             }
+    }
+
+    private fun JemsFileMetadataEntity?.deleteIfPresent() {
+        if (this != null) {
+            fileService.delete(this)
+        }
     }
 
 }

@@ -125,6 +125,7 @@
     <ID>MaxLineLength:WorkPackageRepository.kt$WorkPackageRepository$ LEFT JOIN programme_indicator_output_transl AS programmeOutputIndicatorIdentifierTransl ON programmeOutputIndicatorIdentifier.id = programmeOutputIndicatorIdentifierTransl.source_entity_id</ID>
     <ID>MemberNameEqualsClassName:SubmitApplication.kt$SubmitApplication$private fun submitApplication(projectSummary: ProjectSummary): ApplicationStatus</ID>
     <ID>NestedBlockDepth:ExecutePreConditionCheck.kt$ExecutePreConditionCheck$@ExceptionWrapper(ExecutePreConditionCheckException::class) @Transactional(readOnly = true) @CanCheckApplicationForm override fun execute(projectId: Long): PreConditionCheckResult</ID>
+    <ID>NestedBlockDepth:SubmitProjectReport.kt$SubmitProjectReport$private fun deleteReportWorkPlansWithFiles( projectId: Long, reportId: Long )</ID>
     <ID>PackageNaming:ActivateUser.kt$package io.cloudflight.jems.server.user.service.user.activate_user</ID>
     <ID>PackageNaming:ActivateUserException.kt$package io.cloudflight.jems.server.user.service.user.activate_user</ID>
     <ID>PackageNaming:ActivateUserInteractor.kt$package io.cloudflight.jems.server.user.service.user.activate_user</ID>

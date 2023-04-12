@@ -18,6 +18,7 @@ import {ProjectReportDTO} from '@cat/api';
 export class ProjectReportDetailPageComponent {
 
   ProjectReportDTO = ProjectReportDTO;
+  TypeEnum = ProjectReportDTO.TypeEnum;
   constructor(private activatedRoute: ActivatedRoute,
               public pageStore: ProjectReportDetailPageStore,
               private router: RoutingService,

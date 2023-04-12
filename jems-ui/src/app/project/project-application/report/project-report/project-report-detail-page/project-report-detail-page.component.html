@@ -11,21 +11,21 @@
                     </span>
             </a>
 
-            <a [active]="activeTab('workPlan')" mat-tab-link
+            <a *ngIf="projectReport.type !== TypeEnum.Finance" [active]="activeTab('workPlan')" mat-tab-link
                (click)="routeTo('workPlan')">
                     <span jemsText maxWidth="230">
                         {{'project.application.project.report.tab.work.plan' | translate}}
                     </span>
             </a>
 
-            <a [active]="activeTab('resultsAndPrinciples')" mat-tab-link
+            <a *ngIf="projectReport.type !== TypeEnum.Finance" [active]="activeTab('resultsAndPrinciples')" mat-tab-link
                (click)="routeTo('resultsAndPrinciples')">
                     <span jemsText maxWidth="230">
                         {{'project.application.project.report.tab.results.and.principles' | translate}}
                     </span>
             </a>
 
-            <a [active]="activeTab('certificate')" mat-tab-link
+            <a *ngIf="projectReport.type !== TypeEnum.Content" [active]="activeTab('certificate')" mat-tab-link
                (click)="routeTo('certificate')">
                     <span jemsText maxWidth="230">
                         {{'project.application.project.report.tab.partner.certificate.list' | translate}}
@@ -39,7 +39,7 @@
                     </span>
             </a>
 
-            <a [active]="activeTab('financialOverview')" mat-tab-link
+            <a *ngIf="projectReport.type !== TypeEnum.Content" [active]="activeTab('financialOverview')" mat-tab-link
                (click)="routeTo('financialOverview')">
                     <span jemsText maxWidth="230">
                         {{ 'project.application.partner.report.financial.tab.title' | translate }}

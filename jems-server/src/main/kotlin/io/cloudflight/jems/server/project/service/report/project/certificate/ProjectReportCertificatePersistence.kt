@@ -10,6 +10,8 @@ interface ProjectReportCertificatePersistence {
 
     fun deselectCertificate(projectReportId: Long, certificateId: Long)
 
+    fun deselectAllCertificatesForDeadlines(deadlineIds: Set<Long>)
+
     fun selectCertificate(projectReportId: Long, certificateId: Long)
 
     fun listCertificates(partnerIds: Set<Long>, pageable: Pageable): Page<PartnerReportCertificate>

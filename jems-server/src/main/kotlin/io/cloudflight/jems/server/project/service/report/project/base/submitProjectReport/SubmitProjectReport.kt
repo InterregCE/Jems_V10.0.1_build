@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service.report.project.base.submitPro
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanEditProjectReport
+import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
@@ -20,6 +21,7 @@ import io.cloudflight.jems.server.project.service.report.project.financialOvervi
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateUnitCostPersistence
 import io.cloudflight.jems.server.project.service.report.project.identification.ProjectReportIdentificationPersistence
 import io.cloudflight.jems.server.project.service.report.project.projectReportSubmitted
+import io.cloudflight.jems.server.project.service.report.project.resultPrinciple.ProjectReportResultPrinciplePersistence
 import io.cloudflight.jems.server.project.service.report.project.workPlan.ProjectReportWorkPlanPersistence
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
@@ -43,6 +45,7 @@ class SubmitProjectReport(
     private val reportCertificateInvestmentPersistence: ProjectReportCertificateInvestmentPersistence,
     private val reportWorkPlanPersistence: ProjectReportWorkPlanPersistence,
     private val auditPublisher: ApplicationEventPublisher,
+    private val reportResultPrinciplePersistence: ProjectReportResultPrinciplePersistence,
 ) : SubmitProjectReportInteractor {
 
     @CanEditProjectReport
@@ -60,7 +63,7 @@ class SubmitProjectReport(
         saveCurrentLumpSums(certificates, projectId, reportId)
         saveCurrentInvestments(certificates, projectId, reportId)
 
-        deleteWorkPlanTabDataIfNotNeeded(projectId, report)
+        deleteContentTypeDataIfNotNeeded(projectId, report)
 
         return reportPersistence.submitReport(
             projectId = projectId,
@@ -154,12 +157,14 @@ class SubmitProjectReport(
         )
     }
 
-    private fun deleteWorkPlanTabDataIfNotNeeded(
+    private fun deleteContentTypeDataIfNotNeeded(
         projectId: Long,
         report: ProjectReportModel,
     ) {
-        if (!report.type!!.hasWorkPlan())
-            reportWorkPlanPersistence.deleteWorkPlan(projectId, reportId = report.id)
+        if (report.type!! == ContractingDeadlineType.Finance) {
+            reportResultPrinciplePersistence.deleteProjectResultPrinciples(report.id)
+            reportWorkPlanPersistence.deleteWorkPlan(projectId, report.id)
+        }
     }
 
 }

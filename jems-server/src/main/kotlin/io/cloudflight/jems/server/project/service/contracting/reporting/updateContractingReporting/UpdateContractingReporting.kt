@@ -13,6 +13,7 @@ import io.cloudflight.jems.server.project.service.contracting.reporting.Contract
 import io.cloudflight.jems.server.project.service.contracting.toLimits
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
@@ -26,7 +27,8 @@ class UpdateContractingReporting(
     private val versionPersistence: ProjectVersionPersistence,
     private val generalValidator: GeneralValidatorService,
     private val contractingValidator: ContractingValidator,
-    private val projectReportPersistence: ProjectReportPersistence
+    private val projectReportPersistence: ProjectReportPersistence,
+    private val certificatePersistence: ProjectReportCertificatePersistence
 ): UpdateContractingReportingInteractor {
 
     companion object {
@@ -51,13 +53,27 @@ class UpdateContractingReporting(
             throw ContractingStartDateIsMissing()
 
         val periods = project.periods.associateBy { it.number }
-        val existingDeadlines = contractingReportingPersistence.getContractingReporting(projectId).associateBy { it.id }
-        validateInputData(deadlines, existingDeadlines, periods, monitoring.startDate, projectId)
+        val existingDeadlines = contractingReportingPersistence.getContractingReporting(projectId)
+
+        validateInputData(deadlines, existingDeadlines.associateBy { it.id }, periods, monitoring.startDate, projectId)
+        deselectCertificatesIfFinancePartExcluded(deadlines, existingDeadlines)
 
         return contractingReportingPersistence.updateContractingReporting(
             projectId = projectId,
-            deadlines = deadlines.fillMissingNumbers(ignoreIds = existingDeadlines.keys),
+            deadlines = deadlines.fillMissingNumbers(ignoreIds = existingDeadlines.map { it.id }.toSet()),
         )
+    }
+
+    private fun deselectCertificatesIfFinancePartExcluded(
+        deadlines: Collection<ProjectContractingReportingSchedule>,
+        existingDeadlines: List<ProjectContractingReportingSchedule>,
+    ) {
+        val existingFinanceIds = existingDeadlines.filter { it.type.hasFinance() }.mapTo(HashSet()) { it.id }
+        val toBeSavedFinanceIds = deadlines.filter { it.type.hasFinance() }.mapTo(HashSet()) { it.id }
+
+        val lostFinanceDeadlineIds = existingFinanceIds.minus(toBeSavedFinanceIds)
+        if (lostFinanceDeadlineIds.isNotEmpty())
+            certificatePersistence.deselectAllCertificatesForDeadlines(deadlineIds = lostFinanceDeadlineIds)
     }
 
     @Transactional
@@ -117,6 +133,7 @@ class UpdateContractingReporting(
         if (invalidPeriods.isNotEmpty())
             throw InvalidPeriodNumbers(invalidPeriods)
     }
+
     private fun validateDates(
         deadlines: Collection<ProjectContractingReportingSchedule>,
         periods: Map<Int, ProjectPeriod>,

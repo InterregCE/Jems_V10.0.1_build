@@ -6,6 +6,7 @@ import io.cloudflight.jems.api.project.dto.description.ProjectHorizontalPrincipl
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
+import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.programme.entity.indicator.ResultIndicatorEntity
 import io.cloudflight.jems.server.programme.entity.indicator.ResultIndicatorTranslEntity
@@ -142,12 +143,16 @@ class ProjectReportResultPrinciplePersistenceProviderTest : UnitTest() {
     @MockK
     private lateinit var horizontalPrincipleRepository: ProjectReportHorizontalPrincipleRepository
 
+    @MockK
+    private lateinit var fileService: JemsProjectFileService
+
     @InjectMockKs
     private lateinit var persistence: ProjectReportResultPrinciplePersistenceProvider
 
+
     @BeforeEach
     fun reset() {
-        clearMocks(projectPersistence, projectResultRepository, horizontalPrincipleRepository)
+        clearMocks(projectPersistence, projectResultRepository, horizontalPrincipleRepository, fileService)
     }
 
     @Test

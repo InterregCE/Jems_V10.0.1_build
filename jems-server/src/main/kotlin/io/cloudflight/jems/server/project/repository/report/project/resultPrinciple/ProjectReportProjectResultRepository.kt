@@ -27,4 +27,5 @@ interface ProjectReportProjectResultRepository : JpaRepository<ProjectReportProj
     """)
     fun getCumulativeValues(reportIds: Set<Long>): List<Pair<Int, BigDecimal>>
 
+    fun deleteByProjectReportId(projectReportId: Long)
 }

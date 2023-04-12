@@ -3,12 +3,16 @@ package io.cloudflight.jems.server.project.service.report.project.base.updatePro
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanEditProjectReport
 import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
+import io.cloudflight.jems.server.project.service.contracting.model.reporting.ProjectContractingReportingSchedule
 import io.cloudflight.jems.server.project.service.contracting.reporting.ContractingReportingPersistence
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReport
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportUpdate
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportDeadline
+import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.toServiceModel
+import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -17,6 +21,7 @@ class UpdateProjectReport(
     private val reportPersistence: ProjectReportPersistence,
     private val projectPersistence: ProjectPersistence,
     private val deadlinePersistence: ContractingReportingPersistence,
+    private val certificatePersistence: ProjectReportCertificatePersistence
 ) : UpdateProjectReportInteractor {
 
     companion object {
@@ -103,18 +108,47 @@ class UpdateProjectReport(
             noLinkAndDataMissingExceptionResolver = { LinkToDeadlineNotProvidedAndDataMissing() },
             periodNumberExceptionResolver = { PeriodNumberInvalid(it) },
         )
-        val deadline = data.toDeadlineObject(validDeadlineIdResolver = { getValidDeadlineId(projectId, it) })
+
+        val existingDeadlineType = getExistingDeadlineType(projectId, reportPersistence.getReportById(projectId, reportId))
+        val linkedDeadline = if (data.deadlineId != null) deadlinePersistence.getContractingReportingDeadline(projectId, data.deadlineId) else null
+        if (isFinanceTypeExcluded(existingDeadlineType, data, linkedDeadline)) {
+            val certificates = certificatePersistence.listCertificatesOfProjectReport(reportId)
+            if (certificates.isNotEmpty()) {
+                certificates.forEach {
+                    certificatePersistence.deselectCertificate(reportId, it.id)
+                }
+            }
+        }
 
         return reportPersistence.updateReport(
             projectId = projectId,
             reportId = reportId,
             startDate = data.startDate,
             endDate = data.endDate,
-            deadline = deadline,
+            deadline =  data.toDeadlineObject(validDeadlineIdResolver = { getValidDeadlineId(linkedDeadline!!) }),
         ).toServiceModel(periodResolver = { periodNumber -> periods[periodNumber]!! })
     }
 
-    private fun getValidDeadlineId(projectId: Long, deadlineId: Long) =
-        deadlinePersistence.getContractingReportingDeadline(projectId, deadlineId).id
+    private fun getValidDeadlineId(deadline: ProjectContractingReportingSchedule) = deadline.id
 
+    private fun getExistingDeadlineType(projectId: Long, existingReport: ProjectReportModel): ContractingDeadlineType? {
+        return if (existingReport.deadlineId == null)
+            existingReport.type
+        else
+            deadlinePersistence.getContractingReportingDeadline(projectId, existingReport.deadlineId).type
+    }
+
+    private fun isFinanceTypeExcluded(
+        existingDeadlineType: ContractingDeadlineType?,
+        data: ProjectReportUpdate,
+        newLinkedDeadline: ProjectContractingReportingSchedule?
+    ): Boolean {
+        if (existingDeadlineType == ContractingDeadlineType.Content)
+            return false
+        return if (data.isManual()) {
+            data.type == ContractingDeadlineType.Content
+        } else {
+            newLinkedDeadline?.type == ContractingDeadlineType.Content
+        }
+    }
 }

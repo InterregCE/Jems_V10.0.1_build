@@ -14,6 +14,6 @@ interface ProjectReportWorkPackageRepository : JpaRepository<ProjectReportWorkPa
         reportEntity: ProjectReportEntity,
     ): MutableList<ProjectReportWorkPackageEntity>
 
-    fun deleteAllByReportEntityProjectIdAndReportEntityId(projectId: Long, reportId: Long)
+    fun deleteAllByReportEntity(reportEntity: ProjectReportEntity)
 
 }

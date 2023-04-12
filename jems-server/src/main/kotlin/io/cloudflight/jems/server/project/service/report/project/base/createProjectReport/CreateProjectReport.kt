@@ -96,7 +96,7 @@ class CreateProjectReport(
             .toCreateModel(previouslyReportedByNumber = projectReportResultPersistence.getResultCumulative(submittedReportIds))
         val projectManagement = projectDescriptionPersistence.getProjectManagement(projectId = projectId, version = version)
 
-        val lastSubmittedReportIdWithWorkPlan = submittedReports.firstOrNull { it.second.hasWorkPlan() }?.first
+        val lastSubmittedReportIdWithWorkPlan = submittedReports.firstOrNull { it.second.hasContent() }?.first
         val reportToCreate = ProjectReportCreateModel(
             reportBase = data.toCreateModel(latestReportNumber, version, project, leadPartner),
             reportBudget = createProjectReportBudget.retrieveBudgetDataFor(
@@ -117,7 +117,7 @@ class CreateProjectReport(
 
         return reportCreatePersistence.createReportAndFillItToEmptyCertificates(reportToCreate).also {
             auditPublisher.publishEvent(projectReportCreated(this, project, it))
-        }.toServiceModel({ periodNumber -> periods[periodNumber]!! })
+        }.toServiceModel { periodNumber -> periods[periodNumber]!! }
     }
 
     private fun getPreviouslyReportedByPartner(

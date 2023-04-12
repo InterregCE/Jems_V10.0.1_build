@@ -5,8 +5,10 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
+import io.cloudflight.jems.server.project.service.model.ProjectHorizontalPrinciples
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
@@ -16,6 +18,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.base.Proj
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
+import io.cloudflight.jems.server.project.service.report.model.project.projectResults.ProjectReportResultPrinciple
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportInvestmentPersistence
@@ -29,6 +32,7 @@ import io.cloudflight.jems.server.project.service.report.project.financialOvervi
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateLumpSumPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateUnitCostPersistence
 import io.cloudflight.jems.server.project.service.report.project.identification.ProjectReportIdentificationPersistence
+import io.cloudflight.jems.server.project.service.report.project.resultPrinciple.ProjectReportResultPrinciplePersistence
 import io.cloudflight.jems.server.project.service.report.project.workPlan.ProjectReportWorkPlanPersistence
 import io.mockk.clearMocks
 import io.mockk.every
@@ -145,6 +149,13 @@ internal class SubmitProjectReportTest : UnitTest() {
             previouslyReported = budgetCostFull
         )
 
+        private val emptyReportResultPrinciple = ProjectReportResultPrinciple(
+            projectResults = listOf(),
+            horizontalPrinciples = ProjectHorizontalPrinciples(),
+            sustainableDevelopmentDescription = setOf(),
+            equalOpportunitiesDescription = setOf(),
+            sexualEqualityDescription = setOf()
+        )
     }
 
     @MockK
@@ -175,6 +186,12 @@ internal class SubmitProjectReportTest : UnitTest() {
     lateinit var reportExpenditureInvestmentPersistence: ProjectPartnerReportInvestmentPersistence
     @MockK
     lateinit var reportCertificateInvestmentPersistence: ProjectReportCertificateInvestmentPersistence
+    @MockK
+    lateinit var reportResultPrinciplePersistence: ProjectReportResultPrinciplePersistence
+    @MockK
+    lateinit var filePersistence: JemsFilePersistence
+
+
     @MockK
     lateinit var auditPublisher: ApplicationEventPublisher
 
@@ -226,6 +243,9 @@ internal class SubmitProjectReportTest : UnitTest() {
         every { reportExpenditureInvestmentPersistence.getInvestmentsCumulativeAfterControl(setOf(42L)) } returns mapOf(Pair(1L, BigDecimal.TEN))
         val investmentSlot = slot<Map<Long, BigDecimal>>()
         every { reportCertificateInvestmentPersistence.updateCurrentlyReportedValues(PROJECT_ID, reportId = REPORT_ID, capture(investmentSlot)) } answers { }
+        every { reportResultPrinciplePersistence.getProjectResultPrinciples(PROJECT_ID, reportId = REPORT_ID) } returns emptyReportResultPrinciple
+        every { reportResultPrinciplePersistence.deleteProjectResultPrinciples(REPORT_ID) } returnsArgument 0
+        every { reportWorkPlanPersistence.getReportWorkPlanById(PROJECT_ID, REPORT_ID) } returns listOf()
 
         submitReport.submit(PROJECT_ID, REPORT_ID)
 
