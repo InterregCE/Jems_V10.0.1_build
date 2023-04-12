@@ -5,8 +5,8 @@ import {CallStore} from '../../../../../call/services/call-store.service';
 import {LocaleDatePipe} from '@common/pipe/locale-date.pipe';
 import {ProjectUtil} from '@project/common/project-util';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
-import {PermissionService} from "../../../../../security/permissions/permission.service";
-import {Observable} from "rxjs";
+import {PermissionService} from '../../../../../security/permissions/permission.service';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'jems-project-application-information',

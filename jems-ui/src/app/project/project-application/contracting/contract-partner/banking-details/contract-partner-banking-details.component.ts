@@ -72,7 +72,11 @@ export class ContractPartnerBankingDetailsComponent {
         public associatedOrganizationStore: ProjectAssociatedOrganizationStore,
     ) {
         this.formService.init(this.partnerBankingDetailsForm);
-        const bankingDetails$ = combineLatest([this.contractPartnerStore.partnerId$, this.contractPartnerStore.projectId$])
+        const bankingDetails$ = combineLatest([
+            this.contractPartnerStore.partnerId$,
+            this.contractPartnerStore.projectId$,
+            this.contractPartnerStore.isPartnerLocked$,
+        ])
             .pipe(
                 tap(([partnerId, projectId]) => {
                     this.partnerId = Number(partnerId);
