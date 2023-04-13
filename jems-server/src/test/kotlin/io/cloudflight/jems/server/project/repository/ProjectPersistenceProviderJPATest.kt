@@ -52,6 +52,7 @@ internal class ProjectPersistenceProviderJPATest : JPATest() {
                 assessmentStep1 = CONTRACTED_PROJECT.assessmentStep1,
                 assessmentStep2 = CONTRACTED_PROJECT.assessmentStep2,
                 contractedDecision = CONTRACTED_PROJECT.contractedDecision,
+                contractedOnDate = CONTRACTED_PROJECT.contractedOnDate,
                 title = versionedInputTranslation("title", version),
                 intro = versionedInputTranslation("intro", version),
                 duration = CONTRACTED_PROJECT_DURATION,

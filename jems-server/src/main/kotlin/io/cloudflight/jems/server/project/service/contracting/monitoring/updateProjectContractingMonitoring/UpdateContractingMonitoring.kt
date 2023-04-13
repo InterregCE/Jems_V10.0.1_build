@@ -2,12 +2,12 @@ package io.cloudflight.jems.server.project.service.contracting.monitoring.update
 
 import io.cloudflight.jems.server.common.audit.fromOldToNewChanges
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.payments.service.regular.PaymentRegularPersistence
 import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerToCreate
 import io.cloudflight.jems.server.payments.model.regular.PaymentToCreate
 import io.cloudflight.jems.server.payments.model.regular.contributionMeta.ContributionMeta
 import io.cloudflight.jems.server.payments.service.monitoringFtlsReadyForPayment
+import io.cloudflight.jems.server.payments.service.regular.PaymentRegularPersistence
 import io.cloudflight.jems.server.project.authorization.CanSetProjectToContracted
 import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
@@ -41,7 +41,7 @@ class UpdateContractingMonitoring(
     private val validator: ContractingValidator,
     private val auditPublisher: ApplicationEventPublisher,
     private val paymentPersistence: PaymentRegularPersistence,
-): UpdateContractingMonitoringInteractor {
+) : UpdateContractingMonitoringInteractor {
 
     @CanSetProjectToContracted
     @Transactional
@@ -57,9 +57,9 @@ class UpdateContractingMonitoring(
             val version = versionPersistence.getLatestApprovedOrCurrent(projectId = projectId)
             // load old data for audit once the project is already contracted
             val oldMonitoring = contractingMonitoringPersistence.getContractingMonitoring(projectId)
-                .fillLumpSumsList ( resolveLumpSums = {
-                        projectLumpSumPersistence.getLumpSums(projectId = projectId, version)
-                } )
+                .fillLumpSumsList(resolveLumpSums = {
+                    projectLumpSumPersistence.getLumpSums(projectId = projectId, version)
+                })
             val updated = contractingMonitoringPersistence.updateContractingMonitoring(
                 contractMonitoring.copy(projectId = projectId)
             ).fillEndDateWithDuration(resolveDuration = {
@@ -88,6 +88,9 @@ class UpdateContractingMonitoring(
 
             if (projectSummary.status.isAlreadyContracted()) {
                 val diff = contractMonitoring.getDiff(old = oldMonitoring)
+                if (diff.containsKey("addSubContractDates")) {
+                    updateProjectContractedOnDate(updated, projectId)
+                }
                 if (diff.isNotEmpty()) {
                     auditPublisher.publishEvent(
                         projectContractingMonitoringChanged(
@@ -100,6 +103,13 @@ class UpdateContractingMonitoring(
             }
             return updated
         }
+    }
+
+    private fun updateProjectContractedOnDate(contractMonitoring: ProjectContractingMonitoring, projectId: Long) {
+        projectPersistence.updateProjectContractedOnDates(
+            projectId,
+            contractMonitoring.addDates.maxByOrNull { addDate -> addDate.number }?.entryIntoForceDate
+        )
     }
 
     private fun updateReadyForPayment(
@@ -115,7 +125,8 @@ class UpdateContractingMonitoring(
             it.paymentEnabledDate = lumpSum.paymentEnabledDate
             if (lumpSum.readyForPayment != it.readyForPayment) {
                 if (contractingMonitoringPersistence
-                        .existsSavedInstallment(projectId, lumpSum.programmeLumpSumId, lumpSum.orderNr)) {
+                        .existsSavedInstallment(projectId, lumpSum.programmeLumpSumId, lumpSum.orderNr)
+                ) {
                     throw UpdateContractingMonitoringFTLSException()
                 }
                 if (it.readyForPayment) {

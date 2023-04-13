@@ -277,6 +277,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
         every { contractingMonitoringPersistence.updateContractingMonitoring(monitoringNew) } returns monitoringNew
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
         every { projectPersistence.getProject(projectId, version) } returns project
+        every { projectPersistence.updateProjectContractedOnDates(projectId, monitoring.addDates.get(0).entryIntoForceDate) } answers {}
         every { projectLumpSumPersistence.getLumpSums(projectId, version)} returns lumpSumsNotReady
         every { projectLumpSumPersistence.updateLumpSums(projectId, any())} returns lumpSumsUpdated
         every { paymentPersistence.getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(1, Sets.newSet(1))} returns

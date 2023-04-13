@@ -62,6 +62,7 @@ fun ProjectFull.getProjectWithoutFormData() = ProjectDetail(
     firstSubmissionStep1 = firstSubmissionStep1,
     lastResubmission = lastResubmission,
     contractedDecision = contractedDecision,
+    contractedOnDate = contractedOnDate,
     assessmentStep1 = assessmentStep1,
     assessmentStep2 = assessmentStep2,
 )
