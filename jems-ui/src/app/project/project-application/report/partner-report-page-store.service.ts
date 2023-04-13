@@ -165,7 +165,7 @@ export class PartnerReportPageStore {
   userCanViewGdpr(): Observable<boolean> {
     return combineLatest([
       this.privilegesPageStore.currentUserPartnerCollaborations$,
-      this.partnerId$,
+      this.partnerId$.pipe(map(id => Number(id))),
       this.userCanEditReport$,
     ]).pipe(
       take(1),
