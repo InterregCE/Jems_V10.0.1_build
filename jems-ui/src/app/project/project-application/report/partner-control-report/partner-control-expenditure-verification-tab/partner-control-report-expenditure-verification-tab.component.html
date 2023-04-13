@@ -350,7 +350,6 @@
                                         *ngIf="control.get('id').value"
                                         [formControlName]="constants.FORM_CONTROL_NAMES.attachment"
                                         [isReportEditable]="false"
-                                        [canDownload]="canViewSensitiveData(control.get(constants.FORM_CONTROL_NAMES.costGDPR).value, data.isGdprCompliant, data.isMonitorUser)"
                                         (download)="onDownloadFile($event)">
                                 </jems-partner-actions-cell>
                             </mat-cell>
