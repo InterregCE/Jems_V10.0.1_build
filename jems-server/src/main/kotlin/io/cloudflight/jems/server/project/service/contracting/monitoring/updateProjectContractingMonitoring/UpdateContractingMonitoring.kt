@@ -85,12 +85,10 @@ class UpdateContractingMonitoring(
                 orderNrsToBeDeleted = lumpSumsOrderNrToBeDeleted,
                 version = version,
             )
+            updateProjectContractedOnDate(updated, projectId)
 
             if (projectSummary.status.isAlreadyContracted()) {
                 val diff = contractMonitoring.getDiff(old = oldMonitoring)
-                if (diff.containsKey("addSubContractDates")) {
-                    updateProjectContractedOnDate(updated, projectId)
-                }
                 if (diff.isNotEmpty()) {
                     auditPublisher.publishEvent(
                         projectContractingMonitoringChanged(
