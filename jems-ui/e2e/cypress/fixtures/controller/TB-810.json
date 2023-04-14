@@ -13,22 +13,6 @@
     "userRoleId": 2,
     "userStatus": "ACTIVE"
   },
-  "controllerCreatorRole": {
-    "name": "controllerCreatorRole",
-    "permissions": [
-      "ProjectContractingView",
-      "InstitutionsUpdate",
-      "InstitutionsUnlimited",
-      "InstitutionsRetrieve"
-    ]
-  },
-  "controllerCreatorUser": {
-    "email": "randomize",
-    "name": "Controller Creator",
-    "surname": "User",
-    "userRoleId": null,
-    "userStatus": "ACTIVE"
-  },
   "institution": {
     "name": "randomize",
     "description": "Some controller institution description",

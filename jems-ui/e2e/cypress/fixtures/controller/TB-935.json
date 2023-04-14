@@ -13,23 +13,5 @@
         "accessLevel": "edit"
       }
     ]
-  },
-  "controllerRole": {
-    "name": "controllerRole",
-    "permissions": [
-      "ProjectContractingView",
-      "InstitutionsUpdate",
-      "InstitutionsUnlimited",
-      "InstitutionsRetrieve",
-      "InstitutionsAssignmentUpdate",
-      "InstitutionsAssignmentRetrieve"
-    ]
-  },
-  "controllerUser": {
-    "email": "randomize",
-    "name": "Controller User",
-    "surname": "User",
-    "userRoleId": null,
-    "userStatus": "ACTIVE"
   }
 }
