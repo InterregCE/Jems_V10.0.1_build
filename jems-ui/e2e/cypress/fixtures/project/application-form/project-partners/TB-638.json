@@ -5,8 +5,11 @@
     "partnerId": 1,
     "address": {
       "country": "Magyarország",
+      "countryCode": "HU",
       "nutsRegion2": "Észak-Alföld",
+      "nutsRegion2Code": "HU32",
       "nutsRegion3": "Jász-Nagykun-Szolnok",
+      "nutsRegion3Code": "HU322",
       "street": "Organisation street",
       "houseNumber": "13",
       "postalCode": "1010",
