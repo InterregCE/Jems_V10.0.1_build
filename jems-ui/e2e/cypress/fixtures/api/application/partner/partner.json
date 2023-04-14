@@ -38,8 +38,11 @@
     {
       "type": "Organization",
       "country": "France (FR)",
+      "countryCode": "FR",
       "nutsRegion2": "Rhône-Alpes (FRK2)",
+      "nutsRegion2Code": "FRK2",
       "nutsRegion3": "Savoie (FRK27)",
+      "nutsRegion3Code": "FRK27",
       "street": "Partnerstreet",
       "houseNumber": "2",
       "postalCode": "1020",

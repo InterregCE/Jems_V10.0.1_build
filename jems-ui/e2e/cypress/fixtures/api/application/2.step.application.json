@@ -85,8 +85,11 @@
           {
             "type": "Organization",
             "country": "Österreich (AT)",
+            "countryCode": "AT",
             "nutsRegion2": "Wien (AT13)",
+            "nutsRegion2Code": "AT13",
             "nutsRegion3": "Wien (AT130)",
+            "nutsRegion3Code": "AT130",
             "street": "Partnerstreet",
             "houseNumber": "2",
             "postalCode": "1020",
@@ -600,8 +603,11 @@
           "nameInEnglish": "API generated associated organisation name in english",
           "address": {
             "country": "Egypt (EG)",
+            "countryCode": "EG",
             "nutsRegion2": "Alexandria (EG01)",
+            "nutsRegion2Code": "EG01",
             "nutsRegion3": "Alexandria (EG010)",
+            "nutsRegion3Code": "EG010",
             "street": "Egyptstreet",
             "houseNumber": "13",
             "postalCode": "109099",

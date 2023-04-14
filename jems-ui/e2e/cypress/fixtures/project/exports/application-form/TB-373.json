@@ -1009,8 +1009,11 @@
           {
             "type": "Organization",
             "country": "Åland Islands (AX)",
+            "countryCode": "AX",
             "nutsRegion2": "Åland Islands (AX00)",
+            "nutsRegion2Code": "AX00",
             "nutsRegion3": "Åland Islands (AX000)",
+            "nutsRegion3Code": "AX000",
             "street": "Street",
             "houseNumber": "99",
             "postalCode": "9090",
@@ -1020,8 +1023,11 @@
           {
             "type": "Department",
             "country": "Åland Islands (AX)",
+            "countryCode": "AX",
             "nutsRegion2": "Åland Islands (AX00)",
+            "nutsRegion2Code": "AX00",
             "nutsRegion3": "Åland Islands (AX000)",
+            "nutsRegion3Code": "AX000",
             "street": "Secondstreet",
             "houseNumber": "88",
             "postalCode": "8080",
