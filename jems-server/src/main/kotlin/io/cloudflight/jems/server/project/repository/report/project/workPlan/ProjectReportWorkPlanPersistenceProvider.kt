@@ -4,6 +4,8 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.entity.inLang
 import io.cloudflight.jems.server.common.entity.updateWith
+import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
+import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.project.entity.report.project.workPlan.ProjectReportWorkPackageActivityDeliverableTranslEntity
 import io.cloudflight.jems.server.project.entity.report.project.workPlan.ProjectReportWorkPackageActivityTranslEntity
 import io.cloudflight.jems.server.project.entity.report.project.workPlan.ProjectReportWorkPackageOutputTranslEntity
@@ -27,6 +29,7 @@ class ProjectReportWorkPlanPersistenceProvider(
     private val workPlanActivityDeliverableRepository: ProjectReportWorkPackageActivityDeliverableRepository,
     private val workPlanOutputRepository: ProjectReportWorkPackageOutputRepository,
     private val projectPersistence: ProjectPersistence,
+    private val fileService: JemsProjectFileService
 ) : ProjectReportWorkPlanPersistence {
 
     @Transactional(readOnly = true)
@@ -149,7 +152,26 @@ class ProjectReportWorkPlanPersistenceProvider(
             }
 
     @Transactional
-    override fun deleteWorkPlan(projectId: Long, reportId: Long) =
-        workPlanRepository.deleteAllByReportEntityProjectIdAndReportEntityId(projectId, reportId = reportId)
+    override fun deleteWorkPlan(projectId: Long, reportId: Long) {
+        val reportEntity = reportRepository.getByIdAndProjectId(id = reportId, projectId = projectId)
+
+        workPlanActivityRepository
+            .findAllByWorkPackageEntityReportEntityOrderByNumber(reportEntity)
+            .forEach { it.attachment.deleteIfPresent() }
+        workPlanActivityDeliverableRepository
+            .findAllByActivityEntityWorkPackageEntityReportEntityOrderByNumber(reportEntity)
+            .forEach { it.attachment.deleteIfPresent() }
+        workPlanOutputRepository
+            .findAllByWorkPackageEntityReportEntityOrderByNumber(reportEntity)
+            .forEach { it.attachment.deleteIfPresent() }
+
+        workPlanRepository.deleteAllByReportEntity(reportEntity)
+    }
+
+    private fun JemsFileMetadataEntity?.deleteIfPresent() {
+        if (this != null) {
+            fileService.delete(this)
+        }
+    }
 
 }

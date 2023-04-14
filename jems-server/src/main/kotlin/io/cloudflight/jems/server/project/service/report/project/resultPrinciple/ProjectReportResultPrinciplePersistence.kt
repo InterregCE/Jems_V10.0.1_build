@@ -16,4 +16,5 @@ interface ProjectReportResultPrinciplePersistence {
 
     fun getResultCumulative(reportIds: Set<Long>): Map<Int, BigDecimal>
 
+    fun deleteProjectResultPrinciples(reportId: Long)
 }

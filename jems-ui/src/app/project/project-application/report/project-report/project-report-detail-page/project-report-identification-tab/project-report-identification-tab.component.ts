@@ -25,6 +25,7 @@ import {
   ContractReportingStore
 } from '@project/project-application/contracting/contract-reporting/contract-reporting.store';
 import {MatSelectChange} from '@angular/material/select/select';
+import {Alert} from '@common/components/forms/alert';
 
 @Component({
   selector: 'jems-project-report-identification-tab',
@@ -36,7 +37,8 @@ import {MatSelectChange} from '@angular/material/select/select';
 export class ProjectReportIdentificationTabComponent {
   APPLICATION_FORM = APPLICATION_FORM;
   ProjectReportDTO = ProjectReportDTO;
-
+  Alert = Alert;
+  TypeEnum = ProjectContractingReportingScheduleDTO.TypeEnum;
   public reportId = this.router.getParameter(this.activatedRoute, 'reportId');
 
   data$: Observable<{
@@ -69,6 +71,7 @@ export class ProjectReportIdentificationTabComponent {
   selectedPeriod: ProjectPeriodDTO | undefined = undefined;
   availablePeriods: ProjectPeriodDTO[] = [];
   availableDeadlines: ProjectContractingReportingScheduleDTO[] = [];
+  displayReportTypeWarningMessage = false;
 
   constructor(public pageStore: ProjectReportDetailPageStore,
               public formService: FormService,
@@ -122,6 +125,7 @@ export class ProjectReportIdentificationTabComponent {
       this.form.get('periodNumber')?.disable();
       this.form.get('reportingDate')?.disable();
     }
+    this.displayReportTypeWarningMessage = false;
   }
 
   saveBaseInformation(): void {
@@ -167,6 +171,14 @@ export class ProjectReportIdentificationTabComponent {
 
   deadlineChanged(change: MatSelectChange) {
     const selectedDeadline = this.availableDeadlines.find(d => d.id === change.value as number);
+    if (this.reportId && ((selectedDeadline?.type === this.TypeEnum.Finance && this.selectedType != this.TypeEnum.Finance) ||
+      (selectedDeadline?.type === this.TypeEnum.Content && this.selectedType != this.TypeEnum.Content))
+    ) {
+      this.displayReportTypeWarningMessage = true;
+    } else {
+      this.displayReportTypeWarningMessage = false;
+    }
+
     this.form.patchValue({type: selectedDeadline?.type});
     this.form.patchValue({periodNumber: selectedDeadline?.periodNumber});
     this.form.patchValue({reportingDate: selectedDeadline?.date});

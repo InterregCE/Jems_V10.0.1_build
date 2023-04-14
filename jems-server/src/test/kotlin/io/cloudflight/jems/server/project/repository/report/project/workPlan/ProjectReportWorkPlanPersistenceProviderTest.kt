@@ -5,6 +5,7 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
+import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.programme.entity.indicator.OutputIndicatorEntity
 import io.cloudflight.jems.server.programme.entity.indicator.OutputIndicatorTranslEntity
@@ -301,6 +302,9 @@ class ProjectReportWorkPlanPersistenceProviderTest : UnitTest() {
     @MockK
     lateinit var projectPersistence: ProjectPersistence
 
+    @MockK
+    lateinit var fileService: JemsProjectFileService
+
     @InjectMockKs
     lateinit var persistence: ProjectReportWorkPlanPersistenceProvider
 
@@ -313,6 +317,7 @@ class ProjectReportWorkPlanPersistenceProviderTest : UnitTest() {
             workPlanActivityDeliverableRepository,
             workPlanOutputRepository,
             projectPersistence,
+            fileService
         )
     }
 

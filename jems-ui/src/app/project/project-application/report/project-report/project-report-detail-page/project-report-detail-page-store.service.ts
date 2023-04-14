@@ -66,10 +66,7 @@ export class ProjectReportDetailPageStore {
       tap(report => Log.info('Fetched the project report:', this, report)),
     );
 
-    return merge(initialReport$, this.updatedReport$)
-      .pipe(
-        shareReplay(1)
-      );
+    return merge(initialReport$, this.updatedReport$);
   }
   public saveIdentification(identification: ProjectReportUpdateDTO): Observable<ProjectReportDTO> {
     return combineLatest([

@@ -6,12 +6,16 @@ import io.cloudflight.jems.server.project.service.contracting.model.reporting.Co
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ProjectContractingReportingSchedule
 import io.cloudflight.jems.server.project.service.contracting.reporting.ContractingReportingPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReport
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportUpdate
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportDeadline
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -38,12 +42,15 @@ internal class UpdateProjectReportTest : UnitTest() {
         private fun deadline(id: Long): ProjectContractingReportingSchedule {
             val deadline = mockk<ProjectContractingReportingSchedule>()
             every { deadline.id } returns id
+            every { deadline.type } returns ContractingDeadlineType.Finance
             return deadline
         }
 
         private fun report(version: String): ProjectReportModel {
             val report = mockk<ProjectReportModel>()
             every { report.linkedFormVersion } returns version
+            every { report.deadlineId } returns null
+            every { report.type } returns ContractingDeadlineType.Both
             return report
         }
 
@@ -100,6 +107,9 @@ internal class UpdateProjectReportTest : UnitTest() {
     private lateinit var projectPersistence: ProjectPersistence
     @MockK
     private lateinit var deadlinePersistence: ContractingReportingPersistence
+    @MockK
+    private lateinit var certificatePersistence: ProjectReportCertificatePersistence
+
 
     @InjectMockKs
     lateinit var interactor: UpdateProjectReport
@@ -123,6 +133,7 @@ internal class UpdateProjectReportTest : UnitTest() {
         every { reportPersistence.updateReport(projectId, reportId = 87L,
             startDate = capture(slotStartDate), endDate = capture(slotEndDate), capture(slotDeadline))
         } returns mockedResult
+        every { certificatePersistence.listCertificatesOfProjectReport(87L) } returns listOf()
 
         val data = ProjectReportUpdate(
             startDate = MONTH_AGO,
@@ -156,6 +167,23 @@ internal class UpdateProjectReportTest : UnitTest() {
         every { reportPersistence.updateReport(projectId, reportId = 82L,
             startDate = capture(slotStartDate), endDate = capture(slotEndDate), capture(slotDeadline))
         } returns mockedResult
+        every { certificatePersistence.listCertificatesOfProjectReport(82L) } returns listOf(
+            ProjectPartnerReportSubmissionSummary(
+                id = 499L,
+                reportNumber = 4,
+                status = ReportStatus.Certified,
+                version = "v",
+                firstSubmission = null,
+                controlEnd = null,
+                createdAt = ZonedDateTime.now(),
+                projectIdentifier = "projectIdentifier",
+                projectAcronym = "projectAcronym",
+                partnerNumber = 4,
+                partnerRole = ProjectPartnerRole.PARTNER,
+                partnerId = 72L
+            )
+        )
+        every { certificatePersistence.deselectCertificate(82L, 499L) } returnsArgument 0
 
         val data = ProjectReportUpdate(
             startDate = MONTH_AGO,

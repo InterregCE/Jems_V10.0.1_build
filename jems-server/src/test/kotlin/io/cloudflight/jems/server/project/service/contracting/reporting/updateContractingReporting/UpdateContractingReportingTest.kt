@@ -19,6 +19,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectVersion
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -74,6 +75,8 @@ class UpdateContractingReportingTest : UnitTest() {
     lateinit var projectReportPersistence: ProjectReportPersistence
     @MockK
     lateinit var validator: ContractingValidator
+    @MockK
+    lateinit var certificatePersistence : ProjectReportCertificatePersistence
 
     @InjectMockKs
     lateinit var interactor: UpdateContractingReporting
@@ -131,6 +134,60 @@ class UpdateContractingReportingTest : UnitTest() {
         )
         assertThat(interactor.updateReportingSchedule(projectId, reporting)).containsExactlyElementsOf(reporting)
         verify(exactly = 2) { generalValidator.maxLength(any<String>(), 2000, any()) }
+    }
+
+    @Test
+    fun `updateReportingSchedule - certificates cleared for existing finance deadline`() {
+        val projectId = 303L
+        val version = "V_1.4"
+        every { validator.validateSectionLock(ProjectContractingSection.ProjectReportingSchedule, projectId) } returns Unit
+        every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
+        every { contractingReportingPersistence.getContractingReporting(projectId) } returns listOf(
+            ProjectContractingReportingSchedule(
+                id = 99L,
+                type = ContractingDeadlineType.Finance,
+                periodNumber = 1,
+                date = LocalDate.of(2022, 8, 9),
+                comment = "",
+                number = 1,
+                linkedSubmittedProjectReportNumbers = setOf(),
+                linkedDraftProjectReportNumbers = setOf(1)
+            )
+        )
+
+        val project = mockk<ProjectFull>()
+        every { project.projectStatus.status } returns ApplicationStatus.APPROVED
+        every { project.periods } returns listOf(
+            ProjectPeriod(number = 1, start = 1, end = 1),
+            ProjectPeriod(number = 2, start = 2, end = 2),
+            ProjectPeriod(number = 3, start = 3, end = 3),
+        )
+        every { projectPersistence.getProject(projectId, version) } returns project
+
+        val monitoring = mockk<ProjectContractingMonitoring>()
+        every { monitoring.startDate } returns LocalDate.of(2022, 1, 31)
+        every { contractingMonitoringPersistence.getContractingMonitoring(projectId) } returns monitoring
+        every { contractingReportingPersistence.getReportIdsByDeadlineId(projectId, 99L) } returns listOf(101L)
+        every { contractingReportingPersistence.updateContractingReporting(projectId, any()) } returnsArgument 1
+        every { projectReportPersistence.getDeadlinesWithLinkedReportStatus(projectId) } returns mapOf()
+        every { certificatePersistence.deselectAllCertificatesForDeadlines(setOf(99L)) } returns Unit
+
+        val deadlines = listOf(
+            ProjectContractingReportingSchedule(
+                id = 99L,
+                type = ContractingDeadlineType.Content,
+                periodNumber = 1,
+                date = LocalDate.of(2022, 8, 9),
+                comment = "",
+                number = 1,
+                linkedSubmittedProjectReportNumbers = setOf(),
+                linkedDraftProjectReportNumbers = setOf(1)
+            )
+        )
+
+        assertThat(interactor.updateReportingSchedule(projectId, deadlines)).containsExactlyElementsOf(deadlines)
+        verify(exactly = 1) { contractingReportingPersistence.updateContractingReporting(any(), any()) }
+        verify(exactly = 1) { certificatePersistence.deselectAllCertificatesForDeadlines(any()) }
     }
 
     @ParameterizedTest(name = "updateReportingSchedule - wrong status {0}")

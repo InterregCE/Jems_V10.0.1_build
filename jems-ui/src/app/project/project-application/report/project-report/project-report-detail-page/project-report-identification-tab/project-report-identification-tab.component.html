@@ -143,6 +143,10 @@
                 </mat-error>
             </mat-form-field>
         </div>
+        <jems-alert [show]="displayReportTypeWarningMessage"
+                    [type]="Alert.WARNING" [closable]="false">
+            <span>{{'project.application.project.report.identification.report.type.update.warning.message' | translate}}</span>
+        </jems-alert>
     </form>
 </jems-form>
 

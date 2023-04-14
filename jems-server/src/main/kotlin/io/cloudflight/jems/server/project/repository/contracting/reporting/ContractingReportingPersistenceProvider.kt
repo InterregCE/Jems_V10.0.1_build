@@ -71,6 +71,10 @@ class ContractingReportingPersistenceProvider(
             newMaxDuration).map { s -> s.id }
     }
 
+    @Transactional(readOnly = true)
+    override fun getReportIdsByDeadlineId(projectId: Long, deadlineId: Long): List<Long> =
+        projectReportRepository.findAllByProjectIdAndDeadlineId(projectId, deadlineId).map { it.id }
+
     private fun Map<Long, ProjectContractingReportingEntity>.getById(id: Long): Optional<ProjectContractingReportingEntity> {
         val value = this[id]
         return if (value != null)

@@ -5,5 +5,7 @@ enum class ContractingDeadlineType {
     Finance,
     Both;
 
-    fun hasWorkPlan() = this == Content || this == Both
+    fun hasContent() = this == Content || this == Both
+    fun hasFinance() = this == Finance || this == Both
+
 }

@@ -29,6 +29,13 @@ class ProjectReportCertificatePersistenceProvider(
     }
 
     @Transactional
+    override fun deselectAllCertificatesForDeadlines(deadlineIds: Set<Long>) {
+        partnerReportRepository.findAllByProjectReportDeadlineIdIn(deadlineIds)
+            .forEach { it.projectReport = null }
+    }
+
+
+    @Transactional
     override fun selectCertificate(projectReportId: Long, certificateId: Long) {
         val partnerReport = partnerReportRepository.getById(certificateId)
         if (partnerReport.projectReport == null) {
