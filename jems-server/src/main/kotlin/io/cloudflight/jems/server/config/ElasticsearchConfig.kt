@@ -7,6 +7,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import org.apache.http.HttpHost
+import org.apache.http.auth.AuthScope
+import org.apache.http.auth.UsernamePasswordCredentials
+import org.apache.http.impl.client.BasicCredentialsProvider
 import org.elasticsearch.client.RestClient
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.ConfigurationProperties
@@ -28,17 +31,20 @@ const val AUDIT_ENABLED = "enabled"
 class ElasticsearchConfig {
 
     lateinit var urlAndPort: String
+    lateinit var password: String
 
     @Bean
-    fun client(): ElasticsearchClient =
-        ElasticsearchClient(
+    fun client(): ElasticsearchClient {
+        val credentials = BasicCredentialsProvider()
+        credentials.setCredentials(AuthScope.ANY, UsernamePasswordCredentials("elastic", password))
+        return ElasticsearchClient(
             RestClientTransport(
                 RestClient.builder(HttpHost.create(urlAndPort))
-//                    .setHttpClientConfigCallback { hc -> hc
-//                        .setSSLContext()
-//                        .setDefaultCredentialsProvider()
-//                    }.build(),
-                    .build(),
+                    .setHttpClientConfigCallback { hc -> hc
+                        // to configure with CA certificate (auto-generated on Elastic 8)
+                        //.setSSLContext(TransportUtils.sslContextFromCaFingerprint("fingerprint"))
+                        .setDefaultCredentialsProvider(credentials)
+                    }.build(),
                 JacksonJsonpMapper(
                     ObjectMapper()
                         .registerModule(JavaTimeModule())
@@ -46,4 +52,5 @@ class ElasticsearchConfig {
                 )
             )
         )
+    }
 }

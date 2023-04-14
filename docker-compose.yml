@@ -34,13 +34,17 @@ services:
       retries: 3
 
   audit-database:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.16.3
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.9
     container_name: audit-database
+#    volumes:
+#      - [YOUR/PATH/HERE]:/usr/share/elasticsearch/data
     ports:
       - '9200:9200'
     environment:
       - discovery.type=single-node
       - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+      - xpack.security.enabled=true
+      - "ELASTIC_PASSWORD=Elastic@2020"
 
 #
 #  Optional: if you need, you can create mailhog container to test sending mail notifications:
@@ -57,7 +61,7 @@ services:
 #  Optional: if you need, you can create kibana container to analyze all ElasticSearch data:
 #
 #  audit-analyzer:
-#    image: docker.elastic.co/kibana/kibana:7.16.3
+#    image: docker.elastic.co/kibana/kibana:7.17.9
 #    container_name: audit-analyzer
 #    ports:
 #      - '5601:5601'
@@ -65,3 +69,5 @@ services:
 #      - audit-database
 #    environment:
 #      ELASTICSEARCH_HOSTS: 'http://audit-database:9200'
+#      ELASTICSEARCH_USERNAME: 'elastic'
+#      ELASTICSEARCH_PASSWORD: 'Elastic@2020'

@@ -46,6 +46,7 @@ spring:
 audit-service:
   enabled: "${AUDIT_ENABLED:true}"
   url-and-port: "${AUDIT_ELASTICSEARCH_URL_AND_PORT:localhost:9200}"
+  password: "${AUDIT_ELASTICSEARCH_PASSWORD:Elastic@2020}"
 
 minio-storage:
   endpoint: "${MINIO_URL_AND_PORT:http://localhost:9000}"

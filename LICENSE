@@ -15,7 +15,7 @@ Some parts of the software are not property of the City of Vienna. The excluded 
 · jackson-module-kotlin (Apache 2.0) - version 2.13.2
 · io.springfox (Apache 2.0) - version 2.9.2/3.0.0
 · io.swagger (Apache 2.0) - version 1.6.2
-· ElasticSearch (Elastic License 2.0 / SSPL) - version 7.16.3
+· ElasticSearch (Elastic License 2.0 / SSPL) - version 7.17.9
 · doyaaaaaken/kotlin-csv (Apache 2.0) - version 0.15.0
 · Mapstruct (Apache 2.0) - version 1.4.2.Final
 · SimpleCaptcha (BSD) - version 1.3.0
