@@ -7,15 +7,14 @@ import {ContractInfoUpdateDTO, ProjectContractInfoDTO, ProjectContractsService, 
 import {catchError, filter, map, switchMap, take, tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {Alert} from '@common/components/forms/alert';
-import {
-  ProjectStore
-} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {PermissionService} from '../../../../security/permissions/permission.service';
 import {ContractingSection} from '@project/project-application/contracting/contracting-section';
 import {ContractingSectionLockStore} from '@project/project-application/contracting/contracting-section-lock.store';
 import {Forms} from '@common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {APIError} from '@common/models/APIError';
+import {TranslateService} from '@ngx-translate/core';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
 @UntilDestroy()
@@ -36,7 +35,7 @@ export class ContractingContractComponent implements OnInit {
 
   contractInfoForm: FormGroup = this.formBuilder.group({
       website: ['', Validators.maxLength(250)],
-      partnershipAgreementDate:['']
+      partnershipAgreementDate: ['']
     }
   );
 
@@ -53,17 +52,18 @@ export class ContractingContractComponent implements OnInit {
     private permissionService: PermissionService,
     private contractingSectionLockStore: ContractingSectionLockStore,
     private dialog: MatDialog,
+    private translateService: TranslateService,
   ) {
     this.projectId = this.activatedRoute.snapshot.params.projectId;
     this.contractingSectionLockStore.lockedSections$.pipe(
-        tap(lockedSections => this.lockedSubject$.next(lockedSections.includes(ContractingSection.ContractsAgreements.toString()))),
-        untilDestroyed(this)
+      tap(lockedSections => this.lockedSubject$.next(lockedSections.includes(ContractingSection.ContractsAgreements.toString()))),
+      untilDestroyed(this)
     ).subscribe();
 
     this.isLocked$ = this.lockedSubject$.asObservable();
     this.canEdit$ = this.canEdit();
     this.projectContractInfo$ = contractInfoService.getProjectContractInfo(this.projectId).pipe(
-        tap(data => this.resetForm(data))
+      tap(data => this.resetForm(data))
     );
   }
 
@@ -90,59 +90,61 @@ export class ContractingContractComponent implements OnInit {
     this.contractInfoForm.controls.partnershipAgreementDate.setValue(projectManagers.partnershipAgreementDate);
 
     combineLatest([
-        this.canEdit$,
-        this.isLocked$
+      this.canEdit$,
+      this.isLocked$
     ]).pipe(
-        tap(([canEdit, isLocked]) => this.formService.setEditable(canEdit && !isLocked)),
-        untilDestroyed(this)
+      tap(([canEdit, isLocked]) => this.formService.setEditable(canEdit && !isLocked)),
+      untilDestroyed(this)
     ).subscribe();
   }
 
-  canEdit(): Observable<boolean>{
+  canEdit(): Observable<boolean> {
     return combineLatest([
       this.projectStore.userIsEditOrManageCollaborator$,
       this.permissionService.hasPermission(PermissionsEnum.ProjectContractsEdit),
     ]).pipe(
-        map(([userIsProjectOwnerOrEditCollaborator, hasEditPermission]) =>
-            userIsProjectOwnerOrEditCollaborator || hasEditPermission
-        )
+      map(([userIsProjectOwnerOrEditCollaborator, hasEditPermission]) =>
+        userIsProjectOwnerOrEditCollaborator || hasEditPermission
+      )
     );
   }
 
   lock(event: any) {
+    const sectionNameKey = `project.application.contract.section.name.${ContractingSection.ContractsAgreements.toString()}`;
     Forms.confirm(
-        this.dialog,
-        {
-          title: 'project.application.contract.section.lock.dialog.header',
-          message: {
-            i18nKey: 'project.application.contract.section.lock.dialog.message',
-            i18nArguments: {name: ContractingSection.ContractsAgreements.toString()}
-          }
-        }).pipe(
-            filter(confirm => confirm),
-            switchMap(() => this.contractingSectionLockStore.lockSection(ContractingSection.ContractsAgreements)),
-            tap( locked => this.lockedSubject$.next(true)),
-            catchError((error) => this.showErrorMessage(error.error)),
-            untilDestroyed(this)
+      this.dialog,
+      {
+        title: 'project.application.contract.section.lock.dialog.header',
+        message: {
+          i18nKey: 'project.application.contract.section.lock.dialog.message',
+          i18nArguments: {name: this.translateService.instant(sectionNameKey)}
+        }
+      }).pipe(
+      filter(confirm => confirm),
+      switchMap(() => this.contractingSectionLockStore.lockSection(ContractingSection.ContractsAgreements)),
+      tap(locked => this.lockedSubject$.next(true)),
+      catchError((error) => this.showErrorMessage(error.error)),
+      untilDestroyed(this)
     ).subscribe();
 
   }
 
   unlock(event: any) {
+    const sectionNameKey = `project.application.contract.section.name.${ContractingSection.ContractsAgreements.toString()}`;
     Forms.confirm(
-        this.dialog,
-        {
-          title: 'project.application.contract.section.unlock.dialog.header',
-          message: {
-            i18nKey: 'project.application.contract.section.unlock.dialog.message',
-            i18nArguments: {name: ContractingSection.ContractsAgreements.toString()}
-          }
-        }).pipe(
-        filter(confirm => confirm),
-        switchMap(() => this.contractingSectionLockStore.unlockSection(ContractingSection.ContractsAgreements)),
-        tap( locked => this.lockedSubject$.next(true)),
-        catchError((error) => this.showErrorMessage(error.error)),
-        untilDestroyed(this)
+      this.dialog,
+      {
+        title: 'project.application.contract.section.unlock.dialog.header',
+        message: {
+          i18nKey: 'project.application.contract.section.unlock.dialog.message',
+          i18nArguments: {name: this.translateService.instant(sectionNameKey)}
+        }
+      }).pipe(
+      filter(confirm => confirm),
+      switchMap(() => this.contractingSectionLockStore.unlockSection(ContractingSection.ContractsAgreements)),
+      tap(locked => this.lockedSubject$.next(true)),
+      catchError((error) => this.showErrorMessage(error.error)),
+      untilDestroyed(this)
     ).subscribe();
 
   }

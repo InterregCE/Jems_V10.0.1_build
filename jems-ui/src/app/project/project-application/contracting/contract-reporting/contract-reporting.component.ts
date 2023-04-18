@@ -5,9 +5,7 @@ import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@a
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {catchError, filter, map, startWith, switchMap, take, tap} from 'rxjs/operators';
 import {ProjectContractingReportingScheduleDTO, ProjectPeriodForMonitoringDTO} from '@cat/api';
-import {
-  ContractReportingStore
-} from '@project/project-application/contracting/contract-reporting/contract-reporting.store';
+import {ContractReportingStore} from '@project/project-application/contracting/contract-reporting/contract-reporting.store';
 import {MatDialog} from '@angular/material/dialog';
 import {
   ContractMonitoringExtensionStore
@@ -17,8 +15,8 @@ import {ContractingSectionLockStore} from '@project/project-application/contract
 import {ContractingSection} from '@project/project-application/contracting/contracting-section';
 import {Forms} from '@common/utils/forms';
 import {APIError} from '@common/models/APIError';
-import {TranslateByInputLanguagePipe} from '@common/pipe/translate-by-input-language.pipe';
 import {CustomTranslatePipe} from '@common/pipe/custom-translate-pipe';
+import {TranslateService} from '@ngx-translate/core';
 
 @UntilDestroy()
 @Component({
@@ -54,14 +52,15 @@ export class ContractReportingComponent implements OnInit {
               public formService: FormService,
               private dialog: MatDialog,
               private contractingSectionLockStore: ContractingSectionLockStore,
-              private customTranslatePipe: CustomTranslatePipe) {
+              private customTranslatePipe: CustomTranslatePipe,
+              private translateService: TranslateService) {
 
   }
 
   ngOnInit(): void {
     this.contractingSectionLockStore.lockedSections$.pipe(
-        tap(lockedSections => this.lockedSubject$.next(lockedSections.includes(ContractingSection.ProjectReportingSchedule.toString()))),
-        untilDestroyed(this)
+      tap(lockedSections => this.lockedSubject$.next(lockedSections.includes(ContractingSection.ProjectReportingSchedule.toString()))),
+      untilDestroyed(this)
     ).subscribe();
 
     this.isSectionLocked$ = this.lockedSubject$.asObservable();
@@ -75,23 +74,23 @@ export class ContractReportingComponent implements OnInit {
       this.contractReportingStore.contractingMonitoringStartDate$,
       this.contractReportingStore.userCanViewTimeplan$
     ])
-        .pipe(
-            map(([availablePeriods, contractReportingDeadlines, userCanViewDeadlines, userCanEditDeadlines, isLocked,contractingMonitoringStartDate, userCanViewTimeplan]:
-            [ProjectPeriodForMonitoringDTO[], ProjectContractingReportingScheduleDTO[], boolean, boolean, boolean, string, boolean]) => ({
-                  periods: availablePeriods,
-                  reportingDeadlines: contractReportingDeadlines,
-                  canView: userCanViewDeadlines,
-                  canEdit: userCanEditDeadlines,
-                  isSectionLocked: isLocked,
-                  projectStartDate: contractingMonitoringStartDate,
-                  projectEndDate: this.projectEndDateString(availablePeriods),
-                  projectDuration: this.projectDurationString(availablePeriods),
-                  userCanViewTimeplan
-                })
-            ),
-            tap(data => this.initForm(data.canEdit, data.isSectionLocked)),
-            tap(data => this.resetForm(data.reportingDeadlines, data.canEdit, data.isSectionLocked, data.periods)),
-        );
+      .pipe(
+        map(([availablePeriods, contractReportingDeadlines, userCanViewDeadlines, userCanEditDeadlines, isLocked, contractingMonitoringStartDate, userCanViewTimeplan]:
+               [ProjectPeriodForMonitoringDTO[], ProjectContractingReportingScheduleDTO[], boolean, boolean, boolean, string, boolean]) => ({
+            periods: availablePeriods,
+            reportingDeadlines: contractReportingDeadlines,
+            canView: userCanViewDeadlines,
+            canEdit: userCanEditDeadlines,
+            isSectionLocked: isLocked,
+            projectStartDate: contractingMonitoringStartDate,
+            projectEndDate: this.projectEndDateString(availablePeriods),
+            projectDuration: this.projectDurationString(availablePeriods),
+            userCanViewTimeplan
+          })
+        ),
+        tap(data => this.initForm(data.canEdit, data.isSectionLocked)),
+        tap(data => this.resetForm(data.reportingDeadlines, data.canEdit, data.isSectionLocked, data.periods)),
+      );
   }
 
   addDeadlineData(): void {
@@ -150,10 +149,10 @@ export class ContractReportingComponent implements OnInit {
 
   onSubmit() {
     this.contractReportingStore.save(this.convertFormToContractingMonitoringDTOs())
-        .pipe(
-            tap(() => this.formService.setSuccess('project.application.contract.reporting.form.save.successful')),
-            catchError(err => this.formService.setError(err)),
-        ).subscribe();
+      .pipe(
+        tap(() => this.formService.setSuccess('project.application.contract.reporting.form.save.successful')),
+        catchError(err => this.formService.setError(err)),
+      ).subscribe();
   }
 
   delete(index: number): void {
@@ -178,41 +177,43 @@ export class ContractReportingComponent implements OnInit {
 
 
   lock(event: any) {
+    const sectionNameKey = `project.application.contract.section.name.${ContractingSection.ProjectReportingSchedule.toString()}`;
     Forms.confirm(
-        this.dialog,
-        {
-          title: 'project.application.contract.section.lock.dialog.header',
-          message: {
-            i18nKey: 'project.application.contract.section.lock.dialog.message',
-            i18nArguments: {name: ContractingSection.ProjectReportingSchedule.toString()}
-          }
-        }).pipe(
-        take(1),
-        filter(confirm => confirm),
-        switchMap(() => this.contractingSectionLockStore.lockSection(ContractingSection.ProjectReportingSchedule)),
-        tap(locked => this.lockedSubject$.next(true)),
-        catchError((error) => this.showErrorMessage(error.error)),
-        untilDestroyed(this)
+      this.dialog,
+      {
+        title: 'project.application.contract.section.lock.dialog.header',
+        message: {
+          i18nKey: 'project.application.contract.section.lock.dialog.message',
+          i18nArguments: {name: this.translateService.instant(sectionNameKey)}
+        }
+      }).pipe(
+      take(1),
+      filter(confirm => confirm),
+      switchMap(() => this.contractingSectionLockStore.lockSection(ContractingSection.ProjectReportingSchedule)),
+      tap(locked => this.lockedSubject$.next(true)),
+      catchError((error) => this.showErrorMessage(error.error)),
+      untilDestroyed(this)
     ).subscribe();
 
   }
 
   unlock(event: any) {
+    const sectionNameKey = `project.application.contract.section.name.${ContractingSection.ProjectReportingSchedule.toString()}`;
     Forms.confirm(
-        this.dialog,
-        {
-          title: 'project.application.contract.section.unlock.dialog.header',
-          message: {
-            i18nKey: 'project.application.contract.section.unlock.dialog.message',
-            i18nArguments: {name: ContractingSection.ProjectReportingSchedule.toString()}
-          }
-        }).pipe(
-        take(1),
-        filter(confirm => confirm),
-        switchMap(() => this.contractingSectionLockStore.unlockSection(ContractingSection.ProjectReportingSchedule)),
-        tap(unlocked => this.lockedSubject$.next(false)),
-        catchError((error) => this.showErrorMessage(error.error)),
-        untilDestroyed(this)
+      this.dialog,
+      {
+        title: 'project.application.contract.section.unlock.dialog.header',
+        message: {
+          i18nKey: 'project.application.contract.section.unlock.dialog.message',
+          i18nArguments: {name: this.translateService.instant(sectionNameKey)}
+        }
+      }).pipe(
+      take(1),
+      filter(confirm => confirm),
+      switchMap(() => this.contractingSectionLockStore.unlockSection(ContractingSection.ProjectReportingSchedule)),
+      tap(unlocked => this.lockedSubject$.next(false)),
+      catchError((error) => this.showErrorMessage(error.error)),
+      untilDestroyed(this)
     ).subscribe();
   }
 
