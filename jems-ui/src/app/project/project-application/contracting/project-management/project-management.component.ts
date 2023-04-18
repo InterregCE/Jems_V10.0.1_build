@@ -17,6 +17,7 @@ import {Forms} from '@common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {APIError} from '@common/models/APIError';
 import { Alert } from '@common/components/forms/alert';
+import {TranslateService} from '@ngx-translate/core';
 
 @UntilDestroy()
 @Component({
@@ -56,7 +57,8 @@ export class ProjectManagementComponent implements OnInit {
               private projectStore: ProjectStore,
               private permissionService: PermissionService,
               private contractingSectionLockStore: ContractingSectionLockStore,
-              private dialog: MatDialog,) {
+              private dialog: MatDialog,
+              private translateService: TranslateService) {
     this.projectId = this.activatedRoute.snapshot.params.projectId;
     this.projectManagers$ = managementService.getContractingManagement(this.projectId).pipe(
       tap(projectManagers => this.projectManagersContacts = projectManagers),
@@ -106,13 +108,14 @@ export class ProjectManagementComponent implements OnInit {
   }
 
   lock(event: any) {
+    const sectionNameKey = `project.application.contract.section.name.${ContractingSection.ProjectManagers.toString()}`;
     Forms.confirm(
         this.dialog,
         {
           title: 'project.application.contract.section.lock.dialog.header',
           message: {
             i18nKey: 'project.application.contract.section.lock.dialog.message',
-            i18nArguments: {name: ContractingSection.ProjectManagers.toString()}
+            i18nArguments: {name: this.translateService.instant(sectionNameKey)}
           }
         }).pipe(
         filter(confirm => confirm),
@@ -124,13 +127,14 @@ export class ProjectManagementComponent implements OnInit {
   }
 
   unlock(event: any) {
+    const sectionNameKey = `project.application.contract.section.name.${ContractingSection.ProjectManagers.toString()}`;
     Forms.confirm(
         this.dialog,
         {
           title: 'project.application.contract.section.unlock.dialog.header',
           message: {
             i18nKey: 'project.application.contract.section.unlock.dialog.message',
-            i18nArguments: {name: ContractingSection.ProjectManagers.toString()}
+            i18nArguments: {name: this.translateService.instant(sectionNameKey)}
           }
         }).pipe(
         filter(confirm => confirm),
