@@ -105,22 +105,17 @@ class ProjectPartnerReportAuthorization(
         )
 
     fun canEditPartnerControlReportChecklist(partnerId: Long, reportId: Long): Boolean {
-        val report = reportPersistence.getPartnerReportById(partnerId, reportId)
-        val reportIsFinalized = report.status.isFinalized()
-        val userAccessLevelFromInstitution = controllerInstitutionPersistence.getControllerUserAccessLevelForPartner(
-            userId = securityService.getUserIdOrThrow(),
-            partnerId = partnerId,
-        )
         val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
-        val inControlPermissions = userAccessLevelFromInstitution == UserInstitutionAccessLevel.Edit
-        val finalizedPermissions = (userAccessLevelFromInstitution != null)
-                && hasPermission(UserRolePermission.ProjectReportingChecklistAfterControl, projectId)
-
-        return if (reportIsFinalized) {
-            finalizedPermissions
-        } else {
-            inControlPermissions
-        }
+        // monitor users
+        if (hasPermissionForProject(UserRolePermission.ProjectReportingChecklistAfterControl, projectId)
+            && hasPermissionForProject(UserRolePermission.ProjectReportingView, projectId))
+            return true
+        val reportIsFinalized = reportPersistence.getPartnerReportById(partnerId, reportId).status.isFinalized()
+        val controllerLevel = getLevelForUserController(partnerId = partnerId)
+        return if (reportIsFinalized)
+            controllerLevel.hasView() && hasNonProjectAuthority(UserRolePermission.ProjectReportingChecklistAfterControl)
+        else
+            controllerLevel.hasEdit()
     }
 
 
@@ -165,5 +160,8 @@ class ProjectPartnerReportAuthorization(
             partnerPersistence.getProjectIdForPartnerId(partnerId),
         )
     }
+
+    private fun Optional<UserInstitutionAccessLevel>.hasView() = isPresent
+    private fun Optional<UserInstitutionAccessLevel>.hasEdit() = isPresent && get() == UserInstitutionAccessLevel.Edit
 
 }
