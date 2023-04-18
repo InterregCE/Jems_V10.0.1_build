@@ -1,20 +1,12 @@
 import {Injectable} from '@angular/core';
-import {
-  ProjectReportDTO,
-  ProjectReportService,
-  ProjectReportSummaryDTO, ProjectReportUpdateDTO
-} from '@cat/api';
+import {PreConditionCheckResultDTO, ProjectReportDTO, ProjectReportService, ProjectReportSummaryDTO, ProjectReportUpdateDTO} from '@cat/api';
 import {combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
-import {catchError, map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
+import {catchError, map, startWith, switchMap, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {Log} from '@common/utils/log';
 import {ProjectPaths} from '@project/common/project-util';
-import {
-  ProjectStore
-} from '@project/project-application/containers/project-application-detail/services/project-store.service';
-import {
-  ProjectReportPageStore
-} from '@project/project-application/report/project-report/project-report-page-store.service';
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectReportPageStore} from '@project/project-application/report/project-report/project-report-page-store.service';
 
 @Injectable({providedIn: 'root'})
 export class ProjectReportDetailPageStore {
@@ -97,8 +89,15 @@ export class ProjectReportDetailPageStore {
       );
   }
 
-  submitReport(partnerId: number, reportId: number): Observable<ProjectReportSummaryDTO.StatusEnum> {
-    return this.projectReportService.submitProjectReport(partnerId, reportId)
+  runPreCheck(partnerId: number, reportId: number): Observable<PreConditionCheckResultDTO> {
+    return this.projectReportService.runPreCheck(partnerId, reportId)
+      .pipe(
+        tap(status => Log.info('Called pre-submission check on report', reportId, status))
+      );
+  }
+
+  submitReport(projectId: number, reportId: number): Observable<ProjectReportSummaryDTO.StatusEnum> {
+    return this.projectReportService.submitProjectReport(projectId, reportId)
       .pipe(
         map(status => status as ProjectReportSummaryDTO.StatusEnum),
         tap(status => this.updatedReportStatus$.next(status)),

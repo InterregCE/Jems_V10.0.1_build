@@ -14,7 +14,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.financial
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumCurrentWithReIncluded
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.unitCost.ExpenditureUnitCostCurrentWithReIncluded
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
-import io.cloudflight.jems.server.project.service.report.partner.base.runPreSubmissionCheck.RunPreSubmissionCheckService
+import io.cloudflight.jems.server.project.service.report.partner.base.runPartnerReportPreSubmissionCheck.RunPartnerReportPreSubmissionCheckService
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectPartnerReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partner.contribution.extractOverview
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.ProjectPartnerReportExpenditureVerificationPersistence
@@ -43,7 +43,7 @@ import java.time.ZonedDateTime
 @Service
 class SubmitProjectPartnerReport(
     private val reportPersistence: ProjectPartnerReportPersistence,
-    private val preSubmissionCheck: RunPreSubmissionCheckService,
+    private val preSubmissionCheck: RunPartnerReportPreSubmissionCheckService,
     private val reportExpenditurePersistence: ProjectPartnerReportExpenditurePersistence,
     private val currencyPersistence: CurrencyPersistence,
     private val partnerPersistence: PartnerPersistence,

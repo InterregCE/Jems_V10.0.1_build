@@ -27,4 +27,6 @@ interface ProjectReportRepository : JpaRepository<ProjectReportEntity, Long> {
     fun findAllByProjectIdAndDeadlineId(projectId: Long, deadlineId: Long): List<ProjectReportEntity>
 
     fun findAllByProjectIdAndNumberGreaterThan(projectId: Long, number: Number): List<ProjectReportEntity>
+
+    fun existsByProjectIdAndId(projectId: Long, id: Long): Boolean
 }

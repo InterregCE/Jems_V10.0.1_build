@@ -31,7 +31,7 @@ class GetProjectReportIdentification(
         }
     }
 
-    private fun getProjectReportSpendingProfiles(projectId: Long, reportId: Long): List<ProjectReportSpendingProfile> {
+    fun getProjectReportSpendingProfiles(projectId: Long, reportId: Long): List<ProjectReportSpendingProfile> {
         val isClosed = projectReportPersistence.getReportById(projectId, reportId).status.isClosed()
         val reportedValues: Map<Long, ProjectReportSpendingProfileReportedValues> = projectReportIdentificationPersistence
             .getSpendingProfileReportedValues(reportId)

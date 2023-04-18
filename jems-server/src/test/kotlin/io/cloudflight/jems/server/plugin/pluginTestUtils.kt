@@ -7,13 +7,15 @@ import io.cloudflight.jems.plugin.contract.models.common.SystemLanguageData
 import io.cloudflight.jems.plugin.contract.pre_condition_check.ControlReportSamplingCheckPlugin
 import io.cloudflight.jems.plugin.contract.pre_condition_check.PreConditionCheckPlugin
 import io.cloudflight.jems.plugin.contract.pre_condition_check.ReportPartnerCheckPlugin
+import io.cloudflight.jems.plugin.contract.pre_condition_check.ReportProjectCheckPlugin
 import io.cloudflight.jems.plugin.contract.pre_condition_check.models.ControlReportSamplingCheckResult
 import io.cloudflight.jems.plugin.contract.pre_condition_check.models.PreConditionCheckResult
 import java.time.LocalDateTime
 
 const val PreConditionCheckSamplePluginKey = "key-1"
 const val ApplicationFormExportSamplePluginKey = "key-2"
-const val ReportCheckPluginKey = "key-3"
+const val PartnerReportCheckPluginKey = "key-3"
+const val ProjectReportCheckPluginKey = "key-5"
 const val ControlReportSamplingCheckPluginKey = "key-4"
 
 class PreConditionCheckSamplePlugin : PreConditionCheckPlugin {
@@ -35,13 +37,30 @@ class PreConditionCheckSamplePlugin : PreConditionCheckPlugin {
 
 class ReportPartnerCheckSamplePlugin : ReportPartnerCheckPlugin {
     override fun getKey(): String =
-        ReportCheckPluginKey
+        PartnerReportCheckPluginKey
 
     override fun check(partnerId: Long, reportId: Long) =
         PreConditionCheckResult(emptyList(), true)
 
     override fun getDescription(): String =
         "description of ReportPartnerCheckSamplePlugin"
+
+    override fun getName(): String =
+        "name-3"
+
+    override fun getVersion(): String =
+        "1.0.0"
+}
+
+class ReportProjectCheckSamplePlugin : ReportProjectCheckPlugin {
+    override fun getKey(): String =
+        ProjectReportCheckPluginKey
+
+    override fun check(projectId: Long, reportId: Long) =
+        PreConditionCheckResult(emptyList(), true)
+
+    override fun getDescription(): String =
+        "description of ReportProjectCheckSamplePlugin"
 
     override fun getName(): String =
         "name-3"

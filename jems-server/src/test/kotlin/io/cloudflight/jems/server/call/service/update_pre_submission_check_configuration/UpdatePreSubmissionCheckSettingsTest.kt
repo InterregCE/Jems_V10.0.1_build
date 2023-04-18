@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.call.service.update_pre_submission_check_conf
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.plugin.contract.pre_condition_check.PreConditionCheckPlugin
 import io.cloudflight.jems.plugin.contract.pre_condition_check.ReportPartnerCheckPlugin
+import io.cloudflight.jems.plugin.contract.pre_condition_check.ReportProjectCheckPlugin
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
@@ -33,6 +34,7 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
             every { call.preSubmissionCheckPluginKey } returns null
             every { call.firstStepPreSubmissionCheckPluginKey } returns null
             every { call.reportPartnerCheckPluginKey } returns null
+            every { call.reportProjectCheckPluginKey } returns null
             every { call.controlReportSamplingCheckPluginKey } returns null
             return call
         }
@@ -56,13 +58,14 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
     }
 
     @Test
-    fun `should update pre-submission check plugin settings when 2step call and both plugins provided`(){
+    fun `should update pre-submission check plugin settings when 2step call and both plugins provided`() {
         val call = call(true)
         every { persistence.getCallById(1L) } returns call
 
         every { jemsPluginRegistry.get(PreConditionCheckPlugin::class, "jems-pre-condition-check-off") } returns PreSubmissionCheckOff()
         every { jemsPluginRegistry.get(PreConditionCheckPlugin::class, PreConditionCheckSamplePluginKey) } returns PreConditionCheckSamplePlugin()
-        every { jemsPluginRegistry.get(ReportPartnerCheckPlugin::class, ReportCheckPluginKey) } returns ReportPartnerCheckSamplePlugin()
+        every { jemsPluginRegistry.get(ReportPartnerCheckPlugin::class, PartnerReportCheckPluginKey) } returns ReportPartnerCheckSamplePlugin()
+        every { jemsPluginRegistry.get(ReportProjectCheckPlugin::class, ProjectReportCheckPluginKey) } returns ReportProjectCheckSamplePlugin()
 
         every { persistence.updateProjectCallPreSubmissionCheckPlugin(1L, any()) } returns call
         every { call.isPublished() } returns true
@@ -71,27 +74,34 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
         every { call.firstStepPreSubmissionCheckPluginKey } returns "no-check"
         every { call.preSubmissionCheckPluginKey } returns "no-check"
         every { call.reportPartnerCheckPluginKey } returns "no-check"
+        every { call.reportProjectCheckPluginKey } returns "no-check"
         every { call.controlReportSamplingCheckPluginKey } returns "no-check"
 
-        assertThat(updatePreSubmissionCheckSettings.update(
-            callId = 1L,
-            newPluginsConfig = PreSubmissionPlugins(
-                pluginKey = "jems-pre-condition-check-off",
-                firstStepPluginKey = PreConditionCheckSamplePluginKey,
-                reportPartnerCheckPluginKey = ReportCheckPluginKey,
-                controlReportSamplingCheckPluginKey = ControlReportSamplingCheckPluginKey,
+        assertThat(
+            updatePreSubmissionCheckSettings.update(
+                callId = 1L,
+                newPluginsConfig = PreSubmissionPlugins(
+                    pluginKey = "jems-pre-condition-check-off",
+                    firstStepPluginKey = PreConditionCheckSamplePluginKey,
+                    reportPartnerCheckPluginKey = PartnerReportCheckPluginKey,
+                    reportProjectCheckPluginKey = ProjectReportCheckPluginKey,
+                    controlReportSamplingCheckPluginKey = ControlReportSamplingCheckPluginKey,
+                )
             )
-        )).isEqualTo(call)
+        ).isEqualTo(call)
 
-        verify(exactly = 1) { persistence.updateProjectCallPreSubmissionCheckPlugin(
-            callId = 1L,
-            pluginKeys = PreSubmissionPlugins(
-                "jems-pre-condition-check-off",
-                PreConditionCheckSamplePluginKey,
-                ReportCheckPluginKey,
-                ControlReportSamplingCheckPluginKey
-            ),
-        ) }
+        verify(exactly = 1) {
+            persistence.updateProjectCallPreSubmissionCheckPlugin(
+                callId = 1L,
+                pluginKeys = PreSubmissionPlugins(
+                    "jems-pre-condition-check-off",
+                    PreConditionCheckSamplePluginKey,
+                    PartnerReportCheckPluginKey,
+                    ProjectReportCheckPluginKey,
+                    ControlReportSamplingCheckPluginKey
+                ),
+            )
+        }
 
         val slotAudit = slot<AuditCandidateEvent>()
         verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }
@@ -103,13 +113,14 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
                         "PreSubmissionCheckFirstStep changed from 'no-check' to 'key-1',\n" +
                         "PreSubmissionCheck changed from 'no-check' to 'jems-pre-condition-check-off',\n" +
                         "PreSubmissionCheckPartnerReport changed from 'no-check' to 'key-3',\n" +
+                        "PreSubmissionCheckProjectReport changed from 'no-check' to 'key-5',\n" +
                         "PreSubmissionCheckControlReportSampling changed from 'no-check' to 'key-4'"
             )
         )
     }
 
     @Test
-    fun `should not update pre-submission check plugin settings when 2step call and only first plugin provided`(){
+    fun `should not update pre-submission check plugin settings when 2step call and only first plugin provided`() {
         val call = call(true)
         every { persistence.getCallById(8L) } returns call
 
@@ -118,23 +129,27 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
 
         every { jemsPluginRegistry.get(PreConditionCheckPlugin::class, "missing") } returns emptyPlugin
         every { jemsPluginRegistry.get(PreConditionCheckPlugin::class, PreConditionCheckSamplePluginKey) } returns PreConditionCheckSamplePlugin()
-        every { jemsPluginRegistry.get(ReportPartnerCheckPlugin::class, ReportCheckPluginKey) } returns ReportPartnerCheckSamplePlugin()
+        every { jemsPluginRegistry.get(ReportPartnerCheckPlugin::class, PartnerReportCheckPluginKey) } returns ReportPartnerCheckSamplePlugin()
+        every { jemsPluginRegistry.get(ReportProjectCheckPlugin::class, ProjectReportCheckPluginKey) } returns ReportProjectCheckSamplePlugin()
 
-        assertThat(updatePreSubmissionCheckSettings.update(
-            callId = 8L,
-            newPluginsConfig = PreSubmissionPlugins(
-                pluginKey = "missing",
-                firstStepPluginKey = PreConditionCheckSamplePluginKey,
-                reportPartnerCheckPluginKey = ReportCheckPluginKey,
-                controlReportSamplingCheckPluginKey = ControlReportSamplingCheckPluginKey
+        assertThat(
+            updatePreSubmissionCheckSettings.update(
+                callId = 8L,
+                newPluginsConfig = PreSubmissionPlugins(
+                    pluginKey = "missing",
+                    firstStepPluginKey = PreConditionCheckSamplePluginKey,
+                    reportPartnerCheckPluginKey = PartnerReportCheckPluginKey,
+                    reportProjectCheckPluginKey = ProjectReportCheckPluginKey,
+                    controlReportSamplingCheckPluginKey = ControlReportSamplingCheckPluginKey
+                )
             )
-        )).isEqualTo(call)
+        ).isEqualTo(call)
 
         verify(exactly = 0) { persistence.updateProjectCallPreSubmissionCheckPlugin(any(), any()) }
     }
 
     @Test
-    fun `should not update pre-submission check plugin settings when 2step call and only second plugin provided`(){
+    fun `should not update pre-submission check plugin settings when 2step call and only second plugin provided`() {
         val call = call(true)
         every { persistence.getCallById(15L) } returns call
 
@@ -143,23 +158,27 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
 
         every { jemsPluginRegistry.get(PreConditionCheckPlugin::class, "missing") } returns emptyPlugin
         every { jemsPluginRegistry.get(PreConditionCheckPlugin::class, PreConditionCheckSamplePluginKey) } returns PreConditionCheckSamplePlugin()
-        every { jemsPluginRegistry.get(ReportPartnerCheckPlugin::class, ReportCheckPluginKey) } returns ReportPartnerCheckSamplePlugin()
+        every { jemsPluginRegistry.get(ReportPartnerCheckPlugin::class, PartnerReportCheckPluginKey) } returns ReportPartnerCheckSamplePlugin()
+        every { jemsPluginRegistry.get(ReportProjectCheckPlugin::class, ProjectReportCheckPluginKey) } returns ReportProjectCheckSamplePlugin()
 
-        assertThat(updatePreSubmissionCheckSettings.update(
-            callId = 15L,
-            newPluginsConfig = PreSubmissionPlugins(
-                pluginKey = PreConditionCheckSamplePluginKey,
-                firstStepPluginKey = "missing",
-                reportPartnerCheckPluginKey = ReportCheckPluginKey,
-                controlReportSamplingCheckPluginKey = ControlReportSamplingCheckPluginKey
+        assertThat(
+            updatePreSubmissionCheckSettings.update(
+                callId = 15L,
+                newPluginsConfig = PreSubmissionPlugins(
+                    pluginKey = PreConditionCheckSamplePluginKey,
+                    firstStepPluginKey = "missing",
+                    reportPartnerCheckPluginKey = PartnerReportCheckPluginKey,
+                    reportProjectCheckPluginKey = ProjectReportCheckPluginKey,
+                    controlReportSamplingCheckPluginKey = ControlReportSamplingCheckPluginKey
+                )
             )
-        )).isEqualTo(call)
+        ).isEqualTo(call)
 
         verify(exactly = 0) { persistence.updateProjectCallPreSubmissionCheckPlugin(any(), any()) }
     }
 
     @Test
-    fun `should not update pre-submission check plugin settings when 2step call and no any plugin provided`(){
+    fun `should not update pre-submission check plugin settings when 2step call and no any plugin provided`() {
         val call = call(true)
         every { persistence.getCallById(20L) } returns call
 
@@ -167,30 +186,37 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
         every { emptyPlugin.getKey() } returns ""
         val emptyReportPlugin = mockk<ReportPartnerCheckPlugin>()
         every { emptyReportPlugin.getKey() } returns ""
+        val emptyProjectPlugin = mockk<ReportProjectCheckPlugin>()
+        every { emptyProjectPlugin.getKey() } returns ""
 
         every { jemsPluginRegistry.get(PreConditionCheckPlugin::class, "missing") } returns emptyPlugin
         every { jemsPluginRegistry.get(ReportPartnerCheckPlugin::class, "missing") } returns emptyReportPlugin
+        every { jemsPluginRegistry.get(ReportProjectCheckPlugin::class, "missing") } returns emptyProjectPlugin
 
-        assertThat(updatePreSubmissionCheckSettings.update(
-            callId = 20L,
-            newPluginsConfig = PreSubmissionPlugins(
-                pluginKey = "missing",
-                firstStepPluginKey = "missing",
-                reportPartnerCheckPluginKey = "missing",
-                controlReportSamplingCheckPluginKey = "missing"
+        assertThat(
+            updatePreSubmissionCheckSettings.update(
+                callId = 20L,
+                newPluginsConfig = PreSubmissionPlugins(
+                    pluginKey = "missing",
+                    firstStepPluginKey = "missing",
+                    reportPartnerCheckPluginKey = "missing",
+                    reportProjectCheckPluginKey = "missing",
+                    controlReportSamplingCheckPluginKey = "missing"
+                )
             )
-        )).isEqualTo(call)
+        ).isEqualTo(call)
 
         verify(exactly = 0) { persistence.updateProjectCallPreSubmissionCheckPlugin(any(), any()) }
     }
 
     @Test
-    fun `should update pre-submission check plugin settings when 1step call and plugin provided`(){
+    fun `should update pre-submission check plugin settings when 1step call and plugin provided`() {
         val call = call(false)
         every { persistence.getCallById(17L) } returns call
 
         every { jemsPluginRegistry.get(PreConditionCheckPlugin::class, PreConditionCheckSamplePluginKey) } returns PreConditionCheckSamplePlugin()
-        every { jemsPluginRegistry.get(ReportPartnerCheckPlugin::class, ReportCheckPluginKey) } returns ReportPartnerCheckSamplePlugin()
+        every { jemsPluginRegistry.get(ReportPartnerCheckPlugin::class, PartnerReportCheckPluginKey) } returns ReportPartnerCheckSamplePlugin()
+        every { jemsPluginRegistry.get(ReportProjectCheckPlugin::class, ProjectReportCheckPluginKey) } returns ReportProjectCheckSamplePlugin()
 
         every { persistence.updateProjectCallPreSubmissionCheckPlugin(17L, any()) } returns call
         every { call.isPublished() } returns false
@@ -199,22 +225,32 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
         every { call.firstStepPreSubmissionCheckPluginKey } returns null
         every { call.preSubmissionCheckPluginKey } returns "no-check"
         every { call.reportPartnerCheckPluginKey } returns "blocked"
+        every { call.reportProjectCheckPluginKey } returns "blocked"
         every { call.controlReportSamplingCheckPluginKey } returns "no-check"
 
-        assertThat(updatePreSubmissionCheckSettings.update(
-            callId = 17L,
-            newPluginsConfig = PreSubmissionPlugins(
-                pluginKey = PreConditionCheckSamplePluginKey,
-                firstStepPluginKey = "",
-                reportPartnerCheckPluginKey = ReportCheckPluginKey,
-                controlReportSamplingCheckPluginKey = ControlReportSamplingCheckPluginKey
+        assertThat(
+            updatePreSubmissionCheckSettings.update(
+                callId = 17L,
+                newPluginsConfig = PreSubmissionPlugins(
+                    pluginKey = PreConditionCheckSamplePluginKey,
+                    firstStepPluginKey = "",
+                    reportPartnerCheckPluginKey = PartnerReportCheckPluginKey,
+                    reportProjectCheckPluginKey = ProjectReportCheckPluginKey,
+                    controlReportSamplingCheckPluginKey = ControlReportSamplingCheckPluginKey
+                )
             )
-        )).isEqualTo(call)
+        ).isEqualTo(call)
 
         verify(exactly = 1) {
             persistence.updateProjectCallPreSubmissionCheckPlugin(
                 17L,
-                PreSubmissionPlugins(PreConditionCheckSamplePluginKey, "", ReportCheckPluginKey, ControlReportSamplingCheckPluginKey)
+                PreSubmissionPlugins(
+                    PreConditionCheckSamplePluginKey,
+                    "",
+                    PartnerReportCheckPluginKey,
+                    ProjectReportCheckPluginKey,
+                    ControlReportSamplingCheckPluginKey
+                )
             )
         }
 
@@ -227,37 +263,42 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
                 description = "Configuration of not-published call id=17 name='Test2' changed: Plugin selection was changed\n" +
                         "PreSubmissionCheck changed from 'no-check' to 'key-1',\n" +
                         "PreSubmissionCheckPartnerReport changed from 'blocked' to 'key-3',\n" +
+                        "PreSubmissionCheckProjectReport changed from 'blocked' to 'key-5',\n" +
                         "PreSubmissionCheckControlReportSampling changed from 'no-check' to 'key-4'"
             )
         )
     }
 
     @Test
-    fun `should not update pre-submission check plugin settings when 1step call and plugin not provided`(){
+    fun `should not update pre-submission check plugin settings when 1step call and plugin not provided`() {
         val call = call(false)
         every { persistence.getCallById(24L) } returns call
 
         val emptyPlugin = mockk<PreConditionCheckPlugin>()
         every { emptyPlugin.getKey() } returns ""
         every { jemsPluginRegistry.get(PreConditionCheckPlugin::class, "missing") } returns emptyPlugin
-        every { jemsPluginRegistry.get(ReportPartnerCheckPlugin::class, ReportCheckPluginKey) } returns ReportPartnerCheckSamplePlugin()
+        every { jemsPluginRegistry.get(ReportPartnerCheckPlugin::class, PartnerReportCheckPluginKey) } returns ReportPartnerCheckSamplePlugin()
+        every { jemsPluginRegistry.get(ReportProjectCheckPlugin::class, ProjectReportCheckPluginKey) } returns ReportProjectCheckSamplePlugin()
 
         every { persistence.updateProjectCallPreSubmissionCheckPlugin(24L, any()) } returns call
 
-        assertThat(updatePreSubmissionCheckSettings.update(
-            callId = 24L,
-            newPluginsConfig = PreSubmissionPlugins(
-                pluginKey = "missing",
-                reportPartnerCheckPluginKey = ReportCheckPluginKey,
-                controlReportSamplingCheckPluginKey = ControlReportSamplingCheckPluginKey
+        assertThat(
+            updatePreSubmissionCheckSettings.update(
+                callId = 24L,
+                newPluginsConfig = PreSubmissionPlugins(
+                    pluginKey = "missing",
+                    reportPartnerCheckPluginKey = PartnerReportCheckPluginKey,
+                    reportProjectCheckPluginKey = ProjectReportCheckPluginKey,
+                    controlReportSamplingCheckPluginKey = ControlReportSamplingCheckPluginKey
+                )
             )
-        )).isEqualTo(call)
+        ).isEqualTo(call)
 
         verify(exactly = 0) { persistence.updateProjectCallPreSubmissionCheckPlugin(any(), any()) }
     }
 
     @Test
-    fun `should not update pre-submission check plugin settings when report check plugin not provided`(){
+    fun `should not update pre-submission check plugin settings when report check plugin not provided`() {
         val call = call(false)
         every { persistence.getCallById(25L) } returns call
 
@@ -265,19 +306,26 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
         every { emptyPlugin.getKey() } returns ""
         val emptyReportPlugin = mockk<ReportPartnerCheckPlugin>()
         every { emptyReportPlugin.getKey() } returns ""
+        val emptyProjectPlugin = mockk<ReportProjectCheckPlugin>()
+        every { emptyProjectPlugin.getKey() } returns ""
+
         every { jemsPluginRegistry.get(PreConditionCheckPlugin::class, PreConditionCheckSamplePluginKey) } returns PreConditionCheckSamplePlugin()
         every { jemsPluginRegistry.get(ReportPartnerCheckPlugin::class, "missing") } returns emptyReportPlugin
+        every { jemsPluginRegistry.get(ReportProjectCheckPlugin::class, "missing") } returns emptyProjectPlugin
 
         every { persistence.updateProjectCallPreSubmissionCheckPlugin(25L, any()) } returns call
 
-        assertThat(updatePreSubmissionCheckSettings.update(
-            callId = 25L,
-            newPluginsConfig = PreSubmissionPlugins(
-                pluginKey = PreConditionCheckSamplePluginKey,
-                reportPartnerCheckPluginKey = "missing",
-                controlReportSamplingCheckPluginKey = ControlReportSamplingCheckPluginKey
+        assertThat(
+            updatePreSubmissionCheckSettings.update(
+                callId = 25L,
+                newPluginsConfig = PreSubmissionPlugins(
+                    pluginKey = PreConditionCheckSamplePluginKey,
+                    reportPartnerCheckPluginKey = "missing",
+                    reportProjectCheckPluginKey = "missing",
+                    controlReportSamplingCheckPluginKey = ControlReportSamplingCheckPluginKey
+                )
             )
-        )).isEqualTo(call)
+        ).isEqualTo(call)
 
         verify(exactly = 0) { persistence.updateProjectCallPreSubmissionCheckPlugin(any(), any()) }
     }

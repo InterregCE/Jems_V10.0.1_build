@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.service.report.partner.base.runPreSubmissionCheck
+package io.cloudflight.jems.server.project.service.report.partner.base.runPartnerReportPreSubmissionCheck
 
 import io.cloudflight.jems.plugin.contract.pre_condition_check.ReportPartnerCheckPlugin
 import io.cloudflight.jems.plugin.contract.pre_condition_check.models.PreConditionCheckResult
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class RunPreSubmissionCheckService(
+class RunPartnerReportPreSubmissionCheckService(
     private val jemsPluginRegistry: JemsPluginRegistry,
     private val callPersistence: CallPersistence,
 ) {

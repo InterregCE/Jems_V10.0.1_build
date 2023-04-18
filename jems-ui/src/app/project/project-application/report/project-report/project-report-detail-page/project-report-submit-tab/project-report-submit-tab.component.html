@@ -38,4 +38,8 @@
                 [type]="Alert.ERROR">
         <jems-api-error-content [error]="error" [showId]="true"></jems-api-error-content>
     </jems-alert>
+
+    <jems-project-application-pre-condition-check-result *ngIf="preConditionCheckResult"
+                                                         [preConditionCheckResult]="preConditionCheckResult" jemsNoWidthLimit>
+    </jems-project-application-pre-condition-check-result>
 </jems-form>

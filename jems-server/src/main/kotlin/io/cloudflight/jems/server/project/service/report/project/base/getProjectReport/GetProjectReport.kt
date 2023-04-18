@@ -28,4 +28,7 @@ class GetProjectReport(
     private fun ProjectReportModel.getProjectPeriods() =
         projectPersistence.getProjectPeriods(projectId, linkedFormVersion)
 
+    fun getProjectPeriods(projectId: Long, linkedFormVersion: String?) = projectPersistence.getProjectPeriods(projectId, linkedFormVersion)
+
+
 }

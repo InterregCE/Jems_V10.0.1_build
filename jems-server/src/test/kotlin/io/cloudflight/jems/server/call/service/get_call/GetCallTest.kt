@@ -78,6 +78,7 @@ class GetCallTest : UnitTest() {
             preSubmissionCheckPluginKey = null,
             firstStepPreSubmissionCheckPluginKey = null,
             reportPartnerCheckPluginKey = null,
+            reportProjectCheckPluginKey = null,
             projectDefinedUnitCostAllowed = false,
             projectDefinedLumpSumAllowed = true,
             controlReportSamplingCheckPluginKey = null

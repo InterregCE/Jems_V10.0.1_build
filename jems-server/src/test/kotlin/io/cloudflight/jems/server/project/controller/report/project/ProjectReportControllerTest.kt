@@ -6,7 +6,9 @@ import io.cloudflight.jems.api.project.dto.report.project.ProjectReportDTO
 import io.cloudflight.jems.api.project.dto.report.project.ProjectReportStatusDTO
 import io.cloudflight.jems.api.project.dto.report.project.ProjectReportSummaryDTO
 import io.cloudflight.jems.api.project.dto.report.project.ProjectReportUpdateDTO
+import io.cloudflight.jems.plugin.contract.pre_condition_check.models.PreConditionCheckResult
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.project.controller.toDTO
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReport
@@ -17,6 +19,7 @@ import io.cloudflight.jems.server.project.service.report.project.base.createProj
 import io.cloudflight.jems.server.project.service.report.project.base.deleteProjectReport.DeleteProjectReportInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.getProjectReport.GetProjectReportInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.getProjectReportList.GetProjectReportListInteractor
+import io.cloudflight.jems.server.project.service.report.project.base.runProjectReportPreSubmissionCheck.RunProjectReportPreSubmissionCheck
 import io.cloudflight.jems.server.project.service.report.project.base.submitProjectReport.SubmitProjectReportInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.updateProjectReport.UpdateProjectReportInteractor
 import io.mockk.clearMocks
@@ -117,14 +120,22 @@ internal class ProjectReportControllerTest : UnitTest() {
 
     @MockK
     private lateinit var getReportList: GetProjectReportListInteractor
+
     @MockK
     private lateinit var getReport: GetProjectReportInteractor
+
     @MockK
     private lateinit var createReport: CreateProjectReportInteractor
+
     @MockK
     private lateinit var updateReport: UpdateProjectReportInteractor
+
     @MockK
     private lateinit var deleteReport: DeleteProjectReportInteractor
+
+    @MockK
+    private lateinit var runProjectReportPreSubmissionCheck: RunProjectReportPreSubmissionCheck
+
     @MockK
     private lateinit var submitReport: SubmitProjectReportInteractor
 
@@ -164,14 +175,16 @@ internal class ProjectReportControllerTest : UnitTest() {
             reportingDate = WEEK_AGO,
         )
         assertThat(controller.createProjectReport(19L, toCreate)).isEqualTo(expectedReport)
-        assertThat(createSlot.captured).isEqualTo(ProjectReportUpdate(
-            startDate = WEEK_AGO,
-            endDate = TOMORROW,
-            deadlineId = null,
-            type = ContractingDeadlineType.Content,
-            periodNumber = null,
-            reportingDate = WEEK_AGO,
-        ))
+        assertThat(createSlot.captured).isEqualTo(
+            ProjectReportUpdate(
+                startDate = WEEK_AGO,
+                endDate = TOMORROW,
+                deadlineId = null,
+                type = ContractingDeadlineType.Content,
+                periodNumber = null,
+                reportingDate = WEEK_AGO,
+            )
+        )
     }
 
     @Test
@@ -188,14 +201,16 @@ internal class ProjectReportControllerTest : UnitTest() {
             reportingDate = TOMORROW,
         )
         assertThat(controller.updateProjectReport(20L, reportId = 9L, toUpdate)).isEqualTo(expectedReport)
-        assertThat(updateSlot.captured).isEqualTo(ProjectReportUpdate(
-            startDate = TOMORROW,
-            endDate = WEEK_AGO,
-            deadlineId = 4L,
-            type = ContractingDeadlineType.Both,
-            periodNumber = 12,
-            reportingDate = TOMORROW,
-        ))
+        assertThat(updateSlot.captured).isEqualTo(
+            ProjectReportUpdate(
+                startDate = TOMORROW,
+                endDate = WEEK_AGO,
+                deadlineId = 4L,
+                type = ContractingDeadlineType.Both,
+                periodNumber = 12,
+                reportingDate = TOMORROW,
+            )
+        )
     }
 
     @Test
@@ -206,9 +221,16 @@ internal class ProjectReportControllerTest : UnitTest() {
     }
 
     @Test
+    fun runPreCheck() {
+        val preSubmissionResult = PreConditionCheckResult(listOf(), true)
+        every { runProjectReportPreSubmissionCheck.preCheck(21L, reportId = 10L) } returns preSubmissionResult
+        assertThat(controller.runPreCheck(21L, reportId = 10L)).isEqualTo(preSubmissionResult.toDTO())
+    }
+
+    @Test
     fun submitProjectReport() {
         every { submitReport.submit(21L, reportId = 10L) } returns ProjectReportStatus.Submitted
         controller.submitProjectReport(21L, reportId = 10L)
-       assertThat(submitReport.submit(21L, reportId = 10L)).isEqualTo(ProjectReportStatus.Submitted)
+        assertThat(submitReport.submit(21L, reportId = 10L)).isEqualTo(ProjectReportStatus.Submitted)
     }
 }

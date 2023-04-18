@@ -138,6 +138,7 @@ class GetBudgetFundsPerPeriodInteractorTest : UnitTest() {
         preSubmissionCheckPluginKey = null,
         firstStepPreSubmissionCheckPluginKey = null,
         reportPartnerCheckPluginKey = null,
+        reportProjectCheckPluginKey = null,
         projectDefinedUnitCostAllowed = false,
         projectDefinedLumpSumAllowed = true,
         controlReportSamplingCheckPluginKey = null
@@ -187,6 +188,7 @@ class GetBudgetFundsPerPeriodInteractorTest : UnitTest() {
         preSubmissionCheckPluginKey = null,
         firstStepPreSubmissionCheckPluginKey = null,
         reportPartnerCheckPluginKey = null,
+        reportProjectCheckPluginKey = null,
         projectDefinedUnitCostAllowed = false,
         projectDefinedLumpSumAllowed = true,
         controlReportSamplingCheckPluginKey = null
@@ -647,7 +649,7 @@ class GetBudgetFundsPerPeriodInteractorTest : UnitTest() {
     }
 
     @Test
-    fun `getSpfBudgetForFundsPerPeriod`() {
+    fun getSpfBudgetForFundsPerPeriod() {
         val projectId = 1L
         val totalSpfBudget = 3500.toBigDecimal()
         val spfBudgetPerPeriods =  mutableListOf(

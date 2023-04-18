@@ -71,7 +71,8 @@ class CallControllerTest : UnitTest() {
 
         private const val ID = 1L
         private const val PLUGIN_KEY = "pluginKey"
-        private const val PLUGIN_KEY_REPORT = "pluginKey-report"
+        private const val PLUGIN_KEY_PARTNER_REPORT = "pluginKey-partnerReport"
+        private const val PLUGIN_KEY_PROJECT_REPORT = "pluginKey-projectReport"
         private const val PLUGIN_KEY_CONTROL_SAMPLING = "pluginKey-control-sampling"
 
         private val call = CallSummary(
@@ -129,7 +130,8 @@ class CallControllerTest : UnitTest() {
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = PLUGIN_KEY,
             firstStepPreSubmissionCheckPluginKey = PLUGIN_KEY,
-            reportPartnerCheckPluginKey = PLUGIN_KEY_REPORT,
+            reportPartnerCheckPluginKey = PLUGIN_KEY_PARTNER_REPORT,
+            reportProjectCheckPluginKey = PLUGIN_KEY_PROJECT_REPORT,
             projectDefinedUnitCostAllowed = false,
             projectDefinedLumpSumAllowed = true,
             controlReportSamplingCheckPluginKey = PLUGIN_KEY_CONTROL_SAMPLING
@@ -182,7 +184,8 @@ class CallControllerTest : UnitTest() {
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = PLUGIN_KEY,
             firstStepPreSubmissionCheckPluginKey = PLUGIN_KEY,
-            reportPartnerCheckPluginKey = PLUGIN_KEY_REPORT,
+            reportPartnerCheckPluginKey = PLUGIN_KEY_PARTNER_REPORT,
+            reportProjectCheckPluginKey = PLUGIN_KEY_PROJECT_REPORT,
             controlReportSamplingCheckPluginKey = PLUGIN_KEY_CONTROL_SAMPLING
         )
 
@@ -379,7 +382,8 @@ class CallControllerTest : UnitTest() {
                 40L, PreSubmissionPluginsDTO(
                     pluginKey = PLUGIN_KEY,
                     firstStepPluginKey = PLUGIN_KEY,
-                    reportPartnerCheckPluginKey = PLUGIN_KEY_REPORT,
+                    reportPartnerCheckPluginKey = PLUGIN_KEY_PARTNER_REPORT,
+                    reportProjectCheckPluginKey = PLUGIN_KEY_PROJECT_REPORT,
                     controlReportSamplingCheckPluginKey = PLUGIN_KEY_CONTROL_SAMPLING
                 )
             )
@@ -389,7 +393,8 @@ class CallControllerTest : UnitTest() {
             PreSubmissionPlugins(
                 pluginKey = PLUGIN_KEY,
                 firstStepPluginKey = PLUGIN_KEY,
-                reportPartnerCheckPluginKey = PLUGIN_KEY_REPORT,
+                reportPartnerCheckPluginKey = PLUGIN_KEY_PARTNER_REPORT,
+                reportProjectCheckPluginKey = PLUGIN_KEY_PROJECT_REPORT,
                 controlReportSamplingCheckPluginKey = PLUGIN_KEY_CONTROL_SAMPLING
             )
         )

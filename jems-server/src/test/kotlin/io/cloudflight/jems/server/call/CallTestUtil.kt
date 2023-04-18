@@ -112,6 +112,7 @@ fun createTestCallEntity(
         preSubmissionCheckPluginKey = null,
         firstStepPreSubmissionCheckPluginKey = null,
         reportPartnerCheckPluginKey = "check-off",
+        reportProjectCheckPluginKey = "check-off",
         unitCosts = unitCosts,
         projectDefinedUnitCostAllowed = true,
         projectDefinedLumpSumAllowed = false,
@@ -153,6 +154,7 @@ fun createCallDetailModel(
     preSubmissionCheckPluginKey: String? = null,
     firstStepPreSubmissionCheckPluginKey: String? = null,
     reportPartnerCheckPluginKey: String? = null,
+    reportProjectCheckPluginKey: String? = null,
     controlReportSamplingCheckPluginKey: String? = null
 ): CallDetail {
     return CallDetail(
@@ -176,6 +178,7 @@ fun createCallDetailModel(
         applicationFormFieldConfigurations = applicationFormFieldConfigurations,
         preSubmissionCheckPluginKey = preSubmissionCheckPluginKey,
         reportPartnerCheckPluginKey = reportPartnerCheckPluginKey,
+        reportProjectCheckPluginKey = reportProjectCheckPluginKey,
         firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey,
         projectDefinedUnitCostAllowed = true,
         projectDefinedLumpSumAllowed = false,
@@ -259,6 +262,7 @@ fun callDetail(
     preSubmissionCheckPluginKey: String? = null,
     firstStepPreSubmissionCheckPluginKey: String? = null,
     reportPartnerCheckPluginKey: String? = null,
+    reportProjectCheckPluginKey: String? = null,
     controlReportSamplingCheckPluginKey: String? = null
 ) = CallDetail(
     id = id,
@@ -274,6 +278,7 @@ fun callDetail(
     preSubmissionCheckPluginKey = preSubmissionCheckPluginKey,
     firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey,
     reportPartnerCheckPluginKey = reportPartnerCheckPluginKey,
+    reportProjectCheckPluginKey = reportProjectCheckPluginKey,
     projectDefinedUnitCostAllowed = false,
     projectDefinedLumpSumAllowed = true,
     controlReportSamplingCheckPluginKey = controlReportSamplingCheckPluginKey

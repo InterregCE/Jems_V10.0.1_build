@@ -94,7 +94,8 @@ internal class CallPersistenceProviderTest {
         private const val LUMP_SUM_ID = 4L
         private const val UNIT_COST_ID = 3L
         private const val PLUGIN_KEY = "plugin-key"
-        private const val PLUGIN_KEY_REPORT = "plugin-key-report"
+        private const val PLUGIN_KEY_PARTNER_REPORT = "plugin-key-partner-report"
+        private const val PLUGIN_KEY_PROJECT_REPORT = "plugin-key-project-report"
         private const val PLUGIN_KEY_CONTROL_SAMPLING = "plugin-key-control-sampling"
 
         private fun applicationFormFieldConfigurationEntities(callEntity: CallEntity) = mutableSetOf(
@@ -143,7 +144,8 @@ internal class CallPersistenceProviderTest {
             fund = callFundRateEntity(call, FUND_ID)
             call.preSubmissionCheckPluginKey = PLUGIN_KEY
             call.firstStepPreSubmissionCheckPluginKey = PLUGIN_KEY
-            call.reportPartnerCheckPluginKey = PLUGIN_KEY_REPORT
+            call.reportPartnerCheckPluginKey = PLUGIN_KEY_PARTNER_REPORT
+            call.reportProjectCheckPluginKey = PLUGIN_KEY_PROJECT_REPORT
             call.controlReportSamplingCheckPluginKey = PLUGIN_KEY_CONTROL_SAMPLING
             call.prioritySpecificObjectives.clear()
             call.prioritySpecificObjectives.addAll(specificObjectives)
@@ -201,7 +203,8 @@ internal class CallPersistenceProviderTest {
             funds = sortedSetOf(callFundRate(FUND_ID)),
             preSubmissionCheckPluginKey = PLUGIN_KEY,
             firstStepPreSubmissionCheckPluginKey = PLUGIN_KEY,
-            reportPartnerCheckPluginKey = PLUGIN_KEY_REPORT,
+            reportPartnerCheckPluginKey = PLUGIN_KEY_PARTNER_REPORT,
+            reportProjectCheckPluginKey = PLUGIN_KEY_PROJECT_REPORT,
             controlReportSamplingCheckPluginKey = PLUGIN_KEY_CONTROL_SAMPLING
         )
 
@@ -328,6 +331,7 @@ internal class CallPersistenceProviderTest {
                 preSubmissionCheckPluginKey = null,
                 firstStepPreSubmissionCheckPluginKey = null,
                 reportPartnerCheckPluginKey = "check-off",
+                reportProjectCheckPluginKey = "check-off",
                 projectDefinedUnitCostAllowed = true,
                 projectDefinedLumpSumAllowed = false,
                 controlReportSamplingCheckPluginKey = "control-report-sampling-check-off"
@@ -482,7 +486,8 @@ internal class CallPersistenceProviderTest {
         assertThat(persistence.updateProjectCallPreSubmissionCheckPlugin(CALL_ID, PreSubmissionPlugins(
             pluginKey = PLUGIN_KEY,
             firstStepPluginKey = PLUGIN_KEY,
-            reportPartnerCheckPluginKey = PLUGIN_KEY_REPORT,
+            reportPartnerCheckPluginKey = PLUGIN_KEY_PARTNER_REPORT,
+            reportProjectCheckPluginKey = PLUGIN_KEY_PROJECT_REPORT,
             controlReportSamplingCheckPluginKey = PLUGIN_KEY_CONTROL_SAMPLING
         ))).isEqualTo(expectedStandardCallDetail)
     }
@@ -494,7 +499,8 @@ internal class CallPersistenceProviderTest {
         assertThrows<CallNotFound> { persistence.updateProjectCallPreSubmissionCheckPlugin(CALL_ID, PreSubmissionPlugins(
             pluginKey = PLUGIN_KEY,
             firstStepPluginKey = PLUGIN_KEY,
-            reportPartnerCheckPluginKey = PLUGIN_KEY_REPORT,
+            reportPartnerCheckPluginKey = PLUGIN_KEY_PARTNER_REPORT,
+            reportProjectCheckPluginKey = PLUGIN_KEY_PROJECT_REPORT,
             controlReportSamplingCheckPluginKey = PLUGIN_KEY_CONTROL_SAMPLING
         ))
         }
@@ -753,6 +759,7 @@ internal class CallPersistenceProviderTest {
             preSubmissionCheckPluginKey = null,
             firstStepPreSubmissionCheckPluginKey = null,
             reportPartnerCheckPluginKey = "check-off",
+            reportProjectCheckPluginKey = "check-off",
             stateAids = listOf(
                 ProgrammeStateAid(
                     id = 254L,

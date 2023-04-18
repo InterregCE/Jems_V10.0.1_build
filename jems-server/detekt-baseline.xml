@@ -28,6 +28,7 @@
     <ID>LargeClass:GetBudgetFundsPerPeriodInteractorTest.kt$GetBudgetFundsPerPeriodInteractorTest : UnitTest</ID>
     <ID>LargeClass:GetReportExpenditureCostCategoryCalculatorServiceTest.kt$GetReportExpenditureCostCategoryCalculatorServiceTest$Companion</ID>
     <ID>LargeClass:ProjectDataProviderImplTest.kt$ProjectDataProviderImplTest : UnitTest</ID>
+    <ID>LargeClass:ProjectReportDataProviderImplTest.kt$ProjectReportDataProviderImplTest$Companion</ID>
     <ID>LargeClass:ReportPartnerDataProviderImplTest.kt$ReportPartnerDataProviderImplTest$Companion</ID>
     <ID>LongParameterList:BudgetCostsCalculatorService.kt$BudgetCostsCalculatorService$( budgetOptions: ProjectPartnerBudgetOptions?, unitCosts: BigDecimal, lumpSumsCosts: BigDecimal, externalCosts: BigDecimal, equipmentCosts: BigDecimal, infrastructureCosts: BigDecimal, travelCosts: BigDecimal, staffCosts: BigDecimal )</ID>
     <ID>LongParameterList:GetBudgetFundsPerPeriodInteractorTest.kt$GetBudgetFundsPerPeriodInteractorTest$( preparation: BigDecimal, total1: BigDecimal, total2: BigDecimal, total3: BigDecimal, total4: BigDecimal, total5: BigDecimal, total6: BigDecimal, total7: BigDecimal, total8: BigDecimal, total9: BigDecimal, closure: BigDecimal, )</ID>
@@ -126,7 +127,6 @@
     <ID>MaxLineLength:WorkPackageRepository.kt$WorkPackageRepository$ LEFT JOIN programme_indicator_output_transl AS programmeOutputIndicatorIdentifierTransl ON programmeOutputIndicatorIdentifier.id = programmeOutputIndicatorIdentifierTransl.source_entity_id</ID>
     <ID>MemberNameEqualsClassName:SubmitApplication.kt$SubmitApplication$private fun submitApplication(projectSummary: ProjectSummary): ApplicationStatus</ID>
     <ID>NestedBlockDepth:ExecutePreConditionCheck.kt$ExecutePreConditionCheck$@ExceptionWrapper(ExecutePreConditionCheckException::class) @Transactional(readOnly = true) @CanCheckApplicationForm override fun execute(projectId: Long): PreConditionCheckResult</ID>
-    <ID>NestedBlockDepth:SubmitProjectReport.kt$SubmitProjectReport$private fun deleteReportWorkPlansWithFiles( projectId: Long, reportId: Long )</ID>
     <ID>PackageNaming:ActivateUser.kt$package io.cloudflight.jems.server.user.service.user.activate_user</ID>
     <ID>PackageNaming:ActivateUserException.kt$package io.cloudflight.jems.server.user.service.user.activate_user</ID>
     <ID>PackageNaming:ActivateUserInteractor.kt$package io.cloudflight.jems.server.user.service.user.activate_user</ID>
@@ -415,6 +415,8 @@
     <ID>PackageNaming:RejectModificationInteractor.kt$package io.cloudflight.jems.server.project.service.application.reject_modification</ID>
     <ID>PackageNaming:ReportPartnerCheckBlocked.kt$package io.cloudflight.jems.server.plugin.pre_submission_check</ID>
     <ID>PackageNaming:ReportPartnerCheckOff.kt$package io.cloudflight.jems.server.plugin.pre_submission_check</ID>
+    <ID>PackageNaming:ReportProjectCheckBlocked.kt$package io.cloudflight.jems.server.plugin.pre_submission_check</ID>
+    <ID>PackageNaming:ReportProjectCheckOff.kt$package io.cloudflight.jems.server.plugin.pre_submission_check</ID>
     <ID>PackageNaming:ResultOverviewCalculator.kt$package io.cloudflight.jems.server.project.service.result.get_project_result_indicators_overview</ID>
     <ID>PackageNaming:ReturnApplicationToApplicant.kt$package io.cloudflight.jems.server.project.service.application.return_application_to_applicant</ID>
     <ID>PackageNaming:ReturnApplicationToApplicantExceptions.kt$package io.cloudflight.jems.server.project.service.application.return_application_to_applicant</ID>
@@ -591,6 +593,7 @@
     <ID>TooManyFunctions:ProjectPartnerBudgetMapper.kt$io.cloudflight.jems.server.project.controller.partner.budget.ProjectPartnerBudgetMapper.kt</ID>
     <ID>TooManyFunctions:ProjectPartnerEntityMapper.kt$io.cloudflight.jems.server.project.repository.partner.ProjectPartnerEntityMapper.kt</ID>
     <ID>TooManyFunctions:ProjectPartnerRepository.kt$ProjectPartnerRepository : JpaRepository</ID>
+    <ID>TooManyFunctions:ProjectReportDataProviderMapper.kt$ProjectReportDataProviderMapper</ID>
     <ID>TooManyFunctions:UpdateCoFinancingValidation.kt$io.cloudflight.jems.server.project.service.partner.cofinancing.update_cofinancing.UpdateCoFinancingValidation.kt</ID>
     <ID>TooManyFunctions:WorkPackagePersistence.kt$WorkPackagePersistence</ID>
     <ID>TooManyFunctions:WorkPackagePersistenceProvider.kt$WorkPackagePersistenceProvider : WorkPackagePersistence</ID>

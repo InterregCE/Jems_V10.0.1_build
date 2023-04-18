@@ -11,6 +11,7 @@ import io.cloudflight.jems.plugin.contract.export.partner.report.PartnerReportEx
 import io.cloudflight.jems.plugin.contract.pre_condition_check.ControlReportSamplingCheckPlugin
 import io.cloudflight.jems.plugin.contract.pre_condition_check.PreConditionCheckPlugin
 import io.cloudflight.jems.plugin.contract.pre_condition_check.ReportPartnerCheckPlugin
+import io.cloudflight.jems.plugin.contract.pre_condition_check.ReportProjectCheckPlugin
 import io.cloudflight.jems.server.plugin.UnknownPluginTypeException
 
 
@@ -21,6 +22,7 @@ fun JemsPlugin.toPluginType(): PluginTypeDTO =
         is BudgetExportPlugin -> PluginTypeDTO.BUDGET_EXPORT
         is ApplicationFormExportPlugin -> PluginTypeDTO.APPLICATION_FORM_EXPORT
         is ReportPartnerCheckPlugin -> PluginTypeDTO.REPORT_PARTNER_CHECK
+        is ReportProjectCheckPlugin -> PluginTypeDTO.REPORT_PROJECT_CHECK
         is PartnerControlReportCertificatePlugin -> PluginTypeDTO.PARTNER_CONTROL_REPORT_CERTIFICATE
         is PartnerControlReportExportPlugin -> PluginTypeDTO.PARTNER_CONTROL_REPORT_EXPORT
         is PartnerReportExportPlugin -> PluginTypeDTO.PARTNER_REPORT_EXPORT
@@ -33,6 +35,7 @@ fun PluginTypeDTO.toType() =
         PluginTypeDTO.PROGRAMME_DATA_EXPORT -> ProgrammeDataExportPlugin::class
         PluginTypeDTO.PRE_SUBMISSION_CHECK -> PreConditionCheckPlugin::class
         PluginTypeDTO.REPORT_PARTNER_CHECK -> ReportPartnerCheckPlugin::class
+        PluginTypeDTO.REPORT_PROJECT_CHECK -> ReportProjectCheckPlugin::class
         PluginTypeDTO.BUDGET_EXPORT -> BudgetExportPlugin::class
         PluginTypeDTO.APPLICATION_FORM_EXPORT -> ApplicationFormExportPlugin::class
         PluginTypeDTO.PARTNER_CONTROL_REPORT_CERTIFICATE -> PartnerControlReportCertificatePlugin::class

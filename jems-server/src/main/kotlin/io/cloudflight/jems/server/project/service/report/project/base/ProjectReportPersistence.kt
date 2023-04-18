@@ -42,4 +42,6 @@ interface ProjectReportPersistence {
     fun getDeadlinesWithLinkedReportStatus(projectId: Long): Map<Long, ProjectReportStatus>
 
     fun decreaseNewerReportNumbersIfAllOpen(projectId: Long, number: Int)
+
+    fun exists(projectId: Long, reportId: Long): Boolean
 }
