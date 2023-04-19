@@ -211,7 +211,7 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
     fun getCurrentSpendingProfile() {
         val projectReportId = 1L
         every { partnerReportRepository.findTotalAfterControlPerPartner(projectReportId) } returns
-            listOf(Pair(10L, BigDecimal(400)), Pair(11L, BigDecimal(200)))
+                listOf(Pair(10L, BigDecimal(400)), Pair(11L, BigDecimal(200)))
         assertThat(persistence.getCurrentSpendingProfile(projectReportId)).isEqualTo(
             mapOf(10L to BigDecimal(400), 11L to BigDecimal(200))
         )
@@ -220,11 +220,15 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
     @Test
     fun getSubmittedProjectReportIds() {
         val projectId = 1L
-        every { projectReportRepository.findAllByProjectIdAndStatusInOrderByNumberDesc(projectId, setOf(
-            ProjectReportStatus.Submitted,
-            ProjectReportStatus.Verified,
-            ProjectReportStatus.Paid
-        )) } returns listOf(
+        every {
+            projectReportRepository.findAllByProjectIdAndStatusInOrderByNumberDesc(
+                projectId, setOf(
+                    ProjectReportStatus.Submitted,
+                    ProjectReportStatus.Verified,
+                    ProjectReportStatus.Paid
+                )
+            )
+        } returns listOf(
             report(id = 45L, deadlineType = null, reportType = ContractingDeadlineType.Content),
             report(id = 46L, deadlineType = ContractingDeadlineType.Both, reportType = ContractingDeadlineType.Content),
             report(id = 47L, deadlineType = ContractingDeadlineType.Finance, reportType = null),
@@ -234,6 +238,40 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
             Pair(46L, ContractingDeadlineType.Both),
             Pair(47L, ContractingDeadlineType.Finance),
         )
+    }
+
+    @Test
+    fun updateNewerReportNumbersIfAllOpen() {
+        val projectId = 3L
+        val reportNumber = 4
+        val reports = listOf(
+            reportEntity(5, projectId).apply { number = 5 },
+            reportEntity(6, projectId).apply { number = 6 },
+            reportEntity(7, projectId).apply { number = 7 },
+        )
+        every { projectReportRepository.findAllByProjectIdAndNumberGreaterThan(projectId, reportNumber) } returns reports
+
+        persistence.decreaseNewerReportNumbersIfAllOpen(projectId, reportNumber)
+
+        verify(exactly = 1) { projectReportRepository.findAllByProjectIdAndNumberGreaterThan(projectId, reportNumber) }
+        assertThat(reports.map { it.number }).containsExactly(4, 5, 6)
+    }
+
+    @Test
+    fun doNotUpdateNewerReportNumbersIfAnyClosed() {
+        val projectId = 3L
+        val reportNumber = 4
+        val reports = listOf(
+            reportEntity(5, projectId).apply { number = 5 },
+            reportEntity(6, projectId).apply { number = 6 }.apply { status = ProjectReportStatus.Submitted },
+            reportEntity(7, projectId).apply { number = 7 },
+        )
+        every { projectReportRepository.findAllByProjectIdAndNumberGreaterThan(projectId, reportNumber) } returns reports
+
+        persistence.decreaseNewerReportNumbersIfAllOpen(projectId, reportNumber)
+
+        verify(exactly = 1) { projectReportRepository.findAllByProjectIdAndNumberGreaterThan(projectId, reportNumber) }
+        assertThat(reports.map { it.number }).containsExactly(5, 6, 7)
     }
 
 }

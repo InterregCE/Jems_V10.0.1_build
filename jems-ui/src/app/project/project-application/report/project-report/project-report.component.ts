@@ -2,26 +2,21 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/co
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {APIError} from '@common/models/APIError';
 import {catchError, filter, map, switchMap, take, tap} from 'rxjs/operators';
-import {
-  PartnerControlReportStore
-} from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
+import {PartnerControlReportStore} from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
 import {ActivatedRoute} from '@angular/router';
 import {
   ProjectApplicationFormSidenavService
 } from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {RoutingService} from '@common/services/routing.service';
 import {TranslateService} from '@ngx-translate/core';
-import {
-  MultiLanguageGlobalService
-} from '@common/components/forms/multi-language-container/multi-language-global.service';
+import {MultiLanguageGlobalService} from '@common/components/forms/multi-language-container/multi-language-global.service';
 import {MatDialog} from '@angular/material/dialog';
 import {Forms} from '@common/utils/forms';
-import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {MatTableDataSource} from '@angular/material/table';
-import {PageProjectReportSummaryDTO, ProjectReportDTO, ProjectReportSummaryDTO, UserRoleDTO} from '@cat/api';
-import { Alert } from '@common/components/forms/alert';
-import { ProjectReportPageStore } from './project-report-page-store.service';
-import StatusEnum = ProjectReportDTO.StatusEnum;
+import {PageProjectReportSummaryDTO, ProjectReportSummaryDTO, UserRoleDTO} from '@cat/api';
+import {Alert} from '@common/components/forms/alert';
+import {ProjectReportPageStore} from './project-report-page-store.service';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Component({
   selector: 'jems-project-report',
@@ -35,10 +30,8 @@ export class ProjectReportComponent {
   ProjectReportSummaryDTO = ProjectReportSummaryDTO;
   successfulDeletionMessage: boolean;
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
-  controlActionMap = new Map<number, BehaviorSubject<boolean>>();
   error$ = new BehaviorSubject<APIError | null>(null);
   Alert = Alert;
-  deletableReportId: number | null = null;
   displayedColumns = ['reportNumber', 'status', 'linkedFormVersion', 'reportingPeriod', 'type', 'createdAt', 'firstSubmission', 'delete'];
   dataSource: MatTableDataSource<ProjectReportSummaryDTO> = new MatTableDataSource([]);
 
@@ -69,18 +62,6 @@ export class ProjectReportComponent {
         canEditReports: isEditable,
         totalElements: projectReports.totalElements
       })),
-      tap(data => {
-        data.projectReports.content.forEach((report) => {
-          this.controlActionMap.set(report.id, new BehaviorSubject<boolean>(false));
-          if (report.status === StatusEnum.Draft && report.reportNumber === data.totalElements) {
-            this.deletableReportId = report.reportNumber;
-          }
-          const someDraft = data.projectReports.content
-            .find((x) => x.status === StatusEnum.Draft);
-          const somePaid = data.projectReports.content
-            .find((x) => x.status === StatusEnum.Paid);
-        });
-      })
     );
   }
 

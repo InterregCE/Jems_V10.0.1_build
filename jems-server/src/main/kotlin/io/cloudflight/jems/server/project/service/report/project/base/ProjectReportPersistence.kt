@@ -40,4 +40,6 @@ interface ProjectReportPersistence {
     fun getSubmittedProjectReportIds(projectId: Long): List<Pair<Long, ContractingDeadlineType>>
 
     fun getDeadlinesWithLinkedReportStatus(projectId: Long): Map<Long, ProjectReportStatus>
+
+    fun decreaseNewerReportNumbersIfAllOpen(projectId: Long, number: Int)
 }

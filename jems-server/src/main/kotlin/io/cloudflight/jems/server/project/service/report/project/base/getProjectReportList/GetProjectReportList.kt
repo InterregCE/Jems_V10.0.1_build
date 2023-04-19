@@ -22,13 +22,9 @@ class GetProjectReportList(
     @CanRetrieveProjectReport
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetProjectReportListException::class)
-    override fun findAll(projectId: Long, pageable: Pageable): Page<ProjectReportSummary> {
-        val latestReport = reportPersistence.getCurrentLatestReportFor(projectId)
-        val latestDeletableReportId = if (latestReport != null && latestReport.status.isOpen()) latestReport.id else null
-
-        return reportPersistence.listReports(projectId, pageable)
-            .map { it.toServiceSummaryModel(deletableId = latestDeletableReportId, it.periodResolver()) }
-    }
+    override fun findAll(projectId: Long, pageable: Pageable): Page<ProjectReportSummary> =
+        reportPersistence.listReports(projectId, pageable)
+            .map { it.toServiceSummaryModel(it.periodResolver()) }
 
     private fun ProjectReportModel.periodResolver(): (Int) -> ProjectPeriod? = { periodNumber ->
         projectPersistence.getProjectPeriods(projectId, linkedFormVersion)
