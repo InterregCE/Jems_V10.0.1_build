@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanRevertDecision
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.application.submit_application.ProjectStatusChangeEvent
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.projectStatusChanged
@@ -31,7 +32,7 @@ class RevertApplicationDecision(
     override fun revert(projectId: Long): ApplicationStatus =
         projectPersistence.getProjectSummary(projectId).let { projectSummary ->
             applicationStateFactory.getInstance(projectSummary).revertDecision().also {
-                auditPublisher.publishEvent(projectStatusChanged(projectSummary, newStatus = it))
+                auditPublisher.publishEvent(ProjectStatusChangeEvent(this, projectSummary, it))
                 log.warn("Decision-reversion has been done for project(id=$projectId) status moved from ${projectSummary.status} to $it")
                 eventPublisher.publishEvent(ApplicationDecisionRevertedEvent(projectSummary))
             }

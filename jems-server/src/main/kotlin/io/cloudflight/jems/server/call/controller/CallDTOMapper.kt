@@ -12,6 +12,7 @@ import io.cloudflight.jems.api.call.dto.applicationFormConfiguration.Application
 import io.cloudflight.jems.api.call.dto.applicationFormConfiguration.StepSelectionOptionDTO
 import io.cloudflight.jems.api.call.dto.applicationFormConfiguration.UpdateApplicationFormFieldConfigurationRequestDTO
 import io.cloudflight.jems.api.call.dto.notificationConfiguration.ProjectNotificationConfigurationDTO
+import io.cloudflight.jems.api.notification.dto.NotificationTypeDTO
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
@@ -127,11 +128,11 @@ fun AllowedRealCostsDTO.toModel() = callDTOMapper.map(this)
 fun CallFundRate.toDto() = callDTOMapper.map(this)
 fun CallFundRateDTO.toModel() = callDTOMapper.map(this)
 
+fun NotificationType.toDto() = callDTOMapper.map(this)
+fun NotificationTypeDTO.toModel() = callDTOMapper.map(this)
+
 fun ProjectNotificationConfiguration.toDto() = ProjectNotificationConfigurationDTO(
-    id = when (id) {
-        NotificationType.ProjectSubmitted -> ApplicationStatusDTO.SUBMITTED
-        else -> ApplicationStatusDTO.STEP1_SUBMITTED
-    },
+    id = id.toDto(),
     active = active,
     sendToManager = sendToManager,
     sendToLeadPartner = sendToLeadPartner,
@@ -141,10 +142,7 @@ fun ProjectNotificationConfiguration.toDto() = ProjectNotificationConfigurationD
     emailBody = emailBody,
 )
 fun ProjectNotificationConfigurationDTO.toModel() = ProjectNotificationConfiguration(
-    id = when (id) {
-        ApplicationStatusDTO.SUBMITTED -> NotificationType.ProjectSubmitted
-        else -> NotificationType.ProjectSubmittedStep1
-    },
+    id = id.toModel(),
     active = active,
     sendToManager = sendToManager,
     sendToLeadPartner = sendToLeadPartner,
@@ -165,6 +163,9 @@ abstract class CallDTOMapper {
 
     abstract fun map(allowedRealCostsDTO: AllowedRealCostsDTO): AllowedRealCosts
     abstract fun map(allowedRealCosts: AllowedRealCosts): AllowedRealCostsDTO
+
+    abstract fun map(notificationTypeDTO: NotificationTypeDTO): NotificationType
+    abstract fun map(notificationType: NotificationType): NotificationTypeDTO
 
     abstract fun map(callFundRateDTO: CallFundRateDTO): CallFundRate
     abstract fun map(callFundRate: CallFundRate): CallFundRateDTO

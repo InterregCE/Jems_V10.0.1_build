@@ -11,7 +11,7 @@ import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import org.springframework.transaction.event.TransactionalEventListener
 
-data class ProjectNotificationEvent(
+data class ProjectStatusChangeEvent(
     val context: Any,
     val projectSummary: ProjectSummary,
     val newStatus: ApplicationStatus
@@ -24,7 +24,7 @@ data class ProjectNotificationEventListeners(
 ) {
 
     @TransactionalEventListener
-    fun storeAudit(event: ProjectNotificationEvent) =
+    fun storeAudit(event: ProjectStatusChangeEvent) =
         eventPublisher.publishEvent(
             projectStatusChanged(
                 event.projectSummary,
@@ -33,14 +33,15 @@ data class ProjectNotificationEventListeners(
         )
 
     @EventListener
-    fun sendNotifications(event: ProjectNotificationEvent) {
+    fun sendNotifications(event: ProjectStatusChangeEvent) {
         val type = event.type()
         if (type != null && type.isProjectNotification())
             notificationProjectService.sendNotifications(type, event.project())
     }
 
-    private fun ProjectNotificationEvent.type() = newStatus.toNotificationType()
-    private fun ProjectNotificationEvent.project() = NotificationProjectBase(
+    private fun ProjectStatusChangeEvent.type() = newStatus.toNotificationType(projectSummary.status)
+
+    private fun ProjectStatusChangeEvent.project() = NotificationProjectBase(
         projectId = projectSummary.id,
         projectIdentifier = projectSummary.customIdentifier,
         projectAcronym = projectSummary.acronym,

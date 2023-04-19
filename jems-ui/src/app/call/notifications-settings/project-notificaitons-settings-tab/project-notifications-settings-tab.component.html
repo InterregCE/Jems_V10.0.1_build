@@ -4,6 +4,7 @@
         (discard)="resetForm(data.projectNotificationConfigurations)">
     <h3>{{'call.detail.notifications.config.tab.project.title' | translate}}</h3>
     <p>{{'call.detail.notifications.config.tab.project.description' | translate}}</p>
+    <p>{{'call.detail.notifications.config.tab.project.description.for.partner.selection' | translate}}</p>
     <form jemsFormLayout [formGroup]="projectNotificationsForm">
         <ng-container *ngFor="let notificationTemplate of projectNotificationConfigurationsArray.controls; let i=index"
                       formArrayName="projectNotificationConfigurations">
@@ -18,7 +19,7 @@
                                         <mat-slide-toggle formControlName="active"
                                                           color="primary"
                                                           (click)="$event.stopPropagation()">
-                                             {{'common.label.projectapplicationstatus.' + notificationTemplate.get('id').value | translate}}
+                                             {{'call.detail.notifications.config.tab.project.status.' + notificationTemplate.get('id').value | translate}}
                                         </mat-slide-toggle>
                                     </span>
                                     <jems-context-info
@@ -36,13 +37,13 @@
 
 
                                     <mat-checkbox formControlName="sendToLeadPartner" class="ml-2" color="primary"
-                                                  [disabled]="existsOnProjectStatus(notificationTemplate)"
+                                                  [disabled]="isPartnerSelectionDisabled(notificationTemplate)"
                                                   (click)="$event.stopPropagation()">
                                         {{ 'call.detail.notifications.config.tab.project.checkbox.lead.partner' | translate }}
                                     </mat-checkbox>
 
                                     <mat-checkbox formControlName="sendToProjectPartners" class="ml-2" color="primary"
-                                                  [disabled]="existsOnProjectStatus(notificationTemplate)"
+                                                  [disabled]="isPartnerSelectionDisabled(notificationTemplate)"
                                                   (click)="$event.stopPropagation()">
                                         {{ 'call.detail.notifications.config.tab.project.checkbox.partners' | translate }}
                                     </mat-checkbox>

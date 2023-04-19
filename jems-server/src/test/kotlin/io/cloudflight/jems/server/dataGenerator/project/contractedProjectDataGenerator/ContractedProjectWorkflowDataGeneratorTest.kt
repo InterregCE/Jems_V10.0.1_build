@@ -46,7 +46,7 @@ class ContractedProjectWorkflowDataGeneratorTest(@LocalServerPort private val po
 
     @Test
     @Order(20)
-    @ExpectSelect(11)
+    @ExpectSelect(13)
     @ExpectInsert(2)
     @ExpectUpdate(2)
     @ExpectDelete(1)
@@ -128,7 +128,7 @@ class ContractedProjectWorkflowDataGeneratorTest(@LocalServerPort private val po
 
     @Test
     @Order(70)
-    @ExpectSelect(9)
+    @ExpectSelect(11)
     @ExpectInsert(2)
     @ExpectUpdate(1)
     @ExpectDelete(1)
@@ -143,7 +143,7 @@ class ContractedProjectWorkflowDataGeneratorTest(@LocalServerPort private val po
 
     @Test
     @Order(80)
-    @ExpectSelect(11)
+    @ExpectSelect(13)
     @ExpectInsert(2)
     @ExpectUpdate(2)
     @ExpectDelete(1)
@@ -161,7 +161,7 @@ class ContractedProjectWorkflowDataGeneratorTest(@LocalServerPort private val po
 
     @Test
     @Order(90)
-    @ExpectSelect(24)
+    @ExpectSelect(26)
     @ExpectInsert(1)
     @ExpectUpdate(1)
     @ExpectDelete(1)
@@ -173,7 +173,7 @@ class ContractedProjectWorkflowDataGeneratorTest(@LocalServerPort private val po
 
     @Test
     @Order(100)
-    @ExpectSelect(14)
+    @ExpectSelect(16)
     @ExpectUpdate(4)
     fun `reject the first modification of the application`() {
         assertThat(
@@ -187,7 +187,7 @@ class ContractedProjectWorkflowDataGeneratorTest(@LocalServerPort private val po
 
     @Test
     @Order(110)
-    @ExpectSelect(11)
+    @ExpectSelect(13)
     @ExpectInsert(2)
     @ExpectUpdate(2)
     @ExpectDelete(1)
@@ -205,7 +205,7 @@ class ContractedProjectWorkflowDataGeneratorTest(@LocalServerPort private val po
 
     @Test
     @Order(120)
-    @ExpectSelect(24)
+    @ExpectSelect(26)
     @ExpectInsert(1)
     @ExpectUpdate(1)
     @ExpectDelete(1)
@@ -217,7 +217,7 @@ class ContractedProjectWorkflowDataGeneratorTest(@LocalServerPort private val po
 
     @Test
     @Order(130)
-    @ExpectSelect(36)
+    @ExpectSelect(38)
     @ExpectInsert(1)
     @ExpectUpdate(2)
     @ExpectDelete(1)
@@ -233,7 +233,7 @@ class ContractedProjectWorkflowDataGeneratorTest(@LocalServerPort private val po
 
     @Test
     @Order(140)
-    @ExpectSelect(8)
+    @ExpectSelect(10)
     @ExpectInsert(1)
     @ExpectUpdate(1)
     @ExpectDelete(1)
@@ -245,7 +245,7 @@ class ContractedProjectWorkflowDataGeneratorTest(@LocalServerPort private val po
 
     @Test
     @Order(150)
-    @ExpectSelect(11)
+    @ExpectSelect(13)
     @ExpectInsert(2)
     @ExpectUpdate(2)
     @ExpectDelete(1)
@@ -263,7 +263,7 @@ class ContractedProjectWorkflowDataGeneratorTest(@LocalServerPort private val po
 
     @Test
     @Order(160)
-    @ExpectSelect(24)
+    @ExpectSelect(26)
     @ExpectInsert(1)
     @ExpectUpdate(1)
     @ExpectDelete(1)
@@ -275,7 +275,7 @@ class ContractedProjectWorkflowDataGeneratorTest(@LocalServerPort private val po
 
     @Test
     @Order(170)
-    @ExpectSelect(8)
+    @ExpectSelect(10)
     @ExpectInsert(1)
     @ExpectUpdate(1)
     @ExpectDelete(1)
@@ -287,7 +287,7 @@ class ContractedProjectWorkflowDataGeneratorTest(@LocalServerPort private val po
 
     @Test
     @Order(180)
-    @ExpectSelect(24)
+    @ExpectSelect(26)
     @ExpectInsert(1)
     @ExpectUpdate(1)
     @ExpectDelete(1)
@@ -299,7 +299,7 @@ class ContractedProjectWorkflowDataGeneratorTest(@LocalServerPort private val po
 
     @Test
     @Order(190)
-    @ExpectSelect(37)
+    @ExpectSelect(39)
     @ExpectInsert(1)
     @ExpectUpdate(2)
     @ExpectDelete(1)

@@ -4,13 +4,12 @@ import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
-import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.authentication.model.CurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.common.event.JemsAuditEvent
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.application.submit_application.ProjectStatusChangeEvent
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
 import io.cloudflight.jems.server.project.service.application.workflow.states.ApprovedApplicationState
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
@@ -95,7 +94,7 @@ class StartSecondStepInteractorTest : UnitTest() {
         every { securityService.currentUser } returns currentUser
         every { currentUser.user.email } returns userEntity.email
 
-        val slotAuditStatus = slot<JemsAuditEvent>()
+        val slotAuditStatus = slot<ProjectStatusChangeEvent>()
         val slotAuditVersion = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(slotAuditStatus)) }.returns(Unit)
         every { auditPublisher.publishEvent(capture(slotAuditVersion)) }.returns(Unit)
@@ -106,11 +105,11 @@ class StartSecondStepInteractorTest : UnitTest() {
         verify (exactly = 1){ auditPublisher.publishEvent(capture(slotAuditStatus)) }
         verify (exactly = 1){ auditPublisher.publishEvent(capture(slotAuditVersion)) }
 
-        assertThat(slotAuditStatus.captured.auditCandidate).isEqualTo(
-            AuditCandidate(
-                action = AuditAction.APPLICATION_STATUS_CHANGED,
-                project = AuditProject(id = PROJECT_ID.toString(), customIdentifier = "01", name = "project acronym"),
-                description = "Project application status changed from STEP1_APPROVED to DRAFT"
+        assertThat(slotAuditStatus.captured).isEqualTo(
+            ProjectStatusChangeEvent(
+                context = startSecondStep,
+                projectSummary = summary,
+                newStatus = ApplicationStatus.DRAFT
             )
         )
         assertThat(slotAuditVersion.captured.auditCandidate).matches {

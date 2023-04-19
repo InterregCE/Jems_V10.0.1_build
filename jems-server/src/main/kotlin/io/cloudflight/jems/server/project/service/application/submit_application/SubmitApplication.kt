@@ -54,7 +54,7 @@ class SubmitApplication(
 
     private fun submitApplication(projectSummary: ProjectSummary): ApplicationStatus {
         return applicationStateFactory.getInstance(projectSummary).submit().also {
-            eventPublisher.publishEvent(ProjectNotificationEvent(this, projectSummary, it))
+            eventPublisher.publishEvent(ProjectStatusChangeEvent(this, projectSummary, it))
         }
     }
 

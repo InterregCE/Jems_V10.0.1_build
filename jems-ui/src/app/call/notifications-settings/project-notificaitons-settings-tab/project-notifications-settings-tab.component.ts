@@ -68,9 +68,23 @@ export class ProjectNotificationsSettingsTabComponent {
         ).subscribe();
     }
 
-    existsOnProjectStatus(notification: AbstractControl): boolean {
-      return notification.get('id')?.value === ProjectNotificationConfigurationDTO.IdEnum.STEP1SUBMITTED
-      || notification.get('id')?.value === ProjectNotificationConfigurationDTO.IdEnum.SUBMITTED;
+    isPartnerSelectionDisabled(notification: AbstractControl): boolean {
+      return [
+        ProjectNotificationConfigurationDTO.IdEnum.ProjectSubmittedStep1,
+        ProjectNotificationConfigurationDTO.IdEnum.ProjectSubmitted,
+        ProjectNotificationConfigurationDTO.IdEnum.ProjectApprovedStep1,
+        ProjectNotificationConfigurationDTO.IdEnum.ProjectApprovedWithConditionsStep1,
+        ProjectNotificationConfigurationDTO.IdEnum.ProjectIneligibleStep1,
+        ProjectNotificationConfigurationDTO.IdEnum.ProjectNotApprovedStep1,
+        ProjectNotificationConfigurationDTO.IdEnum.ProjectApproved,
+        ProjectNotificationConfigurationDTO.IdEnum.ProjectApprovedWithConditions,
+        ProjectNotificationConfigurationDTO.IdEnum.ProjectIneligible,
+        ProjectNotificationConfigurationDTO.IdEnum.ProjectNotApproved,
+        ProjectNotificationConfigurationDTO.IdEnum.ProjectReturnedToApplicant,
+        ProjectNotificationConfigurationDTO.IdEnum.ProjectResubmitted,
+        ProjectNotificationConfigurationDTO.IdEnum.ProjectReturnedForConditions,
+        ProjectNotificationConfigurationDTO.IdEnum.ProjectConditionsSubmitted
+      ].includes(notification.get('id')?.value);
     }
 }
 

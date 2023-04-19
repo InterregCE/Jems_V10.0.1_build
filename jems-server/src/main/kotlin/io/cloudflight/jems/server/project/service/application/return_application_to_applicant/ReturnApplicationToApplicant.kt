@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanReturnApplicationToApplicant
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.application.submit_application.ProjectStatusChangeEvent
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
 import io.cloudflight.jems.server.project.service.projectStatusChanged
 import io.cloudflight.jems.server.project.service.projectVersionRecorded
@@ -29,7 +30,7 @@ class ReturnApplicationToApplicant(
         createNewProjectVersion.create(projectId).let { newProjectVersion ->
             projectPersistence.getProjectSummary(projectId).let { projectSummary ->
                 applicationStateFactory.getInstance(projectSummary).returnToApplicant().also {
-                    auditPublisher.publishEvent(projectStatusChanged(projectSummary, newStatus = it))
+                    auditPublisher.publishEvent(ProjectStatusChangeEvent(this, projectSummary, it))
                     auditPublisher.publishEvent(
                         projectVersionRecorded(
                             this, projectSummary,

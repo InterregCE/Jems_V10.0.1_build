@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.application.ifIsValid
+import io.cloudflight.jems.server.project.service.application.submit_application.ProjectStatusChangeEvent
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
 import io.cloudflight.jems.server.project.service.projectStatusChanged
 import org.springframework.context.ApplicationEventPublisher
@@ -28,7 +29,7 @@ class ApproveApplicationWithConditions(
         actionInfo.ifIsValid(generalValidatorService).let {
             projectPersistence.getProjectSummary(projectId).let { projectSummary ->
                 applicationStateFactory.getInstance(projectSummary).approveWithConditions(actionInfo).also {
-                    auditPublisher.publishEvent(projectStatusChanged(projectSummary, newStatus = it))
+                    auditPublisher.publishEvent(ProjectStatusChangeEvent(this, projectSummary, it))
                 }
             }
         }

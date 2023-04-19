@@ -1,9 +1,9 @@
 package io.cloudflight.jems.api.call.dto.notificationConfiguration
 
-import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
+import io.cloudflight.jems.api.notification.dto.NotificationTypeDTO
 
 data class ProjectNotificationConfigurationDTO(
-    val id: ApplicationStatusDTO,
+    val id: NotificationTypeDTO,
     val active: Boolean,
     val sendToManager: Boolean,
     val sendToLeadPartner: Boolean,
