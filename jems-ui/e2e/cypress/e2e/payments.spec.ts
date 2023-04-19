@@ -63,12 +63,13 @@ context('Payments tests', () => {
                   application.lumpSums = testData.projectLumpSums;
                   cy.loginByRequest(user.applicantUser.email);
                   cy.createContractedApplication(application, user.programmeUser.email).then(function (applicationId) {
-                    cy.log(testData.projectLumpSums);
+                    cy.visit('/');
+                    cy.contains('Dashboard').should('be.visible');
+                    cy.contains('Payments').should('not.exist');
 
                     cy.loginByRequest(paymentsUser.email);
                     cy.visit(`app/project/detail/${applicationId}/contractMonitoring`, {failOnStatusCode: false});
-
-
+                    
                     setReadyForPayment(true, 1);
 
                     cy.contains('Payments').click();
