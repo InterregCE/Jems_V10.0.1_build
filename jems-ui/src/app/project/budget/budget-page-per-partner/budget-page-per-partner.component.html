@@ -34,7 +34,7 @@
 
         <ng-container *ngFor="let budget of budgetColumns; let index = index;">
             <div *ngIf="index < budgetColumns.length - 1">
-                <a [routerLink]="'/app/project/detail/'+ projectId +'/applicationFormPartner/' + budget.partnerId + '/budget'">
+                <a class="unstyled-link" [routerLink]="'/app/project/detail/'+ projectId +'/applicationFormPartner/' + budget.partnerId + '/budget'">
                     <span>
                         <mat-icon *ngIf="!budget.isPartnerActive">person_off</mat-icon>
                         {{ 'common.label.project.partner.role.shortcut.' + budget.partnerRole | adaptTranslationKeyByCallType | async | translate : {partner: budget.partnerSortNumber} }}

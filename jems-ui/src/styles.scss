@@ -22,8 +22,8 @@ html, body {
 }
 
 body {
-  font-family: Roboto, "Helvetica Neue", sans-serif;
-  -webkit-font-smoothing: antialiased;
+  font-family: "Open Sans", "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: subpixel-antialiased;
   -moz-osx-font-smoothing: grayscale;
   margin: 0;
   image-rendering: auto;
@@ -43,5 +43,40 @@ ul li:empty {
     margin-top: -0.33rem;
     font-size: 0.8em;
     color: var(--font-color-secondary);
+  }
+}
+
+mat-card {
+  a, a:visited {
+    text-decoration: none !important;
+    color: inherit;
+    box-shadow: inset 0 -0.125em #87b7db;
+    transition: box-shadow 100ms ease-out;
+    &:hover {
+      box-shadow: inset 0 -1.25em #87b7db;
+    }
+  }
+  a.unstyled-link, .section-link, .support-links a {
+    cursor: pointer;
+    color: var(--primary-color);
+    box-shadow: none;
+    font-weight: 500;
+    &:hover {
+      text-decoration: underline !important;
+    }
+  }
+}
+
+.grayed-out {
+  color: var(--font-color-secondary) !important;
+  font-weight: 300;
+}
+
+.mat-tab-link {
+  color: var(--primary-dark-color) !important;
+  font-weight: 500;
+  opacity: 0.8 !important;
+  &:hover {
+   opacity: 1 !important;
   }
 }

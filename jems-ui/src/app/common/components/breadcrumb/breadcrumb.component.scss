@@ -2,12 +2,12 @@ ol.breadcrumbs {
   display: inline-block;
   margin: 0;
   padding: 0.25rem 0 0 0;
-  font-size: 1rem;
+  font-size: 0.9rem;
 
   li {
     list-style: none;
     float: left;
-    line-height: 1.75rem;
+    line-height: 1.5rem;
 
     a {
       color: var(--font-color-secondary);
@@ -20,7 +20,8 @@ ol.breadcrumbs {
     }
 
     mat-icon {
-      vertical-align: middle;
+      vertical-align: sub;
+      font-size: 1.3em;
       line-height: 0.75em;
       margin-right: 0.25rem;
     }

@@ -1,6 +1,6 @@
 <div class="menu">
     <div *ngFor="let data of headlines; let index = index" class="level-1">
-        <mat-expansion-panel class="mat-elevation-z0"
+        <mat-expansion-panel class="mat-elevation-z0 application-form-foldout"
                              [expanded]="(currentUrl.getValue() === projectOverviewUrl && index === 1) ||
                              (currentUrl.getValue() !== projectOverviewUrl)"
                              [disabled]="!data.bullets?.length"
