@@ -1,0 +1,72 @@
+{
+  "partnerCollaborator": [
+    {
+      "userEmail": "applicant.user@jems.eu",
+      "level": "EDIT"
+    }
+  ],
+  "workplan":[
+    {
+      "description":[
+        {
+          "language":"EN",
+          "translation":"Work plan Description English"
+        },
+        {
+          "language":"DE",
+          "translation":"Work plan Description German"
+        }
+      ],
+      "activities":[
+        {
+          "progress":[
+            {
+              "language":"EN",
+              "translation":"Activity 1 Progress English"
+            },
+            {
+              "language":"DE",
+              "translation":"Activity 1 Progress German"
+            }
+          ],
+          "deliverables":[
+            {
+              "contribution":true
+            },
+            {
+              "contribution":true
+            }
+          ]
+        },
+        {
+          "progress":[
+            {
+              "language":"EN",
+              "translation":"Activity 2 Progress English"
+            },
+            {
+              "language":"DE",
+              "translation":"Activity 2 Progress German"
+            }
+          ],
+          "deliverables":[
+            {
+              "contribution":true
+            },
+            {
+              "contribution":true
+            }
+          ]
+        }
+      ],
+      "outputs":[
+        {
+          "contribution":true
+        },
+        {
+          "contribution":true
+        }
+      ]
+    }
+  ]
+}
