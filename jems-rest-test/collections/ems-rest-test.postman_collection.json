@@ -11665,7 +11665,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "[\r\n    {\r\n        \"type\": \"Organization\",\r\n        \"country\":\"Honduras (HN)\",\r\n        \"nutsRegion2\":\"Honduras (HN00)\",\r\n        \"nutsRegion3\":\"Honduras (HN000)\",\r\n        \"street\": \"Pennsylvania Avenue\",\r\n        \"houseNumber\": \"1600\",\r\n        \"postalCode\": \"20500\",\r\n        \"city\": \"Washington, DC\",\r\n        \"homepage\": \"https://www.whitehouse.gov/\"\r\n    }\r\n]\r\n",
+									"raw": "[\r\n    {\r\n        \"type\": \"Organization\",\r\n        \"country\":\"Honduras (HN)\",\r\n        \"countryCode\":\"HN\",\r\n        \"nutsRegion2\":\"Honduras (HN00)\",\r\n        \"nutsRegion2Code\":\"HN00\",\r\n        \"nutsRegion3\":\"Honduras (HN000)\",\r\n        \"nutsRegion3Code\":\"HN000\",\r\n        \"street\": \"Pennsylvania Avenue\",\r\n        \"houseNumber\": \"1600\",\r\n        \"postalCode\": \"20500\",\r\n        \"city\": \"Washington, DC\",\r\n        \"homepage\": \"https://www.whitehouse.gov/\"\r\n    }\r\n]\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -12570,7 +12570,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "[\r\n    {\r\n        \"type\": \"Organization\",\r\n        \"country\":\"Somalia (SO)\",\r\n        \"nutsRegion2\":\"Somalia (SO00)\",\r\n        \"nutsRegion3\":\"Somalia (SO000)\",\r\n        \"street\": \"Pennsylvania Avenue\",\r\n        \"houseNumber\": \"1600\",\r\n        \"postalCode\": \"20500\",\r\n        \"city\": \"Washington, DC\",\r\n        \"homepage\": \"https://www.whitehouse.gov/\"\r\n    }\r\n]\r\n",
+									"raw": "[\r\n    {\r\n        \"type\": \"Organization\",\r\n        \"country\":\"Somalia (SO)\",\r\n        \"countryCode\":\"SO\",\r\n        \"nutsRegion2\":\"Somalia (SO00)\",\r\n        \"nutsRegion2Code\":\"SO00\",\r\n        \"nutsRegion3\":\"Somalia (SO000)\",\r\n        \"nutsRegion3Code\":\"SO000\",\r\n        \"street\": \"Pennsylvania Avenue\",\r\n        \"houseNumber\": \"1600\",\r\n        \"postalCode\": \"20500\",\r\n        \"city\": \"Washington, DC\",\r\n        \"homepage\": \"https://www.whitehouse.gov/\"\r\n    }\r\n]\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -14345,7 +14345,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "[\r\n    {\r\n        \"type\": \"Organization\",\r\n        \"country\":\"Honduras (HN)\",\r\n        \"nutsRegion2\":\"Honduras (HN00)\",\r\n        \"nutsRegion3\":\"Honduras (HN000)\",\r\n        \"street\": \"Pennsylvania Avenue\",\r\n        \"houseNumber\": \"1600\",\r\n        \"postalCode\": \"20500\",\r\n        \"city\": \"Washington, DC\",\r\n        \"homepage\": \"https://www.whitehouse.gov/\"\r\n    }\r\n]\r\n",
+									"raw": "[\r\n    {\r\n        \"type\": \"Organization\",\r\n        \"country\":\"Honduras (HN)\",\r\n        \"countryCode\":\"HN\",\r\n        \"nutsRegion2\":\"Honduras (HN00)\",\r\n        \"nutsRegion2Code\":\"HN00\",\r\n        \"nutsRegion3\":\"Honduras (HN000)\",\r\n        \"nutsRegion3Code\":\"HN000\",\r\n        \"street\": \"Pennsylvania Avenue\",\r\n        \"houseNumber\": \"1600\",\r\n        \"postalCode\": \"20500\",\r\n        \"city\": \"Washington, DC\",\r\n        \"homepage\": \"https://www.whitehouse.gov/\"\r\n    }\r\n]\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -14908,7 +14908,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "[\r\n    {\r\n        \"type\": \"Organization\",\r\n        \"country\":\"Somalia (SO)\",\r\n        \"nutsRegion2\":\"Somalia (SO00)\",\r\n        \"nutsRegion3\":\"Somalia (SO000)\",\r\n        \"street\": \"Pennsylvania Avenue\",\r\n        \"houseNumber\": \"1600\",\r\n        \"postalCode\": \"20500\",\r\n        \"city\": \"Washington, DC\",\r\n        \"homepage\": \"https://www.whitehouse.gov/\"\r\n    }\r\n]\r\n",
+									"raw": "[\r\n    {\r\n        \"type\": \"Organization\",\r\n        \"country\":\"Somalia (SO)\",\r\n        \"countryCode\":\"SO\",\r\n        \"nutsRegion2\":\"Somalia (SO00)\",\r\n        \"nutsRegion2Code\":\"SO00\",\r\n        \"nutsRegion3\":\"Somalia (SO000)\",\r\n        \"nutsRegion3Code\":\"SO000\",\r\n        \"street\": \"Pennsylvania Avenue\",\r\n        \"houseNumber\": \"1600\",\r\n        \"postalCode\": \"20500\",\r\n        \"city\": \"Washington, DC\",\r\n        \"homepage\": \"https://www.whitehouse.gov/\"\r\n    }\r\n]\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
