@@ -8,10 +8,7 @@ import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus.APPROVED
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus.ELIGIBLE
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus.STEP1_APPROVED
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus.STEP1_ELIGIBLE
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus.*
 import io.cloudflight.jems.server.project.service.application.projectWithId
 import io.cloudflight.jems.server.project.service.application.submit_application.ProjectStatusChangeEvent
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
@@ -20,10 +17,13 @@ import io.cloudflight.jems.server.project.service.application.workflow.states.fi
 import io.cloudflight.jems.server.project.service.model.ProjectAssessment
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentQuality
-import io.mockk.*
+import io.mockk.clearMocks
+import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -45,6 +45,7 @@ class ApproveApplicationInteractorTest : UnitTest() {
             acronym = "project acronym",
             status = status,
         )
+
         private val actionInfo = ApplicationActionInfo(
             note = "make approval",
             date = LocalDate.of(2021, 4, 13),

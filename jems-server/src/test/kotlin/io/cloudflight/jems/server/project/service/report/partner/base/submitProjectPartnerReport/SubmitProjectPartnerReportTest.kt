@@ -37,10 +37,18 @@ import io.cloudflight.jems.server.project.service.report.partner.base.runPreSubm
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectPartnerReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.ProjectPartnerReportExpenditureVerificationPersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
-import io.cloudflight.jems.server.project.service.report.partner.financialOverview.*
-import io.mockk.*
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportInvestmentPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportLumpSumPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportUnitCostPersistence
+import io.mockk.clearMocks
+import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
+import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -49,7 +57,7 @@ import org.springframework.context.ApplicationEventPublisher
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
-import java.util.*
+import java.util.UUID
 
 internal class SubmitProjectPartnerReportTest : UnitTest() {
 
@@ -407,9 +415,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
 
     @BeforeEach
     fun reset() {
-        clearMocks(reportPersistence)
-        clearMocks(reportExpenditurePersistence)
-        clearMocks(auditPublisher)
+        clearMocks(reportPersistence, reportExpenditurePersistence, auditPublisher)
     }
 
     @Test
@@ -427,22 +433,22 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         every { preSubmissionCheck.preCheck(PARTNER_ID, reportId = 35L) } returns PreConditionCheckResult(emptyList(), true)
 
         every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, 35L) } returns
-            listOf(
-                expenditure1, expenditure2.copy(
-                    parkingMetadata = ExpenditureParkingMetadata(
-                        reportOfOriginId = 70L,
-                        reportOfOriginNumber = 5,
-                        originalExpenditureNumber = 3
-                    ),
-                    currencyConversionRate = BigDecimal.valueOf(1)
-                ), expenditure3
-            )
+                listOf(
+                    expenditure1, expenditure2.copy(
+                        parkingMetadata = ExpenditureParkingMetadata(
+                            reportOfOriginId = 70L,
+                            reportOfOriginNumber = 5,
+                            originalExpenditureNumber = 3
+                        ),
+                        currencyConversionRate = BigDecimal.valueOf(1)
+                    ), expenditure3
+                )
         every { currencyPersistence.findAllByIdYearAndIdMonth(year = YEAR, month = MONTH) } returns
-            listOf(
-                CurrencyConversion("CZK", YEAR, MONTH, "", BigDecimal.valueOf(254855, 4)),
-                CurrencyConversion("PLN", YEAR, MONTH, "", BigDecimal.valueOf(195, 2)), /* not used */
-                CurrencyConversion("EUR", YEAR, MONTH, "", BigDecimal.ONE),
-            )
+                listOf(
+                    CurrencyConversion("CZK", YEAR, MONTH, "", BigDecimal.valueOf(254855, 4)),
+                    CurrencyConversion("PLN", YEAR, MONTH, "", BigDecimal.valueOf(195, 2)), /* not used */
+                    CurrencyConversion("EUR", YEAR, MONTH, "", BigDecimal.ONE),
+                )
         val slotExpenditures = slot<List<ProjectPartnerReportExpenditureCost>>()
         every {
             reportExpenditurePersistence
@@ -482,7 +488,8 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
                 .updatePartnerControlReportExpenditureVerification(
                     PARTNER_ID,
                     35L,
-                    capture(slotExpenditureVerification))
+                    capture(slotExpenditureVerification)
+                )
 
         } returns listOf(
             expenditureVerification1,
@@ -589,7 +596,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         every { reportPersistence.getPartnerReportById(PARTNER_ID, 40L) } returns report
         every { preSubmissionCheck.preCheck(PARTNER_ID, reportId = 40L) } returns PreConditionCheckResult(emptyList(), true)
         every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, 40L) } returns
-            listOf(expenditure1)
+                listOf(expenditure1)
         every { currencyPersistence.findAllByIdYearAndIdMonth(year = YEAR, month = MONTH) } returns emptyList()
 
         assertThrows<CurrencyRatesMissing> { submitReport.submit(PARTNER_ID, 40L) }
