@@ -5,7 +5,12 @@ import {
 import {
   PartnerControlReportControlChecklistPageStore
 } from '@project/project-application/report/partner-control-report/partner-control-report-control-checklists-tab/partner-control-report-control-checklist-page/partner-control-report-control-checklist-page-store.service';
-import {ChecklistComponentInstanceDTO, ChecklistInstanceDetailDTO, ControllerInstitutionsApiService} from '@cat/api';
+import {
+    ChecklistComponentInstanceDTO,
+    ChecklistInstanceDetailDTO,
+    ControllerInstitutionsApiService,
+    ProjectPartnerReportSummaryDTO, UserRoleDTO
+} from '@cat/api';
 import {FormService} from '@common/components/section/form/form.service';
 import {map, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
@@ -14,6 +19,11 @@ import {combineLatest, Observable} from 'rxjs';
 import {
   PartnerReportDetailPageStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import {PermissionService} from "../../../../../../security/permissions/permission.service";
+import {
+    PartnerControlReportStore
+} from "@project/project-application/report/partner-control-report/partner-control-report-store.service";
 
 @Component({
   selector: 'jems-partner-control-report-control-checklist-page',
@@ -29,6 +39,7 @@ export class PartnerControlReportControlChecklistPageComponent {
     checklist: ChecklistInstanceDetailDTO;
     editable: boolean;
     reportEditable: boolean;
+    isAfterControlChecklist: boolean;
   }>;
 
   confirmFinish = {
@@ -52,22 +63,40 @@ export class PartnerControlReportControlChecklistPageComponent {
               private routingService: RoutingService,
               private activatedRoute: ActivatedRoute,
               private controllerInstitutionService: ControllerInstitutionsApiService,
-              private partnerReportDetailPageStore: PartnerReportDetailPageStore) {
+              private partnerReportDetailPageStore: PartnerReportDetailPageStore,
+              private partnerControlReportStore: PartnerControlReportStore,
+              private permissionService: PermissionService) {
     this.data$ = combineLatest([
       this.pageStore.checklist$,
       this.pageStore.checklistEditable$,
-      this.pageStore.reportEditable$
+      this.pageStore.reportEditable$,
+      this.partnerControlReportStore.partnerControlReport$
     ]).pipe(
-      map(([checklist, editable, reportEditable]) => ({checklist, editable, reportEditable})),
+      map(([checklist, editable, reportEditable, controlReport]) => ({
+          checklist,
+          editable,
+          reportEditable,
+          isAfterControlChecklist: this.isAfterControlChecklist(checklist.createdAt, controlReport.reportControlEnd)
+      })),
     );
     this.userCanEditControlChecklists$ = this.userCanEditControlChecklists();
   }
 
   private userCanEditControlChecklists(): Observable<boolean> {
-    return this.institutionUserControlReportLevel()
-        .pipe(
-            map((level) => level === 'Edit')
-        );
+      return combineLatest([
+          this.institutionUserControlReportLevel(),
+          this.partnerReportDetailPageStore.reportStatus$,
+          this.permissionService.hasPermission(PermissionsEnum.ProjectReportingChecklistAfterControl)
+      ])
+          .pipe(
+              map(([level, reportStatus, canEditChecklistsAfterControl]) =>
+                  (level === 'Edit' && reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.InControl)
+                  ||
+                  ((level === 'Edit' || level === 'View')
+                      && reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Certified
+                      && canEditChecklistsAfterControl)
+              )
+          );
   }
 
   private institutionUserControlReportLevel(): Observable<string> {
@@ -96,5 +125,12 @@ export class PartnerControlReportControlChecklistPageComponent {
 
   saveDiscardMenuIsActive(): boolean {
     return this.formService.form.dirty;
+  }
+
+  private isAfterControlChecklist(createdAt: Date, controlReportControlFinalizedDate: Date): boolean {
+      if (controlReportControlFinalizedDate === null) {
+          return true;
+      }
+      return createdAt > controlReportControlFinalizedDate;
   }
 }

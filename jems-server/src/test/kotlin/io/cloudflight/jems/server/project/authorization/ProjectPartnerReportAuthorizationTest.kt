@@ -15,6 +15,7 @@ import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaborato
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
+import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectReportingEdit
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectReportingView
 import io.mockk.clearMocks
@@ -320,6 +321,111 @@ internal class ProjectPartnerReportAuthorizationTest : UnitTest() {
         every { partnerCollaboratorPersistence.findByUserIdAndPartnerId(userId, partnerId = partnerId) } returns Optional.empty()
 
         assertThat(reportAuthorization.canRetrievePartner(partnerId)).isFalse
+    }
+
+
+    @Test
+    fun `canEditPartnerControlReportChecklist - is monitor`() {
+        val partnerId = 1193L
+        val reportId = 1193L
+        val projectId = 453L
+        every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
+        every { currentUser.hasPermission(UserRolePermission.ProjectReportingChecklistAfterControl) } returns true
+        every { currentUser.hasPermission(ProjectReportingView) } returns true
+        every { currentUser.user.assignedProjects } returns setOf(projectId)
+
+        assertThat(reportAuthorization.canEditPartnerControlReportChecklist(partnerId, reportId)).isTrue
+    }
+
+    @Test
+    fun `canEditPartnerControlReportChecklist - is controller with Edit, permission and report in control`() {
+        val partnerId = 1193L
+        val reportId = 1193L
+        val projectId = 453L
+        val report = mockk<ProjectPartnerReport>()
+        every { report.status } returns ReportStatus.InControl
+        every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
+        every { currentUser.hasPermission(UserRolePermission.ProjectReportingChecklistAfterControl) } returns true
+        every { currentUser.hasPermission(UserRolePermission.ProjectRetrieve) } returns false
+        every { reportPersistence.getPartnerReportById(partnerId, reportId) } returns report
+        every { securityService.getUserIdOrThrow() } returns 4590L
+        every { partnerCollaboratorPersistence.findByUserIdAndPartnerId(userId = 4590L, partnerId) } returns Optional.empty()
+        every { controllerInstitutionPersistence.getControllerUserAccessLevelForPartner(userId = 4590L, partnerId) } returns UserInstitutionAccessLevel.Edit
+        every { currentUser.user.assignedProjects } returns emptySet()
+
+        assertThat(reportAuthorization.canEditPartnerControlReportChecklist(partnerId, reportId)).isTrue
+    }
+
+    @Test
+    fun `canEditPartnerControlReportChecklist - is controller with Edit, no permission and report in control`() {
+        val partnerId = 1193L
+        val reportId = 1193L
+        val projectId = 453L
+        val report = mockk<ProjectPartnerReport>()
+        every { report.status } returns ReportStatus.InControl
+        every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
+        every { currentUser.hasPermission(UserRolePermission.ProjectReportingChecklistAfterControl) } returns false
+        every { reportPersistence.getPartnerReportById(partnerId, reportId) } returns report
+        every { securityService.getUserIdOrThrow() } returns 4590L
+        every { partnerCollaboratorPersistence.findByUserIdAndPartnerId(userId = 4590L, partnerId) } returns Optional.empty()
+        every { controllerInstitutionPersistence.getControllerUserAccessLevelForPartner(userId = 4590L, partnerId) } returns UserInstitutionAccessLevel.Edit
+
+        assertThat(reportAuthorization.canEditPartnerControlReportChecklist(partnerId, reportId)).isTrue
+    }
+
+    @Test
+    fun `canEditPartnerControlReportChecklist - is controller with View, permission and report in control`() {
+        val partnerId = 1193L
+        val reportId = 1193L
+        val projectId = 453L
+        val report = mockk<ProjectPartnerReport>()
+        every { report.status } returns ReportStatus.InControl
+        every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
+        every { currentUser.hasPermission(UserRolePermission.ProjectReportingChecklistAfterControl) } returns true
+        every { currentUser.hasPermission(UserRolePermission.ProjectRetrieve) } returns false
+        every { reportPersistence.getPartnerReportById(partnerId, reportId) } returns report
+        every { securityService.getUserIdOrThrow() } returns 4590L
+        every { partnerCollaboratorPersistence.findByUserIdAndPartnerId(userId = 4590L, partnerId) } returns Optional.empty()
+        every { controllerInstitutionPersistence.getControllerUserAccessLevelForPartner(userId = 4590L, partnerId) } returns UserInstitutionAccessLevel.View
+        every { currentUser.user.assignedProjects } returns emptySet()
+
+        assertThat(reportAuthorization.canEditPartnerControlReportChecklist(partnerId, reportId)).isFalse
+    }
+
+    @Test
+    fun `canEditPartnerControlReportChecklist - is controller with permission and report certified`() {
+        val partnerId = 1193L
+        val reportId = 1193L
+        val projectId = 453L
+        val report = mockk<ProjectPartnerReport>()
+        every { report.status } returns ReportStatus.Certified
+        every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
+        every { currentUser.hasPermission(UserRolePermission.ProjectReportingChecklistAfterControl) } returns true
+        every { currentUser.hasPermission(UserRolePermission.ProjectRetrieve) } returns false
+        every { reportPersistence.getPartnerReportById(partnerId, reportId) } returns report
+        every { securityService.getUserIdOrThrow() } returns 4590L
+        every { partnerCollaboratorPersistence.findByUserIdAndPartnerId(userId = 4590L, partnerId) } returns Optional.empty()
+        every { controllerInstitutionPersistence.getControllerUserAccessLevelForPartner(userId = 4590L, partnerId) } returns UserInstitutionAccessLevel.Edit
+        every { currentUser.user.assignedProjects } returns emptySet()
+
+        assertThat(reportAuthorization.canEditPartnerControlReportChecklist(partnerId, reportId)).isTrue
+    }
+
+    @Test
+    fun `canEditPartnerControlReportChecklist - is controller without permission and report certified`() {
+        val partnerId = 1193L
+        val reportId = 1193L
+        val projectId = 453L
+        val report = mockk<ProjectPartnerReport>()
+        every { report.status } returns ReportStatus.Certified
+        every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
+        every { currentUser.hasPermission(UserRolePermission.ProjectReportingChecklistAfterControl) } returns false
+        every { reportPersistence.getPartnerReportById(partnerId, reportId) } returns report
+        every { securityService.getUserIdOrThrow() } returns 4590L
+        every { partnerCollaboratorPersistence.findByUserIdAndPartnerId(userId = 4590L, partnerId) } returns Optional.empty()
+        every { controllerInstitutionPersistence.getControllerUserAccessLevelForPartner(userId = 4590L, partnerId) } returns UserInstitutionAccessLevel.Edit
+
+        assertThat(reportAuthorization.canEditPartnerControlReportChecklist(partnerId, reportId)).isFalse
     }
 
 }
