@@ -32,7 +32,6 @@ fun ProjectReportModel.toServiceModel(
 )
 
 fun ProjectReportModel.toServiceSummaryModel(
-    deletableId: Long?,
     periodResolver: (Int) -> ProjectPeriod?,
 ) = ProjectReportSummary(
     id = id,
@@ -49,5 +48,5 @@ fun ProjectReportModel.toServiceSummaryModel(
     createdAt = createdAt,
     firstSubmission = firstSubmission,
     verificationDate = verificationDate,
-    deletable = id == deletableId,
+    deletable = status.isOpen(),
 )

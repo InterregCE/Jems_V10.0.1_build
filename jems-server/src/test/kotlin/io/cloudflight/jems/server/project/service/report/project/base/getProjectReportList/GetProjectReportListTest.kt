@@ -38,7 +38,6 @@ internal class GetProjectReportListTest : UnitTest() {
     @EnumSource(value = ProjectReportStatus::class, names = ["Draft"])
     fun `findAll, when last report draft`(status: ProjectReportStatus) {
         val projectId = 91L + status.ordinal
-        every { reportPersistence.getCurrentLatestReportFor(projectId) } returns report.copy(id = 7L, status = status)
         every { reportPersistence.listReports(projectId, Pageable.unpaged()) } returns PageImpl(
             listOf(
                 report.copy(id = 7L, projectId = projectId, periodNumber = 7),
@@ -48,7 +47,7 @@ internal class GetProjectReportListTest : UnitTest() {
 
         assertThat(interactor.findAll(projectId, Pageable.unpaged())).containsExactly(
             expectedReportSummary.copy(id = 7L, deletable = true),
-            expectedReportSummary.copy(id = 8L, deletable = false, periodDetail = null),
+            expectedReportSummary.copy(id = 8L, deletable = true, periodDetail = null),
         )
     }
 
@@ -56,13 +55,12 @@ internal class GetProjectReportListTest : UnitTest() {
     @EnumSource(value = ProjectReportStatus::class, names = ["Draft"], mode = EnumSource.Mode.EXCLUDE)
     fun `findAll, when last report not draft but`(status: ProjectReportStatus) {
         val projectId = 191L + status.ordinal
-        every { reportPersistence.getCurrentLatestReportFor(projectId) } returns report.copy(id = 7L, status = status)
         every { reportPersistence.listReports(projectId, Pageable.unpaged()) } returns PageImpl(
             listOf(report.copy(id = 7L, projectId = projectId, periodNumber = 7))
         )
 
         assertThat(interactor.findAll(projectId, Pageable.unpaged()))
-            .containsExactly(expectedReportSummary.copy(id = 7L, deletable = false))
+            .containsExactly(expectedReportSummary.copy(id = 7L, deletable = true))
     }
 
 }

@@ -18,14 +18,14 @@ class DeleteProjectReport(
     @Transactional
     @ExceptionWrapper(DeleteProjectReportException::class)
     override fun delete(projectId: Long, reportId: Long) {
-        val latestReport = reportPersistence.getCurrentLatestReportFor(projectId)
-            ?: throw ThereIsNoAnyReportForProject()
+        val report = reportPersistence.getReportById(projectId, reportId)
 
-        if (latestReport.status.isClosed() || latestReport.id != reportId) {
-            throw OnlyLastOpenReportCanBeDeleted(lastOpenReport = latestReport)
+        if (report.status.isClosed()) {
+            throw ClosedReportCannotBeDeleted()
         }
 
         reportPersistence.deleteReport(projectId, reportId = reportId)
-        auditPublisher.publishEvent(projectReportDeleted(context = this, latestReport))
+        reportPersistence.decreaseNewerReportNumbersIfAllOpen(projectId, report.reportNumber)
+        auditPublisher.publishEvent(projectReportDeleted(context = this, report))
     }
 }

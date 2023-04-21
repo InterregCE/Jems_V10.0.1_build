@@ -100,4 +100,11 @@ class ProjectReportPersistenceProvider(
             .groupBy { it.deadline!!.id }
             .mapValues { it.value.maxOf { it.status } }
 
+    @Transactional
+    override fun decreaseNewerReportNumbersIfAllOpen(projectId: Long, number: Int) {
+        val lastReports = projectReportRepository.findAllByProjectIdAndNumberGreaterThan(projectId, number)
+        if (lastReports.all { it.status.isOpen() }) {
+            lastReports.onEach { it.number -= 1 }
+        }
+    }
 }

@@ -39,7 +39,7 @@ class ProjectReportEntity(
     val projectId: Long,
 
     @field:NotNull
-    val number: Int,
+    var number: Int,
 
     @Enumerated(EnumType.STRING)
     @field:NotNull

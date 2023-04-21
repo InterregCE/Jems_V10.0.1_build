@@ -17,7 +17,6 @@ import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
@@ -60,15 +59,17 @@ internal class DeleteProjectReportTest : UnitTest() {
     @EnumSource(value = ProjectReportStatus::class, names = ["Draft"])
     fun delete(status: ProjectReportStatus) {
         val projectId = 61L + status.ordinal
-        every { reportPersistence.getCurrentLatestReportFor(projectId) } returns
+        every { reportPersistence.getReportById(projectId, 22L) } returns
             currentLatestReport(22L, projectId, 4, status)
         every { reportPersistence.deleteReport(projectId, any()) } answers { }
+        every { reportPersistence.decreaseNewerReportNumbersIfAllOpen(projectId, 4) } answers { }
 
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
 
         interactor.delete(projectId, reportId = 22L)
         verify(exactly = 1) { reportPersistence.deleteReport(projectId, 22L) }
+        verify(exactly = 1) { reportPersistence.decreaseNewerReportNumbersIfAllOpen(projectId, 4) }
 
         assertThat(auditSlot.captured.auditCandidate).isEqualTo(AuditCandidate(
             action = AuditAction.PROJECT_REPORT_DELETED,
@@ -82,36 +83,15 @@ internal class DeleteProjectReportTest : UnitTest() {
     @EnumSource(value = ProjectReportStatus::class, names = ["Draft"], mode = EnumSource.Mode.EXCLUDE)
     fun `delete - report closed`(status: ProjectReportStatus) {
         val projectId = 161L + status.ordinal
-        every { reportPersistence.getCurrentLatestReportFor(projectId) } returns
+        every { reportPersistence.getReportById(projectId, 25L) } returns
             currentLatestReport(25L, projectId, 7, status)
 
-        assertThrows<OnlyLastOpenReportCanBeDeleted> { interactor.delete(projectId, reportId = 25L) }
+        assertThrows<ClosedReportCannotBeDeleted> { interactor.delete(projectId, reportId = 25L) }
 
         verify(exactly = 0) { reportPersistence.deleteReport(any(), any()) }
+        verify(exactly = 0) { reportPersistence.decreaseNewerReportNumbersIfAllOpen(any(), any()) }
         verify(exactly = 0) { auditPublisher.publishEvent(any()) }
     }
 
-    @ParameterizedTest(name = "delete - report not latest {0}")
-    @EnumSource(value = ProjectReportStatus::class)
-    fun `delete - report not latest`(status: ProjectReportStatus) {
-        val projectId = 261L + status.ordinal
-        every { reportPersistence.getCurrentLatestReportFor(projectId) } returns
-            currentLatestReport(30L, projectId, 8, status)
-
-        assertThrows<OnlyLastOpenReportCanBeDeleted> { interactor.delete(projectId, reportId = -1L) }
-
-        verify(exactly = 0) { reportPersistence.deleteReport(any(), any()) }
-        verify(exactly = 0) { auditPublisher.publishEvent(any()) }
-    }
-
-    @Test
-    fun `delete - no report`() {
-        every { reportPersistence.getCurrentLatestReportFor(-1L) } returns null
-
-        assertThrows<ThereIsNoAnyReportForProject> { interactor.delete(-1L, reportId = 0L) }
-
-        verify(exactly = 0) { reportPersistence.deleteReport(any(), any()) }
-        verify(exactly = 0) { auditPublisher.publishEvent(any()) }
-    }
 
 }
