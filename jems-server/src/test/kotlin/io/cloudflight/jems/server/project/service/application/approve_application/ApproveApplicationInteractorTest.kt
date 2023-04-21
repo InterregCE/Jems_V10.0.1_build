@@ -1,22 +1,16 @@
 package io.cloudflight.jems.server.project.service.application.approve_application
 
-import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentQualityResult.RECOMMENDED_FOR_FUNDING
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.audit.model.AuditProject
-import io.cloudflight.jems.server.audit.service.AuditCandidate
-import io.cloudflight.jems.server.common.event.JemsAuditEvent
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.authorization.ProjectAuthorization
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus.APPROVED
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus.ELIGIBLE
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus.STEP1_APPROVED
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus.STEP1_ELIGIBLE
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus.*
 import io.cloudflight.jems.server.project.service.application.projectWithId
+import io.cloudflight.jems.server.project.service.application.submit_application.ProjectStatusChangeEvent
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
 import io.cloudflight.jems.server.project.service.application.workflow.states.EligibleApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.first_step.FirstStepEligibleApplicationState
@@ -51,6 +45,7 @@ class ApproveApplicationInteractorTest : UnitTest() {
             acronym = "project acronym",
             status = status,
         )
+
         private val actionInfo = ApplicationActionInfo(
             note = "make approval",
             date = LocalDate.of(2021, 4, 13),
@@ -101,13 +96,13 @@ class ApproveApplicationInteractorTest : UnitTest() {
 
         assertThat(approveApplication.approve(PROJECT_ID, actionInfo)).isEqualTo(APPROVED)
 
-        val slotAudit = slot<JemsAuditEvent>()
+        val slotAudit = slot<ProjectStatusChangeEvent>()
         verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }
-        assertThat(slotAudit.captured.auditCandidate).isEqualTo(
-            AuditCandidate(
-                action = AuditAction.APPLICATION_STATUS_CHANGED,
-                project = AuditProject(id = PROJECT_ID.toString(), customIdentifier = "01", name = "project acronym"),
-                description = "Project application status changed from ELIGIBLE to APPROVED"
+        assertThat(slotAudit.captured).isEqualTo(
+            ProjectStatusChangeEvent(
+                context = approveApplication,
+                projectSummary = summary(ELIGIBLE),
+                newStatus = APPROVED
             )
         )
     }
@@ -120,16 +115,17 @@ class ApproveApplicationInteractorTest : UnitTest() {
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns summary(STEP1_ELIGIBLE)
         every { applicationStateFactory.getInstance(any()) } returns eligibleStateStep1
         every { eligibleStateStep1.approve(actionInfo) } returns STEP1_APPROVED
+        every { eligibleStateStep1.approve(actionInfo) } returns STEP1_APPROVED
 
         assertThat(approveApplication.approve(PROJECT_ID, actionInfo)).isEqualTo(STEP1_APPROVED)
 
-        val slotAudit = slot<JemsAuditEvent>()
+        val slotAudit = slot<ProjectStatusChangeEvent>()
         verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }
-        assertThat(slotAudit.captured.auditCandidate).isEqualTo(
-            AuditCandidate(
-                action = AuditAction.APPLICATION_STATUS_CHANGED,
-                project = AuditProject(id = PROJECT_ID.toString(), customIdentifier = "01", name = "project acronym"),
-                description = "Project application status changed from STEP1_ELIGIBLE to STEP1_APPROVED"
+        assertThat(slotAudit.captured).isEqualTo(
+            ProjectStatusChangeEvent(
+                context = approveApplication,
+                projectSummary = summary(STEP1_ELIGIBLE),
+                newStatus = STEP1_APPROVED
             )
         )
     }

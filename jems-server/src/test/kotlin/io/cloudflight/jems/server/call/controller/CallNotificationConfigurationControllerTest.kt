@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.call.controller
 
 import io.cloudflight.jems.api.call.dto.notificationConfiguration.ProjectNotificationConfigurationDTO
-import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
+import io.cloudflight.jems.api.notification.dto.NotificationTypeDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.service.model.ProjectNotificationConfiguration
 import io.cloudflight.jems.server.call.service.notificationConfigurations.getProjectNotificationConfiguration.GetProjectNotificationConfigurationException
@@ -9,7 +9,6 @@ import io.cloudflight.jems.server.call.service.notificationConfigurations.getPro
 import io.cloudflight.jems.server.call.service.notificationConfigurations.updateProjectNotificationConfigurations.UpdateProjectNotificationConfigurationsException
 import io.cloudflight.jems.server.call.service.notificationConfigurations.updateProjectNotificationConfigurations.UpdateProjectNotificationConfigurationsInteractor
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -26,7 +25,7 @@ class CallNotificationConfigurationControllerTest : UnitTest() {
 
         private val configDTO = listOf(
             ProjectNotificationConfigurationDTO(
-                id = ApplicationStatusDTO.SUBMITTED,
+                id = NotificationTypeDTO.ProjectSubmitted,
                 active = true,
                 sendToManager = true,
                 sendToLeadPartner = false,
@@ -34,7 +33,7 @@ class CallNotificationConfigurationControllerTest : UnitTest() {
                 sendToProjectAssigned = false,
             ),
             ProjectNotificationConfigurationDTO(
-                id = ApplicationStatusDTO.STEP1_SUBMITTED,
+                id = NotificationTypeDTO.ProjectSubmittedStep1,
                 active = true,
                 sendToManager = true,
                 sendToLeadPartner = false,
@@ -45,7 +44,7 @@ class CallNotificationConfigurationControllerTest : UnitTest() {
 
         private val updateConfigDTO = listOf(
             ProjectNotificationConfigurationDTO(
-                id = ApplicationStatusDTO.SUBMITTED,
+                id = NotificationTypeDTO.ProjectSubmitted,
                 active = true,
                 sendToManager = true,
                 sendToLeadPartner = false,
@@ -53,7 +52,7 @@ class CallNotificationConfigurationControllerTest : UnitTest() {
                 sendToProjectAssigned = false,
             ),
             ProjectNotificationConfigurationDTO(
-                id = ApplicationStatusDTO.STEP1_SUBMITTED,
+                id = NotificationTypeDTO.ProjectSubmittedStep1,
                 active = true,
                 sendToManager = true,
                 sendToLeadPartner = false,

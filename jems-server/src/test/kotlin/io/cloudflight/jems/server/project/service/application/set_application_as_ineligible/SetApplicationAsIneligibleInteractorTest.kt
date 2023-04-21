@@ -1,16 +1,13 @@
 package io.cloudflight.jems.server.project.service.application.set_application_as_ineligible
 
-import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentEligibilityResult
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.audit.model.AuditProject
-import io.cloudflight.jems.server.audit.service.AuditCandidate
-import io.cloudflight.jems.server.common.event.JemsAuditEvent
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.application.projectWithId
+import io.cloudflight.jems.server.project.service.application.submit_application.ProjectStatusChangeEvent
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
 import io.cloudflight.jems.server.project.service.application.workflow.states.SubmittedApplicationState
 import io.cloudflight.jems.server.project.service.model.ProjectAssessment
@@ -77,13 +74,13 @@ class SetApplicationAsIneligibleInteractorTest : UnitTest() {
 
         assertThat(setApplicationAsIneligible.setAsIneligible(PROJECT_ID, actionInfo)).isEqualTo(ApplicationStatus.INELIGIBLE)
 
-        val slotAudit = slot<JemsAuditEvent>()
+        val slotAudit = slot<ProjectStatusChangeEvent>()
         verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }
-        assertThat(slotAudit.captured.auditCandidate).isEqualTo(
-            AuditCandidate(
-                action = AuditAction.APPLICATION_STATUS_CHANGED,
-                project = AuditProject(id = PROJECT_ID.toString(), customIdentifier = "01", name = "project acronym"),
-                description = "Project application status changed from SUBMITTED to INELIGIBLE"
+        assertThat(slotAudit.captured).isEqualTo(
+            ProjectStatusChangeEvent(
+                context = setApplicationAsIneligible,
+                projectSummary = summary,
+                newStatus = ApplicationStatus.INELIGIBLE
             )
         )
     }

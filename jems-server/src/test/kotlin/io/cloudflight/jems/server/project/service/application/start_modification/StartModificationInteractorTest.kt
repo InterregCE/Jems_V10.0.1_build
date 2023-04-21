@@ -6,11 +6,11 @@ import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.common.event.JemsAuditEvent
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.application.submit_application.ProjectStatusChangeEvent
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
 import io.cloudflight.jems.server.project.service.application.workflow.states.ApprovedApplicationState
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
@@ -76,13 +76,13 @@ class StartModificationInteractorTest: UnitTest() {
 
     @Test
     fun startModifications() {
-        every { projectPersistence.getProjectSummary(PROJECT_ID) } returns StartModificationInteractorTest.summary
+        every { projectPersistence.getProjectSummary(PROJECT_ID) } returns summary
         every { applicationStateFactory.getInstance(any()) } returns approvedState
         every { projectPersistence.getApplicantAndStatusById(any()).projectStatus } returns ApplicationStatus.APPROVED
         every { approvedState.startModification() } returns ApplicationStatus.MODIFICATION_PRECONTRACTING
 
 
-        val slotAuditStatus = slot<JemsAuditEvent>()
+        val slotAuditStatus = slot<ProjectStatusChangeEvent>()
         val slotAuditVersion = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(slotAuditStatus)) }.returns(Unit)
         every { auditPublisher.publishEvent(capture(slotAuditVersion)) }.returns(Unit)
@@ -94,16 +94,11 @@ class StartModificationInteractorTest: UnitTest() {
         verify (exactly = 1){ auditPublisher.publishEvent(capture(slotAuditStatus)) }
         verify (exactly = 1){ auditPublisher.publishEvent(capture(slotAuditVersion)) }
 
-
-        Assertions.assertThat(slotAuditStatus.captured.auditCandidate).isEqualTo(
-            AuditCandidate(
-                action = AuditAction.APPLICATION_STATUS_CHANGED,
-                project = AuditProject(
-                    id = PROJECT_ID.toString(),
-                    customIdentifier = "01",
-                    name = "project acronym"
-                ),
-                description = "Project application status changed from APPROVED to MODIFICATION_PRECONTRACTING"
+        Assertions.assertThat(slotAuditStatus.captured).isEqualTo(
+            ProjectStatusChangeEvent(
+                context = startModification,
+                projectSummary = summary,
+                newStatus = ApplicationStatus.MODIFICATION_PRECONTRACTING
             )
         )
 

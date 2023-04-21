@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.call.repository.notifications.project
 
 import io.cloudflight.jems.api.call.dto.notificationConfiguration.ProjectNotificationConfigurationDTO
-import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
+import io.cloudflight.jems.api.notification.dto.NotificationTypeDTO
 import io.cloudflight.jems.server.call.controller.toDto
 import io.cloudflight.jems.server.call.entity.ProjectNotificationConfigurationEntity
 import io.cloudflight.jems.server.call.entity.ProjectNotificationConfigurationId
@@ -47,7 +47,7 @@ class CallNotificationConfigurationsPersistenceProviderTest {
            )
            val expectedConfigs = mutableSetOf(
                ProjectNotificationConfigurationDTO(
-                   id = ApplicationStatusDTO.SUBMITTED,
+                   id = NotificationTypeDTO.ProjectSubmitted,
                    active = true,
                    sendToManager = true,
                    sendToLeadPartner = false,
@@ -84,7 +84,7 @@ class CallNotificationConfigurationsPersistenceProviderTest {
             emailBody = ""
         )
         val expectedConfig = ProjectNotificationConfigurationDTO(
-            id = ApplicationStatusDTO.SUBMITTED,
+            id = NotificationTypeDTO.ProjectSubmitted,
             active = true,
             sendToManager = true,
             sendToLeadPartner = false,

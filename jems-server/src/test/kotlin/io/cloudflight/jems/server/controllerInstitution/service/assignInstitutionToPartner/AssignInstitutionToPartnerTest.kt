@@ -3,21 +3,24 @@ package io.cloudflight.jems.server.controllerInstitution.service.assignInstituti
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
-import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.approvedAndAfterApprovedApplicationStatuses
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionAssignment
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignment
 import io.cloudflight.jems.server.project.repository.partner.PartnerPersistenceProvider
-import io.mockk.*
+import io.mockk.clearMocks
+import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.context.ApplicationEventPublisher
 
-class AssignInstitutionToPartnerTest: UnitTest() {
+class AssignInstitutionToPartnerTest : UnitTest() {
 
     companion object {
         private const val INSTITUTION_ID = 1L
@@ -30,7 +33,7 @@ class AssignInstitutionToPartnerTest: UnitTest() {
     }
 
     @RelaxedMockK
-    lateinit var  controllerInstitutionPersistence: ControllerInstitutionPersistence
+    lateinit var controllerInstitutionPersistence: ControllerInstitutionPersistence
 
     @RelaxedMockK
     lateinit var partnerPersistence: PartnerPersistenceProvider
@@ -44,8 +47,7 @@ class AssignInstitutionToPartnerTest: UnitTest() {
 
     @BeforeEach
     fun resetMocks() {
-        clearMocks(controllerInstitutionPersistence)
-        clearMocks(partnerPersistence)
+        clearMocks(partnerPersistence, controllerInstitutionPersistence)
     }
 
     @Test
@@ -56,17 +58,24 @@ class AssignInstitutionToPartnerTest: UnitTest() {
         )
         val assignmentsPartnerIds = newAssignment.assignmentsToAdd.map { it.partnerId }.union(newAssignment.assignmentsToRemove.map { it.partnerId })
 
-        every { partnerPersistence.getPartnerProjectIdByPartnerIdAndProjectStatusIn(
-            assignmentsPartnerIds, approvedAndAfterApprovedApplicationStatuses) } returns listOf(Pair(1L, 1L))
+        every {
+            partnerPersistence.getPartnerProjectIdByPartnerIdAndProjectStatusIn(
+                assignmentsPartnerIds, approvedAndAfterApprovedApplicationStatuses
+            )
+        } returns listOf(Pair(1L, 1L))
 
-       every { controllerInstitutionPersistence.assignInstitutionToPartner(
-           partnerIdsToRemove = emptySet(),
-           assignmentsToSave = listOf(InstitutionPartnerAssignment(
-               institutionId = 1L,
-               partnerId = 1L,
-               partnerProjectId = 1L
-           ))
-       ) }  returns listOf(InstitutionPartnerAssignment(institutionId = 1L, partnerId = 1L, partnerProjectId = 1L))
+        every {
+            controllerInstitutionPersistence.assignInstitutionToPartner(
+                partnerIdsToRemove = emptySet(),
+                assignmentsToSave = listOf(
+                    InstitutionPartnerAssignment(
+                        institutionId = 1L,
+                        partnerId = 1L,
+                        partnerProjectId = 1L
+                    )
+                )
+            )
+        } returns listOf(InstitutionPartnerAssignment(institutionId = 1L, partnerId = 1L, partnerProjectId = 1L))
 
         assertThat(assignInstitutionToPartner.assignInstitutionToPartner(newAssignment)).containsExactly(
             InstitutionPartnerAssignment(
@@ -99,8 +108,11 @@ class AssignInstitutionToPartnerTest: UnitTest() {
         )
         val assignmentsPartnerIds = newAssignment.assignmentsToAdd.map { it.partnerId }.union(newAssignment.assignmentsToRemove.map { it.partnerId })
 
-        every { partnerPersistence.getPartnerProjectIdByPartnerIdAndProjectStatusIn(
-            assignmentsPartnerIds, approvedAndAfterApprovedApplicationStatuses) } returns emptyList()
+        every {
+            partnerPersistence.getPartnerProjectIdByPartnerIdAndProjectStatusIn(
+                assignmentsPartnerIds, approvedAndAfterApprovedApplicationStatuses
+            )
+        } returns emptyList()
 
         assertThrows<ProjectPartnerNotValidException> { assignInstitutionToPartner.assignInstitutionToPartner(newAssignment) }
     }

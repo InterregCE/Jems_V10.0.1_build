@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.application.ifIsValid
+import io.cloudflight.jems.server.project.service.application.submit_application.ProjectStatusChangeEvent
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
 import io.cloudflight.jems.server.project.service.projectStatusChanged
 import org.springframework.context.ApplicationEventPublisher
@@ -33,7 +34,7 @@ class ApproveApplication(
                     if(projectSummary.isInStep2()) {
                         projectVersionPersistence.saveTimestampForApprovedApplication(projectId)
                     }
-                    auditPublisher.publishEvent(projectStatusChanged(projectSummary, newStatus = it))
+                    auditPublisher.publishEvent(ProjectStatusChangeEvent(this, projectSummary, it))
                 }
             }
         }

@@ -1,15 +1,12 @@
 package io.cloudflight.jems.server.project.service.application.hand_back_to_applicant
 
-import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.audit.model.AuditProject
-import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.common.event.JemsAuditEvent
 import io.cloudflight.jems.server.project.authorization.ProjectAuthorization
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.application.submit_application.ProjectStatusChangeEvent
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
 import io.cloudflight.jems.server.project.service.application.workflow.states.ConditionsSubmittedApplicationState
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
@@ -67,7 +64,7 @@ class HandBackToApplicantInteractorTest : UnitTest() {
         every { applicationStateFactory.getInstance(any()) } returns conditionsSubmittedApplicationState
         every { conditionsSubmittedApplicationState.handBackToApplicant() } returns ApplicationStatus.RETURNED_TO_APPLICANT_FOR_CONDITIONS
 
-        val slotAudit = mutableListOf<JemsAuditEvent>()
+        val slotAudit = mutableListOf<ProjectStatusChangeEvent>()
         every { auditPublisher.publishEvent(capture(slotAudit)) }.returnsMany(Unit)
 
         assertThat(handBackToApplicant.handBackToApplicant(PROJECT_ID))
@@ -75,11 +72,11 @@ class HandBackToApplicantInteractorTest : UnitTest() {
 
         verify (exactly = 1){ auditPublisher.publishEvent(slotAudit[0]) }
 
-        assertThat(slotAudit[0].auditCandidate).isEqualTo(
-            AuditCandidate(
-                action = AuditAction.APPLICATION_STATUS_CHANGED,
-                project = AuditProject(id = PROJECT_ID.toString(), customIdentifier = "01", name = "project acronym"),
-                description = "Project application status changed from CONDITIONS_SUBMITTED to RETURNED_TO_APPLICANT_FOR_CONDITIONS"
+        assertThat(slotAudit[0]).isEqualTo(
+            ProjectStatusChangeEvent(
+                context = handBackToApplicant,
+                projectSummary = summary,
+                newStatus = ApplicationStatus.RETURNED_TO_APPLICANT_FOR_CONDITIONS
             )
         )
     }

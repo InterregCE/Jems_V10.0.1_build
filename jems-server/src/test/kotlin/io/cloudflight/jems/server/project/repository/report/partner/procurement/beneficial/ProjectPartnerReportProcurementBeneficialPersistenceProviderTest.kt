@@ -6,9 +6,12 @@ import io.cloudflight.jems.server.project.entity.report.partner.procurement.bene
 import io.cloudflight.jems.server.project.repository.report.partner.procurement.ProjectPartnerReportProcurementRepository
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.beneficial.ProjectPartnerReportProcurementBeneficialChange
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.beneficial.ProjectPartnerReportProcurementBeneficialOwner
-import io.mockk.*
+import io.mockk.clearMocks
+import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
+import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -103,8 +106,7 @@ class ProjectPartnerReportProcurementBeneficialPersistenceProviderTest : UnitTes
 
     @BeforeEach
     fun reset() {
-        clearMocks(reportProcurementRepository)
-        clearMocks(reportProcurementBeneficialRepository)
+        clearMocks(reportProcurementRepository, reportProcurementBeneficialRepository)
     }
 
     @Test
