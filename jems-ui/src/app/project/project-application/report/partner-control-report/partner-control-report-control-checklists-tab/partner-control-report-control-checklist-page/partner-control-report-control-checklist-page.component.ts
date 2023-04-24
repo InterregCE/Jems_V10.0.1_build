@@ -86,13 +86,14 @@ export class PartnerControlReportControlChecklistPageComponent {
       return combineLatest([
           this.institutionUserControlReportLevel(),
           this.partnerReportDetailPageStore.reportStatus$,
-          this.permissionService.hasPermission(PermissionsEnum.ProjectReportingChecklistAfterControl)
+          this.permissionService.hasPermission(PermissionsEnum.ProjectReportingChecklistAfterControl),
+          this.permissionService.hasPermission(PermissionsEnum.ProjectReportingView)
       ])
           .pipe(
-              map(([level, reportStatus, canEditChecklistsAfterControl]) =>
+              map(([level, reportStatus, canEditChecklistsAfterControl, canViewReport]) =>
                   (level === 'Edit' && reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.InControl)
                   ||
-                  ((level === 'Edit' || level === 'View')
+                  ((level === 'Edit' || level === 'View' || canViewReport)
                       && reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Certified
                       && canEditChecklistsAfterControl)
               )

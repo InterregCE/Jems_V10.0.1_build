@@ -28,9 +28,6 @@ import {ChecklistItem} from '@common/components/checklist/checklist-item';
 import {AlertMessage} from '@common/components/file-list/file-list-table/alert-message';
 import {Alert} from '@common/components/forms/alert';
 import {SecurityService} from '../../../../security/security.service';
-import {
-    PartnerControlReportStore
-} from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {PermissionService} from '../../../../security/permissions/permission.service';
 
@@ -116,13 +113,14 @@ export class ControlChecklistInstanceListComponent implements OnInit {
     return combineLatest([
         this.institutionUserControlReportLevel(),
         this.partnerReportDetailPageStore.reportStatus$,
-        this.permissionService.hasPermission(PermissionsEnum.ProjectReportingChecklistAfterControl)
+        this.permissionService.hasPermission(PermissionsEnum.ProjectReportingChecklistAfterControl),
+        this.permissionService.hasPermission(PermissionsEnum.ProjectReportingView)
     ])
       .pipe(
-        map(([level, reportStatus, canEditChecklistsAfterControl]) =>
+        map(([level, reportStatus, canEditChecklistsAfterControl, canViewReport]) =>
             (level === 'Edit' && reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.InControl)
             ||
-            ((level === 'Edit' || level === 'View')
+            ((level === 'Edit' || level === 'View' || canViewReport)
                 && reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Certified
                 && canEditChecklistsAfterControl)
         )
