@@ -1,5 +1,6 @@
 package io.cloudflight.jems.api.project.report.project
 
+import io.cloudflight.jems.api.plugin.dto.PreConditionCheckResultDTO
 import io.cloudflight.jems.api.project.dto.report.project.ProjectReportDTO
 import io.cloudflight.jems.api.project.dto.report.project.ProjectReportStatusDTO
 import io.cloudflight.jems.api.project.dto.report.project.ProjectReportSummaryDTO
@@ -63,6 +64,13 @@ interface ProjectReportApi {
     @ApiOperation("Deletes project report")
     @DeleteMapping(ENDPOINT_API_PROJECT_REPORT)
     fun deleteProjectReport(@PathVariable projectId: Long, @PathVariable reportId: Long)
+
+    @ApiOperation("Run pre-submission check for project report")
+    @PostMapping("$ENDPOINT_API_PROJECT_REPORT/preCheck/")
+    fun runPreCheck(
+        @PathVariable projectId: Long,
+        @PathVariable reportId: Long,
+    ): PreConditionCheckResultDTO
 
     @ApiOperation("Submit and lock project report")
     @PostMapping("$ENDPOINT_API_PROJECT_REPORT/submit")

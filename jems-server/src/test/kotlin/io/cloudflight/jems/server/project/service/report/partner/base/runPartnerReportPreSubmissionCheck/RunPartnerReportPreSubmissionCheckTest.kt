@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.service.report.partner.base.runPreSubmissionCheck
+package io.cloudflight.jems.server.project.service.report.partner.base.runPartnerReportPreSubmissionCheck
 
 import io.cloudflight.jems.plugin.contract.pre_condition_check.models.PreConditionCheckResult
 import io.cloudflight.jems.server.UnitTest
@@ -14,15 +14,15 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
-internal class RunPreSubmissionCheckTest : UnitTest() {
+internal class RunPartnerReportPreSubmissionCheckTest : UnitTest() {
 
     @MockK
     private lateinit var reportPersistence: ProjectPartnerReportPersistence
     @MockK
-    private lateinit var service: RunPreSubmissionCheckService
+    private lateinit var service: RunPartnerReportPreSubmissionCheckService
 
     @InjectMockKs
-    private lateinit var interactor: RunPreSubmissionCheck
+    private lateinit var interactor: RunPartnerReportPreSubmissionCheck
 
     @BeforeEach
     fun reset() {

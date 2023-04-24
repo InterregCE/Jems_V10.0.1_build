@@ -4,5 +4,6 @@ data class PreSubmissionPluginsDTO(
     val pluginKey: String,
     val firstStepPluginKey: String?,
     val reportPartnerCheckPluginKey: String,
+    val reportProjectCheckPluginKey: String,
     val controlReportSamplingCheckPluginKey: String,
 )

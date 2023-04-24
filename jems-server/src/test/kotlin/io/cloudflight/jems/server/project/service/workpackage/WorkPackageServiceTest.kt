@@ -85,6 +85,7 @@ class WorkPackageServiceTest {
         preSubmissionCheckPluginKey = null,
         firstStepPreSubmissionCheckPluginKey = null,
         reportPartnerCheckPluginKey = "check-off",
+        reportProjectCheckPluginKey = "check-off",
         projectDefinedUnitCostAllowed = true,
         projectDefinedLumpSumAllowed = false,
         controlReportSamplingCheckPluginKey = "control-report-sampling-check-off"

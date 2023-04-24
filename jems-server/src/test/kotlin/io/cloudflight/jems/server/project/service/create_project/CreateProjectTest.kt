@@ -1,8 +1,6 @@
 package io.cloudflight.jems.server.project.service.create_project
 
-import io.cloudflight.jems.api.audit.dto.AuditAction.APPLICATION_STATUS_CHANGED
-import io.cloudflight.jems.api.audit.dto.AuditAction.APPLICATION_VERSION_RECORDED
-import io.cloudflight.jems.api.audit.dto.AuditAction.CALL_ALREADY_ENDED
+import io.cloudflight.jems.api.audit.dto.AuditAction.*
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.programme.dto.ProgrammeDataDTO
@@ -17,6 +15,8 @@ import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.ProgrammeDataService
+import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel
+import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel.MANAGE
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus.DRAFT
@@ -24,15 +24,12 @@ import io.cloudflight.jems.server.project.service.application.ApplicationStatus.
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectDetail
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
-import io.cloudflight.jems.server.project.service.model.ProjectVersion
+import io.cloudflight.jems.server.project.service.model.ProjectVersionSummary
+import io.cloudflight.jems.server.project.service.projectuser.UserProjectCollaboratorPersistence
 import io.cloudflight.jems.server.project.service.save_project_version.CreateNewProjectVersionInteractor
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
-import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel
-import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel.MANAGE
-import io.cloudflight.jems.server.project.service.model.ProjectVersionSummary
 import io.cloudflight.jems.server.user.repository.user.toUserSummary
-import io.cloudflight.jems.server.project.service.projectuser.UserProjectCollaboratorPersistence
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.clearMocks
 import io.mockk.every
@@ -74,6 +71,7 @@ internal class CreateProjectTest : UnitTest() {
             preSubmissionCheckPluginKey = null,
             firstStepPreSubmissionCheckPluginKey = null,
             reportPartnerCheckPluginKey = null,
+            reportProjectCheckPluginKey = null,
             projectDefinedUnitCostAllowed = false,
             projectDefinedLumpSumAllowed = true,
             controlReportSamplingCheckPluginKey = null

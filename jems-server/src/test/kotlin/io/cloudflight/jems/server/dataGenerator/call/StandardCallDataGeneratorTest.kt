@@ -25,6 +25,7 @@ import io.cloudflight.jems.server.dataGenerator.inputTranslation
 import io.cloudflight.jems.server.plugin.pre_submission_check.ControlReportSamplingCheckOff
 import io.cloudflight.jems.server.plugin.pre_submission_check.PreSubmissionCheckOff
 import io.cloudflight.jems.server.plugin.pre_submission_check.ReportPartnerCheckOff
+import io.cloudflight.jems.server.plugin.pre_submission_check.ReportProjectCheckOff
 import io.cloudflight.platform.test.openfeign.FeignTestClientFactory
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Order
@@ -117,6 +118,7 @@ class StandardCallDataGeneratorTest(@LocalServerPort private val port: Int) : Da
                 firstStepPluginKey = PreSubmissionCheckOff.KEY,
                 pluginKey = PreSubmissionCheckOff.KEY,
                 reportPartnerCheckPluginKey = ReportPartnerCheckOff.KEY,
+                reportProjectCheckPluginKey = ReportProjectCheckOff.KEY,
                 controlReportSamplingCheckPluginKey = ControlReportSamplingCheckOff.KEY
             )
         )

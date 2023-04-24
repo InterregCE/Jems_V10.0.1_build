@@ -52,6 +52,7 @@ class UpdatePreSubmissionCheckSettings(
         pluginKey = preSubmissionCheckPluginKey ?: "",
         firstStepPluginKey = firstStepPreSubmissionCheckPluginKey ?: "",
         reportPartnerCheckPluginKey = reportPartnerCheckPluginKey ?: "",
+        reportProjectCheckPluginKey = reportProjectCheckPluginKey ?: "",
         controlReportSamplingCheckPluginKey = controlReportSamplingCheckPluginKey?: ""
     )
 }

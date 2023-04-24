@@ -14,6 +14,7 @@ export class PreSubmissionCheckSettingsPageStore {
   preSubmissionCheckPlugins: Observable<PluginInfoDTO[]>;
   reportPartnerCheckPlugins: Observable<PluginInfoDTO[]>;
   controlReportSamplingCheckPlugins: Observable<PluginInfoDTO[]>;
+  reportProjectCheckPlugins: Observable<PluginInfoDTO[]>;
   callIsEditable$: Observable<boolean>;
   callHasTwoSteps$: Observable<boolean>;
   pluginKeys$: Observable<PluginKeys>;
@@ -22,6 +23,7 @@ export class PreSubmissionCheckSettingsPageStore {
               private callStore: CallStore) {
     this.preSubmissionCheckPlugins = this.pluginStore.getPluginListByType(TypeEnum.PRESUBMISSIONCHECK);
     this.reportPartnerCheckPlugins = this.pluginStore.getPluginListByType(TypeEnum.REPORTPARTNERCHECK);
+    this.reportProjectCheckPlugins = this.pluginStore.getPluginListByType(TypeEnum.REPORTPROJECTCHECK);
     this.controlReportSamplingCheckPlugins = this.pluginStore.getPluginListByType(TypeEnum.PARTNERCONTROLRISKBASEDSAMPLING);
     this.callIsEditable$ = this.callStore.callIsEditable$;
     this.callHasTwoSteps$ = this.callStore.call$.pipe(map(call => !!call.endDateTimeStep1));
@@ -29,6 +31,7 @@ export class PreSubmissionCheckSettingsPageStore {
       pluginKey: call.preSubmissionCheckPluginKey,
       firstStepPluginKey: call.firstStepPreSubmissionCheckPluginKey,
       reportPartnerCheckPluginKey: call.reportPartnerCheckPluginKey,
+      reportProjectCheckPluginKey: call.reportProjectCheckPluginKey,
       callHasTwoSteps: !!call.endDateTimeStep1,
       controlReportSamplingCheckPluginKey: call.controlReportSamplingCheckPluginKey
     })));

@@ -33,7 +33,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.financial
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumCurrentWithReIncluded
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.unitCost.ExpenditureUnitCostCurrentWithReIncluded
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
-import io.cloudflight.jems.server.project.service.report.partner.base.runPreSubmissionCheck.RunPreSubmissionCheckService
+import io.cloudflight.jems.server.project.service.report.partner.base.runPartnerReportPreSubmissionCheck.RunPartnerReportPreSubmissionCheckService
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectPartnerReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.ProjectPartnerReportExpenditureVerificationPersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
@@ -375,7 +375,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
     lateinit var reportPersistence: ProjectPartnerReportPersistence
 
     @MockK
-    lateinit var preSubmissionCheck: RunPreSubmissionCheckService
+    lateinit var preSubmissionCheck: RunPartnerReportPreSubmissionCheckService
 
     @MockK
     lateinit var reportExpenditurePersistence: ProjectPartnerReportExpenditurePersistence

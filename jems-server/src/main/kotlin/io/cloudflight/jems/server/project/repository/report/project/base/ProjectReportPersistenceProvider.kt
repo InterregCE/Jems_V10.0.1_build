@@ -107,4 +107,9 @@ class ProjectReportPersistenceProvider(
             lastReports.onEach { it.number -= 1 }
         }
     }
+
+    @Transactional(readOnly = true)
+    override fun exists(projectId: Long, reportId: Long): Boolean =
+        projectReportRepository.existsByProjectIdAndId(projectId, reportId)
+
 }

@@ -29,6 +29,7 @@ import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.plugin.pre_submission_check.ControlReportSamplingCheckOff
 import io.cloudflight.jems.server.plugin.pre_submission_check.ReportPartnerCheckOff
+import io.cloudflight.jems.server.plugin.pre_submission_check.ReportProjectCheckOff
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeStrategyEntity
 import io.cloudflight.jems.server.programme.entity.stateaid.ProgrammeStateAidEntity
@@ -81,6 +82,7 @@ fun CallEntity.toDetailModel(
     preSubmissionCheckPluginKey = preSubmissionCheckPluginKey,
     firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey,
     reportPartnerCheckPluginKey = reportPartnerCheckPluginKey,
+    reportProjectCheckPluginKey = reportProjectCheckPluginKey,
     projectDefinedUnitCostAllowed = projectDefinedUnitCostAllowed,
     projectDefinedLumpSumAllowed = projectDefinedLumpSumAllowed,
     controlReportSamplingCheckPluginKey = controlReportSamplingCheckPluginKey
@@ -155,6 +157,7 @@ fun Call.toEntity(
     preSubmissionCheckPluginKey = existingEntity?.preSubmissionCheckPluginKey,
     firstStepPreSubmissionCheckPluginKey = existingEntity?.firstStepPreSubmissionCheckPluginKey,
     reportPartnerCheckPluginKey = existingEntity?.reportPartnerCheckPluginKey ?: ReportPartnerCheckOff.KEY,
+    reportProjectCheckPluginKey = existingEntity?.reportProjectCheckPluginKey ?: ReportProjectCheckOff.KEY,
     projectDefinedUnitCostAllowed = existingEntity?.projectDefinedUnitCostAllowed ?: false,
     projectDefinedLumpSumAllowed = existingEntity?.projectDefinedLumpSumAllowed ?: false,
     controlReportSamplingCheckPluginKey = existingEntity?.controlReportSamplingCheckPluginKey ?: ControlReportSamplingCheckOff.KEY

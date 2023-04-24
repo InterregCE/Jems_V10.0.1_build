@@ -85,7 +85,18 @@ export class ProjectReportSubmitTabComponent {
   }
 
   runPreCheckOnReport(projectId: number, reportId: number): void {
-    this.submissionAvailable = true;
+    this.preCheckPending = true;
+    this.preConditionCheckResult = undefined;
+    this.detailPageStore.runPreCheck(projectId, reportId)
+      .pipe(
+        tap(result => this.submissionAvailable = result.submissionAllowed),
+        tap(result => this.preConditionCheckResult = result),
+        catchError((error) => this.showErrorMessage(error.error)),
+        finalize(() => {
+          this.preCheckPending = false;
+          this.cd.detectChanges();
+        }),
+      ).subscribe();
   }
 
   private showErrorMessage(error: APIError): Observable<null> {

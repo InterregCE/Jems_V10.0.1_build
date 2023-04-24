@@ -41,6 +41,7 @@ class UpdateCallLumpSumsTest {
             preSubmissionCheckPluginKey = null,
             firstStepPreSubmissionCheckPluginKey = null,
             reportPartnerCheckPluginKey = null,
+            reportProjectCheckPluginKey = null,
             projectDefinedUnitCostAllowed = false,
             projectDefinedLumpSumAllowed = true,
             controlReportSamplingCheckPluginKey = null

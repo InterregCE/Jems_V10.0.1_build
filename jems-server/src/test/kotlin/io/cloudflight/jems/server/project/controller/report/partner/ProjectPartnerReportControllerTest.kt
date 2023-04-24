@@ -54,7 +54,7 @@ import io.cloudflight.jems.server.project.service.report.partner.base.deleteProj
 import io.cloudflight.jems.server.project.service.report.partner.base.finalizeControlPartnerReport.FinalizeControlPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.getProjectPartnerReport.GetProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.getProjectReportPartnerList.GetProjectReportPartnerListInteractor
-import io.cloudflight.jems.server.project.service.report.partner.base.runPreSubmissionCheck.RunPreSubmissionCheckInteractor
+import io.cloudflight.jems.server.project.service.report.partner.base.runPartnerReportPreSubmissionCheck.RunPartnerReportPreSubmissionCheckInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.startControlPartnerReport.StartControlPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.submitProjectPartnerReport.SubmitProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.control.deleteControlReportFile.DeleteControlReportFileInteractor
@@ -268,7 +268,7 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
     lateinit var submitPartnerReport: SubmitProjectPartnerReportInteractor
 
     @MockK
-    lateinit var runPreCheckPartnerReport: RunPreSubmissionCheckInteractor
+    lateinit var runPreCheckPartnerReport: RunPartnerReportPreSubmissionCheckInteractor
 
     @MockK
     lateinit var startControlReport: StartControlPartnerReportInteractor
