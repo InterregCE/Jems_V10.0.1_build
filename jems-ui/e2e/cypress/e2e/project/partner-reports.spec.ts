@@ -151,6 +151,135 @@ context('Partner reports tests', () => {
     });
   });
 
+    it('TB-739 Partner user can report work plan progress', function () {
+        cy.fixture('project/reporting/TB-739.json').then(testData => {
+            cy.loginByRequest(user.programmeUser.email);
+            cy.createCall(call).then(callId => {
+                application.details.projectCallId = callId;
+                cy.publishCall(callId);
+
+                cy.loginByRequest(user.applicantUser.email);
+
+                cy.createContractedApplication(application, user.programmeUser.email)
+                    .then(applicationId => {
+                        const partnerId2 = this[application.partners[1].details.abbreviation];
+
+                        cy.loginByRequest(user.applicantUser.email);
+                        cy.assignPartnerCollaborators(applicationId, partnerId2, testData.partnerCollaborator);
+
+                        // fill in workplan for a report
+                        cy.addPartnerReport(partnerId2)
+                            .then(reportId => {
+                                cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId2}/reports/${reportId}/workplan`, {failOnStatusCode: false});
+                                cy.contains('mat-panel-title', 'Work package 1')
+                                    .click();
+                                cy.contains('Please describe your contribution to the activities carried out in this reporting period.').next().within(() => {
+                                    testData.workplan[0].description.forEach(item => {
+                                        cy.contains('button', item.language)
+                                            .click();
+                                        cy.get('textarea')
+                                            .type(item.translation);
+                                    });
+                                });
+                                testData.workplan[0].activities.forEach((item, index) => {
+                                    cy.get(`div.activity-container > jems-multi-language-container`).eq(index + (index % 2)).within(() => {
+                                        item.progress.forEach(language => {
+                                            cy.contains('button', language.language)
+                                                .click();
+                                            cy.get('textarea')
+                                                .eq(1)
+                                                .type(language.translation);
+                                        });
+                                    });
+
+                                    cy.get(`div.activity-container > jems-multi-language-container`).eq(index + (index % 2) + 1).within(() => {
+                                        item.deliverables.forEach((deliverable, del_index) => {
+                                            cy.get(`#deliverables-table > div`).eq(del_index + 1).within(() => {
+                                                cy.get('mat-checkbox')
+                                                    .click();
+                                            });
+                                        });
+                                    });
+                                });
+
+                                testData.workplan[0].outputs.forEach((output, out_index) => {
+                                    cy.get(`#outputs-table > div`).eq(out_index + 1).within(() => {
+                                        cy.get('mat-checkbox')
+                                            .click();
+                                    });
+                                });
+
+                                cy.contains('button', 'Save changes')
+                                    .click();
+
+                                cy.contains('The work package activities were saved successfully')
+                                    .should('be.visible');
+
+                                // upload file to activity
+                                cy.get('div.activity-container > jems-multi-language-container input').eq(0)
+                                    .scrollIntoView()
+                                    .invoke('show')
+                                    .selectFile('cypress/fixtures/project/reporting/fileToUpload.txt')
+                                    .invoke('hide');
+
+                                //upload file to deliverable
+                                cy.get('div.activity-container > jems-multi-language-container').eq(1).within(() => {
+                                    cy.get(`#deliverables-table > div`).eq(1).within(() => {
+                                        cy.get('input')
+                                            .eq(1)
+                                            .scrollIntoView()
+                                            .invoke('show')
+                                            .selectFile('cypress/fixtures/project/reporting/fileToUpload.txt')
+                                            .invoke('hide');
+                                    });
+                                });
+
+                                //upload file to output
+                                cy.get(`#outputs-table > div`).eq(1).within(() => {
+                                    cy.get('input')
+                                        .eq(1)
+                                        .scrollIntoView()
+                                        .invoke('show')
+                                        .selectFile('cypress/fixtures/project/reporting/fileToUpload.txt')
+                                        .invoke('hide');
+                                });
+
+                                //delete file from activity
+                                cy.get('div.activity-container > jems-multi-language-container mat-chip-list').eq(0).within(() => {
+                                    cy.get('mat-chip')
+                                        .contains('mat-icon', 'cancel')
+                                        .scrollIntoView()
+                                        .click();
+                                })
+
+                                cy.contains('button', 'Confirm')
+                                    .click();
+
+                                cy.get('div.activity-container > jems-multi-language-container input').eq(0)
+                                    .scrollIntoView()
+                                    .invoke('show')
+                                    .selectFile('cypress/fixtures/project/reporting/fileForUpdate.txt')
+                                    .invoke('hide');
+
+                                cy.wait(1000);
+
+                                cy.get('div.activity-container > jems-multi-language-container mat-chip-list').eq(0).within(() => {
+                                    cy.get('mat-chip > span')
+                                        .contains('fileForUpdate.txt')
+                                        .should('be.visible');
+                                })
+
+                                cy.get('div.activity-container > jems-multi-language-container mat-chip-list').eq(0).within(() => {
+                                    cy.get('mat-chip > span')
+                                        .contains('fileToUpload.txt')
+                                        .should('not.exist');
+                                })
+                            });
+                    });
+            });
+        });
+    });
+
   it('TB-740 Partner user can report public procurements', function () {
     cy.fixture('project/reporting/TB-740.json').then(testData => {
       cy.loginByRequest(user.programmeUser.email);
