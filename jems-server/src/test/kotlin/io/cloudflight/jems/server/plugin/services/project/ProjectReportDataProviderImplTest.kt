@@ -43,6 +43,7 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.plugin.services.report.ProjectReportDataProviderImpl
 import io.cloudflight.jems.server.plugin.services.report.toDataModel
 import io.cloudflight.jems.server.programme.service.indicator.model.OutputIndicatorSummary
+import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.model.ProjectHorizontalPrinciples
@@ -79,7 +80,6 @@ import io.cloudflight.jems.server.project.service.report.model.project.workPlan.
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageOutput
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanStatus
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
-import io.cloudflight.jems.server.project.service.report.project.base.getProjectReport.GetProjectReport
 import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCertificateInvestmentsBreakdownInteractor.GetReportCertificateInvestmentCalculatorService
@@ -109,7 +109,7 @@ class ProjectReportDataProviderImplTest : UnitTest() {
     private lateinit var projectReportPersistence: ProjectReportPersistence
 
     @MockK
-    private lateinit var getProjectReport: GetProjectReport
+    private lateinit var projectPersistence: ProjectPersistence
 
     @MockK
     private lateinit var getIdentificationPersistence: ProjectReportIdentificationPersistence
@@ -842,7 +842,7 @@ class ProjectReportDataProviderImplTest : UnitTest() {
                 reportId = REPORT_ID
             )
         } returns reportData
-        every { getProjectReport.getProjectPeriods(PROJECT_ID, any()) } returns listOf(projectPeriod)
+        every { projectPersistence.getProjectPeriods(PROJECT_ID, any()) } returns listOf(projectPeriod)
         assertThat(dataProvider.get(PROJECT_ID, reportId = REPORT_ID)).isEqualTo(expectedReportData)
     }
 

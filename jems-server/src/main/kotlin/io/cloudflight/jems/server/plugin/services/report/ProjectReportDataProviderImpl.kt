@@ -16,7 +16,6 @@ import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.perPartner.PerPartnerCostCategoryBreakdown
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
-import io.cloudflight.jems.server.project.service.report.project.base.getProjectReport.GetProjectReport
 import io.cloudflight.jems.server.project.service.report.project.base.toServiceModel
 import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCostCategoryPersistence
@@ -36,7 +35,7 @@ import org.springframework.stereotype.Service
 @Service
 class ProjectReportDataProviderImpl(
     private val projectReportPersistence: ProjectReportPersistence,
-    private val getProjectReport: GetProjectReport,
+    private val projectPersistence: ProjectPersistence,
     private val getIdentificationPersistence: ProjectReportIdentificationPersistence,
     private val getIdentificationService: GetProjectReportIdentification,
     private val reportWorkPlanPersistence: ProjectReportWorkPlanPersistence,
@@ -49,12 +48,11 @@ class ProjectReportDataProviderImpl(
     private val reportCertificateCostCategoryPersistence: ProjectReportCertificateCostCategoryPersistence,
     private val reportCertificateUnitCostCalculatorService: GetReportCertificateUnitCostCalculatorService,
     private val reportCertificateInvestmentCalculatorService: GetReportCertificateInvestmentCalculatorService,
-
-    ) : ProjectReportDataProvider {
+): ProjectReportDataProvider {
 
     override fun get(projectId: Long, reportId: Long): ProjectReportData =
         projectReportPersistence.getReportById(projectId, reportId = reportId).let { report ->
-            val periods = getProjectReport.getProjectPeriods(report.projectId, report.linkedFormVersion)
+            val periods = projectPersistence.getProjectPeriods(report.projectId, report.linkedFormVersion)
             report.toServiceModel { periodNumber -> periods.first { it.number == periodNumber } }
         }.toDataModel()
 
