@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.plugin.services
 
+import io.cloudflight.jems.plugin.contract.models.project.checklist.ChecklistSummaryData
 import io.cloudflight.jems.plugin.contract.models.project.checklist.ChecklistTypeData
 import io.cloudflight.jems.plugin.contract.services.ProjectChecklistDataProvider
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
@@ -34,4 +35,16 @@ class ProjectChecklistDataProviderImpl(
         ).toDataModel().also {
             logger.info("Retrieved checklist instances for project id=$projectId via plugin.")
         }
+
+    @Transactional(readOnly = true)
+    override fun getChecklistsForReport(reportId: Long): List<ChecklistSummaryData> =
+        persistence.findChecklistInstances(
+            ChecklistInstanceSearchRequest(
+                relatedToId = reportId,
+                type = ProgrammeChecklistType.CONTROL
+            )
+        ).toDataModel().also {
+            logger.info("Retrieved checklist instances for report id=$reportId via plugin.")
+        }
+
 }

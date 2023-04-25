@@ -38,6 +38,7 @@ data class CallDetail(
     val reportProjectCheckPluginKey: String?,
     val projectDefinedUnitCostAllowed: Boolean,
     val projectDefinedLumpSumAllowed: Boolean,
+    val controlReportPartnerCheckPluginKey: String?,
     val controlReportSamplingCheckPluginKey: String?,
 ) {
     fun isPublished() = status == CallStatus.PUBLISHED

@@ -88,6 +88,7 @@ class WorkPackageServiceTest {
         reportProjectCheckPluginKey = "check-off",
         projectDefinedUnitCostAllowed = true,
         projectDefinedLumpSumAllowed = false,
+        controlReportPartnerCheckPluginKey = "control-report-partner-check-off",
         controlReportSamplingCheckPluginKey = "control-report-sampling-check-off"
     ).apply { translatedValues.add(CallTranslEntity(TranslationId(this, SystemLanguage.EN), "This is a dummy call")) }
 

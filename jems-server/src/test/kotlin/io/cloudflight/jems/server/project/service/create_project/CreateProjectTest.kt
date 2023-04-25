@@ -74,6 +74,7 @@ internal class CreateProjectTest : UnitTest() {
             reportProjectCheckPluginKey = null,
             projectDefinedUnitCostAllowed = false,
             projectDefinedLumpSumAllowed = true,
+            controlReportPartnerCheckPluginKey = null,
             controlReportSamplingCheckPluginKey = null
         )
 

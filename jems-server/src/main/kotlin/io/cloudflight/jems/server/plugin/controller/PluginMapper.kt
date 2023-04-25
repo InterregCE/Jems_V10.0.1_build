@@ -9,6 +9,7 @@ import io.cloudflight.jems.plugin.contract.export.partner.report.PartnerControlR
 import io.cloudflight.jems.plugin.contract.export.partner.report.PartnerControlReportExportPlugin
 import io.cloudflight.jems.plugin.contract.export.partner.report.PartnerReportExportPlugin
 import io.cloudflight.jems.plugin.contract.export.project.report.ProjectReportExportPlugin
+import io.cloudflight.jems.plugin.contract.pre_condition_check.ControlReportPartnerCheckPlugin
 import io.cloudflight.jems.plugin.contract.pre_condition_check.ControlReportSamplingCheckPlugin
 import io.cloudflight.jems.plugin.contract.pre_condition_check.PreConditionCheckPlugin
 import io.cloudflight.jems.plugin.contract.pre_condition_check.ReportPartnerCheckPlugin
@@ -26,6 +27,7 @@ fun JemsPlugin.toPluginType(): PluginTypeDTO =
         is ReportProjectCheckPlugin -> PluginTypeDTO.REPORT_PROJECT_CHECK
         is PartnerControlReportCertificatePlugin -> PluginTypeDTO.PARTNER_CONTROL_REPORT_CERTIFICATE
         is PartnerControlReportExportPlugin -> PluginTypeDTO.PARTNER_CONTROL_REPORT_EXPORT
+        is ControlReportPartnerCheckPlugin -> PluginTypeDTO.PARTNER_CONTROL_REPORT_CHECK
         is PartnerReportExportPlugin -> PluginTypeDTO.PARTNER_REPORT_EXPORT
         is ControlReportSamplingCheckPlugin -> PluginTypeDTO.PARTNER_CONTROL_RISK_BASED_SAMPLING
         is ProjectReportExportPlugin -> PluginTypeDTO.REPORT_PROJECT_EXPORT
@@ -42,6 +44,7 @@ fun PluginTypeDTO.toType() =
         PluginTypeDTO.APPLICATION_FORM_EXPORT -> ApplicationFormExportPlugin::class
         PluginTypeDTO.PARTNER_CONTROL_REPORT_CERTIFICATE -> PartnerControlReportCertificatePlugin::class
         PluginTypeDTO.PARTNER_CONTROL_REPORT_EXPORT -> PartnerControlReportExportPlugin::class
+        PluginTypeDTO.PARTNER_CONTROL_REPORT_CHECK -> ControlReportPartnerCheckPlugin::class
         PluginTypeDTO.PARTNER_REPORT_EXPORT -> PartnerReportExportPlugin::class
         PluginTypeDTO.PARTNER_CONTROL_RISK_BASED_SAMPLING -> ControlReportSamplingCheckPlugin::class
         PluginTypeDTO.REPORT_PROJECT_EXPORT -> ProjectReportExportPlugin::class

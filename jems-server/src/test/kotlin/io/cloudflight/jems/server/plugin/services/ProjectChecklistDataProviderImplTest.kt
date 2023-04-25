@@ -110,6 +110,32 @@ internal class ProjectChecklistDataProviderImplTest : UnitTest() {
             visible = false,
         )
 
+        private val controlChecklistSummary = ChecklistInstance(
+            id = 16L,
+            programmeChecklistId = 55L,
+            status = ChecklistInstanceStatus.DRAFT,
+            type = ProgrammeChecklistType.CONTROL,
+            name = "name",
+            creatorEmail = "creator@email",
+            finishedDate = TODAY,
+            relatedToId = 18L,
+            consolidated = true,
+            visible = false,
+            description = "test"
+        )
+
+        private val expectedControlChecklistSummary = ChecklistSummaryData(
+            id = 16L,
+            status = ChecklistStatusData.DRAFT,
+            type = ChecklistTypeData.CONTROL,
+            name = "name",
+            creatorEmail = "creator@email",
+            finishedDate = TODAY,
+            relatedToId = 18L,
+            consolidated = true,
+            visible = false,
+        )
+
     }
 
     @MockK
@@ -135,6 +161,21 @@ internal class ProjectChecklistDataProviderImplTest : UnitTest() {
             ChecklistInstanceSearchRequest(
                 relatedToId = 18L,
                 type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
+            )
+        )
+    }
+
+    @Test
+    fun getChecklistsForReport() {
+        val slotSearch = slot<ChecklistInstanceSearchRequest>()
+        every { persistence.findChecklistInstances(capture(slotSearch)) } returns listOf(controlChecklistSummary)
+        assertThat(dataProvider.getChecklistsForReport(18L))
+            .containsExactly(expectedControlChecklistSummary)
+
+        assertThat(slotSearch.captured).isEqualTo(
+            ChecklistInstanceSearchRequest(
+                relatedToId = 18L,
+                type = ProgrammeChecklistType.CONTROL,
             )
         )
     }

@@ -22,6 +22,8 @@ import io.cloudflight.jems.server.dataGenerator.SELECTED_PROGRAMME_FUNDS
 import io.cloudflight.jems.server.dataGenerator.STANDARD_CALL_DETAIL
 import io.cloudflight.jems.server.dataGenerator.STANDARD_CALL_LENGTH_OF_PERIOD
 import io.cloudflight.jems.server.dataGenerator.inputTranslation
+import io.cloudflight.jems.server.plugin.PartnerControlReportCheckPluginKey
+import io.cloudflight.jems.server.plugin.pre_submission_check.ControlReportPartnerCheckOff
 import io.cloudflight.jems.server.plugin.pre_submission_check.ControlReportSamplingCheckOff
 import io.cloudflight.jems.server.plugin.pre_submission_check.PreSubmissionCheckOff
 import io.cloudflight.jems.server.plugin.pre_submission_check.ReportPartnerCheckOff
@@ -119,6 +121,7 @@ class StandardCallDataGeneratorTest(@LocalServerPort private val port: Int) : Da
                 pluginKey = PreSubmissionCheckOff.KEY,
                 reportPartnerCheckPluginKey = ReportPartnerCheckOff.KEY,
                 reportProjectCheckPluginKey = ReportProjectCheckOff.KEY,
+                controlReportPartnerCheckPluginKey = ControlReportPartnerCheckOff.KEY,
                 controlReportSamplingCheckPluginKey = ControlReportSamplingCheckOff.KEY
             )
         )

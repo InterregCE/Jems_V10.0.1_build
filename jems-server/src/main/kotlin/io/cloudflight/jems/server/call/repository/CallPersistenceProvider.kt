@@ -297,6 +297,7 @@ class CallPersistenceProvider(
             firstStepPreSubmissionCheckPluginKey = pluginKeys.firstStepPluginKey
             reportPartnerCheckPluginKey = pluginKeys.reportPartnerCheckPluginKey
             reportProjectCheckPluginKey = pluginKeys.reportProjectCheckPluginKey
+            controlReportPartnerCheckPluginKey = pluginKeys.controlReportPartnerCheckPluginKey
             controlReportSamplingCheckPluginKey = pluginKeys.controlReportSamplingCheckPluginKey
         }.toDetailModel(
             applicationFormFieldConfigurationEntities = applicationFormFieldConfigurationRepository.findAllByCallId(callId),

@@ -19,6 +19,7 @@
     <ID>ComplexMethod:ApplicationStatus.kt$ApplicationStatus$fun isInStep2()</ID>
     <ID>ComplexMethod:CallDetail.kt$CallDetail$fun getDiff(old: CallDetail? = null): Map&lt;String, Pair&lt;Any?, Any?&gt;&gt;</ID>
     <ID>ComplexMethod:GetReportExpenditureCoFinancingBreakdownCalculatorTest.kt$GetReportExpenditureCoFinancingBreakdownCalculatorTest.Companion$private fun expectedSubmittedResult(zeroTotals: Boolean = false)</ID>
+    <ID>ComplexMethod:PluginMapper.kt$fun PluginTypeDTO.toType()</ID>
     <ID>ComplexMethod:ProjectDataModelMapper.kt$PluginDataMapper$fun map(programmeStrategy: ProgrammeStrategy): ProgrammeStrategyData</ID>
     <ID>ComplexMethod:ProjectNotificationHelper.kt$fun ApplicationStatus.toNotificationType(prevStatus: ApplicationStatus): NotificationType?</ID>
     <ID>ComplexMethod:ProjectPartnerEntityMapper.kt$fun ProjectPartnerEntity.copy( projectPartner: ProjectPartner? = null, legalStatusRef: ProgrammeLegalStatusEntity? = null, newAddresses: Set&lt;ProjectPartnerAddress&gt;? = null, newContacts: Set&lt;ProjectPartnerContact&gt;? = null, newMotivation: ProjectPartnerMotivation? = null, newPartnerContributions: List&lt;ProjectPartnerContribution&gt;? = null, ): ProjectPartnerEntity</ID>
@@ -120,6 +121,7 @@
     <ID>MaxLineLength:UpdateBudgetOptionsValidation.kt$options.officeAndAdministrationOnStaffCostsFlatRate != null || options.officeAndAdministrationOnDirectCostsFlatRate != null || options.travelAndAccommodationOnStaffCostsFlatRate != null || options.staffCostsFlatRate != null</ID>
     <ID>MaxLineLength:UpdateBudgetTravelAndAccommodationCostsInteractor.kt$UpdateBudgetTravelAndAccommodationCostsInteractor$fun updateBudgetTravelAndAccommodationCosts(partnerId: Long, travelCosts: List&lt;BudgetTravelAndAccommodationCostEntry&gt;): List&lt;BudgetTravelAndAccommodationCostEntry&gt;</ID>
     <ID>MaxLineLength:UpdateOutputIndicatorTest.kt$UpdateOutputIndicatorTest$fun</ID>
+    <ID>MaxLineLength:UpdatePreSubmissionCheckSettingsTest.kt$UpdatePreSubmissionCheckSettingsTest$every { jemsPluginRegistry.get(ControlReportPartnerCheckPlugin::class, PartnerControlReportCheckPluginKey) } returns PartnerControlReportCheckSamplePlugin()</ID>
     <ID>MaxLineLength:UploadFileToProjectPartnerReportWorkPlanTest.kt$UploadFileToProjectPartnerReportWorkPlanTest$assertThat(path).isEqualTo("Project/000450/Report/Partner/000478/PartnerReport/000462/WorkPlan/WorkPackage/000481/Activity/000010/Deliverable/000012/")</ID>
     <ID>MaxLineLength:UploadTranslationFileTest.kt$UploadTranslationFileTest$fun</ID>
     <ID>MaxLineLength:UserAuthorization.kt$UserAuthorization$(hasPermission(ProjectCreatorCollaboratorsUpdate) &amp;&amp; isActiveUserIdEqualToOneOf(projectPersistence.getApplicantAndStatusById(projectId).getUserIdsWithManageLevel()))</ID>
@@ -157,6 +159,8 @@
     <ID>PackageNaming:AssignUserToProjectInteractor.kt$package io.cloudflight.jems.server.project.service.projectuser.assign_user_to_project</ID>
     <ID>PackageNaming:AssociatedOrganizationPersistenceProvider.kt$package io.cloudflight.jems.server.project.repository.partner.associated_organization</ID>
     <ID>PackageNaming:CoFinancingOverviewCalculator.kt$package io.cloudflight.jems.server.project.service.cofinancing.get_project_cofinancing_overview</ID>
+    <ID>PackageNaming:ControlPartnerReportCheckBlocked.kt$package io.cloudflight.jems.server.plugin.pre_submission_check</ID>
+    <ID>PackageNaming:ControlReportPartnerCheckOff.kt$package io.cloudflight.jems.server.plugin.pre_submission_check</ID>
     <ID>PackageNaming:ControlReportSamplingCheckOff.kt$package io.cloudflight.jems.server.plugin.pre_submission_check</ID>
     <ID>PackageNaming:CreateCall.kt$package io.cloudflight.jems.server.call.service.create_call</ID>
     <ID>PackageNaming:CreateCallExceptions.kt$package io.cloudflight.jems.server.call.service.create_call</ID>
@@ -593,6 +597,7 @@
     <ID>TooManyFunctions:ProjectMapper.kt$ProjectMapper</ID>
     <ID>TooManyFunctions:ProjectPartnerBudgetMapper.kt$io.cloudflight.jems.server.project.controller.partner.budget.ProjectPartnerBudgetMapper.kt</ID>
     <ID>TooManyFunctions:ProjectPartnerEntityMapper.kt$io.cloudflight.jems.server.project.repository.partner.ProjectPartnerEntityMapper.kt</ID>
+    <ID>TooManyFunctions:ProjectPartnerReportController.kt$ProjectPartnerReportController : ProjectPartnerReportApi</ID>
     <ID>TooManyFunctions:ProjectPartnerRepository.kt$ProjectPartnerRepository : JpaRepository</ID>
     <ID>TooManyFunctions:ProjectReportDataProviderMapper.kt$ProjectReportDataProviderMapper</ID>
     <ID>TooManyFunctions:UpdateCoFinancingValidation.kt$io.cloudflight.jems.server.project.service.partner.cofinancing.update_cofinancing.UpdateCoFinancingValidation.kt</ID>

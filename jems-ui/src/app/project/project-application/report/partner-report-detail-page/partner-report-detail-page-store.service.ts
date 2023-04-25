@@ -114,6 +114,13 @@ export class PartnerReportDetailPageStore {
       );
   }
 
+  runPreCheckOnControlReport(partnerId: number, reportId: number): Observable<PreConditionCheckResultDTO> {
+    return this.projectPartnerReportService.runPreCheckOnControlReport(partnerId, reportId)
+      .pipe(
+        tap(status => Log.info('Called pre-submission check on control report', reportId, status))
+      );
+  }
+
   finalizeReport(partnerId: number, reportId: number): Observable<ProjectPartnerReportSummaryDTO.StatusEnum> {
     return this.projectPartnerReportService.finalizeControlOnPartnerReport(partnerId, reportId)
       .pipe(

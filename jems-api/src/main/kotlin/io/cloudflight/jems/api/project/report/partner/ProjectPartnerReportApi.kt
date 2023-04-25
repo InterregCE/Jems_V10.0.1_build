@@ -94,6 +94,13 @@ interface ProjectPartnerReportApi {
         @PathVariable reportId: Long,
     ): ReportStatusDTO
 
+    @ApiOperation("Run pre-submission check on control report")
+    @PostMapping("$ENDPOINT_API_PROJECT_PARTNER_REPORT/controlPreCheck/{partnerId}/{reportId}")
+    fun runPreCheckOnControlReport(
+        @PathVariable partnerId: Long,
+        @PathVariable reportId: Long,
+    ): PreConditionCheckResultDTO
+
     @ApiOperation("Finalize control on partner report in control")
     @PostMapping("$ENDPOINT_API_PROJECT_PARTNER_REPORT/finalizeControl/{partnerId}/{reportId}")
     fun finalizeControlOnPartnerReport(

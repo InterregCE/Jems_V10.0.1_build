@@ -141,6 +141,7 @@ class GetBudgetFundsPerPeriodInteractorTest : UnitTest() {
         reportProjectCheckPluginKey = null,
         projectDefinedUnitCostAllowed = false,
         projectDefinedLumpSumAllowed = true,
+        controlReportPartnerCheckPluginKey = null,
         controlReportSamplingCheckPluginKey = null
     )
 
@@ -191,6 +192,7 @@ class GetBudgetFundsPerPeriodInteractorTest : UnitTest() {
         reportProjectCheckPluginKey = null,
         projectDefinedUnitCostAllowed = false,
         projectDefinedLumpSumAllowed = true,
+        controlReportPartnerCheckPluginKey = null,
         controlReportSamplingCheckPluginKey = null
     )
 

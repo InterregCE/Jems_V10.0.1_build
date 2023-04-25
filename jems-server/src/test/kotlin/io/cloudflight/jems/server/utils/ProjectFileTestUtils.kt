@@ -106,6 +106,7 @@ val callEntity = CallEntity(
     reportProjectCheckPluginKey = "check-off",
     projectDefinedUnitCostAllowed = true,
     projectDefinedLumpSumAllowed = false,
+    controlReportPartnerCheckPluginKey = "control-report-partner-check-off",
     controlReportSamplingCheckPluginKey = "control-report-sampling-check-off"
 )
 val projectStatusEntity = ProjectStatusHistoryEntity(

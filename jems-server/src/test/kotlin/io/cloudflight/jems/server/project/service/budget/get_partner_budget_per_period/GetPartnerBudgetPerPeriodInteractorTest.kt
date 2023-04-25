@@ -191,6 +191,7 @@ class GetPartnerBudgetPerPeriodInteractorTest : UnitTest() {
             reportProjectCheckPluginKey = null,
             projectDefinedUnitCostAllowed = false,
             projectDefinedLumpSumAllowed = true,
+            controlReportPartnerCheckPluginKey = null,
             controlReportSamplingCheckPluginKey = null
         )
 
@@ -311,6 +312,7 @@ class GetPartnerBudgetPerPeriodInteractorTest : UnitTest() {
             reportProjectCheckPluginKey = null,
             projectDefinedUnitCostAllowed = false,
             projectDefinedLumpSumAllowed = true,
+            controlReportPartnerCheckPluginKey = null,
             controlReportSamplingCheckPluginKey = null
         )
         every { callPersistence.getCallByProjectId(projectId)} returns spfCall

@@ -57,6 +57,7 @@ import io.cloudflight.jems.server.project.service.report.partner.base.getProject
 import io.cloudflight.jems.server.project.service.report.partner.base.runPartnerReportPreSubmissionCheck.RunPartnerReportPreSubmissionCheckInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.startControlPartnerReport.StartControlPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.submitProjectPartnerReport.SubmitProjectPartnerReportInteractor
+import io.cloudflight.jems.server.project.service.report.partner.control.overview.runControlPartnerReportPreSubmissionCheck.RunControlPartnerReportPreSubmissionCheckInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.control.deleteControlReportFile.DeleteControlReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.control.downloadControlReportFile.DownloadControlReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.control.listProjectPartnerControlReportFile.ListControlReportFileInteractor
@@ -271,6 +272,9 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
     lateinit var runPreCheckPartnerReport: RunPartnerReportPreSubmissionCheckInteractor
 
     @MockK
+    lateinit var runPreCheckPartnerControlReport: RunControlPartnerReportPreSubmissionCheckInteractor
+
+    @MockK
     lateinit var startControlReport: StartControlPartnerReportInteractor
 
     @MockK
@@ -381,6 +385,24 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
             )), true
         ))
     }
+
+    @Test
+    fun runPreCheckForPartnerReport() {
+        val preCheck = PreConditionCheckResult(listOf(PreConditionCheckMessage(
+            message = I18nMessageData("key", mapOf("arg1" to "val1")),
+            messageType = MessageType.WARNING,
+            subSectionMessages = listOf(),
+        )), isSubmissionAllowed = true)
+        every { runPreCheckPartnerControlReport.preCheck(18, 305) } returns preCheck
+        assertThat(controller.runPreCheckOnControlReport(18, 305)).isEqualTo(PreConditionCheckResultDTO(
+            listOf(PreConditionCheckMessageDTO(
+                message = I18nMessage("key", mapOf("arg1" to "val1")),
+                messageType = MessageTypeDTO.WARNING,
+                subSectionMessages = listOf(),
+            )), true
+        ))
+    }
+
 
     @Test
     fun submitProjectPartnerReport() {
