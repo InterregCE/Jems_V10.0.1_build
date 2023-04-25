@@ -111,6 +111,7 @@
     "reportPartnerCheckPluginKey": "report-example-check",
     "callHasTwoSteps": true,
     "firstStepPluginKey": "standard-pre-condition-check-plugin",
+    "reportProjectCheckPluginKey": "project-report-example-check",
     "controlReportSamplingCheckPluginKey": "control-report-sampling"
   },
   "applicationFormConfiguration": [

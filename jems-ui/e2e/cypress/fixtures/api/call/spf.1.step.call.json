@@ -146,6 +146,7 @@
   "preSubmissionCheckSettings": {
     "pluginKey": "standard-pre-condition-check-plugin",
     "reportPartnerCheckPluginKey": "report-example-check",
+    "reportProjectCheckPluginKey": "project-report-example-check",
     "controlReportSamplingCheckPluginKey": "control-report-sampling",
     "callHasTwoSteps": false
   },
