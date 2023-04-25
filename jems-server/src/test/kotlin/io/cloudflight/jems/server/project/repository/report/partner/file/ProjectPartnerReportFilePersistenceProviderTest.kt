@@ -186,7 +186,7 @@ class ProjectPartnerReportFilePersistenceProviderTest : UnitTest() {
 
         val fileCreate = fileCreate(type = JemsFileType.Activity)
         val resultMock = mockk<JemsFileMetadata>()
-        every { fileRepository.persistProjectFileAndPerformAction(fileCreate, any()) } returns resultMock
+        every { fileRepository.persistFileAndPerformAction(fileCreate, any()) } returns resultMock
         mockFileDeletion(oldFile)
 
         assertThat(persistence.updatePartnerReportActivityAttachment(80L, file = fileCreate))
@@ -202,7 +202,7 @@ class ProjectPartnerReportFilePersistenceProviderTest : UnitTest() {
 
         val fileCreate = fileCreate(type = JemsFileType.Deliverable)
         val resultMock = mockk<JemsFileMetadata>()
-        every { fileRepository.persistProjectFileAndPerformAction(fileCreate, any()) } returns resultMock
+        every { fileRepository.persistFileAndPerformAction(fileCreate, any()) } returns resultMock
         mockFileDeletion(oldFile)
 
         assertThat(persistence.updatePartnerReportDeliverableAttachment(90L, file = fileCreate))
@@ -218,7 +218,7 @@ class ProjectPartnerReportFilePersistenceProviderTest : UnitTest() {
 
         val fileCreate = fileCreate(type = JemsFileType.Contribution)
         val resultMock = mockk<JemsFileMetadata>()
-        every { fileRepository.persistProjectFileAndPerformAction(fileCreate, any()) } returns resultMock
+        every { fileRepository.persistFileAndPerformAction(fileCreate, any()) } returns resultMock
         mockFileDeletion(oldFile)
 
         assertThat(persistence.updatePartnerReportContributionAttachment(50L, file = fileCreate))
@@ -234,7 +234,7 @@ class ProjectPartnerReportFilePersistenceProviderTest : UnitTest() {
 
         val fileCreate = fileCreate(type = JemsFileType.Output)
         val resultMock = mockk<JemsFileMetadata>()
-        every { fileRepository.persistProjectFileAndPerformAction(fileCreate, any()) } returns resultMock
+        every { fileRepository.persistFileAndPerformAction(fileCreate, any()) } returns resultMock
         mockFileDeletion(oldFile)
 
         assertThat(persistence.updatePartnerReportOutputAttachment(70L, file = fileCreate))
@@ -250,7 +250,7 @@ class ProjectPartnerReportFilePersistenceProviderTest : UnitTest() {
 
         val fileCreate = fileCreate(type = JemsFileType.Expenditure)
         val resultMock = mockk<JemsFileMetadata>()
-        every { fileRepository.persistProjectFileAndPerformAction(fileCreate, any()) } returns resultMock
+        every { fileRepository.persistFileAndPerformAction(fileCreate, any()) } returns resultMock
         mockFileDeletion(oldFile)
 
         assertThat(persistence.updatePartnerReportExpenditureAttachment(40L, file = fileCreate))
@@ -269,7 +269,7 @@ class ProjectPartnerReportFilePersistenceProviderTest : UnitTest() {
         val fileCreate = fileCreate(type = JemsFileType.ProcurementAttachment)
         val extraStep = slot<(JemsFileMetadataEntity) -> Unit>()
         val resultMock = mockk<JemsFileMetadata>()
-        every { fileRepository.persistProjectFileAndPerformAction(fileCreate, capture(extraStep)) } returns resultMock
+        every { fileRepository.persistFileAndPerformAction(fileCreate, capture(extraStep)) } returns resultMock
 
         assertThat(persistence
             .addPartnerReportProcurementAttachment(reportId = 48L, file = fileCreate, procurementId = procurementId)
@@ -289,7 +289,7 @@ class ProjectPartnerReportFilePersistenceProviderTest : UnitTest() {
     fun addAttachmentToPartnerReport() {
         val fileCreate = fileCreate(type = JemsFileType.PartnerReport).copy(name = "new_file_to_partner.txt")
         val resultMock = mockk<JemsFileMetadata>()
-        every { fileRepository.persistProjectFileAndPerformAction(fileCreate, any()) } returns resultMock
+        every { fileRepository.persistFileAndPerformAction(fileCreate, any()) } returns resultMock
 
         assertThat(persistence.addAttachmentToPartnerReport(file = fileCreate)).isEqualTo(resultMock)
     }

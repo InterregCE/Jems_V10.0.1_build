@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.common.minio
+package io.cloudflight.jems.server.common.file.service
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
@@ -8,8 +8,6 @@ import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.common.file.minio.MinioStorage
 import io.cloudflight.jems.server.common.file.repository.JemsFileMetadataRepository
-import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
-import io.cloudflight.jems.server.common.file.service.WrongFileTypeException
 import io.cloudflight.jems.server.common.file.service.model.JemsFileCreate
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType.PaymentAdvanceAttachment
@@ -83,7 +81,7 @@ class JemsProjectFileRepositoryTest : UnitTest() {
     lateinit var auditPublisher: ApplicationEventPublisher
 
     @InjectMockKs
-    private lateinit var repository: JemsProjectFileService
+    private lateinit var service: JemsProjectFileService
 
     @BeforeEach
     fun resetMocks() {
@@ -136,7 +134,7 @@ class JemsProjectFileRepositoryTest : UnitTest() {
 
         val file = file(type = type)
         var additionalStepInvoked = false
-        repository.persistProjectFileAndPerformAction(file) { additionalStepInvoked = true }
+        service.persistFileAndPerformAction(file) { additionalStepInvoked = true }
 
         verify(exactly = 1) { minioStorage.saveFile(expectedBucket, "/our/indexed/path/new_file.txt", any(), any(), true) }
 
@@ -192,7 +190,7 @@ class JemsProjectFileRepositoryTest : UnitTest() {
     fun `persistProjectFileAndPerformAction wrong type`(type: JemsFileType) {
         val file = file(type = type)
         assertThrows<WrongFileTypeException> {
-            repository.persistProjectFileAndPerformAction(file) { }
+            service.persistFileAndPerformAction(file) { }
         }
     }
 
@@ -217,7 +215,7 @@ class JemsProjectFileRepositoryTest : UnitTest() {
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers { }
 
-        repository.setDescription(85L, "new desc")
+        service.setDescription(85L, "new desc")
         assertThat(file.description).isEqualTo("new desc")
         assertThat(auditSlot.captured.auditCandidate).isEqualTo(AuditCandidate(
             action = AuditAction.PROJECT_FILE_DESCRIPTION_CHANGED,
@@ -250,7 +248,7 @@ class JemsProjectFileRepositoryTest : UnitTest() {
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers { }
 
-        repository.delete(file)
+        service.delete(file)
 
         verify(exactly = 1) { minioStorage.deleteFile("file-bucket", "/sample/location") }
         verify(exactly = 1) { reportFileRepository.delete(file) }

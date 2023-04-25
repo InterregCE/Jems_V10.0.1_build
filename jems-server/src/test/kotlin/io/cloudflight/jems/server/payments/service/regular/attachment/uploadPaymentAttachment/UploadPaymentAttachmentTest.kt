@@ -65,7 +65,7 @@ class UploadPaymentAttachmentTest : UnitTest() {
 
         val fileToAdd = slot<JemsFileCreate>()
         val mockResult = mockk<JemsFileMetadata>()
-        every { fileRepository.persistProjectFile(capture(fileToAdd)) } returns mockResult
+        every { fileRepository.persistFile(capture(fileToAdd)) } returns mockResult
 
         val file = ProjectFile(stream = content, name = "test.xlsx", size = 20L)
         assertThat(interactor.upload(paymentId, file)).isEqualTo(mockResult)
@@ -95,7 +95,7 @@ class UploadPaymentAttachmentTest : UnitTest() {
         val file = ProjectFile(stream = content, name = "test.xlsx", size = 20L)
         assertThrows<FileAlreadyExists> { interactor.upload(paymentId, file) }
 
-        verify(exactly = 0) { fileRepository.persistProjectFile(any()) }
+        verify(exactly = 0) { fileRepository.persistFile(any()) }
     }
 
     @Test
@@ -108,6 +108,6 @@ class UploadPaymentAttachmentTest : UnitTest() {
         val file = ProjectFile(stream = content, name = "test.exe", size = 20L)
         assertThrows<FileTypeNotSupported> { interactor.upload(paymentId, file) }
 
-        verify(exactly = 0) { fileRepository.persistProjectFile(any()) }
+        verify(exactly = 0) { fileRepository.persistFile(any()) }
     }
 }

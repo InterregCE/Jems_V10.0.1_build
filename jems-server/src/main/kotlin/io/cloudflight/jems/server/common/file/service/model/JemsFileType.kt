@@ -48,7 +48,10 @@ enum class JemsFileType(
           ContractPartnerDoc(ContractPartner, true),
         ContractInternal(Contracting, false),
 
-      SharedFolder(Project, false);
+      SharedFolder(Project, false),
+
+    CallTranslation(null, true, "jems-translation-file-bucket"),
+    CallTranslationArchive(null, true, "jems-translation-file-bucket");
 
     fun generatePath(vararg ids: Long): String {
         if (this.parent == null)

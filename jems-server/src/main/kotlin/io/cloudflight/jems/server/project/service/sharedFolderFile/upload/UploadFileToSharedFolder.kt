@@ -40,7 +40,7 @@ class UploadFileToSharedFolder(
                 throw FileAlreadyExists()
             }
 
-            return projectFileService.persistProjectFile(
+            return projectFileService.persistFile(
                 file.getFileMetadata(
                     projectId = projectId,
                     partnerId = null,

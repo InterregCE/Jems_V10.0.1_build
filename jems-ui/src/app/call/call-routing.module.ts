@@ -15,6 +15,7 @@ import {
 import {
   PartnerReportNotificationsSettingsTabComponent
 } from './notifications-settings/partner-report-notifications-settings-tab/partner-report-notifications-settings-tab.component';
+import {CallTranslationsConfigurationComponent} from './translations/call-translations-configuration.component';
 
 export const routes: Routes = [
   {
@@ -107,7 +108,16 @@ export const routes: Routes = [
                 data: {breadcrumb: 'partner.report'}
               }
             ]
-          }
+          },
+          {
+            path: 'translationSettings',
+            data: {
+              breadcrumb: 'call.detail.translations.title',
+              permissionsOnly: [UserRoleDTO.PermissionsEnum.CallRetrieve],
+            },
+            canActivate: [PermissionGuard],
+            component: CallTranslationsConfigurationComponent,
+          },
         ],
       },
       {

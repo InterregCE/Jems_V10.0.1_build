@@ -1,7 +1,5 @@
 package io.cloudflight.jems.server.common.file.service
 
-import io.cloudflight.jems.api.common.dto.I18nMessage
-import io.cloudflight.jems.server.common.exception.ApplicationUnprocessableException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.common.file.minio.MinioStorage
@@ -16,7 +14,6 @@ import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
-import java.time.ZonedDateTime
 
 @Repository
 class JemsProjectFileService(
@@ -25,7 +22,8 @@ class JemsProjectFileService(
     private val userRepository: UserRepository,
     private val projectRepository: ProjectRepository,
     private val auditPublisher: ApplicationEventPublisher,
-) {
+) : JemsGenericFileService(projectFileMetadataRepository, minioStorage, userRepository) {
+
     companion object {
         private val allowedFileTypes = setOf(
             JemsFileType.PaymentAttachment,
@@ -65,40 +63,22 @@ class JemsProjectFileService(
     }
 
     @Transactional
-    fun persistProjectFile(file: JemsFileCreate) =
-        persistProjectFileAndPerformAction(file) { /* do nothing */ }
+    fun persistFile(file: JemsFileCreate) =
+        this.persistFileAndPerformAction(file) { /* do nothing */ }
 
     @Transactional
-    fun persistProjectFileAndPerformAction(
+    override fun persistFileAndPerformAction(
         file: JemsFileCreate,
         additionalStep: (JemsFileMetadataEntity) -> Unit,
     ): JemsFileMetadata {
-        validateType(file.type)
-
-        val bucket = file.type.getBucket()
-        val locationForMinio = file.getDefaultMinioFullPath()
-
-        minioStorage.saveFile(
-            bucket = bucket,
-            filePath = locationForMinio,
-            size = file.size,
-            stream = file.content,
-            overwriteIfExists = true,
-        )
-        val fileMeta = projectFileMetadataRepository.save(
-            file.toEntity(
-                bucketForMinio = bucket,
-                locationForMinio = locationForMinio,
-                userResolver = { userRepository.getById(it) },
-                uploaded = ZonedDateTime.now(),
-            )
-        ).also { additionalStep.invoke(it) }.toModel()
+        validateType(file.type, allowedFileTypes)
+        val fileMeta = super.persistFileAndPerformAction(file, additionalStep)
 
         val projectRelated = projectRepository.getById(file.projectId!!).toSummaryModel()
         auditPublisher.publishEvent(
             projectFileUploadSuccess(
                 context = this, fileMeta = fileMeta,
-                location = locationForMinio, type = file.type, projectSummary = projectRelated
+                location = file.getDefaultMinioFullPath(), type = file.type, projectSummary = projectRelated
             )
         )
 
@@ -108,7 +88,7 @@ class JemsProjectFileService(
     @Transactional
     fun setDescription(fileId: Long, description: String) {
         val file = projectFileMetadataRepository.findById(fileId).orElseThrow { ResourceNotFoundException("file") }
-        validateType(file.type)
+        validateType(file.type, allowedFileTypes)
 
         val oldDescription = file.description
         file.description = description
@@ -128,14 +108,13 @@ class JemsProjectFileService(
     }
 
     @Transactional
-    fun delete(file: JemsFileMetadataEntity) {
-        validateType(file.type)
+    override fun delete(file: JemsFileMetadataEntity) {
+        validateType(file.type, allowedFileTypes)
 
         val fileId = file.id
         val projectId = file.projectId!!
 
-        minioStorage.deleteFile(bucket = file.minioBucket, filePath = file.minioLocation)
-        projectFileMetadataRepository.delete(file)
+        super.delete(file)
 
         auditPublisher.publishEvent(
             fileDeleted(
@@ -145,16 +124,4 @@ class JemsProjectFileService(
         )
     }
 
-    private fun validateType(type: JemsFileType) {
-        if (type !in allowedFileTypes) {
-            throw WrongFileTypeException(type)
-        }
-    }
-
 }
-
-class WrongFileTypeException(type: JemsFileType) : ApplicationUnprocessableException(
-    code = "GENERIC-FILE-EXCEPTION",
-    i18nMessage = I18nMessage("not.allowed.file.type.in.generic.project.file.repository"),
-    message = type.name,
-)

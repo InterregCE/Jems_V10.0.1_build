@@ -5,10 +5,15 @@ import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.common.file.service.model.UserSimple
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import java.io.InputStream
 
 interface JemsFilePersistence {
 
     fun existsFile(exactPath: String, fileName: String): Boolean
+
+    fun fileIdIfExists(exactPath: String, fileName: String): Long?
+
+    fun existsFile(exactPath: String, fileId: Long): Boolean
 
     fun existsFile(partnerId: Long, pathPrefix: String, fileId: Long): Boolean
 
@@ -44,6 +49,8 @@ interface JemsFilePersistence {
     fun downloadReportFile(projectId: Long, fileId: Long): Pair<String, ByteArray>?
 
     fun downloadFile(type: JemsFileType, fileId: Long): Pair<String, ByteArray>?
+
+    fun downloadFileAsStream(type: JemsFileType, fileId: Long): Pair<String, InputStream>?
 
     fun deleteFile(partnerId: Long, fileId: Long)
 

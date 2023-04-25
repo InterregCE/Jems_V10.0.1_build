@@ -170,7 +170,7 @@ export class FileListTableComponent implements OnChanges, AfterViewInit {
     this.alerts$.next(alerts);
   }
 
-  private static successAlert(msg: string, i18nArgs: any = {}): AlertMessage {
+  static successAlert(msg: string, i18nArgs: any = {}): AlertMessage {
     return {
       id: uuid(),
       type: Alert.SUCCESS,
@@ -179,7 +179,7 @@ export class FileListTableComponent implements OnChanges, AfterViewInit {
     };
   }
 
-  private static errorAlert(msg: string, i18nArgs: any = {}): AlertMessage {
+  static errorAlert(msg: string, i18nArgs: any = {}): AlertMessage {
     return {
       id: uuid(),
       type: Alert.ERROR,

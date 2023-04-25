@@ -9,7 +9,7 @@ spring:
   flyway:
     out-of-order: true
   messages:
-    basename: file:${app.translations-folder:resources/translations}/Application, file:${app.translations-folder:resources/translations}/System, classpath:/Application, classpath:/System, classpath:/messages, classpath:/plugin_messages
+    basename: file:${app.translations-folder:resources/translations}/Application, file:${app.translations-folder:resources/translations}/System, classpath:/Application, classpath:/System, classpath:/messages, classpath:/plugin_messages, file:${app.translations-folder:resources/translations}/Application-CallSpecific, classpath:/Application-CallSpecific
   datasource:
     url: "${SPRING_DATASOURCE_URL:jdbc:mariadb://localhost:3306/jemsdb}"
     username: root
@@ -85,7 +85,7 @@ app:
   server-url: "${SERVER_URL:http://localhost:4200}"
   security:
     default-password-prefix: Jems@2020
-  translations-folder: resources/translations/
+  translations-folder: resources/translations
   notification:
     mail:
       enabled: "${MAIL_ENABLED:false}"

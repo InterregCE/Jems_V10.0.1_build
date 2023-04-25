@@ -15,8 +15,6 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.io.ByteArrayInputStream
 import java.io.InputStream
-import java.nio.file.Files
-import java.nio.file.Path
 
 @Service
 class UploadTranslationFile(
@@ -40,19 +38,10 @@ class UploadTranslationFile(
 
         return translationFilePersistence.save(fileType, language, ByteArrayInputStream(byteArray), size).also {
             eventPublisher.publishEvent(programmeTranslationFileUploaded(this, fileType.getFileNameFor(language)))
-            copyTranslationFiles(byteArray, fileType, language)
+            copyTranslationFiles(appProperties.translationsFolder, byteArray, fileType.getFileNameFor(language))
             //refreshes translation files without restarting the system
             messageSource.clearCache()
         }
     }
-
-    private fun copyTranslationFiles(byteArray: ByteArray, fileType: TranslationFileType, language: SystemLanguage, ) =
-        with(Path.of(appProperties.translationsFolder)) {
-            if (!Files.exists(this))
-                Files.createDirectories(this)
-
-            Path.of(this.toString(), fileType.getFileNameFor(language)).toFile().writeBytes(byteArray)
-        }
-
 
 }

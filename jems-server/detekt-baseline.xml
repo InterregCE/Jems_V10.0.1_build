@@ -556,6 +556,7 @@
     <ID>PackageNaming:UpdateWorkPackageOutputInteractor.kt$package io.cloudflight.jems.server.project.service.workpackage.output.update_work_package_output</ID>
     <ID>PackageNaming:UploadTranslationFile.kt$package io.cloudflight.jems.server.programme.service.translation.upload_translation_file</ID>
     <ID>PackageNaming:UploadTranslationFileExceptions.kt$package io.cloudflight.jems.server.programme.service.translation.upload_translation_file</ID>
+    <ID>PackageNaming:UploadTranslationFileHelper.kt$package io.cloudflight.jems.server.programme.service.translation.upload_translation_file</ID>
     <ID>PackageNaming:UploadTranslationFileInteractor.kt$package io.cloudflight.jems.server.programme.service.translation.upload_translation_file</ID>
     <ID>PackageNaming:UserCreatedEventListeners.kt$package io.cloudflight.jems.server.user.service.user.create_user</ID>
     <ID>PackageNaming:UserRegisteredEventListeners.kt$package io.cloudflight.jems.server.user.service.user.register_user</ID>
@@ -586,6 +587,7 @@
     <ID>TooManyFunctions:ControllerInstitutionPersistenceProvider.kt$ControllerInstitutionPersistenceProvider : ControllerInstitutionPersistence</ID>
     <ID>TooManyFunctions:GeneralValidatorDefaultImpl.kt$GeneralValidatorDefaultImpl : GeneralValidatorService</ID>
     <ID>TooManyFunctions:GeneralValidatorService.kt$GeneralValidatorService</ID>
+    <ID>TooManyFunctions:JemsFilePersistence.kt$JemsFilePersistence</ID>
     <ID>TooManyFunctions:JemsFilePersistenceProvider.kt$JemsFilePersistenceProvider : JemsFilePersistence</ID>
     <ID>TooManyFunctions:PartnerPersistence.kt$PartnerPersistence</ID>
     <ID>TooManyFunctions:PartnerPersistenceProvider.kt$PartnerPersistenceProvider : PartnerPersistence</ID>

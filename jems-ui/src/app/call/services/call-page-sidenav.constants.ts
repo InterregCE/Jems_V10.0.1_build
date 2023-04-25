@@ -27,4 +27,11 @@ export class CallPageSideNavConstants {
       route: `/app/call/detail/${callId}/notificationSettings`,
     };
   };
+
+  public static TRANSLATION_SETTINGS = (callId: number) =>  {
+    return {
+      headline: {i18nKey: 'call.detail.translations.title'},
+      route: `/app/call/detail/${callId}/translationSettings`,
+    };
+  };
 }

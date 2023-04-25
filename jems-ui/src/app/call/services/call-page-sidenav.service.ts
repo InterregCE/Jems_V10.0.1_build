@@ -49,6 +49,7 @@ export class CallPageSidenavService {
                 this.sideNavConstants.APPLICATION_FORM_CONFIGURATION(callId),
                 this.sideNavConstants.PRE_SUBMISSION_CHECK_SETTINGS(callId),
                 this.sideNavConstants.NOTIFICATIONS_SETTINGS(callId),
+                this.sideNavConstants.TRANSLATION_SETTINGS(callId),
               ]
             );
           }
