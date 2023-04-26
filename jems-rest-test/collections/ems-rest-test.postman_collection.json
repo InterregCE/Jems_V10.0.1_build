@@ -1995,7 +1995,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"pluginKey\": \"jems-pre-condition-check-off\",\r\n    \"reportPartnerCheckPluginKey\": \"report-partner-check-off\",\r\n    \"controlReportSamplingCheckPluginKey\": \"control-report-sampling-check-off\"\r\n}\r\n",
+							"raw": "{\r\n    \"pluginKey\": \"jems-pre-condition-check-off\",\r\n    \"reportPartnerCheckPluginKey\": \"report-partner-check-off\",\r\n    \"controlReportSamplingCheckPluginKey\": \"control-report-sampling-check-off\",\r\n    \"reportProjectCheckPluginKey\": \"report-project-check-off\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
