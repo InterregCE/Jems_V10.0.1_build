@@ -255,6 +255,9 @@ import {
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-work-plan-tab/project-report-work-plan-tab.component';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {SharedFolderPageComponent} from '@project/project-application/shared-folder/shared-folder-page.component';
+import {
+  ProjectReportExportsTabComponent
+} from '@project/project-application/report/project-report/project-report-detail-page/project-report-exports-tab/project-report-exports-tab.component';
 
 export const routes: Routes = [
   {
@@ -438,6 +441,10 @@ export const routes: Routes = [
                       {
                         path: 'financialOverview',
                         component: ProjectReportFinancialOverviewTabComponent,
+                      },
+                      {
+                        path: 'exports',
+                        component: ProjectReportExportsTabComponent,
                       },
                       {
                         path: 'submitReport',

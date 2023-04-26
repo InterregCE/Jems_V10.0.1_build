@@ -20,10 +20,10 @@ import {
   PartnerReportDetailPageStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
-import {PermissionService} from "../../../../../../security/permissions/permission.service";
+import {PermissionService} from '../../../../../../security/permissions/permission.service';
 import {
     PartnerControlReportStore
-} from "@project/project-application/report/partner-control-report/partner-control-report-store.service";
+} from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
 
 @Component({
   selector: 'jems-partner-control-report-control-checklist-page',
