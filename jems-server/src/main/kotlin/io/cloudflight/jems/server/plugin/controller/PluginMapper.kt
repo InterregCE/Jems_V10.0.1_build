@@ -8,6 +8,7 @@ import io.cloudflight.jems.plugin.contract.export.ProgrammeDataExportPlugin
 import io.cloudflight.jems.plugin.contract.export.partner.report.PartnerControlReportCertificatePlugin
 import io.cloudflight.jems.plugin.contract.export.partner.report.PartnerControlReportExportPlugin
 import io.cloudflight.jems.plugin.contract.export.partner.report.PartnerReportExportPlugin
+import io.cloudflight.jems.plugin.contract.export.project.report.ProjectReportExportPlugin
 import io.cloudflight.jems.plugin.contract.pre_condition_check.ControlReportSamplingCheckPlugin
 import io.cloudflight.jems.plugin.contract.pre_condition_check.PreConditionCheckPlugin
 import io.cloudflight.jems.plugin.contract.pre_condition_check.ReportPartnerCheckPlugin
@@ -27,6 +28,7 @@ fun JemsPlugin.toPluginType(): PluginTypeDTO =
         is PartnerControlReportExportPlugin -> PluginTypeDTO.PARTNER_CONTROL_REPORT_EXPORT
         is PartnerReportExportPlugin -> PluginTypeDTO.PARTNER_REPORT_EXPORT
         is ControlReportSamplingCheckPlugin -> PluginTypeDTO.PARTNER_CONTROL_RISK_BASED_SAMPLING
+        is ProjectReportExportPlugin -> PluginTypeDTO.REPORT_PROJECT_EXPORT
         else -> throw UnknownPluginTypeException(this.javaClass.name)
     }
 
@@ -42,6 +44,7 @@ fun PluginTypeDTO.toType() =
         PluginTypeDTO.PARTNER_CONTROL_REPORT_EXPORT -> PartnerControlReportExportPlugin::class
         PluginTypeDTO.PARTNER_REPORT_EXPORT -> PartnerReportExportPlugin::class
         PluginTypeDTO.PARTNER_CONTROL_RISK_BASED_SAMPLING -> ControlReportSamplingCheckPlugin::class
+        PluginTypeDTO.REPORT_PROJECT_EXPORT -> ProjectReportExportPlugin::class
         PluginTypeDTO.ALL -> JemsPlugin::class
         else -> throw UnknownPluginTypeException(this.javaClass.name)
     }
