@@ -34,6 +34,7 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRo
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.service.model.UserStatus
+import io.cloudflight.jems.server.utils.PROJECT_ID
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -164,6 +165,7 @@ internal class ProjectAssociatedOrganizationServiceTest {
 
     @Test
     fun `create associated organization`() {
+        every { projectAssociatedOrganizationRepository.countByProjectId(1) } returns MAX_NUMBER_OF_ORGANIZATIONS - 1
         every { projectPartnerRepository.findFirstByProjectIdAndId(1, 1) } returns Optional.of(projectPartner)
 
         // mock 2 repo.save() method calls
@@ -266,6 +268,21 @@ internal class ProjectAssociatedOrganizationServiceTest {
         val toCreate = InputProjectAssociatedOrganization(id = null, partnerId = projectPartner.id)
         val ex = assertThrows<AppInputValidationException> { projectAssociatedOrganizationService.create(1, toCreate) }
         assertThat(ex.i18nMessage.i18nKey).isEqualTo("common.error.input.invalid")
+    }
+
+    @Test
+    fun `create too many - over 30`() {
+        every { projectAssociatedOrganizationRepository.countByProjectId(PROJECT_ID) } returns MAX_NUMBER_OF_ORGANIZATIONS
+
+        val toCreate = InputProjectAssociatedOrganization(
+            id = null,
+            partnerId = projectPartner.id,
+            nameInOriginalLanguage = "to create",
+            nameInEnglish = "to create",
+            address = InputProjectAssociatedOrganizationAddress(country = "AT"),
+            contacts = setOf(ProjectContactDTO(type = ProjectContactTypeDTO.ContactPerson, firstName = "test contact"))
+        )
+        assertThrows<MaximumNumberOfOrganizationsReached> { projectAssociatedOrganizationService.create(PROJECT_ID, toCreate) }
     }
 
     @Test

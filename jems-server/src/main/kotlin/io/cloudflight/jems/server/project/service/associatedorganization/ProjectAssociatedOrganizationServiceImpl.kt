@@ -4,14 +4,16 @@ import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAs
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
-import io.cloudflight.jems.server.project.repository.partner.associated_organization.ProjectAssociatedOrganizationRepository
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
+import io.cloudflight.jems.server.project.repository.partner.associated_organization.ProjectAssociatedOrganizationRepository
 import io.cloudflight.jems.server.project.repository.partner.associated_organization.combineTranslatedValues
 import io.cloudflight.jems.server.project.repository.partner.associated_organization.toEntity
 import io.cloudflight.jems.server.project.repository.partner.associated_organization.toOutputProjectAssociatedOrganizationDetail
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+
+const val MAX_NUMBER_OF_ORGANIZATIONS = 30
 
 @Service
 class ProjectAssociatedOrganizationServiceImpl(
@@ -23,6 +25,10 @@ class ProjectAssociatedOrganizationServiceImpl(
     @Transactional
     override fun create(projectId: Long, associatedOrganization: InputProjectAssociatedOrganization): OutputProjectAssociatedOrganizationDetail {
         validateAssociatedOrganization(associatedOrganization)
+
+        if (projectAssociatedOrganizationRepo.countByProjectId(projectId) >= MAX_NUMBER_OF_ORGANIZATIONS)
+            throw MaximumNumberOfOrganizationsReached(MAX_NUMBER_OF_ORGANIZATIONS)
+
         val partner = projectPartnerRepo.findFirstByProjectIdAndId(projectId, associatedOrganization.partnerId)
             .orElseThrow { ResourceNotFoundException("projectPartner") }
 

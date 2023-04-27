@@ -69,7 +69,7 @@ class ContractedProjectSectionBDataGeneratorTest(@LocalServerPort private val po
 
     @Test
     @Order(2)
-    @ExpectSelect(16)
+    @ExpectSelect(17)
     @ExpectInsert(5)
     @ExpectUpdate(1)
     @ExpectDelete(1)
