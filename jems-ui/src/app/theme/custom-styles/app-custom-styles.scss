@@ -39,16 +39,17 @@
   --light-blue-gray: #{mat.get-color-from-palette(mat.$blue-gray-palette, 100, if($is-dark-theme, 0.25, 0.5))};
   --pale-blue-gray: #{mat.get-color-from-palette(mat.$blue-gray-palette, 50, if($is-dark-theme, 0.0625, 0.375))};
   --table-backaground-color: #{if($is-dark-theme, $background, white)};
-  --table-highlight-color: #{if($is-dark-theme, lighten($background,2), lighten(mat.get-color-from-palette($primary-theme,50),3.5))};
-  --table-hover-color: #{if($is-dark-theme, lighten($background,1), mat.get-color-from-palette(mat.$gray-palette,100))};
+  --table-highlight-color: #{if($is-dark-theme, lighten($background,2), lighten(mat.get-color-from-palette($primary-theme,50),5))};
+  --table-hover-color: #c9e8fb;
   --table-border-color: #{if($is-dark-theme, $background, lighten(mat.get-color-from-palette(mat.$blue-gray-palette,100),1))};
-  --table-header-text-color: #{if($is-dark-theme, mat.get-color-from-palette(mat.$gray-palette,400), mat.get-color-from-palette(mat.$gray-palette,600,0.85))};
+  --table-header-text-color: #{mat.get-color-from-palette(mat.$gray-palette,600,0.85)};
 
-  --light-yellow: #{mat.get-color-from-palette(mat.$yellow-palette, 100)};
-  --pale-yellow: #{mat.get-color-from-palette(mat.$yellow-palette, 50)};
+  --light-yellow: #fde5c2;
+  --pale-yellow: #fef5e7;
 
   --primary-color: #{$primary};
   --primary-halftone-color: #{$primary-halftone};
+  --primary-dark-color: #123d67;
   --accent-color: #{$accent};
   --error-color: #{$warn};
   --warn-color: #{#F6D15E};
@@ -65,23 +66,28 @@
   --background: #{$background};
   --background-card: #{$background-card};
   --background-lighter: #{$background-lighter};
+  --background-login: mat-light-theme;
+  --background-top-bar: #c9e8fb;
+  --sidebar-background-color: var(--table-highlight-color);
+  --sidebar-dark-background-color: #ebeef0;
   --app-bar: white;
   --app-bar-secondary: #76d7e7;
   --underline-color: #{$underline-color};
   --outline-color: #{$outline};
-  --sidebar-background-color: #5FB3D9;
-  --sidebar-dark-background-color: #4698bd;
-  --sidebar-color: #210C38;
 
   --body-strong-font-size: #{$body-strong-font-size};
   --body-strong-font-weight: #{$body-strong-font-weight};
 
-  --status-draft: #8EBED1;
-  --status-submitted: #9BA3CD;
-  --status-approved-with-conditions: #FBB900;
-  --status-declined: #E76A4C;
-  --status-approved: #86AC63;
-  --status-contracted: #66c3ff;
+  --status-draft: #cfdbea;
+  --status-submitted: #d5e9f2;
+  --status-approved-with-conditions: #f7a833;
+  --status-declined: #{mat.get-color-from-palette(mat.$red-palette, 300)};
+  --status-approved: #63ba8d;
+  --status-contracted: #bfddde;
+
+  --report-type-content: #cfdbea;
+  --report-type-finance: #bfddde;
+  --report-type-both: #f7dcc4;
 
   @include custom-global-styles($is-dark-theme);
 

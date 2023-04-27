@@ -95,9 +95,6 @@
       color: var(--table-header-text-color);
       font-size: var(--body-strong-font-size);
       font-weight: var(--body-strong-font-weight);
-      > * &:hover {
-        background-color: var(--table-backaground-color);
-      }
     }
 
     > * {
@@ -109,7 +106,7 @@
         background-color: var(--table-highlight-color);
       }
 
-      &:hover {
+      &:not(:first-child):not(:last-child):hover {
         background-color: var(--table-hover-color);
       }
 

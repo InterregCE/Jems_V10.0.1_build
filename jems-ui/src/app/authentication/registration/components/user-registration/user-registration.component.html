@@ -93,7 +93,7 @@
                             (change)="areTermsAccepted = $event.checked">
                         <span>
                             {{'user.terms.register.firstText' | translate}}
-                            <span class="terms-link">
+                            <span>
                                 <a [href]="termsAndPrivacyPolicyUrl$ | async">{{'user.terms.linkText' | translate}} *</a>
                             </span>
                         </span>

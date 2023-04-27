@@ -1,8 +1,174 @@
 @use '~@angular/material' as mat;
 @import '../../../../node_modules/@angular/material/theming';
 
-$light-primary: mat.define-palette(mat.$blue-palette, 900);
-$light-accent: mat.define-palette(mat.$amber-palette, 600);
-$light-warn: mat.define-palette(mat.$red-palette, 700);
+// Custom Jems palettes
+$jems-primary-palette: (
+        50: #e2eef6,
+        100: #b7d4e9,
+        200: #87b7db,
+        300: #569acc,
+        400: #3284c1,
+        500: #0e6eb6,
+        600: #0c66af,
+        700: #0a5ba6,
+        800: #08519e,
+        900: #043f8e,
+        A100: #bad3ff,
+        A200: #87b3ff,
+        A400: #5492ff,
+        A700: #3b82ff,
+        contrast: (
+                50: $dark-primary-text,
+                100: $dark-primary-text,
+                200: $dark-primary-text,
+                300: $dark-primary-text,
+                400: $dark-primary-text,
+                500: $light-primary-text,
+                600: $light-primary-text,
+                700: $light-primary-text,
+                800: $light-primary-text,
+                900: $light-primary-text,
+                A100: $dark-primary-text,
+                A200: $light-primary-text,
+                A400: $light-primary-text,
+                A700: $light-primary-text,
+        )
+);
+
+$jems-accent-palette: (
+        50 : #f9eee5,
+        100 : #f0d5bf,
+        200 : #e6b995,
+        300 : #dc9d6a,
+        400 : #d5884a,
+        500 : #cd732a,
+        600 : #c86b25,
+        700 : #c1601f,
+        800 : #ba5619,
+        900 : #ae430f,
+        A100 : #ffe7dd,
+        A200 : #ffc2aa,
+        A400 : #ff9e77,
+        A700 : #ff8b5d,
+        contrast: (
+                50: $dark-primary-text,
+                100: $dark-primary-text,
+                200: $dark-primary-text,
+                300: $dark-primary-text,
+                400: $dark-primary-text,
+                500: $light-primary-text,
+                600: $light-primary-text,
+                700: $light-primary-text,
+                800: $light-primary-text,
+                900: $light-primary-text,
+                A100: $dark-primary-text,
+                A200: $light-primary-text,
+                A400: $light-primary-text,
+                A700: $light-primary-text,
+        )
+);
+
+$jems-warn-palette: (
+        50 : #f9e2e2,
+        100 : #efb6b7,
+        200 : #e48687,
+        300 : #d95557,
+        400 : #d13033,
+        500 : #c90c0f,
+        600 : #c30a0d,
+        700 : #bc080b,
+        800 : #b50608,
+        900 : #a90304,
+        A100 : #ffd3d3,
+        A200 : #ffa0a0,
+        A400 : #ff6d6d,
+        A700 : #ff5353,
+        contrast: (
+                50: $dark-primary-text,
+                100: $dark-primary-text,
+                200: $dark-primary-text,
+                300: $dark-primary-text,
+                400: $dark-primary-text,
+                500: $light-primary-text,
+                600: $light-primary-text,
+                700: $light-primary-text,
+                800: $light-primary-text,
+                900: $light-primary-text,
+                A100: $dark-primary-text,
+                A200: $light-primary-text,
+                A400: $light-primary-text,
+                A700: $light-primary-text,
+        )
+);
+
+$jems-dark-palette: (
+        50 : #e3e8ed,
+        100 : #b8c5d1,
+        200 : #899eb3,
+        300 : #597795,
+        400 : #365a7e,
+        500 : #123d67,
+        600 : #10375f,
+        700 : #0d2f54,
+        800 : #0a274a,
+        900 : #051a39,
+        A100 : #709eff,
+        A200 : #3d7cff,
+        A400 : #0a59ff,
+        A700 : #004df0,
+        contrast: (
+                50: $dark-primary-text,
+                100: $dark-primary-text,
+                200: $dark-primary-text,
+                300: $dark-primary-text,
+                400: $dark-primary-text,
+                500: $light-primary-text,
+                600: $light-primary-text,
+                700: $light-primary-text,
+                800: $light-primary-text,
+                900: $light-primary-text,
+                A100: $dark-primary-text,
+                A200: $light-primary-text,
+                A400: $light-primary-text,
+                A700: $light-primary-text,
+        )
+);
+
+$jems-sunny-palette: (
+        50 : #fef5e7,
+        100 : #fde5c2,
+        200 : #fbd499,
+        300 : #f9c270,
+        400 : #f8b552,
+        500 : #f7a833,
+        600 : #f6a02e,
+        700 : #f59727,
+        800 : #f38d20,
+        900 : #f17d14,
+        A100 : #ffffff,
+        A200 : #fff5ed,
+        A400 : #ffd8ba,
+        A700 : #ffcaa1,
+        contrast: (
+                50: $dark-primary-text,
+                100: $dark-primary-text,
+                200: $dark-primary-text,
+                300: $dark-primary-text,
+                400: $dark-primary-text,
+                500: $light-primary-text,
+                600: $light-primary-text,
+                700: $light-primary-text,
+                800: $light-primary-text,
+                900: $light-primary-text,
+                A100: $dark-primary-text,
+                A200: $light-primary-text,
+                A400: $light-primary-text,
+                A700: $light-primary-text,
+        )
+);
+
+$light-primary: mat.define-palette($jems-primary-palette, 500);
+$light-accent: mat.define-palette($jems-accent-palette, 500);
+$light-warn: mat.define-palette($jems-warn-palette, 500);
 
 $light-theme: mat.define-light-theme($light-primary, $light-accent, $light-warn);

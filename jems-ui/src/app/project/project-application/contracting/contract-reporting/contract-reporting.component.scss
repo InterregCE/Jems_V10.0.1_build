@@ -13,15 +13,15 @@ mat-button-toggle {
   }
 }
 .content-toggle.mat-button-toggle-checked {
-  background-color: var(--status-submitted) !important;
+  background-color: var(--report-type-content) !important;
 }
 
 .finance-toggle.mat-button-toggle-checked {
-  background-color: var(--status-contracted) !important;
+  background-color: var(--report-type-finance) !important;
 }
 
 .both-toggle.mat-button-toggle-checked {
-  background-color: var(--status-approved-with-conditions) !important;
+  background-color: var(--report-type-both) !important;
 }
 
 #timeplanHeader {

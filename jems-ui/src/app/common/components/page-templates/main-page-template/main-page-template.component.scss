@@ -20,22 +20,23 @@
       white-space: pre-wrap;
     }
   }
+
   jems-breadcrumb {
     display: flex;
     justify-content: stretch;
     align-items: center;
     width: 100%;
-    background-color: var(--background);
-    outline: 1px solid var(--background);
+    background-color: inherit;
     z-index: 100;
-    min-height: 2rem;
-    padding: 0.5rem 0.5rem 0.5rem 3rem;
+    min-height: 1.25rem;
+    font-size: 0.75rem;
+    padding: 0.5rem 0.5rem 0.5rem 2.5rem;
   }
 
   #main-page-content {
     flex: 1;
     display: block;
-    padding: 0 3rem 4rem;
+    padding: 0 1rem 4rem 2.5rem;
     height: calc(100% - 4rem);
     overflow: auto;
     overflow-x: hidden;
@@ -49,7 +50,7 @@
       padding: 0;
 
       .mat-card-content {
-        padding: 2rem;
+        padding: 1.5rem;
       }
     }
 

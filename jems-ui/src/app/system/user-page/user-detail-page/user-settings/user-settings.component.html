@@ -9,13 +9,13 @@
         <button jemsText mat-stroked-button
                 [disabled]="disabled"
                 (click)="resetForm()">
-            {{'user.detail.password.button.cancel' | translate}}
+            {{'common.cancel.label' | translate}}
         </button>
         <button jemsText mat-raised-button
                 color="primary"
                 [disabled]="disabled || settingsForm.invalid || submitted"
                 (click)="onSubmit()">
-            {{'user.detail.password.button.save' | translate}}
+            {{'common.save.label' | translate}}
         </button>
     </div>
     <jems-alert *ngIf="error$ | async as error"

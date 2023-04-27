@@ -259,12 +259,12 @@ $color-blue-light: #81D4FA;
 
   .vis-custom-time {
     pointer-events: none;
-    background-color: var(--status-approved-with-conditions);
+    background-color: var(--report-type-both);
     &.finance {
-      background-color: var(--status-contracted);
+      background-color: var(--report-type-finance);
     }
     &.content {
-      background-color: var(--status-submitted);
+      background-color: var(--report-type-content);
     }
   }
 
@@ -278,12 +278,14 @@ $color-blue-light: #81D4FA;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: var(--status-approved-with-conditions) !important;
+    background-color: var(--report-type-both) !important;
+    color: var(--font-color-primary) !important;
+
     &.content {
-      background-color: var(--status-submitted) !important;
+      background-color: var(--report-type-content) !important;
     }
     &.finance {
-      background-color: var(--status-contracted) !important;
+      background-color: var(--report-type-finance) !important;
     }
     span.material-icons {
       margin-left: -0.1em;

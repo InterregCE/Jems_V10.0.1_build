@@ -26,7 +26,7 @@
   gap: 0.5rem;
   border: 1px dotted var(--table-border-color);
   padding: 0.75rem;
-  margin: 2.5rem 0 1.5rem 0;
+  margin: 1.5rem 0 3rem 0;
   mat-icon {
     color: var(--font-color-secondary);
   }
@@ -36,21 +36,17 @@
   width: 100% !important;
 }
 
-.terms-link {
-  color: var(--primary-color);
-  text-decoration: underline;
-}
-
 .interact-info {
-  color: var(--font-color-secondary);
+  color: white;
   font-size: 0.75rem;
-  padding-bottom: 0;
-  margin-bottom: 0;
+  padding: 1.25rem 8rem;
+  margin: -1rem -2.5rem -2rem -2.5rem;
+  background-color: var(--primary-dark-color);
 }
 
 .developer-info {
   position: absolute;
-  bottom: -2em;
+  bottom: -2.2em;
   margin-left: -2em;
   width: 100%;
   text-align: center;
@@ -59,4 +55,8 @@
     height: 1.25em;
     margin-bottom: -0.3em;
   }
+}
+
+.interact-info a, .developer-info a {
+  box-shadow: none;
 }

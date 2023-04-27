@@ -10,13 +10,24 @@
 
 }
 
-
 @mixin custom-general-button-styles() {
   button:focus {
     outline: 2px solid var(--primary-color);
   }
   button:active {
     outline: none;
+  }
+  .mat-raised-button:not(.mat-button-disabled) {
+    box-shadow: 0.15rem 0.15rem 0.25rem rgba(0, 0, 0, 0.35);
+    border-top: 1px solid var(--primary-halftone-color);
+    border-bottom: 1px solid var(--primary-dark-color);
+    transition: 0.125s ease-out;
+    font-weight: 500;
+    &:hover {
+      background-color: var(--primary-dark-color);
+      box-shadow: 0.2rem 0.2rem 0.6rem rgba(0, 0, 0, 0.3);
+      border-bottom: 1px solid var(--primary-color);
+    }
   }
 }
 
@@ -26,6 +37,9 @@
   }
   .mat-stroked-button:not([disabled]) {
     border-color: if($is-dark-theme, var(--outline-color), var(--primary-color));
+    &:hover {
+      background-color: var(--primary-halftone-color);
+    }
   }
 }
 
