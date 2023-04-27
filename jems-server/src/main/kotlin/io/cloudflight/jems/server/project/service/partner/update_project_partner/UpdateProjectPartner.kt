@@ -46,10 +46,18 @@ class UpdateProjectPartner(
     @Transactional
     @ExceptionWrapper(UpdateProjectPartnerAddressesException::class)
     override fun updatePartnerAddresses(partnerId: Long, addresses: Set<ProjectPartnerAddress>): ProjectPartnerDetail =
-        addresses.any { !nutsService.validateAddress(it.country, it.nutsRegion2, it.nutsRegion3)}.let { isAnyAddressInvalid ->
+        addresses.any {
+            !nutsService.validateAddress(it.country, it.nutsRegion2, it.nutsRegion3) || missingCodes(it)
+        }.let { isAnyAddressInvalid ->
             if(isAnyAddressInvalid) throw InvalidProjectPartnerAddressesException()
             persistence.updatePartnerAddresses(partnerId, addresses)
         }
+
+    private fun missingCodes(address: ProjectPartnerAddress): Boolean {
+        return (!address.nutsRegion3.isNullOrBlank() && address.nutsRegion3Code.isNullOrBlank()) ||
+                (!address.nutsRegion2.isNullOrBlank() && address.nutsRegion2Code.isNullOrBlank()) ||
+                (!address.country.isNullOrBlank() && address.countryCode.isNullOrBlank())
+    }
 
     @CanUpdateProjectPartner
     @Transactional
