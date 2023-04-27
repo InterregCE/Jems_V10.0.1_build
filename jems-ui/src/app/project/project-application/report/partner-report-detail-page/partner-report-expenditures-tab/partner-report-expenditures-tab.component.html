@@ -151,7 +151,7 @@
                                      [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.investmentId)">
                                     <div class="custom-dropdown-text">
                                         <span *ngIf="control.get(constants.FORM_CONTROL_NAMES.investmentId).value">
-                                            <mat-icon *ngIf="getInvestmentInactive(control.get(constants.FORM_CONTROL_NAMES.investmentId).value)" class="inactive-icon-dropdown">hide_source</mat-icon>
+                                            <mat-icon *ngIf="getInvestmentInactive(control.get(constants.FORM_CONTROL_NAMES.investmentId).value)" class="inactive-icon-dropdown mt-1">hide_source</mat-icon>
                                             {{getInvestmentIdValue(control.get(constants.FORM_CONTROL_NAMES.investmentId).value)}}
                                         </span>
                                         <span *ngIf="!control.get(constants.FORM_CONTROL_NAMES.investmentId).value">
@@ -170,11 +170,17 @@
                                         [formControlName]="constants.FORM_CONTROL_NAMES.investmentId"
                                         [matTooltip]="investmentNumber.triggerValue"
                                         [placeholder]="'common.not.applicable.option' | translate">
+                                        <mat-select-trigger>
+                                            <span>
+                                                <mat-icon class="inactive-icon" *ngIf="getInvestmentInactive(control.get(constants.FORM_CONTROL_NAMES.investmentId).value)">hide_source</mat-icon>
+                                                {{getInvestmentIdValue(control.get(constants.FORM_CONTROL_NAMES.investmentId).value)}}
+                                            </span>
+                                        </mat-select-trigger>
                                         <mat-option
                                                 [value]="null">{{'common.not.applicable.option' | translate}}</mat-option>
                                         <mat-option *ngFor="let investment of data.investmentsSummary"
                                                     [value]="investment.id">
-                                            <mat-icon *ngIf="investment.deactivated" class="inactive-icon">hide_source</mat-icon>
+                                            <mat-icon *ngIf="investment.deactivated" class="inactive-icon mr-0">hide_source</mat-icon>
                                             {{investment.toString()}}
                                         </mat-option>
                                     </mat-select>
