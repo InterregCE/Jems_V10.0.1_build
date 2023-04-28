@@ -66,6 +66,9 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
+import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -73,9 +76,6 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
-import java.math.BigDecimal
-import java.time.LocalDate
-import java.time.ZonedDateTime
 
 internal class CreateProjectReportTest : UnitTest() {
 
@@ -111,7 +111,7 @@ internal class CreateProjectReportTest : UnitTest() {
             every { mock.id } returns 11L
             every { mock.sortNumber } returns 6
             every { mock.addresses } returns listOf(
-                ProjectPartnerAddress(ProjectPartnerAddressType.Organization, country = "country-6")
+                    ProjectPartnerAddress(ProjectPartnerAddressType.Organization, country = "country-6")
             )
             return mock
         }
@@ -126,473 +126,487 @@ internal class CreateProjectReportTest : UnitTest() {
         }
 
         private val projectManagement = ProjectManagement(
-            projectHorizontalPrinciples = ProjectHorizontalPrinciples(
-                sustainableDevelopmentCriteriaEffect = ProjectHorizontalPrinciplesEffect.PositiveEffects,
-                equalOpportunitiesEffect = ProjectHorizontalPrinciplesEffect.Neutral,
-                sexualEqualityEffect = ProjectHorizontalPrinciplesEffect.NegativeEffects,
-            ),
-            projectCooperationCriteria = null,
+                projectHorizontalPrinciples = ProjectHorizontalPrinciples(
+                        sustainableDevelopmentCriteriaEffect = ProjectHorizontalPrinciplesEffect.PositiveEffects,
+                        equalOpportunitiesEffect = ProjectHorizontalPrinciplesEffect.Neutral,
+                        sexualEqualityEffect = ProjectHorizontalPrinciplesEffect.NegativeEffects,
+                ),
+                projectCooperationCriteria = null,
         )
 
         private fun projectReportModel(projectId: Long) = ProjectReportModel(
-            id = 0L,
-            reportNumber = 8,
-            status = ProjectReportStatus.Draft,
-            linkedFormVersion = "version",
-            startDate = YESTERDAY,
-            endDate = TOMORROW,
-
-            deadlineId = null,
-            type = ContractingDeadlineType.Both,
-            periodNumber = 4,
-            reportingDate = YESTERDAY.minusDays(1),
-
-            projectId = projectId,
-            projectIdentifier = "proj-custom-iden",
-            projectAcronym = "proj-acr",
-            leadPartnerNameInOriginalLanguage = "lead-orig",
-            leadPartnerNameInEnglish = "lead-en",
-
-            createdAt = ZonedDateTime.now(),
-            firstSubmission = null,
-            verificationDate = null,
-        )
-
-        private fun expectedProjectReport(projectId: Long) = ProjectReport(
-            id = 0L,
-            reportNumber = 8,
-            status = ProjectReportStatus.Draft,
-            linkedFormVersion = "version",
-            startDate = YESTERDAY,
-            endDate = TOMORROW,
-
-            deadlineId = null,
-            type = ContractingDeadlineType.Both,
-            periodDetail = ProjectPeriod(4, 17, 22),
-            reportingDate = YESTERDAY.minusDays(1),
-
-            projectId = projectId,
-            projectIdentifier = "proj-custom-iden",
-            projectAcronym = "proj-acr",
-            leadPartnerNameInOriginalLanguage = "lead-orig",
-            leadPartnerNameInEnglish = "lead-en",
-
-            createdAt = ZonedDateTime.now(),
-            firstSubmission = null,
-            verificationDate = null,
-        )
-
-        private fun projectRelevanceBenefits() = listOf(
-            ProjectRelevanceBenefit(
-                group = ProjectTargetGroupDTO.Hospitals,
-                specification = setOf(
-                    InputTranslation(SystemLanguage.EN, "en"),
-                    InputTranslation(SystemLanguage.DE, "de")
-                )
-            ),
-            ProjectRelevanceBenefit(
-                group = ProjectTargetGroupDTO.CrossBorderLegalBody,
-                specification = setOf(
-                    InputTranslation(SystemLanguage.EN, "en 2"),
-                    InputTranslation(SystemLanguage.DE, "de 2")
-                )
-            )
-        )
-
-        val result = ProjectPartnerBudgetPerFund(
-            partner = null,
-            budgetPerFund = emptySet(),
-            publicContribution = BigDecimal.ZERO,
-            autoPublicContribution = BigDecimal.ZERO,
-            privateContribution = BigDecimal.ZERO,
-            totalPartnerContribution = BigDecimal.ZERO,
-            totalEligibleBudget = BigDecimal.ZERO,
-            percentageOfTotalEligibleBudget = BigDecimal.ZERO
-        )
-
-        val budget = ProjectReportBudget(
-            coFinancing = PreviouslyProjectReportedCoFinancing(
-                fundsSorted = listOf(
-                    PreviouslyProjectReportedFund(
-                        fundId = 410L,
-                        percentage = BigDecimal.valueOf(40),
-                        total = BigDecimal.valueOf(1500),
-                        previouslyReported = BigDecimal.valueOf(256),
-                        previouslyPaid = BigDecimal.valueOf(512),
-                    ),
-                ),
-                totalPartner = BigDecimal.valueOf(13),
-                totalPublic = BigDecimal.valueOf(14),
-                totalAutoPublic = BigDecimal.valueOf(15),
-                totalPrivate = BigDecimal.valueOf(16),
-                totalSum = BigDecimal.valueOf(17),
-                previouslyReportedPartner = BigDecimal.valueOf(33),
-                previouslyReportedPublic = BigDecimal.valueOf(34),
-                previouslyReportedAutoPublic = BigDecimal.valueOf(35),
-                previouslyReportedPrivate = BigDecimal.valueOf(36),
-                previouslyReportedSum = BigDecimal.valueOf(37),
-            ),
-            costCategorySetup = ReportCertificateCostCategory(
-                totalsFromAF = BudgetCostsCalculationResultFull(
-                    staff = BigDecimal.valueOf(105),
-                    office = BigDecimal.valueOf(115),
-                    travel = BigDecimal.valueOf(125),
-                    external = BigDecimal.valueOf(135),
-                    equipment = BigDecimal.valueOf(145),
-                    infrastructure = BigDecimal.valueOf(155),
-                    other = BigDecimal.valueOf(165),
-                    lumpSum = BigDecimal.valueOf(175),
-                    unitCost = BigDecimal.valueOf(185),
-                    sum = BigDecimal.valueOf(195),
-                ),
-                currentlyReported = BudgetCostsCalculationResultFull(
-                    staff = BigDecimal.valueOf(106),
-                    office = BigDecimal.valueOf(116),
-                    travel = BigDecimal.valueOf(126),
-                    external = BigDecimal.valueOf(136),
-                    equipment = BigDecimal.valueOf(146),
-                    infrastructure = BigDecimal.valueOf(156),
-                    other = BigDecimal.valueOf(166),
-                    lumpSum = BigDecimal.valueOf(176),
-                    unitCost = BigDecimal.valueOf(186),
-                    sum = BigDecimal.valueOf(196),
-                ),
-                previouslyReported = BudgetCostsCalculationResultFull(
-                    staff = BigDecimal.valueOf(107),
-                    office = BigDecimal.valueOf(117),
-                    travel = BigDecimal.valueOf(127),
-                    external = BigDecimal.valueOf(137),
-                    equipment = BigDecimal.valueOf(147),
-                    infrastructure = BigDecimal.valueOf(157),
-                    other = BigDecimal.valueOf(167),
-                    lumpSum = BigDecimal.valueOf(177),
-                    unitCost = BigDecimal.valueOf(187),
-                    sum = BigDecimal.valueOf(197),
-                )
-            ),
-            availableLumpSums = listOf(
-                ProjectReportLumpSum(
-                    lumpSumId = 1L,
-                    orderNr = 1,
-                    period = 1,
-                    total = BigDecimal.TEN,
-                    previouslyReported = BigDecimal.ONE,
-                    previouslyPaid = BigDecimal.ZERO
-                )
-            ),
-            unitCosts = setOf(
-                ProjectReportUnitCostBase(
-                    unitCostId = 1L,
-                    numberOfUnits = BigDecimal.ONE,
-                    totalCost = BigDecimal.TEN,
-                    previouslyReported = BigDecimal.ONE
-                )
-            ),
-            investments = listOf(
-                ProjectReportInvestment(
-                    investmentId = 1L,
-                    investmentNumber = 1,
-                    workPackageNumber = 1,
-                    title = emptySet(),
-                    deactivated = false,
-                    total = BigDecimal.TEN,
-                    previouslyReported = BigDecimal.ONE
-                )
-            )
-        )
-
-        val workPackage = ProjectWorkPackageFull(
-            id = 1L,
-            workPackageNumber = 15,
-            name = setOf(InputTranslation(SystemLanguage.EN, "name")),
-            specificObjective = setOf(InputTranslation(SystemLanguage.EN, "objective")),
-            objectiveAndAudience = setOf(InputTranslation(SystemLanguage.EN, "audience")),
-            activities = listOf(
-                WorkPackageActivity(
-                    workPackageId = 1L,
-                    activityNumber = 25,
-                    title = setOf(InputTranslation(SystemLanguage.EN, "title")),
-                    description = setOf(InputTranslation(SystemLanguage.EN, "description")),
-                    startPeriod = 4,
-                    endPeriod = 6,
-                    deliverables = listOf(
-                        WorkPackageActivityDeliverable(
-                            deliverableNumber = 35,
-                            period = 12,
-                            deactivated = false,
-                        ),
-                    ),
-                    deactivated = false,
-                ),
-            ),
-            outputs = listOf(
-                WorkPackageOutput(
-                    workPackageId = 1L,
-                    outputNumber = 16,
-                    programmeOutputIndicatorId = 458L,
-                    programmeOutputIndicatorIdentifier = "id",
-                    targetValue = BigDecimal.TEN,
-                    periodNumber = 16,
-                    title = setOf(InputTranslation(SystemLanguage.EN, "title-out")),
-                    description = setOf(InputTranslation(SystemLanguage.EN, "description-out")),
-                    programmeOutputIndicatorName = setOf(InputTranslation(SystemLanguage.EN, "programmeOutputIndicatorName")),
-                    programmeOutputIndicatorMeasurementUnit = setOf(InputTranslation(SystemLanguage.EN, "measure")),
-                    periodStartMonth = 7,
-                    periodEndMonth = 9,
-                    deactivated = false,
-                ),
-            ),
-            investments = emptyList(),
-            deactivated = false,
-        )
-
-        val report11wp = ProjectReportWorkPackage(
-            id = 777L,
-            number = 15,
-            deactivated = false,
-            specificObjective = emptySet(),
-            specificStatus = ProjectReportWorkPlanStatus.Fully,
-            specificExplanation = emptySet(),
-            communicationObjective = emptySet(),
-            communicationStatus = ProjectReportWorkPlanStatus.Partly,
-            communicationExplanation = emptySet(),
-            completed = true,
-            description = emptySet(),
-            activities = listOf(
-                ProjectReportWorkPackageActivity(
-                    id = 778L,
-                    number = 25,
-                    title = emptySet(),
-                    deactivated = false,
-                    startPeriod = null,
-                    endPeriod = null,
-                    status = ProjectReportWorkPlanStatus.Not,
-                    progress = emptySet(),
-                    attachment = null,
-                    deliverables = emptyList(),
-                )
-            ),
-            outputs = emptyList(),
-        )
-
-        fun expectedToCreateModel(projectId: Long, created: ZonedDateTime) = ProjectReportCreateModel(
-            reportBase = ProjectReportModel(
                 id = 0L,
                 reportNumber = 8,
                 status = ProjectReportStatus.Draft,
                 linkedFormVersion = "version",
                 startDate = YESTERDAY,
                 endDate = TOMORROW,
+
                 deadlineId = null,
                 type = ContractingDeadlineType.Both,
                 periodNumber = 4,
                 reportingDate = YESTERDAY.minusDays(1),
+
                 projectId = projectId,
                 projectIdentifier = "proj-custom-iden",
                 projectAcronym = "proj-acr",
                 leadPartnerNameInOriginalLanguage = "lead-orig",
                 leadPartnerNameInEnglish = "lead-en",
-                createdAt = created,
+
+                createdAt = ZonedDateTime.now(),
                 firstSubmission = null,
                 verificationDate = null,
-            ),
-            reportBudget = ProjectReportBudget(
+        )
+
+        private fun expectedProjectReport(projectId: Long) = ProjectReport(
+                id = 0L,
+                reportNumber = 8,
+                status = ProjectReportStatus.Draft,
+                linkedFormVersion = "version",
+                startDate = YESTERDAY,
+                endDate = TOMORROW,
+
+                deadlineId = null,
+                type = ContractingDeadlineType.Both,
+                periodDetail = ProjectPeriod(4, 17, 22),
+                reportingDate = YESTERDAY.minusDays(1),
+
+                projectId = projectId,
+                projectIdentifier = "proj-custom-iden",
+                projectAcronym = "proj-acr",
+                leadPartnerNameInOriginalLanguage = "lead-orig",
+                leadPartnerNameInEnglish = "lead-en",
+
+                createdAt = ZonedDateTime.now(),
+                firstSubmission = null,
+                verificationDate = null,
+        )
+
+        private fun projectRelevanceBenefits() = listOf(
+                ProjectRelevanceBenefit(
+                        group = ProjectTargetGroupDTO.Hospitals,
+                        specification = setOf(
+                                InputTranslation(SystemLanguage.EN, "en"),
+                                InputTranslation(SystemLanguage.DE, "de")
+                        )
+                ),
+                ProjectRelevanceBenefit(
+                        group = ProjectTargetGroupDTO.CrossBorderLegalBody,
+                        specification = setOf(
+                                InputTranslation(SystemLanguage.EN, "en 2"),
+                                InputTranslation(SystemLanguage.DE, "de 2")
+                        )
+                )
+        )
+
+        val result = ProjectPartnerBudgetPerFund(
+                partner = null,
+                budgetPerFund = emptySet(),
+                publicContribution = BigDecimal.ZERO,
+                autoPublicContribution = BigDecimal.ZERO,
+                privateContribution = BigDecimal.ZERO,
+                totalPartnerContribution = BigDecimal.ZERO,
+                totalEligibleBudget = BigDecimal.ZERO,
+                percentageOfTotalEligibleBudget = BigDecimal.ZERO
+        )
+
+        val budget = ProjectReportBudget(
                 coFinancing = PreviouslyProjectReportedCoFinancing(
-                    fundsSorted = listOf(
-                        PreviouslyProjectReportedFund(
-                            fundId = 410L,
-                            percentage = BigDecimal.valueOf(40),
-                            total = BigDecimal.valueOf(1500),
-                            previouslyReported = BigDecimal.valueOf(256),
-                            previouslyPaid = BigDecimal.valueOf(512),
+                        fundsSorted = listOf(
+                                PreviouslyProjectReportedFund(
+                                        fundId = 410L,
+                                        percentage = BigDecimal.valueOf(40),
+                                        total = BigDecimal.valueOf(1500),
+                                        previouslyReported = BigDecimal.valueOf(256),
+                                        previouslyPaid = BigDecimal.valueOf(512),
+                                ),
                         ),
-                    ),
-                    totalPartner = BigDecimal.valueOf(13),
-                    totalPublic = BigDecimal.valueOf(14),
-                    totalAutoPublic = BigDecimal.valueOf(15),
-                    totalPrivate = BigDecimal.valueOf(16),
-                    totalSum = BigDecimal.valueOf(17),
-                    previouslyReportedPartner = BigDecimal.valueOf(33),
-                    previouslyReportedPublic = BigDecimal.valueOf(34),
-                    previouslyReportedAutoPublic = BigDecimal.valueOf(35),
-                    previouslyReportedPrivate = BigDecimal.valueOf(36),
-                    previouslyReportedSum = BigDecimal.valueOf(37),
+                        totalPartner = BigDecimal.valueOf(13),
+                        totalPublic = BigDecimal.valueOf(14),
+                        totalAutoPublic = BigDecimal.valueOf(15),
+                        totalPrivate = BigDecimal.valueOf(16),
+                        totalSum = BigDecimal.valueOf(17),
+                        previouslyReportedPartner = BigDecimal.valueOf(33),
+                        previouslyReportedPublic = BigDecimal.valueOf(34),
+                        previouslyReportedAutoPublic = BigDecimal.valueOf(35),
+                        previouslyReportedPrivate = BigDecimal.valueOf(36),
+                        previouslyReportedSum = BigDecimal.valueOf(37),
                 ),
                 costCategorySetup = ReportCertificateCostCategory(
-                    totalsFromAF = BudgetCostsCalculationResultFull(
-                        staff = BigDecimal.valueOf(105),
-                        office = BigDecimal.valueOf(115),
-                        travel = BigDecimal.valueOf(125),
-                        external = BigDecimal.valueOf(135),
-                        equipment = BigDecimal.valueOf(145),
-                        infrastructure = BigDecimal.valueOf(155),
-                        other = BigDecimal.valueOf(165),
-                        lumpSum = BigDecimal.valueOf(175),
-                        unitCost = BigDecimal.valueOf(185),
-                        sum = BigDecimal.valueOf(195),
-                    ),
-                    currentlyReported = BudgetCostsCalculationResultFull(
-                        staff = BigDecimal.valueOf(106),
-                        office = BigDecimal.valueOf(116),
-                        travel = BigDecimal.valueOf(126),
-                        external = BigDecimal.valueOf(136),
-                        equipment = BigDecimal.valueOf(146),
-                        infrastructure = BigDecimal.valueOf(156),
-                        other = BigDecimal.valueOf(166),
-                        lumpSum = BigDecimal.valueOf(176),
-                        unitCost = BigDecimal.valueOf(186),
-                        sum = BigDecimal.valueOf(196),
-                    ),
-                    previouslyReported = BudgetCostsCalculationResultFull(
-                        staff = BigDecimal.valueOf(107),
-                        office = BigDecimal.valueOf(117),
-                        travel = BigDecimal.valueOf(127),
-                        external = BigDecimal.valueOf(137),
-                        equipment = BigDecimal.valueOf(147),
-                        infrastructure = BigDecimal.valueOf(157),
-                        other = BigDecimal.valueOf(167),
-                        lumpSum = BigDecimal.valueOf(177),
-                        unitCost = BigDecimal.valueOf(187),
-                        sum = BigDecimal.valueOf(197),
-                    ),
+                        totalsFromAF = BudgetCostsCalculationResultFull(
+                                staff = BigDecimal.valueOf(105),
+                                office = BigDecimal.valueOf(115),
+                                travel = BigDecimal.valueOf(125),
+                                external = BigDecimal.valueOf(135),
+                                equipment = BigDecimal.valueOf(145),
+                                infrastructure = BigDecimal.valueOf(155),
+                                other = BigDecimal.valueOf(165),
+                                lumpSum = BigDecimal.valueOf(175),
+                                unitCost = BigDecimal.valueOf(185),
+                                sum = BigDecimal.valueOf(195),
+                        ),
+                        currentlyReported = BudgetCostsCalculationResultFull(
+                                staff = BigDecimal.valueOf(106),
+                                office = BigDecimal.valueOf(116),
+                                travel = BigDecimal.valueOf(126),
+                                external = BigDecimal.valueOf(136),
+                                equipment = BigDecimal.valueOf(146),
+                                infrastructure = BigDecimal.valueOf(156),
+                                other = BigDecimal.valueOf(166),
+                                lumpSum = BigDecimal.valueOf(176),
+                                unitCost = BigDecimal.valueOf(186),
+                                sum = BigDecimal.valueOf(196),
+                        ),
+                        previouslyReported = BudgetCostsCalculationResultFull(
+                                staff = BigDecimal.valueOf(107),
+                                office = BigDecimal.valueOf(117),
+                                travel = BigDecimal.valueOf(127),
+                                external = BigDecimal.valueOf(137),
+                                equipment = BigDecimal.valueOf(147),
+                                infrastructure = BigDecimal.valueOf(157),
+                                other = BigDecimal.valueOf(167),
+                                lumpSum = BigDecimal.valueOf(177),
+                                unitCost = BigDecimal.valueOf(187),
+                                sum = BigDecimal.valueOf(197),
+                        )
                 ),
                 availableLumpSums = listOf(
-                    ProjectReportLumpSum(
-                        lumpSumId = 1L,
-                        orderNr = 1,
-                        period = 1,
-                        total = BigDecimal.TEN,
-                        previouslyReported = BigDecimal.ONE,
-                        previouslyPaid = BigDecimal.ZERO
-                    )
+                        ProjectReportLumpSum(
+                                lumpSumId = 1L,
+                                orderNr = 1,
+                                period = 1,
+                                total = BigDecimal.TEN,
+                                previouslyReported = BigDecimal.ONE,
+                                previouslyPaid = BigDecimal.ZERO
+                        )
                 ),
                 unitCosts = setOf(
-                    ProjectReportUnitCostBase(
-                        unitCostId = 1L,
-                        numberOfUnits = BigDecimal.ONE,
-                        totalCost = BigDecimal.TEN,
-                        previouslyReported = BigDecimal.ONE
-                    )
+                        ProjectReportUnitCostBase(
+                                unitCostId = 1L,
+                                numberOfUnits = BigDecimal.ONE,
+                                totalCost = BigDecimal.TEN,
+                                previouslyReported = BigDecimal.ONE
+                        )
                 ),
                 investments = listOf(
-                    ProjectReportInvestment(
-                        investmentId = 1L,
-                        investmentNumber = 1,
-                        workPackageNumber = 1,
-                        title = emptySet(),
-                        deactivated = false,
-                        total = BigDecimal.TEN,
-                        previouslyReported = BigDecimal.ONE
-                    )
+                        ProjectReportInvestment(
+                                investmentId = 1L,
+                                investmentNumber = 1,
+                                workPackageNumber = 1,
+                                title = emptySet(),
+                                deactivated = false,
+                                total = BigDecimal.TEN,
+                                previouslyReported = BigDecimal.ONE
+                        )
                 )
-            ),
-            workPackages = listOf(
-                ProjectReportWorkPackageCreate(
-                    workPackageId = 1L,
-                    number = 15,
-                    deactivated = false,
-                    specificObjective = setOf(InputTranslation(SystemLanguage.EN, "objective")),
-                    specificStatus = ProjectReportWorkPlanStatus.Fully,
-                    communicationObjective = setOf(InputTranslation(SystemLanguage.EN, "audience")),
-                    communicationStatus = ProjectReportWorkPlanStatus.Partly,
-                    completed = true,
-                    activities = listOf(
-                        ProjectReportWorkPackageActivityCreate(
-                            activityId = 0L,
-                            number = 25,
-                            title = setOf(InputTranslation(SystemLanguage.EN, "title")),
-                            deactivated = false,
-                            startPeriodNumber = 4,
-                            endPeriodNumber = 6,
-                            status = ProjectReportWorkPlanStatus.Not,
-                            deliverables = listOf(
-                                CreateProjectPartnerReportWorkPackageActivityDeliverable(
-                                    deliverableId = 0L,
-                                    number = 35,
-                                    title = emptySet(),
-                                    deactivated = false,
-                                    periodNumber = 12,
-                                    previouslyReported = BigDecimal.valueOf(502),
+        )
+
+        val workPackage = ProjectWorkPackageFull(
+                id = 1L,
+                workPackageNumber = 15,
+                name = setOf(InputTranslation(SystemLanguage.EN, "name")),
+                specificObjective = setOf(InputTranslation(SystemLanguage.EN, "objective")),
+                objectiveAndAudience = setOf(InputTranslation(SystemLanguage.EN, "audience")),
+                activities = listOf(
+                        WorkPackageActivity(
+                                workPackageId = 1L,
+                                activityNumber = 25,
+                                title = setOf(InputTranslation(SystemLanguage.EN, "title")),
+                                description = setOf(InputTranslation(SystemLanguage.EN, "description")),
+                                startPeriod = 4,
+                                endPeriod = 6,
+                                deliverables = listOf(
+                                        WorkPackageActivityDeliverable(
+                                                deliverableNumber = 35,
+                                                period = 12,
+                                                deactivated = false,
+                                        ),
                                 ),
-                            ),
+                                deactivated = false,
                         ),
-                    ),
-                    outputs = listOf(
-                        CreateProjectPartnerReportWorkPackageOutput(
-                            number = 16,
-                            title = setOf(InputTranslation(SystemLanguage.EN, "title-out")),
-                            deactivated = false,
-                            programmeOutputIndicatorId = 458L,
-                            periodNumber = 16,
-                            targetValue = BigDecimal.valueOf(10),
-                            previouslyReported = BigDecimal.valueOf(845),
+                ),
+                outputs = listOf(
+                        WorkPackageOutput(
+                                workPackageId = 1L,
+                                outputNumber = 16,
+                                programmeOutputIndicatorId = 458L,
+                                programmeOutputIndicatorIdentifier = "id",
+                                targetValue = BigDecimal.TEN,
+                                periodNumber = 16,
+                                title = setOf(InputTranslation(SystemLanguage.EN, "title-out")),
+                                description = setOf(InputTranslation(SystemLanguage.EN, "description-out")),
+                                programmeOutputIndicatorName = setOf(InputTranslation(SystemLanguage.EN, "programmeOutputIndicatorName")),
+                                programmeOutputIndicatorMeasurementUnit = setOf(InputTranslation(SystemLanguage.EN, "measure")),
+                                periodStartMonth = 7,
+                                periodEndMonth = 9,
+                                deactivated = false,
                         ),
-                    ),
                 ),
-            ),
-            targetGroups = listOf(
-                ProjectRelevanceBenefit(
-                    group = ProjectTargetGroupDTO.Hospitals,
-                    specification = setOf(InputTranslation(SystemLanguage.EN, "en"), InputTranslation(SystemLanguage.DE, "de")),
+                investments = emptyList(),
+                deactivated = false,
+        )
+
+        val report11wp = ProjectReportWorkPackage(
+                id = 777L,
+                number = 15,
+                deactivated = false,
+                specificObjective = emptySet(),
+                specificStatus = ProjectReportWorkPlanStatus.Fully,
+                specificExplanation = emptySet(),
+                communicationObjective = emptySet(),
+                communicationStatus = ProjectReportWorkPlanStatus.Partly,
+                communicationExplanation = emptySet(),
+                completed = true,
+                description = emptySet(),
+                activities = listOf(
+                        ProjectReportWorkPackageActivity(
+                                id = 778L,
+                                number = 25,
+                                title = emptySet(),
+                                deactivated = false,
+                                startPeriod = null,
+                                endPeriod = null,
+                                status = ProjectReportWorkPlanStatus.Not,
+                                progress = emptySet(),
+                                attachment = null,
+                                deliverables = emptyList(),
+                        )
                 ),
-                ProjectRelevanceBenefit(
-                    group = ProjectTargetGroupDTO.CrossBorderLegalBody,
-                    specification = setOf(InputTranslation(SystemLanguage.EN, "en 2"), InputTranslation(SystemLanguage.DE, "de 2")),
+                outputs = emptyList(),
+                investments = emptyList()
+        )
+
+        fun expectedToCreateModel(projectId: Long, created: ZonedDateTime) = ProjectReportCreateModel(
+                reportBase = ProjectReportModel(
+                        id = 0L,
+                        reportNumber = 8,
+                        status = ProjectReportStatus.Draft,
+                        linkedFormVersion = "version",
+                        startDate = YESTERDAY,
+                        endDate = TOMORROW,
+                        deadlineId = null,
+                        type = ContractingDeadlineType.Both,
+                        periodNumber = 4,
+                        reportingDate = YESTERDAY.minusDays(1),
+                        projectId = projectId,
+                        projectIdentifier = "proj-custom-iden",
+                        projectAcronym = "proj-acr",
+                        leadPartnerNameInOriginalLanguage = "lead-orig",
+                        leadPartnerNameInEnglish = "lead-en",
+                        createdAt = created,
+                        firstSubmission = null,
+                        verificationDate = null,
                 ),
-            ),
-            partners = listOf(
-                ProjectReportPartnerCreateModel(
-                    partnerId = 11L,
-                    partnerNumber = 6,
-                    partnerAbbreviation = "LP abbr",
-                    partnerRole = ProjectPartnerRole.LEAD_PARTNER,
-                    country = "country-6",
-                    previouslyReported = BigDecimal.valueOf(83L, 1),
-                )
-            ),
-            results = listOf(
-                ProjectReportResultCreate(
-                    resultNumber = 1,
-                    deactivated = false,
-                    periodNumber = 2,
-                    programmeResultIndicatorId = null,
-                    baseline = BigDecimal.valueOf(3),
-                    targetValue = BigDecimal.valueOf(4),
-                    previouslyReported = BigDecimal.valueOf(15L, 2),
+                reportBudget = ProjectReportBudget(
+                        coFinancing = PreviouslyProjectReportedCoFinancing(
+                                fundsSorted = listOf(
+                                        PreviouslyProjectReportedFund(
+                                                fundId = 410L,
+                                                percentage = BigDecimal.valueOf(40),
+                                                total = BigDecimal.valueOf(1500),
+                                                previouslyReported = BigDecimal.valueOf(256),
+                                                previouslyPaid = BigDecimal.valueOf(512),
+                                        ),
+                                ),
+                                totalPartner = BigDecimal.valueOf(13),
+                                totalPublic = BigDecimal.valueOf(14),
+                                totalAutoPublic = BigDecimal.valueOf(15),
+                                totalPrivate = BigDecimal.valueOf(16),
+                                totalSum = BigDecimal.valueOf(17),
+                                previouslyReportedPartner = BigDecimal.valueOf(33),
+                                previouslyReportedPublic = BigDecimal.valueOf(34),
+                                previouslyReportedAutoPublic = BigDecimal.valueOf(35),
+                                previouslyReportedPrivate = BigDecimal.valueOf(36),
+                                previouslyReportedSum = BigDecimal.valueOf(37),
+                        ),
+                        costCategorySetup = ReportCertificateCostCategory(
+                                totalsFromAF = BudgetCostsCalculationResultFull(
+                                        staff = BigDecimal.valueOf(105),
+                                        office = BigDecimal.valueOf(115),
+                                        travel = BigDecimal.valueOf(125),
+                                        external = BigDecimal.valueOf(135),
+                                        equipment = BigDecimal.valueOf(145),
+                                        infrastructure = BigDecimal.valueOf(155),
+                                        other = BigDecimal.valueOf(165),
+                                        lumpSum = BigDecimal.valueOf(175),
+                                        unitCost = BigDecimal.valueOf(185),
+                                        sum = BigDecimal.valueOf(195),
+                                ),
+                                currentlyReported = BudgetCostsCalculationResultFull(
+                                        staff = BigDecimal.valueOf(106),
+                                        office = BigDecimal.valueOf(116),
+                                        travel = BigDecimal.valueOf(126),
+                                        external = BigDecimal.valueOf(136),
+                                        equipment = BigDecimal.valueOf(146),
+                                        infrastructure = BigDecimal.valueOf(156),
+                                        other = BigDecimal.valueOf(166),
+                                        lumpSum = BigDecimal.valueOf(176),
+                                        unitCost = BigDecimal.valueOf(186),
+                                        sum = BigDecimal.valueOf(196),
+                                ),
+                                previouslyReported = BudgetCostsCalculationResultFull(
+                                        staff = BigDecimal.valueOf(107),
+                                        office = BigDecimal.valueOf(117),
+                                        travel = BigDecimal.valueOf(127),
+                                        external = BigDecimal.valueOf(137),
+                                        equipment = BigDecimal.valueOf(147),
+                                        infrastructure = BigDecimal.valueOf(157),
+                                        other = BigDecimal.valueOf(167),
+                                        lumpSum = BigDecimal.valueOf(177),
+                                        unitCost = BigDecimal.valueOf(187),
+                                        sum = BigDecimal.valueOf(197),
+                                ),
+                        ),
+                        availableLumpSums = listOf(
+                                ProjectReportLumpSum(
+                                        lumpSumId = 1L,
+                                        orderNr = 1,
+                                        period = 1,
+                                        total = BigDecimal.TEN,
+                                        previouslyReported = BigDecimal.ONE,
+                                        previouslyPaid = BigDecimal.ZERO
+                                )
+                        ),
+                        unitCosts = setOf(
+                                ProjectReportUnitCostBase(
+                                        unitCostId = 1L,
+                                        numberOfUnits = BigDecimal.ONE,
+                                        totalCost = BigDecimal.TEN,
+                                        previouslyReported = BigDecimal.ONE
+                                )
+                        ),
+                        investments = listOf(
+                                ProjectReportInvestment(
+                                        investmentId = 1L,
+                                        investmentNumber = 1,
+                                        workPackageNumber = 1,
+                                        title = emptySet(),
+                                        deactivated = false,
+                                        total = BigDecimal.TEN,
+                                        previouslyReported = BigDecimal.ONE
+                                )
+                        )
                 ),
-            ),
-            horizontalPrinciples = ProjectHorizontalPrinciples(
-                sustainableDevelopmentCriteriaEffect = ProjectHorizontalPrinciplesEffect.PositiveEffects,
-                equalOpportunitiesEffect = ProjectHorizontalPrinciplesEffect.Neutral,
-                sexualEqualityEffect = ProjectHorizontalPrinciplesEffect.NegativeEffects,
-            ),
+                workPackages = listOf(
+                        ProjectReportWorkPackageCreate(
+                                workPackageId = 1L,
+                                number = 15,
+                                deactivated = false,
+                                specificObjective = setOf(InputTranslation(SystemLanguage.EN, "objective")),
+                                specificStatus = ProjectReportWorkPlanStatus.Fully,
+                                communicationObjective = setOf(InputTranslation(SystemLanguage.EN, "audience")),
+                                communicationStatus = ProjectReportWorkPlanStatus.Partly,
+                                completed = true,
+                                activities = listOf(
+                                        ProjectReportWorkPackageActivityCreate(
+                                                activityId = 0L,
+                                                number = 25,
+                                                title = setOf(InputTranslation(SystemLanguage.EN, "title")),
+                                                deactivated = false,
+                                                startPeriodNumber = 4,
+                                                endPeriodNumber = 6,
+                                                status = ProjectReportWorkPlanStatus.Not,
+                                                deliverables = listOf(
+                                                        CreateProjectPartnerReportWorkPackageActivityDeliverable(
+                                                                deliverableId = 0L,
+                                                                number = 35,
+                                                                title = emptySet(),
+                                                                deactivated = false,
+                                                                periodNumber = 12,
+                                                                previouslyReported = BigDecimal.valueOf(502),
+                                                        ),
+                                                ),
+                                        ),
+                                ),
+                                outputs = listOf(
+                                        CreateProjectPartnerReportWorkPackageOutput(
+                                                number = 16,
+                                                title = setOf(InputTranslation(SystemLanguage.EN, "title-out")),
+                                                deactivated = false,
+                                                programmeOutputIndicatorId = 458L,
+                                                periodNumber = 16,
+                                                targetValue = BigDecimal.valueOf(10),
+                                                previouslyReported = BigDecimal.valueOf(845),
+                                        ),
+                                ),
+                                investments = emptyList()
+                        ),
+                ),
+                targetGroups = listOf(
+                        ProjectRelevanceBenefit(
+                                group = ProjectTargetGroupDTO.Hospitals,
+                                specification = setOf(InputTranslation(SystemLanguage.EN, "en"), InputTranslation(SystemLanguage.DE, "de")),
+                        ),
+                        ProjectRelevanceBenefit(
+                                group = ProjectTargetGroupDTO.CrossBorderLegalBody,
+                                specification = setOf(InputTranslation(SystemLanguage.EN, "en 2"), InputTranslation(SystemLanguage.DE, "de 2")),
+                        ),
+                ),
+                partners = listOf(
+                        ProjectReportPartnerCreateModel(
+                                partnerId = 11L,
+                                partnerNumber = 6,
+                                partnerAbbreviation = "LP abbr",
+                                partnerRole = ProjectPartnerRole.LEAD_PARTNER,
+                                country = "country-6",
+                                previouslyReported = BigDecimal.valueOf(83L, 1),
+                        )
+                ),
+                results = listOf(
+                        ProjectReportResultCreate(
+                                resultNumber = 1,
+                                deactivated = false,
+                                periodNumber = 2,
+                                programmeResultIndicatorId = null,
+                                baseline = BigDecimal.valueOf(3),
+                                targetValue = BigDecimal.valueOf(4),
+                                previouslyReported = BigDecimal.valueOf(15L, 2),
+                        ),
+                ),
+                horizontalPrinciples = ProjectHorizontalPrinciples(
+                        sustainableDevelopmentCriteriaEffect = ProjectHorizontalPrinciplesEffect.PositiveEffects,
+                        equalOpportunitiesEffect = ProjectHorizontalPrinciplesEffect.Neutral,
+                        sexualEqualityEffect = ProjectHorizontalPrinciplesEffect.NegativeEffects,
+                ),
         )
     }
 
     @MockK
     private lateinit var versionPersistence: ProjectVersionPersistence
+
     @MockK
     private lateinit var projectPersistence: ProjectPersistence
+
     @MockK
     private lateinit var projectPartnerPersistence: PartnerPersistence
+
     @MockK
     private lateinit var reportPersistence: ProjectReportPersistence
+
     @MockK
     private lateinit var reportCreatePersistence: ProjectReportCreatePersistence
+
     @MockK
     private lateinit var auditPublisher: ApplicationEventPublisher
+
     @MockK
     private lateinit var projectWorkPackagePersistence: WorkPackagePersistence
+
     @MockK
     private lateinit var projectDescriptionPersistence: ProjectDescriptionPersistence
+
     @MockK
     private lateinit var projectReportIdentificationPersistence: ProjectReportIdentificationPersistence
+
     @MockK
     private lateinit var createProjectReportBudget: CreateProjectReportBudget
+
     @MockK
     private lateinit var projectResultPersistence: ProjectResultPersistence
+
     @MockK
     private lateinit var projectReportResultPersistence: ProjectReportResultPrinciplePersistence
+
     @MockK
     private lateinit var workPlanPersistence: ProjectReportWorkPlanPersistence
 
@@ -602,17 +616,17 @@ internal class CreateProjectReportTest : UnitTest() {
     @BeforeEach
     fun reset() {
         clearMocks(
-            versionPersistence,
-            projectPersistence,
-            projectPartnerPersistence,
-            reportPersistence,
-            reportCreatePersistence,
-            auditPublisher,
-            projectWorkPackagePersistence,
-            projectReportIdentificationPersistence,
-            createProjectReportBudget,
-            projectResultPersistence,
-            projectReportResultPersistence
+                versionPersistence,
+                projectPersistence,
+                projectPartnerPersistence,
+                reportPersistence,
+                reportCreatePersistence,
+                auditPublisher,
+                projectWorkPackagePersistence,
+                projectReportIdentificationPersistence,
+                createProjectReportBudget,
+                projectResultPersistence,
+                projectReportResultPersistence
         )
     }
 
@@ -630,49 +644,49 @@ internal class CreateProjectReportTest : UnitTest() {
         every { reportPersistence.getSubmittedProjectReportIds(projectId) } returns listOf(Pair(11L, ContractingDeadlineType.Both))
         every { projectWorkPackagePersistence.getWorkPackagesWithAllDataByProjectId(projectId, "version") } returns listOf(workPackage)
         every { projectReportIdentificationPersistence.getSpendingProfileCumulative(any()) } returns mapOf(11L to BigDecimal.valueOf(83L, 1))
-        every { createProjectReportBudget.retrieveBudgetDataFor(any(), any(), any())} returns budget
+        every { createProjectReportBudget.retrieveBudgetDataFor(any(), any(), any()) } returns budget
         every { workPlanPersistence.getDeliverableCumulative(setOf(11L)) } returns
-            mapOf(15 to mapOf(25 to mapOf(35 to BigDecimal.valueOf(502))))
+                mapOf(15 to mapOf(25 to mapOf(35 to BigDecimal.valueOf(502))))
         every { workPlanPersistence.getOutputCumulative(setOf(11L)) } returns
-            mapOf(15 to mapOf(16 to BigDecimal.valueOf(845)))
+                mapOf(15 to mapOf(16 to BigDecimal.valueOf(845)))
         every { workPlanPersistence.getReportWorkPlanById(projectId, reportId = 11L) } returns listOf(report11wp)
         every { projectResultPersistence.getResultsForProject(projectId, "version") } returns listOf(projectResult())
         every { projectDescriptionPersistence.getProjectManagement(projectId, "version") } returns projectManagement
         every { projectReportResultPersistence.getResultCumulative(setOf(11L)) } returns mapOf(1 to BigDecimal.valueOf(15L, 2))
 
         val reportStored = slot<ProjectReportCreateModel>()
-        every { reportCreatePersistence.createReportAndFillItToEmptyCertificates(capture(reportStored))} returns projectReportModel(projectId)
+        every { reportCreatePersistence.createReportAndFillItToEmptyCertificates(capture(reportStored)) } returns projectReportModel(projectId)
 
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
 
         val data = ProjectReportUpdate(
-            startDate = YESTERDAY,
-            endDate = TOMORROW,
-            deadlineId = null,
-            type = ContractingDeadlineType.Both,
-            periodNumber = 4,
-            reportingDate = YESTERDAY.minusDays(1),
+                startDate = YESTERDAY,
+                endDate = TOMORROW,
+                deadlineId = null,
+                type = ContractingDeadlineType.Both,
+                periodNumber = 4,
+                reportingDate = YESTERDAY.minusDays(1),
         )
         val returned = interactor.createReportFor(projectId, data)
         assertThat(returned).isEqualTo(
-            expectedProjectReport(projectId).copy(createdAt = returned.createdAt)
+                expectedProjectReport(projectId).copy(createdAt = returned.createdAt)
         )
         assertThat(reportStored.captured).isEqualTo(expectedToCreateModel(projectId, created = reportStored.captured.reportBase.createdAt))
 
         assertThat(auditSlot.captured.auditCandidate).isEqualTo(AuditCandidate(
-            action = AuditAction.PROJECT_REPORT_ADDED,
-            project = AuditProject(projectId.toString(), "proj-custom-iden", "proj-acr"),
-            entityRelatedId = 0L,
-            description = "[proj-custom-iden] Project report PR.8 added",
+                action = AuditAction.PROJECT_REPORT_ADDED,
+                project = AuditProject(projectId.toString(), "proj-custom-iden", "proj-acr"),
+                entityRelatedId = 0L,
+                description = "[proj-custom-iden] Project report PR.8 added",
         ))
     }
 
     @ParameterizedTest(name = "createReportFor - not contracted {0}")
     @EnumSource(
-        value = ApplicationStatus::class,
-        names = ["CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED"],
-        mode = EnumSource.Mode.EXCLUDE,
+            value = ApplicationStatus::class,
+            names = ["CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED"],
+            mode = EnumSource.Mode.EXCLUDE,
     )
     fun `createReportFor - not contracted`(status: ApplicationStatus) {
         val projectId = 154L + status.ordinal

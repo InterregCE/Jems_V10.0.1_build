@@ -9,6 +9,7 @@ import io.cloudflight.jems.server.programme.repository.indicator.toOutputIndicat
 import io.cloudflight.jems.server.project.entity.report.project.workPlan.ProjectReportWorkPackageActivityDeliverableEntity
 import io.cloudflight.jems.server.project.entity.report.project.workPlan.ProjectReportWorkPackageActivityEntity
 import io.cloudflight.jems.server.project.entity.report.project.workPlan.ProjectReportWorkPackageEntity
+import io.cloudflight.jems.server.project.entity.report.project.workPlan.ProjectReportWorkPackageInvestmentEntity
 import io.cloudflight.jems.server.project.entity.report.project.workPlan.ProjectReportWorkPackageOutputEntity
 import io.cloudflight.jems.server.project.repository.report.partner.toModel
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
@@ -18,6 +19,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.identific
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackage
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageActivity
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageActivityDeliverable
+import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageInvestment
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageOutput
 import java.math.BigDecimal
 
@@ -26,6 +28,7 @@ fun List<ProjectReportWorkPackageEntity>.toModel(
     retrieveActivities: (ProjectReportWorkPackageEntity) -> List<ProjectReportWorkPackageActivityEntity>,
     retrieveDeliverables: (ProjectReportWorkPackageActivityEntity) -> List<ProjectReportWorkPackageActivityDeliverableEntity>,
     retrieveOutputs: (ProjectReportWorkPackageEntity) -> List<ProjectReportWorkPackageOutputEntity>,
+    retrieveInvestments: (ProjectReportWorkPackageEntity) -> List<ProjectReportWorkPackageInvestmentEntity>,
 ) = map {
     ProjectReportWorkPackage(
         id = it.id,
@@ -40,7 +43,8 @@ fun List<ProjectReportWorkPackageEntity>.toModel(
         completed = it.completed,
         description = it.translatedValues.extractField { it.description },
         activities = retrieveActivities.invoke(it).toActivitiesModel(periods, retrieveDeliverables),
-        outputs = retrieveOutputs.invoke(it).toOutputsModel(periods)
+        outputs = retrieveOutputs.invoke(it).toOutputsModel(periods),
+        investments = retrieveInvestments.invoke(it).toInvestmentsModel(periods)
     )
 }
 
@@ -93,6 +97,20 @@ fun List<ProjectReportWorkPackageOutputEntity>.toOutputsModel(
         previouslyReported = it.previouslyReported,
         progress = it.translatedValues.extractField { it.progress },
         attachment = it.attachment?.toModel(),
+    )
+}
+
+fun List<ProjectReportWorkPackageInvestmentEntity>.toInvestmentsModel(
+    periods: Map<Int, ProjectPeriod>,
+) = map {
+    ProjectReportWorkPackageInvestment(
+        id = it.id,
+        number = it.number,
+        title = it.translatedValues.extractField { it.title },
+        deactivated = it.deactivated,
+        period = it.expectedDeliveryPeriod?.let { periods[it] },
+        progress = it.translatedValues.extractField { it.progress },
+        nutsRegion3 = it.address?.nutsRegion3
     )
 }
 

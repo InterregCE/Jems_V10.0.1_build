@@ -18,4 +18,5 @@ data class ProjectReportWorkPackageCreate(
     val completed: Boolean,
     val activities: List<ProjectReportWorkPackageActivityCreate>,
     val outputs: List<CreateProjectPartnerReportWorkPackageOutput>,
+    val investments: List<ProjectReportWorkPackageInvestmentCreate>,
 )

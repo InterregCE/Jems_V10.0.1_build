@@ -26,6 +26,7 @@ import io.cloudflight.jems.server.project.repository.report.project.resultPrinci
 import io.cloudflight.jems.server.project.repository.report.project.resultPrinciple.toIndexedEntity
 import io.cloudflight.jems.server.project.repository.report.project.workPlan.ProjectReportWorkPackageActivityDeliverableRepository
 import io.cloudflight.jems.server.project.repository.report.project.workPlan.ProjectReportWorkPackageActivityRepository
+import io.cloudflight.jems.server.project.repository.report.project.workPlan.ProjectReportWorkPackageInvestmentRepository
 import io.cloudflight.jems.server.project.repository.report.project.workPlan.ProjectReportWorkPackageOutputRepository
 import io.cloudflight.jems.server.project.repository.report.project.workPlan.ProjectReportWorkPackageRepository
 import io.cloudflight.jems.server.project.service.model.ProjectHorizontalPrinciples
@@ -61,6 +62,7 @@ class ProjectReportCreatePersistenceProvider(
     private val workPlanActivityRepository: ProjectReportWorkPackageActivityRepository,
     private val workPlanActivityDeliverableRepository: ProjectReportWorkPackageActivityDeliverableRepository,
     private val workPlanOutputRepository: ProjectReportWorkPackageOutputRepository,
+    private val workPlanInvestmentRepository: ProjectReportWorkPackageInvestmentRepository,
     private val projectReportCoFinancingRepository: ProjectReportCoFinancingRepository,
     private val projectReportCertificateCostCategoryRepository: ReportProjectCertificateCostCategoryRepository,
     private val resultIndicatorRepository: ResultIndicatorRepository,
@@ -110,6 +112,8 @@ class ProjectReportCreatePersistenceProvider(
             }
             // save WP outputs
             workPlanOutputRepository.saveAll(wp.outputs.toEntity(wpEntity, { outputIndicatorRepository.getById(it) }))
+            // save WP investments
+            workPlanInvestmentRepository.saveAll(wp.investments.toEntity(wpEntity))
         }
     }
 

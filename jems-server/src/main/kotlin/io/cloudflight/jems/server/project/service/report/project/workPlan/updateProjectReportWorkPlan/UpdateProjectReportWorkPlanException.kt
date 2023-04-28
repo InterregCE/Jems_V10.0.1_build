@@ -50,3 +50,11 @@ class WorkPackageOutputNotFoundException(outputId: Long) : ApplicationNotFoundEx
         i18nArguments = mapOf("outputId" to outputId.toString())
     ),
 )
+
+class WorkPackageInvestmentNotFoundException(investmentId: Long) : ApplicationNotFoundException(
+    code = "$ERROR_CODE_PREFIX-006",
+    i18nMessage = I18nMessage(
+        i18nKey = "$ERROR_KEY_PREFIX.investmentId.not.found.on.wp",
+        i18nArguments = mapOf("investmentId" to investmentId.toString())
+    ),
+)

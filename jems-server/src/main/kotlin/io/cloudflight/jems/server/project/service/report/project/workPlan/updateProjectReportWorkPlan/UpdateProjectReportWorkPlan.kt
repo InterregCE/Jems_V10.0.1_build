@@ -9,6 +9,8 @@ import io.cloudflight.jems.server.project.service.report.model.project.workPlan.
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageActivityDeliverable
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageActivityDeliverableUpdate
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageActivityUpdate
+import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageInvestment
+import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageInvestmentUpdate
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageOnlyUpdate
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageOutput
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageOutputUpdate
@@ -52,6 +54,10 @@ class UpdateProjectReportWorkPlan(
             updateNestedOutputs(    // update WP outputs
                 outputsWithNewData = wpNew.outputs,
                 existingOutputsById = existingWp.outputs.associateBy { it.id },
+            )
+            updateNestedInvestments(    // update WP investment
+                investmentsWithNewData = wpNew.investments,
+                existingInvestmentsById = existingWp.investments.associateBy { it.id },
             )
         }
 
@@ -138,6 +144,21 @@ class UpdateProjectReportWorkPlan(
         }
     }
 
+    private fun updateNestedInvestments(
+        investmentsWithNewData: List<ProjectReportWorkPackageInvestmentUpdate>,
+        existingInvestmentsById: Map<Long, ProjectReportWorkPackageInvestment>,
+    ) {
+        investmentsWithNewData.associateBy { it.id }.forEach { (investmentId, investmentNew) ->
+            val existingOutput = existingInvestmentsById.getByIdOrThrow(investmentId)
+
+            if (thereAreChanges(investmentNew, existingOutput))
+                reportWorkPlanPersistence.updateReportWorkPackageInvestment(
+                    investmentId = investmentId,
+                    progress = investmentNew.progress,
+                )
+        }
+    }
+
     private fun thereAreChanges(
         first: ProjectReportWorkPackageUpdate,
         second: ProjectReportWorkPackage,
@@ -165,6 +186,11 @@ class UpdateProjectReportWorkPlan(
     ) = first.currentReport != second.currentReport
         || first.progress != second.progress
 
+    private fun thereAreChanges(
+        first: ProjectReportWorkPackageInvestmentUpdate,
+        second: ProjectReportWorkPackageInvestment,
+    ) = first.progress != second.progress
+
     private fun Map<Long, ProjectReportWorkPackage>.getByIdOrThrow(id: Long) = get(id)
         ?: throw WorkPackageNotFoundException(workPackageId = id)
 
@@ -176,6 +202,9 @@ class UpdateProjectReportWorkPlan(
 
     private fun Map<Long, ProjectReportWorkPackageOutput>.getByIdOrThrow(id: Long) = get(id)
         ?: throw WorkPackageOutputNotFoundException(outputId = id)
+
+    private fun Map<Long, ProjectReportWorkPackageInvestment>.getByIdOrThrow(id: Long) = get(id)
+        ?: throw WorkPackageInvestmentNotFoundException(investmentId = id)
 
     private fun ProjectReportWorkPackageUpdate.onlyWpChangesThemselves() = ProjectReportWorkPackageOnlyUpdate(
         specificStatus = specificStatus,
