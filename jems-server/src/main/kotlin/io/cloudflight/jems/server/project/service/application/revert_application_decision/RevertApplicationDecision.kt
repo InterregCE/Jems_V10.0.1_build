@@ -4,10 +4,9 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanRevertDecision
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.project.service.application.submit_application.ProjectStatusChangeEvent
+import io.cloudflight.jems.server.notification.handler.ProjectStatusChangeEvent
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
-import io.cloudflight.jems.server.project.service.projectStatusChanged
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service

@@ -7,15 +7,17 @@ import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionList
+import io.cloudflight.jems.server.notification.handler.PartnerReportStatusChanged
 import io.cloudflight.jems.server.plugin.JemsPluginRegistry
 import io.cloudflight.jems.server.plugin.pre_submission_check.ControlReportSamplingCheckOff
+import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
-import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.control.overview.ControlOverview
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.overview.ProjectPartnerReportControlOverviewPersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportDesignatedControllerPersistence
@@ -105,6 +107,9 @@ internal class StartControlPartnerReportTest : UnitTest() {
     @MockK
     lateinit var callPersistence: CallPersistence
 
+    @MockK
+    lateinit var projectPersistence: ProjectPersistence
+
 
     @InjectMockKs
     lateinit var interactor: StartControlPartnerReport
@@ -134,9 +139,11 @@ internal class StartControlPartnerReportTest : UnitTest() {
         every { controlOverviewPersistence.createPartnerControlReportOverview(PARTNER_ID, 37L, 5)} returns controlOverview
         every { callPersistence.getCallSimpleByPartnerId(PARTNER_ID).controlReportSamplingCheckPluginKey} returns "control-report-sampling-check-off"
         every { jemsPluginRegistry.get(ControlReportSamplingCheckPlugin::class, "control-report-sampling-check-off")} returns ControlReportSamplingCheckOff()
+        every { projectPersistence.getProjectSummary(PROJECT_ID) } returns mockk()
 
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
+        every { auditPublisher.publishEvent(ofType(PartnerReportStatusChanged::class)) } returns Unit
 
         interactor.startControl(PARTNER_ID, 37L)
 

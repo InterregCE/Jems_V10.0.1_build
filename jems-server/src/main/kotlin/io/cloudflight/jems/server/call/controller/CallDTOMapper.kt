@@ -13,7 +13,6 @@ import io.cloudflight.jems.api.call.dto.applicationFormConfiguration.StepSelecti
 import io.cloudflight.jems.api.call.dto.applicationFormConfiguration.UpdateApplicationFormFieldConfigurationRequestDTO
 import io.cloudflight.jems.api.call.dto.notificationConfiguration.ProjectNotificationConfigurationDTO
 import io.cloudflight.jems.api.notification.dto.NotificationTypeDTO
-import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.Call
@@ -24,7 +23,7 @@ import io.cloudflight.jems.server.call.service.model.CallFundRate
 import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.call.service.model.PreSubmissionPlugins
-import io.cloudflight.jems.server.call.service.model.ProjectNotificationConfiguration
+import io.cloudflight.jems.server.call.service.model.notificationConfigurations.ProjectNotificationConfiguration
 import io.cloudflight.jems.server.common.CommonDTOMapper
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType
 import io.cloudflight.jems.server.programme.controller.costoption.toDto
@@ -140,9 +139,11 @@ fun ProjectNotificationConfiguration.toDto() = ProjectNotificationConfigurationD
     sendToLeadPartner = sendToLeadPartner,
     sendToProjectPartners = sendToProjectPartners,
     sendToProjectAssigned = sendToProjectAssigned,
+    sendToControllers = sendToControllers,
     emailSubject = emailSubject,
     emailBody = emailBody,
 )
+
 fun ProjectNotificationConfigurationDTO.toModel() = ProjectNotificationConfiguration(
     id = id.toModel(),
     active = active,
@@ -150,6 +151,7 @@ fun ProjectNotificationConfigurationDTO.toModel() = ProjectNotificationConfigura
     sendToLeadPartner = sendToLeadPartner,
     sendToProjectPartners = sendToProjectPartners,
     sendToProjectAssigned = sendToProjectAssigned,
+    sendToControllers = sendToControllers,
     emailSubject = emailSubject,
     emailBody = emailBody,
 )

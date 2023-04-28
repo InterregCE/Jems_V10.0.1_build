@@ -9,6 +9,13 @@
                 {{'call.detail.notifications.config.tab.project' | translate}}
             </span>
         </a>
+
+        <a [active]="activeTab('partnerReport')" mat-tab-link
+           (click)="routeTo('partnerReport')">
+            <span jemsText maxWidth="230">
+                {{'call.detail.notifications.config.tab.partner.report' | translate}}
+            </span>
+        </a>
     </nav>
     <router-outlet></router-outlet>
 </jems-main-page-template>

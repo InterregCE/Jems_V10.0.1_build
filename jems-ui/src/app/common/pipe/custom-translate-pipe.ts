@@ -3,9 +3,9 @@ import {ChangeDetectorRef, Pipe, PipeTransform} from '@angular/core';
 import {LanguageStore} from '../services/language-store.service';
 import {
     ProjectStore
-} from "@project/project-application/containers/project-application-detail/services/project-store.service";
-import {map} from "rxjs/operators";
-import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {map} from 'rxjs/operators';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
 // This pipe will replace the 'translate' pipe from '@ngx-translate'
 // It's extended the TranslatePipe to provide support for using the fallback language's translation
@@ -37,8 +37,8 @@ export class CustomTranslatePipe extends TranslatePipe implements PipeTransform 
       return query;
     }
 
-    let callSpecificKey = `${this.callIdPrefix}${query}`;
-    let translationIfExists = this.translateIfExists(callSpecificKey, args);
+    const callSpecificKey = `${this.callIdPrefix}${query}`;
+    const translationIfExists = this.translateIfExists(callSpecificKey, args);
     if (translationIfExists) {
       return translationIfExists;
     }
@@ -58,7 +58,7 @@ export class CustomTranslatePipe extends TranslatePipe implements PipeTransform 
   }
 
   private translateIfExists(query: string, args: any[]): string | null {
-    let translation = super.transform(query, args[0]);
+    const translation = super.transform(query, args[0]);
     if (this.translationExists(query, translation)) {
       return translation;
     } else {

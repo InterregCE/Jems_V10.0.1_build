@@ -2,8 +2,10 @@ package io.cloudflight.jems.server.project.service.report.partner.base.submitPro
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
+import io.cloudflight.jems.server.notification.handler.PartnerReportStatusChanged
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
 import io.cloudflight.jems.server.project.repository.report.partner.model.ExpenditureVerificationUpdate
+import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.budget.model.ExpenditureCostCategoryCurrentlyReportedWithReIncluded
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
@@ -55,6 +57,7 @@ class SubmitProjectPartnerReport(
     private val reportInvestmentPersistence: ProjectPartnerReportInvestmentPersistence,
     private val projectControlReportExpenditurePersistence: ProjectPartnerReportExpenditureVerificationPersistence,
     private val auditPublisher: ApplicationEventPublisher,
+    private val projectPersistence: ProjectPersistence,
 ) : SubmitProjectPartnerReportInteractor {
 
     @CanEditPartnerReport
@@ -91,10 +94,14 @@ class SubmitProjectPartnerReport(
             reportId = reportId,
             submissionTime = ZonedDateTime.now()
         ).also { it ->
+            val projectId = partnerPersistence.getProjectIdForPartnerId(id = partnerId, it.version)
+            val projectSummary = projectPersistence.getProjectSummary(projectId)
+
+            auditPublisher.publishEvent(PartnerReportStatusChanged(this, projectSummary, it))
             auditPublisher.publishEvent(
                 partnerReportSubmitted(
                     context = this,
-                    projectId = partnerPersistence.getProjectIdForPartnerId(id = partnerId, it.version),
+                    projectId = projectId,
                     report = it,
                     isGdprSensitive = expenditures.any { it.gdpr }
                 )

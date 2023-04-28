@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.call.service.get_project_notification_configuration
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.call.service.model.ProjectNotificationConfiguration
+import io.cloudflight.jems.server.call.service.model.notificationConfigurations.ProjectNotificationConfiguration
 import io.cloudflight.jems.server.call.service.notificationConfigurations.CallNotificationConfigurationsPersistence
 import io.cloudflight.jems.server.call.service.notificationConfigurations.getProjectNotificationConfiguration.GetProjectNotificationConfigurations
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType
@@ -24,6 +24,7 @@ class GetProjectNotificationConfigurationsTest: UnitTest() {
                 sendToLeadPartner = false,
                 sendToProjectPartners = false,
                 sendToProjectAssigned = false,
+                sendToControllers = false,
             )
         )
 
@@ -35,6 +36,7 @@ class GetProjectNotificationConfigurationsTest: UnitTest() {
                 sendToLeadPartner = false,
                 sendToProjectPartners = false,
                 sendToProjectAssigned = false,
+                sendToControllers = false,
             ),
             ProjectNotificationConfiguration(
                 id = NotificationType.ProjectSubmittedStep1,
@@ -43,6 +45,7 @@ class GetProjectNotificationConfigurationsTest: UnitTest() {
                 sendToLeadPartner = false,
                 sendToProjectPartners = false,
                 sendToProjectAssigned = false,
+                sendToControllers = false,
             )
         )
     }

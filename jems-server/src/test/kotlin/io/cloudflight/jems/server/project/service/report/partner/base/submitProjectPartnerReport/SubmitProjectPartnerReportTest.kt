@@ -8,8 +8,10 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
 import io.cloudflight.jems.server.currency.service.model.CurrencyConversion
+import io.cloudflight.jems.server.notification.handler.PartnerReportStatusChanged
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.repository.report.partner.model.ExpenditureVerificationUpdate
+import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.budget.model.ExpenditureCostCategoryCurrentlyReportedWithReIncluded
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
@@ -410,6 +412,9 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
     @MockK
     lateinit var auditPublisher: ApplicationEventPublisher
 
+    @MockK
+    lateinit var projectPersistence: ProjectPersistence
+
     @InjectMockKs
     lateinit var submitReport: SubmitProjectPartnerReport
 
@@ -478,9 +483,11 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         val submissionTime = slot<ZonedDateTime>()
         every { reportPersistence.submitReportById(any(), any(), capture(submissionTime)) } returns mockedResult
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID, "5.6.0") } returns PROJECT_ID
+        every { projectPersistence.getProjectSummary(PROJECT_ID) } returns mockk()
 
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
+        every { auditPublisher.publishEvent(ofType(PartnerReportStatusChanged::class)) } returns Unit
 
         val slotExpenditureVerification = slot<List<ExpenditureVerificationUpdate>>()
         every {

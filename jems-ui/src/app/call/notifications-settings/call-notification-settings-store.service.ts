@@ -1,42 +1,59 @@
 import {Injectable} from '@angular/core';
 import {CallNotificationConfigurationService, ProjectNotificationConfigurationDTO} from '@cat/api';
-import {RoutingService} from '@common/services/routing.service';
 import {switchMap, tap} from 'rxjs/operators';
 import {UntilDestroy} from '@ngneat/until-destroy';
 import {merge, Observable, Subject} from 'rxjs';
+import {CallStore} from '../services/call-store.service';
 
 @UntilDestroy()
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class CallNotificationSettingsStore {
-    public static CALL_DETAIL_PATH = '/app/call/detail';
-    private callId: number;
-    projectNotificationConfigurations$: Observable<ProjectNotificationConfigurationDTO[]>;
-    private projectNotificationConfigurationsSaved$ = new Subject< ProjectNotificationConfigurationDTO[]>();
+  callId$: Observable<number>;
+  projectNotificationConfigurations$: Observable<ProjectNotificationConfigurationDTO[]>;
+  partnerReportNotificationConfigurations$: Observable<ProjectNotificationConfigurationDTO[]>;
+  private projectNotificationConfigurationsSaved$ = new Subject<ProjectNotificationConfigurationDTO[]>();
+  private partnerReportNotificationConfigurationsSaved$ = new Subject<ProjectNotificationConfigurationDTO[]>();
 
-    constructor(
-        private callNotificationService: CallNotificationConfigurationService,
-        private router: RoutingService
-    ) {
+  constructor(
+    private readonly callStore: CallStore,
+    private callNotificationService: CallNotificationConfigurationService,
+  ) {
+    this.callId$ = callStore.callId$;
+    this.projectNotificationConfigurations$ = this.projectNotificationConfigurations();
+    this.partnerReportNotificationConfigurations$ = this.partnerReportNotificationConfigurations();
+  }
 
-      this.projectNotificationConfigurations$ = this.projectNotificationConfigurations();
-    }
 
+  private projectNotificationConfigurations(): Observable<ProjectNotificationConfigurationDTO[]> {
+    const initialConfigurations$ = this.callId$.pipe(
+      switchMap(callId => this.callNotificationService.getProjectNotificationsByCallId(callId)),
+    );
 
-    projectNotificationConfigurations(): Observable<ProjectNotificationConfigurationDTO[]> {
-        const initialConfigurations$ = this.router.routeParameterChanges(CallNotificationSettingsStore.CALL_DETAIL_PATH, 'callId').pipe(
-            tap(callId => this.callId = Number(callId)),
-            switchMap( callId => this.callNotificationService.getProjectNotificationsByCallId(Number(callId))),
-        );
+    return merge(initialConfigurations$, this.projectNotificationConfigurationsSaved$);
+  }
 
-        return merge(initialConfigurations$, this.projectNotificationConfigurationsSaved$);
-    }
+  private partnerReportNotificationConfigurations(): Observable<ProjectNotificationConfigurationDTO[]> {
+    const initialConfigurations$ = this.callId$.pipe(
+      switchMap(callId => this.callNotificationService.getPartnerReportNotificationsByCallId(callId)),
+    );
 
-    updateProjectNotifications(projectNotificationTemplates: ProjectNotificationConfigurationDTO[]): Observable<ProjectNotificationConfigurationDTO[]> {
-        return this.callNotificationService.updateProjectNotifications(this.callId, projectNotificationTemplates).pipe(
-            tap(configurations => this.projectNotificationConfigurationsSaved$.next(configurations))
-        );
-    }
+    return merge(initialConfigurations$, this.partnerReportNotificationConfigurationsSaved$);
+  }
+
+  updateProjectNotifications(projectNotificationTemplates: ProjectNotificationConfigurationDTO[]): Observable<ProjectNotificationConfigurationDTO[]> {
+    return this.callId$.pipe(
+      switchMap(callId => this.callNotificationService.updateProjectNotifications(callId, projectNotificationTemplates)),
+      tap(configurations => this.projectNotificationConfigurationsSaved$.next(configurations))
+    );
+  }
+
+  updatePartnerReportNotifications(partnerReportNotificationTemplates: ProjectNotificationConfigurationDTO[]): Observable<ProjectNotificationConfigurationDTO[]> {
+    return this.callId$.pipe(
+      switchMap(callId => this.callNotificationService.updatePartnerReportNotifications(callId, partnerReportNotificationTemplates)),
+      tap(configurations => this.partnerReportNotificationConfigurationsSaved$.next(configurations))
+    );
+  }
 
 }

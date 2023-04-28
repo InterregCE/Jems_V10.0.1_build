@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.call.entity
+package io.cloudflight.jems.server.call.entity.notificationConfiguration
 
 import javax.persistence.EmbeddedId
 import javax.persistence.Entity
@@ -23,6 +23,9 @@ class ProjectNotificationConfigurationEntity (
 
     @field:NotNull
     var sendToProjectAssigned: Boolean,
+
+    @field:NotNull
+    var sendToControllers: Boolean,
 
     @field:NotNull
     var emailSubject: String,

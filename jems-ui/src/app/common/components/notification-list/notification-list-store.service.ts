@@ -23,9 +23,11 @@ export class NotificationListStoreService {
   }
 
   private notificationPage(): Observable<PageNotificationDTO> {
+    const defaultPageSize = Tables.DEFAULT_PAGE_OPTIONS.find(el => el === 10) ?? Tables.DEFAULT_INITIAL_PAGE_SIZE;
+
     return combineLatest([
       this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
-      this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
+      this.newPageSize$.pipe(startWith(defaultPageSize)),
       this.newSort$.pipe(
         startWith(NotificationListStoreService.DEFAULT_SORT),
         map(sort => sort?.direction ? sort : NotificationListStoreService.DEFAULT_SORT),

@@ -1,6 +1,7 @@
 package io.cloudflight.jems.api.notification.dto
 
 enum class NotificationTypeDTO {
+    // Project
     ProjectSubmittedStep1,
     ProjectSubmitted,
     ProjectApprovedStep1,
@@ -19,5 +20,10 @@ enum class NotificationTypeDTO {
     ProjectInModification,
     ProjectModificationSubmitted,
     ProjectModificationApproved,
-    ProjectModificationRejected
+    ProjectModificationRejected,
+
+    // Partner Report
+    PartnerReportSubmitted,
+    PartnerReportControlOngoing,
+    PartnerReportCertified;
 }

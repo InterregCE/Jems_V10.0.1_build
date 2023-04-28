@@ -6,7 +6,7 @@ import io.cloudflight.jems.server.project.authorization.ProjectAuthorization
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.project.service.application.submit_application.ProjectStatusChangeEvent
+import io.cloudflight.jems.server.notification.handler.ProjectStatusChangeEvent
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
 import io.cloudflight.jems.server.project.service.application.workflow.states.ConditionsSubmittedApplicationState
 import io.cloudflight.jems.server.project.service.model.ProjectSummary

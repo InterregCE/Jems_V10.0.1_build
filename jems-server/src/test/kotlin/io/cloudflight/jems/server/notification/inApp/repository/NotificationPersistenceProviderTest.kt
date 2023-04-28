@@ -4,11 +4,13 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.notification.inApp.entity.NotificationEntity
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationInApp
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationPartner
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationProject
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType
 import io.cloudflight.jems.server.notification.inApp.service.model.UserNotification
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import io.mockk.clearMocks
@@ -129,6 +131,9 @@ class NotificationPersistenceProviderTest : UnitTest() {
             project = project,
             projectIdentifier = "C-P0014",
             projectAcronym = "I want money",
+            partnerId = 321L,
+            partnerRole = ProjectPartnerRole.LEAD_PARTNER,
+            partnerNumber = 1,
             subject = "Project was submitted",
             body = "Project was submitted. Your JEMS",
             type = NotificationType.ProjectSubmittedStep1,
@@ -142,6 +147,7 @@ class NotificationPersistenceProviderTest : UnitTest() {
             UserNotification(
                 id = 7L,
                 project = NotificationProject(55L, "call-55",14L, "C-P0014", "I want money"),
+                partner = NotificationPartner(321L, ProjectPartnerRole.LEAD_PARTNER, 1),
                 time = Instant.ofEpochSecond(epoch).atOffset(ZoneOffset.UTC).toZonedDateTime(),
                 subject = "Project was submitted",
                 body = "Project was submitted. Your JEMS",
