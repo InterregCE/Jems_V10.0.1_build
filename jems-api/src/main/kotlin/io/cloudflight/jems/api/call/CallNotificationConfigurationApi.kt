@@ -16,13 +16,26 @@ interface CallNotificationConfigurationApi {
     }
 
     @ApiOperation("Returns set of project notification configurations by call id")
-    @GetMapping(ENDPOINT_API_CALL_NOTIFICATION_CONFIG)
+    @GetMapping("$ENDPOINT_API_CALL_NOTIFICATION_CONFIG/project")
     fun getProjectNotificationsByCallId(@PathVariable callId: Long): List<ProjectNotificationConfigurationDTO>
 
     @ApiOperation("Update project notification configurations")
-    @PostMapping(ENDPOINT_API_CALL_NOTIFICATION_CONFIG, consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping("$ENDPOINT_API_CALL_NOTIFICATION_CONFIG/project", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateProjectNotifications(
         @PathVariable callId: Long,
         @RequestBody projectNotificationConfigurations: List<ProjectNotificationConfigurationDTO>
     ) : List<ProjectNotificationConfigurationDTO>
+
+    @ApiOperation("Returns set of project notification configurations by call id")
+    @GetMapping("$ENDPOINT_API_CALL_NOTIFICATION_CONFIG/partnerReport")
+    fun getPartnerReportNotificationsByCallId(@PathVariable callId: Long): List<ProjectNotificationConfigurationDTO>
+
+    @ApiOperation("Update project notification configurations")
+    @PostMapping("$ENDPOINT_API_CALL_NOTIFICATION_CONFIG/partnerReport", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun updatePartnerReportNotifications(
+        @PathVariable callId: Long,
+        @RequestBody projectNotificationConfigurations: List<ProjectNotificationConfigurationDTO>
+    ) : List<ProjectNotificationConfigurationDTO>
+
+
 }

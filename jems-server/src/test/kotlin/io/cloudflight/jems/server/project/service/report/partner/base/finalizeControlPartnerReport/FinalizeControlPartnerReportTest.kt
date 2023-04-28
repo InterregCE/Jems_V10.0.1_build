@@ -6,6 +6,8 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionList
+import io.cloudflight.jems.server.notification.handler.PartnerReportStatusChanged
+import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCurrentValuesWrapper
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
@@ -247,6 +249,9 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
     @MockK
     private lateinit var reportDesignatedControllerPersistence: ProjectPartnerReportDesignatedControllerPersistence
 
+    @MockK
+    private lateinit var projectPersistence: ProjectPersistence
+
     @InjectMockKs
     private lateinit var interactor: FinalizeControlPartnerReport
 
@@ -270,17 +275,17 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
                 reportId = 42L
             )
         } returns
-            listOf(
-                expenditure1, expenditure2.copy(
-                    declaredAmountAfterSubmission = BigDecimal.TEN,
-                    parkingMetadata = ExpenditureParkingMetadata(
-                        reportOfOriginId = 70L,
-                        reportOfOriginNumber = 5,
-                        originalExpenditureNumber = 3
-                    ),
-                    parked = true
+                listOf(
+                    expenditure1, expenditure2.copy(
+                        declaredAmountAfterSubmission = BigDecimal.TEN,
+                        parkingMetadata = ExpenditureParkingMetadata(
+                            reportOfOriginId = 70L,
+                            reportOfOriginNumber = 5,
+                            originalExpenditureNumber = 3
+                        ),
+                        parked = true
+                    )
                 )
-            )
 
         every { reportExpenditureCostCategoryPersistence.getCostCategories(PARTNER_ID, reportId = 42L) } returns options
         every { controlOverviewPersistence.updatePartnerControlReportOverviewEndDate(PARTNER_ID, 42L, LocalDate.now()) } returns controlOverview
@@ -308,9 +313,11 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
         } answers { }
 
         every { reportPersistence.finalizeControlOnReportById(any(), any(), any()) } returns mockedResult
+        every { projectPersistence.getProjectSummary(PROJECT_ID) } returns mockk()
 
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
+        every { auditPublisher.publishEvent(ofType(PartnerReportStatusChanged::class)) } returns Unit
 
         assertThat(interactor.finalizeControl(PARTNER_ID, 42L)).isEqualTo(ReportStatus.Certified)
 

@@ -1,5 +1,6 @@
-package io.cloudflight.jems.server.call.entity
+package io.cloudflight.jems.server.call.entity.notificationConfiguration
 
+import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType
 import java.io.Serializable
 import java.util.Objects

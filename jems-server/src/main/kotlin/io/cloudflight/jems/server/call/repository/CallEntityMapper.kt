@@ -13,8 +13,8 @@ import io.cloudflight.jems.server.call.entity.CallTranslEntity
 import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
 import io.cloudflight.jems.server.call.entity.ProjectCallStateAidEntity
-import io.cloudflight.jems.server.call.entity.ProjectNotificationConfigurationEntity
-import io.cloudflight.jems.server.call.entity.ProjectNotificationConfigurationId
+import io.cloudflight.jems.server.call.entity.notificationConfiguration.ProjectNotificationConfigurationEntity
+import io.cloudflight.jems.server.call.entity.notificationConfiguration.ProjectNotificationConfigurationId
 import io.cloudflight.jems.server.call.entity.StateAidSetupId
 import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
@@ -24,7 +24,7 @@ import io.cloudflight.jems.server.call.service.model.CallFundRate
 import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
-import io.cloudflight.jems.server.call.service.model.ProjectNotificationConfiguration
+import io.cloudflight.jems.server.call.service.model.notificationConfigurations.ProjectNotificationConfiguration
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.plugin.pre_submission_check.ControlReportSamplingCheckOff
@@ -92,26 +92,28 @@ fun ProjectNotificationConfiguration.toEntity(
     call: CallEntity,
 ): ProjectNotificationConfigurationEntity =
     ProjectNotificationConfigurationEntity(
-        ProjectNotificationConfigurationId(id, call),
-        active,
-        sendToManager,
-        sendToLeadPartner,
-        sendToProjectPartners,
-        sendToProjectAssigned,
-        emailSubject,
-        emailBody,
+        id = ProjectNotificationConfigurationId(id, call),
+        active = active,
+        sendToManager = sendToManager,
+        sendToLeadPartner = sendToLeadPartner,
+        sendToProjectPartners = sendToProjectPartners,
+        sendToProjectAssigned = sendToProjectAssigned,
+        sendToControllers = sendToControllers,
+        emailSubject = emailSubject,
+        emailBody = emailBody,
     )
 
 fun ProjectNotificationConfigurationEntity.toModel(): ProjectNotificationConfiguration =
     ProjectNotificationConfiguration(
-        id.id,
-        active,
-        sendToManager,
-        sendToLeadPartner,
-        sendToProjectPartners,
-        sendToProjectAssigned,
-        emailSubject,
-        emailBody,
+        id = id.id,
+        active = active,
+        sendToManager = sendToManager,
+        sendToLeadPartner = sendToLeadPartner,
+        sendToProjectPartners = sendToProjectPartners,
+        sendToProjectAssigned = sendToProjectAssigned,
+        sendToControllers = sendToControllers,
+        emailSubject = emailSubject,
+        emailBody = emailBody,
     )
 
 private fun Set<ProgrammeSpecificObjectiveEntity>.groupSpecificObjectives() =
@@ -220,7 +222,7 @@ fun List<ProjectNotificationConfigurationEntity>.toNotificationModel() =
 fun MutableSet<ApplicationFormFieldConfiguration>.toEntities(call: CallEntity) =
     map { callEntityMapper.map(call, it) }.toMutableSet()
 
-fun List<ProjectNotificationConfiguration>.toNotificationEntities(call: CallEntity) =
+fun List<ProjectNotificationConfiguration>.toNotificationEntity(call: CallEntity) =
     map { it.toEntity(call) }.toMutableSet()
 
 fun Collection<ProgrammeStateAidEntity>.toEntities(call: CallEntity) =

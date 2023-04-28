@@ -11,7 +11,10 @@ import {PreSubmissionCheckSettingsPageComponent} from './pre-submission-check-se
 import {NotificationsSettingsComponent} from './notifications-settings/notifications-settings.component';
 import {
   ProjectNotificationsSettingsTabComponent
-} from './notifications-settings/project-notificaitons-settings-tab/project-notifications-settings-tab.component';
+} from './notifications-settings/project-notifications-settings-tab/project-notifications-settings-tab.component';
+import {
+  PartnerReportNotificationsSettingsTabComponent
+} from './notifications-settings/partner-report-notifications-settings-tab/partner-report-notifications-settings-tab.component';
 
 export const routes: Routes = [
   {
@@ -91,12 +94,17 @@ export const routes: Routes = [
             children: [
               {
                 path: '',
-                redirectTo:'project',
+                redirectTo: 'project',
               },
               {
                 path: 'project',
                 component: ProjectNotificationsSettingsTabComponent,
                 data: {breadcrumb: 'project'}
+              },
+              {
+                path: 'partnerReport',
+                component: PartnerReportNotificationsSettingsTabComponent,
+                data: {breadcrumb: 'partner.report'}
               }
             ]
           }

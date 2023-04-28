@@ -1,9 +1,9 @@
 package io.cloudflight.jems.server.call.service.update_project_notification_configurations
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.call.service.model.ProjectNotificationConfiguration
+import io.cloudflight.jems.server.call.service.model.notificationConfigurations.ProjectNotificationConfiguration
 import io.cloudflight.jems.server.call.service.notificationConfigurations.CallNotificationConfigurationsPersistence
-import io.cloudflight.jems.server.call.service.notificationConfigurations.updateProjectNotificationConfigurations.UpdateProjectNotificationConfiguration
+import io.cloudflight.jems.server.call.service.notificationConfigurations.updateProjectNotificationConfiguration.UpdateProjectNotificationConfigurations
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -23,6 +23,7 @@ class UpdateProjectNotificationConfigurationsTest : UnitTest() {
             sendToLeadPartner = false,
             sendToProjectPartners = false,
             sendToProjectAssigned = false,
+            sendToControllers = false,
         ),
         ProjectNotificationConfiguration(
             id = NotificationType.ProjectSubmittedStep1,
@@ -31,6 +32,7 @@ class UpdateProjectNotificationConfigurationsTest : UnitTest() {
             sendToLeadPartner = false,
             sendToProjectPartners = false,
             sendToProjectAssigned = false,
+            sendToControllers = false,
         )
     )
 
@@ -38,7 +40,7 @@ class UpdateProjectNotificationConfigurationsTest : UnitTest() {
     lateinit var callNotificationConfigurationsPersistence: CallNotificationConfigurationsPersistence
 
     @InjectMockKs
-    private lateinit var updateProjectNotificationConfiguration: UpdateProjectNotificationConfiguration
+    private lateinit var updateProjectNotificationConfigurations: UpdateProjectNotificationConfigurations
 
     @Test
     fun `update application form field configuration`() {
@@ -46,7 +48,7 @@ class UpdateProjectNotificationConfigurationsTest : UnitTest() {
             callNotificationConfigurationsPersistence.saveProjectNotificationConfigurations(CALL_ID, any())
         } returnsArgument 1
 
-        val result = updateProjectNotificationConfiguration.update(CALL_ID, projectNotificationConfigStandard)
+        val result = updateProjectNotificationConfigurations.update(CALL_ID, projectNotificationConfigStandard)
 
         assertThat(result).isEqualTo(projectNotificationConfigStandard)
         verify(exactly = 1) { callNotificationConfigurationsPersistence.saveProjectNotificationConfigurations(CALL_ID, projectNotificationConfigStandard) }

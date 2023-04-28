@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.service.application.submit_application
+package io.cloudflight.jems.server.notification.handler
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
@@ -22,7 +22,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
 
-class ProjectStatusChangeEventListenersTest: UnitTest() {
+class ProjectNotificationEventListenerTest: UnitTest() {
 
     companion object {
         private const val CALL_ID = 1L
@@ -45,7 +45,7 @@ class ProjectStatusChangeEventListenersTest: UnitTest() {
     private lateinit var notificationProjectService: GlobalProjectNotificationServiceInteractor
 
     @InjectMockKs
-    lateinit var listeners: ProjectNotificationEventListeners
+    lateinit var listener: ProjectNotificationEventListener
 
     @BeforeEach
     internal fun reset() {
@@ -57,7 +57,7 @@ class ProjectStatusChangeEventListenersTest: UnitTest() {
         val slotProject = slot<NotificationProjectBase>()
         every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
 
-        listeners.sendNotifications(
+        listener.sendNotifications(
             ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.DRAFT), ApplicationStatus.SUBMITTED)
         )
 
@@ -70,7 +70,7 @@ class ProjectStatusChangeEventListenersTest: UnitTest() {
         val slotProject = slot<NotificationProjectBase>()
         every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
 
-        listeners.sendNotifications(
+        listener.sendNotifications(
             ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.DRAFT), ApplicationStatus.STEP1_SUBMITTED)
         )
 
@@ -83,7 +83,7 @@ class ProjectStatusChangeEventListenersTest: UnitTest() {
         val slotProject = slot<NotificationProjectBase>()
         every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
 
-        listeners.sendNotifications(
+        listener.sendNotifications(
             ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.STEP1_SUBMITTED), ApplicationStatus.STEP1_APPROVED)
         )
 
@@ -96,7 +96,7 @@ class ProjectStatusChangeEventListenersTest: UnitTest() {
         val slotProject = slot<NotificationProjectBase>()
         every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
 
-        listeners.sendNotifications(
+        listener.sendNotifications(
             ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.STEP1_SUBMITTED), ApplicationStatus.STEP1_APPROVED_WITH_CONDITIONS)
         )
 
@@ -109,7 +109,7 @@ class ProjectStatusChangeEventListenersTest: UnitTest() {
         val slotProject = slot<NotificationProjectBase>()
         every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
 
-        listeners.sendNotifications(
+        listener.sendNotifications(
             ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.STEP1_SUBMITTED), ApplicationStatus.STEP1_INELIGIBLE)
         )
 
@@ -122,7 +122,7 @@ class ProjectStatusChangeEventListenersTest: UnitTest() {
         val slotProject = slot<NotificationProjectBase>()
         every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
 
-        listeners.sendNotifications(
+        listener.sendNotifications(
             ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.STEP1_SUBMITTED), ApplicationStatus.STEP1_NOT_APPROVED)
         )
 
@@ -135,7 +135,7 @@ class ProjectStatusChangeEventListenersTest: UnitTest() {
         val slotProject = slot<NotificationProjectBase>()
         every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
 
-        listeners.sendNotifications(
+        listener.sendNotifications(
             ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.ELIGIBLE), ApplicationStatus.APPROVED)
         )
 
@@ -148,7 +148,7 @@ class ProjectStatusChangeEventListenersTest: UnitTest() {
         val slotProject = slot<NotificationProjectBase>()
         every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
 
-        listeners.sendNotifications(
+        listener.sendNotifications(
             ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.ELIGIBLE), ApplicationStatus.APPROVED_WITH_CONDITIONS)
         )
 
@@ -161,7 +161,7 @@ class ProjectStatusChangeEventListenersTest: UnitTest() {
         val slotProject = slot<NotificationProjectBase>()
         every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
 
-        listeners.sendNotifications(
+        listener.sendNotifications(
             ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.ELIGIBLE), ApplicationStatus.INELIGIBLE)
         )
 
@@ -174,7 +174,7 @@ class ProjectStatusChangeEventListenersTest: UnitTest() {
         val slotProject = slot<NotificationProjectBase>()
         every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
 
-        listeners.sendNotifications(
+        listener.sendNotifications(
             ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.ELIGIBLE), ApplicationStatus.NOT_APPROVED)
         )
 
@@ -187,7 +187,7 @@ class ProjectStatusChangeEventListenersTest: UnitTest() {
         val slotProject = slot<NotificationProjectBase>()
         every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
 
-        listeners.sendNotifications(
+        listener.sendNotifications(
             ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.ELIGIBLE), ApplicationStatus.RETURNED_TO_APPLICANT)
         )
 
@@ -200,7 +200,7 @@ class ProjectStatusChangeEventListenersTest: UnitTest() {
         val slotProject = slot<NotificationProjectBase>()
         every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
 
-        listeners.sendNotifications(
+        listener.sendNotifications(
             ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.RETURNED_TO_APPLICANT), ApplicationStatus.SUBMITTED)
         )
 
@@ -213,7 +213,7 @@ class ProjectStatusChangeEventListenersTest: UnitTest() {
         val slotProject = slot<NotificationProjectBase>()
         every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
 
-        listeners.sendNotifications(
+        listener.sendNotifications(
             ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.ELIGIBLE), ApplicationStatus.RETURNED_TO_APPLICANT_FOR_CONDITIONS)
         )
 
@@ -226,7 +226,7 @@ class ProjectStatusChangeEventListenersTest: UnitTest() {
         val slotProject = slot<NotificationProjectBase>()
         every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
 
-        listeners.sendNotifications(
+        listener.sendNotifications(
             ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.RETURNED_TO_APPLICANT_FOR_CONDITIONS), ApplicationStatus.CONDITIONS_SUBMITTED)
         )
 
@@ -239,7 +239,7 @@ class ProjectStatusChangeEventListenersTest: UnitTest() {
         val slotProject = slot<NotificationProjectBase>()
         every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
 
-        listeners.sendNotifications(
+        listener.sendNotifications(
             ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.APPROVED), ApplicationStatus.CONTRACTED)
         )
 
@@ -252,7 +252,7 @@ class ProjectStatusChangeEventListenersTest: UnitTest() {
         val slotProject = slot<NotificationProjectBase>()
         every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
 
-        listeners.sendNotifications(
+        listener.sendNotifications(
             ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.CONTRACTED), ApplicationStatus.IN_MODIFICATION)
         )
 
@@ -265,7 +265,7 @@ class ProjectStatusChangeEventListenersTest: UnitTest() {
         val slotProject = slot<NotificationProjectBase>()
         every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
 
-        listeners.sendNotifications(
+        listener.sendNotifications(
             ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.APPROVED), ApplicationStatus.MODIFICATION_PRECONTRACTING)
         )
 
@@ -278,7 +278,7 @@ class ProjectStatusChangeEventListenersTest: UnitTest() {
         val slotProject = slot<NotificationProjectBase>()
         every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
 
-        listeners.sendNotifications(
+        listener.sendNotifications(
             ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.IN_MODIFICATION), ApplicationStatus.MODIFICATION_SUBMITTED)
         )
 
@@ -291,7 +291,7 @@ class ProjectStatusChangeEventListenersTest: UnitTest() {
         val slotProject = slot<NotificationProjectBase>()
         every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
 
-        listeners.sendNotifications(
+        listener.sendNotifications(
             ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.MODIFICATION_PRECONTRACTING), ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED)
         )
 
@@ -304,7 +304,7 @@ class ProjectStatusChangeEventListenersTest: UnitTest() {
         val slotProject = slot<NotificationProjectBase>()
         every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
 
-        listeners.sendNotifications(
+        listener.sendNotifications(
             ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.MODIFICATION_SUBMITTED), ApplicationStatus.CONTRACTED)
         )
 
@@ -317,7 +317,7 @@ class ProjectStatusChangeEventListenersTest: UnitTest() {
         val slotProject = slot<NotificationProjectBase>()
         every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
 
-        listeners.sendNotifications(
+        listener.sendNotifications(
             ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED), ApplicationStatus.APPROVED)
         )
 
@@ -330,7 +330,7 @@ class ProjectStatusChangeEventListenersTest: UnitTest() {
         val slotProject = slot<NotificationProjectBase>()
         every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
 
-        listeners.sendNotifications(
+        listener.sendNotifications(
             ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.MODIFICATION_SUBMITTED), ApplicationStatus.MODIFICATION_REJECTED)
         )
 
@@ -343,7 +343,7 @@ class ProjectStatusChangeEventListenersTest: UnitTest() {
         val slotProject = slot<NotificationProjectBase>()
         every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
 
-        listeners.sendNotifications(
+        listener.sendNotifications(
             ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED), ApplicationStatus.MODIFICATION_REJECTED)
         )
 
@@ -363,7 +363,7 @@ class ProjectStatusChangeEventListenersTest: UnitTest() {
             newStatus = applicationStatus,
         )
 
-        listeners.storeAudit(applicationEvent)
+        listener.storeAudit(applicationEvent)
 
         verify(exactly = 1) { eventPublisher.publishEvent(any<Any>()) }
         assertThat(slotAudit.captured.auditCandidate).isEqualTo(

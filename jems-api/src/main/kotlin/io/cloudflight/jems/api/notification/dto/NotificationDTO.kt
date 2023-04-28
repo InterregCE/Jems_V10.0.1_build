@@ -5,6 +5,7 @@ import java.time.ZonedDateTime
 data class NotificationDTO(
     val id: Long,
     val project: NotificationProjectDTO?,
+    val partner: NotificationPartnerDTO?,
     val time: ZonedDateTime,
     val subject: String,
     val body: String,

@@ -3,9 +3,8 @@ package io.cloudflight.jems.server.project.service.application.hand_back_to_appl
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.project.service.application.submit_application.ProjectStatusChangeEvent
+import io.cloudflight.jems.server.notification.handler.ProjectStatusChangeEvent
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
-import io.cloudflight.jems.server.project.service.projectStatusChanged
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

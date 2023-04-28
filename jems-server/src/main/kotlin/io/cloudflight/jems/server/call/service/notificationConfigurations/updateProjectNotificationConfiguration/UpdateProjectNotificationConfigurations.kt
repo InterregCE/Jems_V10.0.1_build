@@ -1,15 +1,16 @@
-package io.cloudflight.jems.server.call.service.notificationConfigurations.updateProjectNotificationConfigurations
+package io.cloudflight.jems.server.call.service.notificationConfigurations.updateProjectNotificationConfiguration
 
 import io.cloudflight.jems.server.call.authorization.CanUpdateCall
-import io.cloudflight.jems.server.call.service.model.ProjectNotificationConfiguration
+import io.cloudflight.jems.server.call.service.model.notificationConfigurations.ProjectNotificationConfiguration
 import io.cloudflight.jems.server.call.service.notificationConfigurations.CallNotificationConfigurationsPersistence
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class UpdateProjectNotificationConfiguration(private val persistence: CallNotificationConfigurationsPersistence) :
-    UpdateProjectNotificationConfigurationsInteractor {
+class UpdateProjectNotificationConfigurations(
+    private val persistence: CallNotificationConfigurationsPersistence
+) : UpdateProjectNotificationConfigurationsInteractor {
 
     @CanUpdateCall
     @Transactional

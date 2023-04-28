@@ -1,8 +1,10 @@
 package io.cloudflight.jems.server.notification.inApp.service.project
 
+import io.cloudflight.jems.server.call.service.model.notificationConfigurations.ProjectNotificationConfiguration
 import io.cloudflight.jems.server.call.service.notificationConfigurations.CallNotificationConfigurationsPersistence
 import io.cloudflight.jems.server.common.event.JemsAsyncMailEvent
 import io.cloudflight.jems.server.common.model.Variable
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.notification.inApp.service.NotificationPersistence
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationConfigurationWithRecipients
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationInApp
@@ -38,6 +40,7 @@ class GlobalProjectNotificationService(
     private val userRolePersistence: UserRolePersistence,
     private val notificationPersistence: NotificationPersistence,
     private val eventPublisher: ApplicationEventPublisher,
+    private val controllerInstitutionPersistence: ControllerInstitutionPersistence,
 ) : GlobalProjectNotificationServiceInteractor {
 
     @Transactional
@@ -47,25 +50,27 @@ class GlobalProjectNotificationService(
         vararg extraVariables: Variable,
     ) {
         resolveNotificationTemplate(type, project.projectId)?.let { template ->
-            val inAppNotification = template.instantiateWith(project, *extraVariables)
+            val inAppNotification = template.instantiateWith(*extraVariables)
 
-            inAppNotification.templateVariables.put("projectId", project.projectId)
-            inAppNotification.templateVariables.put("subject", template.config.emailSubject)
-            inAppNotification.templateVariables.put("body", template.config.emailBody)
+            inAppNotification.templateVariables.putAll(mapOf(
+                "subject" to template.config.emailSubject,
+                "body" to template.config.emailBody,
+                "projectId" to project.projectId,
+                "projectIdentifier" to project.projectIdentifier,
+                "projectAcronym" to project.projectAcronym,
+            ))
 
             notificationPersistence.saveNotification(inAppNotification)
             eventPublisher.publishEvent(inAppNotification.buildSendEmailEvent())
         }
     }
 
+
     private fun resolveNotificationTemplate(
         type: NotificationType,
         projectId: Long
     ): NotificationConfigurationWithRecipients? {
-        val notification = (if (type.isProjectNotification()) callNotificationConfigPersistence.getActiveNotificationOfType(
-            callId = projectPersistence.getCallIdOfProject(projectId),
-            type = type,
-        ) else null) ?: return null
+        val notification = getNotificationConfiguration(type, projectId) ?: return null
 
         val managers = if (!notification.sendToManager) emptyMap() else
             userProjectCollaboratorPersistence.getUserIdsForProject(projectId).emails()
@@ -87,21 +92,36 @@ class GlobalProjectNotificationService(
             userProjectPersistence.getUsersForProject(projectId)
                 .emails() + getUsersWithProjectRetrievePermissions().emails()
 
+        val controllerUsers = if (!notification.sendToControllers || type.isNotPartnerReportNotification()) emptyMap() else
+            userPersistence.findAllByIds(controllerInstitutionPersistence.getRelatedUserIdsForProject(projectId))
+                .emails()
+
         val emailsToNotify =
-            managers + leadPartnerCollaborators + nonLeadPartnerCollaborators + programmeUsers
+            managers + leadPartnerCollaborators + nonLeadPartnerCollaborators + programmeUsers + controllerUsers
 
         return NotificationConfigurationWithRecipients(
             recipientsInApp = emailsToNotify.keys,
             recipientsEmail = emailsToNotify.filterValues { it.isEmailEnabled && it.isActive() }.keys,
             config = notification,
-            emailTemplate = if (type.isProjectNotification()) "notification.html" else null,
+            emailTemplate = "notification.html",
         )
+    }
+
+    private fun getNotificationConfiguration(type: NotificationType, projectId: Long): ProjectNotificationConfiguration? {
+        return if (type.isProjectNotification() || type.isPartnerReportNotification()) {
+            callNotificationConfigPersistence.getActiveNotificationOfType(
+                callId = projectPersistence.getCallIdOfProject(projectId),
+                type = type
+            )
+        } else null
     }
 
     private fun Set<PartnerCollaborator>.partnerCollaboratorEmails() =
         associateBy({ it.userEmail }, { UserEmailNotification(it.sendNotificationsToEmail, it.userStatus) })
+
     private fun Collection<UserSummary>.emails() =
         associateBy({ it.email }, { UserEmailNotification(it.sendNotificationsToEmail, it.userStatus) })
+
     private fun List<CollaboratorAssignedToProject>.emails() =
         associateBy({ it.userEmail }, { UserEmailNotification(it.sendNotificationsToEmail, it.userStatus) })
 

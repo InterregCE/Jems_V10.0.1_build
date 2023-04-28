@@ -1,15 +1,16 @@
 package io.cloudflight.jems.server.notification.inApp.service.project
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.call.service.model.ProjectNotificationConfiguration
+import io.cloudflight.jems.server.call.service.model.notificationConfigurations.ProjectNotificationConfiguration
 import io.cloudflight.jems.server.call.service.notificationConfigurations.CallNotificationConfigurationsPersistence
 import io.cloudflight.jems.server.common.event.JemsAsyncMailEvent
 import io.cloudflight.jems.server.common.model.Variable
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.notification.inApp.service.NotificationPersistence
-import io.cloudflight.jems.server.notification.mail.service.model.MailNotificationInfo
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationInApp
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationProjectBase
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType
+import io.cloudflight.jems.server.notification.mail.service.model.MailNotificationInfo
 import io.cloudflight.jems.server.project.entity.partneruser.PartnerCollaboratorLevel
 import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel
 import io.cloudflight.jems.server.project.service.ProjectPersistence
@@ -42,7 +43,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
 import java.time.ZonedDateTime
 
-class GlobalProjectNotificationServiceTest: UnitTest() {
+class GlobalProjectNotificationServiceTest : UnitTest() {
 
     companion object {
         private const val CALL_ID = 1L
@@ -55,6 +56,7 @@ class GlobalProjectNotificationServiceTest: UnitTest() {
             sendToLeadPartner = true,
             sendToProjectPartners = true,
             sendToProjectAssigned = true,
+            sendToControllers = false,
             emailSubject = "Application Step 1 Submitted",
             emailBody = "test step 1"
         )
@@ -66,7 +68,20 @@ class GlobalProjectNotificationServiceTest: UnitTest() {
             sendToLeadPartner = false,
             sendToProjectPartners = false,
             sendToProjectAssigned = false,
+            sendToControllers = false,
             emailSubject = "Application Submitted",
+            emailBody = "test"
+        )
+
+        val partnerReportSubmitted = ProjectNotificationConfiguration(
+            id = NotificationType.PartnerReportSubmitted,
+            active = true,
+            sendToManager = false,
+            sendToLeadPartner = false,
+            sendToProjectPartners = false,
+            sendToProjectAssigned = false,
+            sendToControllers = true,
+            emailSubject = "PartnerReport Submitted",
             emailBody = "test"
         )
 
@@ -197,18 +212,41 @@ class GlobalProjectNotificationServiceTest: UnitTest() {
             userRole = UserRoleSummary(id = 1151L, name = "aaaadmin", isDefault = false),
             userStatus = UserStatus.ACTIVE,
         )
+
+        val controllerUser = UserSummary(
+            id = 11L,
+            email = "controller.edit@programme.user",
+            sendNotificationsToEmail = true,
+            name = "controller",
+            surname = "user",
+            userRole = UserRoleSummary(id = 3, name = "controller", isDefault = false),
+            userStatus = UserStatus.ACTIVE,
+        )
+
     }
 
-    @MockK private lateinit var projectPersistence: ProjectPersistence
-    @MockK private lateinit var callNotificationConfigPersistence: CallNotificationConfigurationsPersistence
-    @MockK private lateinit var userProjectCollaboratorPersistence: UserProjectCollaboratorPersistence
-    @MockK private lateinit var partnerCollaboratorPersistence: UserPartnerCollaboratorPersistence
-    @MockK private lateinit var partnerPersistence: PartnerPersistence
-    @MockK private lateinit var userProjectPersistence: UserProjectPersistence
-    @MockK private lateinit var userPersistence: UserPersistence
-    @MockK private lateinit var userRolePersistence: UserRolePersistence
-    @MockK private lateinit var notificationPersistence: NotificationPersistence
-    @MockK private lateinit var eventPublisher: ApplicationEventPublisher
+    @MockK
+    private lateinit var projectPersistence: ProjectPersistence
+    @MockK
+    private lateinit var callNotificationConfigPersistence: CallNotificationConfigurationsPersistence
+    @MockK
+    private lateinit var userProjectCollaboratorPersistence: UserProjectCollaboratorPersistence
+    @MockK
+    private lateinit var partnerCollaboratorPersistence: UserPartnerCollaboratorPersistence
+    @MockK
+    private lateinit var partnerPersistence: PartnerPersistence
+    @MockK
+    private lateinit var userProjectPersistence: UserProjectPersistence
+    @MockK
+    private lateinit var userPersistence: UserPersistence
+    @MockK
+    private lateinit var userRolePersistence: UserRolePersistence
+    @MockK
+    private lateinit var notificationPersistence: NotificationPersistence
+    @MockK
+    private lateinit var eventPublisher: ApplicationEventPublisher
+    @MockK
+    private lateinit var controllerInstitutionPersistence: ControllerInstitutionPersistence
 
     @InjectMockKs
     private lateinit var service: GlobalProjectNotificationService
@@ -235,9 +273,11 @@ class GlobalProjectNotificationServiceTest: UnitTest() {
         )
         every { userProjectPersistence.getUsersForProject(PROJECT_ID) } returns setOf(programmeUser, programmeUserDeactivated)
 
-        every { userRolePersistence.findRoleIdsHavingAndNotHavingPermissions(
-            UserRolePermission.getGlobalProjectRetrievePermissions(), emptySet()
-        ) } returns setOf(1151L)
+        every {
+            userRolePersistence.findRoleIdsHavingAndNotHavingPermissions(
+                UserRolePermission.getGlobalProjectRetrievePermissions(), emptySet()
+            )
+        } returns setOf(1151L)
         every { userPersistence.findAllWithRoleIdIn(setOf(1151L)) } returns listOf(programmeUserGlobal)
 
         val slotNotification = slot<NotificationInApp>()
@@ -272,8 +312,10 @@ class GlobalProjectNotificationServiceTest: UnitTest() {
                     "project.manager.deactivated@jems.eu",
                     "john.doe.deactivated@ce.eu"
                 ),
-                recipientsEmail = setOf("project.manager@jems.eu", "lp.collaborator@jems.eu",
-                    "pp.collaborator@jems.eu", "programme@user", "global.retrieve@programme.user"),
+                recipientsEmail = setOf(
+                    "project.manager@jems.eu", "lp.collaborator@jems.eu",
+                    "pp.collaborator@jems.eu", "programme@user", "global.retrieve@programme.user"
+                ),
                 emailTemplate = "notification.html",
             )
         )
@@ -289,8 +331,10 @@ class GlobalProjectNotificationServiceTest: UnitTest() {
                         Variable("body", "test step 1"),
                         Variable("subject", "Application Step 1 Submitted"),
                     ),
-                    recipients = setOf("project.manager@jems.eu", "lp.collaborator@jems.eu",
-                        "pp.collaborator@jems.eu", "programme@user", "global.retrieve@programme.user"),
+                    recipients = setOf(
+                        "project.manager@jems.eu", "lp.collaborator@jems.eu",
+                        "pp.collaborator@jems.eu", "programme@user", "global.retrieve@programme.user"
+                    ),
                     messageType = "ProjectSubmittedStep1",
                 ),
             )
@@ -349,6 +393,75 @@ class GlobalProjectNotificationServiceTest: UnitTest() {
                     ),
                     recipients = emptySet(),
                     messageType = "ProjectSubmitted",
+                ),
+            )
+        )
+    }
+
+    @Test
+    fun `sendNotifications - partnerReport`() {
+        val notifType = NotificationType.PartnerReportSubmitted
+
+        every { projectPersistence.getCallIdOfProject(PROJECT_ID) } returns CALL_ID
+        every { callNotificationConfigPersistence.getActiveNotificationOfType(CALL_ID, notifType) } returns partnerReportSubmitted
+
+        every { partnerPersistence.findTop30ByProjectId(PROJECT_ID) } returns listOf(leadPartner, partner)
+        every { controllerInstitutionPersistence.getRelatedUserIdsForProject(PROJECT_ID) } returns setOf(controllerUser.id)
+        every { userPersistence.findAllByIds(setOf(controllerUser.id)) } returns listOf(controllerUser)
+
+        val slotNotification = slot<NotificationInApp>()
+        every { notificationPersistence.saveNotification(capture(slotNotification)) } answers { }
+        val slotEmail = slot<JemsAsyncMailEvent>()
+        every { eventPublisher.publishEvent(capture(slotEmail)) } answers { }
+
+        val project = NotificationProjectBase(PROJECT_ID, "P005", "5 acr")
+        service.sendNotifications(
+            notifType,
+            project,
+            Variable("partnerId", 91L),
+            Variable("partnerRole", ProjectPartnerRole.LEAD_PARTNER),
+            Variable("partnerNumber", 1)
+        )
+
+        assertThat(slotNotification.captured).isEqualTo(
+            NotificationInApp(
+                subject = "PartnerReport Submitted",
+                body = "test",
+                type = NotificationType.PartnerReportSubmitted,
+                time = slotNotification.captured.time,
+                templateVariables = mutableMapOf(
+                    "partnerId" to 91L,
+                    "partnerRole" to ProjectPartnerRole.LEAD_PARTNER,
+                    "partnerNumber" to 1,
+                    "projectId" to 5L,
+                    "projectIdentifier" to "P005",
+                    "projectAcronym" to "5 acr",
+                    "subject" to "PartnerReport Submitted",
+                    "body" to "test",
+                ),
+                recipientsInApp = setOf("controller.edit@programme.user"),
+                recipientsEmail = setOf("controller.edit@programme.user"),
+                emailTemplate = "notification.html",
+            )
+        )
+        assertThat(slotEmail.captured).isEqualTo(
+            JemsAsyncMailEvent(
+                emailTemplateFileName = "notification.html",
+                mailNotificationInfo = MailNotificationInfo(
+                    subject = "PartnerReport Submitted",
+                    templateVariables = setOf(
+                        Variable("partnerId", 91L),
+                        Variable("partnerRole", ProjectPartnerRole.LEAD_PARTNER),
+                        Variable("partnerNumber", 1),
+                        Variable("projectIdentifier", "P005"),
+                        Variable("projectId", 5L),
+                        Variable("projectAcronym", "5 acr"),
+                        Variable("body", "test"),
+                        Variable("subject", "PartnerReport Submitted"),
+
+                    ),
+                    recipients = setOf("controller.edit@programme.user"),
+                    messageType = "PartnerReportSubmitted",
                 ),
             )
         )

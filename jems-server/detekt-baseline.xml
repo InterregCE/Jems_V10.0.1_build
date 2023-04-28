@@ -19,8 +19,8 @@
     <ID>ComplexMethod:ApplicationStatus.kt$ApplicationStatus$fun isInStep2()</ID>
     <ID>ComplexMethod:CallDetail.kt$CallDetail$fun getDiff(old: CallDetail? = null): Map&lt;String, Pair&lt;Any?, Any?&gt;&gt;</ID>
     <ID>ComplexMethod:GetReportExpenditureCoFinancingBreakdownCalculatorTest.kt$GetReportExpenditureCoFinancingBreakdownCalculatorTest.Companion$private fun expectedSubmittedResult(zeroTotals: Boolean = false)</ID>
-    <ID>ComplexMethod:NotificationType.kt$NotificationType.Companion$fun ApplicationStatus.toNotificationType(prevStatus: ApplicationStatus): NotificationType?</ID>
     <ID>ComplexMethod:ProjectDataModelMapper.kt$PluginDataMapper$fun map(programmeStrategy: ProgrammeStrategy): ProgrammeStrategyData</ID>
+    <ID>ComplexMethod:ProjectNotificationHelper.kt$fun ApplicationStatus.toNotificationType(prevStatus: ApplicationStatus): NotificationType?</ID>
     <ID>ComplexMethod:ProjectPartnerEntityMapper.kt$fun ProjectPartnerEntity.copy( projectPartner: ProjectPartner? = null, legalStatusRef: ProgrammeLegalStatusEntity? = null, newAddresses: Set&lt;ProjectPartnerAddress&gt;? = null, newContacts: Set&lt;ProjectPartnerContact&gt;? = null, newMotivation: ProjectPartnerMotivation? = null, newPartnerContributions: List&lt;ProjectPartnerContribution&gt;? = null, ): ProjectPartnerEntity</ID>
     <ID>FunctionOnlyReturningConstant:MockedMethodSignature.kt$MockedMethodSignature$@ExceptionWrapper(SampleWrapperException::class) fun methodWithAspectWhichReturnsNormally(): String</ID>
     <ID>FunctionOnlyReturningConstant:ProgrammeSetupAuthorization.kt$ProgrammeSetupAuthorization$ fun canReadProgrammeSetup()</ID>
@@ -388,7 +388,6 @@
     <ID>PackageNaming:ProjectAssociatedOrganizationRepository.kt$package io.cloudflight.jems.server.project.repository.partner.associated_organization</ID>
     <ID>PackageNaming:ProjectFundBudgetPerPeriod.kt$package io.cloudflight.jems.server.project.service.model.project_funds_per_period</ID>
     <ID>PackageNaming:ProjectFundsPerPeriod.kt$package io.cloudflight.jems.server.project.service.model.project_funds_per_period</ID>
-    <ID>PackageNaming:ProjectNotificationEventListeners.kt$package io.cloudflight.jems.server.project.service.application.submit_application</ID>
     <ID>PackageNaming:ProjectPartnerBudgetStaffCostEntity.kt$package io.cloudflight.jems.server.project.entity.partner.budget.staff_cost</ID>
     <ID>PackageNaming:ProjectPartnerBudgetStaffCostPeriodEntity.kt$package io.cloudflight.jems.server.project.entity.partner.budget.staff_cost</ID>
     <ID>PackageNaming:ProjectPartnerBudgetStaffCostRow.kt$package io.cloudflight.jems.server.project.entity.partner.budget.staff_cost</ID>

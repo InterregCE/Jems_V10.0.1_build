@@ -3,11 +3,15 @@ package io.cloudflight.jems.server.call.controller
 import io.cloudflight.jems.api.call.dto.notificationConfiguration.ProjectNotificationConfigurationDTO
 import io.cloudflight.jems.api.notification.dto.NotificationTypeDTO
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.call.service.model.ProjectNotificationConfiguration
+import io.cloudflight.jems.server.call.service.model.notificationConfigurations.ProjectNotificationConfiguration
+import io.cloudflight.jems.server.call.service.notificationConfigurations.getPartnerReportNotificationConfiguration.GetPartnerReportNotificationConfigurationsException
+import io.cloudflight.jems.server.call.service.notificationConfigurations.getPartnerReportNotificationConfiguration.GetPartnerReportNotificationConfigurationsInteractor
 import io.cloudflight.jems.server.call.service.notificationConfigurations.getProjectNotificationConfiguration.GetProjectNotificationConfigurationException
 import io.cloudflight.jems.server.call.service.notificationConfigurations.getProjectNotificationConfiguration.GetProjectNotificationConfigurationsInteractor
-import io.cloudflight.jems.server.call.service.notificationConfigurations.updateProjectNotificationConfigurations.UpdateProjectNotificationConfigurationsException
-import io.cloudflight.jems.server.call.service.notificationConfigurations.updateProjectNotificationConfigurations.UpdateProjectNotificationConfigurationsInteractor
+import io.cloudflight.jems.server.call.service.notificationConfigurations.updatePartnerReportNotificationConfiguration.UpdatePartnerReportNotificationConfigurationsException
+import io.cloudflight.jems.server.call.service.notificationConfigurations.updatePartnerReportNotificationConfiguration.UpdatePartnerReportNotificationConfigurationsInteractor
+import io.cloudflight.jems.server.call.service.notificationConfigurations.updateProjectNotificationConfiguration.UpdateProjectNotificationConfigurationsException
+import io.cloudflight.jems.server.call.service.notificationConfigurations.updateProjectNotificationConfiguration.UpdateProjectNotificationConfigurationsInteractor
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -31,6 +35,7 @@ class CallNotificationConfigurationControllerTest : UnitTest() {
                 sendToLeadPartner = false,
                 sendToProjectPartners = false,
                 sendToProjectAssigned = false,
+                sendToControllers = false
             ),
             ProjectNotificationConfigurationDTO(
                 id = NotificationTypeDTO.ProjectSubmittedStep1,
@@ -39,6 +44,7 @@ class CallNotificationConfigurationControllerTest : UnitTest() {
                 sendToLeadPartner = false,
                 sendToProjectPartners = false,
                 sendToProjectAssigned = false,
+                sendToControllers = false
             )
         )
 
@@ -50,6 +56,7 @@ class CallNotificationConfigurationControllerTest : UnitTest() {
                 sendToLeadPartner = false,
                 sendToProjectPartners = false,
                 sendToProjectAssigned = false,
+                sendToControllers = false
             ),
             ProjectNotificationConfigurationDTO(
                 id = NotificationTypeDTO.ProjectSubmittedStep1,
@@ -58,6 +65,7 @@ class CallNotificationConfigurationControllerTest : UnitTest() {
                 sendToLeadPartner = false,
                 sendToProjectPartners = false,
                 sendToProjectAssigned = false,
+                sendToControllers = false
             )
         )
 
@@ -69,6 +77,7 @@ class CallNotificationConfigurationControllerTest : UnitTest() {
                 sendToLeadPartner = false,
                 sendToProjectPartners = false,
                 sendToProjectAssigned = false,
+                sendToControllers = false
             ),
             ProjectNotificationConfiguration(
                 id = NotificationType.ProjectSubmittedStep1,
@@ -77,6 +86,7 @@ class CallNotificationConfigurationControllerTest : UnitTest() {
                 sendToLeadPartner = false,
                 sendToProjectPartners = false,
                 sendToProjectAssigned = false,
+                sendToControllers = false
             )
         )
     }
@@ -87,12 +97,18 @@ class CallNotificationConfigurationControllerTest : UnitTest() {
     @MockK
     lateinit var updateProjectNotificationConfigurationsInteractor: UpdateProjectNotificationConfigurationsInteractor
 
+    @MockK
+    lateinit var getPartnerReportNotificationConfigurationsInteractor: GetPartnerReportNotificationConfigurationsInteractor
+
+    @MockK
+    lateinit var updatePartnerReportNotificationConfigurationsInteractor: UpdatePartnerReportNotificationConfigurationsInteractor
+
     @InjectMockKs
     private lateinit var controller: CallNotificationConfigurationController
 
     @Test
     fun `get callNotificationConfigurations by id`() {
-        every { getProjectNotificationConfigurationsInteractor.get(ID)} returns configModel
+        every { getProjectNotificationConfigurationsInteractor.get(ID) } returns configModel
         assertThat(controller.getProjectNotificationsByCallId(ID)).isEqualTo(configDTO)
     }
 
@@ -120,6 +136,39 @@ class CallNotificationConfigurationControllerTest : UnitTest() {
         every { updateProjectNotificationConfigurationsInteractor.update(ID, capture(capturedConfigModel)) } throws exception
 
         assertThrows<UpdateProjectNotificationConfigurationsException> { controller.updateProjectNotifications(ID, updateConfigDTO) }
+        assertThat(capturedConfigModel.captured).isEqualTo(configModel)
+    }
+
+    @Test
+    fun `get partnerReport callNotificationConfigurations by id`() {
+        every { getPartnerReportNotificationConfigurationsInteractor.get(ID) } returns configModel
+        assertThat(controller.getPartnerReportNotificationsByCallId(ID)).isEqualTo(configDTO)
+    }
+
+    @Test
+    fun `get partnerReport callNotificationConfigurations fails on get exception`() {
+        val exception = GetPartnerReportNotificationConfigurationsException(Exception())
+        every { getPartnerReportNotificationConfigurationsInteractor.get(ID) } throws exception
+        assertThrows<GetPartnerReportNotificationConfigurationsException> { controller.getPartnerReportNotificationsByCallId(ID) }
+    }
+
+
+    @Test
+    fun `update partnerReport callNotificationConfigurations`() {
+        val capturedConfigModel = slot<List<ProjectNotificationConfiguration>>()
+        every { updatePartnerReportNotificationConfigurationsInteractor.update(ID, capture(capturedConfigModel)) } returns listOf()
+        controller.updatePartnerReportNotifications(ID, updateConfigDTO)
+        verify { updatePartnerReportNotificationConfigurationsInteractor.update(ID, configModel) }
+        assertThat(capturedConfigModel.captured).isEqualTo(configModel)
+    }
+
+    @Test
+    fun `update partnerReport callNotificationConfigurations fails on update exception`() {
+        val exception = UpdatePartnerReportNotificationConfigurationsException(Exception())
+        val capturedConfigModel = slot<List<ProjectNotificationConfiguration>>()
+        every { updatePartnerReportNotificationConfigurationsInteractor.update(ID, capture(capturedConfigModel)) } throws exception
+
+        assertThrows<UpdatePartnerReportNotificationConfigurationsException> { controller.updatePartnerReportNotifications(ID, updateConfigDTO) }
         assertThat(capturedConfigModel.captured).isEqualTo(configModel)
     }
 }

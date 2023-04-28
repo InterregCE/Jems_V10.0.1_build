@@ -1,14 +1,9 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {
-  ProjectApplicationListStore
-} from '@common/components/project-application-list/project-application-list-store.service';
 import {UntilDestroy} from '@ngneat/until-destroy';
-import {TableConfiguration} from '@common/components/table/model/table.configuration';
-import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {NotificationListStoreService} from '@common/components/notification-list/notification-list-store.service';
 import {combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {NotificationDTO, PageCallDTO, PageNotificationDTO} from '@cat/api';
+import {NotificationDTO, PageNotificationDTO} from '@cat/api';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 
 @Component({
@@ -45,5 +40,6 @@ export class NotificationListComponent implements OnInit{
         map(([page]) => ({page}))
       );
   }
+
 
 }

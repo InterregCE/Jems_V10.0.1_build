@@ -1,7 +1,6 @@
-package io.cloudflight.jems.server.project.service.application.submit_application
+package io.cloudflight.jems.server.notification.handler
 
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationProjectBase
-import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.Companion.toNotificationType
 import io.cloudflight.jems.server.notification.inApp.service.project.GlobalProjectNotificationServiceInteractor
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
@@ -18,7 +17,7 @@ data class ProjectStatusChangeEvent(
 )
 
 @Service
-data class ProjectNotificationEventListeners(
+data class ProjectNotificationEventListener(
     private val eventPublisher: ApplicationEventPublisher,
     private val notificationProjectService: GlobalProjectNotificationServiceInteractor,
 ) {
@@ -46,5 +45,4 @@ data class ProjectNotificationEventListeners(
         projectIdentifier = projectSummary.customIdentifier,
         projectAcronym = projectSummary.acronym,
     )
-
 }
