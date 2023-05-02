@@ -147,7 +147,8 @@
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <div *ngIf="expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.investmentId).errors"
                                      (click)="selectRow(i, 'investmentId')" class="custom-wrapper pointer"
-                                     [matTooltip]="control.get(constants.FORM_CONTROL_NAMES.investmentId).value" [matTooltipClass]="'tooltip'"
+                                     [matTooltip]="getInvestmentIdValue(control.get(constants.FORM_CONTROL_NAMES.investmentId).value)"
+                                     [matTooltipClass]="'tooltip'"
                                      [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.investmentId)">
                                     <div class="custom-dropdown-text">
                                         <span *ngIf="control.get(constants.FORM_CONTROL_NAMES.investmentId).value">
@@ -168,7 +169,7 @@
                                         #investmentNumber
                                         (selectionChange)="onInvestmentNumberChange($event, control)"
                                         [formControlName]="constants.FORM_CONTROL_NAMES.investmentId"
-                                        [matTooltip]="investmentNumber.triggerValue"
+                                        [matTooltip]="getInvestmentIdValue(control.get(constants.FORM_CONTROL_NAMES.investmentId).value)"
                                         [placeholder]="'common.not.applicable.option' | translate">
                                         <mat-select-trigger>
                                             <span>
