@@ -89,6 +89,57 @@
                         </jems-multi-language-form-field>
                     </jems-multi-language-container>
 
+                    <!-- INVESTMENTS -->
+                    <ng-container *ngIf="investments(workPackageIndex).controls.length">
+
+                        <div *ngFor="let investment of investments(workPackageIndex).controls; let investmentIndex = index"
+                             jemsNoWidthLimit [formArrayName]="constants.INVESTMENTS.name" class="mt-5">
+
+                            <div class="table-container" [formGroupName]="investmentIndex" >
+                                <div class="table-header" jemsNoWidthLimit>
+                                    <h4 jemsMultiColumnRow class="my-1 table-header-inner">
+                                        <mat-icon *ngIf="investment.get(constants.INVESTMENT_DEACTIVATED.name)?.value"
+                                                  [matTooltip]="'project.application.form.partner.table.status.inactive' | translate">
+                                            do_not_disturb
+                                        </mat-icon>
+                                        <span [innerText]="'project.application.project.report.tab.work.plan.investment.nr.entry' | translate: {
+                                                workPackageNr: workPackage.get(constants.WORK_PACKAGE_NUMBER.name)?.value,
+                                                investmentNr: investment.get(constants.INVESTMENT_NUMBER.name)?.value}"></span>
+                                        <span *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.TITLE"
+                                              [innerText]="investment.get(constants.INVESTMENT_TITLE.name)?.value | translateByInputLanguage | async"></span>
+                                    </h4>
+                                </div>
+
+                                <mat-form-field
+                                        *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.EXPECTED_DELIVERY_PERIOD"
+                                        class="input-field">
+                                    <mat-label
+                                            [innerText]="'project.application.project.report.tab.work.plan.work.package.investment.delivery.period' | translate"></mat-label>
+                                    <input matInput disabled [value]="investment.get(constants.INVESTMENT_PERIOD.name)?.value
+                                             && 'project.application.form.work.package.output.delivery.period.entry' | translate :
+                                             getPeriodArguments(investment.get(constants.INVESTMENT_PERIOD.name)?.value )">
+                                </mat-form-field>
+
+                                <mat-form-field jemsFormFieldWidth="xxx-large"
+                                        *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.ADDRESS.COUNTRY_AND_NUTS"
+                                        class="input-field">
+                                    <mat-label
+                                            [innerText]="'project.application.project.report.tab.work.plan.work.package.investment.location.nuts3' | translate"></mat-label>
+                                    <input matInput disabled [value]="investment.get(constants.INVESTMENT_NUTS3.name)?.value">
+                                </mat-form-field>
+
+                                <jems-multi-language-container>
+                                    <jems-multi-language-form-field type="textarea"
+                                                                    label="project.application.project.report.tab.work.plan.work.package.investment.reporting.period.description"
+                                                                    [formControlName]="constants.INVESTMENT_PROGRESS.name"
+                                                                    [maxLength]="constants.INVESTMENT_PROGRESS.maxLength">
+                                    </jems-multi-language-form-field>
+                                </jems-multi-language-container>
+
+                            </div>
+                        </div>
+                    </ng-container>
+
                     <div *ngIf="activities(workPackageIndex)?.value.length || outputs(workPackageIndex)?.value.length" class="my-5">
                         <h4 [innerText]="'project.application.project.report.tab.work.plan.work.package.subtitle' | translate"></h4>
                     </div>

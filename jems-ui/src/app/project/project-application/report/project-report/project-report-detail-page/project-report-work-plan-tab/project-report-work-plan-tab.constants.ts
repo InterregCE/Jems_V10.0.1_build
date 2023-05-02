@@ -6,6 +6,35 @@ export class ProjectReportWorkPlanTabConstants {
     name: 'workPackages'
   };
 
+  public static INVESTMENTS: AppControl = {
+    name: 'investments'
+  };
+
+  public static INVESTMENT_NUMBER: AppControl = {
+    name: 'number',
+  };
+
+  public static INVESTMENT_TITLE: AppControl = {
+    name: 'title',
+  };
+
+  public static INVESTMENT_DEACTIVATED: AppControl = {
+    name: 'deactivated',
+  };
+
+  public static INVESTMENT_PERIOD: AppControl = {
+    name: 'period'
+  };
+
+  public static INVESTMENT_NUTS3: AppControl = {
+    name: 'nutsRegion3'
+  };
+
+  public static INVESTMENT_PROGRESS: AppControl = {
+    name: 'progress',
+    maxLength: 2000,
+  };
+
   public static ACTIVITIES: AppControl = {
     name: 'activities'
   };
