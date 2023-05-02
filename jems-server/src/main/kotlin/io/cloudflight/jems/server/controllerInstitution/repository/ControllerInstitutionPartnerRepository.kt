@@ -92,6 +92,15 @@ interface ControllerInstitutionPartnerRepository: JpaRepository<ControllerInstit
     """)
     fun getRelatedUserIdsForProject(projectId: Long): Set<Long>
 
+    @Query("""
+        SELECT ciu.id.user.id
+        FROM #{#entityName} AS cip
+            LEFT JOIN controller_institution_user AS ciu
+                ON ciu.id.controllerInstitutionId = cip.institution.id
+        WHERE cip.partnerId = :partnerId
+    """)
+    fun getRelatedUserIdsForPartner(partnerId: Long): Set<Long>
+
     @Query(
         """
         SELECT ciu.accessLevel

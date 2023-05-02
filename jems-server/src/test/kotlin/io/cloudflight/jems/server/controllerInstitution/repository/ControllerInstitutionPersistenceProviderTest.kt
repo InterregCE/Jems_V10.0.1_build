@@ -169,6 +169,13 @@ class ControllerInstitutionPersistenceProviderTest: UnitTest() {
     }
 
     @Test
+    fun getRelatedUserIdsForPartner() {
+        every { institutionPartnerRepository.getRelatedUserIdsForPartner(partnerId = 199L) } returns setOf(1L, 2L, 3L)
+        assertThat(controllerInstitutionPersistenceProvider.getRelatedUserIdsForPartner(199L))
+            .containsExactly(1L, 2L, 3L)
+    }
+
+    @Test
     fun getRelatedProjectAndPartnerIdsForUser() {
         every { institutionPartnerRepository.getRelatedProjectIdsForUser(userId = 444L) } returns listOf(
             Pair(1L, 10L), Pair(1L, 11L),

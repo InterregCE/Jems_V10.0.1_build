@@ -1,7 +1,7 @@
 <jems-form
         *ngIf="data$ | async as data"
         (save)="save()"
-        (discard)="resetForm(data.projectNotificationConfigurations)">
+        (discard)="resetForm(data.projectNotificationConfigurations, data.canEditCall)">
     <h3>{{'call.detail.notifications.config.tab.project.title' | translate}}</h3>
     <p>{{'call.detail.notifications.config.tab.project.description' | translate}}</p>
     <p>{{'call.detail.notifications.config.tab.project.description.for.partner.selection' | translate}}</p>
@@ -35,15 +35,14 @@
                                         {{ 'call.detail.notifications.config.tab.project.checkbox.manager' | translate }}
                                     </mat-checkbox>
 
-
                                     <mat-checkbox formControlName="sendToLeadPartner" class="ml-2" color="primary"
-                                                  [disabled]="isPartnerSelectionDisabled(notificationTemplate)"
+                                                  [disabled]="isPartnerSelectionDisabled(notificationTemplate.get('id')?.value)"
                                                   (click)="$event.stopPropagation()">
                                         {{ 'call.detail.notifications.config.tab.project.checkbox.lead.partner' | translate }}
                                     </mat-checkbox>
 
                                     <mat-checkbox formControlName="sendToProjectPartners" class="ml-2" color="primary"
-                                                  [disabled]="isPartnerSelectionDisabled(notificationTemplate)"
+                                                  [disabled]="isPartnerSelectionDisabled(notificationTemplate.get('id')?.value)"
                                                   (click)="$event.stopPropagation()">
                                         {{ 'call.detail.notifications.config.tab.project.checkbox.partners' | translate }}
                                     </mat-checkbox>
@@ -51,8 +50,8 @@
                                     <span class="ml-6">
                                         <b>{{'call.detail.notifications.config.tab.project.checkbox.users.programme' | translate}}</b>:
                                     </span>
-                                    <mat-checkbox formControlName="sendToProjectAssigned" class="ml-3 mr-5"
-                                                  color="primary" (click)="$event.stopPropagation()">
+                                    <mat-checkbox formControlName="sendToProjectAssigned" class="ml-3 mr-5" color="primary"
+                                                  (click)="$event.stopPropagation()">
                                         {{'call.detail.notifications.config.tab.project.checkbox.users.programme.project.assigned' |  translate}}
                                     </mat-checkbox>
                                 </div>

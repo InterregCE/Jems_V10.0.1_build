@@ -150,6 +150,10 @@ class ControllerInstitutionPersistenceProvider(
         institutionPartnerRepository.getRelatedUserIdsForProject(projectId = projectId)
 
     @Transactional(readOnly = true)
+    override fun getRelatedUserIdsForPartner(partnerId: Long) =
+        institutionPartnerRepository.getRelatedUserIdsForPartner(partnerId = partnerId)
+
+    @Transactional(readOnly = true)
     override fun getControllerUserAccessLevelForPartner(userId: Long, partnerId: Long): UserInstitutionAccessLevel? =
          institutionPartnerRepository.getControllerUserAccessLevelForPartner(userId, partnerId)
 

@@ -1,7 +1,7 @@
 <jems-form
         *ngIf="data$ | async as data"
         (save)="save()"
-        (discard)="resetForm(data.partnerReportNotificationConfigurations)">
+        (discard)="resetForm(data.partnerReportNotificationConfigurations, data.canEditCall)">
     <h3>{{'call.detail.notifications.config.tab.partner.report.title' | translate}}</h3>
     <p>{{'call.detail.notifications.config.tab.partner.report.description' | translate}}</p>
     <form jemsFormLayout [formGroup]="partnerReportNotificationsForm">
@@ -15,8 +15,7 @@
                             <ng-container>
                                 <div>
                                     <span>
-                                        <mat-slide-toggle formControlName="active"
-                                                          color="primary"
+                                        <mat-slide-toggle formControlName="active" color="primary"
                                                           (click)="$event.stopPropagation()">
                                              {{'call.detail.notifications.config.tab.partner.report.status.' + notificationTemplate.get('id').value | translate}}
                                         </mat-slide-toggle>
@@ -48,12 +47,12 @@
                                     <span class="ml-6">
                                         <b>{{'call.detail.notifications.config.tab.partner.report.checkbox.users.programme' | translate}}</b>:
                                     </span>
-                                    <mat-checkbox formControlName="sendToProjectAssigned" class="ml-3"
-                                                  color="primary" (click)="$event.stopPropagation()">
+                                    <mat-checkbox formControlName="sendToProjectAssigned" class="ml-3" color="primary"
+                                                  (click)="$event.stopPropagation()">
                                         {{'call.detail.notifications.config.tab.partner.report.checkbox.users.programme.project.assigned' |  translate}}
                                     </mat-checkbox>
-                                    <mat-checkbox formControlName="sendToControllers" class="ml-2 mr-5"
-                                                  color="primary" (click)="$event.stopPropagation()">
+                                    <mat-checkbox formControlName="sendToControllers" class="ml-2 mr-5" color="primary"
+                                                  (click)="$event.stopPropagation()">
                                         {{'call.detail.notifications.config.tab.partner.report.checkbox.controllers' |  translate}}
                                     </mat-checkbox>
                                 </div>
@@ -83,7 +82,6 @@
                                                       [minRows]="5"
                                                       [maxRows]="30">
                             </jems-expandable-textarea>
-
                         </div>
                     </div>
                 </mat-expansion-panel>

@@ -49,17 +49,20 @@ class GlobalProjectNotificationService(
         project: NotificationProjectBase,
         vararg extraVariables: Variable,
     ) {
-        resolveNotificationTemplate(type, project.projectId)?.let { template ->
-            val inAppNotification = template.instantiateWith(*extraVariables)
+        val variableMap = extraVariables.associate { Pair(it.name, it.value!!) }.toMutableMap()
 
-            inAppNotification.templateVariables.putAll(mapOf(
-                "subject" to template.config.emailSubject,
-                "body" to template.config.emailBody,
-                "projectId" to project.projectId,
-                "projectIdentifier" to project.projectIdentifier,
-                "projectAcronym" to project.projectAcronym,
-            ))
+        resolveNotificationTemplate(type, project.projectId, variableMap["partnerId"] as? Long)?.let { template ->
+            variableMap.putAll(
+                mapOf(
+                    "subject" to template.config.emailSubject,
+                    "body" to template.config.emailBody,
+                    "projectId" to project.projectId,
+                    "projectIdentifier" to project.projectIdentifier,
+                    "projectAcronym" to project.projectAcronym,
+                )
+            )
 
+            val inAppNotification = template.instantiateWith(variableMap)
             notificationPersistence.saveNotification(inAppNotification)
             eventPublisher.publishEvent(inAppNotification.buildSendEmailEvent())
         }
@@ -68,7 +71,8 @@ class GlobalProjectNotificationService(
 
     private fun resolveNotificationTemplate(
         type: NotificationType,
-        projectId: Long
+        projectId: Long,
+        partnerId: Long?
     ): NotificationConfigurationWithRecipients? {
         val notification = getNotificationConfiguration(type, projectId) ?: return null
 
@@ -92,8 +96,8 @@ class GlobalProjectNotificationService(
             userProjectPersistence.getUsersForProject(projectId)
                 .emails() + getUsersWithProjectRetrievePermissions().emails()
 
-        val controllerUsers = if (!notification.sendToControllers || type.isNotPartnerReportNotification()) emptyMap() else
-            userPersistence.findAllByIds(controllerInstitutionPersistence.getRelatedUserIdsForProject(projectId))
+        val controllerUsers = if (!notification.sendToControllers || type.isNotPartnerReportNotification() || partnerId == null) emptyMap() else
+            userPersistence.findAllByIds(controllerInstitutionPersistence.getRelatedUserIdsForPartner(partnerId))
                 .emails()
 
         val emailsToNotify =

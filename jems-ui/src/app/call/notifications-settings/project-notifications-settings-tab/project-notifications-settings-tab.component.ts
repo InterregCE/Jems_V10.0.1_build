@@ -1,11 +1,11 @@
 import {Component} from '@angular/core';
 import {ProjectNotificationConfigurationDTO} from '@cat/api';
-import {AbstractControl, FormArray, FormBuilder, Validators} from '@angular/forms';
+import {FormArray, FormBuilder, Validators} from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
 import {CallNotificationSettingsStore} from '../call-notification-settings-store.service';
 import {catchError, map, take, tap} from 'rxjs/operators';
-import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {Observable} from 'rxjs';
+import {UntilDestroy} from '@ngneat/until-destroy';
+import {combineLatest, Observable, of} from 'rxjs';
 
 @UntilDestroy()
 @Component({
@@ -20,6 +20,7 @@ export class ProjectNotificationsSettingsTabComponent {
 
   data$: Observable<{
     projectNotificationConfigurations: ProjectNotificationConfigurationDTO[];
+    canEditCall: boolean;
   }>;
 
   constructor(
@@ -27,12 +28,15 @@ export class ProjectNotificationsSettingsTabComponent {
     private formService: FormService,
     private callNotificationSettingsStore: CallNotificationSettingsStore
   ) {
-    this.data$ = this.callNotificationSettingsStore.projectNotificationConfigurations$.pipe(
-      tap(notificationConfigurations => this.resetForm(notificationConfigurations)),
-      map(notificationConfigurations => ({
-        projectNotificationConfigurations: notificationConfigurations
+    this.data$ = combineLatest(
+      this.callNotificationSettingsStore.projectNotificationConfigurations$,
+      this.callNotificationSettingsStore.canEditCall$,
+    ).pipe(
+      map(([projectNotificationConfigurations, canEditCall]) => ({
+        projectNotificationConfigurations,
+        canEditCall,
       })),
-      untilDestroyed(this)
+      tap(data => this.resetForm(data.projectNotificationConfigurations, data.canEditCall)),
     );
   }
 
@@ -40,7 +44,7 @@ export class ProjectNotificationsSettingsTabComponent {
     return this.projectNotificationsForm.get('projectNotificationConfigurations') as FormArray;
   }
 
-  resetForm(projectNotificationConfigurations: ProjectNotificationConfigurationDTO[]): void {
+  resetForm(projectNotificationConfigurations: ProjectNotificationConfigurationDTO[], canEditCall: boolean): void {
     this.projectNotificationConfigurationsArray.clear();
     projectNotificationConfigurations.forEach(notificationConfig => {
       this.projectNotificationConfigurationsArray.push(this.formBuilder.group(
@@ -52,11 +56,11 @@ export class ProjectNotificationsSettingsTabComponent {
           sendToManager: notificationConfig.sendToManager,
           sendToLeadPartner: notificationConfig.sendToLeadPartner,
           sendToProjectPartners: notificationConfig.sendToProjectPartners,
-          sendToProjectAssigned: notificationConfig.sendToProjectAssigned
+          sendToProjectAssigned: notificationConfig.sendToProjectAssigned,
         }
       ));
     });
-    this.formService.init(this.projectNotificationsForm);
+    this.formService.init(this.projectNotificationsForm, of(canEditCall));
   }
 
   save() {
@@ -68,7 +72,7 @@ export class ProjectNotificationsSettingsTabComponent {
     ).subscribe();
   }
 
-  isPartnerSelectionDisabled(notification: AbstractControl): boolean {
+  isPartnerSelectionDisabled(id: ProjectNotificationConfigurationDTO.IdEnum): boolean {
     return [
       ProjectNotificationConfigurationDTO.IdEnum.ProjectSubmittedStep1,
       ProjectNotificationConfigurationDTO.IdEnum.ProjectSubmitted,
@@ -84,7 +88,7 @@ export class ProjectNotificationsSettingsTabComponent {
       ProjectNotificationConfigurationDTO.IdEnum.ProjectResubmitted,
       ProjectNotificationConfigurationDTO.IdEnum.ProjectReturnedForConditions,
       ProjectNotificationConfigurationDTO.IdEnum.ProjectConditionsSubmitted
-    ].includes(notification.get('id')?.value);
+    ].includes(id);
   }
 }
 
