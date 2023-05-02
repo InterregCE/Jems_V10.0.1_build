@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service.associatedorganization
 
 import io.cloudflight.jems.api.project.dto.associatedorganization.InputProjectAssociatedOrganization
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
+import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
@@ -23,6 +24,7 @@ class ProjectAssociatedOrganizationServiceImpl(
 ) : ProjectAssociatedOrganizationService {
 
     @Transactional
+    @ExceptionWrapper(ProjectAssociatedOrganizationException::class)
     override fun create(projectId: Long, associatedOrganization: InputProjectAssociatedOrganization): OutputProjectAssociatedOrganizationDetail {
         validateAssociatedOrganization(associatedOrganization)
 
@@ -46,6 +48,7 @@ class ProjectAssociatedOrganizationServiceImpl(
     }
 
     @Transactional
+    @ExceptionWrapper(ProjectAssociatedOrganizationException::class)
     override fun update(projectId: Long, associatedOrganization: InputProjectAssociatedOrganization): OutputProjectAssociatedOrganizationDetail {
         validateAssociatedOrganization(associatedOrganization)
         val oldAssociatedOrganisation = projectAssociatedOrganizationRepo.findFirstByProjectIdAndId(projectId, associatedOrganization.id!!)
@@ -67,6 +70,7 @@ class ProjectAssociatedOrganizationServiceImpl(
     }
 
     @Transactional
+    @ExceptionWrapper(ProjectAssociatedOrganizationException::class)
     override fun delete(projectId: Long, associatedOrganizationId: Long) {
         projectAssociatedOrganizationRepo.delete(
             projectAssociatedOrganizationRepo.findFirstByProjectIdAndId(projectId, associatedOrganizationId)
@@ -76,6 +80,7 @@ class ProjectAssociatedOrganizationServiceImpl(
     }
 
     @Transactional
+    @ExceptionWrapper(ProjectAssociatedOrganizationException::class)
     override fun refreshSortNumbers(projectId: Long) {
         val sort = Sort.by(listOf(
             Sort.Order(Sort.Direction.ASC, "id")

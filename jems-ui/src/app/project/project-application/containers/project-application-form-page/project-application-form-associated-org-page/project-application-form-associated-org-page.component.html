@@ -4,7 +4,8 @@
 
     <h3>{{'project.application.form.section.part.b.associatedOrganizations' | translate}}</h3>
 
-    <button jemsText *ngIf="(projectStore.projectEditable$ | async) === true" mat-stroked-button
+    <button *ngIf="(projectStore.projectEditable$ | async) === true && (associatedOrganizationsPage$ | async)?.totalElements < MAX_ALLOWED_ORGANIZATIONS"
+            jemsText mat-stroked-button
             [routerLink]="'/app/project/detail/' + projectId + '/applicationFormAssociatedOrganization/create'">
         + {{'project.application.form.associatedOrganization.add' | translate}}
     </button>
