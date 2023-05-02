@@ -33,6 +33,12 @@ interface ProjectPartnerReportFilePersistence {
         file: JemsFileCreate
     ): JemsFileMetadata
 
+    fun addPartnerReportProcurementGdprAttachment(
+        reportId: Long,
+        procurementId: Long,
+        file: JemsFileCreate
+    ): JemsFileMetadata
+
     fun addAttachmentToPartnerReport(file: JemsFileCreate): JemsFileMetadata
 
 }

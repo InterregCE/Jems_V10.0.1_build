@@ -7,6 +7,7 @@ import {
   ReportFileCategoryTypeEnum
 } from '@project/project-application/report/partner-report-detail-page/partner-report-annexes-tab/report-file-category-type';
 import {FormService} from '@common/components/section/form/form.service';
+import {Alert} from '@common/components/forms/alert';
 
 @Component({
   selector: 'jems-partner-report-annexes-tab',
@@ -16,6 +17,7 @@ import {FormService} from '@common/components/section/form/form.service';
   providers: [FormService],
 })
 export class PartnerReportAnnexesTabComponent implements OnInit{
+  Alert = Alert;
 
   constructor(public reportFileManagementStore: ReportFileManagementStore) {
   }

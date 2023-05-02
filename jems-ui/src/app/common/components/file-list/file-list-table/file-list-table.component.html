@@ -65,14 +65,14 @@
                 <ng-container *ngIf="descriptionForm.value.id !== file.id">
                     <span *ngIf="file.description" jemsText maxLines="2"
                           class="mr-1 text-left fill-space-left-to-button" [matTooltip]="file.description">{{ file.description }}</span>
-                    <button (click)="editDescription(file)" *ngIf="file.editable"
+                    <button (click)="editDescription(file)" *ngIf="file.editable && file.name !== SENSITIVE_FILE_NAME_MASK"
                             [disabled]="descriptionForm.value.id && descriptionForm.value.id !== file.id"
                             color="primary" mat-icon-button matTooltip="{{ 'file.table.action.description.tooltip' | translate }}" class="my-fab">
                         <mat-icon>edit</mat-icon>
                     </button>
                 </ng-container>
 
-                <form [formGroup]="descriptionForm" *ngIf="descriptionForm.value.id === file.id && file.editable" class="w-100">
+                <form [formGroup]="descriptionForm" *ngIf="descriptionForm.value.id === file.id && (file.editable && file.name !== SENSITIVE_FILE_NAME_MASK)" class="w-100">
                     <jems-expandable-textarea class="w-100"
                             label="file.table.column.name.description"
                             [control]="descriptionForm.controls.description"
@@ -113,13 +113,13 @@
                     </button>
                 </span>
 
-                <span *ngIf="file.deletable || (file.tooltipIfNotDeletable !== '' && file.iconIfNotDeletable !== '')"
-                      [matTooltip]="((file.deletable ? 'file.table.action.delete.tooltip' : file.tooltipIfNotDeletable) | translate)">
-                    <button (click)="deleteFile(file)" [disabled]="!file.deletable || (deletingId$ | async) === file.id"
+                <span *ngIf="(file.deletable && file.name !== SENSITIVE_FILE_NAME_MASK) || (file.tooltipIfNotDeletable !== '' && file.iconIfNotDeletable !== '')"
+                      [matTooltip]="((file.deletable && file.name !== SENSITIVE_FILE_NAME_MASK ? 'file.table.action.delete.tooltip' : file.tooltipIfNotDeletable) | translate)">
+                    <button (click)="deleteFile(file)" [disabled]="!file.deletable || (deletingId$ | async) === file.id || file.name === SENSITIVE_FILE_NAME_MASK"
                             color="accent" mat-icon-button>
                         <mat-icon [class.icon-hidden]="!file.deletable && !file.iconIfNotDeletable"
                                   *ngIf="(deletingId$ | async) !== file.id">
-                            {{ file.deletable ? 'delete' : file.iconIfNotDeletable }}
+                            {{ file.name !== SENSITIVE_FILE_NAME_MASK && file.deletable ? 'delete' : file.iconIfNotDeletable }}
                         </mat-icon>
                         <mat-spinner *ngIf="(deletingId$ | async) === file.id" class="mr-4" color="primary" [diameter]="17"></mat-spinner>
                     </button>

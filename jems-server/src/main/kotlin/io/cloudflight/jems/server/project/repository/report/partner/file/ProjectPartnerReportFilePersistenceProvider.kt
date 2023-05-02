@@ -5,10 +5,12 @@ import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.common.file.service.model.JemsFileCreate
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.project.entity.report.partner.procurement.file.ProjectPartnerReportProcurementFileEntity
+import io.cloudflight.jems.server.project.entity.report.partner.procurement.file.ProjectPartnerReportProcurementGdprFileEntity
 import io.cloudflight.jems.server.project.repository.report.partner.contribution.ProjectPartnerReportContributionRepository
 import io.cloudflight.jems.server.project.repository.report.partner.expenditure.ProjectPartnerReportExpenditureRepository
 import io.cloudflight.jems.server.project.repository.report.partner.procurement.ProjectPartnerReportProcurementRepository
 import io.cloudflight.jems.server.project.repository.report.partner.procurement.attachment.ProjectPartnerReportProcurementAttachmentRepository
+import io.cloudflight.jems.server.project.repository.report.partner.procurement.gdprAttachment.ProjectPartnerReportProcurementGdprAttachmentRepository
 import io.cloudflight.jems.server.project.repository.report.partner.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableRepository
 import io.cloudflight.jems.server.project.repository.report.partner.workPlan.ProjectPartnerReportWorkPackageActivityRepository
 import io.cloudflight.jems.server.project.repository.report.partner.workPlan.ProjectPartnerReportWorkPackageOutputRepository
@@ -24,6 +26,7 @@ class ProjectPartnerReportFilePersistenceProvider(
     private val contributionRepository: ProjectPartnerReportContributionRepository,
     private val expenditureRepository: ProjectPartnerReportExpenditureRepository,
     private val reportProcurementAttachmentRepository: ProjectPartnerReportProcurementAttachmentRepository,
+    private val reportProcurementGdprAttachmentRepository: ProjectPartnerReportProcurementGdprAttachmentRepository,
     private val procurementRepository: ProjectPartnerReportProcurementRepository,
     private val fileService: JemsProjectFileService,
 ) : ProjectPartnerReportFilePersistence {
@@ -94,6 +97,25 @@ class ProjectPartnerReportFilePersistenceProvider(
         return persistFileAndUpdateLink(file = file) {
             reportProcurementAttachmentRepository.save(
                 ProjectPartnerReportProcurementFileEntity(
+                    procurement = procurement,
+                    createdInReportId = reportId,
+                    file = it,
+                )
+            )
+        }
+    }
+
+    @Transactional
+    override fun addPartnerReportProcurementGdprAttachment(
+        reportId: Long,
+        procurementId: Long,
+        file: JemsFileCreate,
+    ): JemsFileMetadata {
+        val procurement = procurementRepository.getById(procurementId)
+
+        return persistFileAndUpdateLink(file = file) {
+            reportProcurementGdprAttachmentRepository.save(
+                ProjectPartnerReportProcurementGdprFileEntity(
                     procurement = procurement,
                     createdInReportId = reportId,
                     file = it,

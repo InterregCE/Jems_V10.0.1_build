@@ -33,6 +33,7 @@ enum class JemsFileType(
             Expenditure(PartnerReport, true),
             Procurement(PartnerReport, true),
               ProcurementAttachment(Procurement, false),
+              ProcurementGdprAttachment(Procurement, false),
             Contribution(PartnerReport, true),
 
           PartnerControlReport(Partner, true),

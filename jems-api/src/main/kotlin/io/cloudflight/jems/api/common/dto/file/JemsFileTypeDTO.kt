@@ -28,6 +28,7 @@ enum class JemsFileTypeDTO {
             Expenditure,
             Procurement,
               ProcurementAttachment,
+              ProcurementGdprAttachment,
             Contribution,
 
           PartnerControlReport,
