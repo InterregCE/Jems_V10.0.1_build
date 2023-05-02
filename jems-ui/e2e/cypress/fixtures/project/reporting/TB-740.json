@@ -21,8 +21,11 @@
     {
       "type": "Organization",
       "country": "Afghanistan (AF)",
+      "countryCode": "AF",
       "nutsRegion2": "Afghanistan (AF00)",
+      "nutsRegion2Code": "AF00",
       "nutsRegion3": "Afghanistan (AF000)",
+      "nutsRegion3Code": "AF000",
       "street": "Partnerstreet",
       "houseNumber": "2",
       "postalCode": "1020",
@@ -32,8 +35,11 @@
     {
       "type": "Department",
       "country": "Afghanistan (AF)",
+      "countryCode": "AF",
       "nutsRegion2": "Afghanistan (AF00)",
+      "nutsRegion2Code": "AF00",
       "nutsRegion3": "Afghanistan (AF000)",
+      "nutsRegion3Code": "AF000",
       "street": "Departmentstreet",
       "houseNumber": "5",
       "postalCode": "4020",

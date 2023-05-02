@@ -64,8 +64,11 @@
     {
       "type": "Organization",
       "country": "Nederland (NL)",
+      "countryCode": "NL",
       "nutsRegion2": "Utrecht (NL31)",
+      "nutsRegion2Code": "NL31",
       "nutsRegion3": "Utrecht (NL310)",
+      "nutsRegion3Code": "NL310",
       "street": "Partnerstreet",
       "houseNumber": "2",
       "postalCode": "1020",
@@ -75,8 +78,11 @@
     {
       "type": "Department",
       "country": "España (ES)",
+      "countryCode": "ES",
       "nutsRegion2": "Castilla y León (ES41)",
+      "nutsRegion2Code": "ES41",
       "nutsRegion3": "León (ES413)",
+      "nutsRegion3Code": "ES413",
       "street": "Departmentstreet",
       "houseNumber": "5",
       "postalCode": "4020",
