@@ -52,8 +52,11 @@
     {
       "type": "Department",
       "country": "España (ES)",
+      "countryCode": "ES",
       "nutsRegion2": "Castilla y León (ES41)",
+      "nutsRegion2Code": "ES41",
       "nutsRegion3": "León (ES413)",
+      "nutsRegion3Code": "ES413",
       "street": "Departmentstreet",
       "houseNumber": "5",
       "postalCode": "4020",

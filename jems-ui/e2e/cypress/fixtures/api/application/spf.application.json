@@ -68,8 +68,11 @@
         {
           "type": "Organization",
           "country": "Österreich (AT)",
+          "countryCode": "AT",
           "nutsRegion2": "Wien (AT13)",
+          "nutsRegion2Code": "AT13",
           "nutsRegion3": "Wien (AT130)",
+          "nutsRegion3Code": "AT130",
           "street": "Partnerstreet",
           "houseNumber": "2",
           "postalCode": "1020",
@@ -79,8 +82,11 @@
         {
           "type": "Department",
           "country": "Österreich (AT)",
+          "countryCode": "AT",
           "nutsRegion2": "Oberösterreich (AT31)",
+          "nutsRegion2Code": "AT31",
           "nutsRegion3": "Linz-Wels (AT312)",
+          "nutsRegion3Code": "AT312",
           "street": "Departmentstreet",
           "houseNumber": "5",
           "postalCode": "4020",

@@ -77,13 +77,15 @@
           "houseNumber": "2",
           "postalCode": "1020",
           "city": "Partner city",
-          "homepage": "partner@test.com"
-        },
-        {
+          "homepage": "www.partnerpage.com"
+        }, {
           "type": "Department",
           "country": "Österreich (AT)",
+          "countryCode": "AT",
           "nutsRegion2": "Oberösterreich (AT31)",
+          "nutsRegion2Code": "AT31",
           "nutsRegion3": "Linz-Wels (AT312)",
+          "nutsRegion3Code": "AT312",
           "street": "Departmentstreet",
           "houseNumber": "5",
           "postalCode": "4020",
@@ -886,8 +888,11 @@
         {
           "type": "Organization",
           "country": "France (FR)",
+          "countryCode": "FR",
           "nutsRegion2": "Rhône-Alpes (FRK2)",
+          "nutsRegion2Code": "FRK2",
           "nutsRegion3": "Savoie (FRK27)",
+          "nutsRegion3Code": "FRK27",
           "street": "Partnerstreet",
           "houseNumber": "2",
           "postalCode": "1020",
@@ -897,8 +902,11 @@
         {
           "type": "Department",
           "country": "España (ES)",
+          "countryCode": "ES",
           "nutsRegion2": "Castilla y León (ES41)",
+          "nutsRegion2Code": "ES41",
           "nutsRegion3": "León (ES413)",
+          "nutsRegion3Code": "ES413",
           "street": "Departmentstreet",
           "houseNumber": "5",
           "postalCode": "4020",
