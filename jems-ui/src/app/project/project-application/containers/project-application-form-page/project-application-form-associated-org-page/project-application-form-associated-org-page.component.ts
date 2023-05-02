@@ -18,6 +18,7 @@ import { Alert } from '@common/components/forms/alert';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationFormAssociatedOrgPageComponent {
+  MAX_ALLOWED_ORGANIZATIONS = 30;
   Permission = Permission;
   Alert = Alert;
   projectId = this.activatedRoute?.snapshot?.params?.projectId;

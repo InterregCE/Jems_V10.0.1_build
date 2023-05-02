@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {combineLatest} from 'rxjs';
-import {map, take, tap} from 'rxjs/operators';
+import {catchError, map, take, tap} from 'rxjs/operators';
 import {ActivatedRoute} from '@angular/router';
 import {
   InputProjectAssociatedOrganizationAddress,
@@ -122,13 +122,15 @@ export class ProjectApplicationFormAssociatedOrgDetailComponent implements OnIni
     if (!this.controls?.id?.value) {
       this.associatedOrganizationStore.createAssociatedOrganization({id: 0, ...toSave})
         .pipe(
-          take(1)
+          take(1),
+          catchError(err => this.formService.setError(err))
         ).subscribe();
     } else {
       this.associatedOrganizationStore.updateAssociatedOrganization({id: this.controls.id.value, ...toSave})
         .pipe(
           take(1),
-          tap(() => this.formService.setSuccess('project.partner.save.success'))
+          tap(() => this.formService.setSuccess('project.partner.save.success')),
+          catchError(err => this.formService.setError(err))
         ).subscribe();
     }
   }
