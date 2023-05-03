@@ -380,7 +380,7 @@ context('Partner reports tests', () => {
                       .type(partnerProcurement[0].vatNumber);
                     cy.contains('button', 'Create')
                       .click();
-                    cy.contains('use.case.create.project.partner.report.procurement.contractName.needs.to.be.unique (error code: S-CPPRP-003)')
+                    cy.contains(`Procurement contract name [${partnerProcurement[0].contractName}] is not unique (error code: S-CPPRP-003)`)
                       .should('be.visible');
 
                     // Partners with EURO currency should be able to save only EUR as currency for their procurement
@@ -390,7 +390,7 @@ context('Partner reports tests', () => {
                       .click();
                     cy.contains('button', 'Create')
                       .click();
-                    cy.contains('use.case.create.project.partner.report.procurement.invalid.currency (error code: S-CPPRP-004)')
+                    cy.contains('Selected currency is invalid (error code: S-CPPRP-004)')
                       .should('be.visible');
                     cy.contains('button', 'Discard changes')
                       .click();
