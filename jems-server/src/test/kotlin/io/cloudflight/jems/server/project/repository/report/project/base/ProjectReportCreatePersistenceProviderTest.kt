@@ -20,19 +20,12 @@ import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
-import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateCoFinancingEntity
-import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateCostCategoryEntity
-import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateInvestmentEntity
-import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateLumpSumEntity
-import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateUnitCostEntity
+import io.cloudflight.jems.server.project.entity.report.project.financialOverview.*
 import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportIdentificationTargetGroupEntity
 import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportSpendingProfileEntity
 import io.cloudflight.jems.server.project.entity.report.project.resultPrinciple.ProjectReportHorizontalPrincipleEntity
 import io.cloudflight.jems.server.project.entity.report.project.resultPrinciple.ProjectReportProjectResultEntity
-import io.cloudflight.jems.server.project.entity.report.project.workPlan.ProjectReportWorkPackageActivityDeliverableEntity
-import io.cloudflight.jems.server.project.entity.report.project.workPlan.ProjectReportWorkPackageActivityEntity
-import io.cloudflight.jems.server.project.entity.report.project.workPlan.ProjectReportWorkPackageEntity
-import io.cloudflight.jems.server.project.entity.report.project.workPlan.ProjectReportWorkPackageOutputEntity
+import io.cloudflight.jems.server.project.entity.report.project.workPlan.*
 import io.cloudflight.jems.server.project.repository.contracting.reporting.ProjectContractingReportingRepository
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
@@ -46,10 +39,7 @@ import io.cloudflight.jems.server.project.repository.report.project.identificati
 import io.cloudflight.jems.server.project.repository.report.project.identification.ProjectReportSpendingProfileRepository
 import io.cloudflight.jems.server.project.repository.report.project.resultPrinciple.ProjectReportHorizontalPrincipleRepository
 import io.cloudflight.jems.server.project.repository.report.project.resultPrinciple.ProjectReportProjectResultRepository
-import io.cloudflight.jems.server.project.repository.report.project.workPlan.ProjectReportWorkPackageActivityDeliverableRepository
-import io.cloudflight.jems.server.project.repository.report.project.workPlan.ProjectReportWorkPackageActivityRepository
-import io.cloudflight.jems.server.project.repository.report.project.workPlan.ProjectReportWorkPackageOutputRepository
-import io.cloudflight.jems.server.project.repository.report.project.workPlan.ProjectReportWorkPackageRepository
+import io.cloudflight.jems.server.project.repository.report.project.workPlan.*
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.model.ProjectHorizontalPrinciples
@@ -61,15 +51,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.create.CreateProjectPartnerReportWorkPackageOutput
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
-import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedCoFinancing
-import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedFund
-import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportBudget
-import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportCreateModel
-import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportInvestment
-import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportPartnerCreateModel
-import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportLumpSum
-import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportResultCreate
-import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportUnitCostBase
+import io.cloudflight.jems.server.project.service.report.model.project.base.create.*
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanStatus
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageActivityCreate
@@ -160,7 +142,8 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                         previouslyReported = BigDecimal.valueOf(954L, 2),
                     ),
                 ),
-            )
+                investments = emptyList()
+            ),
         )
 
         private fun projectRelevanceBenefits() = listOf(
@@ -340,6 +323,9 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
     private lateinit var workPlanRepository: ProjectReportWorkPackageRepository
 
     @MockK
+    private lateinit var workPlanInvestmentRepository: ProjectReportWorkPackageInvestmentRepository
+
+    @MockK
     private lateinit var workPlanActivityRepository: ProjectReportWorkPackageActivityRepository
 
     @MockK
@@ -396,6 +382,7 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
             projectReportCertificateCoFinancingRepository,
             programmeFundRepository,
             workPlanRepository,
+            workPlanInvestmentRepository,
             workPlanActivityRepository,
             workPlanActivityDeliverableRepository,
             workPlanOutputRepository,
@@ -426,6 +413,8 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
         // workPlan
         val slotWp = slot<ProjectReportWorkPackageEntity>()
         every { workPlanRepository.save(capture(slotWp)) } returnsArgument 0
+        val slotInvestment = slot<Iterable<ProjectReportWorkPackageInvestmentEntity>>()
+        every { workPlanInvestmentRepository.saveAll(capture(slotInvestment)) } returnsArgument 0
         val slotActivity = slot<ProjectReportWorkPackageActivityEntity>()
         every { workPlanActivityRepository.save(capture(slotActivity)) } returnsArgument 0
         val slotDeliverables = slot<Iterable<ProjectReportWorkPackageActivityDeliverableEntity>>()

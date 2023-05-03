@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackage
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageActivityCreate
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageCreate
+import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageInvestmentCreate
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackageFull
 import java.math.BigDecimal
 
@@ -100,5 +101,25 @@ fun List<ProjectWorkPackageFull>.toCreateEntity(
                 previouslyReported = previouslyReportedOutputs[wp.workPackageNumber]?.get(o.outputNumber) ?: BigDecimal.ZERO,
             )
         },
+        investments = wp.investments.map {i ->
+            ProjectReportWorkPackageInvestmentCreate(
+                investmentId = i.id,
+                number = i.investmentNumber,
+                title = i.title,
+                expectedDeliveryPeriod = i.expectedDeliveryPeriod,
+                justificationExplanation = i.justificationExplanation,
+                justificationTransactionalRelevance = i.justificationTransactionalRelevance,
+                justificationBenefits = i.justificationBenefits,
+                justificationPilot = i.justificationPilot,
+                address = i.address,
+                risk = i.risk,
+                documentation = i.documentation,
+                documentationExpectedImpacts = i.documentationExpectedImpacts,
+                ownershipSiteLocation = i.ownershipSiteLocation,
+                ownershipRetain = i.ownershipRetain,
+                ownershipMaintenance = i.ownershipMaintenance,
+                deactivated = i.deactivated
+            )
+        }
     )
 }

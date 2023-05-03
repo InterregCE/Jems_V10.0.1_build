@@ -27,6 +27,8 @@ interface ProjectReportWorkPlanPersistence {
 
     fun updateReportWorkPackageOutput(outputId: Long, currentReport: BigDecimal, progress: Set<InputTranslation>)
 
+    fun updateReportWorkPackageInvestment(investmentId: Long, progress: Set<InputTranslation>)
+
     fun getDeliverableCumulative(reportIds: Set<Long>): Map<Int, Map<Int, Map<Int, BigDecimal>>>
 
     fun getOutputCumulative(reportIds: Set<Long>): Map<Int, Map<Int, BigDecimal>>

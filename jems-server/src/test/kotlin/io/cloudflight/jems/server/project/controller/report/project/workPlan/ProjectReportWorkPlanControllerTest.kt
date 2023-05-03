@@ -5,15 +5,7 @@ import io.cloudflight.jems.api.programme.dto.indicator.OutputIndicatorSummaryDTO
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.ProjectPeriodDTO
-import io.cloudflight.jems.api.project.dto.report.project.workPlan.ProjectReportWorkPackageActivityDTO
-import io.cloudflight.jems.api.project.dto.report.project.workPlan.ProjectReportWorkPackageActivityDeliverableDTO
-import io.cloudflight.jems.api.project.dto.report.project.workPlan.ProjectReportWorkPackageDTO
-import io.cloudflight.jems.api.project.dto.report.project.workPlan.ProjectReportWorkPackageOutputDTO
-import io.cloudflight.jems.api.project.dto.report.project.workPlan.ProjectReportWorkPlanStatusDTO
-import io.cloudflight.jems.api.project.dto.report.project.workPlan.UpdateProjectReportWorkPackageActivityDTO
-import io.cloudflight.jems.api.project.dto.report.project.workPlan.UpdateProjectReportWorkPackageActivityDeliverableDTO
-import io.cloudflight.jems.api.project.dto.report.project.workPlan.UpdateProjectReportWorkPackageDTO
-import io.cloudflight.jems.api.project.dto.report.project.workPlan.UpdateProjectReportWorkPackageOutputDTO
+import io.cloudflight.jems.api.project.dto.report.project.workPlan.*
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.programme.service.indicator.model.OutputIndicatorSummary
@@ -23,15 +15,7 @@ import io.cloudflight.jems.server.project.controller.report.partner.dummyFileExp
 import io.cloudflight.jems.server.project.controller.report.partner.dummyMultipartFile
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
-import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackage
-import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageActivity
-import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageActivityDeliverable
-import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageActivityDeliverableUpdate
-import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageActivityUpdate
-import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageOutput
-import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageOutputUpdate
-import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageUpdate
-import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanStatus
+import io.cloudflight.jems.server.project.service.report.model.project.workPlan.*
 import io.cloudflight.jems.server.project.service.report.project.workPlan.getProjectReportWorkPlan.GetProjectReportWorkPlanInteractor
 import io.cloudflight.jems.server.project.service.report.project.workPlan.updateProjectReportWorkPlan.UpdateProjectReportWorkPlanInteractor
 import io.cloudflight.jems.server.project.service.report.project.workPlan.uploadFileToProjectReportWorkPlan.UploadFileToProjectReportWorkPlanInteractor
@@ -105,6 +89,7 @@ internal class ProjectReportWorkPlanControllerTest : UnitTest() {
                     attachment = JemsFileMetadata(6377L, "file3", time),
                 ),
             ),
+            investments = emptyList()
         )
     )
     private val workPlanExpected = ProjectReportWorkPackageDTO(
@@ -161,6 +146,7 @@ internal class ProjectReportWorkPlanControllerTest : UnitTest() {
                 attachment = JemsFileMetadataDTO(6377L, "file3", time),
             ),
         ),
+        investments = emptyList()
     )
 
     private val toUpdate = UpdateProjectReportWorkPackageDTO(
@@ -191,7 +177,9 @@ internal class ProjectReportWorkPlanControllerTest : UnitTest() {
                 currentReport = BigDecimal.valueOf(112L, 2),
                 progress = setOf(InputTranslation(SystemLanguage.EN, "out-progress-EN-update")),
             ),
-        )
+        ),
+        investments = emptyList()
+
     )
 
     private val toUpdateExpected = ProjectReportWorkPackageUpdate(
@@ -223,6 +211,7 @@ internal class ProjectReportWorkPlanControllerTest : UnitTest() {
                 progress = setOf(InputTranslation(SystemLanguage.EN, "out-progress-EN-update")),
             ),
         ),
+        investments = emptyList()
     )
 
     @MockK

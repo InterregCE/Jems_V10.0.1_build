@@ -15,4 +15,5 @@ data class UpdateProjectReportWorkPackageDTO(
     val description: Set<InputTranslation>,
     val activities: List<UpdateProjectReportWorkPackageActivityDTO>,
     val outputs: List<UpdateProjectReportWorkPackageOutputDTO>,
+    val investments: List<UpdateProjectReportWorkPackageInvestmentDTO>,
 )

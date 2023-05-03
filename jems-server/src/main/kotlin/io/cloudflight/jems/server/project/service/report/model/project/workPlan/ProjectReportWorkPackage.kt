@@ -19,4 +19,5 @@ data class ProjectReportWorkPackage(
     val description: Set<InputTranslation>,
     val activities: List<ProjectReportWorkPackageActivity>,
     val outputs: List<ProjectReportWorkPackageOutput>,
+    val investments: List<ProjectReportWorkPackageInvestment>
 )

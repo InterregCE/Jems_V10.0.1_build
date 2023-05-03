@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.project.entity.report.project.workPlan.ProjectReportWorkPackageActivityDeliverableTranslEntity
 import io.cloudflight.jems.server.project.entity.report.project.workPlan.ProjectReportWorkPackageActivityTranslEntity
+import io.cloudflight.jems.server.project.entity.report.project.workPlan.ProjectReportWorkPackageInvestmentTranslEntity
 import io.cloudflight.jems.server.project.entity.report.project.workPlan.ProjectReportWorkPackageOutputTranslEntity
 import io.cloudflight.jems.server.project.entity.report.project.workPlan.ProjectReportWorkPackageTranslEntity
 import io.cloudflight.jems.server.project.repository.report.project.base.ProjectReportRepository
@@ -28,6 +29,7 @@ class ProjectReportWorkPlanPersistenceProvider(
     private val workPlanActivityRepository: ProjectReportWorkPackageActivityRepository,
     private val workPlanActivityDeliverableRepository: ProjectReportWorkPackageActivityDeliverableRepository,
     private val workPlanOutputRepository: ProjectReportWorkPackageOutputRepository,
+    private val workPlanInvestmentRepository: ProjectReportWorkPackageInvestmentRepository,
     private val projectPersistence: ProjectPersistence,
     private val fileService: JemsProjectFileService
 ) : ProjectReportWorkPlanPersistence {
@@ -45,6 +47,9 @@ class ProjectReportWorkPlanPersistenceProvider(
         val outputsByWorkPackage = workPlanOutputRepository
             .findAllByWorkPackageEntityReportEntityOrderByNumber(reportEntity)
             .groupBy { it.workPackageEntity }
+        val investmentsByWorkPackage = workPlanInvestmentRepository
+            .findAllByWorkPackageEntityReportEntityOrderByNumber(reportEntity)
+            .groupBy { it.workPackageEntity }
 
         val periods = projectPersistence.getProjectPeriods(projectId, reportEntity.applicationFormVersion)
             .associateBy { it.number }
@@ -54,6 +59,7 @@ class ProjectReportWorkPlanPersistenceProvider(
             retrieveActivities = { wp -> activitiesByWorkPackage[wp] ?: emptyList() },
             retrieveDeliverables = { activity -> deliverablesByActivity[activity] ?: emptyList() },
             retrieveOutputs = { wp -> outputsByWorkPackage[wp] ?: emptyList() },
+            retrieveInvestments = { wp -> investmentsByWorkPackage[wp] ?: emptyList() },
         )
     }
 
@@ -126,6 +132,18 @@ class ProjectReportWorkPlanPersistenceProvider(
             this.currentReport = currentReport
             this.translatedValues.updateWith(
                 entitySupplier = { lang -> ProjectReportWorkPackageOutputTranslEntity(TranslationId(this, lang), "", "") },
+                allTranslations = listOf(progress),
+                { e -> e.progress = progress.inLang(e.language()) },
+            )
+        }
+    }
+
+    @Transactional
+    override fun updateReportWorkPackageInvestment(investmentId: Long, progress: Set<InputTranslation>) {
+        workPlanInvestmentRepository.findById(investmentId).get().apply {
+            this.translatedValues.updateWith(
+                entitySupplier = { lang ->
+                    ProjectReportWorkPackageInvestmentTranslEntity(TranslationId(this, lang)) },
                 allTranslations = listOf(progress),
                 { e -> e.progress = progress.inLang(e.language()) },
             )

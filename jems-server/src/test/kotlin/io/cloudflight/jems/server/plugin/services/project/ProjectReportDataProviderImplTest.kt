@@ -11,6 +11,7 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionC.management.Pr
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.management.ProjectHorizontalPrinciplesEffectData
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.relevance.ProjectTargetGroupData
 import io.cloudflight.jems.plugin.contract.models.report.partner.identification.ProjectPartnerReportPeriodData
+import io.cloudflight.jems.plugin.contract.models.report.project.financialOverview.CertificateUnitCostBreakdownData
 import io.cloudflight.jems.plugin.contract.models.report.project.financialOverview.BudgetCostsCalculationResultFullData
 import io.cloudflight.jems.plugin.contract.models.report.project.financialOverview.CertificateCoFinancingBreakdownData
 import io.cloudflight.jems.plugin.contract.models.report.project.financialOverview.CertificateCoFinancingBreakdownLineData
@@ -22,11 +23,10 @@ import io.cloudflight.jems.plugin.contract.models.report.project.financialOvervi
 import io.cloudflight.jems.plugin.contract.models.report.project.financialOverview.CertificateInvestmentBreakdownLineData
 import io.cloudflight.jems.plugin.contract.models.report.project.financialOverview.CertificateLumpSumBreakdownData
 import io.cloudflight.jems.plugin.contract.models.report.project.financialOverview.CertificateLumpSumBreakdownLineData
-import io.cloudflight.jems.plugin.contract.models.report.project.financialOverview.CertificateUnitCostBreakdownData
 import io.cloudflight.jems.plugin.contract.models.report.project.financialOverview.CertificateUnitCostBreakdownLineData
+import io.cloudflight.jems.plugin.contract.models.report.project.identification.ProjectReportIdentificationData
 import io.cloudflight.jems.plugin.contract.models.report.project.identification.ContractingDeadlineTypeData
 import io.cloudflight.jems.plugin.contract.models.report.project.identification.ProjectReportData
-import io.cloudflight.jems.plugin.contract.models.report.project.identification.ProjectReportIdentificationData
 import io.cloudflight.jems.plugin.contract.models.report.project.identification.ProjectReportIdentificationTargetGroupData
 import io.cloudflight.jems.plugin.contract.models.report.project.identification.ProjectReportPeriodData
 import io.cloudflight.jems.plugin.contract.models.report.project.identification.ProjectReportSpendingProfileData
@@ -34,8 +34,8 @@ import io.cloudflight.jems.plugin.contract.models.report.project.identification.
 import io.cloudflight.jems.plugin.contract.models.report.project.partnerCertificates.PartnerReportCertificateData
 import io.cloudflight.jems.plugin.contract.models.report.project.projectResults.ProjectReportResultData
 import io.cloudflight.jems.plugin.contract.models.report.project.projectResults.ProjectReportResultPrincipleData
-import io.cloudflight.jems.plugin.contract.models.report.project.workPlan.ProjectReportWorkPackageActivityData
 import io.cloudflight.jems.plugin.contract.models.report.project.workPlan.ProjectReportWorkPackageData
+import io.cloudflight.jems.plugin.contract.models.report.project.workPlan.ProjectReportWorkPackageActivityData
 import io.cloudflight.jems.plugin.contract.models.report.project.workPlan.ProjectReportWorkPackageOutputData
 import io.cloudflight.jems.plugin.contract.models.report.project.workPlan.ProjectReportWorkPackageOutputIndicatorSummaryData
 import io.cloudflight.jems.plugin.contract.models.report.project.workPlan.ProjectReportWorkPackageStatusData
@@ -50,11 +50,11 @@ import io.cloudflight.jems.server.project.service.model.ProjectHorizontalPrincip
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
 import io.cloudflight.jems.server.project.service.partner.model.NaceGroupLevel
 import io.cloudflight.jems.server.project.service.partner.model.PartnerSubType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
@@ -421,7 +421,8 @@ class ProjectReportDataProviderImplTest : UnitTest() {
             completed = true,
             description = description,
             activities = listOf(activity),
-            outputs = listOf(output)
+            outputs = listOf(output),
+            investments = emptyList()
         )
         private val expectedWorkPackage = ProjectReportWorkPackageData(
             id = 10L,
