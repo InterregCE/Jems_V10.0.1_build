@@ -5,18 +5,6 @@
       "level": "EDIT"
     }
   ],
-  "partnerProcurement": {
-    "id": 0,
-    "contractName": "LP1 - Very important procurement",
-    "referenceNumber": "2137",
-    "contractDate": "2023-04-01",
-    "contractType": "Very trustful glance",
-    "contractAmount": 150,
-    "currencyCode": "EUR",
-    "supplierName": "Cloudflight Clothing",
-    "vatNumber": "444444",
-    "comment": "Yes, it is very important procurement, indeed."
-  },
   "address": [
     {
       "type": "Organization",
