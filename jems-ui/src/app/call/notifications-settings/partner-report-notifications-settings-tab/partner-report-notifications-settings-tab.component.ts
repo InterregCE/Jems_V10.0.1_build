@@ -5,7 +5,7 @@ import {FormService} from '@common/components/section/form/form.service';
 import {CallNotificationSettingsStore} from '../call-notification-settings-store.service';
 import {catchError, map, take, tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {Observable} from 'rxjs';
+import {combineLatest, Observable, of} from 'rxjs';
 
 @UntilDestroy()
 @Component({
@@ -20,6 +20,7 @@ export class PartnerReportNotificationsSettingsTabComponent {
 
   data$: Observable<{
     partnerReportNotificationConfigurations: ProjectNotificationConfigurationDTO[];
+    canEditCall: boolean;
   }>;
 
   constructor(
@@ -27,11 +28,15 @@ export class PartnerReportNotificationsSettingsTabComponent {
     private formService: FormService,
     private callNotificationSettingsStore: CallNotificationSettingsStore
   ) {
-    this.data$ = this.callNotificationSettingsStore.partnerReportNotificationConfigurations$.pipe(
-      tap(notificationConfigurations => this.resetForm(notificationConfigurations)),
-      map(notificationConfigurations => ({
-        partnerReportNotificationConfigurations: notificationConfigurations
+    this.data$ = combineLatest(
+      this.callNotificationSettingsStore.partnerReportNotificationConfigurations$,
+      this.callNotificationSettingsStore.canEditCall$,
+    ).pipe(
+      map(([partnerReportNotificationConfigurations, canEditCall]) => ({
+        partnerReportNotificationConfigurations,
+        canEditCall,
       })),
+      tap(data => this.resetForm(data.partnerReportNotificationConfigurations, data.canEditCall)),
       untilDestroyed(this)
     );
   }
@@ -40,7 +45,7 @@ export class PartnerReportNotificationsSettingsTabComponent {
     return this.partnerReportNotificationsForm.get('partnerReportNotificationConfigurations') as FormArray;
   }
 
-  resetForm(partnerReportNotificationConfigurations: ProjectNotificationConfigurationDTO[]): void {
+  resetForm(partnerReportNotificationConfigurations: ProjectNotificationConfigurationDTO[], canEditCall: boolean): void {
     this.partnerReportNotificationConfigurationsArray.clear();
     partnerReportNotificationConfigurations.forEach(notificationConfig => {
       this.partnerReportNotificationConfigurationsArray.push(this.formBuilder.group(
@@ -57,7 +62,7 @@ export class PartnerReportNotificationsSettingsTabComponent {
         }
       ));
     });
-    this.formService.init(this.partnerReportNotificationsForm);
+    this.formService.init(this.partnerReportNotificationsForm, of(canEditCall));
   }
 
   save() {

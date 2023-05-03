@@ -58,10 +58,13 @@ interface ControllerInstitutionPersistence {
 
     fun getRelatedUserIdsForProject(projectId: Long): Set<Long>
 
+    fun getRelatedUserIdsForPartner(partnerId: Long): Set<Long>
+
     fun getControllerUserAccessLevelForPartner(userId: Long, partnerId: Long): UserInstitutionAccessLevel?
 
     fun getRelatedProjectAndPartnerIdsForUser(userId: Long): Map<Long, Set<Long>>
 
     fun getInstitutionPartnerAssignmentsToDeleteByProjectId(projectId: Long): List<InstitutionPartnerAssignment>
+
     fun getInstitutionPartnerAssignmentsToDeleteByInstitutionId(institutionId: Long): List<InstitutionPartnerAssignment>
 }

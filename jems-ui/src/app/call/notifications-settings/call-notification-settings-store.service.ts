@@ -11,6 +11,7 @@ import {CallStore} from '../services/call-store.service';
 })
 export class CallNotificationSettingsStore {
   callId$: Observable<number>;
+  canEditCall$: Observable<boolean>;
   projectNotificationConfigurations$: Observable<ProjectNotificationConfigurationDTO[]>;
   partnerReportNotificationConfigurations$: Observable<ProjectNotificationConfigurationDTO[]>;
   private projectNotificationConfigurationsSaved$ = new Subject<ProjectNotificationConfigurationDTO[]>();
@@ -21,6 +22,7 @@ export class CallNotificationSettingsStore {
     private callNotificationService: CallNotificationConfigurationService,
   ) {
     this.callId$ = callStore.callId$;
+    this.canEditCall$ = callStore.callIsEditable$;
     this.projectNotificationConfigurations$ = this.projectNotificationConfigurations();
     this.partnerReportNotificationConfigurations$ = this.partnerReportNotificationConfigurations();
   }

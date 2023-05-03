@@ -406,7 +406,7 @@ class GlobalProjectNotificationServiceTest : UnitTest() {
         every { callNotificationConfigPersistence.getActiveNotificationOfType(CALL_ID, notifType) } returns partnerReportSubmitted
 
         every { partnerPersistence.findTop30ByProjectId(PROJECT_ID) } returns listOf(leadPartner, partner)
-        every { controllerInstitutionPersistence.getRelatedUserIdsForProject(PROJECT_ID) } returns setOf(controllerUser.id)
+        every { controllerInstitutionPersistence.getRelatedUserIdsForPartner(91L) } returns setOf(controllerUser.id)
         every { userPersistence.findAllByIds(setOf(controllerUser.id)) } returns listOf(controllerUser)
 
         val slotNotification = slot<NotificationInApp>()

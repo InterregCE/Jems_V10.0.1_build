@@ -11,12 +11,12 @@ data class NotificationConfigurationWithRecipients(
     val emailTemplate: String?,
 ) {
 
-    fun instantiateWith(vararg variable: Variable) = NotificationInApp(
+    fun instantiateWith(variableMap: MutableMap<String, Any>) = NotificationInApp(
         subject = config.emailSubject,
         body = config.emailBody,
         type = config.id,
         time = ZonedDateTime.now(),
-        templateVariables = variable.associate { Pair(it.name, it.value!!) }.toMutableMap(),
+        templateVariables = variableMap,
         recipientsInApp = recipientsInApp,
         recipientsEmail = recipientsEmail,
         emailTemplate = emailTemplate,
