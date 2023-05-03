@@ -4,13 +4,17 @@ import {
   ProjectReportWorkPackageActivityDeliverableDTO,
   ProjectReportWorkPackageActivityDTO,
   ProjectReportWorkPackageDTO,
+  ProjectReportWorkPackageInvestmentDTO,
   ProjectReportWorkPackageOutputDTO,
   UpdateProjectReportWorkPackageActivityDeliverableDTO,
   UpdateProjectReportWorkPackageActivityDTO,
   UpdateProjectReportWorkPackageDTO,
+  UpdateProjectReportWorkPackageInvestmentDTO,
   UpdateProjectReportWorkPackageOutputDTO
 } from '@cat/api';
-import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {
+  ProjectStore
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {
   ProjectReportDetailPageStore
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-detail-page-store.service';
@@ -79,6 +83,9 @@ export class ProjectReportWorkPlanTabComponent {
     return this.form.get('workPackages') as FormArray;
   }
 
+  investments(workPackageIndex: number): FormArray {
+    return this.workPackages.at(workPackageIndex).get(this.constants.INVESTMENTS.name) as FormArray;
+  }
   activities(workPackageIndex: number): FormArray {
     return this.workPackages.at(workPackageIndex).get(this.constants.ACTIVITIES.name) as FormArray;
   }
@@ -123,7 +130,8 @@ export class ProjectReportWorkPlanTabComponent {
       communicationExplanation: workPackageForm.communicationExplanation,
       description: workPackageForm.description,
       activities: this.convertActivitiesFormToDTO(workPackageForm.activities),
-      outputs: this.convertOutputsFormToDTO(workPackageForm.outputs)
+      outputs: this.convertOutputsFormToDTO(workPackageForm.outputs),
+      investments: this.convertInvestmentFormToDTO(workPackageForm.investments)
     } as UpdateProjectReportWorkPackageDTO));
   }
 
@@ -152,6 +160,13 @@ export class ProjectReportWorkPlanTabComponent {
     } as UpdateProjectReportWorkPackageOutputDTO));
   }
 
+  private convertInvestmentFormToDTO(investments: any[]): UpdateProjectReportWorkPackageInvestmentDTO[] {
+    return investments.map(investmentForm => ({
+      id: investmentForm.id,
+      progress: investmentForm.progress
+    } as UpdateProjectReportWorkPackageInvestmentDTO));
+  }
+
   resetForm(workPackagesDTO: ProjectReportWorkPackageDTO[], reportEditable: boolean) {
     this.workPackages.clear();
     workPackagesDTO.map((dto: ProjectReportWorkPackageDTO) => this.extractWorkPackageFormFromDTO(dto))
@@ -165,6 +180,7 @@ export class ProjectReportWorkPlanTabComponent {
   private extractWorkPackageFormFromDTO(dto: ProjectReportWorkPackageDTO): FormGroup {
     const activities = dto.activities.map((activityDTO: ProjectReportWorkPackageActivityDTO) => this.extractActivitiesFormFromDTO(activityDTO));
     const outputs = dto.outputs.map((outputDTO: ProjectReportWorkPackageOutputDTO) => this.extractOutputsFormFromDTO(outputDTO));
+    const investments = dto.investments.map((outputDTO: ProjectReportWorkPackageInvestmentDTO) => this.extractInvestmentsFormFromDTO(outputDTO));
 
     return this.formBuilder.group({
       id: this.formBuilder.control(dto.id),
@@ -180,6 +196,7 @@ export class ProjectReportWorkPlanTabComponent {
       description: this.formBuilder.control(dto.description ?? []),
       activities: this.formBuilder.array(activities ?? []),
       outputs: this.formBuilder.array(outputs ?? []),
+      investments: this.formBuilder.array(investments ?? [])
     });
   }
 
@@ -229,6 +246,18 @@ export class ProjectReportWorkPlanTabComponent {
       totalReportedSoFar: this.formBuilder.control(this.disableControl((dto.currentReport ?? 0) + (dto.previouslyReported ?? 0))),
       progress: this.formBuilder.control(dto.progress ?? ''),
       attachment: this.formBuilder.control(dto.attachment)
+    });
+  }
+
+  private extractInvestmentsFormFromDTO(dto: ProjectReportWorkPackageInvestmentDTO): FormGroup {
+    return this.formBuilder.group({
+      id: this.formBuilder.control(dto.id),
+      number: this.formBuilder.control(dto.number),
+      title: this.formBuilder.control(dto.title),
+      deactivated: this.formBuilder.control(dto.deactivated),
+      period: this.formBuilder.control(dto.period),
+      nutsRegion3: this.formBuilder.control(dto.nutsRegion3),
+      progress: this.formBuilder.control(dto.progress)
     });
   }
 
