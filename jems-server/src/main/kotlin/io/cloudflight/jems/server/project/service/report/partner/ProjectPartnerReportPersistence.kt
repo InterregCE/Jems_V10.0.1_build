@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPa
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.certificate.PartnerReportCertificate
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -13,7 +14,11 @@ interface ProjectPartnerReportPersistence {
 
     fun submitReportById(partnerId: Long, reportId: Long, submissionTime: ZonedDateTime): ProjectPartnerReportSubmissionSummary
 
+    fun reSubmitReportById(partnerId: Long, reportId: Long, submissionTime: ZonedDateTime): ProjectPartnerReportSubmissionSummary
+
     fun startControlOnReportById(partnerId: Long, reportId: Long): ProjectPartnerReportSubmissionSummary
+
+    fun reOpenReportById(partnerId: Long, reportId: Long, newStatus: ReportStatus): ProjectPartnerReportSubmissionSummary
 
     fun finalizeControlOnReportById(
         partnerId: Long,

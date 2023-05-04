@@ -119,7 +119,7 @@ internal class ProjectPartnerReportAuthorizationTest : UnitTest() {
     @ValueSource(booleans = [true, false])
     fun `assigned monitor user with permission can edit`(isOpen: Boolean) {
         val report = mockk<ProjectPartnerReport>()
-        every { report.status.isOpen() } returns isOpen
+        every { report.status.isClosed() } returns !isOpen
         every { reportPersistence.getPartnerReportById(PARTNER_ID, 17L) } returns report
 
         every { currentUser.hasPermission(ProjectReportingEdit) } returns true

@@ -64,7 +64,7 @@ class ProjectPartnerReportAuthorization(
     fun canEditPartnerReport(partnerId: Long, reportId: Long): Boolean {
         val report = reportPersistence.getPartnerReportById(partnerId, reportId = reportId)
 
-        return report.status.isOpen() && hasPermissionForPartner(partnerId = partnerId, EDIT)
+        return !report.status.isClosed() && hasPermissionForPartner(partnerId = partnerId, EDIT)
     }
 
     fun canEditPartnerReportNotSpecific(partnerId: Long): Boolean =

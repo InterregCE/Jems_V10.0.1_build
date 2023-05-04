@@ -57,6 +57,24 @@ fun partnerReportSubmitted(
             .build()
     )
 
+fun partnerReportReOpened(
+    context: Any,
+    projectId: Long,
+    report: ProjectPartnerReportSubmissionSummary,
+): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.PARTNER_REPORT_REOPENED)
+            .project(
+                projectId = projectId,
+                customIdentifier = report.projectIdentifier,
+                acronym = report.projectAcronym,
+            )
+            .entityRelatedId(entityRelatedId = report.id)
+            .description("[${(if (report.partnerRole == ProjectPartnerRole.LEAD_PARTNER) "LP" else "PP")}" +
+                    "${report.partnerNumber}] Partner report R.${report.reportNumber} was reopened")
+            .build()
+    )
 
 fun partnerReportStartedControl(
     context: Any,

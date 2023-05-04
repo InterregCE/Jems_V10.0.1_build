@@ -21,21 +21,22 @@ class GetProjectPartnerReportExpenditureCalculator(
 
     @Transactional(readOnly = true)
     fun getExpenditureCosts(partnerId: Long, reportId: Long): List<ProjectPartnerReportExpenditureCost> {
-        val isSubmitted = reportPersistence.getPartnerReportById(partnerId = partnerId, reportId).status.isClosed()
+        val isOpen = reportPersistence.getPartnerReportStatusAndVersion(partnerId = partnerId, reportId)
+            .status.isOpenForNumbersChanges()
         val expenditures =
             reportExpenditurePersistence.getPartnerReportExpenditureCosts(partnerId = partnerId, reportId = reportId)
 
         expenditures.anonymizeSensitiveDataIf(
             canNotWorkWithSensitive = !sensitiveDataAuthorization.canViewPartnerSensitiveData(partnerId))
 
-        return if (isSubmitted)
-            expenditures
-        else
+        return if (isOpen)
             expenditures.apply {
                 val today = LocalDate.now()
                 val rates = currencyPersistence.findAllByIdYearAndIdMonth(year = today.year, month = today.monthValue)
                     .associateBy { it.code }
                 this.fillCurrencyRates(rates)
             }
+        else
+            expenditures
     }
 }

@@ -65,53 +65,61 @@ class SubmitProjectPartnerReport(
     @ExceptionWrapper(SubmitProjectPartnerReportException::class)
     override fun submit(partnerId: Long, reportId: Long): ReportStatus {
         val report = reportPersistence.getPartnerReportById(partnerId = partnerId, reportId = reportId)
-        validateReportIsStillDraft(report)
+        validateReportIsStillOpen(report)
 
         if (!preSubmissionCheck.preCheck(partnerId, reportId = reportId).isSubmissionAllowed) {
             throw SubmissionNotAllowed()
         }
 
-        val expenditures = fillInVerificationForExpendituresAndSaveCurrencyRates(partnerId = partnerId, reportId = reportId)
-        val costCategories = reportExpenditureCostCategoryPersistence.getCostCategories(partnerId = partnerId, reportId)
+        val expenditures = fillInVerificationForExpendituresAndSaveCurrencyRates(partnerId, reportId = reportId)
+        val needsRecalculation = report.status.isOpenForNumbersChanges()
+        if (needsRecalculation)
+            storeCurrentValues(partnerId, report, expenditures)
+
+        // TODO refactor
+        return (if (report.status.isOpenInitially())
+            reportPersistence.submitReportById(partnerId, reportId = reportId, ZonedDateTime.now())
+        else
+            reportPersistence.reSubmitReportById(partnerId, reportId = reportId, ZonedDateTime.now()))
+            .also { it ->
+                val projectId = partnerPersistence.getProjectIdForPartnerId(id = partnerId, it.version)
+                val projectSummary = projectPersistence.getProjectSummary(projectId)
+
+                auditPublisher.publishEvent(PartnerReportStatusChanged(this, projectSummary, it))
+                auditPublisher.publishEvent(
+                    partnerReportSubmitted(
+                        context = this,
+                        projectId = projectId,
+                        report = it,
+                        isGdprSensitive = expenditures.any { it.gdpr }
+                    )
+                )
+            }.status
+    }
+
+    private fun validateReportIsStillOpen(report: ProjectPartnerReport) {
+        if (report.status.isClosed())
+            throw ReportAlreadyClosed()
+    }
+
+    private fun storeCurrentValues(partnerId: Long, report: ProjectPartnerReport, expenditures: List<ProjectPartnerReportExpenditureCost>) {
+        val costCategories = reportExpenditureCostCategoryPersistence.getCostCategories(partnerId = partnerId, report.id)
 
         val currentCostCategories = ExpenditureCostCategoryCurrentlyReportedWithReIncluded(
             currentlyReported = expenditures.calculateCurrent(options = costCategories.options),
             currentlyReportedReIncluded = expenditures.onlyReIncluded().calculateCurrent(options = costCategories.options),
         )
 
-        saveCurrentCostCategories(currentCostCategories, partnerId = partnerId, reportId) // table 2
+        saveCurrentCostCategories(currentCostCategories, partnerId = partnerId, report.id) // table 2
         saveCurrentCoFinancing( // table 1
             currentReport = currentCostCategories.currentlyReported.sum,
             currentReportReIncluded = currentCostCategories.currentlyReportedReIncluded.sum,
             totalEligibleBudget = costCategories.totalsFromAF.sum,
             report = report, partnerId = partnerId,
         )
-        saveCurrentLumpSums(expenditures.getCurrentForLumpSums(), partnerId = partnerId, reportId) // table 3
-        saveCurrentUnitCosts(expenditures.getCurrentForUnitCosts(), partnerId = partnerId, reportId) // table 4
-        saveCurrentInvestments(expenditures.getCurrentForInvestments(), partnerId = partnerId, reportId) // table 5
-        return reportPersistence.submitReportById(
-            partnerId = partnerId,
-            reportId = reportId,
-            submissionTime = ZonedDateTime.now()
-        ).also { it ->
-            val projectId = partnerPersistence.getProjectIdForPartnerId(id = partnerId, it.version)
-            val projectSummary = projectPersistence.getProjectSummary(projectId)
-
-            auditPublisher.publishEvent(PartnerReportStatusChanged(this, projectSummary, it))
-            auditPublisher.publishEvent(
-                partnerReportSubmitted(
-                    context = this,
-                    projectId = projectId,
-                    report = it,
-                    isGdprSensitive = expenditures.any { it.gdpr }
-                )
-            )
-        }.status
-    }
-
-    private fun validateReportIsStillDraft(report: ProjectPartnerReport) {
-        if (report.status.isClosed())
-            throw ReportAlreadyClosed()
+        saveCurrentLumpSums(expenditures.getCurrentForLumpSums(), partnerId = partnerId, report.id) // table 3
+        saveCurrentUnitCosts(expenditures.getCurrentForUnitCosts(), partnerId = partnerId, report.id) // table 4
+        saveCurrentInvestments(expenditures.getCurrentForInvestments(), partnerId = partnerId, report.id) // table 5
     }
 
     private fun fillInVerificationForExpendituresAndSaveCurrencyRates(partnerId: Long, reportId: Long): List<ProjectPartnerReportExpenditureCost> {

@@ -34,6 +34,7 @@ class ProjectPartnerReportEntity(
     val applicationFormVersion: String,
 
     var firstSubmission: ZonedDateTime?,
+    var lastReSubmission: ZonedDateTime?,
 
     var controlEnd: ZonedDateTime?,
 

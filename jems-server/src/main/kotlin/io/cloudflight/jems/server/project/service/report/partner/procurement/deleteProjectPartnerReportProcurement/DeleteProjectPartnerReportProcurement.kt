@@ -4,7 +4,6 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectPartnerReportProcurementPersistence
-import io.cloudflight.jems.server.project.service.report.partner.procurement.isClosed
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -19,7 +18,7 @@ class DeleteProjectPartnerReportProcurement(
     @ExceptionWrapper(DeleteProjectPartnerReportProcurementException::class)
     override fun delete(partnerId: Long, reportId: Long, procurementId: Long) {
         val report = reportPersistence.getPartnerReportStatusAndVersion(partnerId = partnerId, reportId)
-        if (report.isClosed())
+        if (!report.status.isOpenForNumbersChanges())
             throw ReportAlreadyClosed()
 
         reportProcurementPersistence.deletePartnerReportProcurement(
