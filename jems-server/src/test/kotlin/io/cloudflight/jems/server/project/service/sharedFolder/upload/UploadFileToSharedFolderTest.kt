@@ -59,7 +59,7 @@ class UploadFileToSharedFolderTest : UnitTest() {
         every { filePersistence.existsFile(EXPECTED_PATH, FILE_NAME) } returns false
         val fileToAdd = slot<JemsFileCreate>()
         val mockResult = mockk<JemsFileMetadata>()
-        every { projectFileService.persistProjectFile(capture(fileToAdd)) } returns mockResult
+        every { projectFileService.persistFile(capture(fileToAdd)) } returns mockResult
         every { securityService.getUserIdOrThrow() } returns USER_ID
 
         val file = ProjectFile(

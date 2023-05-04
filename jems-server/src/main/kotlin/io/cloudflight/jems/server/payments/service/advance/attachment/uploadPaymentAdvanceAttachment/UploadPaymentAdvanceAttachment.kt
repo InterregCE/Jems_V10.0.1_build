@@ -44,7 +44,7 @@ class UploadPaymentAdvanceAttachment(
                 userId = securityService.getUserIdOrThrow(),
             )
 
-            return fileRepository.persistProjectFile(fileToSave)
+            return fileRepository.persistFile(fileToSave)
         }
     }
 }

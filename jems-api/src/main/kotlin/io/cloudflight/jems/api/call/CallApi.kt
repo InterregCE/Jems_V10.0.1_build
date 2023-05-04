@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam
 interface CallApi {
 
     companion object {
-        private const val ENDPOINT_API_CALL = "/api/call"
+        const val ENDPOINT_API_CALL = "/api/call"
     }
 
     @ApiOperation("Returns all calls")

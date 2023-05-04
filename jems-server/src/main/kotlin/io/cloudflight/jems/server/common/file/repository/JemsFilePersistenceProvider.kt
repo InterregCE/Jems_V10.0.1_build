@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import java.io.InputStream
 
 @Repository
 class JemsFilePersistenceProvider(
@@ -23,7 +24,15 @@ class JemsFilePersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun existsFile(exactPath: String, fileName: String) =
-        projectFileMetadataRepository.existsByPathAndName(path = exactPath, name = fileName)
+        projectFileMetadataRepository.findOneByPathAndName(path = exactPath, name = fileName) != null
+
+    @Transactional(readOnly = true)
+    override fun fileIdIfExists(exactPath: String, fileName: String): Long? =
+        projectFileMetadataRepository.findOneByPathAndName(path = exactPath, name = fileName)?.id
+
+    @Transactional(readOnly = true)
+    override fun existsFile(exactPath: String, fileId: Long): Boolean =
+        projectFileMetadataRepository.findOneByPathAndId(exactPath, fileId) != null
 
     @Transactional(readOnly = true)
     override fun existsFile(partnerId: Long, pathPrefix: String, fileId: Long) =
@@ -110,6 +119,10 @@ class JemsFilePersistenceProvider(
     override fun downloadReportFile(projectId: Long, fileId: Long) =
         projectFileMetadataRepository.findByProjectIdAndId(projectId = projectId, fileId = fileId)?.download()
 
+    @Transactional(readOnly = true)
+    override fun downloadFileAsStream(type: JemsFileType, fileId: Long): Pair<String, InputStream>? =
+        projectFileMetadataRepository.findByTypeAndId(type = type, fileId = fileId)?.downloadAsStream()
+
     @Transactional
     override fun deleteFile(partnerId: Long, fileId: Long) =
         projectFileMetadataRepository.findByPartnerIdAndId(partnerId = partnerId, fileId = fileId)
@@ -142,6 +155,9 @@ class JemsFilePersistenceProvider(
 
     private fun JemsFileMetadataEntity.download() =
         Pair(name, minioStorage.getFile(minioBucket, filePath = minioLocation))
+
+    private fun JemsFileMetadataEntity.downloadAsStream() =
+        Pair(name, minioStorage.getFileAsStream(minioBucket, filePath = minioLocation))
 
     private fun JemsFileMetadataEntity?.deleteIfPresent() {
         if (this != null) {

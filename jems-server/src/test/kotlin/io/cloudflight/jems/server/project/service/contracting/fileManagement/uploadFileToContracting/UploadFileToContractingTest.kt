@@ -118,7 +118,7 @@ internal class UploadFileToContractingTest : UnitTest() {
         val result = mockk<JemsFileMetadata>()
 
         val fileSlot = slot<JemsFileCreate>()
-        every { fileRepository.persistProjectFile(capture(fileSlot)) } returns result
+        every { fileRepository.persistFile(capture(fileSlot)) } returns result
 
         assertThat(testFunction.invoke()).isEqualTo(result)
 

@@ -24,7 +24,7 @@ fun JemsFileCreate.toEntity(
     size = size,
     user = userResolver.invoke(userId),
     uploaded = uploaded,
-    description = "",
+    description = defaultDescription,
 )
 
 fun Page<JemsFileMetadataEntity>.toModel() = map { it.toFullModel() }

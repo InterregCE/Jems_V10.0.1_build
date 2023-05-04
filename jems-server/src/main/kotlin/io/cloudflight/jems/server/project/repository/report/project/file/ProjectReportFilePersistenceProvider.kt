@@ -57,7 +57,7 @@ class ProjectReportFilePersistenceProvider(
     }
 
     private fun persistFileAndUpdateLink(file: JemsFileCreate, additionalStep: (JemsFileMetadataEntity) -> Unit) =
-        fileService.persistProjectFileAndPerformAction(file = file, additionalStep = additionalStep)
+        fileService.persistFileAndPerformAction(file = file, additionalStep = additionalStep)
 
     private fun JemsFileMetadataEntity?.deleteIfPresent() {
         if (this != null) {

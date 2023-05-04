@@ -13,5 +13,5 @@ class ProjectReportAnnexesFilePersistenceProvider(
 
     @Transactional
     override fun saveFile(projectFile: JemsFileCreate) =
-        projectFileRepository.persistProjectFile(projectFile)
+        projectFileRepository.persistFile(projectFile)
 }

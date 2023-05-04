@@ -63,7 +63,7 @@ class ProjectPartnerReportControlFilePersistenceProvider(
     }
 
     private fun persistFileAndCreateLink(file: JemsFileCreate, additionalStep: (JemsFileMetadataEntity) -> Unit) =
-        fileRepository.persistProjectFileAndPerformAction(file = file, additionalStep = additionalStep)
+        fileRepository.persistFileAndPerformAction(file = file, additionalStep = additionalStep)
 
     private fun createControlReportFileEntity(reportId: Long, file: JemsFileMetadataEntity): PartnerReportControlFileEntity {
         return PartnerReportControlFileEntity(

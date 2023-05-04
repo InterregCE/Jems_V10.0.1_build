@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.report.project.projectResults.ProjectReportResultPrincipleDTO
 import io.cloudflight.jems.api.project.dto.report.project.projectResults.UpdateProjectReportResultPrincipleDTO
 import io.cloudflight.jems.api.project.report.project.ProjectReportResultPrincipleApi
+import io.cloudflight.jems.server.project.controller.report.partner.toDto
 import io.cloudflight.jems.server.project.controller.report.project.toProjectFile
 import io.cloudflight.jems.server.project.service.report.project.resultPrinciple.attachment.delete.DeleteAttachmentFromProjectReportResultPrincipleInteractor
 import io.cloudflight.jems.server.project.service.report.project.resultPrinciple.attachment.download.DownloadAttachmentFromProjectReportResultPrincipleInteractor

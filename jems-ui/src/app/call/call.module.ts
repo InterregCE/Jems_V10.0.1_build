@@ -30,6 +30,7 @@ import {
 import {
   PartnerReportNotificationsSettingsTabComponent
 } from './notifications-settings/partner-report-notifications-settings-tab/partner-report-notifications-settings-tab.component';
+import {CallTranslationsConfigurationComponent} from './translations/call-translations-configuration.component';
 
 @NgModule({
   declarations: [
@@ -47,6 +48,7 @@ import {
     CallStateAidsComponent,
     CallAllowedRealCostsComponent,
     PreSubmissionCheckSettingsPageComponent,
+    CallTranslationsConfigurationComponent,
     CallDraftBudgetComponent,
     NotificationsSettingsComponent,
     ProjectNotificationsSettingsTabComponent,

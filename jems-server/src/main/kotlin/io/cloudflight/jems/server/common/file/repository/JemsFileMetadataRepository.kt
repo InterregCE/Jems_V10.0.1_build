@@ -19,7 +19,7 @@ interface JemsFileMetadataRepository : JpaRepository<JemsFileMetadataEntity, Lon
 
     fun existsByProjectIdAndId(projectId: Long, fileId: Long): Boolean
 
-    fun existsByPathAndName(path: String, name: String): Boolean
+    fun findOneByPathAndName(path: String, name: String): JemsFileMetadataEntity?
 
     @Query(
         """
@@ -31,6 +31,8 @@ interface JemsFileMetadataRepository : JpaRepository<JemsFileMetadataEntity, Lon
     fun existsByPartnerIdAndPathPrefixAndId(partnerId: Long, pathPrefix: String, id: Long): Boolean
 
     fun existsByTypeAndId(type: JemsFileType, id: Long): Boolean
+
+    fun findOneByPathAndId(path: String, id: Long): JemsFileMetadataEntity?
 
     @Query(
         """

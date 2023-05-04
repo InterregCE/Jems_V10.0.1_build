@@ -19,9 +19,10 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import java.io.FilterInputStream
 import java.time.ZonedDateTime
 
-class FilePersistenceProviderTest: UnitTest() {
+class JemsFilePersistenceProviderTest: UnitTest() {
 
     companion object {
         private const val PROJECT_ID = 877L
@@ -75,7 +76,7 @@ class FilePersistenceProviderTest: UnitTest() {
     }
 
     @MockK
-    lateinit var fileMetadataRepository: JemsFileMetadataRepository
+    lateinit var projectFileMetadataRepository: JemsFileMetadataRepository
 
     @MockK
     lateinit var minioStorage: MinioStorage
@@ -89,19 +90,19 @@ class FilePersistenceProviderTest: UnitTest() {
     @BeforeEach
     fun reset() {
         clearMocks(minioStorage)
-        clearMocks(fileMetadataRepository)
+        clearMocks(projectFileMetadataRepository)
         clearMocks(fileRepository)
     }
 
     @Test
     fun existsFileByLocation() {
-        every { fileMetadataRepository.existsByPathAndName(path = "Project/Report/Partner/", name = "test.xlsx") } returns false
+        every { projectFileMetadataRepository.findOneByPathAndName(path = "Project/Report/Partner/", name = "test.xlsx") } returns null
         assertThat(persistence.existsFile(exactPath = "Project/Report/Partner/", fileName = "test.xlsx")).isFalse
     }
 
     @Test
     fun existsFile() {
-        every { fileMetadataRepository.existsByPartnerIdAndPathPrefixAndId(
+        every { projectFileMetadataRepository.existsByPartnerIdAndPathPrefixAndId(
             partnerId = PARTNER_ID,
             pathPrefix = "Project/45/Report/21",
             id = 14L,
@@ -110,8 +111,30 @@ class FilePersistenceProviderTest: UnitTest() {
     }
 
     @Test
+    fun fileIdIfExists() {
+        val file = mockk<JemsFileMetadataEntity>()
+        every { file.id } returns 887L
+        every { projectFileMetadataRepository.findOneByPathAndName("Project/45/Report/21", "existingName") } returns file
+        assertThat(persistence.fileIdIfExists("Project/45/Report/21", fileName = "existingName")).isEqualTo(887L)
+    }
+
+    @Test
+    fun fileIdIfNotExists() {
+        every { projectFileMetadataRepository.findOneByPathAndName("path", "notExistingName") } returns null
+        assertThat(persistence.fileIdIfExists("path", fileName = "notExistingName")).isNull()
+    }
+
+    @Test
+    fun existsFileId() {
+        every { projectFileMetadataRepository.findOneByPathAndId("CallTransl/45/", id = 21L) } returns mockk()
+        every { projectFileMetadataRepository.findOneByPathAndId("CallTransl/45/", id = -1L) } returns null
+        assertThat(persistence.existsFile("CallTransl/45/", fileId = 21L)).isTrue()
+        assertThat(persistence.existsFile("CallTransl/45/", fileId = -1L)).isFalse()
+    }
+
+    @Test
     fun existsFileByProjectIdAndFileIdAndFileTypeIn() {
-        every { fileMetadataRepository.existsByProjectIdAndIdAndTypeIn(
+        every { projectFileMetadataRepository.existsByProjectIdAndIdAndTypeIn(
             projectId = PROJECT_ID,
             fileId = 15L,
             fileTypes = setOf(JemsFileType.ContractInternal),
@@ -123,7 +146,7 @@ class FilePersistenceProviderTest: UnitTest() {
 
     @Test
     fun existsFileByPartnerIdAndFileIdAndFileTypeIn() {
-        every { fileMetadataRepository.existsByPartnerIdAndIdAndTypeIn(
+        every { projectFileMetadataRepository.existsByPartnerIdAndIdAndTypeIn(
             partnerId = 1L,
             fileId = 15L,
             fileTypes = setOf(JemsFileType.ContractPartnerDoc),
@@ -144,7 +167,7 @@ class FilePersistenceProviderTest: UnitTest() {
         every { user.surname } returns "surname 270"
 
         every { reportFile.user } returns user
-        every { fileMetadataRepository.findByPartnerIdAndPathPrefixAndId(
+        every { projectFileMetadataRepository.findByPartnerIdAndPathPrefixAndId(
             partnerId = PARTNER_ID,
             pathPrefix = "prefix",
             id = 16L,
@@ -156,7 +179,7 @@ class FilePersistenceProviderTest: UnitTest() {
 
     @Test
     fun `getFileAuthor - not existing file`() {
-        every { fileMetadataRepository.findByPartnerIdAndPathPrefixAndId(
+        every { projectFileMetadataRepository.findByPartnerIdAndPathPrefixAndId(
             partnerId = PARTNER_ID,
             pathPrefix = "prefix",
             id = 16L,
@@ -169,7 +192,8 @@ class FilePersistenceProviderTest: UnitTest() {
     @Test
     fun downloadFile() {
         val filePathFull = "sample/path/to/file.txt"
-        every { fileMetadataRepository.findByPartnerIdAndId(PARTNER_ID, fileId = 17L) } returns file(id = 17L, name = "file.txt", filePathFull = filePathFull)
+        every { projectFileMetadataRepository.findByPartnerIdAndId(PARTNER_ID, fileId = 17L) } returns
+                file(id = 17L, name = "file.txt", filePathFull = filePathFull)
         every { minioStorage.getFile(BUCKET, filePathFull) } returns ByteArray(5)
 
         assertThat(persistence.downloadFile(PARTNER_ID, fileId = 17L))
@@ -179,7 +203,7 @@ class FilePersistenceProviderTest: UnitTest() {
 
     @Test
     fun `downloadFile - not existing`() {
-        every { fileMetadataRepository.findByPartnerIdAndId(PARTNER_ID, fileId = -1L) } returns null
+        every { projectFileMetadataRepository.findByPartnerIdAndId(PARTNER_ID, fileId = -1L) } returns null
         assertThat(persistence.downloadFile(PARTNER_ID, fileId = -1L)).isNull()
         verify(exactly = 0) { minioStorage.getFile(any(), any()) }
     }
@@ -188,7 +212,7 @@ class FilePersistenceProviderTest: UnitTest() {
     fun `downloadFile - by type`() {
         val filePathFull = "sample/path/to/file.txt"
         every {
-            fileMetadataRepository.findByTypeAndId(
+            projectFileMetadataRepository.findByTypeAndId(
                 JemsFileType.PaymentAttachment,
                 fileId = 20L
             )
@@ -201,8 +225,21 @@ class FilePersistenceProviderTest: UnitTest() {
     }
 
     @Test
+    fun downloadFileAsStream() {
+        val filePathFull = "sample/path/to/file.txt"
+        every {
+            projectFileMetadataRepository.findByTypeAndId(JemsFileType.CallTranslation, fileId = 77L)
+        } returns file(id = 77L, name = "file.txt", filePathFull = filePathFull)
+        val stream = mockk<FilterInputStream>()
+        every { minioStorage.getFileAsStream(BUCKET, filePathFull) } returns stream
+
+        assertThat(persistence.downloadFileAsStream(JemsFileType.CallTranslation, fileId = 77L))
+            .isEqualTo(Pair("file.txt", stream))
+    }
+
+    @Test
     fun `downloadFile - by type - not existing`() {
-        every { fileMetadataRepository.findByTypeAndId(JemsFileType.PaymentAttachment, fileId = -1L) } returns null
+        every { projectFileMetadataRepository.findByTypeAndId(JemsFileType.PaymentAttachment, fileId = -1L) } returns null
         assertThat(persistence.downloadFile(JemsFileType.PaymentAttachment, fileId = -1L)).isNull()
         verify(exactly = 0) { minioStorage.getFile(any(), any()) }
     }
@@ -215,7 +252,7 @@ class FilePersistenceProviderTest: UnitTest() {
             name = "file-to-delete.txt",
             filePathFull = filePathFull
         )
-        every { fileMetadataRepository.findByTypeAndId(JemsFileType.PaymentAttachment, fileId = 20L) } returns fileToDelete
+        every { projectFileMetadataRepository.findByTypeAndId(JemsFileType.PaymentAttachment, fileId = 20L) } returns fileToDelete
         every { fileRepository.delete(fileToDelete) } answers { }
 
         persistence.deleteFile(JemsFileType.PaymentAttachment, fileId = 20L)
@@ -225,7 +262,7 @@ class FilePersistenceProviderTest: UnitTest() {
 
     @Test
     fun `deleteFile - not existing`() {
-        every { fileMetadataRepository.findByPartnerIdAndId(PARTNER_ID, fileId = -1L) } returns null
+        every { projectFileMetadataRepository.findByPartnerIdAndId(PARTNER_ID, fileId = -1L) } returns null
         persistence.deleteFile(PARTNER_ID, fileId = -1L)
 
         verify(exactly = 0) { fileRepository.delete(any()) }
@@ -239,7 +276,7 @@ class FilePersistenceProviderTest: UnitTest() {
             name = "file-to-delete.txt",
             filePathFull = filePathFull
         )
-        every { fileMetadataRepository.findByTypeAndId(JemsFileType.PaymentAttachment, fileId = 21L) } returns fileToDelete
+        every { projectFileMetadataRepository.findByTypeAndId(JemsFileType.PaymentAttachment, fileId = 21L) } returns fileToDelete
         every { fileRepository.delete(fileToDelete) } answers { }
 
         persistence.deleteFile(JemsFileType.PaymentAttachment, fileId = 21L)
@@ -249,7 +286,7 @@ class FilePersistenceProviderTest: UnitTest() {
 
     @Test
     fun `deleteFile - by type - not existing`() {
-        every { fileMetadataRepository.findByTypeAndId(JemsFileType.PaymentAttachment, fileId = -1L) } returns null
+        every { projectFileMetadataRepository.findByTypeAndId(JemsFileType.PaymentAttachment, fileId = -1L) } returns null
         persistence.deleteFile(JemsFileType.PaymentAttachment, fileId = -1L)
 
         verify(exactly = 0) { fileRepository.delete(any()) }
@@ -267,7 +304,7 @@ class FilePersistenceProviderTest: UnitTest() {
         val filterSubtypes = setOf(JemsFileType.Activity)
         val filterUserIds = setOf(45L, 46L, 47L)
 
-        every { fileMetadataRepository.filterAttachment(
+        every { projectFileMetadataRepository.filterAttachment(
             pageable = Pageable.unpaged(),
             indexPrefix = "indexPrefix",
             filterSubtypes = filterSubtypes,
@@ -280,7 +317,7 @@ class FilePersistenceProviderTest: UnitTest() {
 
     @Test
     fun getFileTypeByPartnerId() {
-        every { fileMetadataRepository.findByPartnerIdAndId(
+        every { projectFileMetadataRepository.findByPartnerIdAndId(
             partnerId = 5L,
             fileId = 15L,
         ) } returns dummyFileMetadataEntity

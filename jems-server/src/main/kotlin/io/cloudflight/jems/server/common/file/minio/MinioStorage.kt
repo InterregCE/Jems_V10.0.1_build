@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.common.file.minio
 
+import java.io.FilterInputStream
 import java.io.InputStream
 
 interface MinioStorage {
@@ -9,6 +10,7 @@ interface MinioStorage {
     fun moveFile(sourceBucket: String, sourceFilePath: String, destinationBucket: String, destinationFilePath: String)
 
     fun getFile(bucket: String, filePath: String): ByteArray
+    fun getFileAsStream(bucket: String, filePath: String): FilterInputStream
 
     fun deleteFile(bucket: String, filePath: String)
 

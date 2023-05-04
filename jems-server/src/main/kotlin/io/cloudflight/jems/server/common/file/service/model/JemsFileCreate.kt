@@ -11,4 +11,5 @@ data class JemsFileCreate(
     val size: Long,
     val content: InputStream,
     val userId: Long,
+    val defaultDescription: String = "",
 )

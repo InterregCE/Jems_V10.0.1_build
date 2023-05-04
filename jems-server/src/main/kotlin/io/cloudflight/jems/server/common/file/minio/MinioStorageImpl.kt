@@ -15,6 +15,7 @@ import io.minio.messages.Item
 import org.apache.commons.io.IOUtils
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import java.io.FilterInputStream
 import java.io.InputStream
 
 @Service
@@ -57,20 +58,20 @@ class MinioStorageImpl(
         deleteFile(sourceBucket, sourceFilePath)
     }
 
-    override fun getFile(bucket: String, filePath: String): ByteArray {
-        val objectResponse =
-            try {
-                minioClient.getObject(GetObjectArgs.builder().bucket(bucket).`object`(filePath).build())
-            } catch (exception: ErrorResponseException) {
-                if (exception.errorResponse().code().equals("NoSuchKey")) {
-                    logger.error("Template '$filePath' not found in Minio bucket '$bucket'!")
-                } else if (exception.errorResponse().code().equals("NoSuchBucket")) {
-                    logger.error("Bucket '$bucket' not found in Minio!")
-                }
-                throw exception
+    override fun getFile(bucket: String, filePath: String): ByteArray =
+        IOUtils.toByteArray(getFileAsStream(bucket, filePath))
+
+    override fun getFileAsStream(bucket: String, filePath: String): FilterInputStream =
+        try {
+            minioClient.getObject(GetObjectArgs.builder().bucket(bucket).`object`(filePath).build())
+        } catch (exception: ErrorResponseException) {
+            if (exception.errorResponse().code().equals("NoSuchKey")) {
+                logger.error("Template '$filePath' not found in Minio bucket '$bucket'!")
+            } else if (exception.errorResponse().code().equals("NoSuchBucket")) {
+                logger.error("Bucket '$bucket' not found in Minio!")
             }
-        return IOUtils.toByteArray(objectResponse)
-    }
+            throw exception
+        }
 
     override fun deleteFile(bucket: String, filePath: String) {
         exists(bucket, filePath).also { objectAlreadyExists ->

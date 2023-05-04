@@ -136,7 +136,7 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
 
         val fileCreate = fileCreate(type = JemsFileType.ActivityProjectReport)
         val resultMock = mockk<JemsFileMetadata>()
-        every { fileService.persistProjectFileAndPerformAction(fileCreate, any()) } returns resultMock
+        every { fileService.persistFileAndPerformAction(fileCreate, any()) } returns resultMock
         mockFileDeletion(oldFile)
 
         assertThat(persistence.updateReportActivityAttachment(80L, file = fileCreate)).isEqualTo(resultMock)
@@ -150,7 +150,7 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
 
         val fileCreate = fileCreate(type = JemsFileType.DeliverableProjectReport)
         val resultMock = mockk<JemsFileMetadata>()
-        every { fileService.persistProjectFileAndPerformAction(fileCreate, any()) } returns resultMock
+        every { fileService.persistFileAndPerformAction(fileCreate, any()) } returns resultMock
         mockFileDeletion(oldFile)
 
         assertThat(persistence.updateReportDeliverableAttachment(75L, file = fileCreate)).isEqualTo(resultMock)
@@ -164,7 +164,7 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
 
         val fileCreate = fileCreate(type = JemsFileType.OutputProjectReport)
         val resultMock = mockk<JemsFileMetadata>()
-        every { fileService.persistProjectFileAndPerformAction(fileCreate, any()) } returns resultMock
+        every { fileService.persistFileAndPerformAction(fileCreate, any()) } returns resultMock
         mockFileDeletion(oldFile)
 
         assertThat(persistence.updateReportOutputAttachment(70L, file = fileCreate)).isEqualTo(resultMock)
@@ -178,7 +178,7 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
 
         every { projectResultRepository.findByProjectReportIdAndResultNumber(reportId, resultNumber) } returns projectResultEntity
         every { fileService.delete(eq(projectResultEntity.attachment!!)) } returns Unit
-        every { fileService.persistProjectFileAndPerformAction(eq(jesmFileCreate), any()) } returns newFileMetadata
+        every { fileService.persistFileAndPerformAction(eq(jesmFileCreate), any()) } returns newFileMetadata
 
         assertThat(persistence.updateProjectResultAttachment(reportId, resultNumber, jesmFileCreate))
             .isEqualTo(newFileMetadata)

@@ -36,16 +36,16 @@ class JemsFileMetadataEntity(
     val partnerId: Long?,
 
     @field:NotNull
-    val path: String,
+    var path: String,
 
     @field:NotNull
     val minioBucket: String,
 
     @field:NotNull
-    val minioLocation: String,
+    var minioLocation: String,
 
     @field:NotNull
-    val name: String,
+    var name: String,
 
     @Enumerated(EnumType.STRING)
     @field:NotNull
