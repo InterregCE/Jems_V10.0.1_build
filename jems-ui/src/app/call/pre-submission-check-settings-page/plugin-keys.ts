@@ -4,5 +4,6 @@ export interface PluginKeys {
   reportPartnerCheckPluginKey: string;
   reportProjectCheckPluginKey: string;
   callHasTwoSteps: boolean;
+  controlReportPartnerCheckPluginKey: string;
   controlReportSamplingCheckPluginKey: string;
 }

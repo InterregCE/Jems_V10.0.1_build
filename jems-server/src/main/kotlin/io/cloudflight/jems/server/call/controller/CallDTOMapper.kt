@@ -67,6 +67,7 @@ fun CallDetail.toDto() = CallDetailDTO(
     firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey,
     reportPartnerCheckPluginKey = reportPartnerCheckPluginKey,
     reportProjectCheckPluginKey = reportProjectCheckPluginKey,
+    controlReportPartnerCheckPluginKey = controlReportPartnerCheckPluginKey,
     controlReportSamplingCheckPluginKey = controlReportSamplingCheckPluginKey
 )
 
@@ -92,6 +93,7 @@ fun PreSubmissionPluginsDTO.toModel() = PreSubmissionPlugins(
     firstStepPluginKey = firstStepPluginKey ?: "",
     reportPartnerCheckPluginKey = reportPartnerCheckPluginKey,
     reportProjectCheckPluginKey = reportProjectCheckPluginKey,
+    controlReportPartnerCheckPluginKey = controlReportPartnerCheckPluginKey,
     controlReportSamplingCheckPluginKey = controlReportSamplingCheckPluginKey
 )
 

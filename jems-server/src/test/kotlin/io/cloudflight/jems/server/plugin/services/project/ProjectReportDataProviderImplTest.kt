@@ -437,7 +437,8 @@ class ProjectReportDataProviderImplTest : UnitTest() {
             completed = true,
             description = expectedDescription,
             activities = listOf(expectedActivity),
-            outputs = listOf(expectedOutput)
+            outputs = listOf(expectedOutput),
+            investments = emptyList()
         )
 
 //        Project results

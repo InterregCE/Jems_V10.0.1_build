@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.call.service.update_pre_submission_check_configuration
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
+import io.cloudflight.jems.plugin.contract.pre_condition_check.ControlReportPartnerCheckPlugin
 import io.cloudflight.jems.plugin.contract.pre_condition_check.PreConditionCheckPlugin
 import io.cloudflight.jems.plugin.contract.pre_condition_check.ReportPartnerCheckPlugin
 import io.cloudflight.jems.plugin.contract.pre_condition_check.ReportProjectCheckPlugin
@@ -35,6 +36,7 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
             every { call.firstStepPreSubmissionCheckPluginKey } returns null
             every { call.reportPartnerCheckPluginKey } returns null
             every { call.reportProjectCheckPluginKey } returns null
+            every { call.controlReportPartnerCheckPluginKey } returns null
             every { call.controlReportSamplingCheckPluginKey } returns null
             return call
         }
@@ -66,6 +68,7 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
         every { jemsPluginRegistry.get(PreConditionCheckPlugin::class, PreConditionCheckSamplePluginKey) } returns PreConditionCheckSamplePlugin()
         every { jemsPluginRegistry.get(ReportPartnerCheckPlugin::class, PartnerReportCheckPluginKey) } returns ReportPartnerCheckSamplePlugin()
         every { jemsPluginRegistry.get(ReportProjectCheckPlugin::class, ProjectReportCheckPluginKey) } returns ReportProjectCheckSamplePlugin()
+        every { jemsPluginRegistry.get(ControlReportPartnerCheckPlugin::class, PartnerControlReportCheckPluginKey) } returns PartnerControlReportCheckSamplePlugin()
 
         every { persistence.updateProjectCallPreSubmissionCheckPlugin(1L, any()) } returns call
         every { call.isPublished() } returns true
@@ -75,6 +78,7 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
         every { call.preSubmissionCheckPluginKey } returns "no-check"
         every { call.reportPartnerCheckPluginKey } returns "no-check"
         every { call.reportProjectCheckPluginKey } returns "no-check"
+        every { call.controlReportPartnerCheckPluginKey } returns "no-check"
         every { call.controlReportSamplingCheckPluginKey } returns "no-check"
 
         assertThat(
@@ -85,6 +89,7 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
                     firstStepPluginKey = PreConditionCheckSamplePluginKey,
                     reportPartnerCheckPluginKey = PartnerReportCheckPluginKey,
                     reportProjectCheckPluginKey = ProjectReportCheckPluginKey,
+                    controlReportPartnerCheckPluginKey = PartnerControlReportCheckPluginKey,
                     controlReportSamplingCheckPluginKey = ControlReportSamplingCheckPluginKey,
                 )
             )
@@ -94,11 +99,12 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
             persistence.updateProjectCallPreSubmissionCheckPlugin(
                 callId = 1L,
                 pluginKeys = PreSubmissionPlugins(
-                    "jems-pre-condition-check-off",
-                    PreConditionCheckSamplePluginKey,
-                    PartnerReportCheckPluginKey,
-                    ProjectReportCheckPluginKey,
-                    ControlReportSamplingCheckPluginKey
+                    pluginKey ="jems-pre-condition-check-off",
+                    firstStepPluginKey = PreConditionCheckSamplePluginKey,
+                    reportPartnerCheckPluginKey = PartnerReportCheckPluginKey,
+                    reportProjectCheckPluginKey = ProjectReportCheckPluginKey,
+                    controlReportPartnerCheckPluginKey = PartnerControlReportCheckPluginKey,
+                    controlReportSamplingCheckPluginKey =ControlReportSamplingCheckPluginKey
                 ),
             )
         }
@@ -114,6 +120,7 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
                         "PreSubmissionCheck changed from 'no-check' to 'jems-pre-condition-check-off',\n" +
                         "PreSubmissionCheckPartnerReport changed from 'no-check' to 'key-3',\n" +
                         "PreSubmissionCheckProjectReport changed from 'no-check' to 'key-5',\n" +
+                        "PreSubmissionCheckPartnerControlReport changed from 'no-check' to 'key-6',\n" +
                         "PreSubmissionCheckControlReportSampling changed from 'no-check' to 'key-4'"
             )
         )
@@ -131,6 +138,7 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
         every { jemsPluginRegistry.get(PreConditionCheckPlugin::class, PreConditionCheckSamplePluginKey) } returns PreConditionCheckSamplePlugin()
         every { jemsPluginRegistry.get(ReportPartnerCheckPlugin::class, PartnerReportCheckPluginKey) } returns ReportPartnerCheckSamplePlugin()
         every { jemsPluginRegistry.get(ReportProjectCheckPlugin::class, ProjectReportCheckPluginKey) } returns ReportProjectCheckSamplePlugin()
+        every { jemsPluginRegistry.get(ControlReportPartnerCheckPlugin::class, PartnerControlReportCheckPluginKey) } returns PartnerControlReportCheckSamplePlugin()
 
         assertThat(
             updatePreSubmissionCheckSettings.update(
@@ -140,6 +148,7 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
                     firstStepPluginKey = PreConditionCheckSamplePluginKey,
                     reportPartnerCheckPluginKey = PartnerReportCheckPluginKey,
                     reportProjectCheckPluginKey = ProjectReportCheckPluginKey,
+                    controlReportPartnerCheckPluginKey = PartnerControlReportCheckPluginKey,
                     controlReportSamplingCheckPluginKey = ControlReportSamplingCheckPluginKey
                 )
             )
@@ -160,6 +169,7 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
         every { jemsPluginRegistry.get(PreConditionCheckPlugin::class, PreConditionCheckSamplePluginKey) } returns PreConditionCheckSamplePlugin()
         every { jemsPluginRegistry.get(ReportPartnerCheckPlugin::class, PartnerReportCheckPluginKey) } returns ReportPartnerCheckSamplePlugin()
         every { jemsPluginRegistry.get(ReportProjectCheckPlugin::class, ProjectReportCheckPluginKey) } returns ReportProjectCheckSamplePlugin()
+        every { jemsPluginRegistry.get(ControlReportPartnerCheckPlugin::class, PartnerControlReportCheckPluginKey) } returns PartnerControlReportCheckSamplePlugin()
 
         assertThat(
             updatePreSubmissionCheckSettings.update(
@@ -169,6 +179,7 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
                     firstStepPluginKey = "missing",
                     reportPartnerCheckPluginKey = PartnerReportCheckPluginKey,
                     reportProjectCheckPluginKey = ProjectReportCheckPluginKey,
+                    controlReportPartnerCheckPluginKey = PartnerControlReportCheckPluginKey,
                     controlReportSamplingCheckPluginKey = ControlReportSamplingCheckPluginKey
                 )
             )
@@ -189,9 +200,13 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
         val emptyProjectPlugin = mockk<ReportProjectCheckPlugin>()
         every { emptyProjectPlugin.getKey() } returns ""
 
+        val emptyControlReportPlugin = mockk<ControlReportPartnerCheckPlugin>()
+        every { emptyControlReportPlugin.getKey() } returns ""
+
         every { jemsPluginRegistry.get(PreConditionCheckPlugin::class, "missing") } returns emptyPlugin
         every { jemsPluginRegistry.get(ReportPartnerCheckPlugin::class, "missing") } returns emptyReportPlugin
         every { jemsPluginRegistry.get(ReportProjectCheckPlugin::class, "missing") } returns emptyProjectPlugin
+        every { jemsPluginRegistry.get(ControlReportPartnerCheckPlugin::class, "missing") } returns emptyControlReportPlugin
 
         assertThat(
             updatePreSubmissionCheckSettings.update(
@@ -201,6 +216,7 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
                     firstStepPluginKey = "missing",
                     reportPartnerCheckPluginKey = "missing",
                     reportProjectCheckPluginKey = "missing",
+                    controlReportPartnerCheckPluginKey = "missing",
                     controlReportSamplingCheckPluginKey = "missing"
                 )
             )
@@ -217,6 +233,7 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
         every { jemsPluginRegistry.get(PreConditionCheckPlugin::class, PreConditionCheckSamplePluginKey) } returns PreConditionCheckSamplePlugin()
         every { jemsPluginRegistry.get(ReportPartnerCheckPlugin::class, PartnerReportCheckPluginKey) } returns ReportPartnerCheckSamplePlugin()
         every { jemsPluginRegistry.get(ReportProjectCheckPlugin::class, ProjectReportCheckPluginKey) } returns ReportProjectCheckSamplePlugin()
+        every { jemsPluginRegistry.get(ControlReportPartnerCheckPlugin::class, PartnerControlReportCheckPluginKey) } returns PartnerControlReportCheckSamplePlugin()
 
         every { persistence.updateProjectCallPreSubmissionCheckPlugin(17L, any()) } returns call
         every { call.isPublished() } returns false
@@ -226,6 +243,7 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
         every { call.preSubmissionCheckPluginKey } returns "no-check"
         every { call.reportPartnerCheckPluginKey } returns "blocked"
         every { call.reportProjectCheckPluginKey } returns "blocked"
+        every { call.controlReportPartnerCheckPluginKey } returns "no-check"
         every { call.controlReportSamplingCheckPluginKey } returns "no-check"
 
         assertThat(
@@ -236,6 +254,7 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
                     firstStepPluginKey = "",
                     reportPartnerCheckPluginKey = PartnerReportCheckPluginKey,
                     reportProjectCheckPluginKey = ProjectReportCheckPluginKey,
+                    controlReportPartnerCheckPluginKey = PartnerControlReportCheckPluginKey,
                     controlReportSamplingCheckPluginKey = ControlReportSamplingCheckPluginKey
                 )
             )
@@ -245,11 +264,12 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
             persistence.updateProjectCallPreSubmissionCheckPlugin(
                 17L,
                 PreSubmissionPlugins(
-                    PreConditionCheckSamplePluginKey,
-                    "",
-                    PartnerReportCheckPluginKey,
-                    ProjectReportCheckPluginKey,
-                    ControlReportSamplingCheckPluginKey
+                    pluginKey = PreConditionCheckSamplePluginKey,
+                    firstStepPluginKey = "",
+                    reportPartnerCheckPluginKey = PartnerReportCheckPluginKey,
+                    reportProjectCheckPluginKey = ProjectReportCheckPluginKey,
+                    controlReportPartnerCheckPluginKey = PartnerControlReportCheckPluginKey,
+                    controlReportSamplingCheckPluginKey = ControlReportSamplingCheckPluginKey
                 )
             )
         }
@@ -264,6 +284,7 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
                         "PreSubmissionCheck changed from 'no-check' to 'key-1',\n" +
                         "PreSubmissionCheckPartnerReport changed from 'blocked' to 'key-3',\n" +
                         "PreSubmissionCheckProjectReport changed from 'blocked' to 'key-5',\n" +
+                        "PreSubmissionCheckPartnerControlReport changed from 'no-check' to 'key-6',\n" +
                         "PreSubmissionCheckControlReportSampling changed from 'no-check' to 'key-4'"
             )
         )
@@ -279,6 +300,7 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
         every { jemsPluginRegistry.get(PreConditionCheckPlugin::class, "missing") } returns emptyPlugin
         every { jemsPluginRegistry.get(ReportPartnerCheckPlugin::class, PartnerReportCheckPluginKey) } returns ReportPartnerCheckSamplePlugin()
         every { jemsPluginRegistry.get(ReportProjectCheckPlugin::class, ProjectReportCheckPluginKey) } returns ReportProjectCheckSamplePlugin()
+        every { jemsPluginRegistry.get(ControlReportPartnerCheckPlugin::class, PartnerControlReportCheckPluginKey) } returns PartnerControlReportCheckSamplePlugin()
 
         every { persistence.updateProjectCallPreSubmissionCheckPlugin(24L, any()) } returns call
 
@@ -289,6 +311,7 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
                     pluginKey = "missing",
                     reportPartnerCheckPluginKey = PartnerReportCheckPluginKey,
                     reportProjectCheckPluginKey = ProjectReportCheckPluginKey,
+                    controlReportPartnerCheckPluginKey = PartnerControlReportCheckPluginKey,
                     controlReportSamplingCheckPluginKey = ControlReportSamplingCheckPluginKey
                 )
             )
@@ -308,10 +331,14 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
         every { emptyReportPlugin.getKey() } returns ""
         val emptyProjectPlugin = mockk<ReportProjectCheckPlugin>()
         every { emptyProjectPlugin.getKey() } returns ""
+        val emptyControlReportPlugin = mockk<ControlReportPartnerCheckPlugin>()
+        every { emptyControlReportPlugin.getKey() } returns ""
 
         every { jemsPluginRegistry.get(PreConditionCheckPlugin::class, PreConditionCheckSamplePluginKey) } returns PreConditionCheckSamplePlugin()
         every { jemsPluginRegistry.get(ReportPartnerCheckPlugin::class, "missing") } returns emptyReportPlugin
         every { jemsPluginRegistry.get(ReportProjectCheckPlugin::class, "missing") } returns emptyProjectPlugin
+        every { jemsPluginRegistry.get(ControlReportPartnerCheckPlugin::class, "missing") } returns emptyControlReportPlugin
+
 
         every { persistence.updateProjectCallPreSubmissionCheckPlugin(25L, any()) } returns call
 
@@ -322,6 +349,7 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
                     pluginKey = PreConditionCheckSamplePluginKey,
                     reportPartnerCheckPluginKey = "missing",
                     reportProjectCheckPluginKey = "missing",
+                    controlReportPartnerCheckPluginKey = PartnerControlReportCheckPluginKey,
                     controlReportSamplingCheckPluginKey = ControlReportSamplingCheckPluginKey
                 )
             )

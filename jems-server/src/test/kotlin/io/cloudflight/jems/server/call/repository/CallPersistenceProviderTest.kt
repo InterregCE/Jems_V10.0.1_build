@@ -18,7 +18,7 @@ import io.cloudflight.jems.server.call.END
 import io.cloudflight.jems.server.call.START
 import io.cloudflight.jems.server.call.callFundRate
 import io.cloudflight.jems.server.call.callFundRateEntity
-import io.cloudflight.jems.server.call.controller.toDto
+ import io.cloudflight.jems.server.call.controller.toDto
 import io.cloudflight.jems.server.call.createCallDetailModel
 import io.cloudflight.jems.server.call.createTestCallEntity
 import io.cloudflight.jems.server.call.defaultAllowedRealCostsByCallType
@@ -95,6 +95,7 @@ internal class CallPersistenceProviderTest {
         private const val UNIT_COST_ID = 3L
         private const val PLUGIN_KEY = "plugin-key"
         private const val PLUGIN_KEY_PARTNER_REPORT = "plugin-key-partner-report"
+        private const val PLUGIN_KEY_PARTNER_CONTROL_REPORT = "plugin-key-partner-control-report"
         private const val PLUGIN_KEY_PROJECT_REPORT = "plugin-key-project-report"
         private const val PLUGIN_KEY_CONTROL_SAMPLING = "plugin-key-control-sampling"
 
@@ -145,6 +146,7 @@ internal class CallPersistenceProviderTest {
             call.preSubmissionCheckPluginKey = PLUGIN_KEY
             call.firstStepPreSubmissionCheckPluginKey = PLUGIN_KEY
             call.reportPartnerCheckPluginKey = PLUGIN_KEY_PARTNER_REPORT
+            call.controlReportPartnerCheckPluginKey = PLUGIN_KEY_PARTNER_CONTROL_REPORT
             call.reportProjectCheckPluginKey = PLUGIN_KEY_PROJECT_REPORT
             call.controlReportSamplingCheckPluginKey = PLUGIN_KEY_CONTROL_SAMPLING
             call.prioritySpecificObjectives.clear()
@@ -205,6 +207,7 @@ internal class CallPersistenceProviderTest {
             firstStepPreSubmissionCheckPluginKey = PLUGIN_KEY,
             reportPartnerCheckPluginKey = PLUGIN_KEY_PARTNER_REPORT,
             reportProjectCheckPluginKey = PLUGIN_KEY_PROJECT_REPORT,
+            controlReportPartnerCheckPlugin = PLUGIN_KEY_PARTNER_CONTROL_REPORT,
             controlReportSamplingCheckPluginKey = PLUGIN_KEY_CONTROL_SAMPLING
         )
 
@@ -334,6 +337,7 @@ internal class CallPersistenceProviderTest {
                 reportProjectCheckPluginKey = "check-off",
                 projectDefinedUnitCostAllowed = true,
                 projectDefinedLumpSumAllowed = false,
+                controlReportPartnerCheckPluginKey = "control-report-partner-check-off",
                 controlReportSamplingCheckPluginKey = "control-report-sampling-check-off"
             )
         }
@@ -488,6 +492,7 @@ internal class CallPersistenceProviderTest {
             firstStepPluginKey = PLUGIN_KEY,
             reportPartnerCheckPluginKey = PLUGIN_KEY_PARTNER_REPORT,
             reportProjectCheckPluginKey = PLUGIN_KEY_PROJECT_REPORT,
+            controlReportPartnerCheckPluginKey = PLUGIN_KEY_PARTNER_CONTROL_REPORT,
             controlReportSamplingCheckPluginKey = PLUGIN_KEY_CONTROL_SAMPLING
         ))).isEqualTo(expectedStandardCallDetail)
     }
@@ -501,6 +506,7 @@ internal class CallPersistenceProviderTest {
             firstStepPluginKey = PLUGIN_KEY,
             reportPartnerCheckPluginKey = PLUGIN_KEY_PARTNER_REPORT,
             reportProjectCheckPluginKey = PLUGIN_KEY_PROJECT_REPORT,
+            controlReportPartnerCheckPluginKey = PLUGIN_KEY_PARTNER_CONTROL_REPORT,
             controlReportSamplingCheckPluginKey = PLUGIN_KEY_CONTROL_SAMPLING
         ))
         }
@@ -774,6 +780,7 @@ internal class CallPersistenceProviderTest {
             ),
             projectDefinedUnitCostAllowed = true,
             projectDefinedLumpSumAllowed = false,
+            controlReportPartnerCheckPluginKey = "control-report-partner-check-off",
             controlReportSamplingCheckPluginKey = "control-report-sampling-check-off"
         )
         assertThat(persistence.updateCall(call)).isEqualTo(callDetail)

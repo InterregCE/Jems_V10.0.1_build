@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.plugin.contract.pre_condition_check.ControlReportPartnerCheckPlugin
 import io.cloudflight.jems.server.call.entity.AllowedRealCostsEntity
 import io.cloudflight.jems.server.call.entity.ApplicationFormFieldConfigurationEntity
 import io.cloudflight.jems.server.call.entity.ApplicationFormFieldConfigurationId
@@ -27,6 +28,7 @@ import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.call.service.model.notificationConfigurations.ProjectNotificationConfiguration
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.entity.extractField
+import io.cloudflight.jems.server.plugin.pre_submission_check.ControlReportPartnerCheckOff
 import io.cloudflight.jems.server.plugin.pre_submission_check.ControlReportSamplingCheckOff
 import io.cloudflight.jems.server.plugin.pre_submission_check.ReportPartnerCheckOff
 import io.cloudflight.jems.server.plugin.pre_submission_check.ReportProjectCheckOff
@@ -85,6 +87,7 @@ fun CallEntity.toDetailModel(
     reportProjectCheckPluginKey = reportProjectCheckPluginKey,
     projectDefinedUnitCostAllowed = projectDefinedUnitCostAllowed,
     projectDefinedLumpSumAllowed = projectDefinedLumpSumAllowed,
+    controlReportPartnerCheckPluginKey = controlReportPartnerCheckPluginKey,
     controlReportSamplingCheckPluginKey = controlReportSamplingCheckPluginKey
 )
 
@@ -162,6 +165,7 @@ fun Call.toEntity(
     reportProjectCheckPluginKey = existingEntity?.reportProjectCheckPluginKey ?: ReportProjectCheckOff.KEY,
     projectDefinedUnitCostAllowed = existingEntity?.projectDefinedUnitCostAllowed ?: false,
     projectDefinedLumpSumAllowed = existingEntity?.projectDefinedLumpSumAllowed ?: false,
+    controlReportPartnerCheckPluginKey = existingEntity?.controlReportPartnerCheckPluginKey ?: ControlReportPartnerCheckOff.KEY,
     controlReportSamplingCheckPluginKey = existingEntity?.controlReportSamplingCheckPluginKey ?: ControlReportSamplingCheckOff.KEY
 ).apply {
     translatedValues.addAll(description.combineDescriptionsToTranslations(this))

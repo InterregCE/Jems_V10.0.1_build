@@ -128,10 +128,25 @@
     <jems-alert show="true" *ngIf="data.userCanEdit && !data.finalizationAllowed" [type]="Alert.INFO" [closable]="false">
         <span>{{ 'project.application.partner.report.finalize.wrong.status' | translate }}</span>
     </jems-alert>
+
+    <h3>{{'project.application.partner.report.control.tab.overviewAndFinalize.certificate.export.title' | translate}}</h3>
+    <jems-partner-control-report-generate-control-report-and-certificate
+            [partnerId]=data.partnerId
+            [reportId]=data.reportId>
+    </jems-partner-control-report-generate-control-report-and-certificate>
+
     <div jemsNoWidthLimit *ngIf="data.userCanEdit && data.finalizationAllowed && !overviewForm.dirty" class="mt-3">
+        <jems-pending-button [pending]="preCheckPending" [disabled]="finalizationAvailable" class="mr-2 mt-2"
+                             (clicked)="runPreCheckOnControlReport(data.partnerId, data.reportId)">
+            {{ 'project.detail.button.pre.condition.check' | translate }}
+        </jems-pending-button>
+
+        <mat-icon class="mr-2 vertical-middle">trending_flat</mat-icon>
+
         <jems-pending-button
                 [confirm]="{ title: 'project.application.partner.report.button.finalize', message: 'project.application.partner.report.finalize.dialog.message' }"
                 [pending]="finalizationLoading"
+                [disabled]="!finalizationAvailable"
                 [icon]="'workspace_premium'"
                 (clicked)="finalizeReport(data.partnerId, data.reportId)"
                 class="mr-2 mt-2">
@@ -139,10 +154,14 @@
         </jems-pending-button>
     </div>
 
-    <h3>{{'project.application.partner.report.control.tab.overviewAndFinalize.certificate.export.title' | translate}}</h3>
-    <jems-partner-control-report-generate-control-report-and-certificate
-            [partnerId]=data.partnerId
-            [reportId]=data.reportId>
-    </jems-partner-control-report-generate-control-report-and-certificate>
+    <jems-alert *ngIf="error$ | async as error"
+                [show]="!!error.i18nMessage?.i18nKey"
+                [type]="Alert.ERROR">
+        <jems-api-error-content [error]="error" [showId]="true"></jems-api-error-content>
+    </jems-alert>
+
+    <jems-project-application-pre-condition-check-result *ngIf="preConditionCheckResult"
+                                                         [preConditionCheckResult]="preConditionCheckResult" jemsNoWidthLimit>
+    </jems-project-application-pre-condition-check-result>
 
 </jems-form>

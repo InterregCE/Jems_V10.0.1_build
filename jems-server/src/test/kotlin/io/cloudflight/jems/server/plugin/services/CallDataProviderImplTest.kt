@@ -80,6 +80,7 @@ internal class CallDataProviderImplTest : UnitTest() {
             reportProjectCheckPluginKey = null,
             projectDefinedUnitCostAllowed = false,
             projectDefinedLumpSumAllowed = true,
+            controlReportPartnerCheckPluginKey = null,
             controlReportSamplingCheckPluginKey = null
         )
 

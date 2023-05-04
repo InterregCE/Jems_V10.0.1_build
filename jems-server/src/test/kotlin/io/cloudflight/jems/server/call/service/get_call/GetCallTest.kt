@@ -81,6 +81,7 @@ class GetCallTest : UnitTest() {
             reportProjectCheckPluginKey = null,
             projectDefinedUnitCostAllowed = false,
             projectDefinedLumpSumAllowed = true,
+            controlReportPartnerCheckPluginKey = null,
             controlReportSamplingCheckPluginKey = null
         )
 

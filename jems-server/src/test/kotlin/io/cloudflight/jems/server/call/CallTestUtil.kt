@@ -116,6 +116,7 @@ fun createTestCallEntity(
         unitCosts = unitCosts,
         projectDefinedUnitCostAllowed = true,
         projectDefinedLumpSumAllowed = false,
+        controlReportPartnerCheckPluginKey = "control-report-partner-check-off",
         controlReportSamplingCheckPluginKey = "control-report-sampling-check-off",
     ).apply {
         translatedValues.add(CallTranslEntity(TranslationId(this, SystemLanguage.EN), "This is a dummy call"))
@@ -155,6 +156,7 @@ fun createCallDetailModel(
     firstStepPreSubmissionCheckPluginKey: String? = null,
     reportPartnerCheckPluginKey: String? = null,
     reportProjectCheckPluginKey: String? = null,
+    controlReportPartnerCheckPlugin: String? = null,
     controlReportSamplingCheckPluginKey: String? = null
 ): CallDetail {
     return CallDetail(
@@ -182,6 +184,7 @@ fun createCallDetailModel(
         firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey,
         projectDefinedUnitCostAllowed = true,
         projectDefinedLumpSumAllowed = false,
+        controlReportPartnerCheckPluginKey = controlReportPartnerCheckPlugin,
         controlReportSamplingCheckPluginKey = controlReportSamplingCheckPluginKey
     )
 }
@@ -263,6 +266,7 @@ fun callDetail(
     firstStepPreSubmissionCheckPluginKey: String? = null,
     reportPartnerCheckPluginKey: String? = null,
     reportProjectCheckPluginKey: String? = null,
+    controlReportPartnerCheckPlugin: String? = null,
     controlReportSamplingCheckPluginKey: String? = null
 ) = CallDetail(
     id = id,
@@ -281,6 +285,7 @@ fun callDetail(
     reportProjectCheckPluginKey = reportProjectCheckPluginKey,
     projectDefinedUnitCostAllowed = false,
     projectDefinedLumpSumAllowed = true,
+    controlReportPartnerCheckPluginKey = controlReportPartnerCheckPlugin,
     controlReportSamplingCheckPluginKey = controlReportSamplingCheckPluginKey
 )
 

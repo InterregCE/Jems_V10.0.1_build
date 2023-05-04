@@ -43,6 +43,16 @@
             </mat-form-field>
 
             <mat-form-field>
+                <mat-label *ngIf="controlReportPartnerCheckPluginKey?.value?.length > 0">{{ 'call.detail.pre.submission.check.control.report.partner.label' | translate }}</mat-label>
+                <mat-select class="placeholder-required" [disabled]="!data.callIsEditable" formControlName="controlReportPartnerCheckPluginKey"
+                            required placeholder="{{ 'call.detail.pre.submission.check.report.partner.control.placeholder' | translate }}">
+                    <mat-option *ngFor="let plugin of data.controlReportPartnerCheckPlugins" [value]="plugin.key">
+                        {{ plugin.name }} {{ plugin.version?.length > 0 ? '- ' + plugin.version : '' }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field>
                 <mat-label *ngIf="controlReportSamplingCheckPluginKey?.value?.length > 0">{{ 'call.detail.pre.submission.check.control.report.sampling.label' | translate }}</mat-label>
                 <mat-select class="placeholder-required" [disabled]="!data.callIsEditable" formControlName="controlReportSamplingCheckPluginKey"
                             required placeholder="{{ 'call.detail.pre.submission.check.control.report.sampling.placeholder' | translate }}">

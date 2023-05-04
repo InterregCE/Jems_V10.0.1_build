@@ -1,13 +1,11 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnChanges, SimpleChanges} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
 import {
   ControlDeductionOverviewDTO,
-  ControlDeductionOverviewRowDTO,
   ControlOverviewDTO,
-  ControlWorkOverviewDTO,
+  ControlWorkOverviewDTO, PreConditionCheckResultDTO,
   ProjectPartnerReportControlOverviewService,
   ProjectPartnerReportDTO, ProjectPartnerReportUnitCostDTO
 } from '@cat/api';
-import {MatTableDataSource} from '@angular/material/table';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {catchError, finalize, map, take, tap} from 'rxjs/operators';
 import {
@@ -47,6 +45,9 @@ export class PartnerControlReportOverviewAndFinalizeTabComponent{
   allowedCostCategories: Map<CategoryEnum | 'LumpSum' | 'UnitCost', boolean>;
 
   finalizationLoading = false;
+  finalizationAvailable = false;
+  preConditionCheckResult: PreConditionCheckResultDTO | undefined = undefined;
+  preCheckPending = false;
   error$ = new BehaviorSubject<APIError | null>(null);
 
   data$: Observable<{
@@ -84,7 +85,8 @@ export class PartnerControlReportOverviewAndFinalizeTabComponent{
     public store: PartnerControlReportStore,
     private projectPartnerReportControlOverviewService: ProjectPartnerReportControlOverviewService,
     private localeDatePipe: LocaleDatePipe,
-    private financialOverviewStore: PartnerReportFinancialOverviewStoreService
+    private financialOverviewStore: PartnerReportFinancialOverviewStoreService,
+    private cd: ChangeDetectorRef
   ) {
     financialOverviewStore.allowedCostCategories$.pipe(
       tap(data => {
@@ -197,6 +199,21 @@ export class PartnerControlReportOverviewAndFinalizeTabComponent{
       changedLastCertifiedReportEndDate: this.overviewForm.controls.changedLastCertifiedReportEndDate.value,
       lastCertifiedReportNumber: this.overviewForm.controls.lastCertifiedReportNumber.value
     };
+  }
+
+  runPreCheckOnControlReport(partnerId: number, reportId: number): void {
+    this.preCheckPending = true;
+    this.preConditionCheckResult = undefined;
+    this.reportDetailPageStore.runPreCheckOnControlReport(partnerId, reportId)
+      .pipe(
+        tap(result => this.finalizationAvailable = result.submissionAllowed),
+        tap(result => this.preConditionCheckResult = result),
+        catchError((error) => this.showErrorMessage(error.error)),
+        finalize(() => {
+          this.preCheckPending = false;
+          this.cd.detectChanges();
+        }),
+      ).subscribe();
   }
 
   finalizeReport(partnerId: number, reportId: number): void {

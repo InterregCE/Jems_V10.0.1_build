@@ -16,6 +16,7 @@ import io.cloudflight.jems.server.project.service.report.partner.base.getProject
 import io.cloudflight.jems.server.project.service.report.partner.base.runPartnerReportPreSubmissionCheck.RunPartnerReportPreSubmissionCheckInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.startControlPartnerReport.StartControlPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.submitProjectPartnerReport.SubmitProjectPartnerReportInteractor
+import io.cloudflight.jems.server.project.service.report.partner.control.overview.runControlPartnerReportPreSubmissionCheck.RunControlPartnerReportPreSubmissionCheckInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.control.deleteControlReportFile.DeleteControlReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.control.downloadControlReportFile.DownloadControlReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.control.listProjectPartnerControlReportFile.ListControlReportFileInteractor
@@ -43,6 +44,7 @@ class ProjectPartnerReportController(
     private val runPreCheckPartnerReport: RunPartnerReportPreSubmissionCheckInteractor,
     private val submitPartnerReport: SubmitProjectPartnerReportInteractor,
     private val startControlReport: StartControlPartnerReportInteractor,
+    private val runPreCheckPartnerControlReport: RunControlPartnerReportPreSubmissionCheckInteractor,
     private val finalizeControlReport: FinalizeControlPartnerReportInteractor,
     private val getPartnerReport: GetProjectPartnerReportInteractor,
     private val downloadReportFile: DownloadProjectPartnerReportFileInteractor,
@@ -81,6 +83,9 @@ class ProjectPartnerReportController(
 
     override fun startControlOnPartnerReport(partnerId: Long, reportId: Long) =
         startControlReport.startControl(partnerId = partnerId, reportId = reportId).toDto()
+
+    override fun runPreCheckOnControlReport(partnerId: Long, reportId: Long): PreConditionCheckResultDTO =
+        runPreCheckPartnerControlReport.preCheck(partnerId = partnerId, reportId = reportId).toDTO()
 
     override fun finalizeControlOnPartnerReport(partnerId: Long, reportId: Long) =
         finalizeControlReport.finalizeControl(partnerId = partnerId, reportId = reportId).toDto()

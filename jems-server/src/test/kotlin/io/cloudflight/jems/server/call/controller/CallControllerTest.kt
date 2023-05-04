@@ -72,6 +72,7 @@ class CallControllerTest : UnitTest() {
         private const val ID = 1L
         private const val PLUGIN_KEY = "pluginKey"
         private const val PLUGIN_KEY_PARTNER_REPORT = "pluginKey-partnerReport"
+        private const val PLUGIN_KEY_PARTNER_CONTROL_REPORT = "pluginKey-partnerControlReport"
         private const val PLUGIN_KEY_PROJECT_REPORT = "pluginKey-projectReport"
         private const val PLUGIN_KEY_CONTROL_SAMPLING = "pluginKey-control-sampling"
 
@@ -134,6 +135,7 @@ class CallControllerTest : UnitTest() {
             reportProjectCheckPluginKey = PLUGIN_KEY_PROJECT_REPORT,
             projectDefinedUnitCostAllowed = false,
             projectDefinedLumpSumAllowed = true,
+            controlReportPartnerCheckPluginKey = PLUGIN_KEY_PARTNER_CONTROL_REPORT,
             controlReportSamplingCheckPluginKey = PLUGIN_KEY_CONTROL_SAMPLING
         )
 
@@ -186,6 +188,7 @@ class CallControllerTest : UnitTest() {
             firstStepPreSubmissionCheckPluginKey = PLUGIN_KEY,
             reportPartnerCheckPluginKey = PLUGIN_KEY_PARTNER_REPORT,
             reportProjectCheckPluginKey = PLUGIN_KEY_PROJECT_REPORT,
+            controlReportPartnerCheckPluginKey = PLUGIN_KEY_PARTNER_CONTROL_REPORT,
             controlReportSamplingCheckPluginKey = PLUGIN_KEY_CONTROL_SAMPLING
         )
 
@@ -384,6 +387,7 @@ class CallControllerTest : UnitTest() {
                     firstStepPluginKey = PLUGIN_KEY,
                     reportPartnerCheckPluginKey = PLUGIN_KEY_PARTNER_REPORT,
                     reportProjectCheckPluginKey = PLUGIN_KEY_PROJECT_REPORT,
+                    controlReportPartnerCheckPluginKey = PLUGIN_KEY_PARTNER_CONTROL_REPORT,
                     controlReportSamplingCheckPluginKey = PLUGIN_KEY_CONTROL_SAMPLING
                 )
             )
@@ -395,6 +399,7 @@ class CallControllerTest : UnitTest() {
                 firstStepPluginKey = PLUGIN_KEY,
                 reportPartnerCheckPluginKey = PLUGIN_KEY_PARTNER_REPORT,
                 reportProjectCheckPluginKey = PLUGIN_KEY_PROJECT_REPORT,
+                controlReportPartnerCheckPluginKey = PLUGIN_KEY_PARTNER_CONTROL_REPORT,
                 controlReportSamplingCheckPluginKey = PLUGIN_KEY_CONTROL_SAMPLING
             )
         )

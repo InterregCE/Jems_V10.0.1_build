@@ -228,6 +228,13 @@ internal class ProjectReportControllerTest : UnitTest() {
     }
 
     @Test
+    fun runPreCheckForControl() {
+        val preSubmissionResult = PreConditionCheckResult(listOf(), true)
+        every { runProjectReportPreSubmissionCheck.preCheck(21L, reportId = 10L) } returns preSubmissionResult
+        assertThat(controller.runPreCheck(21L, reportId = 10L)).isEqualTo(preSubmissionResult.toDTO())
+    }
+
+    @Test
     fun submitProjectReport() {
         every { submitReport.submit(21L, reportId = 10L) } returns ProjectReportStatus.Submitted
         controller.submitProjectReport(21L, reportId = 10L)

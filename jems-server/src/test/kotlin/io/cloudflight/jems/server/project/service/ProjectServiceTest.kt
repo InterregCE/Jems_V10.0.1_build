@@ -108,6 +108,7 @@ class ProjectServiceTest : UnitTest() {
         reportProjectCheckPluginKey = "check-off",
         projectDefinedUnitCostAllowed = true,
         projectDefinedLumpSumAllowed = false,
+        controlReportPartnerCheckPluginKey = "control-report-partner-check-off",
         controlReportSamplingCheckPluginKey = "control-report-sampling-check-off"
     )
 
@@ -155,6 +156,7 @@ class ProjectServiceTest : UnitTest() {
         reportProjectCheckPluginKey = "check-off",
         projectDefinedUnitCostAllowed = true,
         projectDefinedLumpSumAllowed = false,
+        controlReportPartnerCheckPluginKey = "control-report-partner-check-off",
         controlReportSamplingCheckPluginKey = "control-report-sampling-check-off"
     )
 

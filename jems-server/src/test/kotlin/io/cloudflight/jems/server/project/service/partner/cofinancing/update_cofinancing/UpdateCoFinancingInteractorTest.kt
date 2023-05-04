@@ -130,6 +130,7 @@ internal class UpdateCoFinancingInteractorTest {
             reportProjectCheckPluginKey = null,
             projectDefinedUnitCostAllowed = false,
             projectDefinedLumpSumAllowed = true,
+            controlReportPartnerCheckPluginKey = null,
             controlReportSamplingCheckPluginKey = null
         )
 
@@ -185,6 +186,7 @@ internal class UpdateCoFinancingInteractorTest {
             reportProjectCheckPluginKey = null,
             projectDefinedUnitCostAllowed = false,
             projectDefinedLumpSumAllowed = true,
+            controlReportPartnerCheckPluginKey = null,
             controlReportSamplingCheckPluginKey = null
         )
 
@@ -236,6 +238,7 @@ internal class UpdateCoFinancingInteractorTest {
             reportProjectCheckPluginKey = null,
             projectDefinedUnitCostAllowed = false,
             projectDefinedLumpSumAllowed = true,
+            controlReportPartnerCheckPluginKey = null,
             controlReportSamplingCheckPluginKey = null
         )
 

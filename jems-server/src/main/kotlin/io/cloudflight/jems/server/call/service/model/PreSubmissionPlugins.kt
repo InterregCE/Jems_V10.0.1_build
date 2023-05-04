@@ -5,6 +5,7 @@ data class PreSubmissionPlugins (
     val firstStepPluginKey: String = "",
     val reportPartnerCheckPluginKey: String,
     val reportProjectCheckPluginKey: String,
+    val controlReportPartnerCheckPluginKey: String,
     val controlReportSamplingCheckPluginKey: String,
 ) {
     fun getDiff(old: PreSubmissionPlugins? = null): Map<String, Pair<String?, String>> {
@@ -21,6 +22,9 @@ data class PreSubmissionPlugins (
 
         if (old?.reportProjectCheckPluginKey != reportProjectCheckPluginKey)
             changes["PreSubmissionCheckProjectReport"] = Pair(old?.reportProjectCheckPluginKey, reportProjectCheckPluginKey)
+
+        if (old?.controlReportPartnerCheckPluginKey != controlReportPartnerCheckPluginKey)
+            changes["PreSubmissionCheckPartnerControlReport"] = Pair(old?.controlReportPartnerCheckPluginKey, controlReportPartnerCheckPluginKey)
 
         if (old?.controlReportSamplingCheckPluginKey != controlReportSamplingCheckPluginKey)
             changes["PreSubmissionCheckControlReportSampling"] = Pair(old?.controlReportSamplingCheckPluginKey, controlReportSamplingCheckPluginKey)
