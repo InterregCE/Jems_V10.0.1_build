@@ -5,16 +5,15 @@
 }
 
 .mat-column-language {
-  min-width: 5rem;
-  max-width: 5rem;
+  min-width: 12rem;
 }
 .mat-column-fileName,
 .mat-column-uploaded {
   min-width: 10rem;
 }
-.mat-column-defaultFileName {
-  min-width: 15rem;
-  max-width: 15rem;
+.mat-column-actions {
+  min-width: 10rem;
+  max-width: 10rem;
 }
 
 .file-input {

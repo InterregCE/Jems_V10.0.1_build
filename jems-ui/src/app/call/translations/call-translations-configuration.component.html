@@ -1,5 +1,6 @@
 <jems-main-page-template *ngIf="data$ | async as data"
-                         titleKey="call.detail.translations.title">
+                         titleKey="call.detail.translations.title"
+                         descriptionKey="call.detail.translations.subtitle">
 
     <input class="file-input" accept=".properties" type="file" #fileInput onclick="this.value=null;"
            (change)="upload($event, data.callId)">
@@ -16,7 +17,7 @@
                 <span jemsText maxLines="2">{{ 'programme.translation.management.language' | translate }}</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let translation" [class.is-in-use]="translation.file">
-                {{ translation.language }}
+                {{ translation.language }} - {{ 'language.' + translation.language.toLowerCase() | translate }}
             </mat-cell>
         </ng-container>
 
@@ -25,14 +26,6 @@
                 <span jemsText maxLines="2">{{ 'programme.translation.management.file.name' | translate }}</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let translation">
-                <button color="primary" mat-icon-button
-                        (click)="languageToUpload = translation.language; fileInput.click()">
-                    <mat-icon fontSet="material-icons-outlined">file_upload</mat-icon>
-                </button>
-                <button color="primary" mat-icon-button [disabled]="!translation.file"
-                        (click)="download(data.callId, translation.file)">
-                    <mat-icon fontSet="material-icons-outlined">file_download</mat-icon>
-                </button>
                 {{ translation.file?.name }}
             </mat-cell>
         </ng-container>
@@ -46,14 +39,28 @@
             </mat-cell>
         </ng-container>
 
-        <ng-container matColumnDef="defaultFileName">
+        <ng-container matColumnDef="actions">
             <mat-header-cell *matHeaderCellDef>
-                <span jemsText maxLines="2">{{ 'programme.translation.management.get.default.translations' | translate }}</span>
+                <span jemsText maxLines="2">{{ 'common.action' | translate }}</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let translation">
-                <button mat-stroked-button *ngIf="translation.defaultFromProgramme" color="primary"
-                        (click)="downloadFromProgramme(data.callId, translation.language)">
-                    <mat-icon fontSet="material-icons-outlined">file_download</mat-icon>{{ translation.defaultFromProgramme }}
+                <span matTooltip="{{ 'call.detail.translations.default.tooltip' | translate }}">
+                    <button color="primary" mat-icon-button [disabled]="!translation.defaultFromProgramme"
+                            (click)="downloadFromProgramme(data.callId, translation.language)">
+                    <mat-icon fontSet="material-icons-outlined">description</mat-icon>
+                    </button>
+                </span>
+                <button color="primary" mat-icon-button
+                        (click)="languageToUpload = translation.language; fileInput.click()">
+                    <mat-icon fontSet="material-icons-outlined">file_upload</mat-icon>
+                </button>
+                <button color="primary" mat-icon-button [disabled]="!translation.file"
+                        (click)="download(data.callId, translation.file)">
+                    <mat-icon fontSet="material-icons-outlined">file_download</mat-icon>
+                </button>
+                <button color="accent" mat-icon-button [disabled]="!translation.file"
+                        (click)="delete(data.callId, translation)">
+                    <mat-icon>delete</mat-icon>
                 </button>
             </mat-cell>
         </ng-container>
