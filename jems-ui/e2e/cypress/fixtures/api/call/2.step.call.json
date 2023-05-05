@@ -108,12 +108,12 @@
   },
   "preSubmissionCheckSettings": {
     "pluginKey": "standard-pre-condition-check-plugin",
+    "firstStepPluginKey": "standard-pre-condition-check-plugin",
     "reportPartnerCheckPluginKey": "report-example-check",
     "reportProjectCheckPluginKey": "project-report-example-check",
-    "callHasTwoSteps": true,
-    "firstStepPluginKey": "standard-pre-condition-check-plugin",
-    "reportProjectCheckPluginKey": "project-report-example-check",
-    "controlReportSamplingCheckPluginKey": "control-report-sampling"
+    "controlReportSamplingCheckPluginKey": "control-report-sampling",
+    "controlReportPartnerCheckPluginKey": "control-report-example-check",
+    "callHasTwoSteps": true
   },
   "applicationFormConfiguration": [
     {

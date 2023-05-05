@@ -68,6 +68,7 @@
       "pluginKey": "jems-pre-condition-check-off",
       "reportPartnerCheckPluginKey": "report-example-check",
       "reportProjectCheckPluginKey": "project-report-example-check",
+      "controlReportPartnerCheckPluginKey": "control-report-example-check",
       "controlReportSamplingCheckPluginKey": "control-report-sampling",
       "callHasTwoSteps": false
     }
