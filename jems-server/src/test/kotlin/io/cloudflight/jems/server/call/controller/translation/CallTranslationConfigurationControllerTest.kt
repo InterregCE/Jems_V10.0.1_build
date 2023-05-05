@@ -3,9 +3,11 @@ package io.cloudflight.jems.server.call.controller.translation
 import io.cloudflight.jems.api.call.dto.translation.CallTranslationFileDTO
 import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.FR
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.NL
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.NO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.service.model.translation.CallTranslationFile
+import io.cloudflight.jems.server.call.service.translation.deleteTranslationFile.DeleteCallTranslationFileInteractor
 import io.cloudflight.jems.server.call.service.translation.downloadTranslationFile.DownloadCallTranslationFileInteractor
 import io.cloudflight.jems.server.call.service.translation.getTranslation.GetTranslationInteractor
 import io.cloudflight.jems.server.call.service.translation.uploadTranslationFile.UploadCallTranslationFileInteractor
@@ -16,6 +18,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.core.io.ByteArrayResource
@@ -30,9 +33,10 @@ class CallTranslationConfigurationControllerTest : UnitTest() {
         private val time = ZonedDateTime.now()
     }
 
-    @MockK lateinit var getTranslation: GetTranslationInteractor
-    @MockK lateinit var downloadTranslationFile: DownloadCallTranslationFileInteractor
-    @MockK lateinit var uploadTranslationFile: UploadCallTranslationFileInteractor
+    @MockK private lateinit var getTranslation: GetTranslationInteractor
+    @MockK private lateinit var downloadTranslationFile: DownloadCallTranslationFileInteractor
+    @MockK private lateinit var uploadTranslationFile: UploadCallTranslationFileInteractor
+    @MockK private lateinit var deleteTranslationFile: DeleteCallTranslationFileInteractor
 
     @InjectMockKs
     private lateinit var controller: CallTranslationConfigurationController
@@ -75,6 +79,13 @@ class CallTranslationConfigurationControllerTest : UnitTest() {
         assertThat(controller.uploadTranslationFile(57L, FR, dummyMultipartFile())).isEqualTo(
             CallTranslationFileDTO(FR, JemsFileMetadataDTO(id = 90L, "file_name.ext", uploaded = time), "some default name")
         )
+    }
+
+    @Test
+    fun deleteTranslationFile() {
+        every { deleteTranslationFile.delete(59L, NL) } answers { }
+        controller.deleteTranslationFile(59L, NL)
+        verify(exactly = 1) { deleteTranslationFile.delete(59L, NL) }
     }
 
 }

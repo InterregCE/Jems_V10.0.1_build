@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiOperation
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -36,5 +37,9 @@ interface CallTranslationConfigurationApi {
         @PathVariable language: SystemLanguage,
         @RequestPart("file") file: MultipartFile,
     ): CallTranslationFileDTO
+
+    @ApiOperation("Delete translation file")
+    @DeleteMapping("$ENDPOINT_API_CALL_TRANSLATION_CONFIG/delete/{language}")
+    fun deleteTranslationFile(@PathVariable callId: Long, @PathVariable language: SystemLanguage)
 
 }

@@ -37,4 +37,9 @@ export class CallTranslationsConfigurationStore {
       .pipe(tap(() => this.refresh$.next(true)));
   }
 
+  delete(callId: number, language: string): Observable<any> {
+    return this.callTranslationService.deleteTranslationFile(callId, language)
+      .pipe(tap(() => this.refresh$.next(true)));
+  }
+
 }

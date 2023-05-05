@@ -39,10 +39,13 @@ class UploadCallTranslationFile(
 
     companion object {
 
-        private fun storageFileNameFor(callId: Long, language: SystemLanguage) =
+        fun storageFileNameFor(callId: Long, language: SystemLanguage) =
             "call-id-$callId-Application_${language.name.lowercase()}.properties"
 
-        private fun classpathFileNameFor(language: SystemLanguage) =
+        fun archivedFileNameFor(originalFileName: String) =
+            "archived-${ZonedDateTime.now().format(DateTimeFormatter.ofPattern("dd_MM_yyyy_HH_mm_ss"))}-$originalFileName"
+
+        fun classpathFileNameFor(language: SystemLanguage) =
             "Application-CallSpecific_${language.name.lowercase()}.properties"
     }
 
@@ -86,8 +89,8 @@ class UploadCallTranslationFile(
         filePersistence.fileIdIfExists(exactPath = CallTranslation.generatePath(callId), fileName = fileName)?.let { previousFileId ->
             fileService.moveFile(
                 previousFileId,
-                newName = "archived-${ZonedDateTime.now().format(DateTimeFormatter.ofPattern("dd_MM_yyyy_HH_mm_ss"))}-$fileName",
-                JemsFileType.CallTranslationArchive.generatePath(callId)
+                newName = archivedFileNameFor(fileName),
+                newLocation = JemsFileType.CallTranslationArchive.generatePath(callId),
             )
         }
     }

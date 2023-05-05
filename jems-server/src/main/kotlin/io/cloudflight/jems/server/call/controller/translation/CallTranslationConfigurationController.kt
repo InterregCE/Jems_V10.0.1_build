@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.call.controller.translation
 import io.cloudflight.jems.api.call.CallTranslationConfigurationApi
 import io.cloudflight.jems.api.call.dto.translation.CallTranslationFileDTO
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.server.call.service.translation.deleteTranslationFile.DeleteCallTranslationFileInteractor
 import io.cloudflight.jems.server.call.service.translation.downloadTranslationFile.DownloadCallTranslationFileInteractor
 import io.cloudflight.jems.server.call.service.translation.getTranslation.GetTranslationInteractor
 import io.cloudflight.jems.server.call.service.translation.uploadTranslationFile.UploadCallTranslationFileInteractor
@@ -19,6 +20,7 @@ class CallTranslationConfigurationController(
     private val getTranslation: GetTranslationInteractor,
     private val downloadTranslationFile: DownloadCallTranslationFileInteractor,
     private val uploadTranslationFile: UploadCallTranslationFileInteractor,
+    private val deleteTranslationFile: DeleteCallTranslationFileInteractor,
 ) : CallTranslationConfigurationApi {
 
     override fun getTranslation(callId: Long): List<CallTranslationFileDTO> =
@@ -39,5 +41,8 @@ class CallTranslationConfigurationController(
         file: MultipartFile,
     ): CallTranslationFileDTO =
         uploadTranslationFile.upload(callId = callId, language, file.toProjectFile()).toDto()
+
+    override fun deleteTranslationFile(callId: Long, language: SystemLanguage) =
+        deleteTranslationFile.delete(callId = callId, language)
 
 }
