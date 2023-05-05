@@ -1,6 +1,6 @@
 <jems-main-page-template [needsCard]="true" titleKey="call.header">
 
-    <h2 page-sub-title> {{'call.list.header' | translate}}</h2>
+    <h2 page-sub-title>{{'call.list.header' | translate}}</h2>
 
     <button class="mr-3"
             jemsText
@@ -20,7 +20,7 @@
     <jems-context-info infoPosition="right" infoText="{{'call.add.spf.info' | translate}}" *jemsHasPermission="PermissionsEnum.CallUpdate"></jems-context-info>
     <div *ngIf="success" class="success-wrapper">
         <div class="success jems-alert-success">
-            <mat-icon>check_circle</mat-icon>
+            <mat-icon>check_circle_outline</mat-icon>
             <span *ngIf="success.i18nKey">{{success.i18nKey | translate : success.i18nArguments}}</span>
         </div>
     </div>

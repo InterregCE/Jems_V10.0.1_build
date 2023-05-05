@@ -35,7 +35,7 @@
 </ng-template>
 
 <ng-template let-type="type" #icon>
-    <mat-icon *ngIf="type===PluginMessageType.ERROR" class="error mr-2">error</mat-icon>
-    <mat-icon *ngIf="type===PluginMessageType.WARNING" class="warning mr-2">warning</mat-icon>
-    <mat-icon *ngIf="type===PluginMessageType.INFO" class="info mr-2">check_circle</mat-icon>
+    <mat-icon *ngIf="type===PluginMessageType.ERROR" class="error mr-2">error_outline</mat-icon>
+    <mat-icon *ngIf="type===PluginMessageType.WARNING" class="warning mr-2">warning_amber</mat-icon>
+    <mat-icon *ngIf="type===PluginMessageType.INFO" class="info mr-2">check_circle_outline</mat-icon>
 </ng-template>

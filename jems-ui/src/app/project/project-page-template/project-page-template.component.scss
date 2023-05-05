@@ -62,9 +62,9 @@ jems-main-page-template.in-modification {
 }
 
 .color-green {
-  color: green;
+  color: var(--success-color);
 }
 
 .color-red {
-  color: red;
+  color: var(--error-color);
 }

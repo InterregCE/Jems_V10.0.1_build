@@ -25,7 +25,7 @@ $color-blue-light: #81D4FA;
     text-align: center;
     font-size: .875rem;
     line-height: 2.5rem;
-    font-weight: 500;
+    font-weight: var(--font-weight-strong);
     overflow: hidden;
     text-overflow: ellipsis;
   }

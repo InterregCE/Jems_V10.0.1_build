@@ -70,11 +70,14 @@
 
 <ng-template #projectReportCell let-partnerReport>
     <ng-container *ngIf="partnerReport.projectReportNumber">
-        PR.{{ partnerReport.projectReportNumber }}
-        <a *ngIf="canViewProjectReport"
-           [routerLink]="['/app', 'project', 'detail', this.projectId, 'projectReports', partnerReport.projectReportId, 'identification']">
-            <mat-icon class="ml-2 mr-5 mat-primary">launch</mat-icon>
-        </a>
+        <span *ngIf="canViewProjectReport">
+            <a [routerLink]="['/app', 'project', 'detail', this.projectId, 'projectReports', partnerReport.projectReportId, 'identification']">
+                PR.{{ partnerReport.projectReportNumber }}
+            </a>
+        </span>
+        <span *ngIf="!canViewProjectReport">
+            PR.{{ partnerReport.projectReportNumber }}
+        </span>
     </ng-container>
 </ng-template>
 
@@ -110,11 +113,11 @@
 </ng-template>
 
 <ng-template #versionCell let-partnerReport>
-    <mat-icon *ngIf="partnerReport.status === ProjectPartnerReportSummaryDTO.StatusEnum.Draft && isReportVersionNotLatestApproved(partnerReport.linkedFormVersion)"
-              matTooltip="{{'project.application.partner.report.warning.tooltip' | translate }}" color="accent" class="mr-1">
-        warning
-    </mat-icon>
     <span>
         {{partnerReport.linkedFormVersion}}
     </span>
+    <mat-icon *ngIf="partnerReport.status === ProjectPartnerReportSummaryDTO.StatusEnum.Draft && isReportVersionNotLatestApproved(partnerReport.linkedFormVersion)"
+              matTooltip="{{'project.application.partner.report.warning.tooltip' | translate }}" color="accent" class="ml-1">
+        warning_amber
+    </mat-icon>
 </ng-template>

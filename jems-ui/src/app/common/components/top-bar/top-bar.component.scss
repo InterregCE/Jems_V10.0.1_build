@@ -266,29 +266,19 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
       flex-flow: row nowrap;
       -ms-flex-pack: start;
     }
-    .navbar-expand-lg .navbar-navigation-items {
-      -ms-flex-direction: column-reverse;
-      flex-direction: column-reverse;
-    }
     .navbar-expand-lg .navbar-navigation-items .dropdown-menu {
       position: absolute;
     }
     .navbar-expand-lg .navbar-navigation-items .nav-link {
       padding-right: 0.5rem;
-      padding-left: 0.5rem;
     }
     .navbar-expand-lg .navbar-collapse {
       display: flex;
-      justify-content: space-between;
-      flex-direction: column-reverse;
+      justify-content: flex-end;
     }
     .navbar-expand-lg .navbar-toggler {
       display: none;
     }
-    .jems-logo-container {
-      display: flex;
-    }
-
   }
 
   .navbar {
@@ -296,9 +286,9 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
     display: flex;
     flex-wrap: wrap; // allow us to do the line break for collapsing content
     justify-content: space-between; // space out brand from logo
-    border-bottom: 1px solid var(--primary-dark-color);
-    background: var(--background-top-bar);
-    padding: 0 0 0 1rem;
+    background: white;
+    padding: 0;
+    overflow: hidden;
     &.no-user {
       .navbar-logos {
         visibility: hidden;
@@ -352,9 +342,8 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
   .navbar-right {
     position: relative;
     display: flex;
-    flex-wrap: wrap;
     width: 100%;
-    overflow: hidden;
+    height: 100%;
   }
   .navbar-navigation-items {
     display: flex;
@@ -367,7 +356,6 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
     justify-content: flex-end;
 
     button, mat-select, .nav-item {
-      font-size: 0.75rem;
       font-weight: 400;
     }
 
@@ -378,15 +366,23 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
       box-shadow: none;
       button, mat-select, .nav-item {
         font-size: 0.9rem;
-        font-weight: 500;
       }
       .nav-item {
         flex-grow: 1;
         min-width: 6.5rem;
         max-width: 12rem;
         justify-content: center;
+      }
+    }
+
+    &.secondary-navigation-items {
+      color: var(--font-color-primary);
+      margin-right: 1rem;
+      mat-select {
+        border-bottom: 1px dotted var(--table-border-color);
+        margin-right: 0.5rem;
         &:hover {
-          border-bottom: .2rem solid var(--primary-dark-color);
+          border-bottom: 1px solid var(--primary-color);
         }
       }
     }
@@ -451,9 +447,6 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
           &.no-user {
             border: none;
             background: none;
-            .jems-logo-container {
-              display: none;
-            }
             .navbar-navigation-items {
               margin-right: 1rem;
               margin-top: 1rem;
@@ -462,7 +455,6 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
           .navbar-navigation-items {
             flex-direction: row;
             align-items: center;
-            height: 2.25rem;
             &.main-navigation-items {
               align-items: stretch;
             }
@@ -482,17 +474,9 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
 
           .navbar-collapse {
             display: flex !important; // stylelint-disable-line declaration-no-important
-            // Changes flex-bases to auto because of an IE10 bug
-            flex-basis: auto;
-            flex-direction: column-reverse;
-            justify-content: space-between;
-            height: fit-content;
           }
           .navbar-toggler {
             display: none;
-          }
-          .jems-logo-container {
-            display: flex;
           }
         }
       }
@@ -540,7 +524,7 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
   padding: 0;
 }
 .navbar-logos {
-  height: 5rem;
+  height: 4.5rem;
   display: flex;
   flex-wrap: wrap;
   flex-shrink: 0;
@@ -549,39 +533,23 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
   min-width: 17.5rem;
   max-width: fit-content;
   overflow-y: hidden;
-  margin-right: 1rem;
 }
 .programme-logo-container {
   width: 17.5rem;
   max-width: 17.5rem;
-  height: 5rem;
-  max-height: 5rem;
-  border: 1px solid var(--table-border-color);
-  border-top: none;
+  height: 4.5rem;
+  max-height: 4.5rem;
+  padding: .2rem .5rem .2rem .5rem;
   box-sizing: border-box;
-  padding: 0.2rem;
   position: relative;
   display: flex;
   background: white;
-  box-shadow: -0.5rem 0.5rem 1rem rgba(0, 0, 0, 0.5);
 }
 .logo {
   margin: auto;
   &.fill {
     max-width: 100%;
     max-height: 100%;
-  }
-}
-.jems-logo-container {
-  min-width: 6rem;
-  max-width: 12rem;
-  height: 100%;
-  flex-shrink: 5;
-  padding: 1.25rem;
-  margin: 0;
-  display: none;
-  .logo {
-    height: 100%;
   }
 }
 .show-pointer {
@@ -606,23 +574,11 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
 }
 
 .nav-item {
-  transition: border-bottom-color .2s ease-out, background-color .2s ease-out;
+  transition: background-color .2s ease-out;
   display: flex;
-  font-weight: 600;
-  border-bottom: .2rem solid transparent;
-  border-top: 1px solid transparent;
   background-color: transparent;
-  background-size: 0%;
 
   &.user-name {
-    margin-right: -0.5rem;
-
-    mat-icon {
-      font-size: 1.25em;
-      margin-right: -0.25rem;
-      width: 1em;
-      height: 0.95em;
-    }
   }
   .mat-button-base.logout-button {
     font-weight: 700;
@@ -630,39 +586,51 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
     &:hover {
       background: rgba(255, 255, 255, 0.3);
     }
-    mat-icon {
-      font-size: 1.25em;
-      margin-right: -0.25rem;
-      vertical-align: sub;
-    }
   }
   .nav-link {
     display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    justify-content: center;
     align-items: center;
     cursor: pointer;
-    color: var(--primary-dark-color) !important;
-    max-width: 25em;
+    color: var(--primary-dark-color);
+    opacity: 0.87;
     overflow-y: hidden;
     padding: 0 0.125rem;
+    border-left: 1px solid transparent;
+    border-right: 1px solid transparent;
+    transition: opacity 0.125s ease-out, background-color 0.125s ease-out, box-shadow 0.25s ease-out;
     .nav-text {
-      line-height: 1rem;
+      line-height: 1.25em;
+      text-overflow: ellipsis;
+    }
+    mat-icon {
+      margin-right: 0.5rem;
+    }
+    &:hover {
+      opacity: 1;
+      background: var(--table-hover-color);
     }
   }
   &.active-collapsed {
-    background: var(--background);
-    background-size: 100%;
-    border-top-left-radius: 0.25rem;
-    border-top-right-radius: 0.25rem;
-    border-top: 1px solid white;
-    border-bottom: .2rem solid var(--primary-dark-color);
+    .nav-link {
+      opacity: 1;
+      background: var(--table-hover-color);
+      box-shadow: inset 0 0.35rem 1.5rem -0.1rem rgba(135, 183, 219, 0.75);
+      border-left: 1px solid rgba(0,0,0, 0.1);
+      border-right: 1px solid rgba(0,0,0, 0.1);
+    }
   }
-  &.active-not-collapsed .nav-text {
-    font-weight: 700;
+  &.active-not-collapsed {
+    .nav-link {
+      opacity: 1;
+    }
   }
 }
 
 .mat-select {
-  font-weight: 500;
+  font-weight: var(--font-weight-strong);
 }
 
 .spacer {

@@ -14,17 +14,19 @@
 .edit-form-wrapper {
   .content {
     padding: 1.5rem;
+    margin-bottom: 0;
   }
 
   .footer {
-    border-bottom-left-radius: .3rem;
-    border-bottom-right-radius: .3rem;
-    min-height: 4rem;
+    border-bottom-left-radius: .2rem;
+    border-bottom-right-radius: .2rem;
     background-color: var(--background-lighter);
+    min-height: 4rem;
     bottom: -4rem;
     position: sticky;
     z-index: 4;
     margin: 0;
+    overflow-y: hidden;
 
     .action-button {
       margin: 1rem 0.3rem 0.2rem 1rem;
@@ -42,14 +44,12 @@
 
   .message-wrapper {
     border-radius: .3rem;
-    height: 100%;
   }
 
   .message {
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    height: 100%;
     padding: 1.4rem;
 
     .detail-error {

@@ -1,8 +1,8 @@
-<button mat-icon-button aria-label="help button" [matMenuTriggerFor]="menu">
-    <mat-icon>help_outline</mat-icon>
+<button mat-icon-button class="matmenu-trigger" aria-label="help button" [matMenuTriggerFor]="menu">
+    <mat-icon>help</mat-icon>
 </button>
 <mat-menu #menu="matMenu">
-    <label *ngIf="helpdeskUrl || helpdeskEmail" class="help-category">{{'topbar.help.title' | translate}}</label>
+    <label *ngIf="helpdeskUrl || helpdeskEmail" class="matmenu-headline">{{'topbar.help.title' | translate}}</label>
     <ng-container *ngIf="helpdeskUrl">
         <a mat-menu-item
            [href]="helpdeskUrl" matTooltip="{{'topbar.help.legal.helpdesk' | translate}}" target="_blank" rel="noopener">
@@ -10,15 +10,15 @@
         </a>
     </ng-container>
     <a *ngIf="helpdeskEmail" mat-menu-item matTooltip="{{'topbar.help.contact' | translate}}">
-        {{'topbar.help.contact' | translate}} <a href="mailto:{{ helpdeskEmail }}">{{ helpdeskEmail }}</a>
+        {{'topbar.help.contact' | translate}} <a class="unstyled-link" href="mailto:{{ helpdeskEmail }}">{{ helpdeskEmail }}</a>
     </a>
-    <label class="help-category">{{'topbar.help.legal' | translate}}</label>
+    <label class="matmenu-headline">{{'topbar.help.legal' | translate}}</label>
     <a mat-menu-item [href]="termsAndPrivacyPolicyUrl" matTooltip="{{'topbar.help.legal.terms.and.privacy' | translate}}">
         {{'topbar.help.legal.terms.and.privacy' | translate}}</a>
     <a mat-menu-item [href]="accessibilityStatementUrl" matTooltip="{{'topbar.help.legal.accessibility' | translate}}">
         {{'topbar.help.legal.accessibility' | translate}}</a>
     <ng-container *ngIf="version">
-        <label class="help-category">{{'topbar.help.version' | translate}}</label>
+        <label class="matmenu-headline">{{'topbar.help.version' | translate}}</label>
         <a disabled mat-menu-item>{{ version }}</a>
     </ng-container>
 </mat-menu>

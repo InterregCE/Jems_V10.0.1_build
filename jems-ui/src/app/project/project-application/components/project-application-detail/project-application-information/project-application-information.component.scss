@@ -3,7 +3,8 @@
   align-items: baseline;
 
   .mat-chip {
-    color: var(--font-color-primary);
+    color: var(--font-color-status-chips);
+    font-weight: 600;
   }
 
   .draft {
@@ -44,19 +45,11 @@
     min-width: 12rem;
     background-clip: padding-box;
     text-align: right;
-    font-weight: 500;
+    font-weight: var(--font-weight-strong);
   }
 
   .expiration {
     color: var(--error-color);
-  }
-
-  a {
-    text-decoration: none;
-  }
-
-  a:hover {
-    text-decoration: underline;
   }
 }
 

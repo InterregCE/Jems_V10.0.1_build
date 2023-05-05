@@ -7,7 +7,8 @@
   align-items: baseline;
 
   .mat-chip {
-    color: var(--font-color-primary);
+    color: var(--font-color-status-chips);
+    font-weight: 600;
   }
 
   .draft {
@@ -15,7 +16,7 @@
   }
 
   .finished {
-    background-color: var(--status-approved);
+    background-color: var(--status-contracted);
   }
 }
 

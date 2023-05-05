@@ -49,12 +49,19 @@
 
   --primary-color: #{$primary};
   --primary-halftone-color: #{$primary-halftone};
-  --primary-dark-color: #123d67;
+  --primary-dark-color: rgb(18, 61, 103);
   --accent-color: #{$accent};
-  --error-color: #{$warn};
-  --warn-color: #{#F6D15E};
-  --info-color: #{#155724};
 
+  --info-color: #{#267067};
+  --info-color-lighter: #{#bfddde};
+  --success-color: #{#63ba8d};
+  --success-color-lighter: #{#e1efe3};
+  --warn-color: #{#cd732a};
+  --warn-color-lighter: #{#fff2ce};
+  --error-color: #{$warn};
+  --error-color-lighter: rgba(201,12,15, 0.3);;
+
+  --font-weight-strong: 600;
   --font-color-primary: #{$text};
   --font-color-secondary: #{$text-secondary};
   --font-color-contrast: #{$text-contrast};
@@ -67,9 +74,9 @@
   --background-card: #{$background-card};
   --background-lighter: #{$background-lighter};
   --background-login: mat-light-theme;
-  --background-top-bar: #c9e8fb;
-  --sidebar-background-color: var(--table-highlight-color);
-  --sidebar-dark-background-color: #ebeef0;
+  --background-top-bar: var(--primary-dark-color);
+  --sidebar-background-color: #87b7db;
+  --sidebar-dark-background-color: rgba(18, 61, 103, 0.1);
   --app-bar: white;
   --app-bar-secondary: #76d7e7;
   --underline-color: #{$underline-color};
@@ -78,16 +85,19 @@
   --body-strong-font-size: #{$body-strong-font-size};
   --body-strong-font-weight: #{$body-strong-font-weight};
 
-  --status-draft: #cfdbea;
-  --status-submitted: #d5e9f2;
-  --status-approved-with-conditions: #f7a833;
-  --status-declined: #{mat.get-color-from-palette(mat.$red-palette, 300)};
-  --status-approved: #63ba8d;
-  --status-contracted: #bfddde;
+  --font-color-status-chips: var(--font-color-primary);
+  --status-draft: rgba(255,164,69, 0.5); // sunny
+  --status-submitted: rgba(38,165,192, 0.3); // azure
+  --status-approved-with-conditions: rgba(18,61,103, 0.3); // deep sea
+  --status-declined: rgba(201,12,15, 0.5); // financial red
+  --status-approved: rgba(38,112,103, 0.4); // deep woods
+  --status-contracted: rgb(99,186,141, 0.75); // fresh grass
 
   --report-type-content: #cfdbea;
   --report-type-finance: #bfddde;
   --report-type-both: #f7dcc4;
+
+  --navigation-shadow: 0.5rem 0 0.75rem rgba(0,0,0,0.5);
 
   @include custom-global-styles($is-dark-theme);
 

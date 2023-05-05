@@ -61,13 +61,11 @@
             <mat-icon *ngIf="!partner?.active">person_off</mat-icon>
          {{ 'common.label.project.partner.role.shortcut.' + partner?.role | adaptTranslationKeyByCallType | async | translate : {partner: partner?.sortNumber} }}
     </span>
-
-    <a *ngIf="!hidePartnerLink"
-       [routerLink]="'/app/project/detail/'+ projectId +'/applicationFormPartner/' + partner.id + '/budget'">
-        <span>
+    <span *ngIf="!hidePartnerLink">
+        <a [routerLink]="'/app/project/detail/'+ projectId +'/applicationFormPartner/' + partner.id + '/budget'">
             <mat-icon *ngIf="!partner?.active">person_off</mat-icon>
             {{ 'common.label.project.partner.role.shortcut.' + partner?.role | adaptTranslationKeyByCallType | async | translate : {partner: partner?.sortNumber} }}
-        </span>
-    </a>
+        </a>
+    </span>
 </ng-template>
 

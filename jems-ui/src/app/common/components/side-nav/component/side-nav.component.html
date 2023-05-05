@@ -7,7 +7,7 @@
                              [class.link]="data.route"
                              (click)="sideNavService.navigate(data)"
                              [class.route-active]="(currentUrl | async) | IsMenuActive : (data.baseRoute || data.route) : !data.baseRoute">
-            <mat-expansion-panel-header>
+            <mat-expansion-panel-header [ngClass]="{'has-children' : data.bullets?.length}">
                 <mat-panel-title>
                     <div class="title">
                         <mat-icon *ngIf="data.iconBeforeHeadline">{{data.iconBeforeHeadline}}</mat-icon>
@@ -26,7 +26,7 @@
                                      [class.link]="subtitle.route"
                                      [class.route-active]="(currentUrl | async) | IsMenuActive : (subtitle.baseRoute || subtitle.route) : !subtitle.baseRoute"
                                      (click)="sideNavService.navigate(subtitle)">
-                    <mat-expansion-panel-header>
+                    <mat-expansion-panel-header class="header-level-2" [ngClass]="{'has-children' : subtitle.bullets?.length}">
                         <mat-panel-title>
                             <span class="title">
                                 <mat-icon *ngIf="subtitle.iconBeforeHeadline">{{subtitle.iconBeforeHeadline}}</mat-icon>
@@ -38,12 +38,12 @@
                               *ngIf="subtitle.iconAfterHeadline">{{subtitle.iconAfterHeadline}}</mat-icon>
                     <ul class="level-3" *ngIf="subtitle.bullets?.length">
                         <li *ngFor="let section of subtitle.bullets">
-                            <div class="icon-container-level-3">
+                            <div class="icon-container-level-3"
+                                 [class.link]="section.route"
+                                 [class.route-active]="(currentUrl | async) | IsMenuActive : (section.baseRoute || section.route) : !section.baseRoute"
+                                 (click)="sideNavService.navigate(section)">
                                 <mat-icon *ngIf="section.iconBeforeHeadline">{{section.iconBeforeHeadline}}</mat-icon>
-                                <span [class.link]="section.route"
-                                      [class.icon]="section.iconBeforeHeadline"
-                                      [class.route-active]="(currentUrl | async) | IsMenuActive : (section.baseRoute || section.route) : !section.baseRoute"
-                                      (click)="sideNavService.navigate(section)">
+                                <span [class.icon]="section.iconBeforeHeadline">
                                     {{ section.headline.i18nKey | translate : section.headline.i18nArguments }}
                                 </span>
                             </div>
@@ -74,5 +74,10 @@
             </div>
         </mat-expansion-panel>
         <hr>
+    </div>
+    <div class="jems-logo-container">
+        <a href="https://interact.eu/" target="_blank">
+            <img src="assets/logos/JemsLogo_White_96.png" alt="Logo Jems">
+        </a>
     </div>
 </div>
