@@ -1,9 +1,12 @@
 
 .context-info {
+  color: var(--info-color);
+  font-weight: 800;
+  font-size: 0.75rem;
   cursor: default;
   width: 1em;
   height: 1em;
-  opacity: 0.33;
+  opacity: 0.7;
 
   &:hover {
     opacity: 1

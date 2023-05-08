@@ -31,9 +31,9 @@
             <span jemsText maxLines="2">{{ 'project.application.partner.report.expenditures.tab.cost.lump.sum' | translate }}</span>
         </mat-header-cell>
         <mat-cell *matCellDef="let exp">
-            <mat-icon color="accent" class="mr-1" *ngIf="exp.lumpSum && !exp.lumpSum.entityStillAvailable">warning</mat-icon>
+            <mat-icon color="accent" class="mr-1" *ngIf="exp.lumpSum && !exp.lumpSum.entityStillAvailable">warning_amber</mat-icon>
             <span *ngIf="exp.lumpSum" [class.grayed-out]="!exp.lumpSum.entityStillAvailable">{{ exp.lumpSumName | translateByInputLanguage | async }}</span>
-            <mat-icon color="accent" class="mr-1" *ngIf="exp.unitCost && !exp.unitCost.entityStillAvailable">warning</mat-icon>
+            <mat-icon color="accent" class="mr-1" *ngIf="exp.unitCost && !exp.unitCost.entityStillAvailable">warning_amber</mat-icon>
             <span *ngIf="exp.unitCost" [class.grayed-out]="!exp.unitCost.entityStillAvailable">{{ exp.unitCostName | translateByInputLanguage | async }}</span>
             <span *ngIf="!exp.lumpSum && !exp.unitCost">{{ 'common.not.applicable.option' | translate }}</span>
         </mat-cell>
@@ -54,7 +54,7 @@
         </mat-header-cell>
         <mat-cell *matCellDef="let exp">
             <mat-icon color="accent" class="mr-1" *ngIf="exp.investment && !exp.investment.entityStillAvailable"
-                      matTooltip="{{ 'Investment cannot be resolved' | translate }}">warning</mat-icon>
+                      matTooltip="{{ 'Investment cannot be resolved' | translate }}">warning_amber</mat-icon>
             <span *ngIf="exp.investment" [class.grayed-out]="!exp.investment.entityStillAvailable">{{ exp.investmentName }}</span>
             <span *ngIf="!exp.investment">{{ 'common.not.applicable.option' | translate }}</span>
         </mat-cell>

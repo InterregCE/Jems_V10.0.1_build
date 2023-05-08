@@ -25,7 +25,7 @@ Some parts of the software are not property of the City of Vienna. The excluded 
 · Angular (MIT) - version 12.2.13 includes material icons 1.10.4
 · moment (MIT) - version 2.29.1
 · RxJS (Apache 2.0) version 6.6.3
-· Roboto (Apache 2.0) (The copy font in the project) 0.10.0
+· OpenSans (Apache 2.0) (The copy font in the project) 1.1.0
 · UUID (MIT) - version 8.3.4
 · NgxMatSelectSearch (MIT) - version 5.0.0
 

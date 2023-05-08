@@ -57,7 +57,7 @@
                 <button (click)="saveContractingDescription()" mat-flat-button type="submit"
                         [disabled]="contractingDescriptionForm.invalid || (savingContractingDescriptionId$ | async) === checklist.id"
                         class="ml-2 small-flat-btn" color="primary">
-                    <mat-icon class="mr-1" *ngIf="(savingContractingDescriptionId$ | async) !== checklist.id">check</mat-icon>
+                    <mat-icon class="mr-1" *ngIf="(savingContractingDescriptionId$ | async) !== checklist.id">check_circle_outline</mat-icon>
                     <mat-spinner *ngIf="(savingContractingDescriptionId$ | async) === checklist.id" class="mr-4" color="primary"
                                  [diameter]="17"></mat-spinner>
                     {{'project.file.description.button.save' | translate}}

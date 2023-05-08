@@ -87,7 +87,7 @@
 
                         <button (click)="saveDescription()" mat-flat-button type="submit"
                                 [disabled]="descriptionForm.invalid || (savingDescriptionId$ | async) === file.id" class="ml-2 small-flat-btn" color="primary">
-                            <mat-icon class="mr-1" *ngIf="(savingDescriptionId$ | async) !== file.id">check</mat-icon>
+                            <mat-icon class="mr-1" *ngIf="(savingDescriptionId$ | async) !== file.id">check_circle_outline</mat-icon>
                             <mat-spinner *ngIf="(savingDescriptionId$ | async) === file.id" class="mr-4" color="primary" [diameter]="17"></mat-spinner>
                             {{'project.file.description.button.save' | translate}}
                         </button>

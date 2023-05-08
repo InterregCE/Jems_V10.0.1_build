@@ -3,7 +3,8 @@
   align-items: baseline;
 
   .mat-chip {
-    color: var(--font-color-primary);
+    color: var(--font-color-status-chips);
+    font-weight: 600;
   }
 
   .open {
@@ -11,7 +12,7 @@
   }
 
   .approved {
-    background-color: var(--status-approved);
+    background-color: var(--status-contracted);
   }
 
   .declined {

@@ -25,10 +25,9 @@
 
         <p>{{'payments.payment.to.project.detail.subtext' | translate}}</p>
         <jems-alert [show]="true"
-                    [type]="Alert.WARNING">
+                    [type]="Alert.INFO">
             <span>{{'payments.detail.installment.deletion.not.possible.warning' | translate}}</span>
         </jems-alert>
-
             <ng-container *ngIf="partnerPayments">
                 <div jemsNoWidthLimit id="payments-per-partner-table" class="mb-3 payments-per-partner-container"
                     *ngIf="data.paymentDetail.partnerPayments as partnerPayments">

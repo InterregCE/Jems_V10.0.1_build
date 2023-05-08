@@ -311,9 +311,9 @@ export class ProjectApplicationFormSidenavService {
                       i18nArguments: {workpackage: `${workPackage.number}`},
                       disabled: true
                     },
+                    iconBeforeHeadline: workPackage.deactivated ? 'do_not_disturb' : '',
                     route: `/app/project/detail/${projectId}/applicationFormWorkPackage/${workPackage.id}/objectives`,
                     baseRoute: `/app/project/detail/${projectId}/applicationFormWorkPackage/${workPackage.id}`,
-                    icon: workPackage.deactivated ? 'do_not_disturb' : ''
                   }
                 ))
               )

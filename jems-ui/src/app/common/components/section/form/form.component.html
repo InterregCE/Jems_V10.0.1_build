@@ -39,8 +39,8 @@
 <ng-template #saveSuccess let-message>
     <mat-card-footer [@slideInOut] class="footer">
         <div class="message-wrapper">
-            <div class="message jems-alert-success">
-                <mat-icon class="jems-alert-icon">check_circle</mat-icon>
+            <div class="message jems-alert jems-alert-success">
+                <mat-icon></mat-icon>
                 <span *ngIf="message.i18nKey">{{message.i18nKey | translate : message.i18nArguments}}</span>
                 <span *ngIf="!message.i18nKey">{{message | translate}}</span>
             </div>
@@ -51,7 +51,10 @@
 <ng-template #saveError let-error>
     <mat-card-footer [@slideInOut] class="footer">
         <div class="message-wrapper">
-            <jems-api-error-content [error]="error"></jems-api-error-content>
+            <div class="message jems-alert jems-alert-danger">
+                <mat-icon></mat-icon>
+                <jems-api-error-content [error]="error"></jems-api-error-content>
+            </div>
         </div>
         <ng-container *ngTemplateOutlet="saveDiscard"></ng-container>
     </mat-card-footer>

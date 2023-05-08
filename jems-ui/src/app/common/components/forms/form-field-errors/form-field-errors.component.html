@@ -1,4 +1,4 @@
 <div *ngFor="let error of errors | keyvalue">
-    <div *ngIf="condensed" class="error-icon" [matTooltip]="getErrorMessage(error) | async"><mat-icon>error</mat-icon></div>
+    <div *ngIf="condensed" class="error-icon" [matTooltip]="getErrorMessage(error) | async"><mat-icon>error_outline</mat-icon></div>
     <div *ngIf="!condensed">{{getErrorMessage(error) | async}}</div>
 </div>

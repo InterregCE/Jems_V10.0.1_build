@@ -11,5 +11,8 @@
             (click)="show = false; closed.emit()">
         <span aria-hidden="true">&times;</span>
     </button>
-    <ng-content></ng-content>
+    <mat-icon></mat-icon><!-- placeholder - actual icon filled in by alert type -->
+    <div>
+        <ng-content></ng-content>
+    </div>
 </div>

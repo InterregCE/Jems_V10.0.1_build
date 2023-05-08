@@ -7,6 +7,7 @@ jems-top-bar {
   width: 100%;
   position: relative;
   top: 0;
+  box-shadow: var(--navigation-shadow);
 }
 
 mat-sidenav-content {
@@ -42,9 +43,8 @@ ul {
 }
 
 .side-nav-container {
-  margin-left: 1rem;
   margin-right: 1rem;
-  padding-top: 0.5rem;
+  padding-top: 0;
   width: $sidebarSize;
   height: 100%;
   background-color: var(--sidebar-background-color);
@@ -53,7 +53,7 @@ ul {
   .shadows {
     box-sizing: border-box;
     border-left: 1px solid rgba(0, 0, 0, 0.2);
-    border-right: 1px solid rgba(0, 0, 0, 0.2);
+    border-right: 1px solid rgba(0, 0, 0, 0.125);
     pointer-events: none;
     position:absolute;
     top:0;
@@ -67,13 +67,12 @@ ul {
   &.stayVisible {
     transform: translate3d(0, 0, 0) !important;
     visibility: visible !important;
-    width: .1rem !important;
+    width: 1rem !important;
     transition: width 0.2s ease-out, border 0.5s ease-out;
     .shadows {
       border-left: 1px solid var(--primary-halftone-color);
       border-right: 1px solid var(--primary-halftone-color);
     }
-
     jems-side-nav {
       display: none;
     }
