@@ -304,7 +304,7 @@ context('Control report tests', () => {
           cy.get('.mat-autocomplete-visible').children('mat-option').eq(0).contains(testData.institution.institutionUsers[0].userEmail);
           cy.get('.mat-autocomplete-visible').children('mat-option').eq(1).contains(testData.institution.institutionUsers[1].userEmail);
           cy.contains('mat-option', testData.institution.institutionUsers[0].userEmail).click();
-          cy.contains('Save changes').click();
+          cy.contains('Save changes').should('be.visible').click();
 
           cy.get('input[name="controlUser"]').eq(1).click();
           cy.contains('mat-option', testData.institution.institutionUsers[0].userEmail).click();
@@ -323,7 +323,7 @@ context('Control report tests', () => {
           cy.get('input[name="name"]').clear().type(controllerUser1.name);
           cy.get('input[name="surname"]').clear().type(controllerUser1.surname);
           cy.get('input[name="email"]').clear().type(controllerUser1.email);
-          cy.contains('Save changes').click();
+          cy.contains('Save changes').should('be.visible').click();
 
           const userInfoInitial = `${controllerUser1.name} ${controllerUser1.surname} - ${controllerUser1.email}`;
           cy.loginByRequest(controllerUser1.email);
@@ -349,7 +349,7 @@ context('Control report tests', () => {
           cy.get('input[name="name"]').clear().type(controllerUser1.name);
           cy.get('input[name="surname"]').clear().type(controllerUser1.surname);
           cy.get('input[name="email"]').clear().type(controllerUser1.email);
-          cy.contains('Save changes').click();
+          cy.contains('Save changes').should('be.visible').click();
 
           const userInfoUpdated = `${controllerUser1.name} ${controllerUser1.surname} - ${controllerUser1.email}`;
           cy.loginByRequest(controllerUser1.email);
