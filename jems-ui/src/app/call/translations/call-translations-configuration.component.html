@@ -2,6 +2,15 @@
                          titleKey="call.detail.translations.title"
                          descriptionKey="call.detail.translations.subtitle">
 
+    <div>
+    <jems-alert
+            [show]="true"
+            [closable]="false"
+            [type]="Alert.WARNING">
+        {{'call.detail.translations.warning' | translate}}
+    </jems-alert>
+    </div>
+
     <input class="file-input" accept=".properties" type="file" #fileInput onclick="this.value=null;"
            (change)="upload($event, data.callId)">
 
@@ -10,7 +19,7 @@
         <p>{{ alert.i18nMessage | translate : alert.i18nArgs }}</p>
     </jems-alert>
 
-    <mat-table jemsNoWidthLimit [dataSource]="dataSource">
+    <mat-table [dataSource]="dataSource" class="table">
 
         <ng-container matColumnDef="language">
             <mat-header-cell *matHeaderCellDef>
@@ -52,11 +61,11 @@
                 </span>
                 <button color="primary" mat-icon-button
                         (click)="languageToUpload = translation.language; fileInput.click()">
-                    <mat-icon fontSet="material-icons-outlined">file_upload</mat-icon>
+                    <mat-icon>upload</mat-icon>
                 </button>
                 <button color="primary" mat-icon-button [disabled]="!translation.file"
                         (click)="download(data.callId, translation.file)">
-                    <mat-icon fontSet="material-icons-outlined">file_download</mat-icon>
+                    <mat-icon>download</mat-icon>
                 </button>
                 <button color="accent" mat-icon-button [disabled]="!translation.file"
                         (click)="delete(data.callId, translation)">

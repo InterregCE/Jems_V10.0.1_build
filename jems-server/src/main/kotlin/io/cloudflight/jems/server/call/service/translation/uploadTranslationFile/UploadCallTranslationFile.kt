@@ -58,7 +58,7 @@ class UploadCallTranslationFile(
         // content, which is used for auto-refresh
         val content = updatedLinesOnlyNotEmpty.joinToString(LINE_ENDING).toByteArray(PROPERTIES_CHARSET)
 
-        if (updatedLinesOnlyNotEmpty.size > 100)
+        if (updatedLinesOnlyNotEmpty.size > 5000)
             throw TooManyCallSpecificTranslations()
 
         val fileName = storageFileNameFor(callId, language)
