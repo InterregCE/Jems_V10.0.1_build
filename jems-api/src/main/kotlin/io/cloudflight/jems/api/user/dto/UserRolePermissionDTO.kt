@@ -24,6 +24,7 @@ enum class UserRolePermissionDTO(val key: String) {
 
     ProjectContractingPartnerView("ProjectContractingPartnerView"),
     ProjectContractingPartnerEdit("ProjectContractingPartnerEdit"),
+    ProjectContractingPartnerReOpen("ProjectContractingPartnerReOpen"),
 
     ProjectContractingView("ProjectContractingView"),
     ProjectSetToContracted("ProjectSetToContracted"),
@@ -120,5 +121,4 @@ enum class UserRolePermissionDTO(val key: String) {
 
     AuditRetrieve("AuditRetrieve"),
     // endregion top navigation
-
 }

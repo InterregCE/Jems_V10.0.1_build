@@ -196,6 +196,7 @@ fun ProjectPartnerReportCreate.toEntity(
         currency = identification.currency
     ),
     projectReport = null,
+    lastReSubmission = null
 )
 
 fun List<PreviouslyReportedFund>.toEntity(
