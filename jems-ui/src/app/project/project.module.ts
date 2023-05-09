@@ -526,6 +526,9 @@ import { SharedFolderPageComponent } from './project-application/shared-folder/s
 import {
   ProjectReportExportsTabComponent
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-exports-tab/project-report-exports-tab.component';
+import {
+  PartnerReportProcurementGdprAttachmentComponent
+} from '@project/project-application/report/partner-report-detail-page/partner-report-procurements-tab/partner-report-procurement-detail/partner-report-procurement-gdpr-attachment/partner-report-procurement-gdpr-attachment.component';
 
 @NgModule({
   declarations: [
@@ -648,6 +651,7 @@ import {
     PartnerReportProcurementBeneficialComponent,
     PartnerReportProcurementSubcontractComponent,
     PartnerReportProcurementAttachmentComponent,
+    PartnerReportProcurementGdprAttachmentComponent,
     PartnerReportContributionTabComponent,
     PartnerReportExpendituresTabComponent,
     PartnerReportExpendituresParkedComponent,

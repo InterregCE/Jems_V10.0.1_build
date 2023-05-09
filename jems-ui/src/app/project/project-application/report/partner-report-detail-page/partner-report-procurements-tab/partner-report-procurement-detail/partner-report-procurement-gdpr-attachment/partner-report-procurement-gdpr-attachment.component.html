@@ -1,0 +1,42 @@
+<jems-form *ngIf="data$ | async as data">
+    <form jemsFormLayout>
+        <h3>{{ 'project.application.partner.report.procurements.gdpr.attachment.title' | translate }}</h3>
+
+        <jems-alert [closable]="false" [show]="true" [type]="Alert.INFO">
+            <span>{{'project.application.partner.report.expenditures.tab.cost.field.sensitive.info' | translate}}</span>
+        </jems-alert>
+
+        <jems-file-list-table jemsNoWidthLimit
+                [fileList]="data.attachments"
+                [setDescriptionCallback]="setDescriptionCallback"
+                [deleteCallback]="deleteCallback"
+                (onDownload)="downloadFile($event)"
+                (refresh)="procurementStore.filesChanged$.next()">
+        </jems-file-list-table>
+
+        <div *ngIf="data.isReportEditable && data.userCanWorkWithSensitiveData">
+            <input #selectFile (change)="uploadFile($event?.target)"
+                   type="file" [accept]="acceptedFilesTypes" [hidden]="true">
+            <jems-pending-button (clicked)="selectFile.click()"
+                                 type="secondary"
+                                 icon="file_upload"
+                                 [disabled]="data.attachments.length >= 30"
+                                 [buttonOptions]="{class: 'mr-1 font-size-medium', fontSet: 'material-icons-outlined'}"
+                                 [pending]="isUploadInProgress">
+                {{ 'file.upload.add.new' | translate }}
+            </jems-pending-button>
+        </div>
+
+        <jems-alert *ngIf="procurementStore.gdprError$ | async as error"
+                    [show]="!!error"
+                    [type]="Alert.ERROR">
+            <jems-api-error-content [error]="error"></jems-api-error-content>
+        </jems-alert>
+        <jems-alert *ngIf="fileSizeOverLimitError$ | async as showError"
+                    [show]="showError"
+                    [type]="Alert.ERROR">
+            <p>{{'project.file.size.over.limit' | translate}} {{maximumAllowedFileSizeInMB}} MB</p>
+        </jems-alert>
+
+    </form>
+</jems-form>

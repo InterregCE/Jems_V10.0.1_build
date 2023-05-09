@@ -1,5 +1,10 @@
 <jems-form>
     <h3>{{'project.application.partner.report.tab.annexes' | translate}}</h3>
+
+    <jems-alert [closable]="false" [show]="true" [type]="Alert.INFO">
+        <span>{{'project.application.partner.report.expenditures.tab.cost.field.sensitive.info' | translate}}</span>
+    </jems-alert>
+
     <div jemsNoWidthLimit id="report-files" class="overflow-auto">
         <jems-category-tree
                 [categories]="reportFileManagementStore.fileCategories$ | async"

@@ -41,6 +41,8 @@ class DeleteCallTranslationFileTest : UnitTest() {
     @Test
     fun `previous file is archived`() {
         every { filePersistence.fileIdIfExists("CallTranslation/000017/", "call-id-17-Application_no.properties") } returns 655L
+        every{ messageSource.clearCache() } answers {}
+
         val fileArchivedNameSlot = slot<String>()
         every { fileService.moveFile(655L, capture(fileArchivedNameSlot), "CallTranslationArchive/000017/") } answers { }
         every { appProperties.translationsFolder } returns "transl-folder"

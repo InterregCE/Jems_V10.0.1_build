@@ -18,6 +18,7 @@ import io.cloudflight.jems.server.project.repository.report.partner.contribution
 import io.cloudflight.jems.server.project.repository.report.partner.expenditure.ProjectPartnerReportExpenditureRepository
 import io.cloudflight.jems.server.project.repository.report.partner.procurement.ProjectPartnerReportProcurementRepository
 import io.cloudflight.jems.server.project.repository.report.partner.procurement.attachment.ProjectPartnerReportProcurementAttachmentRepository
+import io.cloudflight.jems.server.project.repository.report.partner.procurement.gdprAttachment.ProjectPartnerReportProcurementGdprAttachmentRepository
 import io.cloudflight.jems.server.project.repository.report.partner.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableRepository
 import io.cloudflight.jems.server.project.repository.report.partner.workPlan.ProjectPartnerReportWorkPackageActivityRepository
 import io.cloudflight.jems.server.project.repository.report.partner.workPlan.ProjectPartnerReportWorkPackageOutputRepository
@@ -167,6 +168,9 @@ class ProjectPartnerReportFilePersistenceProviderTest : UnitTest() {
     @MockK
     lateinit var fileRepository: JemsProjectFileService
 
+    @MockK
+    lateinit var reportProcurementGdprAttachmentRepository: ProjectPartnerReportProcurementGdprAttachmentRepository
+
     @InjectMockKs
     lateinit var persistence: ProjectPartnerReportFilePersistenceProvider
 
@@ -273,6 +277,25 @@ class ProjectPartnerReportFilePersistenceProviderTest : UnitTest() {
 
         assertThat(persistence
             .addPartnerReportProcurementAttachment(reportId = 48L, file = fileCreate, procurementId = procurementId)
+        ).isEqualTo(resultMock)
+    }
+
+    @Test
+    fun addPartnerReportProcurementGdprAttachment() {
+        val oldFile = mockk<JemsFileMetadataEntity>() // this is not used here
+        mockFileDeletion(oldFile)
+
+        val procurementId = 500L
+        val procurement = mockk<ProjectPartnerReportProcurementEntity>()
+        every { procurementRepository.getById(procurementId) } returns procurement
+
+        val fileCreate = fileCreate(type = JemsFileType.ProcurementGdprAttachment)
+        val extraStep = slot<(JemsFileMetadataEntity) -> Unit>()
+        val resultMock = mockk<JemsFileMetadata>()
+        every { fileRepository.persistFileAndPerformAction(fileCreate, capture(extraStep)) } returns resultMock
+
+        assertThat(persistence
+            .addPartnerReportProcurementGdprAttachment(reportId = 48L, file = fileCreate, procurementId = procurementId)
         ).isEqualTo(resultMock)
     }
 

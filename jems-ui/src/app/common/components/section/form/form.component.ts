@@ -12,12 +12,12 @@ import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confir
   animations: [
     trigger('slideInOut', [
       transition(':enter', [
-        style({opacity: '0', height: '0', 'min-height': '0'}),
+        style({'opacity': '0', 'height': '0', 'min-height': '0'}),
         animate('250ms ease-in-out', style({}))
       ]),
       transition(':leave', [
         style({'min-height': '4rem'}),
-        animate('250ms ease-in-out', style({opacity: '0', height: '0', 'min-height': '0'}))
+        animate('250ms ease-in-out', style({'opacity': '0', 'height': '0', 'min-height': '0'}))
       ]),
     ]),
   ],

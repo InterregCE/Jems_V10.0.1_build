@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service.report.partner.file.listProje
 
 import io.cloudflight.jems.server.common.SENSITIVE_FILE_NAME_MAKS
 import io.cloudflight.jems.server.common.SENSITIVE_TRANSLATION_MAKS
+import io.cloudflight.jems.server.common.anonymize
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.file.service.model.JemsFile
@@ -98,6 +99,7 @@ class ListProjectPartnerReportFile(
         for ((fileType, files) in fileTypeToFiles) {
             when(fileType) {
                 Expenditure -> anonymizeExpenditureFileNames(files, partnerId, reportId)
+                ProcurementGdprAttachment -> anonymizeProcurementGdprFileNames(files)
                 else -> {}
             }
         }
@@ -115,4 +117,6 @@ class ListProjectPartnerReportFile(
         }
     }
 
+    private fun anonymizeProcurementGdprFileNames(files: List<JemsFile>) =
+        files.onEach { it.anonymize() }
 }

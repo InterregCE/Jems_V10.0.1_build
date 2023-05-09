@@ -105,6 +105,7 @@ class JemsProjectFileRepositoryTest : UnitTest() {
         "Output",
         "Expenditure",
         "ProcurementAttachment",
+        "ProcurementGdprAttachment",
         "Contribution",
 
         "ControlDocument",
@@ -175,6 +176,7 @@ class JemsProjectFileRepositoryTest : UnitTest() {
         "Output",
         "Expenditure",
         "ProcurementAttachment",
+        "ProcurementGdprAttachment",
         "Contribution",
 
         "ControlDocument",

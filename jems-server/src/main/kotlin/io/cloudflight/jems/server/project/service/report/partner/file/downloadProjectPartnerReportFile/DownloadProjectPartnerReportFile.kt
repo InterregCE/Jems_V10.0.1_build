@@ -20,7 +20,6 @@ class DownloadProjectPartnerReportFile(
     @ExceptionWrapper(DownloadProjectPartnerReportFileException::class)
     override fun download(partnerId: Long, fileId: Long): Pair<String, ByteArray> {
 
-
         if(isGdprProtected(fileId = fileId, partnerId = partnerId) &&
                 !sensitiveDataAuthorization.canViewPartnerSensitiveData(partnerId)) {
             throw SensitiveFileException()

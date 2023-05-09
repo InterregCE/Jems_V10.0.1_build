@@ -43,6 +43,7 @@ class JemsProjectFileService(
             JemsFileType.Output,
             JemsFileType.Expenditure,
             JemsFileType.ProcurementAttachment,
+            JemsFileType.ProcurementGdprAttachment,
             JemsFileType.Contribution,
 
             // Partner Control

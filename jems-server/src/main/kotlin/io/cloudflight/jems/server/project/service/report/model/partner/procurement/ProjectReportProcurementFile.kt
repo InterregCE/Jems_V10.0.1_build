@@ -8,10 +8,10 @@ data class ProjectReportProcurementFile(
     val id: Long,
     val reportId: Long,
     var createdInThisReport: Boolean = false,
-    val name: String,
+    var name: String,
     val type: JemsFileType,
     val uploaded: ZonedDateTime,
     val author: UserSimple,
     val size: Long,
-    val description: String
+    var description: String
 )
