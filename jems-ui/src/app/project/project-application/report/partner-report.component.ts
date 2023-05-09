@@ -1,6 +1,11 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, TemplateRef, ViewChild} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
-import {ProjectPartnerReportSummaryDTO, ProjectPartnerSummaryDTO, UserRoleDTO} from '@cat/api';
+import {
+  PageProjectPartnerReportSummaryDTO,
+  ProjectPartnerReportSummaryDTO,
+  ProjectPartnerSummaryDTO, ProjectVersionDTO,
+  UserRoleDTO
+} from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {catchError, distinctUntilChanged, filter, finalize, map, switchMap, take, tap} from 'rxjs/operators';
@@ -32,6 +37,7 @@ import {
 } from '@project/project-application/report/project-report/project-report-page-store.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import StatusEnum = ProjectPartnerReportSummaryDTO.StatusEnum;
+import {ReportUtil} from '@project/common/report-util';
 
 @UntilDestroy()
 @Component({
@@ -44,6 +50,7 @@ export class PartnerReportComponent {
   PermissionsEnum = PermissionsEnum;
   ProjectPartnerReportSummaryDTO = ProjectPartnerReportSummaryDTO;
   successfulDeletionMessage: boolean;
+  ReportUtil = ReportUtil;
 
   @ViewChild('numberingCell', {static: true})
   numberingCell: TemplateRef<any>;
@@ -81,6 +88,7 @@ export class PartnerReportComponent {
     canEditReport: boolean;
     currentApprovedVersion: string | undefined;
     canViewProjectReport: boolean;
+    canCreateReport: boolean;
   }>;
   currentApprovedVersion: string;
   canViewProjectReport: boolean;
@@ -120,9 +128,9 @@ export class PartnerReportComponent {
       pageStore.institutionUserCanViewControlReports$,
       versionStore.lastApprovedOrContractedVersion$,
       projectReportPageStore.userCanViewReport$,
-
+      pageStore.canCreateReport$,
     ]).pipe(
-      map(([partnerReports, partner, canEditReport, isController, approvedVersion, canViewProjectReport]) => {
+      map(([partnerReports, partner, canEditReport, isController, approvedVersion, canViewProjectReport, canCreateReport]: [PageProjectPartnerReportSummaryDTO, ProjectPartnerSummaryDTO, boolean, boolean, ProjectVersionDTO | undefined, boolean, boolean]) => {
           return {
             totalElements: partnerReports.totalElements,
             partnerReports: partnerReports.content.map(report => ({
@@ -132,14 +140,15 @@ export class PartnerReportComponent {
             partner,
             canEditReport,
             currentApprovedVersion: approvedVersion?.version,
-            canViewProjectReport
+            canViewProjectReport,
+            canCreateReport
           };
         }
       ),
       tap(data => {
         data.partnerReports.forEach((report) => {
           this.controlActionMap.set(report.id, new BehaviorSubject<boolean>(false));
-          if (report.status === StatusEnum.Draft && report.reportNumber === data.totalElements) {
+          if (report.reportNumber === data.totalElements && report.status === StatusEnum.Draft) {
             this.deletableReportId = report.reportNumber;
           }
           this.currentApprovedVersion = data.currentApprovedVersion ?? '';
@@ -213,6 +222,17 @@ export class PartnerReportComponent {
           elementProperty: 'firstSubmission',
           columnType: ColumnType.DateColumn,
           columnWidth: ColumnWidth.DateColumn
+        },
+        {
+          displayedColumn: 'project.application.partner.reports.table.last.submission',
+          elementProperty: 'lastSubmission',
+          columnType: ColumnType.DateColumn,
+          columnWidth: ColumnWidth.DateColumn
+        },
+        {
+          displayedColumn: 'project.application.partner.reports.table.amount.submitted',
+          elementProperty: 'amountSubmitted',
+          columnType: ColumnType.Decimal,
         },
         ...(thereIsCertified) ? [{
           displayedColumn: 'project.application.partner.reports.table.control.end',

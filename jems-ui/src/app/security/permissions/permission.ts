@@ -191,16 +191,26 @@ export class Permission {
         },
         {
           name: 'project.application.partner.reports.title',
-          mode: PermissionMode.HIDDEN_VIEW_EDIT,
-          viewPermissions: [PermissionsEnum.ProjectReportingView],
-          editPermissions: [PermissionsEnum.ProjectReportingEdit],
-          editTooltip: 'permission.inspect.reporting'
-        },
-          {
+          children: [
+            {
+              name: 'project.application.partner.reports.title',
+              mode: PermissionMode.HIDDEN_VIEW_EDIT,
+              viewPermissions: [PermissionsEnum.ProjectReportingView],
+              editPermissions: [PermissionsEnum.ProjectReportingEdit],
+              editTooltip: 'permission.inspect.reporting'
+            },
+            {
+              name: 'project.application.partner.reports.reopen',
+              mode: PermissionMode.TOGGLE_EDIT,
+              editPermissions: [PermissionsEnum.ProjectReportingReOpen]
+            },
+            {
               name: 'project.application.partner.reports.checklist.after.control',
               mode: PermissionMode.TOGGLE_EDIT,
               editPermissions: [PermissionsEnum.ProjectReportingChecklistAfterControl],
-          },
+            }
+          ]
+        }
       ]
     },
     {

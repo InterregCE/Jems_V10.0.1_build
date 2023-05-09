@@ -1,6 +1,6 @@
 <jems-form *ngIf="data$ | async as data">
     <h3>{{'project.application.partner.report.submit.title' | translate }}</h3>
-    <div *ngIf="data.userCanEditReport && data.reportStatus === StatusEnum.Draft">
+    <div *ngIf="data.userCanEditReport && ReportUtil.isPartnerReportSubmittable(data.reportStatus)">
         <p>{{'project.application.partner.report.submit.description.one' | translate}} : {{'common.label.project.partner.role.shortcut.' + data.partnerReport?.identification?.partnerRole | adaptTranslationKeyByCallType | async | translate : {partner: data.partnerReport?.identification?.partnerNumber + ' ' + data.partnerSummary.abbreviation} }} - {{'project.application.partner.reports.title.number' | translate : {reportNumber: data.partnerReport?.reportNumber} }}</p>
         <p>{{'project.application.partner.report.submit.description.two' | translate}}</p>
     </div>
@@ -14,7 +14,7 @@
         <span>{{'project.application.partner.report.alert.info' | translate}}</span>
     </jems-alert>
 
-    <div jemsNoWidthLimit *ngIf="data.userCanEditReport && data.reportStatus === StatusEnum.Draft">
+    <div jemsNoWidthLimit *ngIf="data.userCanEditReport && ReportUtil.isPartnerReportSubmittable(data.reportStatus)">
         <jems-pending-button [pending]="preCheckPending" [disabled]="submissionAvailable" class="mr-2 mt-2"
                              (clicked)="runPreCheckOnReport(data.partnerSummary.id, data.partnerReport.id)">
             {{ 'project.detail.button.pre.condition.check' | translate }}

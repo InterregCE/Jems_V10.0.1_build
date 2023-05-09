@@ -11,7 +11,7 @@ import {combineLatest, Observable} from 'rxjs';
 import {
   ProjectPartnerContributionDTO,
   ProjectPartnerReportContributionDTO,
-  ProjectPartnerReportContributionWrapperDTO
+  ProjectPartnerReportContributionWrapperDTO, ProjectPartnerReportDTO
 } from '@cat/api';
 import {catchError, finalize, map, take, tap} from 'rxjs/operators';
 import {
@@ -85,6 +85,7 @@ export class PartnerReportContributionTabComponent {
     }),
   });
   isUploadDone = false;
+  isReportReopenedLimited = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -95,15 +96,19 @@ export class PartnerReportContributionTabComponent {
     private partnerFileManagementStore: PartnerFileManagementStore,
     private routingService: RoutingService
   ) {
+    this.formService.init(this.contributionForm, this.partnerReportDetailPageStore.reportEditable$);
     this.savedContribution$ = combineLatest([
       this.pageStore.partnerContribution$,
       this.partnerReportDetailPageStore.reportEditable$,
+      this.pageStore.currentReport$
     ]).pipe(
-      tap(([contribution]) => this.resetForm(contribution)),
+      tap(([contribution,,currentReport]) => {
+        this.isReportReopenedLimited = currentReport.status === ProjectPartnerReportDTO.StatusEnum.ReOpenSubmittedLimited || currentReport.status === ProjectPartnerReportDTO.StatusEnum.ReOpenInControlLimited;
+        this.resetForm(contribution);
+      }),
       tap(([,editable]) => this.generateColumns(editable)),
       map(([contribution]) => contribution),
     );
-    this.formService.init(this.contributionForm, this.partnerReportDetailPageStore.reportEditable$);
   }
 
   resetForm(contribution: ProjectPartnerReportContributionWrapperDTO) {
@@ -113,9 +118,20 @@ export class PartnerReportContributionTabComponent {
     contribution.contributions.forEach(contrib => this.addContribution(contrib));
     this.overview.patchValue(contribution.overview);
     this.formService.resetEditable();
+    if (this.isReportReopenedLimited) {
+      for (const element of this.contributions.controls) {
+        element.get('currentlyReported')?.disable();
+      }
+    }
   }
 
   saveForm() {
+    if (this.isReportReopenedLimited) {
+      for (const element of this.contributions.controls) {
+        element.get('currentlyReported')?.enable();
+      }
+    }
+
     this.pageStore.saveContribution({
       toBeUpdated: this.contributions.controls.filter(contribution => contribution.value.id).map(contribution => contribution.value),
       toBeDeletedIds: this.toBeDeletedIds,

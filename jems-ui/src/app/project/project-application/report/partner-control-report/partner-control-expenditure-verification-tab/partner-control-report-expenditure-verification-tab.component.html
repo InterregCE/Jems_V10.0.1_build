@@ -9,6 +9,10 @@
             <p>{{'project.application.partner.report.tab.expenditure.verification.typology.warning' | translate}}</p>
         </jems-alert>
 
+        <jems-alert [show]="isReportReopened" [type]="Alert.WARNING">
+            <p>{{'project.application.partner.report.tab.expenditure.locked.due.to.reopening.warning' | translate}}</p>
+        </jems-alert>
+
         <form jemsFormLayout [formGroup]="reportExpendituresForm">
             <div id="table-container" jemsNoWidthLimit *ngIf="tableData.length > 0">
                 <jems-multi-language-container>

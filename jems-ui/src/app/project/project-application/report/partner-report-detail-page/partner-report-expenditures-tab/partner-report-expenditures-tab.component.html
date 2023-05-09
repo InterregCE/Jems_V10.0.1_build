@@ -3,6 +3,9 @@
                (discard)="refreshListOfExpenditures()">
         <h3>{{'project.application.partner.report.expenditures.title' | translate}}</h3>
         <p>{{'project.application.partner.report.expenditures.currencies.info.message' | translate}}</p>
+        <jems-alert *ngIf="data.isReopened" [show]="true" [type]="Alert.WARNING">
+            <p>{{'project.application.partner.report.expenditures.locked.due.to.reopened.message' | translate}}</p>
+        </jems-alert>
         <form jemsFormLayout [formGroup]="reportExpendituresForm">
             <div id="table-container" jemsNoWidthLimit *ngIf="tableData.length > 0">
                 <jems-multi-language-container>
@@ -701,7 +704,7 @@
                     </mat-table>
                 </jems-multi-language-container>
             </div>
-            <button *ngIf="isReportEditable$ | async"
+            <button *ngIf="data.isReportEditable"
                     mat-stroked-button type="button" class="mt-2"
                     [disabled]="items.length >= constants.MAX_NUMBER_OF_ITEMS"
                     (click)="addNewItem()">
@@ -711,7 +714,7 @@
         </form>
 
         <jems-partner-report-expenditures-parked
-                *ngIf="data.parkedExpenditures.length && isReportEditable$ | async"
+                *ngIf="data.parkedExpenditures.length && data.isReportEditable"
                 [listDirty$]="formService.dirty$"
                 [expenditures]="data.parkedExpenditures"
                 [columns]="data.columnsToDisplay">

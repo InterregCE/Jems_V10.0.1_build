@@ -32,6 +32,7 @@ export class PartnerReportPageStore {
   institutionUserCanViewControlReports$: Observable<boolean>;
   institutionUserCanEditControlReports$: Observable<boolean>;
   userCanViewGdpr$: Observable<boolean>;
+  canCreateReport$: Observable<boolean>;
 
   newPageSize$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_SIZE);
   newPageIndex$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_INDEX);
@@ -55,6 +56,7 @@ export class PartnerReportPageStore {
     this.institutionUserCanViewControlReports$ = this.institutionUserCanViewControlReports();
     this.institutionUserCanEditControlReports$ = this.institutionUserCanEditControlReports();
     this.userCanViewGdpr$ = this.userCanViewGdpr();
+    this.canCreateReport$ = this.canCreateReport();
   }
 
   createPartnerReport(): Observable<ProjectPartnerReportSummaryDTO> {
@@ -173,6 +175,13 @@ export class PartnerReportPageStore {
         userCanEditReport && currentUserPartnerCollaborations.find(el => el.partnerId === partnerId)?.gdpr === true
       ),
     );
+  }
+
+  canCreateReport(): Observable<boolean> {
+    return this.partnerId$
+      .pipe(
+        switchMap((partnerId) => this.projectPartnerReportService.canReportBeCreated(partnerId as number)),
+      );
   }
 
 }

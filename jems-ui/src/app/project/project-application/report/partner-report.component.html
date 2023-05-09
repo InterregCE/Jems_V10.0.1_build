@@ -16,6 +16,7 @@
             <jems-pending-button jemsText class="mb-3"
                                  icon="add"
                                  (clicked)="createPartnerReport()"
+                                 [disabled]="!data.canCreateReport"
                                  [pending]="actionPending">
                 {{'project.application.partner.reports.add' | translate}}
             </jems-pending-button>
@@ -90,8 +91,7 @@
                                  [pending]="getPendingActionStatus(partnerReport.id) | async">
                 {{'project.application.partner.reports.start.control' | translate}}
             </jems-pending-button>
-            <a jemsText *ngIf="(partnerReport.status === ProjectPartnerReportSummaryDTO.StatusEnum.InControl
-                         || partnerReport.status === ProjectPartnerReportSummaryDTO.StatusEnum.Certified)
+            <a jemsText *ngIf="(ReportUtil.isControlReportExists(partnerReport.status))
                          && ((pageStore.userCanEditReport$ | async) || (pageStore.userCanViewReport$ | async))"
                mat-stroked-button type="submit" class="ml-1"
                [routerLink]="partnerReport.routeToControl">

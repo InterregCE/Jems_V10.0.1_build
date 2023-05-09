@@ -107,7 +107,7 @@
                     </mat-header-cell>
 
                     <mat-cell *matCellDef="let control; let i = index" [formGroupName]="i" class="justify-end">
-                        <span>{{control.value.previouslyReported + control.value.currentlyReported | asMoney }}</span>
+                        <span>{{control.value.previouslyReported + (control.value.currentlyReported ?? 0) | asMoney }}</span>
                     </mat-cell>
                 </ng-container>
 
@@ -151,6 +151,7 @@
             <button *ngIf="contributionForm.enabled && contributions.length <= 24"
                     jemsText mat-stroked-button
                     color="primary"
+                    [disabled]="isReportReopenedLimited"
                     (click)="addContribution(null)">
                 <mat-icon>add</mat-icon>
             </button>
