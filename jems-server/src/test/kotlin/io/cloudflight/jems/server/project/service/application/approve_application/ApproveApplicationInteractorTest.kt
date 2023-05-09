@@ -7,6 +7,8 @@ import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
+import io.cloudflight.jems.server.controllerInstitution.service.model.ProjectPartnerAssignmentMetadata
 import io.cloudflight.jems.server.project.authorization.ProjectAuthorization
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
@@ -23,6 +25,8 @@ import io.cloudflight.jems.server.project.service.application.workflow.states.fi
 import io.cloudflight.jems.server.project.service.model.ProjectAssessment
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentQuality
+import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -30,6 +34,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.slot
 import io.mockk.verify
+import java.time.LocalDate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -37,7 +42,6 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
-import java.time.LocalDate
 
 class ApproveApplicationInteractorTest : UnitTest() {
 
@@ -54,6 +58,21 @@ class ApproveApplicationInteractorTest : UnitTest() {
             note = "make approval",
             date = LocalDate.of(2021, 4, 13),
             entryIntoForceDate = LocalDate.of(2021, 4, 13),
+        )
+        private val partnerAssignmentMetadata = ProjectPartnerAssignmentMetadata(
+            partnerId = 1L,
+            partnerNumber = 1,
+            partnerAbbreviation = "LP1",
+            partnerRole = ProjectPartnerRole.LEAD_PARTNER,
+            partnerActive = true,
+            addressNuts3 = "Wien (AT130)",
+            addressNuts3Code = "AT130",
+            addressCountry = "Austria",
+            addressCountryCode = "AT",
+            addressCity = "Wien",
+            addressPostalCode = "299281",
+            projectIdentifier = "0001",
+            projectAcronym = "Project Test"
         )
     }
 
@@ -84,6 +103,12 @@ class ApproveApplicationInteractorTest : UnitTest() {
     @MockK
     lateinit var eligibleStateStep1: FirstStepEligibleApplicationState
 
+    @MockK
+    lateinit var partnerPersistence: PartnerPersistence
+
+    @MockK
+    lateinit var controllerInstitutionPersistence: ControllerInstitutionPersistence
+
     @BeforeEach
     fun clearMocks() {
         clearMocks(auditPublisher)
@@ -91,6 +116,7 @@ class ApproveApplicationInteractorTest : UnitTest() {
 
     @Test
     fun `approve when in STEP2`() {
+        every { partnerPersistence.getCurrentPartnerAssignmentMetadata(PROJECT_ID) } returns listOf(partnerAssignmentMetadata)
         every { projectPersistence.getProject(PROJECT_ID) } returns projectWithId(PROJECT_ID, status = ELIGIBLE).copy(
             assessmentStep2 = ProjectAssessment(assessmentQuality = ProjectAssessmentQuality(PROJECT_ID, 2, RECOMMENDED_FOR_FUNDING))
         )
@@ -145,6 +171,8 @@ class ApproveApplicationInteractorTest : UnitTest() {
 
     @Test
     fun `approve when submitted precontracted checks modification permission`() {
+        every { partnerPersistence.getCurrentPartnerAssignmentMetadata(PROJECT_ID) } returns listOf(partnerAssignmentMetadata)
+        every { controllerInstitutionPersistence.updatePartnerDataInAssignments(listOf(partnerAssignmentMetadata)) } returns Unit
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns summary(ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED)
         every { applicationStateFactory.getInstance(any()) } returns eligibleState
         every { eligibleState.approve(actionInfo) } returns APPROVED
@@ -153,5 +181,4 @@ class ApproveApplicationInteractorTest : UnitTest() {
 
         // verify CanApproveApplication annotation
     }
-
 }

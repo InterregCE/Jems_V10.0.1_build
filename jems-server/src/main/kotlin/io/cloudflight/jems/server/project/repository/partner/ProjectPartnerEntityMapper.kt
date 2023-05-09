@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.entity.addTranslationEntities
 import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.common.entity.extractTranslation
+import io.cloudflight.jems.server.controllerInstitution.service.model.ProjectPartnerAssignmentMetadata
 import io.cloudflight.jems.server.payments.entity.PartnerWithContributionsRow
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.programme.entity.stateaid.ProgrammeStateAidEntity
@@ -48,9 +49,9 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAd
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerContact
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerMotivation
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerPaymentSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerStateAid
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerPaymentSummary
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import java.math.BigDecimal
 import java.time.ZoneOffset
@@ -593,3 +594,24 @@ fun extractPaymentSummaryFromRows(rows: List<PartnerWithContributionsRow>): Proj
         partnerContributionsSpf = spfContributions
     )
 }
+
+fun Iterable<ProjectPartnerEntity>.onlyAssignmentMetadata() = map {
+    ProjectPartnerAssignmentMetadata(
+        partnerId = it.id,
+        partnerNumber = it.sortNumber,
+        partnerAbbreviation = it.abbreviation,
+        partnerRole = it.role,
+        partnerActive = it.active,
+        addressNuts3 = it.organizationAddress()?.nutsRegion3,
+        addressNuts3Code = it.organizationAddress()?.nutsRegion3Code,
+        addressCountry = it.organizationAddress()?.country,
+        addressCountryCode = it.organizationAddress()?.countryCode,
+        addressCity = it.organizationAddress()?.city,
+        addressPostalCode = it.organizationAddress()?.postalCode,
+        projectIdentifier = it.project.customIdentifier,
+        projectAcronym = it.project.acronym,
+    )
+}
+
+private fun ProjectPartnerEntity.organizationAddress() = addresses
+    ?.firstOrNull { it.addressId.type == ProjectPartnerAddressType.Organization }?.address

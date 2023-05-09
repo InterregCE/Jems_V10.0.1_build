@@ -101,7 +101,7 @@ fun listOfApplicationStates() =
         ),
         Pair(
             ApplicationStatus.APPROVED,
-            ApprovedApplicationState(mockk(relaxed = true), mockk(), mockk(), mockk(), mockk(), mockk())
+            ApprovedApplicationState(mockk(relaxed = true), mockk(), mockk(), mockk(), mockk(), mockk(), mockk())
         ),
         Pair(
             ApplicationStatus.APPROVED_WITH_CONDITIONS,

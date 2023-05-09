@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service.application.approve_modificat
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.service.checkInstitutionPartnerAssignment.CheckInstitutionPartnerAssignments
 import io.cloudflight.jems.server.project.authorization.CanApproveModification
 import io.cloudflight.jems.server.project.service.ProjectPersistence
@@ -11,6 +12,7 @@ import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.application.ifIsValid
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
 import io.cloudflight.jems.server.project.service.contracting.reporting.updateContractingReporting.UpdateContractingReportingInteractor
+import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.projectStatusChanged
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
@@ -24,7 +26,9 @@ class ApproveModification(
     private val applicationStateFactory: ApplicationStateFactory,
     private val auditPublisher: ApplicationEventPublisher,
     private val updateContractingReportingService: UpdateContractingReportingInteractor,
-    private val checkInstitutionPartnerAssignments: CheckInstitutionPartnerAssignments
+    private val checkInstitutionPartnerAssignments: CheckInstitutionPartnerAssignments,
+    private val partnerPersistence: PartnerPersistence,
+    private val controllerInstitutionPersistence: ControllerInstitutionPersistence,
 ) : ApproveModificationInteractor {
 
     @CanApproveModification
@@ -35,6 +39,10 @@ class ApproveModification(
             projectPersistence.getProjectSummary(projectId).let { projectSummary ->
                 applicationStateFactory.getInstance(projectSummary).approveModification(actionInfo).also {
                     projectVersionPersistence.updateTimestampForApprovedModification(projectId)
+                    // update versioned data inside institution-assignment table
+                    controllerInstitutionPersistence.updatePartnerDataInAssignments(
+                        partners = partnerPersistence.getCurrentPartnerAssignmentMetadata(projectId)
+                    )
                     auditPublisher.publishEvent(projectStatusChanged(this, projectSummary, newStatus = it))
                     updateContractingReportingService.checkNoLongerAvailablePeriodsAndDatesToRemove(projectId)
                     checkInstitutionPartnerAssignments.checkInstitutionAssignmentsToRemoveForUpdatedPartners(projectId)

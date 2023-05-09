@@ -3,14 +3,18 @@ package io.cloudflight.jems.server.controllerInstitution.service.assignInstituti
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
-import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.approvedAndAfterApprovedApplicationStatuses
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionAssignment
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignment
 import io.cloudflight.jems.server.project.repository.partner.PartnerPersistenceProvider
-import io.mockk.*
+import io.mockk.clearMocks
+import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.mockk
+import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -25,7 +29,6 @@ class AssignInstitutionToPartnerTest: UnitTest() {
         private val institutionAssignment = InstitutionPartnerAssignment(
             institutionId = INSTITUTION_ID,
             partnerId = 1L,
-            partnerProjectId = 0L
         )
     }
 
@@ -40,7 +43,6 @@ class AssignInstitutionToPartnerTest: UnitTest() {
 
     @InjectMockKs
     lateinit var assignInstitutionToPartner: AssignInstitutionToPartner
-
 
     @BeforeEach
     fun resetMocks() {
@@ -59,22 +61,16 @@ class AssignInstitutionToPartnerTest: UnitTest() {
         every { partnerPersistence.getPartnerProjectIdByPartnerIdAndProjectStatusIn(
             assignmentsPartnerIds, approvedAndAfterApprovedApplicationStatuses) } returns listOf(Pair(1L, 1L))
 
+        val result = mockk<InstitutionPartnerAssignment>()
        every { controllerInstitutionPersistence.assignInstitutionToPartner(
            partnerIdsToRemove = emptySet(),
            assignmentsToSave = listOf(InstitutionPartnerAssignment(
                institutionId = 1L,
                partnerId = 1L,
-               partnerProjectId = 1L
            ))
-       ) }  returns listOf(InstitutionPartnerAssignment(institutionId = 1L, partnerId = 1L, partnerProjectId = 1L))
+       ) }  returns listOf(result)
 
-        assertThat(assignInstitutionToPartner.assignInstitutionToPartner(newAssignment)).containsExactly(
-            InstitutionPartnerAssignment(
-                institutionId = 1L,
-                partnerId = 1L,
-                partnerProjectId = 1L
-            )
-        )
+        assertThat(assignInstitutionToPartner.assignInstitutionToPartner(newAssignment)).containsExactly(result)
 
         val slotAudit = slot<AuditCandidateEvent>()
         verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }
@@ -91,7 +87,6 @@ class AssignInstitutionToPartnerTest: UnitTest() {
         val institutionAssignment = InstitutionPartnerAssignment(
             institutionId = INSTITUTION_ID,
             partnerId = 9L,
-            partnerProjectId = 0L
         )
         val newAssignment = ControllerInstitutionAssignment(
             assignmentsToAdd = listOf(institutionAssignment),
@@ -104,5 +99,4 @@ class AssignInstitutionToPartnerTest: UnitTest() {
 
         assertThrows<ProjectPartnerNotValidException> { assignInstitutionToPartner.assignInstitutionToPartner(newAssignment) }
     }
-
 }

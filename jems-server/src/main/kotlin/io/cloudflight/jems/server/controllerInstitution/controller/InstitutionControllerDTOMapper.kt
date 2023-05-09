@@ -3,6 +3,8 @@ package io.cloudflight.jems.server.controllerInstitution.controller
 import io.cloudflight.jems.api.controllerInstitutions.dto.ControllerInstitutionDTO
 import io.cloudflight.jems.api.controllerInstitutions.dto.ControllerInstitutionListDTO
 import io.cloudflight.jems.api.controllerInstitutions.dto.ControllerInstitutionUserDTO
+import io.cloudflight.jems.api.controllerInstitutions.dto.InstitutionPartnerSearchRequest
+import io.cloudflight.jems.api.controllerInstitutions.dto.InstitutionPartnerSearchRequestDTO
 import io.cloudflight.jems.api.controllerInstitutions.dto.UpdateControllerInstitutionDTO
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitution
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionList
@@ -28,7 +30,15 @@ fun UpdateControllerInstitutionDTO.toModel() = mapper.mapUpdateDTO(this)
 fun ControllerInstitutionUser.toDto() = userMapper.map(this)
 fun ControllerInstitutionUserDTO.toModel() = userMapper.map(this)
 fun Set<NutsRegion3>.toDto() = groupNuts(this).toOutputNuts()
+fun InstitutionPartnerSearchRequestDTO.toModel() = mapper.map(this)
 
+val emptySearch = InstitutionPartnerSearchRequest(
+    callId = null,
+    projectId = null,
+    acronym = null,
+    partnerName = null,
+    partnerNuts = emptySet(),
+)
 
 @Mapper
 interface ControllerInstitutionMapper {
@@ -36,6 +46,7 @@ interface ControllerInstitutionMapper {
     fun map(model: ControllerInstitutionList): ControllerInstitutionListDTO
     fun map(dto: ControllerInstitutionDTO): ControllerInstitution
     fun mapUpdateDTO(dto: UpdateControllerInstitutionDTO): UpdateControllerInstitution
+    fun map(dto: InstitutionPartnerSearchRequestDTO): InstitutionPartnerSearchRequest
 }
 
 @Mapper

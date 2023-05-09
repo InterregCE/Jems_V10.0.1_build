@@ -52,7 +52,6 @@ interface InstitutionPartnerDTOMapper {
 
     fun map(dto: ControllerInstitutionAssignmentDTO): ControllerInstitutionAssignment
     fun map(dto: ControllerInstitutionAssignment): ControllerInstitutionAssignmentDTO
-    @Mapping(target = "partnerProjectId", ignore = true)
     fun map(dto: InstitutionPartnerAssignmentDTO): InstitutionPartnerAssignment
 
     fun map(model: InstitutionPartnerAssignment): InstitutionPartnerAssignmentDTO

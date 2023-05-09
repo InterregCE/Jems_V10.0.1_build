@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service.application.approve_applicati
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.project.authorization.CanApproveApplication
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
@@ -9,6 +10,7 @@ import io.cloudflight.jems.server.project.service.application.ApplicationActionI
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.application.ifIsValid
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
+import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.projectStatusChanged
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
@@ -20,6 +22,8 @@ class ApproveApplication(
     private val generalValidatorService: GeneralValidatorService,
     private val applicationStateFactory: ApplicationStateFactory,
     private val projectVersionPersistence: ProjectVersionPersistence,
+    private val partnerPersistence: PartnerPersistence,
+    private val controllerInstitutionPersistence: ControllerInstitutionPersistence,
     private val auditPublisher: ApplicationEventPublisher
 ) : ApproveApplicationInteractor {
 
@@ -32,6 +36,10 @@ class ApproveApplication(
                 applicationStateFactory.getInstance(projectSummary).approve(actionInfo).also {
                     if(projectSummary.isInStep2()) {
                         projectVersionPersistence.saveTimestampForApprovedApplication(projectId)
+                        // initialize data inside institution-assignment table
+                        controllerInstitutionPersistence.updatePartnerDataInAssignments(
+                            partners = partnerPersistence.getCurrentPartnerAssignmentMetadata(projectId)
+                        )
                     }
                     auditPublisher.publishEvent(projectStatusChanged(this, projectSummary, newStatus = it))
                 }
