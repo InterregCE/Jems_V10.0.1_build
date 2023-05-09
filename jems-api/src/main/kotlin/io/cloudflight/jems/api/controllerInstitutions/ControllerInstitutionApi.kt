@@ -1,12 +1,14 @@
 package io.cloudflight.jems.api.controllerInstitutions
 
+import io.cloudflight.jems.api.controllerInstitutions.dto.ControllerInstitutionAssignmentDTO
 import io.cloudflight.jems.api.controllerInstitutions.dto.ControllerInstitutionDTO
 import io.cloudflight.jems.api.controllerInstitutions.dto.ControllerInstitutionListDTO
-import io.cloudflight.jems.api.controllerInstitutions.dto.InstitutionPartnerDetailsDTO
-import io.cloudflight.jems.api.controllerInstitutions.dto.UpdateControllerInstitutionDTO
-import io.cloudflight.jems.api.controllerInstitutions.dto.ControllerInstitutionAssignmentDTO
 import io.cloudflight.jems.api.controllerInstitutions.dto.InstitutionPartnerAssignmentDTO
+import io.cloudflight.jems.api.controllerInstitutions.dto.InstitutionPartnerDetailsDTO
+import io.cloudflight.jems.api.controllerInstitutions.dto.InstitutionPartnerSearchRequestDTO
+import io.cloudflight.jems.api.controllerInstitutions.dto.UpdateControllerInstitutionDTO
 import io.cloudflight.jems.api.controllerInstitutions.dto.UserInstitutionAccessLevelDTO
+import io.cloudflight.jems.api.nuts.dto.OutputNuts
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -15,9 +17,9 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
 
 @Api("Controller Institutions Api")
@@ -59,8 +61,11 @@ interface ControllerInstitutionApi {
         ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
     )
-    @GetMapping("$ENDPOINT_API_CONTROLLERS/assignments")
-    fun getInstitutionPartnerAssignments(pageable: Pageable): Page<InstitutionPartnerDetailsDTO>
+    @PostMapping("$ENDPOINT_API_CONTROLLERS/assignments", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun getInstitutionPartnerAssignments(
+        pageable: Pageable,
+        @RequestBody(required = false) searchRequest: InstitutionPartnerSearchRequestDTO?
+    ): Page<InstitutionPartnerDetailsDTO>
 
     @ApiOperation("Assign institutions to partners")
     @PostMapping("$ENDPOINT_API_CONTROLLERS/assign", consumes = [MediaType.APPLICATION_JSON_VALUE])
@@ -73,4 +78,8 @@ interface ControllerInstitutionApi {
     fun getControllerUserAccessLevelForPartner(
         @PathVariable partnerId: Long,
     ): UserInstitutionAccessLevelDTO?
+
+    @ApiOperation("Get available NUTS from the controller institution(s) that the provided user is assigned to")
+    @GetMapping("$ENDPOINT_API_CONTROLLERS/checkMyAvailableRegions")
+    fun getAvailableRegions(): List<OutputNuts>
 }

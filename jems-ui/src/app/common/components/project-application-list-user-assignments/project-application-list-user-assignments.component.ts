@@ -141,7 +141,7 @@ export class ProjectApplicationListUserAssignmentsComponent implements OnInit {
       columns: [
         {
           columnWidth: ColumnWidth.IdColumn,
-          displayedColumn: 'project.table.column.name.id',
+          displayedColumn: 'project.table.column.name.project.id',
           elementProperty: 'customIdentifier',
           sortProperty: 'customIdentifier',
           tooltip: {

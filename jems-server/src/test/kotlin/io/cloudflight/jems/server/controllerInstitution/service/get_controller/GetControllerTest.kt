@@ -2,8 +2,8 @@ package io.cloudflight.jems.server.controllerInstitution.service.get_controller
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.authorization.ControllerInstitutionAuthorization
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.service.getControllerInstitution.GetController
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitution
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionList
@@ -11,12 +11,11 @@ import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.RelaxedMockK
+import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
-import java.time.ZonedDateTime
-
 
 class GetControllerTest: UnitTest() {
 
@@ -31,7 +30,6 @@ class GetControllerTest: UnitTest() {
 
     @InjectMockKs
     lateinit var getController: GetController
-
 
     companion object {
         private const val INSTITUTION_ID = 1L
@@ -51,7 +49,6 @@ class GetControllerTest: UnitTest() {
             createdAt = ZonedDateTime.now()
         )
     }
-
 
     @Test
     fun getAllInstitutions() {

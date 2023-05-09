@@ -4,5 +4,4 @@ interface CheckInstitutionPartnerAssignmentsInteractor {
 
     fun checkInstitutionAssignmentsToRemoveForUpdatedPartners(projectId: Long)
 
-    fun checkInstitutionAssignmentsToRemoveForUpdatedInstitution(institutionId: Long)
 }

@@ -75,6 +75,7 @@ import {JemsNutsInfoComponent} from '@common/components/jems-nuts-info/jems-nuts
 import {JemsRegionsTreeComponent} from '@common/components/jems-regions-tree/jems-regions-tree.component';
 import {JemsSelectedRegionsComponent} from '@common/components/jems-selected-regions/jems-selected-regions.component';
 import {FileListTableComponent} from '@common/components/file-list/file-list-table/file-list-table.component';
+import {FilterNutsInputComponent} from '@common/components/filter/filter-nuts/filter-nuts-input.component';
 
 const modules = [
   CommonModule,
@@ -139,6 +140,7 @@ const declarations = [
   FilterDateInputComponent,
   FilterListInputComponent,
   FilterAutocompleteInputComponent,
+  FilterNutsInputComponent,
   SecondsToTimePipePipe,
   ChecklistAnswersComponent,
   ChecklistInstanceListComponent,

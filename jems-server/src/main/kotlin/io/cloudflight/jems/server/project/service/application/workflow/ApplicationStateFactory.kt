@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.application.workflow
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.project.authorization.ProjectAuthorization
 import io.cloudflight.jems.server.project.service.ProjectAssessmentPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
@@ -42,7 +43,8 @@ class ApplicationStateFactory(
     private val projectWorkflowPersistence: ProjectWorkflowPersistence,
     private val projectAuthorization: ProjectAuthorization,
     private val projectAssessmentPersistence: ProjectAssessmentPersistence,
-    private val projectVersionPersistence: ProjectVersionPersistence
+    private val projectVersionPersistence: ProjectVersionPersistence,
+    private val controllerInstitutionPersistence: ControllerInstitutionPersistence,
 ) {
 
     fun getInstance(projectSummary: ProjectSummary) =
@@ -103,7 +105,8 @@ class ApplicationStateFactory(
                 auditPublisher,
                 securityService,
                 projectPersistence,
-                projectVersionPersistence
+                projectVersionPersistence,
+                controllerInstitutionPersistence,
             )
             APPROVED_WITH_CONDITIONS -> ApprovedApplicationWithConditionsState(
                 projectSummary,

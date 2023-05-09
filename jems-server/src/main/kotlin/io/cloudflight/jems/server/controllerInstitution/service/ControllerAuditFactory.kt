@@ -25,14 +25,14 @@ fun controllerInstitutionChanged(
 
 fun institutionPartnerAssignmentsChanged(
     context: Any,
-    institutionPartnerUpdatedAssignments: List<InstitutionPartnerAssignment>,
-    institutionPartnerRemovedAssignments: List<InstitutionPartnerAssignment>
+    institutionPartnerUpdatedAssignments: List<InstitutionPartnerAssignmentAudit>,
+    institutionPartnerRemovedAssignments: List<InstitutionPartnerAssignmentAudit>
 ): AuditCandidateEvent {
     val institutionPartnerAssignmentsUpdatedAsString = institutionPartnerUpdatedAssignments.asSequence()
-        .map { "ProjectID: ${it.partnerProjectId}, PartnerID: ${it.partnerId}, InstitutionID: ${it.institutionId} " }
+        .map { "ProjectID: ${it.projectId}, PartnerID: ${it.partnerId}, InstitutionID: ${it.institutionId} " }
         .joinToString(",\n")
     val institutionPartnerAssignmentsRemovedAsString = institutionPartnerRemovedAssignments.asSequence()
-        .map { "ProjectID: ${it.partnerProjectId}, Partner:ID ${it.partnerId}, InstitutionID: N/A" }
+        .map { "ProjectID: ${it.projectId}, Partner:ID ${it.partnerId}, InstitutionID: N/A" }
         .joinToString(",\n")
     val institutionAssignmentsAsString =
         "$institutionPartnerAssignmentsUpdatedAsString,\n$institutionPartnerAssignmentsRemovedAsString"
@@ -43,6 +43,12 @@ fun institutionPartnerAssignmentsChanged(
         ).build()
     )
 }
+
+data class InstitutionPartnerAssignmentAudit(
+    val institutionId: Long,
+    val partnerId: Long,
+    val projectId: Long,
+)
 
 fun institutionPartnerAssignmentRemoved(
     context: Any,

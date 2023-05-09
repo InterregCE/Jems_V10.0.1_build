@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.controllerInstitution.service.assignInstituti
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.authorization.CanAssignInstitutionToPartner
+import io.cloudflight.jems.server.controllerInstitution.service.InstitutionPartnerAssignmentAudit
 import io.cloudflight.jems.server.controllerInstitution.service.institutionPartnerAssignmentsChanged
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionAssignment
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignment
@@ -41,11 +42,7 @@ class AssignInstitutionToPartner(
             )
         ).associateBy(keySelector = { it.first }, valueTransform = { it.second })
 
-
         validateAssignments(assignmentsToSaveOrUpdate.union(assignmentsToRemove), partnerToProjectIdMap)
-        assignmentsToSaveOrUpdate.forEach { it.setPartnerProjectId(partnerToProjectIdMap[it.partnerId]!!) }
-        assignmentsToRemove.forEach { it.setPartnerProjectId(partnerToProjectIdMap[it.partnerId]!!) }
-
 
         return controllerInstitutionPersistence.assignInstitutionToPartner(
             partnerIdsToRemove = assignmentsToRemove.mapTo(HashSet()) { it.partnerId },
@@ -54,13 +51,22 @@ class AssignInstitutionToPartner(
             auditPublisher.publishEvent(
                 institutionPartnerAssignmentsChanged(
                     context = this,
-                    assignmentsToSaveOrUpdate,
-                    assignmentsToRemove
+                    assignmentsToSaveOrUpdate.withProjectId { partnerId -> partnerToProjectIdMap[partnerId]!! },
+                    assignmentsToRemove.withProjectId { partnerId -> partnerToProjectIdMap[partnerId]!! },
                 )
             )
         }
     }
 
+    private fun InstitutionPartnerAssignment.withProjectId(projectId: Long) = InstitutionPartnerAssignmentAudit(
+        institutionId = institutionId!!,
+        partnerId = partnerId,
+        projectId = projectId,
+    )
+
+    private fun List<InstitutionPartnerAssignment>.withProjectId(partnerIdToProjectId: (Long) -> Long) = map {
+        it.withProjectId(partnerIdToProjectId.invoke(it.partnerId))
+    }
 
     private fun validateAssignments(
         assignmentsToValidate: Set<InstitutionPartnerAssignment>,
@@ -71,10 +77,6 @@ class AssignInstitutionToPartner(
         notValidAssignments.takeIf { it.isNotEmpty() }?.let {
             throw ProjectPartnerNotValidException()
         }
-    }
-
-    private fun InstitutionPartnerAssignment.setPartnerProjectId(projectId: Long) {
-        this.partnerProjectId = projectId
     }
 
 }

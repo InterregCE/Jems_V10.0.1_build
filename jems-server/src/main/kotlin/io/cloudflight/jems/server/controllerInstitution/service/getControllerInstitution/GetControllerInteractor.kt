@@ -10,5 +10,4 @@ interface GetControllerInteractor {
     fun getControllers(pageable: Pageable): Page<ControllerInstitutionList>
 
     fun getControllerInstitutionById(institutionId: Long): ControllerInstitution
-
 }

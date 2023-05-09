@@ -60,7 +60,6 @@ class UpdateControllerTest : UnitTest() {
 
     }
 
-
     @RelaxedMockK
     lateinit var controllerInstitutionPersistence: ControllerInstitutionPersistence
 
@@ -84,7 +83,6 @@ class UpdateControllerTest : UnitTest() {
         clearMocks(controllerInstitutionPersistence)
         clearMocks(userPersistence)
     }
-
 
     @Test
     fun updateInstitution() {
@@ -171,18 +169,6 @@ class UpdateControllerTest : UnitTest() {
         val institutionPartnerAssignment = InstitutionPartnerAssignment(
             institutionId = 1L,
             partnerId = 1L,
-            partnerProjectId = 1L
-        )
-        val institutionPartnerAssignmentsWithUsers = listOf(
-            InstitutionPartnerAssignmentWithUsers(
-                institutionId = 1L,
-                userId = MONITOR_USER_1_ID,
-                partnerProjectId = 1L
-            ), InstitutionPartnerAssignmentWithUsers(
-                institutionId = 1L,
-                userId = MONITOR_USER_2_ID,
-                partnerProjectId = 1L
-            )
         )
 
         every { userPersistence.findAllByEmails(listOf(institutionUser1.userEmail)) } returns listOf(
@@ -209,13 +195,6 @@ class UpdateControllerTest : UnitTest() {
         every { controllerInstitutionPersistence.getInstitutionPartnerAssignmentsByInstitutionId(INSTITUTION_ID) } returns listOf(
             institutionPartnerAssignment
         )
-        every {
-            controllerInstitutionPersistence.getInstitutionPartnerAssignmentsWithUsersByPartnerProjectIdsIn(
-                setOf(
-                    INSTITUTION_ID
-                )
-            )
-        } returns institutionPartnerAssignmentsWithUsers
 
         every { controllerInstitutionPersistence.updateControllerInstitution(updateControllerInstitution) } returns
             ControllerInstitution(
@@ -237,12 +216,10 @@ class UpdateControllerTest : UnitTest() {
         val institutionPartnerAssignment1 = InstitutionPartnerAssignment(
             institutionId = 1L,
             partnerId = 1L,
-            partnerProjectId = 1L
         )
         val institutionPartnerAssignment2 = InstitutionPartnerAssignment(
             institutionId = 2L,
             partnerId = 1L,
-            partnerProjectId = 1L
         )
         val institution1User = ControllerInstitutionUser(
             1L,
@@ -257,17 +234,6 @@ class UpdateControllerTest : UnitTest() {
             surname = "",
             userRole = UserRoleSummary(4, "Controller"),
             userStatus = UserStatus.ACTIVE
-        )
-        val institutionPartnerAssignmentWithUsers = listOf(
-            InstitutionPartnerAssignmentWithUsers(
-                institutionId = 1L,
-                userId = MONITOR_USER_1_ID,
-                partnerProjectId = 1L
-            ), InstitutionPartnerAssignmentWithUsers(
-                institutionId = 2L,
-                userId = MONITOR_USER_1_ID,
-                partnerProjectId = 1L
-            )
         )
 
         val institutionsPartnerAssignments = listOf(institutionPartnerAssignment1, institutionPartnerAssignment2)
@@ -298,11 +264,6 @@ class UpdateControllerTest : UnitTest() {
         } returns institutionUsers.toSet()
 
         every { controllerInstitutionPersistence.getInstitutionPartnerAssignmentsByInstitutionId(INSTITUTION_ID) } returns institutionsPartnerAssignments
-        every {
-            controllerInstitutionPersistence.getInstitutionPartnerAssignmentsWithUsersByPartnerProjectIdsIn(
-                institutionsPartnerAssignments.map { it.partnerProjectId }.toSet()
-            )
-        } returns institutionPartnerAssignmentWithUsers
 
         assertThat(updateController.updateControllerInstitution(INSTITUTION_ID, updateControllerInstitution).institutionUsers)
             .isEmpty()
@@ -315,12 +276,10 @@ class UpdateControllerTest : UnitTest() {
             InstitutionPartnerAssignment(
                 institutionId = INSTITUTION_ID,
                 partnerId = 1L,
-                partnerProjectId = 3L
             ),
             InstitutionPartnerAssignment(
                 institutionId = INSTITUTION_ID,
                 partnerId = 1L,
-                partnerProjectId = 1L
             )
         )
 
@@ -356,19 +315,6 @@ class UpdateControllerTest : UnitTest() {
             )
         )
 
-        val institutionPartnerAssignmentWithUsers = listOf(
-            InstitutionPartnerAssignmentWithUsers(
-                institutionId = INSTITUTION_ID,
-                userId = MONITOR_USER_1_ID,
-                partnerProjectId = 1L
-            ),
-            InstitutionPartnerAssignmentWithUsers(
-                institutionId = INSTITUTION_ID,
-                userId = MONITOR_USER_1_ID,
-                partnerProjectId = 3L
-            )
-        )
-
         val updateControllerInstitution = UpdateControllerInstitution(
             id = 1L,
             name = "INSTITUTION",
@@ -397,11 +343,6 @@ class UpdateControllerTest : UnitTest() {
         } returns institutionUsers.toSet()
 
         every { controllerInstitutionPersistence.getInstitutionPartnerAssignmentsByInstitutionId(INSTITUTION_ID) } returns institutionAssignments
-        every {
-            controllerInstitutionPersistence.getInstitutionPartnerAssignmentsWithUsersByPartnerProjectIdsIn(
-                institutionAssignments.map { it.partnerProjectId }.toSet()
-            )
-        } returns institutionPartnerAssignmentWithUsers
 
         every { controllerInstitutionPersistence.updateControllerInstitution(updateControllerInstitution) } returns
             ControllerInstitution(

@@ -1,0 +1,22 @@
+.common-option {
+  height: 1.75rem;
+  font-size: 1rem;
+
+  span {
+    font-size: .875em;
+    color: var(--table-header-text-color);
+  }
+}
+.option-level-2 {
+  margin-top: .5rem;
+  font-weight: 500;
+}
+.option-level-3 {
+  margin-left: 1rem;
+}
+.option-level-4 {
+  margin-left: 2rem;
+}
+.option-level-5 {
+  margin-left: 3rem;
+}

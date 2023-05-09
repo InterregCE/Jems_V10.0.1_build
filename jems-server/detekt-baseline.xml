@@ -19,6 +19,7 @@
     <ID>ComplexMethod:GetReportExpenditureCoFinancingBreakdownTest.kt$GetReportExpenditureCoFinancingBreakdownTest.Companion$private fun expectedSubmittedResult(zeroTotals: Boolean = false)</ID>
     <ID>ComplexMethod:ProjectDataModelMapper.kt$PluginDataMapper$fun map(programmeStrategy: ProgrammeStrategy): ProgrammeStrategyData</ID>
     <ID>ComplexMethod:ProjectPartnerEntityMapper.kt$fun ProjectPartnerEntity.copy( projectPartner: ProjectPartner? = null, legalStatusRef: ProgrammeLegalStatusEntity? = null, newAddresses: Set&lt;ProjectPartnerAddress&gt;? = null, newContacts: Set&lt;ProjectPartnerContact&gt;? = null, newMotivation: ProjectPartnerMotivation? = null, newPartnerContributions: List&lt;ProjectPartnerContribution&gt;? = null, ): ProjectPartnerEntity</ID>
+    <ID>FunctionNaming:ControllerInstitutionNutsRepository.kt$ControllerInstitutionNutsRepository$fun findAllById_InstitutionIdIn(institutionIds: List&lt;Long&gt;): List&lt;ControllerInstitutionNutsEntity&gt;</ID>
     <ID>FunctionOnlyReturningConstant:MockedMethodSignature.kt$MockedMethodSignature$@ExceptionWrapper(SampleWrapperException::class) fun methodWithAspectWhichReturnsNormally(): String</ID>
     <ID>FunctionOnlyReturningConstant:ProgrammeSetupAuthorization.kt$ProgrammeSetupAuthorization$ fun canReadProgrammeSetup()</ID>
     <ID>LargeClass:GetBudgetFundsPerPeriodInteractorTest.kt$GetBudgetFundsPerPeriodInteractorTest : UnitTest</ID>
@@ -112,16 +113,7 @@
     <ID>MaxLineLength:UploadTranslationFileTest.kt$UploadTranslationFileTest$fun</ID>
     <ID>MaxLineLength:UserAuthorization.kt$UserAuthorization$(hasPermission(ProjectCreatorCollaboratorsUpdate) &amp;&amp; isActiveUserIdEqualToOneOf(projectPersistence.getApplicantAndStatusById(projectId).getUserIdsWithManageLevel()))</ID>
     <ID>MaxLineLength:WorkPackageInvestmentRepository.kt$WorkPackageInvestmentRepository$ LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS workPackageInvestmentTransl ON entity.id = workPackageInvestmentTransl.investment_id</ID>
-    <ID>MaxLineLength:WorkPackageMapper.kt$documentationExpectedImpacts = groupedInvestmentRow.value.extractField ({it.investmentLanguage}) { it.investmentDocumentationExpectedImpacts}</ID>
-    <ID>MaxLineLength:WorkPackageMapper.kt$justificationTransactionalRelevance = groupedInvestmentRow.value.extractField ({it.investmentLanguage}) { it.justificationTransactionalRelevance}</ID>
-    <ID>MaxLineLength:WorkPackageMapper.kt$programmeOutputIndicatorMeasurementUnit = groupedRows.value.extractField({ it.programmeOutputIndicatorLanguage }) { it.programmeOutputIndicatorMeasurementUnit }</ID>
     <ID>MaxLineLength:WorkPackageOutputModelMapper.kt$programmeOutputIndicatorMeasurementUnit = it.programmeOutputIndicatorEntity?.translatedValues?.extractIndicatorField { it.measurementUnit } ?: emptySet()</ID>
-    <ID>MaxLineLength:WorkPackageOutputRepository.kt$WorkPackageOutputRepository$ LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS workPackageOutputTransl ON entity.work_package_id = workPackageOutputTransl.work_package_id AND entity.output_number = workPackageOutputTransl.output_number</ID>
-    <ID>MaxLineLength:WorkPackageRepository.kt$WorkPackageRepository$ LEFT JOIN #{#entityName}_activity_deliverable_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS deliverableTransl ON deliverable.id = deliverableTransl.source_entity_id</ID>
-    <ID>MaxLineLength:WorkPackageRepository.kt$WorkPackageRepository$ LEFT JOIN #{#entityName}_activity_partner FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS activityPartner ON activity.id = activityPartner.activity_id</ID>
-    <ID>MaxLineLength:WorkPackageRepository.kt$WorkPackageRepository$ LEFT JOIN #{#entityName}_activity_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS activityTransl ON activity.id = activityTransl.source_entity_id</ID>
-    <ID>MaxLineLength:WorkPackageRepository.kt$WorkPackageRepository$ LEFT JOIN #{#entityName}_investment_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS investmentTransl ON investment.id = investmentTransl.investment_id</ID>
-    <ID>MaxLineLength:WorkPackageRepository.kt$WorkPackageRepository$ LEFT JOIN #{#entityName}_output_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS outputTransl ON output.work_package_id = outputTransl.work_package_id AND output.output_number = outputTransl.output_number</ID>
     <ID>MaxLineLength:WorkPackageRepository.kt$WorkPackageRepository$ LEFT JOIN #{#entityName}_output_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS workPackageOutputTransl ON entity.work_package_id = workPackageOutputTransl.work_package_id AND entity.output_number = workPackageOutputTransl.output_number</ID>
     <ID>MaxLineLength:WorkPackageRepository.kt$WorkPackageRepository$ LEFT JOIN programme_indicator_output_transl AS programmeOutputIndicatorIdentifierTransl ON programmeOutputIndicatorIdentifier.id = programmeOutputIndicatorIdentifierTransl.source_entity_id</ID>
     <ID>MemberNameEqualsClassName:SubmitApplication.kt$SubmitApplication$private fun submitApplication(projectSummary: ProjectSummary): ApplicationStatus</ID>
@@ -550,10 +542,10 @@
     <ID>ReturnCount:GetInstitutionPartnerAssignment.kt$GetInstitutionPartnerAssignment$private fun getAvailableInstitutionsForPartner( partnerDetails: InstitutionPartnerDetails, nuts3CodeToInstitutionsMap: Map&lt;String, List&lt;IdNamePair&gt;&gt;, countryCodeToInstitutionsMap: Map&lt;String, MutableSet&lt;IdNamePair&gt;&gt;, allInstitutions: List&lt;IdNamePair&gt; ): Set&lt;IdNamePair&gt;</ID>
     <ID>ReturnCount:ProjectContractingManagementAuthorization.kt$ProjectContractingManagementAuthorization$private fun canEdit(needed: ContractingPermission, projectId: Long): Boolean</ID>
     <ID>ReturnCount:ProjectContractingManagementAuthorization.kt$ProjectContractingManagementAuthorization$private fun canView(needed: ContractingPermission, projectId: Long): Boolean</ID>
+    <ID>ReturnCount:ProjectContractingPartnerAuthorization.kt$ProjectContractingPartnerAuthorization$fun hasPartnersPermission(projectId: Long): Boolean</ID>
     <ID>ReturnCount:ProjectDescriptionMapper.kt$fun getMappedStrategy(strategy: ProgrammeStrategy?): ProgrammeStrategy?</ID>
     <ID>ReturnCount:UserAuthorization.kt$UserAuthorization$private fun hasView(projectId: Long): Boolean</ID>
     <ID>ReturnCount:UserRoleAuditFactory.kt$private fun getAuditPermissionState(node: UserRolePermissionNode, permissions: Set&lt;UserRolePermission&gt;): String</ID>
-    <ID>ReturnCount:ProjectContractingPartnerAuthorization.kt$ProjectContractingPartnerAuthorization$fun hasPartnersPermission(projectId: Long): Boolean</ID>
     <ID>ThrowsCount:BudgetCostValidator.kt$BudgetCostValidator$final fun validateBaseEntries(budgetEntries: List&lt;BaseBudgetEntry&gt;)</ID>
     <ID>ThrowsCount:ControlReportFileAuthorizationService.kt$ControlReportFileAuthorizationService$fun validateChangeToFileAllowed(partnerId: Long, reportId: Long, fileId: Long)</ID>
     <ID>ThrowsCount:CreateOutputIndicator.kt$CreateOutputIndicator$private fun validateOutputIndicatorDetail(outputIndicator: OutputIndicator)</ID>
@@ -565,7 +557,6 @@
     <ID>TooManyFunctions:CallPersistenceProvider.kt$CallPersistenceProvider : CallPersistence</ID>
     <ID>TooManyFunctions:ControllerInstitutionPersistence.kt$ControllerInstitutionPersistence</ID>
     <ID>TooManyFunctions:ControllerInstitutionPersistenceProvider.kt$ControllerInstitutionPersistenceProvider : ControllerInstitutionPersistence</ID>
-    <ID>TooManyFunctions:CreateProjectPartnerReportBudget.kt$CreateProjectPartnerReportBudget</ID>
     <ID>TooManyFunctions:GeneralValidatorDefaultImpl.kt$GeneralValidatorDefaultImpl : GeneralValidatorService</ID>
     <ID>TooManyFunctions:GeneralValidatorService.kt$GeneralValidatorService</ID>
     <ID>TooManyFunctions:PartnerPersistence.kt$PartnerPersistence</ID>
@@ -576,6 +567,7 @@
     <ID>TooManyFunctions:ProjectDataModelMapper.kt$io.cloudflight.jems.server.plugin.services.ProjectDataModelMapper.kt</ID>
     <ID>TooManyFunctions:ProjectDescriptionMapper.kt$io.cloudflight.jems.server.project.controller.ProjectDescriptionMapper.kt</ID>
     <ID>TooManyFunctions:ProjectDescriptionMapper.kt$io.cloudflight.jems.server.project.service.ProjectDescriptionMapper.kt</ID>
+    <ID>TooManyFunctions:ProjectMapper.kt$ProjectMapper</ID>
     <ID>TooManyFunctions:ProjectPartnerBudgetMapper.kt$io.cloudflight.jems.server.project.controller.partner.budget.ProjectPartnerBudgetMapper.kt</ID>
     <ID>TooManyFunctions:ProjectPartnerEntityMapper.kt$io.cloudflight.jems.server.project.repository.partner.ProjectPartnerEntityMapper.kt</ID>
     <ID>TooManyFunctions:ProjectPartnerRepository.kt$ProjectPartnerRepository : JpaRepository</ID>
@@ -583,7 +575,6 @@
     <ID>TooManyFunctions:ProjectReportFilePersistenceProvider.kt$ProjectReportFilePersistenceProvider : ProjectReportFilePersistence</ID>
     <ID>TooManyFunctions:UpdateCoFinancingValidation.kt$io.cloudflight.jems.server.project.service.partner.cofinancing.update_cofinancing.UpdateCoFinancingValidation.kt</ID>
     <ID>TooManyFunctions:WorkPackagePersistenceProvider.kt$WorkPackagePersistenceProvider : WorkPackagePersistence</ID>
-    <ID>TooManyFunctions:ProjectMapper.kt$ProjectMapper</ID>
     <ID>UnnecessaryAbstractClass:ApplicationState.kt$ApplicationState</ID>
     <ID>UnnecessaryAbstractClass:CommonDTOMapper.kt$CommonDTOMapper</ID>
     <ID>UnnecessaryAbstractClass:MailNotificationMapper.kt$MailNotificationMapper</ID>

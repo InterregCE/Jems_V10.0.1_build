@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.partner
 
+import io.cloudflight.jems.server.controllerInstitution.service.model.ProjectPartnerAssignmentMetadata
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddress
@@ -57,4 +58,7 @@ interface PartnerPersistence {
     fun deactivatePartner(partnerId: Long)
 
     fun getPartnerProjectIdByPartnerIdAndProjectStatusIn(partnerIds: Set<Long>, projectStatuses: Set<ApplicationStatus>): List<Pair<Long, Long>>
+
+    fun getCurrentPartnerAssignmentMetadata(projectId: Long): List<ProjectPartnerAssignmentMetadata>
+
 }

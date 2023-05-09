@@ -1,0 +1,21 @@
+<mat-form-field jemsFormFieldWidth="xx-large" appearance="fill">
+    <mat-label>{{ label | translate }}</mat-label>
+    <mat-chip-list #filterChip>
+        <mat-chip class="chip-option" *ngFor="let value of valuesFull"
+                  removable="true" [selectable]="false">
+            <div matTooltipClass="filter-text-tooltip" matTooltip="{{ value.title }}">
+                <span class="filter-text">{{ value.code }}</span>
+                <mat-icon (click)="removeFromFilters(value)" matChipRemove>cancel</mat-icon>
+            </div>
+        </mat-chip>
+        <input type="text" matInput [formControl]="mySearchControl" [matAutocomplete]="auto"
+               [matChipInputFor]="filterChip" #filterInput
+               [placeholder]="label | translate">
+        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn"
+                          (optionSelected)="addToFilters($event.option.value); filterInput.value = ''; filterInput.blur()">
+            <mat-option *ngFor="let option of filteredOptions | async" [value]="option" class="common-option option-level-{{option.level}}">
+                {{ option.code }}<span> - {{ option.title }}</span>
+            </mat-option>
+        </mat-autocomplete>
+    </mat-chip-list>
+</mat-form-field>

@@ -3,12 +3,15 @@ package io.cloudflight.jems.server.controllerInstitution.controller
 import io.cloudflight.jems.api.common.dto.IdNamePairDTO
 import io.cloudflight.jems.api.controllerInstitutions.dto.ControllerInstitutionListDTO
 import io.cloudflight.jems.api.controllerInstitutions.dto.InstitutionPartnerDetailsDTO
+import io.cloudflight.jems.api.controllerInstitutions.dto.InstitutionPartnerSearchRequest
+import io.cloudflight.jems.api.controllerInstitutions.dto.InstitutionPartnerSearchRequestDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.controllerInstitution.service.assignInstitutionToPartner.AssignInstitutionToPartnerInteractor
 import io.cloudflight.jems.server.controllerInstitution.service.createControllerInstitution.CreateControllerInteractor
 import io.cloudflight.jems.server.controllerInstitution.service.getControllerInstitution.GetControllerInteractor
+import io.cloudflight.jems.server.controllerInstitution.service.getControllerInstitutionNUTS.GetControllerInstitutionNUTSInteractor
 import io.cloudflight.jems.server.controllerInstitution.service.getInstitutionPartnerAssignment.GetInstitutionPartnerAssignmentInteractor
 import io.cloudflight.jems.server.controllerInstitution.service.getInstitutionUserAccessLevel.GetInstitutionUserAccessLevelInteractor
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionList
@@ -18,11 +21,12 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRo
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
+import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
-import java.time.ZonedDateTime
 
 class ControllerInstitutionControllerTest: UnitTest() {
 
@@ -43,7 +47,6 @@ class ControllerInstitutionControllerTest: UnitTest() {
             institutionNuts = emptyList(),
             createdAt = createdAt
         )
-
     }
 
     @MockK
@@ -64,9 +67,11 @@ class ControllerInstitutionControllerTest: UnitTest() {
     @MockK
     lateinit var assignInstitutionToPartnerInteractor: AssignInstitutionToPartnerInteractor
 
+    @MockK
+    lateinit var getControllerInstitutionNUTSInteractor: GetControllerInstitutionNUTSInteractor
+
     @InjectMockKs
     lateinit var controllerInstitutionController: ControllerInstitutionController
-
 
     @Test
     fun getControllers() {
@@ -153,9 +158,24 @@ class ControllerInstitutionControllerTest: UnitTest() {
             )
         )
 
-        every { getInstitutionPartnerAssignment.getInstitutionPartnerAssignments(Pageable.unpaged()) } returns
+        val requestMock = mockk<InstitutionPartnerSearchRequest> {
+            every { callId } returns 1L
+            every { projectId } returns "1"
+            every { acronym } returns "Project Test"
+            every { partnerName } returns "A"
+            every { partnerNuts } returns emptySet()
+        }
+        val requestDTOMock = mockk<InstitutionPartnerSearchRequestDTO> {
+            every { callId } returns 1L
+            every { projectId } returns "1"
+            every { acronym } returns "Project Test"
+            every { partnerName } returns "A"
+            every { partnerNuts } returns emptySet()
+        }
+
+        every { getInstitutionPartnerAssignment.getInstitutionPartnerAssignments(Pageable.unpaged(), requestMock) } returns
             PageImpl(institutionPartnerAssignments)
-        assertThat(controllerInstitutionController.getInstitutionPartnerAssignments(Pageable.unpaged()).content)
+        assertThat(controllerInstitutionController.getInstitutionPartnerAssignments(Pageable.unpaged(), requestDTOMock).content)
             .containsAll(expectedInstitutionPartnerAssignments)
     }
 }

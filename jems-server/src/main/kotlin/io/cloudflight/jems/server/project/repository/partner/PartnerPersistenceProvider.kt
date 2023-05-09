@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.repository.partner
 
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.controllerInstitution.service.model.ProjectPartnerAssignmentMetadata
 import io.cloudflight.jems.server.programme.repository.legalstatus.ProgrammeLegalStatusRepository
 import io.cloudflight.jems.server.programme.repository.stateaid.ProgrammeStateAidRepository
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
@@ -241,6 +242,9 @@ class PartnerPersistenceProvider(
     override fun getPartnerProjectIdByPartnerIdAndProjectStatusIn(partnerIds: Set<Long>, projectStatuses: Set<ApplicationStatus>): List<Pair<Long, Long>> =
         projectPartnerRepository.getPartnerProjectIdByPartnerIdAndProjectStatusIn(partnerIds, projectStatuses).toList()
 
+    @Transactional(readOnly = true)
+    override fun getCurrentPartnerAssignmentMetadata(projectId: Long): List<ProjectPartnerAssignmentMetadata> =
+        projectPartnerRepository.findTop30ByProjectId(projectId).onlyAssignmentMetadata()
 
     /**
      * sets or updates the sort number for all partners for the specified project.
