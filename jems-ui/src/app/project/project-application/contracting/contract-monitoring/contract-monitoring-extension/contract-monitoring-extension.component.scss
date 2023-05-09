@@ -9,17 +9,6 @@ mat-table {
 .jems-table-config {
   margin-top: 1rem !important;
 }
-.form-width-limit {
-  max-width: 50rem;
-
-  .date {
-    width: 20rem;
-    flex-grow: 0;
-  }
-  .comment {
-    flex-grow: 1;
-  }
-}
 
 #additional-entry-into-force-dates-table {
   mat-cell:first-of-type, mat-header-cell:first-of-type {

@@ -42,6 +42,17 @@
 
 @mixin custom-general-form-field-styles() {
 
+  .form-width-limit {
+    max-width: 50rem;
+
+    .date {
+      width: 20rem;
+      flex-grow: 0;
+    }
+    .comment {
+      flex-grow: 1;
+    }
+  }
   .mat-form-field-appearance-fill .mat-form-field-flex {
     background: rgba(0, 0, 0, 0.03);
   }
