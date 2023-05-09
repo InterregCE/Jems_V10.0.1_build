@@ -946,7 +946,7 @@ context('Partner reports tests', () => {
     });
   });
 
-    it('TB-741 Partner user can report contributions', function () {
+  it('TB-741 Partner user can report contributions', function () {
         cy.fixture('project/reporting/TB-741.json').then(testData => {
             cy.fixture('api/application/application.json').then(application => {
 
@@ -1166,6 +1166,62 @@ context('Partner reports tests', () => {
             })
         });
     });
+
+  it('TB-742 Partner user can manage report annexes', function () {
+    cy.fixture('project/reporting/TB-742.json').then(testData => {
+      cy.loginByRequest(user.programmeUser.email);
+      cy.createCall(call).then(callId => {
+        application.details.projectCallId = callId;
+        cy.publishCall(callId);
+
+        cy.loginByRequest(user.applicantUser.email);
+
+        cy.createContractedApplication(application, user.programmeUser.email).then(applicationId => {
+          const partnerId1 = this[application.partners[0].details.abbreviation];
+          cy.assignPartnerCollaborators(applicationId, partnerId1, testData.partnerCollaborator);
+
+          cy.addPartnerReport(partnerId1).then(firstReportId => {
+            createReportByAttachingFiles(applicationId, partnerId1, firstReportId, true);
+            submitPartnerReport();
+          });
+
+          cy.addPartnerReport(partnerId1).then(secondReportId => {
+            createReportByAttachingFiles(applicationId, partnerId1, secondReportId, false);
+
+            cy.loginByRequest(user.applicantUser.email);
+            cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId1}/reports/${secondReportId}/annexes`, {failOnStatusCode: false});
+
+            cy.get('mat-row:contains("fileToUpload.txt")').should('have.length', 4);
+            cy.get('mat-row:contains("partner-report-attachment01.txt")').should('have.length', 0);
+
+            cy.contains('button', 'Upload file').click();
+            cy.get('input[type=file]').selectFile('cypress/fixtures/project/reporting/fileToUpload.txt', {force: true});
+            cy.wait(2000);
+
+            addFileDescription(0);
+            addFileDescription(1);
+            addFileDescription(2);
+            addFileDescription(3);
+            addFileDescription(4);
+            cy.get('mat-row').eq(0).contains('button', 'delete').scrollIntoView().click();
+            cy.contains('button', 'Confirm').click();
+
+            cy.get('mat-row').eq(0).contains('button', 'delete').scrollIntoView().should('be.disabled');
+            cy.get('mat-row').eq(1).contains('button', 'delete').scrollIntoView().should('be.disabled');
+            cy.get('mat-row').eq(2).contains('button', 'delete').scrollIntoView().should('be.disabled');
+            cy.get('mat-row').eq(3).contains('button', 'delete').scrollIntoView().should('be.disabled');
+
+            cy.wait(2000);
+
+            validateDownloadFile(0, partnerId1);
+            validateDownloadFile(1, partnerId1);
+            validateDownloadFile(2, partnerId1);
+            validateDownloadFile(3, partnerId1);
+          });
+        });
+      });
+    });
+  });
 
   //region TB-554 METHODS
   function verifyReport(reportInfo) {
@@ -2089,6 +2145,77 @@ context('Partner reports tests', () => {
     cy.contains('Run pre-submission check').click();
     cy.contains('Submit partner report').click();
     cy.contains('Confirm').should('be.visible').click();
+  }
+
+  //endregion
+
+
+  //region TB-742 METHODS
+  function createReportByAttachingFiles(projectId: number, partnerId: number, reportId: number, isFirstReport: boolean) {
+    const procurementIndex = isFirstReport ? 0 : 1;
+    const uploadedFilePath = isFirstReport ? 'cypress/fixtures/project/reporting/partner-report-attachment01.txt' :
+      'cypress/fixtures/project/reporting/fileToUpload.txt';
+    cy.updatePartnerReportIdentification(partnerId, reportId, partnerReportIdentification);
+
+    cy.visit(`/app/project/detail/${projectId}/reporting/${partnerId}/reports/${reportId}/workplan`, {failOnStatusCode: false});
+    cy.contains('mat-panel-title', 'Work package 1')
+      .click();
+
+    cy.get('div.activity-container > jems-multi-language-container input').eq(0)
+      .scrollIntoView()
+      .invoke('show')
+      .selectFile(uploadedFilePath)
+      .invoke('hide');
+
+    cy.visit(`/app/project/detail/${projectId}/reporting/${partnerId}/reports/${reportId}/expenditures`, {failOnStatusCode: false});
+    clickAddExpenditure();
+    cy.contains('#expenditure-costs-table mat-select', 'Please select a cost category')
+      .click();
+    cy.contains('mat-option', 'Travel and accommodation')
+      .click();
+    saveExpenditure();
+    cy.get('#expenditure-costs-table mat-cell.mat-column-uploadFunction input').eq(0)
+      .scrollIntoView()
+      .invoke('show')
+      .selectFile(uploadedFilePath)
+      .invoke('hide');
+
+    cy.addPublicProcurement(partnerId, reportId, partnerProcurement[procurementIndex]).then(procurement => {
+      cy.visit(`/app/project/detail/${projectId}/reporting/${partnerId}/reports/${reportId}/procurements/${procurement.id}`, {failOnStatusCode: false});
+      cy.contains('button', 'Upload file').click();
+      cy.get('input[type=file]').selectFile(uploadedFilePath, {force: true});
+    });
+
+    cy.visit(`/app/project/detail/${projectId}/reporting/${partnerId}/reports/${reportId}/contribution`, {failOnStatusCode: false});
+    cy.get('#contributions-table mat-cell.mat-column-attachment input').eq(0)
+      .scrollIntoView()
+      .invoke('show')
+      .selectFile(uploadedFilePath)
+      .invoke('hide');
+
+    if (isFirstReport) {
+      cy.visit(`/app/project/detail/${projectId}/reporting/${partnerId}/reports/${reportId}/annexes`, {failOnStatusCode: false});
+      cy.contains('button', 'Upload file').click();
+      cy.get('input[type=file]').selectFile(uploadedFilePath, {force: true});
+    }
+
+    cy.wait(2000);
+  }
+
+  function addFileDescription(rowIndex: number) {
+    const testInput = faker.word.noun();
+    cy.get('mat-row').eq(rowIndex).contains('button', 'edit').scrollIntoView().click();
+    cy.get('[label="file.table.column.name.description"] textarea').click().scrollIntoView().type(testInput);
+    cy.contains('button', 'Save').scrollIntoView().click();
+
+    cy.contains(new RegExp('File description for \'[a-zA-Z-.\\d]+\' has been updated')).should('be.visible');
+    cy.contains(new RegExp('File description for \'[a-zA-Z-.\\d]+\' has been updated')).should('not.exist');
+  }
+
+  function validateDownloadFile(rowIndex: number, partnerId: number) {
+    cy.get('mat-row').eq(rowIndex).contains('button', 'download').scrollIntoView().clickToDownload(`api/project/report/partner/byPartnerId/${partnerId}/?*`, 'txt').then(returnValue => {
+      cy.wrap(returnValue.fileName === 'fileToUpload.txt').should('eq', true);
+    });
   }
 
   //endregion
