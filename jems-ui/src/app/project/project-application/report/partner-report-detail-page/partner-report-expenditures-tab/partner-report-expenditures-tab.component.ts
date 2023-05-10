@@ -39,6 +39,9 @@ import {SecurityService} from 'src/app/security/security.service';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import {
+  ProjectStore
+} from "@project/project-application/containers/project-application-detail/services/project-store.service";
 
 @UntilDestroy()
 @Component({
@@ -71,6 +74,9 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     canEdit: boolean;
     isMonitorUser: boolean;
     isReportEditable: boolean;
+    partnerId: string | number | null;
+    partnerReportId: number;
+    projectId: number;
   }>;
   tableConfiguration$: Observable<{
     columnsToDisplay: string[];
@@ -94,6 +100,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   contractIDs: IdNamePairDTO[] = [];
   investmentsSummary: InvestmentSummary[] = [];
   isUploadDone = false;
+  StatusEnum = ProjectPartnerReportDTO.StatusEnum;
 
   readonly PERIOD_PREPARATION: number = 0;
   readonly PERIOD_CLOSURE: number = 255;
@@ -109,7 +116,8 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
               private translateByInputLanguagePipe: TranslateByInputLanguagePipe,
               public securityService: SecurityService,
               public permissionService: PermissionService,
-              private partnerReportPageStore: PartnerReportPageStore) {
+              private partnerReportPageStore: PartnerReportPageStore,
+              private projectStore: ProjectStore) {
     this.isReportEditable$ = this.pageStore.isEditable$;
   }
 
@@ -401,9 +409,12 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       this.partnerReportPageStore.userCanViewGdpr$,
       this.partnerReportPageStore.userCanEditReport$,
       this.permissionService.hasPermission(PermissionsEnum.ProjectReportingView),
-      this.isReportEditable$
+      this.isReportEditable$,
+      this.partnerReportDetailPageStore.partnerId$,
+      this.partnerReportDetailPageStore.partnerReportId$,
+      this.projectStore.projectId$
     ]).pipe(
-      map(([expendituresCosts, costCategories, investmentsSummary, contractIDs, tableConfiguration, reportCosts, parkedExpenditures, isCurrentUserGDPRCompliant, canEdit, isMonitorUser, isReportEditable]: any) => ({
+      map(([expendituresCosts, costCategories, investmentsSummary, contractIDs, tableConfiguration, reportCosts, parkedExpenditures, isCurrentUserGDPRCompliant, canEdit, isMonitorUser, isReportEditable, partnerId, partnerReportId, projectId]: any) => ({
           expendituresCosts,
           costCategories,
           investmentsSummary,
@@ -420,7 +431,10 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
         isGDPRCompliant: isCurrentUserGDPRCompliant,
         canEdit,
         isMonitorUser,
-        isReportEditable
+        isReportEditable,
+        partnerId,
+        partnerReportId,
+        projectId
         })
       ),
       tap(data => this.resetForm(data.expendituresCosts, data.isGDPRCompliant, data.isMonitorUser)),
@@ -743,7 +757,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       || (controlName === PartnerReportExpendituresTabConstants.FORM_CONTROL_NAMES.currencyCode
         && this.hasPartnerCurrencySetToEur())
     ) {
-      return controlName === PartnerReportExpendituresTabConstants.FORM_CONTROL_NAMES.contractId ? 'border-with-dotted disabled-text' : 'border-with-dotted';
+      return 'border-with-dotted';
     } else if (index % 2 === 0) {
       return 'blue-background';
     } else {
