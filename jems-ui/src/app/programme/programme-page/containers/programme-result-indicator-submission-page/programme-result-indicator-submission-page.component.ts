@@ -6,10 +6,7 @@ import {catchError, take, takeUntil, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {ActivatedRoute} from '@angular/router';
 import {HttpErrorResponse} from '@angular/common/http';
-import {
-  ProgrammeIndicatorResultService,
-  ProgrammePriorityService, ResultIndicatorCreateRequestDTO, ResultIndicatorUpdateRequestDTO
-} from '@cat/api';
+import {ProgrammeIndicatorResultService, ProgrammePriorityService, ResultIndicatorCreateRequestDTO, ResultIndicatorUpdateRequestDTO} from '@cat/api';
 import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav.service';
 
 @Component({
