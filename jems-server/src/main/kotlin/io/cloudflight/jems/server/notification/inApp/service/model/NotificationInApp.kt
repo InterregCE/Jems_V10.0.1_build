@@ -7,7 +7,7 @@ data class NotificationInApp(
     val body: String,
     val type: NotificationType,
     val time: ZonedDateTime,
-    val templateVariables: MutableMap<String, Any>,
+    val templateVariables: Map<String, Any>,
     val recipientsInApp: Set<String>,
 
     val recipientsEmail: Set<String>,

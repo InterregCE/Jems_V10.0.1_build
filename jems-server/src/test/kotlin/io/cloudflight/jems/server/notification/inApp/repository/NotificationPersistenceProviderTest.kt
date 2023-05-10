@@ -82,7 +82,7 @@ class NotificationPersistenceProviderTest : UnitTest() {
             templateVariables = mutableMapOf(
                 "var1" to "val1",
                 "projectId" to 45L,
-                "projectIdentifier" to "P0045",
+                "projectCustomIdentifier" to "P0045",
                 "projectAcronym" to "45 acr",
             ),
             recipientsInApp = setOf("notify.me@inApp"),

@@ -1,8 +1,7 @@
 package io.cloudflight.jems.server.notification.handler
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.common.model.Variable
-import io.cloudflight.jems.server.notification.inApp.service.model.NotificationProjectBase
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationVariable
 import io.cloudflight.jems.server.notification.inApp.service.project.GlobalProjectNotificationServiceInteractor
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
@@ -21,6 +20,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import java.time.ZonedDateTime
+import java.util.Map.entry
 
 class PartnerReportNotificationEventListenerTest : UnitTest() {
 
@@ -70,24 +70,22 @@ class PartnerReportNotificationEventListenerTest : UnitTest() {
     @ParameterizedTest(name = "send PartnerReport - {0} notification")
     @EnumSource(value = ReportStatus::class, names = ["Draft"], mode = EnumSource.Mode.EXCLUDE)
     fun sendPartnerReportNotification(partnerReportStatus: ReportStatus) {
-        val slotProject = slot<NotificationProjectBase>()
-        every { notificationProjectService.sendNotifications(any(), capture(slotProject), *anyVararg()) } answers { }
+        val slotVariable = slot<Map<NotificationVariable, Any>>()
+        every { notificationProjectService.sendNotifications(any(), capture(slotVariable)) } answers { }
 
         val partnerReportSummary = partnerReportSummary(partnerReportStatus)
         listener.sendNotifications(
             PartnerReportStatusChanged(mockk(), projectSummary(), partnerReportSummary)
         )
 
-        val varArgs = mutableListOf<Variable>()
-        verify(exactly = 1) {
-            notificationProjectService.sendNotifications(
-                partnerReportStatus.toNotificationType()!!,
-                any(),
-                *varargAll { varArgs.add(it); true })
-        }
-        assertThat(slotProject.captured).isEqualTo(NotificationProjectBase(PROJECT_ID, "01", "project acronym"))
-        assertThat(varArgs).contains(Variable("partnerId", PARTNER_ID))
-        assertThat(varArgs).contains(Variable("partnerRole", ProjectPartnerRole.LEAD_PARTNER))
-        assertThat(varArgs).contains(Variable("partnerNumber", PARTNER_NUMBER))
+        verify(exactly = 1) { notificationProjectService.sendNotifications(partnerReportStatus.toNotificationType()!!, any()) }
+        assertThat(slotVariable.captured).contains(
+            entry(NotificationVariable.ProjectId, PROJECT_ID),
+            entry(NotificationVariable.ProjectIdentifier, "01"),
+            entry(NotificationVariable.ProjectAcronym, "project acronym"),
+            entry(NotificationVariable.PartnerId, PARTNER_ID),
+            entry(NotificationVariable.PartnerRole, ProjectPartnerRole.LEAD_PARTNER),
+            entry(NotificationVariable.PartnerNumber, PARTNER_NUMBER),
+        )
     }
 }

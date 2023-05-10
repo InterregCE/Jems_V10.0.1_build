@@ -1,114 +1,63 @@
 package io.cloudflight.jems.server.notification.inApp.service.project
 
+import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.notificationConfigurations.ProjectNotificationConfiguration
 import io.cloudflight.jems.server.call.service.notificationConfigurations.CallNotificationConfigurationsPersistence
 import io.cloudflight.jems.server.common.event.JemsAsyncMailEvent
 import io.cloudflight.jems.server.common.model.Variable
-import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.notification.inApp.service.NotificationPersistence
-import io.cloudflight.jems.server.notification.inApp.service.model.NotificationConfigurationWithRecipients
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationInApp
-import io.cloudflight.jems.server.notification.inApp.service.model.NotificationProjectBase
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationVariable
 import io.cloudflight.jems.server.notification.mail.service.model.MailNotificationInfo
+import io.cloudflight.jems.server.programme.service.userrole.ProgrammeDataPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
-import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaboratorPersistence
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
-import io.cloudflight.jems.server.project.service.projectuser.UserProjectCollaboratorPersistence
-import io.cloudflight.jems.server.project.service.projectuser.UserProjectPersistence
-import io.cloudflight.jems.server.user.service.UserPersistence
-import io.cloudflight.jems.server.user.service.UserRolePersistence
 import io.cloudflight.jems.server.user.service.model.UserEmailNotification
-import io.cloudflight.jems.server.user.service.model.UserRolePermission
-import io.cloudflight.jems.server.user.service.model.UserSummary
-import io.cloudflight.jems.server.user.service.model.assignment.CollaboratorAssignedToProject
-import io.cloudflight.jems.server.user.service.model.assignment.PartnerCollaborator
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.ZonedDateTime
 
 @Service
 class GlobalProjectNotificationService(
+    private val projectNotificationRecipientServiceInteractor: ProjectNotificationRecipientServiceInteractor,
     private val projectPersistence: ProjectPersistence,
+    private val callPersistence: CallPersistence,
     private val callNotificationConfigPersistence: CallNotificationConfigurationsPersistence,
-    private val userProjectCollaboratorPersistence: UserProjectCollaboratorPersistence,
-    private val partnerCollaboratorPersistence: UserPartnerCollaboratorPersistence,
-    private val partnerPersistence: PartnerPersistence,
-    private val userProjectPersistence: UserProjectPersistence,
-    private val userPersistence: UserPersistence,
-    private val userRolePersistence: UserRolePersistence,
     private val notificationPersistence: NotificationPersistence,
     private val eventPublisher: ApplicationEventPublisher,
-    private val controllerInstitutionPersistence: ControllerInstitutionPersistence,
+    private val programmeDataPersistence: ProgrammeDataPersistence,
 ) : GlobalProjectNotificationServiceInteractor {
 
     @Transactional
-    override fun sendNotifications(
-        type: NotificationType,
-        project: NotificationProjectBase,
-        vararg extraVariables: Variable,
-    ) {
-        val variableMap = extraVariables.associate { Pair(it.name, it.value!!) }.toMutableMap()
-
-        resolveNotificationTemplate(type, project.projectId, variableMap["partnerId"] as? Long)?.let { template ->
-            variableMap.putAll(
-                mapOf(
-                    "subject" to template.config.emailSubject,
-                    "body" to template.config.emailBody,
-                    "projectId" to project.projectId,
-                    "projectIdentifier" to project.projectIdentifier,
-                    "projectAcronym" to project.projectAcronym,
-                )
-            )
-
-            val inAppNotification = template.instantiateWith(variableMap)
-            notificationPersistence.saveNotification(inAppNotification)
-            eventPublisher.publishEvent(inAppNotification.buildSendEmailEvent())
-        }
+    override fun sendNotifications(type: NotificationType, variables: Map<NotificationVariable, Any>) = when {
+        type.isProjectNotification() -> sendProjectNotification(type, variables)
+        type.isPartnerReportNotification() -> sendPartnerReportNotification(type, variables)
+        else -> Unit
     }
 
+    fun sendProjectNotification(type: NotificationType, variables: Map<NotificationVariable, Any>) {
+        validateVariables(variables, NotificationVariable.projectNotificationVariables)
 
-    private fun resolveNotificationTemplate(
-        type: NotificationType,
-        projectId: Long,
-        partnerId: Long?
-    ): NotificationConfigurationWithRecipients? {
-        val notification = getNotificationConfiguration(type, projectId) ?: return null
+        val projectId = variables[NotificationVariable.ProjectId] as Long
+        val notificationConfig = getNotificationConfiguration(type, projectId) ?: return
 
-        val managers = if (!notification.sendToManager) emptyMap() else
-            userProjectCollaboratorPersistence.getUserIdsForProject(projectId).emails()
+        val emailsToNotify = projectNotificationRecipientServiceInteractor.getEmailsForProjectNotification(notificationConfig, projectId)
 
-        val partnerIdsByType = partnerPersistence.findTop30ByProjectId(projectId).groupBy({ it.role }, { it.id })
-        val leadPartnerId = partnerIdsByType[ProjectPartnerRole.LEAD_PARTNER]?.firstOrNull()
-        val partnerIds = partnerIdsByType[ProjectPartnerRole.PARTNER]?.toSet() ?: emptySet()
+        sendInAppAndEmails(notificationConfig, emailsToNotify, variables)
+    }
 
-        val leadPartnerCollaborators = if (leadPartnerId == null || !notification.sendToLeadPartner) emptyMap() else
-            partnerCollaboratorPersistence.findByProjectAndPartners(projectId, setOf(leadPartnerId))
-                .partnerCollaboratorEmails()
+    fun sendPartnerReportNotification(type: NotificationType, variables: Map<NotificationVariable, Any>) {
+        validateVariables(variables, NotificationVariable.partnerReportNotificationVariables)
 
-        val nonLeadPartnerCollaborators =
-            if (partnerIds.isEmpty() || !notification.sendToProjectPartners) emptyMap() else
-                partnerCollaboratorPersistence.findByProjectAndPartners(projectId, partnerIds)
-                    .partnerCollaboratorEmails()
+        val projectId = variables[NotificationVariable.ProjectId] as Long
+        val notificationConfig = getNotificationConfiguration(type, projectId) ?: return
 
-        val programmeUsers = if (!notification.sendToProjectAssigned) emptyMap() else
-            userProjectPersistence.getUsersForProject(projectId)
-                .emails() + getUsersWithProjectRetrievePermissions().emails()
+        val partnerId = variables[NotificationVariable.PartnerId] as Long
+        val emailsToNotify = projectNotificationRecipientServiceInteractor.getEmailsForProjectNotification(notificationConfig, projectId)
+            .plus(projectNotificationRecipientServiceInteractor.getEmailsForPartnerNotification(notificationConfig, partnerId))
 
-        val controllerUsers = if (!notification.sendToControllers || type.isNotPartnerReportNotification() || partnerId == null) emptyMap() else
-            userPersistence.findAllByIds(controllerInstitutionPersistence.getRelatedUserIdsForPartner(partnerId))
-                .emails()
-
-        val emailsToNotify =
-            managers + leadPartnerCollaborators + nonLeadPartnerCollaborators + programmeUsers + controllerUsers
-
-        return NotificationConfigurationWithRecipients(
-            recipientsInApp = emailsToNotify.keys,
-            recipientsEmail = emailsToNotify.filterValues { it.isEmailEnabled && it.isActive() }.keys,
-            config = notification,
-            emailTemplate = "notification.html",
-        )
+        sendInAppAndEmails(notificationConfig, emailsToNotify, variables)
     }
 
     private fun getNotificationConfiguration(type: NotificationType, projectId: Long): ProjectNotificationConfiguration? {
@@ -120,27 +69,64 @@ class GlobalProjectNotificationService(
         } else null
     }
 
-    private fun Set<PartnerCollaborator>.partnerCollaboratorEmails() =
-        associateBy({ it.userEmail }, { UserEmailNotification(it.sendNotificationsToEmail, it.userStatus) })
+    private fun sendInAppAndEmails(
+        config: ProjectNotificationConfiguration,
+        emails: Map<String, UserEmailNotification>,
+        variables: Map<NotificationVariable, Any>,
+    ) {
+        val inAppNotifications = config.toInAppNotificationsFor(emails, variables)
+        notificationPersistence.saveNotification(inAppNotifications)
+        eventPublisher.publishEvent(inAppNotifications.buildSendEmailEvent())
+    }
 
-    private fun Collection<UserSummary>.emails() =
-        associateBy({ it.email }, { UserEmailNotification(it.sendNotificationsToEmail, it.userStatus) })
+    private fun validateVariables(variables: Map<NotificationVariable, Any>, minimumNeeded: Set<NotificationVariable>) {
+        if (!variables.keys.containsAll(minimumNeeded))
+            throw IllegalArgumentException("Provided variables: $variables, does not all the minimum needed ones: $minimumNeeded")
+    }
 
-    private fun List<CollaboratorAssignedToProject>.emails() =
-        associateBy({ it.userEmail }, { UserEmailNotification(it.sendNotificationsToEmail, it.userStatus) })
-
-    private fun getUsersWithProjectRetrievePermissions() = userPersistence.findAllWithRoleIdIn(
-        roleIds = userRolePersistence.findRoleIdsHavingAndNotHavingPermissions(
-            needsToHaveAtLeastOneFrom = UserRolePermission.getGlobalProjectRetrievePermissions(),
-            needsNotToHaveAnyOf = emptySet(),
+    private fun getCallVariablesFrom(projectId: Long): Map<NotificationVariable, Any> {
+        val callId = projectPersistence.getCallIdOfProject(projectId = projectId)
+        val callName = callPersistence.getCallSummaryById(callId = callId).name
+        return mapOf(
+            NotificationVariable.CallId to callId,
+            NotificationVariable.CallName to callName,
         )
-    )
+    }
+
+    private fun getProgrammeVariables(): Map<NotificationVariable, Any> {
+        return mapOf(
+            NotificationVariable.ProgrammeName to (programmeDataPersistence.getProgrammeName() ?: "")
+        )
+    }
+
+    private fun String.replacePlaceholdersWith(variables: Map<NotificationVariable, Any>) = variables.entries
+        .map { (key, value) -> "[${key.variable}]" to value.toString() }
+        .map { (pattern, value) -> { str: String -> str.replace(pattern, value) } }
+        .fold(this) { acc, replaceFun -> replaceFun(acc) }
+
+    private fun ProjectNotificationConfiguration.toInAppNotificationsFor(
+        users: Map<String, UserEmailNotification>,
+        variablesProvided: Map<NotificationVariable, Any>,
+    ): NotificationInApp {
+        val projectId = variablesProvided[NotificationVariable.ProjectId] as Long
+        val variables = variablesProvided + getCallVariablesFrom(projectId) + getProgrammeVariables()
+        return NotificationInApp(
+            subject = emailSubject.replacePlaceholdersWith(variables),
+            body = emailBody.replacePlaceholdersWith(variables),
+            type = id,
+            time = ZonedDateTime.now(),
+            templateVariables = variables.mapKeys { it.key.variable },
+            recipientsInApp = users.keys,
+            recipientsEmail = users.filterValues { it.isEmailEnabled && it.isActive() }.keys,
+            emailTemplate = "notification.html",
+        )
+    }
 
     private fun NotificationInApp.buildSendEmailEvent() = JemsAsyncMailEvent(
         emailTemplateFileName = emailTemplate!!,
         mailNotificationInfo = MailNotificationInfo(
             subject = subject,
-            templateVariables = templateVariables.mapTo(HashSet()) { Variable(it.key, it.value) },
+            templateVariables = templateVariables.plus("body" to body).map { Variable(it.key, it.value) }.toSet(),
             recipients = recipientsEmail,
             messageType = type.name,
         ),

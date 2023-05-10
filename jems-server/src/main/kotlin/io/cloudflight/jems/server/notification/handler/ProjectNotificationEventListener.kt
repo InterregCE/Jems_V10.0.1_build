@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.notification.handler
 
-import io.cloudflight.jems.server.notification.inApp.service.model.NotificationProjectBase
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationVariable
 import io.cloudflight.jems.server.notification.inApp.service.project.GlobalProjectNotificationServiceInteractor
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
@@ -35,14 +35,14 @@ data class ProjectNotificationEventListener(
     fun sendNotifications(event: ProjectStatusChangeEvent) {
         val type = event.type()
         if (type != null && type.isProjectNotification())
-            notificationProjectService.sendNotifications(type, event.project())
+            notificationProjectService.sendNotifications(type, event.projectVariables())
     }
 
     private fun ProjectStatusChangeEvent.type() = newStatus.toNotificationType(projectSummary.status)
 
-    private fun ProjectStatusChangeEvent.project() = NotificationProjectBase(
-        projectId = projectSummary.id,
-        projectIdentifier = projectSummary.customIdentifier,
-        projectAcronym = projectSummary.acronym,
+    private fun ProjectStatusChangeEvent.projectVariables() = mapOf(
+        NotificationVariable.ProjectId to projectSummary.id,
+        NotificationVariable.ProjectIdentifier to projectSummary.customIdentifier,
+        NotificationVariable.ProjectAcronym to projectSummary.acronym
     )
 }

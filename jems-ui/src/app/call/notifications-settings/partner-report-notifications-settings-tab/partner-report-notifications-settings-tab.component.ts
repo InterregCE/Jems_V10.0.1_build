@@ -6,6 +6,8 @@ import {CallNotificationSettingsStore} from '../call-notification-settings-store
 import {catchError, map, take, tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {combineLatest, Observable, of} from 'rxjs';
+import {NotificationVariable} from '../notification-variable.enum';
+import {Alert} from '@common/components/forms/alert';
 
 @UntilDestroy()
 @Component({
@@ -14,6 +16,8 @@ import {combineLatest, Observable, of} from 'rxjs';
   styleUrls: ['./partner-report-notifications-settings-tab.component.scss']
 })
 export class PartnerReportNotificationsSettingsTabComponent {
+  Alert = Alert;
+
   partnerReportNotificationsForm = this.formBuilder.group({
     partnerReportNotificationConfigurations: this.formBuilder.array([]),
   });
@@ -23,6 +27,19 @@ export class PartnerReportNotificationsSettingsTabComponent {
     canEditCall: boolean;
   }>;
 
+  partnerReportNotificationVariables = [
+    NotificationVariable.PROGRAMME_NAME,
+    NotificationVariable.CALL_ID,
+    NotificationVariable.CALL_NAME,
+    NotificationVariable.PROJECT_ID,
+    NotificationVariable.PROJECT_IDENTIFIER,
+    NotificationVariable.PROJECT_ACRONYM,
+    NotificationVariable.PARTNER_ID,
+    NotificationVariable.PARTNER_ROLE,
+    NotificationVariable.PARTNER_NUMBER,
+    NotificationVariable.PARTNER_REPORT_ID,
+    NotificationVariable.PARTNER_REPORT_NUMBER,
+  ];
   constructor(
     private formBuilder: FormBuilder,
     private formService: FormService,

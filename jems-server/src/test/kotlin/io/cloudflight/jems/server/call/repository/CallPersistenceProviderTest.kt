@@ -540,6 +540,20 @@ internal class CallPersistenceProviderTest {
     }
 
     @Test
+    fun getCallSummaryById() {
+        val callEntity = callEntity(CALL_ID)
+        every { callRepo.findById(CALL_ID) } returns Optional.of(callEntity)
+        assertThat(persistence.getCallSummaryById(CALL_ID)).isEqualTo(expectedCall)
+    }
+
+    @Test
+    fun `getCallSummaryById - not existing`() {
+        every { callRepo.findById(-1) } returns Optional.empty()
+        assertThrows<CallNotFound> { persistence.getCallSummaryById(-1) }
+    }
+
+
+    @Test
     fun `should return call detail by project id`() {
         val callEntity = callEntity(CALL_ID)
         every { callRepo.findById(CALL_ID) } returns Optional.of(callEntity)
