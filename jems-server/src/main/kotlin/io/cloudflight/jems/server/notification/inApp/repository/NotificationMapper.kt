@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.notification.inApp.entity.NotificationEntity
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationInApp
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationPartner
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationProject
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationVariable
 import io.cloudflight.jems.server.notification.inApp.service.model.UserNotification
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
@@ -35,12 +36,12 @@ fun NotificationInApp.toUsers(
     )
 }
 
-fun Map<String, Any>.projectId() = get("projectId") as? Long
-fun Map<String, Any>.projectIdentifier() = get("projectIdentifier") as? String
-fun Map<String, Any>.projectAcronym() = get("projectAcronym") as? String
-fun Map<String, Any>.partnerId() = get("partnerId") as? Long
-fun Map<String, Any>.partnerRole() = get("partnerRole") as? ProjectPartnerRole
-fun Map<String, Any>.partnerNumber() = get("partnerNumber") as? Int
+fun Map<String, Any>.projectId() = get(NotificationVariable.ProjectId.variable) as? Long
+fun Map<String, Any>.projectIdentifier() = get(NotificationVariable.ProjectIdentifier.variable) as? String
+fun Map<String, Any>.projectAcronym() = get(NotificationVariable.ProjectAcronym.variable) as? String
+fun Map<String, Any>.partnerId() = get(NotificationVariable.PartnerId.variable) as? Long
+fun Map<String, Any>.partnerRole() = get(NotificationVariable.PartnerRole.variable) as? ProjectPartnerRole
+fun Map<String, Any>.partnerNumber() = get(NotificationVariable.PartnerNumber.variable) as? Int
 
 fun Page<NotificationEntity>.toModel() = map { it.toModel() }
 

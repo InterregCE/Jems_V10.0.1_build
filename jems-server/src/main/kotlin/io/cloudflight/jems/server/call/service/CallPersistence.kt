@@ -20,6 +20,7 @@ interface CallPersistence {
     fun listCalls(status: CallStatus?): List<IdNamePair>
     fun getPublishedAndOpenCalls(pageable: Pageable): Page<CallSummary>
     fun getCallById(callId: Long): CallDetail
+    fun getCallSummaryById(callId: Long): CallSummary
     fun getCallByProjectId(projectId: Long): CallDetail
     fun getCallSimpleByPartnerId(partnerId: Long): CallDetail
     fun getCallIdForNameIfExists(name: String): Long?

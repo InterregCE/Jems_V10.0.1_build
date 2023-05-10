@@ -69,6 +69,10 @@ class CallPersistenceProvider(
         }.orElseThrow { CallNotFound() }
 
     @Transactional(readOnly = true)
+    override fun getCallSummaryById(callId: Long): CallSummary =
+        callRepo.findById(callId).map { it.toModel() }.orElseThrow { CallNotFound() }
+
+    @Transactional(readOnly = true)
     override fun getCallByProjectId(projectId: Long): CallDetail =
         getCallById(projectPersistence.getCallIdOfProject(projectId))
 

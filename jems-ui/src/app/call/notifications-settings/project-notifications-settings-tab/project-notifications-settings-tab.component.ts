@@ -6,6 +6,8 @@ import {CallNotificationSettingsStore} from '../call-notification-settings-store
 import {catchError, map, take, tap} from 'rxjs/operators';
 import {UntilDestroy} from '@ngneat/until-destroy';
 import {combineLatest, Observable, of} from 'rxjs';
+import {NotificationVariable} from '../notification-variable.enum';
+import {Alert} from '@common/components/forms/alert';
 
 @UntilDestroy()
 @Component({
@@ -14,6 +16,8 @@ import {combineLatest, Observable, of} from 'rxjs';
   styleUrls: ['./project-notifications-settings-tab.component.scss']
 })
 export class ProjectNotificationsSettingsTabComponent {
+  Alert = Alert;
+
   projectNotificationsForm = this.formBuilder.group({
     projectNotificationConfigurations: this.formBuilder.array([]),
   });
@@ -22,6 +26,15 @@ export class ProjectNotificationsSettingsTabComponent {
     projectNotificationConfigurations: ProjectNotificationConfigurationDTO[];
     canEditCall: boolean;
   }>;
+
+  projectNotificationVariables = [
+    NotificationVariable.PROGRAMME_NAME,
+    NotificationVariable.CALL_ID,
+    NotificationVariable.CALL_NAME,
+    NotificationVariable.PROJECT_ID,
+    NotificationVariable.PROJECT_IDENTIFIER,
+    NotificationVariable.PROJECT_ACRONYM,
+  ];
 
   constructor(
     private formBuilder: FormBuilder,

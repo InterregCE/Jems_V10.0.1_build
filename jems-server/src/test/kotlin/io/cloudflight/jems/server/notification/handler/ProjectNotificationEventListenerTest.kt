@@ -5,8 +5,8 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.common.event.JemsAuditEvent
-import io.cloudflight.jems.server.notification.inApp.service.model.NotificationProjectBase
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationVariable
 import io.cloudflight.jems.server.notification.inApp.service.project.GlobalProjectNotificationServiceInteractor
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
@@ -18,11 +18,17 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.entry
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.context.ApplicationEventPublisher
+import java.lang.RuntimeException
+import java.util.stream.Stream
 
-class ProjectNotificationEventListenerTest: UnitTest() {
+class ProjectNotificationEventListenerTest : UnitTest() {
 
     companion object {
         private const val CALL_ID = 1L
@@ -36,6 +42,33 @@ class ProjectNotificationEventListenerTest: UnitTest() {
             acronym = "project acronym",
             status = status,
         )
+
+        @JvmStatic
+        fun parameterizedTestValues(): Stream<Arguments> = Stream.of(
+            Arguments.of(ApplicationStatus.DRAFT, ApplicationStatus.SUBMITTED, NotificationType.ProjectSubmitted),
+            Arguments.of(ApplicationStatus.DRAFT, ApplicationStatus.STEP1_SUBMITTED, NotificationType.ProjectSubmittedStep1),
+            Arguments.of(ApplicationStatus.STEP1_SUBMITTED, ApplicationStatus.STEP1_APPROVED, NotificationType.ProjectApprovedStep1),
+            Arguments.of(ApplicationStatus.STEP1_SUBMITTED, ApplicationStatus.STEP1_APPROVED_WITH_CONDITIONS, NotificationType.ProjectApprovedWithConditionsStep1),
+            Arguments.of(ApplicationStatus.STEP1_SUBMITTED, ApplicationStatus.STEP1_INELIGIBLE, NotificationType.ProjectIneligibleStep1),
+            Arguments.of(ApplicationStatus.STEP1_SUBMITTED, ApplicationStatus.STEP1_NOT_APPROVED, NotificationType.ProjectNotApprovedStep1),
+            Arguments.of(ApplicationStatus.ELIGIBLE, ApplicationStatus.APPROVED, NotificationType.ProjectApproved),
+            Arguments.of(ApplicationStatus.ELIGIBLE, ApplicationStatus.APPROVED_WITH_CONDITIONS, NotificationType.ProjectApprovedWithConditions),
+            Arguments.of(ApplicationStatus.ELIGIBLE, ApplicationStatus.INELIGIBLE, NotificationType.ProjectIneligible),
+            Arguments.of(ApplicationStatus.ELIGIBLE, ApplicationStatus.NOT_APPROVED, NotificationType.ProjectNotApproved),
+            Arguments.of(ApplicationStatus.ELIGIBLE, ApplicationStatus.RETURNED_TO_APPLICANT, NotificationType.ProjectReturnedToApplicant),
+            Arguments.of(ApplicationStatus.RETURNED_TO_APPLICANT, ApplicationStatus.SUBMITTED, NotificationType.ProjectResubmitted),
+            Arguments.of(ApplicationStatus.ELIGIBLE, ApplicationStatus.RETURNED_TO_APPLICANT_FOR_CONDITIONS, NotificationType.ProjectReturnedForConditions),
+            Arguments.of(ApplicationStatus.RETURNED_TO_APPLICANT_FOR_CONDITIONS, ApplicationStatus.CONDITIONS_SUBMITTED, NotificationType.ProjectConditionsSubmitted),
+            Arguments.of(ApplicationStatus.APPROVED, ApplicationStatus.CONTRACTED, NotificationType.ProjectContracted),
+            Arguments.of(ApplicationStatus.CONTRACTED, ApplicationStatus.IN_MODIFICATION, NotificationType.ProjectInModification),
+            Arguments.of(ApplicationStatus.APPROVED, ApplicationStatus.MODIFICATION_PRECONTRACTING, NotificationType.ProjectInModification),
+            Arguments.of(ApplicationStatus.IN_MODIFICATION, ApplicationStatus.MODIFICATION_SUBMITTED, NotificationType.ProjectModificationSubmitted),
+            Arguments.of(ApplicationStatus.MODIFICATION_PRECONTRACTING, ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED, NotificationType.ProjectModificationSubmitted),
+            Arguments.of(ApplicationStatus.MODIFICATION_SUBMITTED, ApplicationStatus.CONTRACTED, NotificationType.ProjectModificationApproved),
+            Arguments.of(ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED, ApplicationStatus.APPROVED, NotificationType.ProjectModificationApproved),
+            Arguments.of(ApplicationStatus.MODIFICATION_SUBMITTED, ApplicationStatus.MODIFICATION_REJECTED, NotificationType.ProjectModificationRejected),
+            Arguments.of(ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED, ApplicationStatus.MODIFICATION_REJECTED, NotificationType.ProjectModificationRejected),
+        )!!
     }
 
     @MockK
@@ -52,303 +85,22 @@ class ProjectNotificationEventListenerTest: UnitTest() {
         clearAllMocks()
     }
 
-    @Test
-    fun `send ProjectSubmitted notification`() {
-        val slotProject = slot<NotificationProjectBase>()
-        every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
+    @ParameterizedTest
+    @MethodSource("parameterizedTestValues")
+    fun `send notification`(currentStatus: ApplicationStatus, newStatus: ApplicationStatus, notificationType: NotificationType) {
+        val slotVariable = slot<Map<NotificationVariable, Any>>()
+        every { notificationProjectService.sendNotifications(any(), capture(slotVariable)) } answers { }
 
         listener.sendNotifications(
-            ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.DRAFT), ApplicationStatus.SUBMITTED)
+            ProjectStatusChangeEvent(mockk(), summary(currentStatus), newStatus)
         )
 
-        verify(exactly = 1) { notificationProjectService.sendNotifications(NotificationType.ProjectSubmitted, any()) }
-        assertThat(slotProject.captured).isEqualTo(NotificationProjectBase(PROJECT_ID, "01", "project acronym"))
-    }
-
-    @Test
-    fun `send ProjectSubmittedStep1 notification`() {
-        val slotProject = slot<NotificationProjectBase>()
-        every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
-
-        listener.sendNotifications(
-            ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.DRAFT), ApplicationStatus.STEP1_SUBMITTED)
+        verify(exactly = 1) { notificationProjectService.sendNotifications(notificationType, any()) }
+        assertThat(slotVariable.captured).contains(
+            entry(NotificationVariable.ProjectId, PROJECT_ID),
+            entry(NotificationVariable.ProjectIdentifier, "01"),
+            entry(NotificationVariable.ProjectAcronym, "project acronym"),
         )
-
-        verify(exactly = 1) { notificationProjectService.sendNotifications(NotificationType.ProjectSubmittedStep1, any()) }
-        assertThat(slotProject.captured).isEqualTo(NotificationProjectBase(PROJECT_ID, "01", "project acronym"))
-    }
-
-    @Test
-    fun `send ProjectApprovedStep1 notification`() {
-        val slotProject = slot<NotificationProjectBase>()
-        every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
-
-        listener.sendNotifications(
-            ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.STEP1_SUBMITTED), ApplicationStatus.STEP1_APPROVED)
-        )
-
-        verify(exactly = 1) { notificationProjectService.sendNotifications(NotificationType.ProjectApprovedStep1, any()) }
-        assertThat(slotProject.captured).isEqualTo(NotificationProjectBase(PROJECT_ID, "01", "project acronym"))
-    }
-
-    @Test
-    fun `send ProjectApprovedWithConditionsStep1 notification`() {
-        val slotProject = slot<NotificationProjectBase>()
-        every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
-
-        listener.sendNotifications(
-            ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.STEP1_SUBMITTED), ApplicationStatus.STEP1_APPROVED_WITH_CONDITIONS)
-        )
-
-        verify(exactly = 1) { notificationProjectService.sendNotifications(NotificationType.ProjectApprovedWithConditionsStep1, any()) }
-        assertThat(slotProject.captured).isEqualTo(NotificationProjectBase(PROJECT_ID, "01", "project acronym"))
-    }
-
-    @Test
-    fun `send ProjectIneligibleStep1 notification`() {
-        val slotProject = slot<NotificationProjectBase>()
-        every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
-
-        listener.sendNotifications(
-            ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.STEP1_SUBMITTED), ApplicationStatus.STEP1_INELIGIBLE)
-        )
-
-        verify(exactly = 1) { notificationProjectService.sendNotifications(NotificationType.ProjectIneligibleStep1, any()) }
-        assertThat(slotProject.captured).isEqualTo(NotificationProjectBase(PROJECT_ID, "01", "project acronym"))
-    }
-
-    @Test
-    fun `send ProjectNotApprovedStep1 notification`() {
-        val slotProject = slot<NotificationProjectBase>()
-        every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
-
-        listener.sendNotifications(
-            ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.STEP1_SUBMITTED), ApplicationStatus.STEP1_NOT_APPROVED)
-        )
-
-        verify(exactly = 1) { notificationProjectService.sendNotifications(NotificationType.ProjectNotApprovedStep1, any()) }
-        assertThat(slotProject.captured).isEqualTo(NotificationProjectBase(PROJECT_ID, "01", "project acronym"))
-    }
-
-    @Test
-    fun `send ProjectApproved notification`() {
-        val slotProject = slot<NotificationProjectBase>()
-        every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
-
-        listener.sendNotifications(
-            ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.ELIGIBLE), ApplicationStatus.APPROVED)
-        )
-
-        verify(exactly = 1) { notificationProjectService.sendNotifications(NotificationType.ProjectApproved, any()) }
-        assertThat(slotProject.captured).isEqualTo(NotificationProjectBase(PROJECT_ID, "01", "project acronym"))
-    }
-
-    @Test
-    fun `send ProjectApprovedWithConditions notification`() {
-        val slotProject = slot<NotificationProjectBase>()
-        every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
-
-        listener.sendNotifications(
-            ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.ELIGIBLE), ApplicationStatus.APPROVED_WITH_CONDITIONS)
-        )
-
-        verify(exactly = 1) { notificationProjectService.sendNotifications(NotificationType.ProjectApprovedWithConditions, any()) }
-        assertThat(slotProject.captured).isEqualTo(NotificationProjectBase(PROJECT_ID, "01", "project acronym"))
-    }
-
-    @Test
-    fun `send ProjectIneligible notification`() {
-        val slotProject = slot<NotificationProjectBase>()
-        every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
-
-        listener.sendNotifications(
-            ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.ELIGIBLE), ApplicationStatus.INELIGIBLE)
-        )
-
-        verify(exactly = 1) { notificationProjectService.sendNotifications(NotificationType.ProjectIneligible, any()) }
-        assertThat(slotProject.captured).isEqualTo(NotificationProjectBase(PROJECT_ID, "01", "project acronym"))
-    }
-
-    @Test
-    fun `send ProjectNotApproved notification`() {
-        val slotProject = slot<NotificationProjectBase>()
-        every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
-
-        listener.sendNotifications(
-            ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.ELIGIBLE), ApplicationStatus.NOT_APPROVED)
-        )
-
-        verify(exactly = 1) { notificationProjectService.sendNotifications(NotificationType.ProjectNotApproved, any()) }
-        assertThat(slotProject.captured).isEqualTo(NotificationProjectBase(PROJECT_ID, "01", "project acronym"))
-    }
-
-    @Test
-    fun `send ProjectReturnedToApplicant notification`() {
-        val slotProject = slot<NotificationProjectBase>()
-        every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
-
-        listener.sendNotifications(
-            ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.ELIGIBLE), ApplicationStatus.RETURNED_TO_APPLICANT)
-        )
-
-        verify(exactly = 1) { notificationProjectService.sendNotifications(NotificationType.ProjectReturnedToApplicant, any()) }
-        assertThat(slotProject.captured).isEqualTo(NotificationProjectBase(PROJECT_ID, "01", "project acronym"))
-    }
-
-    @Test
-    fun `send ProjectResubmitted notification`() {
-        val slotProject = slot<NotificationProjectBase>()
-        every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
-
-        listener.sendNotifications(
-            ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.RETURNED_TO_APPLICANT), ApplicationStatus.SUBMITTED)
-        )
-
-        verify(exactly = 1) { notificationProjectService.sendNotifications(NotificationType.ProjectResubmitted, any()) }
-        assertThat(slotProject.captured).isEqualTo(NotificationProjectBase(PROJECT_ID, "01", "project acronym"))
-    }
-
-    @Test
-    fun `send ProjectReturnedForConditions notification`() {
-        val slotProject = slot<NotificationProjectBase>()
-        every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
-
-        listener.sendNotifications(
-            ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.ELIGIBLE), ApplicationStatus.RETURNED_TO_APPLICANT_FOR_CONDITIONS)
-        )
-
-        verify(exactly = 1) { notificationProjectService.sendNotifications(NotificationType.ProjectReturnedForConditions, any()) }
-        assertThat(slotProject.captured).isEqualTo(NotificationProjectBase(PROJECT_ID, "01", "project acronym"))
-    }
-
-    @Test
-    fun `send ProjectConditionsSubmitted notification`() {
-        val slotProject = slot<NotificationProjectBase>()
-        every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
-
-        listener.sendNotifications(
-            ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.RETURNED_TO_APPLICANT_FOR_CONDITIONS), ApplicationStatus.CONDITIONS_SUBMITTED)
-        )
-
-        verify(exactly = 1) { notificationProjectService.sendNotifications(NotificationType.ProjectConditionsSubmitted, any()) }
-        assertThat(slotProject.captured).isEqualTo(NotificationProjectBase(PROJECT_ID, "01", "project acronym"))
-    }
-
-    @Test
-    fun `send ProjectContracted notification`() {
-        val slotProject = slot<NotificationProjectBase>()
-        every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
-
-        listener.sendNotifications(
-            ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.APPROVED), ApplicationStatus.CONTRACTED)
-        )
-
-        verify(exactly = 1) { notificationProjectService.sendNotifications(NotificationType.ProjectContracted, any()) }
-        assertThat(slotProject.captured).isEqualTo(NotificationProjectBase(PROJECT_ID, "01", "project acronym"))
-    }
-
-    @Test
-    fun `send ProjectInModification notification when project is contracted already`() {
-        val slotProject = slot<NotificationProjectBase>()
-        every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
-
-        listener.sendNotifications(
-            ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.CONTRACTED), ApplicationStatus.IN_MODIFICATION)
-        )
-
-        verify(exactly = 1) { notificationProjectService.sendNotifications(NotificationType.ProjectInModification, any()) }
-        assertThat(slotProject.captured).isEqualTo(NotificationProjectBase(PROJECT_ID, "01", "project acronym"))
-    }
-
-    @Test
-    fun `send ProjectInModification notification when project is not contracted yet`() {
-        val slotProject = slot<NotificationProjectBase>()
-        every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
-
-        listener.sendNotifications(
-            ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.APPROVED), ApplicationStatus.MODIFICATION_PRECONTRACTING)
-        )
-
-        verify(exactly = 1) { notificationProjectService.sendNotifications(NotificationType.ProjectInModification, any()) }
-        assertThat(slotProject.captured).isEqualTo(NotificationProjectBase(PROJECT_ID, "01", "project acronym"))
-    }
-
-    @Test
-    fun `send ProjectModificationSubmitted notification when project is contracted`() {
-        val slotProject = slot<NotificationProjectBase>()
-        every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
-
-        listener.sendNotifications(
-            ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.IN_MODIFICATION), ApplicationStatus.MODIFICATION_SUBMITTED)
-        )
-
-        verify(exactly = 1) { notificationProjectService.sendNotifications(NotificationType.ProjectModificationSubmitted, any()) }
-        assertThat(slotProject.captured).isEqualTo(NotificationProjectBase(PROJECT_ID, "01", "project acronym"))
-    }
-
-    @Test
-    fun `send ProjectModificationSubmitted notification when project not contracted`() {
-        val slotProject = slot<NotificationProjectBase>()
-        every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
-
-        listener.sendNotifications(
-            ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.MODIFICATION_PRECONTRACTING), ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED)
-        )
-
-        verify(exactly = 1) { notificationProjectService.sendNotifications(NotificationType.ProjectModificationSubmitted, any()) }
-        assertThat(slotProject.captured).isEqualTo(NotificationProjectBase(PROJECT_ID, "01", "project acronym"))
-    }
-
-    @Test
-    fun `send ProjectModificationApproved notification when project contracted`() {
-        val slotProject = slot<NotificationProjectBase>()
-        every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
-
-        listener.sendNotifications(
-            ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.MODIFICATION_SUBMITTED), ApplicationStatus.CONTRACTED)
-        )
-
-        verify(exactly = 1) { notificationProjectService.sendNotifications(NotificationType.ProjectModificationApproved, any()) }
-        assertThat(slotProject.captured).isEqualTo(NotificationProjectBase(PROJECT_ID, "01", "project acronym"))
-    }
-
-    @Test
-    fun `send ProjectModificationApproved notification when project not contracted`() {
-        val slotProject = slot<NotificationProjectBase>()
-        every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
-
-        listener.sendNotifications(
-            ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED), ApplicationStatus.APPROVED)
-        )
-
-        verify(exactly = 1) { notificationProjectService.sendNotifications(NotificationType.ProjectModificationApproved, any()) }
-        assertThat(slotProject.captured).isEqualTo(NotificationProjectBase(PROJECT_ID, "01", "project acronym"))
-    }
-
-    @Test
-    fun `send ProjectModificationRejected notification when project is contracted`() {
-        val slotProject = slot<NotificationProjectBase>()
-        every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
-
-        listener.sendNotifications(
-            ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.MODIFICATION_SUBMITTED), ApplicationStatus.MODIFICATION_REJECTED)
-        )
-
-        verify(exactly = 1) { notificationProjectService.sendNotifications(NotificationType.ProjectModificationRejected, any()) }
-        assertThat(slotProject.captured).isEqualTo(NotificationProjectBase(PROJECT_ID, "01", "project acronym"))
-    }
-
-    @Test
-    fun `send ProjectModificationRejected notification when project not contracted`() {
-        val slotProject = slot<NotificationProjectBase>()
-        every { notificationProjectService.sendNotifications(any(), capture(slotProject)) } answers { }
-
-        listener.sendNotifications(
-            ProjectStatusChangeEvent(mockk(), summary(ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED), ApplicationStatus.MODIFICATION_REJECTED)
-        )
-
-        verify(exactly = 1) { notificationProjectService.sendNotifications(NotificationType.ProjectModificationRejected, any()) }
-        assertThat(slotProject.captured).isEqualTo(NotificationProjectBase(PROJECT_ID, "01", "project acronym"))
     }
 
     @Test
@@ -374,4 +126,5 @@ class ProjectNotificationEventListenerTest: UnitTest() {
             )
         )
     }
+
 }
