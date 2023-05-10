@@ -11,7 +11,9 @@ import {
 import {ContractingDimensionCodeDTO} from '@cat/api';
 import {NumberService} from '@common/services/number.service';
 import {Alert} from '@common/components/forms/alert';
+import {UntilDestroy} from "@ngneat/until-destroy";
 
+@UntilDestroy()
 @Component({
   selector: 'jems-contract-monitoring-codes-of-intervention-table',
   templateUrl: './contract-monitoring-codes-of-intervention-table.component.html',
@@ -42,8 +44,11 @@ export class ContractMonitoringCodesOfInterventionTableComponent implements OnCh
 
   Alert = Alert;
 
-  dimensionsEnum = Object.keys(ContractingDimensionCodeDTO.ProgrammeObjectiveDimensionEnum);
-
+  dimensionsEnum = Object.keys(ContractingDimensionCodeDTO.ProgrammeObjectiveDimensionEnum)
+    .map((dimension: string, index: number) => ({
+      name: dimension,
+      orderNr: this.getOrderNrForDimension(dimension, index)
+    }));
   dimensionControl: AbstractControl | null;
 
   dimensionCodesTableData: AbstractControl[] = [];
@@ -55,7 +60,7 @@ export class ContractMonitoringCodesOfInterventionTableComponent implements OnCh
     'delete'
   ];
 
-  constructor(private formBuilder: FormBuilder) {}
+  constructor(private formBuilder: FormBuilder) { }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.contractMonitoringDimensionCodesDTO) {
@@ -216,5 +221,13 @@ export class ContractMonitoringCodesOfInterventionTableComponent implements OnCh
 
   private controlIsNew(control: FormGroup): boolean {
     return control.controls.id.value === 0;
+  }
+
+  private getOrderNrForDimension(dimension: string, index: number): number {
+    switch(dimension) {
+      case 'GenderEquality': return 7;
+      case 'RegionalAndSeaBasinStrategy': return 8;
+      default: return index + 1;
+    }
   }
 }

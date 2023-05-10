@@ -207,13 +207,13 @@
             <div class=mat-body-strong>{{'programme.priority.dimensions.title' | translate}}</div>
             <div class=mat-body-strong>{{'programme.priority.dimensions.codes' | translate}}</div>
         </div>
-        <div *ngFor="let dimension of dimensions">
-            <div>{{'programme.objective.dimension.' + dimension.toLowerCase() | translate}}</div>
+        <div *ngFor="let dimension of dimensionsEnum; let index = index;">
+            <div> {{dimension.orderNr}} - {{'programme.objective.dimension.' + dimension.name.toLowerCase() | translate}}</div>
             <div class="dimensions pt-2">
                 <jems-filter-autocomplete-input
-                        [options]=getCodesByDimension(dimension)
+                        [options]=getCodesByDimension(dimension.name)
                         [isDisabled]="form.disabled"
-                        [formControl]=objectiveControl.get(constants.DIMENSION_CODES.name).get(dimension)
+                        [formControl]=objectiveControl.get(constants.DIMENSION_CODES.name).get(dimension.name)
                         [hasPartialLockingOfValues]="true"
                         formFieldWidth=full
                         label=programme.priority.dimensions.codes>
@@ -221,7 +221,7 @@
 
                 <mat-error>
                     <jems-form-field-errors
-                            [errors]=objectiveControl?.get(constants.DIMENSION_CODES.name)?.get(dimension)?.errors
+                            [errors]=objectiveControl?.get(constants.DIMENSION_CODES.name)?.get(dimension.name)?.errors
                             [messages]=constants.DIMENSION_CODES.errorMessages>
                     </jems-form-field-errors>
                 </mat-error>

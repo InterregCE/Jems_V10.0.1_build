@@ -3,7 +3,7 @@ import {ProgrammePriorityDetailPageStore} from './programme-priority-detail-page
 import {ProgrammePageSidenavService} from '../../../programme-page/services/programme-page-sidenav.service';
 import {ActivatedRoute} from '@angular/router';
 import {combineLatest, Observable, of} from 'rxjs';
-import {ProgrammePriorityDTO, ProgrammeSpecificObjectiveDTO} from '@cat/api';
+import {ContractingDimensionCodeDTO, ProgrammePriorityDTO, ProgrammeSpecificObjectiveDTO} from '@cat/api';
 import {catchError, filter, map, take, tap} from 'rxjs/operators';
 import {AbstractControl, FormArray, FormBuilder, FormGroup} from '@angular/forms';
 import {ProgrammePriorityDetailPageConstants} from './programme-priority-detail-page.constants';
@@ -71,6 +71,12 @@ export class ProgrammePriorityDetailPageComponent {
   // TODO: remove when new edit mode is introduced
   saveSuccess: string;
   saveError: APIError;
+  dimensionsEnum = Object.keys(ContractingDimensionCodeDTO.ProgrammeObjectiveDimensionEnum)
+    .filter(dimension => this.dimensions.includes(dimension))
+    .map((dimension: string, index: number) => ({
+      name: dimension,
+      orderNr: this.getOrderNrForDimension(dimension, index)
+  }));
 
   constructor(private programmePageSidenavService: ProgrammePageSidenavService,
               private activatedRoute: ActivatedRoute,
@@ -289,5 +295,13 @@ export class ProgrammePriorityDetailPageComponent {
       return objectives;
     }
     return [currentObjective, ...objectives];
+  }
+
+  private getOrderNrForDimension(dimension: string, index: number): number {
+    switch(dimension) {
+      case 'GenderEquality': return 7;
+      case 'RegionalAndSeaBasinStrategy': return 8;
+      default: return index + 1;
+    }
   }
 }
