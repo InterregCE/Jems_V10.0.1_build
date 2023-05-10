@@ -25,7 +25,8 @@ context('Login tests', () => {
 
       cy.contains('h2', 'My applications').should('be.visible');
 
-      cy.get('button.logout-button').click();
+      cy.contains('button', 'account_circle').should('be.visible').click(); // the icon of the user-menu-button
+      cy.contains('a', 'Logout').should('be.visible').click();
 
       cy.contains('button', 'Login').should('be.visible');
     })
