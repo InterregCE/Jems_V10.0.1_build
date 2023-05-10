@@ -1995,7 +1995,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"pluginKey\": \"jems-pre-condition-check-off\",\r\n    \"reportPartnerCheckPluginKey\": \"report-partner-check-off\",\r\n    \"controlReportSamplingCheckPluginKey\": \"control-report-sampling-check-off\",\r\n    \"reportProjectCheckPluginKey\": \"report-project-check-off\"\r\n}\r\n",
+							"raw": "{\r\n    \"pluginKey\": \"jems-pre-condition-check-off\",\r\n    \"reportPartnerCheckPluginKey\": \"report-partner-check-off\",\r\n    \"controlReportSamplingCheckPluginKey\": \"control-report-sampling-check-off\",\r\n    \"reportProjectCheckPluginKey\": \"report-project-check-off\",\r\n    \"controlReportPartnerCheckPluginKey\": \"control-report-partner-check-off\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -11253,7 +11253,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "[\r\n    {\r\n        \"type\": \"Organization\",\r\n        \"country\":\"Burundi (BI)\",\r\n        \"nutsRegion2\":\"Burundi (BI00)\",\r\n        \"nutsRegion3\":\"Burundi (BI000)\",\r\n        \"street\": \"Pennsylvania Avenue\",\r\n        \"houseNumber\": \"1600\",\r\n        \"postalCode\": \"20500\",\r\n        \"city\": \"Washington, DC\",\r\n        \"homepage\": \"https://www.whitehouse.gov/\"\r\n    }\r\n]\r\n",
+									"raw": "[\r\n    {\r\n        \"type\": \"Organization\",\r\n        \"country\":\"Burundi (BI)\",\r\n        \"countryCode\":\"BI\",\r\n        \"nutsRegion2\":\"Burundi (BI00)\",\r\n        \"nutsRegion2Code\":\"BI00\",\r\n        \"nutsRegion3\":\"Burundi (BI000)\",\r\n        \"nutsRegion3Code\":\"BI000\",\r\n        \"street\": \"Pennsylvania Avenue\",\r\n        \"houseNumber\": \"1600\",\r\n        \"postalCode\": \"20500\",\r\n        \"city\": \"Washington, DC\",\r\n        \"homepage\": \"https://www.whitehouse.gov/\"\r\n    }\r\n]\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
