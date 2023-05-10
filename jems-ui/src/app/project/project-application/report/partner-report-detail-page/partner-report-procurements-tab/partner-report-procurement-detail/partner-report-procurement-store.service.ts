@@ -305,7 +305,7 @@ export class PartnerReportProcurementStore {
         filter(partnerId => !!partnerId),
         tap(() => this.gdprError$.next(null)),
         switchMap((partnerId) => {
-          return this.downloadService.download(`/api/project/report/partner//procurement/gdprAttachment/byPartnerId/${partnerId}/byFileId/${fileId}/download`, 'partner-report');
+          return this.downloadService.download(`/api/project/report/partner/procurement/gdprAttachment/byPartnerId/${partnerId}/byFileId/${fileId}/download`, 'partner-report');
         }),
         catchError(error => {
           this.gdprError$.next(error.error);
