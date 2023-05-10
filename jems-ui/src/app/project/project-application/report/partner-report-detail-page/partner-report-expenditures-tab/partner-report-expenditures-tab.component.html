@@ -196,14 +196,20 @@
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.contract.ID' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <div *ngIf="expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.contractId).errors"
+                                <div *ngIf="this.currentReport.status !== StatusEnum.Draft || (expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.contractId).errors)"
                                       (click)="selectRow(i, 'contractId')" class="custom-wrapper pointer"
                                       [matTooltip]="getContractIdValue(control.get(constants.FORM_CONTROL_NAMES.contractId).value) ?? ('common.not.applicable.option' | translate)"
                                       [matTooltipClass]="'tooltip'"
                                       [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.contractId)">
                                     <div class="custom-dropdown-text">
-                                        <span *ngIf="control.get(constants.FORM_CONTROL_NAMES.contractId).value">
-                                            {{getContractIdValue(control.get(constants.FORM_CONTROL_NAMES.contractId).value)}}
+                                        <a *ngIf="control.get(constants.FORM_CONTROL_NAMES.contractId).value && currentReport.status !== StatusEnum.Draft"
+                                           [routerLink]="'/app/project/detail/' + data.projectId + '/reporting/' + data.partnerId + '/reports/' + data.partnerReportId + '/procurements/' + control.get(constants.FORM_CONTROL_NAMES.contractId).value">
+                                           <span>
+                                                {{getContractIdValue(control.get(constants.FORM_CONTROL_NAMES.contractId).value)}}
+                                           </span>
+                                        </a>
+                                        <span *ngIf="control.get(constants.FORM_CONTROL_NAMES.contractId).value && currentReport.status === StatusEnum.Draft">
+                                                {{getContractIdValue(control.get(constants.FORM_CONTROL_NAMES.contractId).value)}}
                                         </span>
                                         <span *ngIf="!control.get(constants.FORM_CONTROL_NAMES.contractId).value">
                                             {{'common.not.applicable.option' | translate}}
@@ -214,7 +220,7 @@
                                     </div>
                                 </div>
 
-                                <mat-form-field *ngIf="expenditureFormIndex === i || control.get(constants.FORM_CONTROL_NAMES.contractId).errors" jemsFormFieldWidth="full">
+                                <mat-form-field *ngIf="this.currentReport.status === StatusEnum.Draft && (expenditureFormIndex === i || control.get(constants.FORM_CONTROL_NAMES.contractId).errors)" jemsFormFieldWidth="full">
                                     <mat-select
                                         #contractId
                                         [formControlName]="constants.FORM_CONTROL_NAMES.contractId"
