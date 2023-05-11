@@ -13,8 +13,10 @@ data class ProjectReportWorkPackageActivityDeliverable(
 
     val period: ProjectPeriod?,
     val previouslyReported: BigDecimal,
+    val previousCurrentReport: BigDecimal,
     val currentReport: BigDecimal,
 
     val progress: Set<InputTranslation>,
+    val previousProgress: Set<InputTranslation>,
     val attachment: JemsFileMetadata?,
 )

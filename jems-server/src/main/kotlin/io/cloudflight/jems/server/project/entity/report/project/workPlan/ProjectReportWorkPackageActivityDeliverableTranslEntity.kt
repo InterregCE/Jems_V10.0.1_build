@@ -14,4 +14,6 @@ class ProjectReportWorkPackageActivityDeliverableTranslEntity(
     val title: String,
     @field:NotNull
     var progress: String,
+    @field:NotNull
+    var previousProgress: String,
 ) : TranslationEntity()

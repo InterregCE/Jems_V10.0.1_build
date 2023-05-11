@@ -12,5 +12,5 @@ data class ProjectReportWorkPackageActivityCreate(
     val startPeriodNumber: Int?,
     val endPeriodNumber: Int?,
     val status: ProjectReportWorkPlanStatus?,
-    val deliverables: List<CreateProjectPartnerReportWorkPackageActivityDeliverable>,
+    val deliverables: List<ProjectReportWorkPackageActivityDeliverableCreate>,
 )

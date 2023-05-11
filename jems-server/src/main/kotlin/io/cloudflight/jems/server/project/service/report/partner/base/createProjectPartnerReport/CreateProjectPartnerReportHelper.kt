@@ -6,8 +6,10 @@ import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.create.CreateProjectPartnerReportWorkPackageOutput
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackage
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageActivityCreate
+import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageActivityDeliverableCreate
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageCreate
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageInvestmentCreate
+import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageOutputCreate
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackageFull
 import java.math.BigDecimal
 
@@ -78,7 +80,7 @@ fun List<ProjectWorkPackageFull>.toCreateEntity(
                 status = lastWorkPlan.firstOrNull { it.number == wp.workPackageNumber }
                     ?.activities?.firstOrNull { it.number == a.activityNumber }?.status,
                 deliverables = a.deliverables.map { d ->
-                    CreateProjectPartnerReportWorkPackageActivityDeliverable(
+                    ProjectReportWorkPackageActivityDeliverableCreate(
                         deliverableId = d.id,
                         number = d.deliverableNumber,
                         title = d.title,
@@ -86,12 +88,12 @@ fun List<ProjectWorkPackageFull>.toCreateEntity(
                         periodNumber = d.period,
                         previouslyReported = previouslyReportedDeliverables[wp.workPackageNumber]
                             ?.get(a.activityNumber)?.get(d.deliverableNumber) ?: BigDecimal.ZERO,
-                    )
+                        )
                 },
             )
         },
         outputs = wp.outputs.map { o ->
-            CreateProjectPartnerReportWorkPackageOutput(
+            ProjectReportWorkPackageOutputCreate(
                 number = o.outputNumber,
                 title = o.title,
                 deactivated = o.deactivated,
@@ -99,7 +101,7 @@ fun List<ProjectWorkPackageFull>.toCreateEntity(
                 periodNumber = o.periodNumber,
                 targetValue = o.targetValue ?: BigDecimal.ZERO,
                 previouslyReported = previouslyReportedOutputs[wp.workPackageNumber]?.get(o.outputNumber) ?: BigDecimal.ZERO,
-            )
+                )
         },
         investments = wp.investments.map {i ->
             ProjectReportWorkPackageInvestmentCreate(
@@ -118,8 +120,8 @@ fun List<ProjectWorkPackageFull>.toCreateEntity(
                 ownershipSiteLocation = i.ownershipSiteLocation,
                 ownershipRetain = i.ownershipRetain,
                 ownershipMaintenance = i.ownershipMaintenance,
-                deactivated = i.deactivated
-            )
+                deactivated = i.deactivated,
+                )
         }
     )
 }

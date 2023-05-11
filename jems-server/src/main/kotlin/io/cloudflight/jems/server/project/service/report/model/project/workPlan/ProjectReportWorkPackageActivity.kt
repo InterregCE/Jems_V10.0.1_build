@@ -13,10 +13,13 @@ data class ProjectReportWorkPackageActivity(
     val startPeriod: ProjectPeriod?,
     val endPeriod: ProjectPeriod?,
 
+    val previousStatus: ProjectReportWorkPlanStatus?,
     val status: ProjectReportWorkPlanStatus?,
+    val previousProgress: Set<InputTranslation>,
     val progress: Set<InputTranslation>,
 
     val attachment: JemsFileMetadata?,
 
     val deliverables: List<ProjectReportWorkPackageActivityDeliverable>,
+    var activityStatusLabel: ProjectReportWorkPlanFlag? = null
 )

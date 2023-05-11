@@ -16,6 +16,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.workPlan.
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageOutput
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageOutputUpdate
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageUpdate
+import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanFlag
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanStatus
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.workPlan.ProjectReportWorkPlanPersistence
@@ -75,9 +76,13 @@ internal class UpdateProjectReportWorkPlanTest : UnitTest() {
                                                 currentReport = BigDecimal.valueOf(3654L, 2),
                                                 progress = setOf(InputTranslation(EN, "[87] progress")),
                                                 attachment = dummyFile,
+                                                previousProgress = setOf(InputTranslation(EN, "[87] progress")),
+                                                previousCurrentReport = BigDecimal.valueOf(3654L, 2),
                                         ),
                                 ),
                                 attachment = dummyFile,
+                                previousStatus = ProjectReportWorkPlanStatus.Not,
+                                previousProgress = setOf(InputTranslation(EN, "[99] progress"))
                         ),
                 ),
                 outputs = listOf(
@@ -93,9 +98,16 @@ internal class UpdateProjectReportWorkPlanTest : UnitTest() {
                                 currentReport = BigDecimal.valueOf(6653L, 2),
                                 progress = setOf(InputTranslation(EN, "[61] progress")),
                                 attachment = dummyFile,
+                                previousProgress = setOf(InputTranslation(EN, "[61] progress")),
+                                previousCurrentReport = BigDecimal.valueOf(6653L, 2)
                         ),
                 ),
-                investments = emptyList()
+                investments = emptyList(),
+                previousCommunicationExplanation = setOf(InputTranslation(EN, "[45] communicationExplanation")),
+                previousSpecificExplanation = setOf(InputTranslation(EN, "[45] specificExplanation")),
+                previousSpecificStatus = ProjectReportWorkPlanStatus.Not,
+                previousCompleted = false,
+                previousCommunicationStatus = ProjectReportWorkPlanStatus.Not,
         )
 
         private val newWorkPlan = ProjectReportWorkPackage(
@@ -131,9 +143,14 @@ internal class UpdateProjectReportWorkPlanTest : UnitTest() {
                                                 currentReport = BigDecimal.TEN,
                                                 progress = setOf(InputTranslation(EN, "[87] progress new")),
                                                 attachment = dummyFile,
+                                                previousCurrentReport = BigDecimal.TEN,
+                                                previousProgress = setOf(InputTranslation(EN, "[87] progress new")),
                                         )
                                 ),
                                 attachment = dummyFile,
+                                previousProgress = setOf(InputTranslation(EN, "[99] progress new")),
+                                previousStatus = ProjectReportWorkPlanStatus.Partly,
+                                activityStatusLabel = ProjectReportWorkPlanFlag.Gray
                         ),
                 ),
                 outputs = listOf(
@@ -149,9 +166,19 @@ internal class UpdateProjectReportWorkPlanTest : UnitTest() {
                                 currentReport = BigDecimal.ONE,
                                 progress = setOf(InputTranslation(EN, "[61] progress new")),
                                 attachment = dummyFile,
+                                previousProgress = setOf(InputTranslation(EN, "[61] progress new")),
+                                previousCurrentReport = BigDecimal.ONE,
                         ),
                 ),
-                investments = emptyList()
+                investments = emptyList(),
+                previousCommunicationStatus = ProjectReportWorkPlanStatus.Partly,
+                previousCompleted = true,
+                previousSpecificStatus = ProjectReportWorkPlanStatus.Partly,
+                previousSpecificExplanation = setOf(InputTranslation(EN, "[45] specificExplanation new")),
+                previousCommunicationExplanation = setOf(InputTranslation(EN, "[45] communicationExplanation new")),
+                specificStatusLabel = ProjectReportWorkPlanFlag.Gray,
+                communicationStatusLabel = ProjectReportWorkPlanFlag.Gray,
+                workPlanStatusLabel = ProjectReportWorkPlanFlag.Gray
         )
 
         private val updateWorkPlanModel = ProjectReportWorkPackageUpdate(

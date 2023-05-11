@@ -8,16 +8,25 @@ data class ProjectReportWorkPackageDTO(
     val deactivated: Boolean,
 
     val specificObjective: Set<InputTranslation>,
+    val previousSpecificStatus: ProjectReportWorkPlanStatusDTO?,
     val specificStatus: ProjectReportWorkPlanStatusDTO?,
+    val previousSpecificExplanation: Set<InputTranslation>,
     val specificExplanation: Set<InputTranslation>,
 
     val communicationObjective: Set<InputTranslation>,
+    val previousCommunicationStatus: ProjectReportWorkPlanStatusDTO?,
     val communicationStatus: ProjectReportWorkPlanStatusDTO?,
+    val previousCommunicationExplanation: Set<InputTranslation>,
     val communicationExplanation: Set<InputTranslation>,
 
+    val previousCompleted: Boolean,
     val completed: Boolean,
     val description: Set<InputTranslation>,
     val activities: List<ProjectReportWorkPackageActivityDTO>,
     val outputs: List<ProjectReportWorkPackageOutputDTO>,
-    val investments: List<ProjectReportWorkPackageInvestmentDTO>
+    val investments: List<ProjectReportWorkPackageInvestmentDTO>,
+
+    val specificStatusLabel: ProjectReportWorkPlanFlagDTO? = null,
+    val communicationStatusLabel: ProjectReportWorkPlanFlagDTO? = null,
+    val workPlanStatusLabel: ProjectReportWorkPlanFlagDTO? = null,
 )

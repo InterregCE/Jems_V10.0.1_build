@@ -2,9 +2,12 @@ package io.cloudflight.jems.server.project.entity.report.project.workPlan
 
 import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.programme.entity.indicator.OutputIndicatorEntity
+import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanStatus
 import java.math.BigDecimal
 import javax.persistence.CascadeType
 import javax.persistence.Entity
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
 import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
@@ -60,6 +63,9 @@ class ProjectReportWorkPackageOutputEntity(
     @field:NotNull
     var currentReport: BigDecimal,
 
+    @field:NotNull
+    var previousCurrentReport: BigDecimal,
+
     @ManyToOne
     @JoinColumn(name = "file_id")
     var attachment: JemsFileMetadataEntity?,
@@ -67,4 +73,4 @@ class ProjectReportWorkPackageOutputEntity(
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
     val translatedValues: MutableSet<ProjectReportWorkPackageOutputTranslEntity> = mutableSetOf(),
 
-)
+    )

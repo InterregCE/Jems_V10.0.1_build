@@ -55,7 +55,9 @@ import io.cloudflight.jems.server.project.service.report.model.project.base.crea
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanStatus
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageActivityCreate
+import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageActivityDeliverableCreate
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageCreate
+import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageOutputCreate
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -120,7 +122,7 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                         endPeriodNumber = 5,
                         status = ProjectReportWorkPlanStatus.Fully,
                         deliverables = listOf(
-                            CreateProjectPartnerReportWorkPackageActivityDeliverable(
+                            ProjectReportWorkPackageActivityDeliverableCreate(
                                 deliverableId = 400L,
                                 number = 4,
                                 title = setOf(InputTranslation(SystemLanguage.EN, "del-title-EN")),
@@ -132,7 +134,7 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                     ),
                 ),
                 outputs = listOf(
-                    CreateProjectPartnerReportWorkPackageOutput(
+                    ProjectReportWorkPackageOutputCreate(
                         number = 7,
                         title = setOf(InputTranslation(SystemLanguage.EN, "wp-out")),
                         deactivated = false,

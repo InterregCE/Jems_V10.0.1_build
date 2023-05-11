@@ -47,7 +47,9 @@ import io.cloudflight.jems.server.project.service.report.model.project.workPlan.
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageActivity
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanStatus
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageActivityCreate
+import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageActivityDeliverableCreate
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageCreate
+import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageOutputCreate
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportCreatePersistence
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.identification.ProjectReportIdentificationPersistence
@@ -370,10 +372,17 @@ internal class CreateProjectReportTest : UnitTest() {
                                 progress = emptySet(),
                                 attachment = null,
                                 deliverables = emptyList(),
+                                previousStatus = ProjectReportWorkPlanStatus.Not,
+                                previousProgress = emptySet()
                         )
                 ),
                 outputs = emptyList(),
-                investments = emptyList()
+                investments = emptyList(),
+                previousCommunicationStatus = ProjectReportWorkPlanStatus.Partly,
+                previousCompleted = true,
+                previousSpecificStatus = ProjectReportWorkPlanStatus.Fully,
+                previousSpecificExplanation = emptySet(),
+                previousCommunicationExplanation = emptySet()
         )
 
         fun expectedToCreateModel(projectId: Long, created: ZonedDateTime) = ProjectReportCreateModel(
@@ -507,7 +516,7 @@ internal class CreateProjectReportTest : UnitTest() {
                                                 endPeriodNumber = 6,
                                                 status = ProjectReportWorkPlanStatus.Not,
                                                 deliverables = listOf(
-                                                        CreateProjectPartnerReportWorkPackageActivityDeliverable(
+                                                        ProjectReportWorkPackageActivityDeliverableCreate(
                                                                 deliverableId = 0L,
                                                                 number = 35,
                                                                 title = emptySet(),
@@ -519,7 +528,7 @@ internal class CreateProjectReportTest : UnitTest() {
                                         ),
                                 ),
                                 outputs = listOf(
-                                        CreateProjectPartnerReportWorkPackageOutput(
+                                        ProjectReportWorkPackageOutputCreate(
                                                 number = 16,
                                                 title = setOf(InputTranslation(SystemLanguage.EN, "title-out")),
                                                 deactivated = false,

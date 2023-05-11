@@ -34,9 +34,12 @@ class ProjectReportWorkPackageInvestmentTranslEntity(
     val ownershipMaintenance: String,
     @field:NotNull
     var progress: String,
+    @field:NotNull
+    var previousProgress: String,
 ) : TranslationEntity() {
     constructor(translationId: TranslationId<ProjectReportWorkPackageInvestmentEntity>) : this(
             translationId,
+            "",
             "",
             "",
             "",

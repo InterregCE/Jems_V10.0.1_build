@@ -55,6 +55,9 @@ class ProjectReportWorkPackageActivityEntity(
     @Enumerated(EnumType.STRING)
     var status: ProjectReportWorkPlanStatus?,
 
+    @Enumerated(EnumType.STRING)
+    var previousStatus: ProjectReportWorkPlanStatus?,
+
     @ManyToOne
     @JoinColumn(name = "file_id")
     var attachment: JemsFileMetadataEntity?,

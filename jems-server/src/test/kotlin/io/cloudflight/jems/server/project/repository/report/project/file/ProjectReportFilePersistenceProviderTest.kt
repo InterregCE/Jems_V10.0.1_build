@@ -39,6 +39,7 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
             endPeriodNumber = null,
             status = null,
             attachment = attachment,
+            previousStatus = null
         )
 
         private fun deliverable(id: Long, attachment: JemsFileMetadataEntity?) = ProjectReportWorkPackageActivityDeliverableEntity(
@@ -51,6 +52,7 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
             previouslyReported = BigDecimal.ZERO,
             currentReport = BigDecimal.ZERO,
             attachment = attachment,
+            previousCurrentReport = BigDecimal.ZERO,
         )
 
         private fun output(id: Long, attachment: JemsFileMetadataEntity?) = ProjectReportWorkPackageOutputEntity(
@@ -64,6 +66,7 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
             previouslyReported = BigDecimal.ZERO,
             currentReport = BigDecimal.ZERO,
             attachment = attachment,
+            previousCurrentReport = BigDecimal.ZERO,
         )
 
         val projectResultEntity = ProjectReportProjectResultEntity(

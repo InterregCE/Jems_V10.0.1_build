@@ -17,6 +17,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.workPlan.
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageUpdate
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.workPlan.ProjectReportWorkPlanPersistence
+import io.cloudflight.jems.server.project.service.report.project.workPlan.fillInFlags
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -61,7 +62,7 @@ class UpdateProjectReportWorkPlan(
             )
         }
 
-        return reportWorkPlanPersistence.getReportWorkPlanById(projectId = projectId, reportId = reportId)
+        return reportWorkPlanPersistence.getReportWorkPlanById(projectId = projectId, reportId = reportId).fillInFlags()
     }
 
     private fun validateReportNotClosed(status: ProjectReportStatus) {

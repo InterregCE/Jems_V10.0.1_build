@@ -69,8 +69,12 @@ internal class ProjectReportWorkPlanControllerTest : UnitTest() {
                             currentReport = BigDecimal.valueOf(512L, 2),
                             progress = setOf(InputTranslation(SystemLanguage.EN, "act-del-progress-EN")),
                             attachment = JemsFileMetadata(6336L, "file2", time),
+                            previousCurrentReport = BigDecimal.valueOf(512L, 2),
+                            previousProgress = setOf(InputTranslation(SystemLanguage.EN, "act-del-progress-EN")),
                         ),
                     ),
+                    previousStatus = ProjectReportWorkPlanStatus.Not,
+                    previousProgress = setOf(InputTranslation(SystemLanguage.EN, "act-progress-EN")),
                 ),
             ),
             outputs = listOf(
@@ -87,10 +91,17 @@ internal class ProjectReportWorkPlanControllerTest : UnitTest() {
                     previouslyReported = BigDecimal.valueOf(555L, 2),
                     progress = setOf(InputTranslation(SystemLanguage.EN, "out-progress-EN")),
                     attachment = JemsFileMetadata(6377L, "file3", time),
+                    previousProgress = setOf(InputTranslation(SystemLanguage.EN, "out-progress-EN")),
+                    previousCurrentReport = BigDecimal.valueOf(455L, 2)
                 ),
             ),
-            investments = emptyList()
-        )
+            investments = emptyList(),
+            previousSpecificExplanation = setOf(InputTranslation(SystemLanguage.EN, "spec-expl-EN")),
+            previousCommunicationStatus = ProjectReportWorkPlanStatus.Fully,
+            previousCompleted = true,
+            previousCommunicationExplanation = setOf(InputTranslation(SystemLanguage.EN, "comm-expl-EN")),
+            previousSpecificStatus = ProjectReportWorkPlanStatus.Partly,
+            )
     )
     private val workPlanExpected = ProjectReportWorkPackageDTO(
         id = 18L,
@@ -126,8 +137,12 @@ internal class ProjectReportWorkPlanControllerTest : UnitTest() {
                         currentReport = BigDecimal.valueOf(512L, 2),
                         progress = setOf(InputTranslation(SystemLanguage.EN, "act-del-progress-EN")),
                         attachment = JemsFileMetadataDTO(6336L, "file2", time),
+                        previousProgress = setOf(InputTranslation(SystemLanguage.EN, "act-del-progress-EN")),
+                        previousCurrentReport = BigDecimal.valueOf(512L, 2)
                     ),
-                )
+                ),
+                previousProgress = setOf(InputTranslation(SystemLanguage.EN, "act-progress-EN")),
+                previousStatus = ProjectReportWorkPlanStatusDTO.Not
             ),
         ),
         outputs = listOf(
@@ -144,9 +159,16 @@ internal class ProjectReportWorkPlanControllerTest : UnitTest() {
                 previouslyReported = BigDecimal.valueOf(555L, 2),
                 progress = setOf(InputTranslation(SystemLanguage.EN, "out-progress-EN")),
                 attachment = JemsFileMetadataDTO(6377L, "file3", time),
+                previousProgress = setOf(InputTranslation(SystemLanguage.EN, "out-progress-EN")),
+                previousCurrentReport = BigDecimal.valueOf(455L, 2),
             ),
         ),
-        investments = emptyList()
+        investments = emptyList(),
+        previousSpecificStatus = ProjectReportWorkPlanStatusDTO.Partly,
+        previousCommunicationExplanation = setOf(InputTranslation(SystemLanguage.EN, "comm-expl-EN")),
+        previousCompleted = true,
+        previousCommunicationStatus = ProjectReportWorkPlanStatusDTO.Fully,
+        previousSpecificExplanation = setOf(InputTranslation(SystemLanguage.EN, "spec-expl-EN")),
     )
 
     private val toUpdate = UpdateProjectReportWorkPackageDTO(

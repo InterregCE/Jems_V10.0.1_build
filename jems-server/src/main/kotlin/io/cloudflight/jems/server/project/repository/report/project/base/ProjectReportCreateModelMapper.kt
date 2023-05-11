@@ -21,8 +21,10 @@ import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.create.CreateProjectPartnerReportWorkPackageOutput
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportInvestment
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageActivityCreate
+import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageActivityDeliverableCreate
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageCreate
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageInvestmentCreate
+import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageOutputCreate
 import java.math.BigDecimal
 
 fun ProjectReportWorkPackageCreate.toEntity(report: ProjectReportEntity) =
@@ -34,6 +36,9 @@ fun ProjectReportWorkPackageCreate.toEntity(report: ProjectReportEntity) =
         specificStatus = specificStatus,
         communicationStatus = communicationStatus,
         completed = completed,
+        previousSpecificStatus = specificStatus,
+        previousCommunicationStatus = communicationStatus,
+        previousCompleted = completed
     ).apply {
         val specMap = specificObjective.associateBy( { it.language }, { it.translation } )
         val commMap = communicationObjective.associateBy( { it.language }, { it.translation } )
@@ -49,6 +54,8 @@ fun ProjectReportWorkPackageCreate.toEntity(report: ProjectReportEntity) =
                     communicationObjective = commMap[it] ?: "",
                     communicationExplanation = "",
                     description = "",
+                    previousCommunicationExplanation = "",
+                    previousSpecificExplanation = ""
                 )
             }
         )
@@ -64,6 +71,7 @@ fun ProjectReportWorkPackageActivityCreate.toEntity(wp: ProjectReportWorkPackage
         endPeriodNumber = endPeriodNumber,
         status = status,
         attachment = null,
+        previousStatus = status,
     ).apply {
         val translMap = title.associateBy( { it.language }, { it.translation } )
 
@@ -73,12 +81,13 @@ fun ProjectReportWorkPackageActivityCreate.toEntity(wp: ProjectReportWorkPackage
                     TranslationId(this, it),
                     title = translMap[it] ?: "",
                     progress = "",
+                    previousProgress = ""
                 )
             }
         )
     }
 
-fun List<CreateProjectPartnerReportWorkPackageActivityDeliverable>.toEntity(
+fun List<ProjectReportWorkPackageActivityDeliverableCreate>.toEntity(
     activity: ProjectReportWorkPackageActivityEntity,
 ) = map {
     ProjectReportWorkPackageActivityDeliverableEntity(
@@ -90,6 +99,7 @@ fun List<CreateProjectPartnerReportWorkPackageActivityDeliverable>.toEntity(
         previouslyReported = it.previouslyReported ?: BigDecimal.ZERO,
         currentReport = BigDecimal.ZERO,
         attachment = null,
+        previousCurrentReport = BigDecimal.ZERO
     ).apply {
         val translMap = it.title.associateBy({ it.language }, { it.translation })
 
@@ -99,13 +109,14 @@ fun List<CreateProjectPartnerReportWorkPackageActivityDeliverable>.toEntity(
                     TranslationId(this, it),
                     title = translMap[it] ?: "",
                     progress = "",
+                    previousProgress = ""
                 )
             }
         )
     }
 }
 
-fun List<CreateProjectPartnerReportWorkPackageOutput>.toEntity(
+fun List<ProjectReportWorkPackageOutputCreate>.toEntity(
     wp: ProjectReportWorkPackageEntity,
     indicatorResolver: (Long) -> OutputIndicatorEntity,
 ) =
@@ -120,6 +131,7 @@ fun List<CreateProjectPartnerReportWorkPackageOutput>.toEntity(
             previouslyReported = it.previouslyReported ?: BigDecimal.ZERO,
             currentReport = BigDecimal.ZERO,
             attachment = null,
+            previousCurrentReport = BigDecimal.ZERO
         ).apply {
             translatedValues.addAll(
                 it.title.map {
@@ -127,6 +139,7 @@ fun List<CreateProjectPartnerReportWorkPackageOutput>.toEntity(
                         TranslationId(this, it.language),
                         title = it.translation ?: "",
                         progress = "",
+                        previousProgress = ""
                     )
                 }
             )
@@ -174,6 +187,7 @@ fun List<ProjectReportWorkPackageInvestmentCreate>.toEntity(
                         ownershipRetain = oRMap[it] ?: "",
                         ownershipMaintenance = oMMap[it] ?: "",
                         progress = "",
+                        previousProgress = ""
                     )
                 }
             )
