@@ -170,7 +170,7 @@ context('Programme management tests', () => {
                 cy.root().closest('body').find('mat-option').contains(code).click();
               });
               specificObjective.dimensionCodes.RegionalAndSeaBasinStrategy.forEach(code => {
-                cy.contains('Regional and Sea Basin Strategy').next().find('input').type(code);
+                cy.contains('Macro-regional and Sea Basin Strategy').next().find('input').type(code);
                 cy.root().closest('body').find('mat-option').contains(code).click();
               });
             });
