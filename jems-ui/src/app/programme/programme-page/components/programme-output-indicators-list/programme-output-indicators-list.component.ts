@@ -1,24 +1,19 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output, TemplateRef, ViewChild, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild} from '@angular/core';
 import {BaseComponent} from '@common/components/base-component';
 import {MatSort} from '@angular/material/sort';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
-import {
-  OutputIndicatorDetailDTO,
-  PageOutputIndicatorDetailDTO,
-  ProgrammeIndicatorOutputService,
-  UserRoleCreateDTO
-} from '@cat/api';
+import {OutputIndicatorDetailDTO, PageOutputIndicatorDetailDTO, ProgrammeIndicatorOutputService, UserRoleCreateDTO} from '@cat/api';
 import {Alert} from '@common/components/forms/alert';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {ColumnWidth} from '@common/components/table/model/column-width';
-import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 import {PermissionService} from '../../../../security/permissions/permission.service';
-import { MatDialog } from '@angular/material/dialog';
+import {MatDialog} from '@angular/material/dialog';
 import {Forms} from '@common/utils/forms';
 import {catchError, filter, switchMap, take, tap} from 'rxjs/operators';
 import {Subject} from 'rxjs';
 import {APIError} from '@common/models/APIError';
 import {HttpErrorResponse} from '@angular/common/http';
+import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
 
 @Component({
@@ -49,6 +44,8 @@ export class ProgrammeOutputIndicatorsListComponent extends BaseComponent implem
 
   @ViewChild('deleteCell', {static: true})
   deleteCell: TemplateRef<any>;
+  @ViewChild('resultIndicator', {static: true})
+  resultIndicator: TemplateRef<any>;
 
   indicatorTableConfiguration: TableConfiguration;
 
@@ -96,6 +93,10 @@ export class ProgrammeOutputIndicatorsListComponent extends BaseComponent implem
           displayedColumn: 'output.indicator.table.column.name.measurement.unit',
           columnType: ColumnType.InputTranslation,
           elementProperty: 'measurementUnit',
+        },
+        {
+          displayedColumn: 'output.indicator.table.column.name.result.indicator',
+          customCellTemplate: this.resultIndicator
         },
         {
           displayedColumn: 'output.indicator.table.column.name.milestone',
