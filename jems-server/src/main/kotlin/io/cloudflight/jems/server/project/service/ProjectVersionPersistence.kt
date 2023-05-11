@@ -15,6 +15,8 @@ interface ProjectVersionPersistence {
 
     fun getAllVersions(): List<ProjectVersion>
 
+    fun getAllVersionsByProjectIdIn(projectIds: Set<Long>): List<ProjectVersion>
+
     fun saveTimestampForApprovedApplication(projectId: Long)
 
     fun updateTimestampForApprovedModification(projectId: Long)

@@ -25,8 +25,8 @@ export class ProgrammeDataExportStore {
     this.programmeDataExportMetadata$ = combineLatest([this.exportTriggeredEvent$, this.refreshExportMetadata$]).pipe(switchMap(() => this.exportService.list()));
   }
 
-  exportData(pluginKey: string, exportLanguage: string, inputLanguage: string): Observable<any> {
-    return this.exportService._export(exportLanguage, inputLanguage, pluginKey).pipe(
+  exportData(pluginKey: string, exportLanguage: string, inputLanguage: string, pluginOptions: string): Observable<any> {
+    return this.exportService._export(exportLanguage, inputLanguage, pluginKey, pluginOptions).pipe(
       tap(() => this.exportTriggeredEvent$.next())
     );
   }

@@ -44,35 +44,49 @@
         <form jemsFormLayout [formGroup]="exportForm">
             <mat-form-field>
                 <mat-label>{{'programme.data.export.label.plugins' | translate}}</mat-label>
-                <mat-select formControlName="pluginKey">
+                <mat-select formControlName="pluginKey" (selectionChange)="setPluginOptionsDescription($event.value, data.plugins)">
                     <mat-option *ngFor="let plugin of data.plugins" [value]="plugin.key" role="option">
                         {{plugin.name}} - {{plugin.version}}</mat-option>
                 </mat-select>
             </mat-form-field>
 
-            <mat-form-field jemsFormFieldWidth="xx-large">
-                <mat-label>{{'programme.data.export.label.export.language' | translate}}</mat-label>
-                <mat-select formControlName="exportLanguage">
-                    <mat-option *ngFor="let exportLanguage of data.exportLanguages" [value]="exportLanguage"
-                                role="option">
-                        <mat-label>{{'language.' + exportLanguage.toLowerCase() | translate}}</mat-label>
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
+            <div jemsMultiColumnRow gap="10rem">
+                <mat-form-field jemsFormFieldWidth="xx-large">
+                    <mat-label>{{'programme.data.export.label.export.language' | translate}}</mat-label>
+                    <mat-select formControlName="exportLanguage">
+                        <mat-option *ngFor="let exportLanguage of data.exportLanguages" [value]="exportLanguage"
+                                    role="option">
+                            <mat-label>{{'language.' + exportLanguage.toLowerCase() | translate}}</mat-label>
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
 
-            <mat-form-field jemsFormFieldWidth="xx-large">
-                <mat-label>{{'programme.data.export.label.input.language' | translate}}</mat-label>
-                <mat-select formControlName="inputLanguage">
-                    <mat-option *ngFor="let inputLanguage of data.inputLanguages" [value]="inputLanguage"
-                                role="option">
-                        <mat-label>{{'language.' + inputLanguage.toLowerCase() | translate}}</mat-label>
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
+                <mat-form-field jemsFormFieldWidth="xx-large">
+                    <mat-label>{{'programme.data.export.label.input.language' | translate}}</mat-label>
+                    <mat-select formControlName="inputLanguage">
+                        <mat-option *ngFor="let inputLanguage of data.inputLanguages" [value]="inputLanguage"
+                                    role="option">
+                            <mat-label>{{'language.' + inputLanguage.toLowerCase() | translate}}</mat-label>
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <ng-container *ngIf="pluginOptionsDescription.length" class="pt-0">
+                <jems-alert [closable]="false" [show]="true" [type]="Alert.INFO" class="mt-5 mb-0">
+                    <p>{{pluginOptionsDescription}}</p>
+                </jems-alert>
+
+                <mat-form-field jemsFormFieldWidth="full" class="mb-5">
+                    <input formControlName="pluginOptions" matInput>
+                    <mat-hint>{{'programme.data.export.plugin.parameter.info' | translate}}</mat-hint>
+                </mat-form-field>
+            </ng-container>
+
 
             <jems-pending-button jemsText
                                  [disabled]="data.isExportDisabled"
-                                 (click)="exportData(pluginKey, exportLanguage, inputLanguage)">
+                                 (click)="exportData(pluginKey, exportLanguage, inputLanguage, pluginOptions)">
                 {{'programme.data.export.label.export.button' | translate}}
             </jems-pending-button>
         </form>

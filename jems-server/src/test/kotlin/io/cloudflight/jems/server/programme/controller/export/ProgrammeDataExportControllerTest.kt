@@ -3,13 +3,13 @@ package io.cloudflight.jems.server.programme.controller.export
 import io.cloudflight.jems.api.programme.dto.export.ProgrammeDataExportMetadataDTO
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.programme.service.EXPORT_LANGUAGE
-import io.cloudflight.jems.server.programme.service.INPUT_LANGUAGE
 import io.cloudflight.jems.server.programme.service.PLUGIN_KEY
-import io.cloudflight.jems.server.programme.service.downloadProgrammeDataExportFile.DownloadProgrammeDataExportFileInteractor
+import io.cloudflight.jems.server.programme.service.INPUT_LANGUAGE
+import io.cloudflight.jems.server.programme.service.EXPORT_LANGUAGE
 import io.cloudflight.jems.server.programme.service.exportMetaData
-import io.cloudflight.jems.server.programme.service.exportProgrammeData.ExportProgrammeDataInteractor
 import io.cloudflight.jems.server.programme.service.exportResult
+import io.cloudflight.jems.server.programme.service.downloadProgrammeDataExportFile.DownloadProgrammeDataExportFileInteractor
+import io.cloudflight.jems.server.programme.service.exportProgrammeData.ExportProgrammeDataInteractor
 import io.cloudflight.jems.server.programme.service.listProgrammeDataExports.ListProgrammeDataExports
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -40,11 +40,11 @@ internal class ProgrammeDataExportControllerTest : UnitTest() {
     @Test
     fun `should execute export programme data interactor`() {
 
-        every { exportProgrammeDataInteractor.export(PLUGIN_KEY, SystemLanguage.EN, SystemLanguage.DE) } returns Unit
+        every { exportProgrammeDataInteractor.export(PLUGIN_KEY, SystemLanguage.EN, SystemLanguage.DE, "") } returns Unit
 
-        controller.export(PLUGIN_KEY, SystemLanguage.EN, SystemLanguage.DE)
+        controller.export(PLUGIN_KEY, SystemLanguage.EN, SystemLanguage.DE, "")
 
-        verify { exportProgrammeDataInteractor.export(PLUGIN_KEY, SystemLanguage.EN, SystemLanguage.DE) }
+        verify { exportProgrammeDataInteractor.export(PLUGIN_KEY, SystemLanguage.EN, SystemLanguage.DE, "") }
     }
 
     @Test
@@ -71,9 +71,9 @@ internal class ProgrammeDataExportControllerTest : UnitTest() {
         val exportResult = exportResult()
         every { downloadProgrammeDataExportFile.download(PLUGIN_KEY) } returns exportResult
 
-        controller.export(PLUGIN_KEY, SystemLanguage.EN, SystemLanguage.DE)
+        controller.export(PLUGIN_KEY, SystemLanguage.EN, SystemLanguage.DE, "")
 
-        verify { exportProgrammeDataInteractor.export(PLUGIN_KEY, SystemLanguage.EN, SystemLanguage.DE) }
+        verify { exportProgrammeDataInteractor.export(PLUGIN_KEY, SystemLanguage.EN, SystemLanguage.DE, "") }
         assertThat(controller.download(PLUGIN_KEY))
             .isEqualTo(
                 ResponseEntity.ok()
