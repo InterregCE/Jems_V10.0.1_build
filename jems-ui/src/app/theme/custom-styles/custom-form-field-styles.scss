@@ -83,6 +83,22 @@
     white-space: normal !important;
     // necessary, otherwise there is no line-break in checkbox texts
   }
+
+  .dropdown-and-button-in-one-row {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    mat-form-field {
+      flex-grow: 1;
+    }
+    jems-pending-button {
+      margin-top: 0.5rem;
+      margin-left: 1rem;
+    }
+  }
+
+
 }
 
 @mixin custom-disabled-form-fields() {

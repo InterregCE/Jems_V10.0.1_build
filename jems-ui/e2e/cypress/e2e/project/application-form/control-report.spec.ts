@@ -259,7 +259,7 @@ context('Control report tests', () => {
       cy.loginByRequest(user.applicantUser.email);
       cy.createContractedApplication(application, user.programmeUser.email).then(applicationId => {
         const partnerId = this[application.partners[0].details.abbreviation];
-        
+
         cy.loginByRequest(user.admin.email);
         const controllerUser1 = {...controllerUser};
         const controllerUser2 = {...controllerUser};
@@ -372,7 +372,7 @@ function instantiateEmptyChecklist(applicationId, partnerId, reportId, checklist
   cy.wait('@checklistsLoaded');
   cy.contains('Select checklist template').should('be.visible').click()
   cy.contains('span', checklistName).should('be.visible').click();
-  cy.contains('instantiate new checklist').should('be.enabled').click();
+  cy.contains('start new checklist').should('be.enabled').click();
 }
 
 function fillChecklistForm() {
