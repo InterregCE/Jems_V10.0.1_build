@@ -76,25 +76,24 @@ class SubmitProjectPartnerReport(
         if (needsRecalculation)
             storeCurrentValues(partnerId, report, expenditures)
 
-        // TODO refactor
         return (if (report.status.isOpenInitially())
             reportPersistence.submitReportById(partnerId, reportId = reportId, ZonedDateTime.now())
         else
-            reportPersistence.reSubmitReportById(partnerId, reportId = reportId, ZonedDateTime.now()))
-            .also { it ->
-                val projectId = partnerPersistence.getProjectIdForPartnerId(id = partnerId, it.version)
-                val projectSummary = projectPersistence.getProjectSummary(projectId)
+            reportPersistence.reSubmitReportById(partnerId, reportId = reportId, ZonedDateTime.now())
+        ).also { it ->
+            val projectId = partnerPersistence.getProjectIdForPartnerId(id = partnerId, it.version)
+            val projectSummary = projectPersistence.getProjectSummary(projectId)
 
-                auditPublisher.publishEvent(PartnerReportStatusChanged(this, projectSummary, it))
-                auditPublisher.publishEvent(
-                    partnerReportSubmitted(
-                        context = this,
-                        projectId = projectId,
-                        report = it,
-                        isGdprSensitive = expenditures.any { it.gdpr }
-                    )
+            auditPublisher.publishEvent(PartnerReportStatusChanged(this, projectSummary, it))
+            auditPublisher.publishEvent(
+                partnerReportSubmitted(
+                    context = this,
+                    projectId = projectId,
+                    report = it,
+                    isGdprSensitive = expenditures.any { it.gdpr }
                 )
-            }.status
+            )
+        }.status
     }
 
     private fun validateReportIsStillOpen(report: ProjectPartnerReport) {

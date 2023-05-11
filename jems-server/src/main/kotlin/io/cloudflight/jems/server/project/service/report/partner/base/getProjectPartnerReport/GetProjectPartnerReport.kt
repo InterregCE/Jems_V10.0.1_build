@@ -40,6 +40,9 @@ class GetProjectPartnerReport(
             if (it.status.controlNotStartedYet()) {
                 it.totalEligibleAfterControl = null
             }
+            if (it.status.isOpenForNumbersChanges()) {
+                it.totalAfterSubmitted = null
+            }
         }
 
 }

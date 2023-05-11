@@ -167,7 +167,7 @@ internal class GetProjectPartnerControlReportIdentificationTest : UnitTest() {
     lateinit var interactor: GetProjectPartnerControlReportIdentification
 
     @ParameterizedTest(name = "getControlIdentification (status {0})")
-    @EnumSource(value = ReportStatus::class, names = ["InControl", "Certified"])
+    @EnumSource(value = ReportStatus::class, names = ["InControl", "ReOpenInControlLast", "ReOpenInControlLimited", "Certified"])
     fun getControlIdentification(status: ReportStatus) {
         every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = 12L) } returns report(status)
 
@@ -186,7 +186,8 @@ internal class GetProjectPartnerControlReportIdentificationTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "getControlIdentification - wrong status (status {0})")
-    @EnumSource(value = ReportStatus::class, names = ["InControl", "Certified"], mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = ReportStatus::class, mode = EnumSource.Mode.EXCLUDE,
+        names = ["InControl", "ReOpenInControlLast", "ReOpenInControlLimited", "Certified"])
     fun `getControlIdentification - wrong status`(status: ReportStatus) {
         val reportId = 15L + status.ordinal
         every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = reportId) } returns report(status)

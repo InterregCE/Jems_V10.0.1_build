@@ -89,7 +89,7 @@ class ControlReportFileAuthorizationServiceTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "validateChangeToFileAllowed - open enough (status {0})")
-    @EnumSource(value = ReportStatus::class, names = ["InControl", "Certified"])
+    @EnumSource(value = ReportStatus::class, names = ["InControl", "ReOpenInControlLast", "ReOpenInControlLimited", "Certified"])
     fun `validateChangeToFileAllowed - open enough`(status: ReportStatus) {
         val reportId = 51L
         val report = mockk<ProjectPartnerReport>()
@@ -105,7 +105,8 @@ class ControlReportFileAuthorizationServiceTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "validateChangeToFileAllowed - open enough - wrong status (status {0})")
-    @EnumSource(value = ReportStatus::class, names = ["InControl", "Certified"], mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = ReportStatus::class, mode = EnumSource.Mode.EXCLUDE,
+        names = ["InControl", "ReOpenInControlLast", "ReOpenInControlLimited", "Certified"])
     fun `validateChangeToFileAllowed - open enough - wrong status`(status: ReportStatus) {
         val reportId = 55L
         val report = mockk<ProjectPartnerReport>()
@@ -116,7 +117,7 @@ class ControlReportFileAuthorizationServiceTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "validateChangeToFileAllowed - file not found (status {0})")
-    @EnumSource(value = ReportStatus::class, names = ["InControl", "Certified"])
+    @EnumSource(value = ReportStatus::class, names = ["InControl", "ReOpenInControlLast", "ReOpenInControlLimited", "Certified"])
     fun `validateChangeToFileAllowed - file not found`(status: ReportStatus) {
         val reportId = 59L
         val report = mockk<ProjectPartnerReport>()

@@ -79,13 +79,15 @@ class PartnerReportNotificationEventListenerTest : UnitTest() {
         )
 
         verify(exactly = 1) { notificationProjectService.sendNotifications(partnerReportStatus.toNotificationType()!!, any()) }
-        assertThat(slotVariable.captured).contains(
+        assertThat(slotVariable.captured).containsExactly(
             entry(NotificationVariable.ProjectId, PROJECT_ID),
             entry(NotificationVariable.ProjectIdentifier, "01"),
             entry(NotificationVariable.ProjectAcronym, "project acronym"),
             entry(NotificationVariable.PartnerId, PARTNER_ID),
             entry(NotificationVariable.PartnerRole, ProjectPartnerRole.LEAD_PARTNER),
             entry(NotificationVariable.PartnerNumber, PARTNER_NUMBER),
+            entry(NotificationVariable.PartnerReportId, PARTNER_REPORT_ID),
+            entry(NotificationVariable.PartnerReportNumber, 1),
         )
     }
 }

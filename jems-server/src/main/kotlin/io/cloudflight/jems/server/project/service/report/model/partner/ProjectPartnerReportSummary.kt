@@ -11,6 +11,7 @@ data class ProjectPartnerReportSummary(
     val status: ReportStatus,
     val version: String,
     val firstSubmission: ZonedDateTime?,
+    val lastReSubmission: ZonedDateTime?,
     val controlEnd: ZonedDateTime?,
     val createdAt: ZonedDateTime,
     val startDate: LocalDate?,
@@ -22,5 +23,6 @@ data class ProjectPartnerReportSummary(
     val projectReportNumber: Int?,
 
     var totalEligibleAfterControl: BigDecimal?,
+    var totalAfterSubmitted: BigDecimal?,
     var deletable: Boolean,
 )

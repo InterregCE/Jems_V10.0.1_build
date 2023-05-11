@@ -186,7 +186,8 @@ internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "update {0}")
-    @EnumSource(value = ReportStatus::class, names = ["Draft"])
+    @EnumSource(value = ReportStatus::class,
+        names = ["Draft", "ReOpenSubmittedLast", "ReOpenSubmittedLimited", "ReOpenInControlLast", "ReOpenInControlLimited"])
     fun update(status: ReportStatus) {
         every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = 11L) } returns
             ProjectPartnerReportStatusAndVersion(status, "4.12.0")
@@ -239,7 +240,8 @@ internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "update - wrong status {0}")
-    @EnumSource(value = ReportStatus::class, names = ["Draft"], mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = ReportStatus::class, mode = EnumSource.Mode.EXCLUDE,
+        names = ["Draft", "ReOpenSubmittedLast", "ReOpenSubmittedLimited", "ReOpenInControlLast", "ReOpenInControlLimited"])
     fun `update - wrong status`(status: ReportStatus) {
         every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = 0L) } returns
             ProjectPartnerReportStatusAndVersion(status, "4.12.0")

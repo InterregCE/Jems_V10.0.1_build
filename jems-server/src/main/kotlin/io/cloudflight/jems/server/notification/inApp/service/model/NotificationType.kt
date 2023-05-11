@@ -25,7 +25,9 @@ enum class NotificationType {
 
     // Partner Report
     PartnerReportSubmitted,
+    PartnerReportReOpenFromSubmitted,
     PartnerReportControlOngoing,
+    PartnerReportReOpenFromControlOngoing,
     PartnerReportCertified;
 
 
@@ -55,8 +57,10 @@ enum class NotificationType {
 
         val partnerReportNotifications = sortedSetOf(
             PartnerReportSubmitted,
+            PartnerReportReOpenFromSubmitted,
             PartnerReportControlOngoing,
-            PartnerReportCertified
+            PartnerReportReOpenFromControlOngoing,
+            PartnerReportCertified,
         )
     }
 

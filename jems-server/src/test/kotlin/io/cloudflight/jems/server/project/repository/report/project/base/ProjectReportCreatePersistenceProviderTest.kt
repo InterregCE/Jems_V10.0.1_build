@@ -170,6 +170,7 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
             status = ReportStatus.Certified,
             applicationFormVersion = "",
             firstSubmission = null,
+            lastReSubmission = null,
             controlEnd = null,
             identification = mockk(),
             createdAt = ZonedDateTime.now(),

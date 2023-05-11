@@ -34,6 +34,7 @@ internal class GetProjectPartnerReportTest : UnitTest() {
             status = status,
             version = "V4.4",
             firstSubmission = YESTERDAY,
+            lastReSubmission = DAYS_AGO_2,
             controlEnd = HOUR_AGO,
             createdAt = DAYS_AGO_2,
             startDate = null,
@@ -48,6 +49,7 @@ internal class GetProjectPartnerReportTest : UnitTest() {
             projectReportId = 648L,
             projectReportNumber = 649,
             totalEligibleAfterControl = BigDecimal.TEN,
+            totalAfterSubmitted = BigDecimal.ONE,
             deletable = false,
         )
     }
@@ -76,10 +78,14 @@ internal class GetProjectPartnerReportTest : UnitTest() {
             PageImpl(ReportStatus.values().map { report(10L + it.ordinal, it) })
 
         assertThat(getReport.findAll(PARTNER_ID, Pageable.unpaged()).content).containsExactly(
-            report(10L, ReportStatus.Draft).copy(deletable = isDeletable, totalEligibleAfterControl = null),
+            report(10L, ReportStatus.Draft).copy(deletable = isDeletable, totalEligibleAfterControl = null, totalAfterSubmitted = null),
             report(11L, ReportStatus.Submitted).copy(totalEligibleAfterControl = null),
-            report(12L, ReportStatus.InControl),
-            report(13L, ReportStatus.Certified),
+            report(12L, ReportStatus.ReOpenSubmittedLast).copy(totalEligibleAfterControl = null, totalAfterSubmitted = null),
+            report(13L, ReportStatus.ReOpenSubmittedLimited).copy(totalEligibleAfterControl = null),
+            report(14L, ReportStatus.InControl),
+            report(15L, ReportStatus.ReOpenInControlLast).copy(totalAfterSubmitted = null),
+            report(16L, ReportStatus.ReOpenInControlLimited),
+            report(17L, ReportStatus.Certified),
         )
     }
 
@@ -100,12 +106,26 @@ internal class GetProjectPartnerReportTest : UnitTest() {
             report(20L, status).copy(
                 deletable = false,
                 // test removal of total when status is not yet in control
-                totalEligibleAfterControl = if (status in setOf(ReportStatus.InControl, ReportStatus.Certified)) BigDecimal.TEN else null,
+                totalEligibleAfterControl = if (status in setOf(
+                        ReportStatus.InControl,
+                        ReportStatus.ReOpenInControlLast,
+                        ReportStatus.ReOpenInControlLimited,
+                        ReportStatus.Certified,
+                )) BigDecimal.TEN else null,
+                totalAfterSubmitted = if (status in setOf(
+                    ReportStatus.Draft,
+                    ReportStatus.ReOpenSubmittedLast,
+                    ReportStatus.ReOpenInControlLast,
+                )) null else BigDecimal.ONE,
             ),
-            report(21L, ReportStatus.Draft).copy(deletable = false, totalEligibleAfterControl = null),
+            report(21L, ReportStatus.Draft).copy(deletable = false, totalEligibleAfterControl = null, totalAfterSubmitted = null),
             report(22L, ReportStatus.Submitted).copy(totalEligibleAfterControl = null),
-            report(23L, ReportStatus.InControl),
-            report(24L, ReportStatus.Certified),
+            report(23L, ReportStatus.ReOpenSubmittedLast).copy(totalEligibleAfterControl = null, totalAfterSubmitted = null),
+            report(24L, ReportStatus.ReOpenSubmittedLimited).copy(totalEligibleAfterControl = null),
+            report(25L, ReportStatus.InControl),
+            report(26L, ReportStatus.ReOpenInControlLast).copy(totalAfterSubmitted = null),
+            report(27L, ReportStatus.ReOpenInControlLimited),
+            report(28L, ReportStatus.Certified),
         )
     }
 

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 
 @Api("Project Partner Report Control Overview")
-interface ProjectPartnerReportControlOverviewApi {
+interface ProjectPartnerControlReportOverviewApi {
 
     companion object {
         private const val ENDPOINT_API_PROJECT_PARTNER_REPORT_CONTROL_OVERVIEW =

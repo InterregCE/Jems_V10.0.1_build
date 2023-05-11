@@ -66,6 +66,10 @@ interface ProjectPartnerReportApi {
         @PathVariable reportId: Long,
     ): ProjectPartnerReportDTO
 
+    @ApiOperation("Returns true if new report can be created")
+    @GetMapping("$ENDPOINT_API_PROJECT_PARTNER_REPORT/byPartnerId/{partnerId}/canBeCreated")
+    fun canReportBeCreated(@PathVariable partnerId: Long): Boolean
+
     @ApiOperation("Creates new partner report")
     @PostMapping("$ENDPOINT_API_PROJECT_PARTNER_REPORT/create/{partnerId}")
     fun createProjectPartnerReport(
@@ -83,6 +87,13 @@ interface ProjectPartnerReportApi {
     @ApiOperation("Submit and lock partner report")
     @PostMapping("$ENDPOINT_API_PROJECT_PARTNER_REPORT/submit/{partnerId}/{reportId}")
     fun submitProjectPartnerReport(
+        @PathVariable partnerId: Long,
+        @PathVariable reportId: Long,
+    ): ReportStatusDTO
+
+    @ApiOperation("Re-Open partner report")
+    @PostMapping("$ENDPOINT_API_PROJECT_PARTNER_REPORT/reOpen/{partnerId}/{reportId}")
+    fun reOpenProjectPartnerReport(
         @PathVariable partnerId: Long,
         @PathVariable reportId: Long,
     ): ReportStatusDTO

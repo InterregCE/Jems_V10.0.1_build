@@ -100,6 +100,10 @@ class ProjectPartnerReportPersistenceProvider(
         partnerReportRepository.existsByPartnerIdAndId(partnerId = partnerId, id = reportId)
 
     @Transactional(readOnly = true)
+    override fun existsByStatusIn(partnerId: Long, statuses: Set<ReportStatus>) =
+        partnerReportRepository.existsByPartnerIdAndStatusIn(partnerId, statuses)
+
+    @Transactional(readOnly = true)
     override fun getCurrentLatestReportForPartner(partnerId: Long): ProjectPartnerReport? =
         partnerReportRepository.findFirstByPartnerIdOrderByIdDesc(partnerId = partnerId)?.toModel(emptyList())
 

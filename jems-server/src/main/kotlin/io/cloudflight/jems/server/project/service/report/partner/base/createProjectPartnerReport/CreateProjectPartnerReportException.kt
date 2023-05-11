@@ -22,3 +22,8 @@ class ReportCanBeCreatedOnlyWhenContractedException : ApplicationUnprocessableEx
     code = "$CREATE_PROJECT_PARTNER_REPORT_ERROR_CODE_PREFIX-002",
     i18nMessage = I18nMessage("$CREATE_PROJECT_PARTNER_REPORT_ERROR_KEY_PREFIX.wrong.status"),
 )
+
+class LastReOpenedReportException : ApplicationUnprocessableException(
+    code = "$CREATE_PROJECT_PARTNER_REPORT_ERROR_CODE_PREFIX-003",
+    i18nMessage = I18nMessage("$CREATE_PROJECT_PARTNER_REPORT_ERROR_KEY_PREFIX.last.reopened.report"),
+)

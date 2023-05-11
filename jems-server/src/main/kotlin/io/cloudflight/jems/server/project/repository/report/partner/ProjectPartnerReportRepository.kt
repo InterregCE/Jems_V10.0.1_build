@@ -23,11 +23,13 @@ interface ProjectPartnerReportRepository : JpaRepository<ProjectPartnerReportEnt
             report.status,
             report.applicationFormVersion,
             report.firstSubmission,
+            report.lastReSubmission,
             report.controlEnd,
             report.createdAt,
             reportProject.id,
             reportProject.number,
             report_co_fin.sumTotalEligibleAfterControl,
+            report_co_fin.sumCurrent,
             report_identification.periodNumber,
             report_identification.startDate,
             report_identification.endDate,
@@ -111,6 +113,8 @@ interface ProjectPartnerReportRepository : JpaRepository<ProjectPartnerReportEnt
     fun findAllByPartnerIdInAndProjectReportNullAndStatus(partnerIds: Set<Long>, status: ReportStatus): List<ProjectPartnerReportEntity>
 
     fun existsByPartnerIdAndId(partnerId: Long, id: Long): Boolean
+
+    fun existsByPartnerIdAndStatusIn(partnerId: Long, statuses: Set<ReportStatus>): Boolean
 
     @Query("SELECT e.id FROM #{#entityName} e WHERE e.partnerId = :partnerId AND e.status IN :statuses")
     fun findAllIdsByPartnerIdAndStatusIn(partnerId: Long, statuses: Collection<ReportStatus>): Set<Long>

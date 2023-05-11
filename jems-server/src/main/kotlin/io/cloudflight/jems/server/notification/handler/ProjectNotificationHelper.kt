@@ -35,6 +35,8 @@ fun ReportStatus.toNotificationType(): NotificationType? = when(this) {
     ReportStatus.Submitted -> PartnerReportSubmitted
     ReportStatus.InControl -> PartnerReportControlOngoing
     ReportStatus.Certified -> PartnerReportCertified
+    ReportStatus.ReOpenSubmittedLast, ReportStatus.ReOpenSubmittedLimited -> PartnerReportReOpenFromSubmitted
+    ReportStatus.ReOpenInControlLast, ReportStatus.ReOpenInControlLimited -> PartnerReportReOpenFromControlOngoing
     else -> null
 }.enforceIsPartnerReportNotification()
 

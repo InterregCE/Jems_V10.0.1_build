@@ -41,6 +41,7 @@ fun ProjectPartnerReportSummary.toDto() = ProjectPartnerReportSummaryDTO(
     status = ReportStatusDTO.valueOf(status.name),
     linkedFormVersion = version,
     firstSubmission = firstSubmission,
+    lastReSubmission = lastReSubmission,
     controlEnd = controlEnd,
     createdAt = createdAt,
     startDate = startDate,
@@ -49,6 +50,7 @@ fun ProjectPartnerReportSummary.toDto() = ProjectPartnerReportSummaryDTO(
     projectReportId = projectReportId,
     projectReportNumber = projectReportNumber,
     totalEligibleAfterControl = totalEligibleAfterControl,
+    totalAfterSubmitted = totalAfterSubmitted,
     deletable = deletable,
 )
 

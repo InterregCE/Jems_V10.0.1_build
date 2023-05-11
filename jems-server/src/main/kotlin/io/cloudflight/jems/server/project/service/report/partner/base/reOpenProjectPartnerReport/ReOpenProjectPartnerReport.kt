@@ -2,10 +2,10 @@ package io.cloudflight.jems.server.project.service.report.partner.base.reOpenPro
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.notification.handler.PartnerReportStatusChanged
-import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
+import io.cloudflight.jems.server.project.authorization.CanReOpenPartnerReport
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus.ReOpenInControlLast
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus.ReOpenInControlLimited
@@ -26,15 +26,15 @@ class ReOpenProjectPartnerReport(
     private val projectPersistence: ProjectPersistence,
 ) : ReOpenProjectPartnerReportInteractor {
 
-    @CanEditPartnerReport
+    @CanReOpenPartnerReport
     @Transactional
     @ExceptionWrapper(ReOpenProjectPartnerReportException::class)
     override fun reOpen(partnerId: Long, reportId: Long): ReportStatus {
-        val reportToBeReOpen = reportPersistence.getPartnerReportById(partnerId = partnerId, reportId = reportId)
+        val reportToBeReOpen = reportPersistence.getPartnerReportStatusAndVersion(partnerId = partnerId, reportId = reportId)
 
         validateReportCanBeReOpened(reportToBeReOpen)
 
-        val isLastReport = reportToBeReOpen.id == reportPersistence.getCurrentLatestReportForPartner(partnerId = partnerId)!!.id
+        val isLastReport = reportId == reportPersistence.getCurrentLatestReportForPartner(partnerId = partnerId)!!.id
         val status =
             if (reportToBeReOpen.status == Submitted)
                 if (isLastReport) ReOpenSubmittedLast else ReOpenSubmittedLimited
@@ -50,7 +50,7 @@ class ReOpenProjectPartnerReport(
         }.status
     }
 
-    private fun validateReportCanBeReOpened(report: ProjectPartnerReport) {
+    private fun validateReportCanBeReOpened(report: ProjectPartnerReportStatusAndVersion) {
         if (report.status.canNotBeReOpened())
             throw ReportCanNotBeReOpened()
     }

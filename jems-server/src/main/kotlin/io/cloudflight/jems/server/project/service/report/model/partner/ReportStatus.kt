@@ -13,7 +13,7 @@ enum class ReportStatus {
     fun isClosed() = SUBMITTED_STATUSES.contains(this)
     fun hasBeenClosed() = !isOpenInitially()
 
-    fun isOpenForNumbersChanges() = isOpenInitially() || this in setOf(ReOpenSubmittedLast, ReOpenInControlLast)
+    fun isOpenForNumbersChanges() = isOpenInitially() || this in ARE_LAST_OPEN_STATUSES
     fun isOpenInitially() = this == Draft
 
     fun controlNotOpenAnymore() = this != InControl
@@ -33,6 +33,7 @@ enum class ReportStatus {
         val SUBMITTED_STATUSES = setOf(Submitted, InControl, Certified)
         val CONTROL_STATUSES = setOf(InControl, ReOpenInControlLast, ReOpenInControlLimited, Certified)
         val CAN_BE_OPENED_STATUSES = setOf(Submitted, InControl)
+        val ARE_LAST_OPEN_STATUSES = setOf(ReOpenSubmittedLast, ReOpenInControlLast)
     }
 
 }

@@ -51,6 +51,10 @@ annotation class CanViewPartnerControlReportFile
     "@projectPartnerReportAuthorization.canUpdatePartner(#partnerId)")
 annotation class CanEditPartnerControlReportFile
 
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@projectPartnerReportAuthorization.canReOpenPartnerReport(#partnerId)")
+annotation class CanReOpenPartnerReport
+
 @Component
 class ProjectPartnerReportAuthorization(
     override val securityService: SecurityService,
@@ -72,6 +76,12 @@ class ProjectPartnerReportAuthorization(
 
     fun canViewPartnerReport(partnerId: Long): Boolean =
         hasPermissionForPartner(partnerId = partnerId, VIEW)
+
+    fun canReOpenPartnerReport(partnerId: Long): Boolean =
+        hasPermissionForProject(
+            UserRolePermission.ProjectReportingReOpen,
+            projectId = partnerPersistence.getProjectIdForPartnerId(partnerId),
+        )
 
     private fun hasPermissionForPartner(partnerId: Long, levelNeeded: PartnerCollaboratorLevel): Boolean {
         val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
