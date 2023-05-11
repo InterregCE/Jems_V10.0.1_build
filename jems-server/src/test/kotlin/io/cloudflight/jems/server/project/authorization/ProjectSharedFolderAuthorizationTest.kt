@@ -89,6 +89,31 @@ internal class ProjectSharedFolderAuthorizationTest : UnitTest() {
         assertEquals(authorization.canEditSharedFolderFile(PROJECT_ID), result)
     }
 
+    @ParameterizedTest(name = "canDeleteSharedFolderFile - creatorView: {0}, creatorEdit: {1}, monitorView: {2}, monitorEdit: {3} - result {4}")
+    @CsvSource(
+        value = [
+            // Good cases
+            "false,false,false,true,true",
+            "true,true,true,true,true",
+            // Bad case
+            "false,true,false,false,false",
+            "false,false,true,false,false",
+            "true,false,false,false,false",
+            "false,false,false,false,false"
+        ]
+    )
+    fun canDeleteSharedFolderFile(creatorView: Boolean, creatorEdit: Boolean, monitorView: Boolean, monitorEdit: Boolean, result: Boolean) {
+        every { projectPersistence.getApplicantAndStatusById(PROJECT_ID) } returns mockk {
+            every { getUserIdsWithEditLevel() } returns setOf(USER_ID)
+        }
+        every { controllerInstitutionPersistence.getRelatedUserIdsForProject(PROJECT_ID) } returns setOf(USER_ID)
+        every { securityService.getUserIdOrThrow() } returns USER_ID
+
+        mockViewEdit(creatorView, creatorEdit, monitorView, monitorEdit)
+
+        assertEquals(authorization.canDeleteSharedFolderFile(PROJECT_ID), result)
+    }
+
     private fun mockViewEdit(creatorView: Boolean, creatorEdit: Boolean, monitorView: Boolean, monitorEdit: Boolean) {
         every { securityService.currentUser } returns mockk {
             every { hasPermission(UserRolePermission.ProjectRetrieve) } returns true
@@ -99,5 +124,7 @@ internal class ProjectSharedFolderAuthorizationTest : UnitTest() {
             every { user } returns mockk { every { assignedProjects } returns emptySet() }
         }
     }
+
+
 
 }

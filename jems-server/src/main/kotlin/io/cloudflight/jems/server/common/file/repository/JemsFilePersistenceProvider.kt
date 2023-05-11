@@ -93,13 +93,6 @@ class JemsFilePersistenceProvider(
         ).toModel()
 
     @Transactional(readOnly = true)
-    override fun getProjectFileAuthor(projectId: Long, fileId: Long): UserSimple? =
-        projectFileMetadataRepository.findByProjectIdAndId(
-            projectId = projectId,
-            fileId = fileId
-        )?.user?.toModel()
-
-    @Transactional(readOnly = true)
     override fun getFileAuthor(partnerId: Long, pathPrefix: String, fileId: Long) =
         projectFileMetadataRepository.findByPartnerIdAndPathPrefixAndId(
             partnerId = partnerId,

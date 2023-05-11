@@ -1,17 +1,14 @@
 package io.cloudflight.jems.server.project.service.sharedFolder.delete
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.project.service.sharedFolderFile.delete.DeleteFileFromSharedFolder
 import io.cloudflight.jems.server.project.service.sharedFolderFile.delete.FileNotFound
-import io.cloudflight.jems.server.project.service.sharedFolderFile.delete.UserIsNotOwnerOfFile
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -27,22 +24,18 @@ class DeleteFileFromSharedFolderTest : UnitTest() {
     @MockK
     private lateinit var filePersistence: JemsFilePersistence
 
-    @MockK
-    private lateinit var securityService: SecurityService
 
     @InjectMockKs
     private lateinit var interactor: DeleteFileFromSharedFolder
 
     @BeforeEach
     fun setUp() {
-        clearMocks(filePersistence, securityService)
+        clearMocks(filePersistence)
     }
 
     @Test
     fun delete() {
-        val userId = 11L
-        every { filePersistence.getProjectFileAuthor(PROJECT_ID, FILE_ID) } returns mockk { every { id } returns userId }
-        every { securityService.getUserIdOrThrow() } returns userId
+        every { filePersistence.existsFile(JemsFileType.SharedFolder, FILE_ID) } returns true
         every { filePersistence.deleteFile(JemsFileType.SharedFolder, FILE_ID) } returns Unit
 
         interactor.delete(PROJECT_ID, FILE_ID)
@@ -52,15 +45,7 @@ class DeleteFileFromSharedFolderTest : UnitTest() {
 
     @Test
     fun deleteFileNotFound() {
-        every { filePersistence.getProjectFileAuthor(PROJECT_ID, FILE_ID) } returns null
+        every { filePersistence.existsFile(JemsFileType.SharedFolder, FILE_ID) } returns false
         assertThrows<FileNotFound> { interactor.delete(PROJECT_ID, FILE_ID) }
-    }
-
-    @Test
-    fun deleteUserIsNotOwner() {
-        every { filePersistence.getProjectFileAuthor(PROJECT_ID, FILE_ID) } returns mockk { every { id } returns 1L }
-        every { securityService.getUserIdOrThrow() } returns 2L
-
-        assertThrows<UserIsNotOwnerOfFile> { interactor.delete(PROJECT_ID, FILE_ID) }
     }
 }
