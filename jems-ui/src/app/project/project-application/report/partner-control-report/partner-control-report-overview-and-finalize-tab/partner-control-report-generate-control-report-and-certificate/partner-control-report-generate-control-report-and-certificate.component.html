@@ -1,21 +1,18 @@
 <div *ngIf="data$ | async as data" jemsFormLayout>
-
-    <form *ngIf="data.canGenerateExportFile" jemsFormLayout [formGroup]="exportForm">
+    <form *ngIf="data.canGenerateExportFile" class="dropdown-and-button-in-one-row" [formGroup]="exportForm">
         <mat-form-field>
             <mat-label>{{'project.application.partner.report.control.tab.overviewAndFinalize.certificate.export.label.plugins' | translate}}</mat-label>
-            <mat-select formControlName="plugin">
-                <mat-option *ngFor="let plugin of data.plugins" [value]="plugin" role="option">
-                    {{plugin.name}} - {{plugin.version}}
-                </mat-option>
-            </mat-select>
+                <mat-select formControlName="plugin">
+                    <mat-option *ngFor="let plugin of data.plugins" [value]="plugin" role="option">
+                        {{plugin.name}} - {{plugin.version}}
+                    </mat-option>
+                </mat-select>
         </mat-form-field>
-        <span>
-            <jems-pending-button (click)="exportData(plugin)"
-                                 [disabled]="exportInProgress || !exportForm.get('plugin')?.value"
-                                 [pending]="exportInProgress">
-                {{'project.application.partner.report.control.tab.overviewAndFinalize.certificate.export.label.button' | translate}}
-            </jems-pending-button>
-        </span>
+        <jems-pending-button (clicked)="exportData(plugin)"
+                             [disabled]="exportInProgress || !exportForm.get('plugin')?.value"
+                             [pending]="exportInProgress">
+            {{'project.application.partner.report.control.tab.overviewAndFinalize.certificate.export.label.button' | translate}}
+        </jems-pending-button>
     </form>
 
     <div jemsNoWidthLimit id="control-report-files" class="overflow-auto">

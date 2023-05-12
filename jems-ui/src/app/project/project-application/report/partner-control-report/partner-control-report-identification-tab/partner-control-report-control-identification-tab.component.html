@@ -2,49 +2,51 @@
            (discard)="resetForm(data.partnerControlReport)"
            (save)="saveIdentification()">
 
-    <h3>{{'project.application.partner.control.report.section.one.part.one' | translate}}</h3>
-    <div id="control-report-info" class="mb-5">
-        <div class="project-row">
-            <span class="header p-1 pr-3">{{'project.application.partner.control.report.programme.title' | translate}}</span>
-            <span class="p-1">{{data.partnerControlReport.programmeTitle}}</span>
-        </div>
-        <div class="project-row">
-            <span class="header p-1 pr-3">{{'project.application.partner.control.report.project.title' | translate}}</span>
-            <span class="p-1">{{data.partnerControlReport.projectTitle | translateBySystemLanguage | async}}</span>
-        </div>
-        <div class="project-row">
-            <span class="header p-1 pr-3">{{'project.application.partner.control.report.project.acronym' | translate}}</span>
-            <span class="p-1">{{data.partnerControlReport.projectAcronym}}</span>
-        </div>
-        <div class="project-row">
-            <span class="header p-1 pr-3">{{'project.application.partner.control.report.project.identification' | translate}}</span>
-            <span class="p-1">{{data.partnerControlReport.projectIdentifier}}</span>
-        </div>
-        <div class="project-row">
-            <span class="header p-1 pr-3">{{'project.application.partner.control.report.application.form.version' | translate}}</span>
-            <span class="p-1">{{data.partnerControlReport.linkedFormVersion}}</span>
-        </div>
-        <div class="project-row">
-            <span class="header p-1 pr-3">{{'project.application.partner.control.report.project.implementation.period' | translate}}</span>
-            <span class="p-1" *ngIf="data.partnerControlReport.projectStart">{{data.partnerControlReport.projectStart | localeDate : 'L'}} - {{data.partnerControlReport.projectEnd | localeDate : 'L'}}</span>
-        </div>
-        <div class="project-row">
-            <span class="header p-1 pr-3">{{'project.application.partner.control.report.reporting.period' | translate}}</span>
-            <span class="p-1" *ngIf="data.partnerControlReport.reportPeriodNumber">
-                {{data.partnerControlReport.reportPeriodNumber}}: {{data.partnerControlReport.reportPeriodStart | localeDate : 'L'}} - {{data.partnerControlReport.reportPeriodEnd | localeDate : 'L'}}
-            </span>
-        </div>
-        <div class="project-row">
-            <span class="header p-1 pr-3">{{'project.application.partner.control.report.report.number' | translate}}</span>
-            <span class="p-1">R.{{data.partnerControlReport.reportNumber}}</span>
-        </div>
-        <div class="project-row">
-            <span class="header p-1 pr-3">{{'project.application.partner.control.report.first.submission' | translate}}</span>
-            <span class="p-1">{{data.partnerControlReport.reportFirstSubmission | localeDate : 'L' : 'LT'}}</span>
-        </div>
-        <div class="project-row">
-            <span class="header p-1 pr-3">{{'project.application.partner.control.report.latest.resubmission' | translate}}</span>
-            <span class="p-1">{{data.partnerControlReport.reportFirstSubmission | localeDate : 'L' : 'LT'}}</span>
+    <div jemsFormLayout>
+        <h3>{{'project.application.partner.control.report.section.one.part.one' | translate}}</h3>
+        <div id="control-report-info" class="mb-5">
+            <div class="project-row">
+                <span class="header p-1 pr-3">{{'project.application.partner.control.report.programme.title' | translate}}</span>
+                <span class="p-1">{{data.partnerControlReport.programmeTitle}}</span>
+            </div>
+            <div class="project-row">
+                <span class="header p-1 pr-3">{{'project.application.partner.control.report.project.title' | translate}}</span>
+                <span class="p-1">{{data.partnerControlReport.projectTitle | translateBySystemLanguage | async}}</span>
+            </div>
+            <div class="project-row">
+                <span class="header p-1 pr-3">{{'project.application.partner.control.report.project.acronym' | translate}}</span>
+                <span class="p-1">{{data.partnerControlReport.projectAcronym}}</span>
+            </div>
+            <div class="project-row">
+                <span class="header p-1 pr-3">{{'project.application.partner.control.report.project.identification' | translate}}</span>
+                <span class="p-1">{{data.partnerControlReport.projectIdentifier}}</span>
+            </div>
+            <div class="project-row">
+                <span class="header p-1 pr-3">{{'project.application.partner.control.report.application.form.version' | translate}}</span>
+                <span class="p-1">{{data.partnerControlReport.linkedFormVersion}}</span>
+            </div>
+            <div class="project-row">
+                <span class="header p-1 pr-3">{{'project.application.partner.control.report.project.implementation.period' | translate}}</span>
+                <span class="p-1" *ngIf="data.partnerControlReport.projectStart">{{data.partnerControlReport.projectStart | localeDate : 'L'}} - {{data.partnerControlReport.projectEnd | localeDate : 'L'}}</span>
+            </div>
+            <div class="project-row">
+                <span class="header p-1 pr-3">{{'project.application.partner.control.report.reporting.period' | translate}}</span>
+                <span class="p-1" *ngIf="data.partnerControlReport.reportPeriodNumber">
+                    {{data.partnerControlReport.reportPeriodNumber}}: {{data.partnerControlReport.reportPeriodStart | localeDate : 'L'}} - {{data.partnerControlReport.reportPeriodEnd | localeDate : 'L'}}
+                </span>
+            </div>
+            <div class="project-row">
+                <span class="header p-1 pr-3">{{'project.application.partner.control.report.report.number' | translate}}</span>
+                <span class="p-1">R.{{data.partnerControlReport.reportNumber}}</span>
+            </div>
+            <div class="project-row">
+                <span class="header p-1 pr-3">{{'project.application.partner.control.report.first.submission' | translate}}</span>
+                <span class="p-1">{{data.partnerControlReport.reportFirstSubmission | localeDate : 'L' : 'LT'}}</span>
+            </div>
+            <div class="project-row">
+                <span class="header p-1 pr-3">{{'project.application.partner.control.report.latest.resubmission' | translate}}</span>
+                <span class="p-1">{{data.partnerControlReport.reportFirstSubmission | localeDate : 'L' : 'LT'}}</span>
+            </div>
         </div>
     </div>
 
@@ -208,7 +210,7 @@
             </div>
         </div>
 
-        <div jemsNoWidthLimit [formGroupName]="constants.FORM_CONTROL_NAMES.reportVerification">
+        <div [formGroupName]="constants.FORM_CONTROL_NAMES.reportVerification">
             <h3>{{'project.application.partner.control.report.section.four' | translate}}</h3>
             <h4>{{'project.application.partner.control.report.general.methodology.header' | translate}}</h4>
 
@@ -226,7 +228,7 @@
             <ng-container  *ngIf="form.controls.reportVerification?.get(constants.FORM_CONTROL_NAMES.onTheSpotVerification)?.value" id="on-the-spot-verification-container" class="mt-4">
                 <ng-container *ngIf="verificationInstances.controls.length > 0">
                     <h4>{{'project.application.partner.control.report.administrative.on.spot.verification.list.header' | translate}}</h4>
-                    <div jemsNoWidthLimit id="on-the-spot-verification-table" [jemsTableConfig]="[{minInRem:22, maxInRem:30}, {minInRem:12, maxInRem:20},{minInRem:12}, {minInRem:3, maxInRem:3}]">
+                    <div id="on-the-spot-verification-table" [jemsTableConfig]="[{minInRem:22, maxInRem:30}, {minInRem:12, maxInRem:20},{minInRem:12}, {minInRem:3, maxInRem:3}]">
                             <div>
                                 <span>{{ 'project.application.partner.control.report.administrative.on.spot.verification.table.date.header' | translate }}</span>
                                 <span>{{ 'project.application.partner.control.report.administrative.on.spot.verification.table.location.header' | translate }}</span>

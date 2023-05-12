@@ -164,7 +164,7 @@ context('Assessments & decision tests', () => {
       cy.visit(`/app/project/detail/${applicationId}/assessmentAndDecision`, {failOnStatusCode: false});
       cy.contains('mat-select', 'Select checklist template').click();
       cy.get('mat-option:first-of-type').click();
-      cy.contains('instantiate new assessment').click();
+      cy.contains('start new assessment').click();
       cy.contains('Draft').should('be.visible');
       cy.contains('button', 'Finish checklist').should('exist');
       cy.contains('button', 'Yes?').click();
@@ -178,7 +178,7 @@ context('Assessments & decision tests', () => {
       cy.get('jems-table').should('not.exist');
       cy.contains('mat-select', 'Select checklist template').click();
       cy.get('mat-option:first-of-type').click();
-      cy.contains('instantiate new assessment').click();
+      cy.contains('start new assessment').click();
       cy.contains('button', 'Yes?').click();
       cy.contains('button', 'Save changes').click();
       cy.contains('button', 'Finish checklist').click();
