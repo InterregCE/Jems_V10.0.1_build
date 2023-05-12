@@ -20,6 +20,7 @@ export class SharedFolderPageStore {
   projectTitle$ = this.projectStore.projectTitle$;
   fileList$: Observable<PageJemsFileDTO>;
   userCanEdit$: Observable<boolean>;
+  userCanDelete$: Observable<boolean>;
 
   newPageSize$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_SIZE);
   newPageIndex$ = new BehaviorSubject<number>(0);
@@ -37,6 +38,7 @@ export class SharedFolderPageStore {
     this.projectId$ = this.projectStore.projectId$;
     this.fileList$ = this.fileList();
     this.userCanEdit$ = this.userCanEdit();
+    this.userCanDelete$ = this.userCanDelete();
   }
 
   private fileList(): Observable<PageJemsFileDTO> {
@@ -82,6 +84,10 @@ export class SharedFolderPageStore {
     ]).pipe(
       map(([hasCreatorPermission, hasMonitorPermission, isEditCollaborator]) => (hasCreatorPermission && isEditCollaborator) || hasMonitorPermission),
     );
+  }
+
+  private userCanDelete(): Observable<boolean> {
+    return this.permissionService.hasPermission(PermissionsEnum.ProjectMonitorSharedFolderEdit);
   }
 
   uploadFile(file: File): Observable<JemsFileMetadataDTO> {

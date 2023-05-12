@@ -38,9 +38,10 @@ export class SharedFolderPageComponent {
     this.data$ = combineLatest([
       this.pageStore.fileList$,
       this.pageStore.userCanEdit$,
+      this.pageStore.userCanDelete$,
       this.securityService.currentUser.pipe(map(user => user?.id || 0)),
     ]).pipe(
-      map(([files, canEdit, currentUserId]) => ({
+      map(([files, canEdit, canDelete, currentUserId]) => ({
         files,
         fileList: files.content.map((file: JemsFileDTO) => ({
           id: file.id,
@@ -51,8 +52,8 @@ export class SharedFolderPageComponent {
           sizeString: file.sizeString,
           description: file.description,
           editable: canEdit && file.author.id === currentUserId,
-          deletable: canEdit && file.author.id === currentUserId,
-          tooltipIfNotDeletable: canEdit ? 'shared.folder.not.owner' : 'shared.folder.can.not.edit',
+          deletable: canDelete,
+          tooltipIfNotDeletable: 'shared.folder.can.not.edit',
           iconIfNotDeletable: 'delete'
         })),
         userCanEdit: canEdit

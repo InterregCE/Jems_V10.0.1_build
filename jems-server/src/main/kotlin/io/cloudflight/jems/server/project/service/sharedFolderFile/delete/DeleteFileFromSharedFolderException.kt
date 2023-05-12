@@ -18,8 +18,3 @@ class FileNotFound : ApplicationUnprocessableException(
     code = "$DELETE_SHARED_FOLDER_FILE_ERROR_CODE_PREFIX-001",
     i18nMessage = I18nMessage("$DELETE_SHARED_FOLDER_FILE_ERROR_KEY_PREFIX.not.found")
 )
-
-class UserIsNotOwnerOfFile : ApplicationAuthenticationException(
-    code = "$DELETE_SHARED_FOLDER_FILE_ERROR_CODE_PREFIX-002",
-    i18nMessage = I18nMessage("$DELETE_SHARED_FOLDER_FILE_ERROR_KEY_PREFIX.user.is.not.owner"),
-)

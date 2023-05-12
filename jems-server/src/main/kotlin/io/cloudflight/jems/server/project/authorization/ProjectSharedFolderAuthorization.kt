@@ -16,6 +16,10 @@ annotation class CanRetrieveSharedFolder
 @PreAuthorize("@projectSharedFolderAuthorization.canEditSharedFolderFile(#projectId)")
 annotation class CanEditSharedFolder
 
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@projectSharedFolderAuthorization.canDeleteSharedFolderFile(#projectId)")
+annotation class CanDeleteSharedFolderFile
+
 @Component
 class ProjectSharedFolderAuthorization(
     override val securityService: SecurityService,
@@ -28,6 +32,9 @@ class ProjectSharedFolderAuthorization(
 
     fun canEditSharedFolderFile(projectId: Long): Boolean =
         hasSharedFolderPermission(SharedFolderPermission.Edit, projectId)
+
+    fun canDeleteSharedFolderFile(projectId: Long): Boolean =
+        hasPermission(SharedFolderPermission.Edit.monitor, projectId)
 
 
     private fun hasSharedFolderPermission(
