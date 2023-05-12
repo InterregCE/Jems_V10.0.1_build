@@ -72,6 +72,7 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
             createdAt = ZonedDateTime.now(),
             projectIdentifier = "FG01_654",
             projectAcronym = "acronym",
+            partnerAbbreviation = "LP-1",
             partnerNumber = 1,
             partnerRole = ProjectPartnerRole.LEAD_PARTNER,
             partnerId = PARTNER_ID

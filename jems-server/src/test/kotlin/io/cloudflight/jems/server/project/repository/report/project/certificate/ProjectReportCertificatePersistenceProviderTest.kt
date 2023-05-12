@@ -186,7 +186,7 @@ class ProjectReportCertificatePersistenceProviderTest : UnitTest() {
             projectIdentifier = "projectIdentifier",
             projectAcronym = "projectAcronym",
             partnerNumber = 4,
-            partnerAbbreviation = "not-needed",
+            partnerAbbreviation = "P-4",
             partnerRole = ProjectPartnerRole.PARTNER,
             nameInOriginalLanguage = null,
             nameInEnglish = null,
@@ -209,6 +209,7 @@ class ProjectReportCertificatePersistenceProviderTest : UnitTest() {
                 createdAt = time,
                 projectIdentifier = "projectIdentifier",
                 projectAcronym = "projectAcronym",
+                partnerAbbreviation = "P-4",
                 partnerNumber = 4,
                 partnerRole = ProjectPartnerRole.PARTNER,
                 partnerId = 72L

@@ -37,6 +37,7 @@ export class PartnerReportNotificationsSettingsTabComponent {
     NotificationVariable.PARTNER_ID,
     NotificationVariable.PARTNER_ROLE,
     NotificationVariable.PARTNER_NUMBER,
+    NotificationVariable.PARTNER_ABBREVIATION,
     NotificationVariable.PARTNER_REPORT_ID,
     NotificationVariable.PARTNER_REPORT_NUMBER,
   ];

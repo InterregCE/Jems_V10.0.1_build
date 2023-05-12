@@ -14,6 +14,7 @@ data class ProjectPartnerReportSubmissionSummary(
 
     val projectIdentifier: String,
     val projectAcronym: String,
+    val partnerAbbreviation: String,
     val partnerNumber: Int,
     val partnerRole: ProjectPartnerRole,
     val partnerId: Long,

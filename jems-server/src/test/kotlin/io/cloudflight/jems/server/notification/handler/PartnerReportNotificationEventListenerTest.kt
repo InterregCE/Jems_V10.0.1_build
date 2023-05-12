@@ -50,6 +50,7 @@ class PartnerReportNotificationEventListenerTest : UnitTest() {
             createdAt = ZonedDateTime.now(),
             projectIdentifier = "01",
             projectAcronym = "project acronym",
+            partnerAbbreviation = "LP-7",
             partnerNumber = PARTNER_NUMBER,
             partnerRole = ProjectPartnerRole.LEAD_PARTNER,
             partnerId = PARTNER_ID,
@@ -86,6 +87,7 @@ class PartnerReportNotificationEventListenerTest : UnitTest() {
             entry(NotificationVariable.PartnerId, PARTNER_ID),
             entry(NotificationVariable.PartnerRole, ProjectPartnerRole.LEAD_PARTNER),
             entry(NotificationVariable.PartnerNumber, PARTNER_NUMBER),
+            entry(NotificationVariable.PartnerAbbreviation, "LP-7"),
             entry(NotificationVariable.PartnerReportId, PARTNER_REPORT_ID),
             entry(NotificationVariable.PartnerReportNumber, 1),
         )

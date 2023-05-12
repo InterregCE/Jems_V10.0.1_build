@@ -127,6 +127,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
             createdAt = createdAt,
             projectIdentifier = "projectIdentifier",
             projectAcronym = "projectAcronym",
+            partnerAbbreviation = "partnerAbbreviation",
             partnerNumber = 4,
             partnerRole = ProjectPartnerRole.PARTNER,
             partnerId = PARTNER_ID
