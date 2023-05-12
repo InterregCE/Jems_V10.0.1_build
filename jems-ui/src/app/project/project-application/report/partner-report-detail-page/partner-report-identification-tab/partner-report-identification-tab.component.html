@@ -183,6 +183,9 @@
                 <ng-container matColumnDef="totalReportedSoFar">
                     <th *matHeaderCellDef mat-header-cell scope="col" class="text-right">
                         {{ 'project.report.partner.spending.totalReportedSoFar' | translate }}
+                        <jems-context-info infoPosition="right"
+                                           infoText="{{ 'project.report.partner.spending.totalReportedSoFar.context.info' | translate }}">
+                        </jems-context-info>
                     </th>
                     <td *matCellDef="let data; let i = index" mat-cell  class="text-right">
                         {{ (form.get('spendingProfile')?.value?.previouslyReported + form.get('spendingProfile')?.value?.currentReport) | asMoney }}
