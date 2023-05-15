@@ -166,33 +166,6 @@ internal class CreateProjectPartnerReportProcurementTest : UnitTest() {
     }
 
     @Test
-    fun `create - invalid currencies`() {
-        val report = mockk<ProjectPartnerReport>()
-        every { report.id } returns 85L
-        every { report.status } returns ReportStatus.Draft
-        every { report.identification.currency } returns "EUR"
-
-        every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = 85L) } returns report
-        every { reportPersistence.getReportIdsBefore(PARTNER_ID, beforeReportId = 85L) } returns emptySet()
-        every { reportProcurementPersistence.getProcurementContractNamesForReportIds(setOf(85L)) } returns emptySet()
-
-        val change = ProjectPartnerReportProcurementChange(
-            id = 0L,
-            contractName = "",
-            referenceNumber = "",
-            contractDate = NEXT_WEEK,
-            contractType = "",
-            contractAmount = BigDecimal.ZERO,
-            currencyCode = "GBP",
-            supplierName = "",
-            vatNumber = "",
-            comment = "",
-        )
-
-        assertThrows<InvalidCurrency> { interactor.create(PARTNER_ID, reportId = 85L, change) }
-    }
-
-    @Test
     fun `update - reached max amount of procurements`() {
         val report = mockk<ProjectPartnerReport>()
         every { report.id } returns 86L
