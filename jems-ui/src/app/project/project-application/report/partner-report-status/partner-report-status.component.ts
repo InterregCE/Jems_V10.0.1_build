@@ -9,13 +9,6 @@ import {ProjectPartnerReportSummaryDTO} from '@cat/api';
 })
 export class PartnerReportStatusComponent {
 
-  statusesOrdered = [
-    ProjectPartnerReportSummaryDTO.StatusEnum.Draft,
-    ProjectPartnerReportSummaryDTO.StatusEnum.Submitted,
-    ProjectPartnerReportSummaryDTO.StatusEnum.InControl,
-    ProjectPartnerReportSummaryDTO.StatusEnum.Certified,
-  ];
-
   @Input()
   status: ProjectPartnerReportSummaryDTO.StatusEnum;
 
@@ -26,6 +19,11 @@ export class PartnerReportStatusComponent {
     switch (currentChip) {
       case 'Draft':
         return 'donut_large';
+      case 'ReOpenSubmittedLast':
+      case 'ReOpenSubmittedLimited':
+      case 'ReOpenInControlLast':
+      case 'ReOpenInControlLimited':
+        return 'undo';
       case 'Submitted':
         return 'send';
       case 'InControl':
@@ -37,8 +35,21 @@ export class PartnerReportStatusComponent {
     }
   }
 
+  getStatusesOrdered(): ProjectPartnerReportSummaryDTO.StatusEnum[] {
+    return [
+      ProjectPartnerReportSummaryDTO.StatusEnum.Draft,
+      ... this.status === ProjectPartnerReportSummaryDTO.StatusEnum.Submitted || (this.status !== ProjectPartnerReportSummaryDTO.StatusEnum.ReOpenSubmittedLast && this.status !== ProjectPartnerReportSummaryDTO.StatusEnum.ReOpenSubmittedLimited) ? [ProjectPartnerReportSummaryDTO.StatusEnum.Submitted] : [],
+      ... this.status === ProjectPartnerReportSummaryDTO.StatusEnum.ReOpenSubmittedLast ? [ProjectPartnerReportSummaryDTO.StatusEnum.ReOpenSubmittedLast] : [],
+      ... this.status === ProjectPartnerReportSummaryDTO.StatusEnum.ReOpenSubmittedLimited ? [ProjectPartnerReportSummaryDTO.StatusEnum.ReOpenSubmittedLimited] : [],
+      ... this.status === ProjectPartnerReportSummaryDTO.StatusEnum.InControl || (this.status !== ProjectPartnerReportSummaryDTO.StatusEnum.ReOpenInControlLast && this.status !== ProjectPartnerReportSummaryDTO.StatusEnum.ReOpenInControlLimited) ? [ProjectPartnerReportSummaryDTO.StatusEnum.InControl] : [],
+      ... this.status === ProjectPartnerReportSummaryDTO.StatusEnum.ReOpenInControlLast ? [ProjectPartnerReportSummaryDTO.StatusEnum.ReOpenInControlLast] : [],
+      ... this.status === ProjectPartnerReportSummaryDTO.StatusEnum.ReOpenInControlLimited ? [ProjectPartnerReportSummaryDTO.StatusEnum.ReOpenInControlLimited] : [],
+      ProjectPartnerReportSummaryDTO.StatusEnum.Certified,
+    ];
+  }
+
   isEnabled(currentChip: ProjectPartnerReportSummaryDTO.StatusEnum): boolean {
-    return this.statusesOrdered.indexOf(currentChip) <= this.statusesOrdered.indexOf(this.status);
+    return this.getStatusesOrdered().indexOf(currentChip) <= this.getStatusesOrdered().indexOf(this.status);
   }
 
 }

@@ -19,6 +19,7 @@ import {
   ProjectStore
 } from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
+import {ReportUtil} from "@project/common/report-util";
 
 @Injectable({providedIn: 'root'})
 export class PartnerReportDetailPageStore {
@@ -98,6 +99,15 @@ export class PartnerReportDetailPageStore {
 
   submitReport(partnerId: number, reportId: number): Observable<ProjectPartnerReportSummaryDTO.StatusEnum> {
     return this.projectPartnerReportService.submitProjectPartnerReport(partnerId, reportId)
+      .pipe(
+        map(status => status as ProjectPartnerReportSummaryDTO.StatusEnum),
+        tap(status => this.updatedReportStatus$.next(status)),
+        tap(status => Log.info('Changed status for report', reportId, status))
+      );
+  }
+
+  reopenReport(partnerId: number, reportId: number): Observable<ProjectPartnerReportSummaryDTO.StatusEnum> {
+    return this.projectPartnerReportService.reOpenProjectPartnerReport(partnerId, reportId)
       .pipe(
         map(status => status as ProjectPartnerReportSummaryDTO.StatusEnum),
         tap(status => this.updatedReportStatus$.next(status)),
@@ -202,7 +212,7 @@ export class PartnerReportDetailPageStore {
       this.reportStatus$
     ])
       .pipe(
-        map(([canEdit, status]) => canEdit && status === ProjectPartnerReportSummaryDTO.StatusEnum.Draft)
+        map(([canEdit, status]) => canEdit && ReportUtil.isPartnerReportSubmittable(status))
       );
   }
 }

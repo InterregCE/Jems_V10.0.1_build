@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {
   ProjectPartnerReportProcurementService,
   ProjectPartnerReportService,
-  PageProjectPartnerReportProcurementDTO, IdNamePairDTO,
+  PageProjectPartnerReportProcurementDTO, IdNamePairDTO, ProjectPartnerReportDTO,
 } from '@cat/api';
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {map, startWith, switchMap, tap} from 'rxjs/operators';
@@ -23,6 +23,7 @@ export class PartnerReportProcurementsPageStore {
 
   partnerId$: Observable<string | number | null>;
   page$: Observable<PageProjectPartnerReportProcurementDTO>;
+  currentReport$: Observable<ProjectPartnerReportDTO>;
 
   newPageSize$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_SIZE);
   newPageIndex$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_INDEX);
@@ -34,9 +35,11 @@ export class PartnerReportProcurementsPageStore {
               private partnerReportPageStore: PartnerReportPageStore,
               private projectPartnerReportService: ProjectPartnerReportService,
               private projectStore: ProjectStore,
-              private projectPartnerProcurementService: ProjectPartnerReportProcurementService) {
+              private projectPartnerProcurementService: ProjectPartnerReportProcurementService,
+              private partnerReportDetailPageStore: PartnerReportDetailPageStore,) {
     this.partnerId$ = this.partnerId();
     this.page$ = this.getProcurements();
+    this.currentReport$ = this.partnerReportDetailPageStore.partnerReport$;
   }
 
   private partnerId(): Observable<number | string | null> {

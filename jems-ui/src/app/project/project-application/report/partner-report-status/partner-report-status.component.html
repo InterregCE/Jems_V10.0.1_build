@@ -1,5 +1,5 @@
 <mat-chip-list>
-    <ng-container *ngFor="let currentChip of (longVersion ? statusesOrdered : [status]); let first = first">
+    <ng-container *ngFor="let currentChip of (longVersion ? getStatusesOrdered() : [status]); let first = first">
         <mat-icon *ngIf="!first">trending_flat</mat-icon>
         <mat-chip [ngClass]="isEnabled(currentChip) ? ('status-' + currentChip) : 'status-Disabled'">
             <mat-icon class="mr-2">{{ getIconFromStatus(currentChip) }}</mat-icon>{{ ('project.application.partner.report.table.status.' + currentChip) | translate }}

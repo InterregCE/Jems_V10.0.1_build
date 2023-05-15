@@ -3,7 +3,7 @@
 </h1>
 
 <div mat-dialog-content>
-    <p *ngIf="message">{{message | translate : arguments}}</p>
+    <p *ngIf="message" [innerHTML]="message | translate : arguments"></p>
 
     <jems-alert [closable]="false"
                [show]="!!data.warnMessage"

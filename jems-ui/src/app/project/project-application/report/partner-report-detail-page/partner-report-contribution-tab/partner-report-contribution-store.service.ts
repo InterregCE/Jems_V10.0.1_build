@@ -3,7 +3,7 @@ import {
   ProjectPartnerReportContributionService,
   ProjectPartnerReportContributionWrapperDTO,
   ProjectPartnerReportService, JemsFileMetadataDTO,
-  UpdateProjectPartnerReportContributionDataDTO,
+  UpdateProjectPartnerReportContributionDataDTO, ProjectPartnerReportDTO,
 } from '@cat/api';
 import {BehaviorSubject, combineLatest, merge, Observable, Subject} from 'rxjs';
 import {map, switchMap, take, tap} from 'rxjs/operators';
@@ -22,6 +22,7 @@ export class PartnerReportContributionStore {
 
   partnerId$: Observable<number>;
   partnerContribution$: Observable<ProjectPartnerReportContributionWrapperDTO>;
+  currentReport$: Observable<ProjectPartnerReportDTO>;
 
   refreshContributions$ = new BehaviorSubject<void>(undefined);
   private savedContribution$ = new Subject<ProjectPartnerReportContributionWrapperDTO>();
@@ -32,9 +33,11 @@ export class PartnerReportContributionStore {
     private projectPartnerReportService: ProjectPartnerReportService,
     private projectStore: ProjectStore,
     private projectPartnerReportContributionService: ProjectPartnerReportContributionService,
+    private partnerReportDetailPageStore: PartnerReportDetailPageStore
   ) {
     this.partnerId$ = this.partnerReportPageStore.partnerId$.pipe(map(partnerId => Number(partnerId)));
     this.partnerContribution$ = this.getContribution();
+    this.currentReport$ = this.partnerReportDetailPageStore.partnerReport$;
   }
 
   public getContribution(): Observable<ProjectPartnerReportContributionWrapperDTO> {

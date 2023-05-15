@@ -4,7 +4,7 @@ import {UntilDestroy} from '@ngneat/until-destroy';
 import {FormService} from '@common/components/section/form/form.service';
 import {combineLatest, Observable} from 'rxjs';
 import {
-  PageProjectPartnerReportProcurementDTO, ProjectPartnerReportProcurementDTO
+  PageProjectPartnerReportProcurementDTO, ProjectPartnerReportDTO, ProjectPartnerReportProcurementDTO
 } from '@cat/api';
 import {
   PartnerReportProcurementsPageStore
@@ -39,6 +39,7 @@ export class PartnerReportProcurementsTabComponent {
     procurements: PageProjectPartnerReportProcurementDTO;
     limitReached: boolean;
     isReportEditable: boolean;
+    isReportReopenedLimited: boolean;
   }>;
 
   constructor(
@@ -50,13 +51,15 @@ export class PartnerReportProcurementsTabComponent {
     this.data$ = combineLatest([
       this.pageStore.page$,
       this.reportDetailPageStore.reportEditable$,
+      this.pageStore.currentReport$
     ]).pipe(
       tap(([procurements, isEditable]) => this.prepareVisibleColumns(isEditable)),
       tap(([procurements, isEditable]) => this.dataSource.data = procurements.content),
-      map(([procurements, isReportEditable]) => ({
+      map(([procurements, isReportEditable, currentReport]) => ({
         procurements,
         limitReached: procurements.totalElements >= 50,
         isReportEditable,
+        isReportReopenedLimited: currentReport.status === ProjectPartnerReportDTO.StatusEnum.ReOpenSubmittedLimited || currentReport.status === ProjectPartnerReportDTO.StatusEnum.ReOpenInControlLimited
       })),
     );
   }

@@ -39,9 +39,11 @@ import {SecurityService} from 'src/app/security/security.service';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import {Alert} from '@common/components/forms/alert';
 import {
   ProjectStore
-} from "@project/project-application/containers/project-application-detail/services/project-store.service";
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {ReportUtil} from '@project/common/report-util';
 
 @UntilDestroy()
 @Component({
@@ -77,6 +79,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     partnerId: string | number | null;
     partnerReportId: number;
     projectId: number;
+    isReopened: boolean;
   }>;
   tableConfiguration$: Observable<{
     columnsToDisplay: string[];
@@ -104,6 +107,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
 
   readonly PERIOD_PREPARATION: number = 0;
   readonly PERIOD_CLOSURE: number = 255;
+  Alert = Alert;
 
   constructor(public pageStore: PartnerReportExpendituresStore,
               protected changeDetectorRef: ChangeDetectorRef,
@@ -154,7 +158,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
         })
       )
     );
-    this.pageStore.currentReport$.pipe(untilDestroyed(this)).subscribe(report=> this.currentReport = report);
+    this.pageStore.currentReport$.pipe(untilDestroyed(this)).subscribe(report => this.currentReport = report);
     this.pageStore.currencies$.pipe(untilDestroyed(this)).subscribe(currencies=> this.currencies = currencies);
 
     this.dataAsObservable();
@@ -412,9 +416,10 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       this.isReportEditable$,
       this.partnerReportDetailPageStore.partnerId$,
       this.partnerReportDetailPageStore.partnerReportId$,
-      this.projectStore.projectId$
+      this.projectStore.projectId$,
+      this.pageStore.currentReport$
     ]).pipe(
-      map(([expendituresCosts, costCategories, investmentsSummary, contractIDs, tableConfiguration, reportCosts, parkedExpenditures, isCurrentUserGDPRCompliant, canEdit, isMonitorUser, isReportEditable, partnerId, partnerReportId, projectId]: any) => ({
+      map(([expendituresCosts, costCategories, investmentsSummary, contractIDs, tableConfiguration, reportCosts, parkedExpenditures, isCurrentUserGDPRCompliant, canEdit, isMonitorUser, isReportEditable, partnerId, partnerReportId, projectId, currentReport]: any) => ({
           expendituresCosts,
           costCategories,
           investmentsSummary,
@@ -431,15 +436,17 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
         isGDPRCompliant: isCurrentUserGDPRCompliant,
         canEdit,
         isMonitorUser,
-        isReportEditable,
+        isReportEditable: isReportEditable && !ReportUtil.isPartnerReportReopened(currentReport.status),
         partnerId,
         partnerReportId,
-        projectId
+        projectId,
+        isReopened: ReportUtil.isPartnerReportReopened(currentReport.status),
         })
       ),
       tap(data => this.resetForm(data.expendituresCosts, data.isGDPRCompliant, data.isMonitorUser)),
       tap(data => this.contractIDs = data.contractIDs),
       tap(data => this.investmentsSummary = data.investmentsSummary),
+      tap(data => this.formService.setEditable(data.isReportEditable))
     );
 
   }
@@ -893,4 +900,5 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   formChanged(): void {
     this.formService.setDirty(true);
   }
+
 }

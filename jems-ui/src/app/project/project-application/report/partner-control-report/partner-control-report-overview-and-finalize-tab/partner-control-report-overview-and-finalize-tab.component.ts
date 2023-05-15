@@ -54,6 +54,7 @@ export class PartnerControlReportOverviewAndFinalizeTabComponent{
     overview: ControlWorkOverviewDTO;
     deduction: ControlDeductionOverviewDTO;
     finalizationAllowed: boolean;
+    isReportReopened: boolean;
     reportId: number;
     partnerId: number;
     userCanEdit: boolean;
@@ -110,6 +111,7 @@ export class PartnerControlReportOverviewAndFinalizeTabComponent{
         overview,
         deduction,
         finalizationAllowed: report.status === ProjectPartnerReportDTO.StatusEnum.InControl,
+        isReportReopened: report.status === ProjectPartnerReportDTO.StatusEnum.ReOpenInControlLast || report.status === ProjectPartnerReportDTO.StatusEnum.ReOpenInControlLimited,
         reportId: report.id,
         partnerId,
         userCanEdit,

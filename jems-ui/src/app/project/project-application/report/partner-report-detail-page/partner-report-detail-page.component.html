@@ -4,6 +4,24 @@
                                     [titleText]="'project.application.partner.reports.title.number' | translate : {reportNumber: partnerReport?.reportNumber}"
                                     [subTitleText]="'common.label.project.partner.role.shortcut.' + partnerReport?.identification?.partnerRole | adaptTranslationKeyByCallType | async | translate : {partner: partnerReport?.identification?.partnerNumber + ' ' + partnerReportSummary.abbreviation}"
                                     [isVersionedData]="false">
+
+            <div class="mb-3 reopen-wrapper">
+                <span class="status-label">Status</span>
+                <span class="ml-2"><jems-partner-report-status [status]="partnerReport.status" [longVersion]="false"></jems-partner-report-status></span>
+                <button *ngIf="data.hasReopenPermission && partnerReport.status === StatusEnum.Submitted || partnerReport.status === StatusEnum.InControl"
+                        mat-stroked-button type="button" class="ml-2"
+                        (click)="reopenReport(data.partnerId, data.partnerReportId)">
+                    <mat-icon>undo</mat-icon>
+                    <span>{{'project.application.partner.reports.reopen' | translate}}</span>
+                </button>
+            </div>
+
+            <jems-alert *ngIf="error$ | async as error"
+                        [show]="!!error.i18nMessage?.i18nKey"
+                        [type]="Alert.ERROR">
+                <jems-api-error-content [error]="error"></jems-api-error-content>
+            </jems-alert>
+
             <nav mat-tab-nav-bar>
                 <a [active]="activeTab('identification')" mat-tab-link
                    (click)="routeTo('identification')">
@@ -61,7 +79,7 @@
                     </span>
                 </a>
 
-                <a *ngIf="partnerReport.status === ProjectPartnerReportDTO.StatusEnum.Draft"
+                <a *ngIf="ReportUtil.isPartnerReportSubmittable(partnerReport.status)"
                    [active]="activeTab('submission')" mat-tab-link
                    (click)="routeTo('submission')">
                     <span jemsText maxWidth="230">

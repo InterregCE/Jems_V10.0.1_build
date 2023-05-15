@@ -26,3 +26,15 @@ mat-chip {
 .status-Certified {
   background-color: var(--status-contracted) !important;
 }
+.status-ReOpenSubmittedLast {
+  background-color: var(--status-declined) !important;
+}
+.status-ReOpenSubmittedLimited {
+  background-color: var(--status-declined) !important;
+}
+.status-ReOpenInControlLast {
+  background-color: var(--status-declined) !important;
+}
+.status-ReOpenInControlLimited {
+  background-color: var(--status-declined) !important;
+}

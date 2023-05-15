@@ -72,6 +72,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
     lumpSums: ProjectPartnerReportLumpSumDTO[];
   }>;
 
+  isReportReopened: boolean;
   lumpSumsAvailable: boolean;
   unitCostsAvailable: boolean;
   columnsToDisplay: string[];
@@ -108,17 +109,19 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
       this.pageStore.reportLumpSums$,
       this.pageStore.reportUnitCosts$,
       this.pageStore.isFinalized$,
-      this.pageStore.isEditable$
+      this.pageStore.isEditable$,
+      this.pageStore.currentReport$
     ]).pipe(
-      map(([investments, lumpSums, unitCosts, isFinalized, isEditable]) => {
+      map(([investments, lumpSums, unitCosts, isFinalized, isEditable, currentReport]) => {
           this.setColumnsToDisplay(investments, lumpSums.length > 0 || unitCosts.length > 0);
           this.setColumnsWidths(investments, lumpSums.length > 0 || unitCosts.length > 0);
-          this.isFormEditable = isEditable && !isFinalized;
+          this.currentReport = currentReport;
+          this.isReportReopened = currentReport.status === ProjectPartnerReportDTO.StatusEnum.ReOpenInControlLast || currentReport.status === ProjectPartnerReportDTO.StatusEnum.ReOpenInControlLimited;
+          this.isFormEditable = !this.isReportReopened && isEditable && !isFinalized;
         }
       ),
       untilDestroyed(this)
     ).subscribe();
-    this.pageStore.currentReport$.pipe(untilDestroyed(this)).subscribe(report => this.currentReport = report);
     this.pageStore.currencies$.pipe(untilDestroyed(this)).subscribe(currencies => this.currencies = currencies);
 
     this.dataAsObservable();

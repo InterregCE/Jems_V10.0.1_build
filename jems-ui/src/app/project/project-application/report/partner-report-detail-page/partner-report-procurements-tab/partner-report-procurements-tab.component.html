@@ -121,7 +121,7 @@
             </mat-header-cell>
             <mat-cell *matCellDef="let procurement" class="border-cell-left text-center">
                 <button *ngIf="procurement.createdInThisReport" (click)="deleteProcurement(procurement);$event.stopPropagation();"
-                        color="accent" mat-icon-button>
+                        color="accent" mat-icon-button [disabled]="data.isReportReopenedLimited" >
                     <mat-icon>delete</mat-icon>
                 </button>
             </mat-cell>
