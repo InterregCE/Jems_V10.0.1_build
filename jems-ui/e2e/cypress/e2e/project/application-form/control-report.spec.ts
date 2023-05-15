@@ -332,6 +332,12 @@ context('Control report tests', () => {
           cy.get('#control-project-partner-controller input[name="controlUser"]').eq(1).should('have.value', userInfoInitial);
 
           cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/controlReport/overviewAndFinalizeTab`, {failOnStatusCode: false});
+
+
+          cy.contains('Run pre-submission check').scrollIntoView();
+          cy.contains('Run pre-submission check').click();
+          cy.get('jems-project-application-pre-condition-check-result').should('be.visible');
+          cy.contains('Finalize control').should('be.enabled');
           cy.contains('Finalize control').click();
           cy.contains('Confirm').should('be.visible').click();
           cy.contains('Certified').should('be.visible');
