@@ -50,7 +50,7 @@ export class InstitutionsAssignmentsStoreService {
     return this.controllerInstitutionsApiService.assignInstitutionToPartner(institutionPartnerAssignments)
       .pipe(
         tap(updated => this.updatedControllerInstitutionPartnerAssignment$.next(updated)),
-        tap(() => this.formService.setSuccess('controller.institutions.nuts.assignments.update.success')),
+        tap(() => setTimeout(() => this.formService.setSuccess('controller.institutions.nuts.assignments.update.success'), 100)),
         tap(() => this.controllerInstitutionUpdateEvent$.next(null)),
         tap(updated => Log.info('Updated controller assignment:', this, updated)),
         untilDestroyed(this)
