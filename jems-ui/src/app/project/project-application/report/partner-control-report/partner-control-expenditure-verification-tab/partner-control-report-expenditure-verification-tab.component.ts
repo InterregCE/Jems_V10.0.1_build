@@ -36,6 +36,9 @@ import {MatTable} from '@angular/material/table';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import {
+  ProjectStore
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 
 @UntilDestroy()
 @Component({
@@ -66,6 +69,8 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
     isMonitorUser: boolean;
     isGdprCompliant: boolean;
     typologyOfErrors: TypologyErrorsDTO[];
+    projectId: number;
+    partnerId: string | number | null;
   }>;
   reportCosts$: Observable<{
     unitCosts: ProjectPartnerReportUnitCostDTO[];
@@ -99,7 +104,8 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
               private router: RoutingService,
               private customTranslatePipe: CustomTranslatePipe,
               private translateByInputLanguagePipe: TranslateByInputLanguagePipe,
-              private permissionService: PermissionService) {
+              private permissionService: PermissionService,
+              private projectStore: ProjectStore) {
   }
 
   ngOnInit(): void {
@@ -204,9 +210,11 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
       this.pageStore.contractIDs$,
       this.reportCosts$,
       this.permissionService.hasPermission(PermissionsEnum.ProjectReportingView),
-      this.partnerReportPageStore.userCanViewGdpr$
+      this.partnerReportPageStore.userCanViewGdpr$,
+      this.projectStore.projectId$,
+      this.partnerReportDetailPageStore.partnerId$,
     ]).pipe(
-      map(([typologyOfErrors, expendituresCosts, costCategories, investmentsSummary, contractIDs, reportCosts, isMonitorUser, isGdprCompliant]: any) => ({
+      map(([typologyOfErrors, expendituresCosts, costCategories, investmentsSummary, contractIDs, reportCosts, isMonitorUser, isGdprCompliant, projectId, partnerId]: any) => ({
           typologyOfErrors,
           expendituresCosts,
           costCategories,
@@ -214,6 +222,8 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
           contractIDs,
           isMonitorUser,
           isGdprCompliant,
+          projectId,
+          partnerId,
           ...reportCosts,
         })
       ),

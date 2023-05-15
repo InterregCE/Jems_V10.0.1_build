@@ -122,9 +122,15 @@
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.contract.ID' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <span [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}">
+                                <span *ngIf="!data.expendituresCosts[i].contractId">
                                     {{getContractName(data.contractIDs, data.expendituresCosts[i].contractId)}}
                                 </span>
+                                <a *ngIf="data.expendituresCosts[i].contractId"
+                                   [routerLink]="'/app/project/detail/' + data.projectId + '/reporting/' + data.partnerId + '/reports/' + currentReport.id + '/procurements/' + data.expendituresCosts[i].contractId">
+                                   <span [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}">
+                                        {{getContractName(data.contractIDs, data.expendituresCosts[i].contractId)}}
+                                   </span>
+                                </a>
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
