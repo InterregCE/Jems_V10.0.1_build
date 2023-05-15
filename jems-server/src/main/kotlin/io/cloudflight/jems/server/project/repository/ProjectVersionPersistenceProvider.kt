@@ -46,6 +46,11 @@ class ProjectVersionPersistenceProvider(
     override fun getAllVersions(): List<ProjectVersion> =
         projectVersionRepository.findAllVersions().toProjectVersion()
 
+    @Transactional(readOnly = true)
+    override fun getAllVersionsByProjectIdIn(projectIds: Set<Long>): List<ProjectVersion> {
+        return projectVersionRepository.findAllVersionsByProjectIdIn(projectIds).toProjectVersion()
+    }
+
     @Transactional
     override fun saveTimestampForApprovedApplication(projectId: Long) =
         optimizationProjectVersionRepository.saveOptimizationProjectVersion(projectId)

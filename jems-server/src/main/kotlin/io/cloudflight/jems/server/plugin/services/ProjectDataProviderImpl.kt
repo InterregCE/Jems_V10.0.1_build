@@ -41,6 +41,7 @@ import io.cloudflight.jems.server.project.service.customCostOptions.ProjectUnitC
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
+import io.cloudflight.jems.server.project.service.model.ProjectSearchRequest
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
@@ -55,6 +56,7 @@ import io.cloudflight.jems.server.project.service.result.ProjectResultPersistenc
 import io.cloudflight.jems.server.project.service.result.get_project_result_indicators_overview.ResultOverviewCalculator
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import org.slf4j.LoggerFactory
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal.ZERO
@@ -273,9 +275,32 @@ class ProjectDataProviderImpl(
     ): ProjectPartnerBudgetOptionsData? = budgetOptionsPersistence.getBudgetOptions(partnerId, version)?.toDataModel()
 
 
+    @Transactional(readOnly = true)
     override fun getProjectPartnerSummaryData(partnerId: Long): ProjectPartnerSummaryData =
         partnerPersistence.getById(partnerId).toSummaryDataModel()
 
+
+    @Transactional(readOnly = true)
+    override fun getProjectIdsByCallIdIn(callIds: Set<Long>): List<Long> {
+        val searchRequest = ProjectSearchRequest(
+            calls = callIds,
+            id = null,
+            acronym = null,
+            firstSubmissionFrom = null,
+            firstSubmissionTo = null,
+            lastSubmissionFrom = null,
+            lastSubmissionTo = null,
+            objectives = null,
+            statuses = null,
+            users = null
+        )
+        return projectPersistence.getProjects(Pageable.unpaged(), searchRequest).content.map { it.id }
+    }
+
+    @Transactional(readOnly = true)
+    override fun getAllProjectVersionsByProjectIdIn(projectIds: Set<Long>): List<ProjectVersionData> {
+        return projectVersionPersistence.getAllVersionsByProjectIdIn(projectIds).toDataModel()
+    }
 
     private fun getSpfPartnerBudgetPerPeriod(
         partnerSummary: ProjectPartnerSummary?,

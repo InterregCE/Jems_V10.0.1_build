@@ -34,13 +34,13 @@ internal class ExportProgrammeDataTest : UnitTest() {
         every {
             exportProgrammeDataService.saveExportFileMetaData(PLUGIN_KEY, EXPORT_LANGUAGE, INPUT_LANGUAGE)
         } returns Unit
-        every { exportProgrammeDataService.execute(pluginMockk, EXPORT_LANGUAGE, INPUT_LANGUAGE) } returns Unit
+        every { exportProgrammeDataService.execute(pluginMockk, EXPORT_LANGUAGE, INPUT_LANGUAGE, "") } returns Unit
 
-        exportProgrammeData.export(PLUGIN_KEY, EXPORT_LANGUAGE, INPUT_LANGUAGE)
+        exportProgrammeData.export(PLUGIN_KEY, EXPORT_LANGUAGE, INPUT_LANGUAGE, "")
 
         verifyOrder {
             exportProgrammeDataService.saveExportFileMetaData(PLUGIN_KEY, EXPORT_LANGUAGE, INPUT_LANGUAGE)
-            exportProgrammeDataService.execute(pluginMockk, EXPORT_LANGUAGE, INPUT_LANGUAGE)
+            exportProgrammeDataService.execute(pluginMockk, EXPORT_LANGUAGE, INPUT_LANGUAGE, "")
         }
 
     }

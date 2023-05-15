@@ -11,16 +11,17 @@ const val EXPORT_TIMEOUT_IN_MINUTES = 60L
 
 @Service
 class ExportProgrammeData(
-    private val pluginRegistry: JemsPluginRegistry, private val exportProgrammeDataService: ExportProgrammeDataService
+    private val jemsPluginRegistry: JemsPluginRegistry,
+    private val exportProgrammeDataService: ExportProgrammeDataService
 ) : ExportProgrammeDataInteractor {
 
     @CanExportProgrammeData
     @ExceptionWrapper(ExportProgrammeDataException::class)
-    override fun export(pluginKey: String?, exportLanguage: SystemLanguage, inputLanguage: SystemLanguage) {
-        pluginRegistry.get(ProgrammeDataExportPlugin::class, pluginKey).also {
+    override fun export(pluginKey: String?, exportLanguage: SystemLanguage, inputLanguage: SystemLanguage, pluginOptions: String) {
+        jemsPluginRegistry.get(ProgrammeDataExportPlugin::class, pluginKey).also {
             synchronized(this) {
                 exportProgrammeDataService.saveExportFileMetaData(it.getKey(), exportLanguage, inputLanguage)
             }
-        }.also { exportProgrammeDataService.execute(it, exportLanguage, inputLanguage) }
+        }.also { exportProgrammeDataService.execute(it, exportLanguage, inputLanguage, pluginOptions) }
     }
 }

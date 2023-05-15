@@ -21,9 +21,9 @@ class ExportProgrammeDataService(private val programmeDataPersistence: Programme
 
     @Async
     @Transactional
-    fun execute(plugin: ProgrammeDataExportPlugin, exportLanguage: SystemLanguage, inputLanguage: SystemLanguage) {
+    fun execute(plugin: ProgrammeDataExportPlugin, exportLanguage: SystemLanguage, inputLanguage: SystemLanguage, pluginOptions: String) {
         runCatching {
-            plugin.export(exportLanguage.toDataModel(), inputLanguage.toDataModel()).also { result ->
+            plugin.export(exportLanguage.toDataModel(), inputLanguage.toDataModel(), pluginOptions).also { result ->
                 programmeDataPersistence.saveExportFile(plugin.getKey(), result.content, true).also {
                     programmeDataPersistence.updateExportMetaData(
                         plugin.getKey(), result.fileName, result.contentType,
