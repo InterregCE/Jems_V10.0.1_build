@@ -178,6 +178,7 @@ internal class UpdateProjectReportTest : UnitTest() {
                 createdAt = ZonedDateTime.now(),
                 projectIdentifier = "projectIdentifier",
                 projectAcronym = "projectAcronym",
+                partnerAbbreviation = "P-4",
                 partnerNumber = 4,
                 partnerRole = ProjectPartnerRole.PARTNER,
                 partnerId = 72L

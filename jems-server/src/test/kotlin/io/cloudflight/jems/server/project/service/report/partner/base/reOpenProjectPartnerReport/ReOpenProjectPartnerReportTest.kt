@@ -13,8 +13,8 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRo
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
-import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -33,22 +33,21 @@ import java.time.ZonedDateTime
 
 internal class ReOpenProjectPartnerReportTest : UnitTest() {
 
-    private fun mockResult(status: ReportStatus): ProjectPartnerReportSubmissionSummary {
-        return ProjectPartnerReportSubmissionSummary(
-            id = 160L,
-            reportNumber = 7,
-            status = status,
-            version = "V7.4",
-            firstSubmission = ZonedDateTime.now(),
-            controlEnd = ZonedDateTime.now(),
-            createdAt = ZonedDateTime.now(),
-            projectIdentifier = "0000014",
-            projectAcronym = "PROJ_acr",
-            partnerNumber = 75,
-            partnerRole = ProjectPartnerRole.LEAD_PARTNER,
-            partnerId = 18L,
-        )
-    }
+    private fun mockResult(status: ReportStatus) = ProjectPartnerReportSubmissionSummary(
+        id = 160L,
+        reportNumber = 7,
+        status = status,
+        version = "V7.4",
+        firstSubmission = ZonedDateTime.now(),
+        controlEnd = ZonedDateTime.now(),
+        createdAt = ZonedDateTime.now(),
+        projectIdentifier = "0000014",
+        projectAcronym = "PROJ_acr",
+        partnerNumber = 75,
+        partnerRole = ProjectPartnerRole.LEAD_PARTNER,
+        partnerId = 18L,
+        partnerAbbreviation = "LP-75"
+    )
 
     @MockK private lateinit var reportPersistence: ProjectPartnerReportPersistence
     @MockK private lateinit var partnerPersistence: PartnerPersistence

@@ -249,6 +249,7 @@ class GlobalProjectNotificationServiceTest : UnitTest() {
             NotificationVariable.PartnerId to 91L,
             NotificationVariable.PartnerRole to ProjectPartnerRole.LEAD_PARTNER,
             NotificationVariable.PartnerNumber to 1,
+            NotificationVariable.PartnerAbbreviation to "LP-1",
             NotificationVariable.PartnerReportId to 92L,
             NotificationVariable.PartnerReportNumber to 1,
         )

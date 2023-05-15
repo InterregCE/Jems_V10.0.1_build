@@ -81,6 +81,7 @@ internal class SubmitProjectReportTest : UnitTest() {
             createdAt = ZonedDateTime.now(),
             projectIdentifier = "not-needed",
             projectAcronym = "not-needed-as-well",
+            partnerAbbreviation = "LP-5",
             partnerNumber = 5,
             partnerRole = ProjectPartnerRole.LEAD_PARTNER,
             partnerId = 1L

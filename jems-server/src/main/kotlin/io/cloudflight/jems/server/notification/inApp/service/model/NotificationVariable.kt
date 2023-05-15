@@ -7,12 +7,13 @@ enum class NotificationVariable(val variable: String) {
     CallName("callName"),
 
     ProjectId("projectId"),
-    ProjectIdentifier("projectCustomIdentifier"),
+    ProjectIdentifier("projectIdentifier"),
     ProjectAcronym("projectAcronym"),
 
     PartnerId("partnerId"),
     PartnerRole("partnerRole"),
     PartnerNumber("partnerNumber"),
+    PartnerAbbreviation("partnerName"),
 
     PartnerReportId("partnerReportId"),
     PartnerReportNumber("partnerReportNumber"),
@@ -35,6 +36,7 @@ enum class NotificationVariable(val variable: String) {
             PartnerId,
             PartnerRole,
             PartnerNumber,
+            PartnerAbbreviation,
             PartnerReportId,
             PartnerReportNumber,
         )

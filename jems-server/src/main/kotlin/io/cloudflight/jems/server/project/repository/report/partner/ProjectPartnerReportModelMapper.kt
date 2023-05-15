@@ -107,6 +107,7 @@ fun ProjectPartnerReportEntity.toSubmissionSummary() =
         createdAt = createdAt,
         projectIdentifier = identification.projectIdentifier,
         projectAcronym = identification.projectAcronym,
+        partnerAbbreviation = identification.partnerAbbreviation,
         partnerNumber = identification.partnerNumber,
         partnerRole = identification.partnerRole,
         partnerId = partnerId
