@@ -165,33 +165,6 @@ internal class UpdateProjectPartnerReportProcurementTest : UnitTest() {
     }
 
     @Test
-    fun `update - invalid currencies`() {
-        val report = mockk<ProjectPartnerReport>()
-        every { report.id } returns 45L
-        every { report.status } returns ReportStatus.Draft
-        every { report.identification.currency } returns "EUR"
-
-        every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = 45L) } returns report
-        every { reportPersistence.getReportIdsBefore(PARTNER_ID, beforeReportId = 45L) } returns emptySet()
-        every { reportProcurementPersistence.getProcurementContractNamesForReportIds(setOf(45L)) } returns emptySet()
-
-        val change = ProjectPartnerReportProcurementChange(
-            id = 47L,
-            contractName = "",
-            referenceNumber = "",
-            contractDate = NEXT_WEEK,
-            contractType = "",
-            contractAmount = BigDecimal.ZERO,
-            currencyCode = "HUF",
-            supplierName = "",
-            vatNumber = "",
-            comment = "",
-        )
-
-        assertThrows<InvalidCurrency> { interactor.update(PARTNER_ID, reportId = 45L, change) }
-    }
-
-    @Test
     fun `update - contract name is not unique`() {
         val report = mockk<ProjectPartnerReport>()
         every { report.id } returns 48L

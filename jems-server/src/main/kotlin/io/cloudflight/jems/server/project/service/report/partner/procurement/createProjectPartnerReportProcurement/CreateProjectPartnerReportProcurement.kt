@@ -8,7 +8,6 @@ import io.cloudflight.jems.server.project.service.report.model.partner.procureme
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurementChange
 import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectPartnerReportProcurementPersistence
 import io.cloudflight.jems.server.project.service.report.partner.procurement.getStaticValidationResults
-import io.cloudflight.jems.server.project.service.report.partner.procurement.validateAllowedCurrenciesIfEur
 import io.cloudflight.jems.server.project.service.report.partner.procurement.validateContractNameIsUnique
 import io.cloudflight.jems.server.project.service.report.partner.procurement.validateMaxAmountOfProcurements
 import org.springframework.stereotype.Service
@@ -34,8 +33,6 @@ class CreateProjectPartnerReportProcurement(
         val report = reportPersistence.getPartnerReportById(partnerId = partnerId, reportId)
         if (report.status.isClosed())
             throw ReportAlreadyClosed()
-
-        procurementData.validateAllowedCurrenciesIfEur(report.identification.currency, { InvalidCurrency(it) })
 
         validateMaxAmountOfProcurements(
             amount = reportProcurementPersistence.countProcurementsForPartner(partnerId = partnerId),

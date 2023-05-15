@@ -36,14 +36,6 @@ fun ProjectPartnerReportProcurementChange.getStaticValidationResults(validator: 
     validator.onlyValidCurrencies(currencyCodes = setOf(currencyCode).filterNotNullTo(HashSet()), "currencyCode"),
 )
 
-fun ProjectPartnerReportProcurementChange.validateAllowedCurrenciesIfEur(
-    partnerCurrency: String?,
-    exceptionResolver: (String) -> Exception,
-) {
-    if (partnerCurrency == "EUR" && currencyCode != partnerCurrency)
-        throw exceptionResolver.invoke(currencyCode)
-}
-
 fun ProjectPartnerReportProcurementChange.validateContractNameIsUnique(
     currentProcurementId: Long,
     existingContractNames: Set<Pair<Long, String>>,

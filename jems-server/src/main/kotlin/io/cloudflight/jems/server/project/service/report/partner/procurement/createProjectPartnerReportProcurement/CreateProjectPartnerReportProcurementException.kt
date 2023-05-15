@@ -37,13 +37,3 @@ class ContractNameIsNotUnique(notUniqueName: String) : ApplicationUnprocessableE
     formErrors = mapOf(notUniqueName to I18nMessage(i18nKey = "not.unique")),
     message = "duplicate name: $notUniqueName",
 )
-
-class InvalidCurrency(invalidCurrency: String) : ApplicationNotFoundException(
-    code = "$CREATE_PROJECT_PARTNER_REPORT_PROCUREMENT_ERROR_CODE_PREFIX-004",
-    i18nMessage = I18nMessage(
-        i18nKey = "$CREATE_PROJECT_PARTNER_REPORT_PROCUREMENT_ERROR_KEY_PREFIX.invalid.currency",
-        i18nArguments = mapOf(
-            "invalid" to invalidCurrency,
-        ),
-    ),
-)
