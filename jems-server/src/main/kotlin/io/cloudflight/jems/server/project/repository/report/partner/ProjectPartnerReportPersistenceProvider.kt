@@ -19,33 +19,18 @@ class ProjectPartnerReportPersistenceProvider(
 ) : ProjectPartnerReportPersistence {
 
     @Transactional
-    override fun submitReportById(partnerId: Long, reportId: Long, submissionTime: ZonedDateTime) =
+    override fun updateStatusAndTimes(
+        partnerId: Long,
+        reportId: Long,
+        status: ReportStatus,
+        firstSubmissionTime: ZonedDateTime?,
+        lastReSubmissionTime: ZonedDateTime?,
+    ) =
         partnerReportRepository.findByIdAndPartnerId(id = reportId, partnerId = partnerId)
             .apply {
-                status = this.status.submitStatus()
-                firstSubmission = submissionTime
-            }.toSubmissionSummary()
-
-    @Transactional
-    override fun reSubmitReportById(partnerId: Long, reportId: Long, submissionTime: ZonedDateTime) =
-        partnerReportRepository.findByIdAndPartnerId(id = reportId, partnerId = partnerId)
-            .apply {
-                status = this.status.submitStatus()
-                lastReSubmission = submissionTime
-            }.toSubmissionSummary()
-
-    @Transactional
-    override fun startControlOnReportById(partnerId: Long, reportId: Long) =
-        partnerReportRepository.findByIdAndPartnerId(id = reportId, partnerId = partnerId)
-            .apply {
-                status = ReportStatus.InControl
-            }.toSubmissionSummary()
-
-    @Transactional
-    override fun reOpenReportById(partnerId: Long, reportId: Long, newStatus: ReportStatus) =
-        partnerReportRepository.findByIdAndPartnerId(id = reportId, partnerId = partnerId)
-            .apply {
-                status = newStatus
+                this.status = status
+                firstSubmission = firstSubmissionTime ?: this.firstSubmission
+                lastReSubmission = lastReSubmissionTime ?: this.lastReSubmission
             }.toSubmissionSummary()
 
     @Transactional
@@ -85,7 +70,7 @@ class ProjectPartnerReportPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getSubmittedPartnerReportIds(partnerId: Long): Set<Long> =
-        partnerReportRepository.findAllIdsByPartnerIdAndStatusIn(partnerId, ReportStatus.SUBMITTED_STATUSES)
+        partnerReportRepository.findAllIdsByPartnerIdAndStatusIn(partnerId, ReportStatus.FINANCIALLY_CLOSED_STATUSES)
 
     @Transactional(readOnly = true)
     override fun getLastCertifiedPartnerReportId(partnerId: Long): Long? =

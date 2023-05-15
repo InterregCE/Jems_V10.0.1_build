@@ -94,7 +94,7 @@ internal class ReOpenProjectPartnerReportTest : UnitTest() {
 
         val newStatus = slot<ReportStatus>()
         val mockResult = mockResult(expectedStatus)
-        every { reportPersistence.reOpenReportById(18L, reportId = 160L, capture(newStatus)) } returns mockResult
+        every { reportPersistence.updateStatusAndTimes(18L, reportId = 160L, capture(newStatus)) } returns mockResult
 
         val eventAudit = slot<AuditCandidateEvent>()
         val eventNotif = slot<PartnerReportStatusChanged>()

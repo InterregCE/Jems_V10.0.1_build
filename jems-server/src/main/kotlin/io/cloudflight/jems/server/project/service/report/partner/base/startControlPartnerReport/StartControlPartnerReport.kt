@@ -44,16 +44,18 @@ class StartControlPartnerReport(
         val lastCertifiedReportId = reportPersistence.getLastCertifiedPartnerReportId(partnerId)
         controlOverviewPersistence.createPartnerControlReportOverview(partnerId, reportId, lastCertifiedReportId)
 
-        val sampledExpenditureIds = getSampledExpenditureIds(partnerId, reportId)
-        if (sampledExpenditureIds.isNotEmpty())
-            expenditurePersistence.markAsSampledAndLock(sampledExpenditureIds)
+        // perform auto-sampling
+        expenditurePersistence.markAsSampledAndLock(
+            expenditureIds = getSampledExpenditureIdsFromPlugin(partnerId, reportId = reportId)
+        )
 
         val institution = controlInstitutionPersistence.getControllerInstitutions(setOf(partnerId)).values.firstOrNull()
         reportDesignatedControllerPersistence.create(partnerId, reportId, institution!!.id)
 
-        return reportPersistence.startControlOnReportById(
+        return reportPersistence.updateStatusAndTimes(
             partnerId = partnerId,
             reportId = reportId,
+            status = ReportStatus.InControl,
         ).also {
             val projectId = partnerPersistence.getProjectIdForPartnerId(id = partnerId, it.version)
             val projectSummary = projectPersistence.getProjectSummary(projectId)
@@ -68,7 +70,7 @@ class StartControlPartnerReport(
             throw ReportNotSubmitted()
     }
 
-    private fun getSampledExpenditureIds(partnerId: Long, reportId: Long): Set<Long> {
+    private fun getSampledExpenditureIdsFromPlugin(partnerId: Long, reportId: Long): Set<Long> {
         val pluginKey = callPersistence.getCallSimpleByPartnerId(partnerId).controlReportSamplingCheckPluginKey
         val plugin = jemsPluginRegistry.get(ControlReportSamplingCheckPlugin::class, key = pluginKey)
         return runCatching { plugin.check(partnerId = partnerId, reportId = reportId).sampledExpenditureIds }

@@ -35,13 +35,9 @@ class ReOpenProjectPartnerReport(
         validateReportCanBeReOpened(reportToBeReOpen)
 
         val isLastReport = reportId == reportPersistence.getCurrentLatestReportForPartner(partnerId = partnerId)!!.id
-        val status =
-            if (reportToBeReOpen.status == Submitted)
-                if (isLastReport) ReOpenSubmittedLast else ReOpenSubmittedLimited
-            else
-                if (isLastReport) ReOpenInControlLast else ReOpenInControlLimited
+        val status = calculateNewStatus(reportToBeReOpen.status, isLastReport)
 
-        return reportPersistence.reOpenReportById(partnerId = partnerId, reportId = reportId, status).also {
+        return reportPersistence.updateStatusAndTimes(partnerId = partnerId, reportId = reportId, status).also {
             val projectId = partnerPersistence.getProjectIdForPartnerId(id = partnerId, it.version)
             val projectSummary = projectPersistence.getProjectSummary(projectId)
 
@@ -54,5 +50,11 @@ class ReOpenProjectPartnerReport(
         if (report.status.canNotBeReOpened())
             throw ReportCanNotBeReOpened()
     }
+
+    private fun calculateNewStatus(oldStatus: ReportStatus, isLastReport: Boolean) =
+        if (oldStatus == Submitted)
+            if (isLastReport) ReOpenSubmittedLast else ReOpenSubmittedLimited
+        else
+            if (isLastReport) ReOpenInControlLast else ReOpenInControlLimited
 
 }

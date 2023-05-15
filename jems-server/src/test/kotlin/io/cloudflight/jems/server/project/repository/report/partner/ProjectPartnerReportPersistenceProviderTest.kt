@@ -27,7 +27,6 @@ import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPa
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
 import io.cloudflight.jems.server.project.service.report.model.project.certificate.PartnerReportCertificate
-import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -35,8 +34,6 @@ import io.mockk.mockk
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.math.BigDecimal.*
@@ -258,14 +255,14 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
     lateinit var persistence: ProjectPartnerReportPersistenceProvider
 
     @Test
-    fun submitReportById() {
+    fun `updateStatusAndTimes - update status and first submission`() {
         val NOW = ZonedDateTime.now()
         val YESTERDAY = ZonedDateTime.now().minusDays(1)
 
-        val report = reportEntity(id = 45L, YESTERDAY)
+        val report = reportEntity(id = 45L, YESTERDAY, null, ReportStatus.Draft)
         every { partnerReportRepository.findByIdAndPartnerId(45L, 10L) } returns report
 
-        val submittedReport = persistence.submitReportById(10L, 45L, NOW)
+        val submittedReport = persistence.updateStatusAndTimes(10L, 45L, ReportStatus.Submitted, NOW)
 
         assertThat(submittedReport).isEqualTo(
             draftReportSubmissionEntity(id = 45L, YESTERDAY).copy(
@@ -273,61 +270,43 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
                 firstSubmission = NOW,
             )
         )
+        assertThat(report.lastReSubmission).isEqualTo(LAST_MONTH)
     }
 
-    @ParameterizedTest(name = "reSubmitReportById - current: {0}")
-    @CsvSource(
-        value = [
-            "ReOpenSubmittedLast,Submitted",
-            "ReOpenSubmittedLimited,Submitted",
-            "ReOpenInControlLast,InControl",
-            "ReOpenInControlLimited,InControl",
-        ]
-    )
-    fun reSubmitReportById(current: ReportStatus, expected: ReportStatus) {
+    @Test
+    fun `updateStatusAndTimes - update status and last submission`() {
         val NOW = ZonedDateTime.now()
         val YESTERDAY = ZonedDateTime.now().minusDays(1)
 
-        val report = reportEntity(id = 46L, YESTERDAY, null, current)
-        every { partnerReportRepository.findByIdAndPartnerId(46L, 10L) } returns report
+        val report = reportEntity(id = 46L, YESTERDAY, null, ReportStatus.ReOpenInControlLast)
+        every { partnerReportRepository.findByIdAndPartnerId(46L, 11L) } returns report
 
-        val reSubmittedReport = persistence.reSubmitReportById(10L, 46L, NOW)
+        val submittedReport = persistence.updateStatusAndTimes(11L, 46L, ReportStatus.InControl, null, NOW)
 
-        assertThat(reSubmittedReport).isEqualTo(
+        assertThat(submittedReport).isEqualTo(
             draftReportSubmissionEntity(id = 46L, YESTERDAY).copy(
-                status = expected,
-                firstSubmission = LAST_YEAR,
+                status = ReportStatus.InControl,
             )
         )
+        assertThat(report.firstSubmission).isEqualTo(LAST_YEAR)
         assertThat(report.lastReSubmission).isEqualTo(NOW)
     }
 
     @Test
-    fun startControlOnReportById() {
+    fun `updateStatusAndTimes - update status and no time change`() {
+        val NOW = ZonedDateTime.now()
         val YESTERDAY = ZonedDateTime.now().minusDays(1)
 
         val report = reportEntity(id = 47L, YESTERDAY, null, ReportStatus.Submitted)
-        every { partnerReportRepository.findByIdAndPartnerId(47L, 15L) } returns report
+        every { partnerReportRepository.findByIdAndPartnerId(47L, 12L) } returns report
 
-        assertThat(persistence.startControlOnReportById(15L, 47L)).isEqualTo(
-            draftReportSubmissionEntity(id = 47L, YESTERDAY).copy(
-                status = ReportStatus.InControl,
-            )
+        val startedControlReport = persistence.updateStatusAndTimes(12L, 47L, ReportStatus.InControl, null, null)
+
+        assertThat(startedControlReport).isEqualTo(
+            draftReportSubmissionEntity(id = 47L, YESTERDAY).copy(status = ReportStatus.InControl)
         )
-    }
-
-    @Test
-    fun reOpenReportById() {
-        val YESTERDAY = ZonedDateTime.now().minusDays(1)
-
-        val report = reportEntity(id = 47L, YESTERDAY, null, ReportStatus.Submitted)
-        every { partnerReportRepository.findByIdAndPartnerId(47L, 17L) } returns report
-
-        assertThat(persistence.reOpenReportById(17L, 47L, ReportStatus.ReOpenSubmittedLast)).isEqualTo(
-            draftReportSubmissionEntity(id = 47L, YESTERDAY).copy(
-                status = ReportStatus.ReOpenSubmittedLast,
-            )
-        )
+        assertThat(report.firstSubmission).isEqualTo(LAST_YEAR)
+        assertThat(report.lastReSubmission).isEqualTo(LAST_MONTH)
     }
 
     @Test
@@ -410,7 +389,14 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
     @Test
     fun getSubmittedPartnerReportIds() {
         every { partnerReportRepository
-            .findAllIdsByPartnerIdAndStatusIn(PARTNER_ID, setOf(ReportStatus.Submitted, ReportStatus.InControl, ReportStatus.Certified))
+            .findAllIdsByPartnerIdAndStatusIn(PARTNER_ID, setOf(
+                // it's important to verify those statuses, as they are considered as "closed" financially-wise
+                ReportStatus.Submitted,
+                ReportStatus.ReOpenSubmittedLimited,
+                ReportStatus.InControl,
+                ReportStatus.ReOpenInControlLimited,
+                ReportStatus.Certified,
+            ))
         } returns setOf(18L)
         assertThat(persistence.getSubmittedPartnerReportIds(PARTNER_ID)).containsExactly(18L)
     }

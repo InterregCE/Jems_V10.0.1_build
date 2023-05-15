@@ -30,9 +30,10 @@ enum class ReportStatus {
     }
 
     companion object {
-        val SUBMITTED_STATUSES = setOf(Submitted, InControl, Certified)
-        val CONTROL_STATUSES = setOf(InControl, ReOpenInControlLast, ReOpenInControlLimited, Certified)
-        val CAN_BE_OPENED_STATUSES = setOf(Submitted, InControl)
+        private val SUBMITTED_STATUSES = setOf(Submitted, InControl, Certified)
+        val FINANCIALLY_CLOSED_STATUSES = SUBMITTED_STATUSES union setOf(ReOpenInControlLimited, ReOpenSubmittedLimited)
+        private val CONTROL_STATUSES = setOf(InControl, ReOpenInControlLast, ReOpenInControlLimited, Certified)
+        private val CAN_BE_OPENED_STATUSES = setOf(Submitted, InControl)
         val ARE_LAST_OPEN_STATUSES = setOf(ReOpenSubmittedLast, ReOpenInControlLast)
     }
 
