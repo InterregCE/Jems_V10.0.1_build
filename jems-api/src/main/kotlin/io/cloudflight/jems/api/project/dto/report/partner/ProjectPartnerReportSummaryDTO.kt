@@ -11,6 +11,7 @@ data class ProjectPartnerReportSummaryDTO(
     val status: ReportStatusDTO,
     val linkedFormVersion: String,
     val firstSubmission: ZonedDateTime?,
+    val lastReSubmission: ZonedDateTime?,
     val controlEnd: ZonedDateTime?,
     val createdAt: ZonedDateTime,
     val startDate: LocalDate?,
@@ -22,5 +23,6 @@ data class ProjectPartnerReportSummaryDTO(
     val projectReportNumber: Int?,
 
     val totalEligibleAfterControl: BigDecimal?,
+    val totalAfterSubmitted: BigDecimal?,
     val deletable: Boolean,
 )

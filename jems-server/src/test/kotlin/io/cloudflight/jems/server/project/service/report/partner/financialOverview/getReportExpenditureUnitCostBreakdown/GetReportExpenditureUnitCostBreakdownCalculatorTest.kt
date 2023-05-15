@@ -205,7 +205,7 @@ internal class GetReportExpenditureUnitCostBreakdownCalculatorTest : UnitTest() 
     }
 
     @ParameterizedTest(name = "get open (status {0})")
-    @EnumSource(value = ReportStatus::class, names = ["Draft"])
+    @EnumSource(value = ReportStatus::class, names = ["Draft", "ReOpenSubmittedLast", "ReOpenInControlLast"])
     fun getOpen(status: ReportStatus) {
         val reportId = 97658L
         every { reportPersistence.getPartnerReportStatusAndVersion(partnerId = PARTNER_ID, reportId) } returns report(status)
@@ -238,7 +238,7 @@ internal class GetReportExpenditureUnitCostBreakdownCalculatorTest : UnitTest() 
     }
 
     @ParameterizedTest(name = "get closed (status {0})")
-    @EnumSource(value = ReportStatus::class, names = ["Draft"], mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = ReportStatus::class, names = ["Draft", "ReOpenSubmittedLast", "ReOpenInControlLast"], mode = EnumSource.Mode.EXCLUDE)
     fun getClosed(status: ReportStatus) {
         val reportId = 97658L
         every { reportPersistence.getPartnerReportStatusAndVersion(partnerId = PARTNER_ID, reportId) } returns report(status)

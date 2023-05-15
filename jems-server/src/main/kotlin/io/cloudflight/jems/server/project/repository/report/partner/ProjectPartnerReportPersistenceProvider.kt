@@ -2,7 +2,6 @@ package io.cloudflight.jems.server.project.repository.report.partner
 
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
-import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.certificate.PartnerReportCertificate
@@ -20,15 +19,19 @@ class ProjectPartnerReportPersistenceProvider(
 ) : ProjectPartnerReportPersistence {
 
     @Transactional
-    override fun submitReportById(
-        partnerId: Long,
-        reportId: Long,
-        submissionTime: ZonedDateTime
-    ): ProjectPartnerReportSubmissionSummary =
+    override fun submitReportById(partnerId: Long, reportId: Long, submissionTime: ZonedDateTime) =
         partnerReportRepository.findByIdAndPartnerId(id = reportId, partnerId = partnerId)
             .apply {
-                status = ReportStatus.Submitted
+                status = this.status.submitStatus()
                 firstSubmission = submissionTime
+            }.toSubmissionSummary()
+
+    @Transactional
+    override fun reSubmitReportById(partnerId: Long, reportId: Long, submissionTime: ZonedDateTime) =
+        partnerReportRepository.findByIdAndPartnerId(id = reportId, partnerId = partnerId)
+            .apply {
+                status = this.status.submitStatus()
+                lastReSubmission = submissionTime
             }.toSubmissionSummary()
 
     @Transactional
@@ -36,6 +39,13 @@ class ProjectPartnerReportPersistenceProvider(
         partnerReportRepository.findByIdAndPartnerId(id = reportId, partnerId = partnerId)
             .apply {
                 status = ReportStatus.InControl
+            }.toSubmissionSummary()
+
+    @Transactional
+    override fun reOpenReportById(partnerId: Long, reportId: Long, newStatus: ReportStatus) =
+        partnerReportRepository.findByIdAndPartnerId(id = reportId, partnerId = partnerId)
+            .apply {
+                status = newStatus
             }.toSubmissionSummary()
 
     @Transactional
@@ -88,6 +98,10 @@ class ProjectPartnerReportPersistenceProvider(
     @Transactional(readOnly = true)
     override fun exists(partnerId: Long, reportId: Long) =
         partnerReportRepository.existsByPartnerIdAndId(partnerId = partnerId, id = reportId)
+
+    @Transactional(readOnly = true)
+    override fun existsByStatusIn(partnerId: Long, statuses: Set<ReportStatus>) =
+        partnerReportRepository.existsByPartnerIdAndStatusIn(partnerId, statuses)
 
     @Transactional(readOnly = true)
     override fun getCurrentLatestReportForPartner(partnerId: Long): ProjectPartnerReport? =

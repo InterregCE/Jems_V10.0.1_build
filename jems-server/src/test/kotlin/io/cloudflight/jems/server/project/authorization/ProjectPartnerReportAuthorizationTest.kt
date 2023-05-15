@@ -18,6 +18,8 @@ import io.cloudflight.jems.server.project.service.report.model.partner.ReportSta
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectReportingEdit
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectReportingView
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectReportingReOpen
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectRetrieve
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -119,7 +121,7 @@ internal class ProjectPartnerReportAuthorizationTest : UnitTest() {
     @ValueSource(booleans = [true, false])
     fun `assigned monitor user with permission can edit`(isOpen: Boolean) {
         val report = mockk<ProjectPartnerReport>()
-        every { report.status.isOpen() } returns isOpen
+        every { report.status.isClosed() } returns !isOpen
         every { reportPersistence.getPartnerReportById(PARTNER_ID, 17L) } returns report
 
         every { currentUser.hasPermission(ProjectReportingEdit) } returns true
@@ -157,6 +159,23 @@ internal class ProjectPartnerReportAuthorizationTest : UnitTest() {
         every { securityService.getUserIdOrThrow() } returns 3205L
         every { partnerCollaboratorPersistence.findByUserIdAndPartnerId(userId = 3205L, PARTNER_ID) } returns Optional.empty()
         assertThat(reportAuthorization.canViewPartnerReport(PARTNER_ID)).isFalse
+    }
+
+    @Test
+    fun `canReOpenPartnerReport - assigned user`() {
+        every { partnerPersistence.getProjectIdForPartnerId(41L) } returns 281L
+        every { currentUser.hasPermission(ProjectReportingReOpen) } returns true
+        every { currentUser.user.assignedProjects } returns setOf(281)
+        assertThat(reportAuthorization.canReOpenPartnerReport(41L)).isTrue()
+    }
+
+    @Test
+    fun `canReOpenPartnerReport - global view on AF`() {
+        every { partnerPersistence.getProjectIdForPartnerId(42L) } returns 282L
+        every { currentUser.hasPermission(ProjectReportingReOpen) } returns true
+        every { currentUser.user.assignedProjects } returns emptySet()
+        every { currentUser.hasPermission(ProjectRetrieve) } returns true
+        assertThat(reportAuthorization.canReOpenPartnerReport(42L)).isTrue()
     }
 
     @ParameterizedTest(name = "control report - user can view - because is controller with {0}")

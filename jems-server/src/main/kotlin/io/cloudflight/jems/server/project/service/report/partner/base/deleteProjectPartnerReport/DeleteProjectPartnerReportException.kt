@@ -20,10 +20,10 @@ class ThereIsNoAnyReportForPartner : ApplicationNotFoundException(
     i18nMessage = I18nMessage("$DELETE_PROJECT_PARTNER_REPORT_ERROR_KEY_PREFIX.no.report.for.partner"),
 )
 
-class OnlyLastOpenReportCanBeDeleted(lastOpenReport: ProjectPartnerReport) : ApplicationUnprocessableException(
+class OnlyLastInitiallyOpenReportCanBeDeleted(lastOpenReport: ProjectPartnerReport) : ApplicationUnprocessableException(
     code = "$DELETE_PROJECT_PARTNER_REPORT_ERROR_CODE_PREFIX-002",
     i18nMessage = I18nMessage(
-        i18nKey = "$DELETE_PROJECT_PARTNER_REPORT_ERROR_KEY_PREFIX.only.last.open.report.can.be.deleted",
+        i18nKey = "$DELETE_PROJECT_PARTNER_REPORT_ERROR_KEY_PREFIX.only.last.initially.open.report.can.be.deleted",
         i18nArguments = mapOf("lastReport" to "R.${lastOpenReport.reportNumber}"),
     ),
 )

@@ -48,6 +48,7 @@ fun ReportSummary.toModelSummary() =
         status = status,
         version = version,
         firstSubmission = firstSubmission,
+        lastReSubmission = lastReSubmission,
         controlEnd = controlEnd,
         createdAt = createdAt,
         startDate = startDate,
@@ -56,6 +57,7 @@ fun ReportSummary.toModelSummary() =
         projectReportId = projectReportId,
         projectReportNumber = projectReportNumber,
         totalEligibleAfterControl = totalEligibleAfterControl,
+        totalAfterSubmitted = totalAfterSubmitted,
         deletable = false,
     )
 
@@ -81,6 +83,7 @@ fun ProjectPartnerReportEntity.toModelSummaryAfterCreate() =
         status = status,
         version = applicationFormVersion,
         firstSubmission = firstSubmission,
+        lastReSubmission = lastReSubmission,
         controlEnd = controlEnd,
         createdAt = createdAt,
         startDate = null,
@@ -89,6 +92,7 @@ fun ProjectPartnerReportEntity.toModelSummaryAfterCreate() =
         projectReportId = projectReport?.id,
         projectReportNumber = projectReport?.number,
         totalEligibleAfterControl = null,
+        totalAfterSubmitted = null,
         deletable = false,
     )
 
@@ -196,6 +200,7 @@ fun ProjectPartnerReportCreate.toEntity(
         currency = identification.currency
     ),
     projectReport = null,
+    lastReSubmission = null
 )
 
 fun List<PreviouslyReportedFund>.toEntity(

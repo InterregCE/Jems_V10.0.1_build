@@ -233,7 +233,7 @@ class GetReportExpenditureInvestmentsBreakdownCalculatorTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "get open (status {0})")
-    @EnumSource(value = ReportStatus::class, names = ["Draft"])
+    @EnumSource(value = ReportStatus::class, names = ["Draft", "ReOpenSubmittedLast", "ReOpenInControlLast"])
     fun getOpen(status: ReportStatus) {
         val reportId = 1L
         val partnerId = 2L
@@ -266,7 +266,7 @@ class GetReportExpenditureInvestmentsBreakdownCalculatorTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "get closed (status {0})")
-    @EnumSource(value = ReportStatus::class, names = ["Draft"], mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = ReportStatus::class, names = ["Draft", "ReOpenSubmittedLast", "ReOpenInControlLast"], mode = EnumSource.Mode.EXCLUDE)
     fun getClosed(status: ReportStatus) {
         val reportId = 3L
         val partnerId = 4L

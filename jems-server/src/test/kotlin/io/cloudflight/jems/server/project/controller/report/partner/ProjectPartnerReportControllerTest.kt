@@ -49,11 +49,13 @@ import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPa
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
+import io.cloudflight.jems.server.project.service.report.partner.base.canCreateProjectPartnerReport.CanCreateProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.createProjectPartnerReport.CreateProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.deleteProjectPartnerReport.DeleteProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.finalizeControlPartnerReport.FinalizeControlPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.getProjectPartnerReport.GetProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.getProjectReportPartnerList.GetProjectReportPartnerListInteractor
+import io.cloudflight.jems.server.project.service.report.partner.base.reOpenProjectPartnerReport.ReOpenProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.runPartnerReportPreSubmissionCheck.RunPartnerReportPreSubmissionCheckInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.startControlPartnerReport.StartControlPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.submitProjectPartnerReport.SubmitProjectPartnerReportInteractor
@@ -100,6 +102,7 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
             status = ReportStatus.Draft,
             version = "6.1",
             firstSubmission = null,
+            lastReSubmission = null,
             controlEnd = null,
             createdAt = YESTERDAY,
             startDate = LAST_WEEK,
@@ -114,6 +117,7 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
             projectReportId = 758L,
             projectReportNumber = 759,
             totalEligibleAfterControl = BigDecimal.TEN,
+            totalAfterSubmitted = BigDecimal.ONE,
             deletable = false,
         )
 
@@ -123,6 +127,7 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
             status = ReportStatusDTO.Draft,
             linkedFormVersion = reportSummary.version,
             firstSubmission = null,
+            lastReSubmission = null,
             controlEnd = null,
             createdAt = reportSummary.createdAt,
             startDate = reportSummary.startDate,
@@ -137,6 +142,7 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
             projectReportId = 758L,
             projectReportNumber = 759,
             totalEligibleAfterControl = BigDecimal.TEN,
+            totalAfterSubmitted = BigDecimal.ONE,
             deletable = false,
         )
 
@@ -263,25 +269,31 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
     lateinit var getPartnerList: GetProjectReportPartnerListInteractor
 
     @MockK
+    lateinit var getPartnerReport: GetProjectPartnerReportInteractor
+
+    @MockK
     lateinit var createPartnerReport: CreateProjectPartnerReportInteractor
 
     @MockK
-    lateinit var submitPartnerReport: SubmitProjectPartnerReportInteractor
+    lateinit var canCreatePartnerReport: CanCreateProjectPartnerReportInteractor
 
     @MockK
     lateinit var runPreCheckPartnerReport: RunPartnerReportPreSubmissionCheckInteractor
 
     @MockK
-    lateinit var runPreCheckPartnerControlReport: RunControlPartnerReportPreSubmissionCheckInteractor
+    lateinit var submitPartnerReport: SubmitProjectPartnerReportInteractor
+
+    @MockK
+    lateinit var reOpenPartnerReport: ReOpenProjectPartnerReportInteractor
 
     @MockK
     lateinit var startControlReport: StartControlPartnerReportInteractor
 
     @MockK
-    private lateinit var finalizeControlReport: FinalizeControlPartnerReportInteractor
+    lateinit var runPreCheckPartnerControlReport: RunControlPartnerReportPreSubmissionCheckInteractor
 
     @MockK
-    lateinit var getPartnerReport: GetProjectPartnerReportInteractor
+    private lateinit var finalizeControlReport: FinalizeControlPartnerReportInteractor
 
     @MockK
     lateinit var downloadReportFile: DownloadProjectPartnerReportFileInteractor
@@ -328,13 +340,14 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
 
     @Test
     fun getProjectPartnerReports() {
-        every { getPartnerReport.findAll(14, Pageable.unpaged()) } returns PageImpl(listOf(reportSummary))
+        val report = reportSummary.copy(firstSubmission = YESTERDAY, lastReSubmission = TODAY)
+        every { getPartnerReport.findAll(14, Pageable.unpaged()) } returns PageImpl(listOf(report))
         assertThat(
             controller.getProjectPartnerReports(
                 14,
                 Pageable.unpaged()
             ).content
-        ).containsExactly(reportSummaryDTO)
+        ).containsExactly(reportSummaryDTO.copy(firstSubmission = YESTERDAY, lastReSubmission = TODAY))
     }
 
     @Test
@@ -361,6 +374,14 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
                 )
             )
         )
+    }
+
+    @Test
+    fun canCreateProjectPartnerReport() {
+        every { canCreatePartnerReport.canCreateReportFor(20L) } returns true
+        every { canCreatePartnerReport.canCreateReportFor(21L) } returns false
+        assertThat(controller.canReportBeCreated(20L)).isTrue()
+        assertThat(controller.canReportBeCreated(21L)).isFalse()
     }
 
     @Test
@@ -408,6 +429,12 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
     fun submitProjectPartnerReport() {
         every { submitPartnerReport.submit(18, 310) } returns ReportStatus.Submitted
         assertThat(controller.submitProjectPartnerReport(18, 310)).isEqualTo(ReportStatusDTO.Submitted)
+    }
+
+    @Test
+    fun reOpenProjectPartnerReport() {
+        every { reOpenPartnerReport.reOpen(17, 311) } returns ReportStatus.ReOpenInControlLast
+        assertThat(controller.reOpenProjectPartnerReport(17, 311)).isEqualTo(ReportStatusDTO.ReOpenInControlLast)
     }
 
     @Test

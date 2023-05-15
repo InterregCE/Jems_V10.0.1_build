@@ -29,7 +29,7 @@ class GetReportExpenditureCoFinancingBreakdownCalculator(
         val data = reportExpenditureCoFinancingPersistence.getCoFinancing(partnerId = partnerId, reportId = reportId)
         val coFinancing = data.toLinesModel()
 
-        if (report.status.isOpen()) {
+        if (report.status.isOpenForNumbersChanges()) {
             val expenditureTotal = reportExpenditureCostCategoryCalculatorService
                 .getSubmittedOrCalculateCurrent(partnerId = partnerId, reportId = reportId).total
             val contributions = reportContributionPersistence

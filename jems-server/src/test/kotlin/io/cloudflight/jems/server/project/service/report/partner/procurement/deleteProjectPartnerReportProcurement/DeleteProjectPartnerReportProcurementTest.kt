@@ -36,7 +36,7 @@ internal class DeleteProjectPartnerReportProcurementTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "delete (status {0})")
-    @EnumSource(value = ReportStatus::class, names = ["Draft"])
+    @EnumSource(value = ReportStatus::class, names = ["Draft", "ReOpenSubmittedLast", "ReOpenInControlLast"])
     fun delete(status: ReportStatus) {
         every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = 3L) } returns
             ProjectPartnerReportStatusAndVersion(status, "4.5.8")
@@ -49,7 +49,7 @@ internal class DeleteProjectPartnerReportProcurementTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "delete - not draft (status {0})")
-    @EnumSource(value = ReportStatus::class, names = ["Draft"], mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = ReportStatus::class, names = ["Draft", "ReOpenSubmittedLast", "ReOpenInControlLast"], mode = EnumSource.Mode.EXCLUDE)
     fun `delete - not draft`(status: ReportStatus) {
         every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = 3L) } returns
             ProjectPartnerReportStatusAndVersion(status, "4.5.8")

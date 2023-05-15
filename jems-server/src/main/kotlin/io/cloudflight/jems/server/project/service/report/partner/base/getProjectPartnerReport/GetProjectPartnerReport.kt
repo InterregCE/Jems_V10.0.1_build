@@ -33,12 +33,15 @@ class GetProjectPartnerReport(
     }
 
     private fun Page<ProjectPartnerReportSummary>.fillInDeletableFor(latestReportId: Long?) =
-        this.onEach { it.deletable = it.id == latestReportId && it.status.isOpen() }
+        this.onEach { it.deletable = it.id == latestReportId && it.status.isOpenInitially() }
 
     private fun Page<ProjectPartnerReportSummary>.removeEligibleAfterControlFromNotInControlOnes() =
         this.onEach {
             if (it.status.controlNotStartedYet()) {
                 it.totalEligibleAfterControl = null
+            }
+            if (it.status.isOpenForNumbersChanges()) {
+                it.totalAfterSubmitted = null
             }
         }
 

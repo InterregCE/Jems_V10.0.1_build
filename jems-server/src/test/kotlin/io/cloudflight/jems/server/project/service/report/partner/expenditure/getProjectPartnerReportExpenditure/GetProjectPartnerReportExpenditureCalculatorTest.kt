@@ -11,6 +11,7 @@ import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
 import io.cloudflight.jems.server.currency.service.model.CurrencyConversion
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
@@ -122,11 +123,11 @@ internal class GetProjectPartnerReportExpenditureCalculatorTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "getContribution and fill in currencies (status {0})")
-    @EnumSource(value = ReportStatus::class, names = ["Draft"])
+    @EnumSource(value = ReportStatus::class, names = ["Draft", "ReOpenSubmittedLast", "ReOpenInControlLast"])
     fun `getContribution and fill in`(status: ReportStatus) {
-        val report = mockk<ProjectPartnerReport>()
+        val report = mockk<ProjectPartnerReportStatusAndVersion>()
         every { report.status } returns status
-        every { reportPersistence.getPartnerReportById(PARTNER_ID, 74L) } returns report
+        every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, 74L) } returns report
 
         every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, reportId = 74L) } returns
             listOf(expenditure(10L))
@@ -138,11 +139,12 @@ internal class GetProjectPartnerReportExpenditureCalculatorTest : UnitTest() {
             .containsExactly(filledInExpenditure(10L))
     }
 
-    @Test
-    fun `getContribution and fill in, but not parked ones`() {
-        val report = mockk<ProjectPartnerReport>()
-        every { report.status } returns ReportStatus.Draft
-        every { reportPersistence.getPartnerReportById(PARTNER_ID, 76L) } returns report
+    @ParameterizedTest(name = "getContribution and fill in, but not parked ones (status {0})")
+    @EnumSource(value = ReportStatus::class, names = ["Draft", "ReOpenSubmittedLast", "ReOpenInControlLast"])
+    fun `getContribution and fill in, but not parked ones`(status: ReportStatus) {
+        val report = mockk<ProjectPartnerReportStatusAndVersion>()
+        every { report.status } returns status
+        every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, 76L) } returns report
 
         val parked_11 = mockk<ExpenditureParkingMetadata>()
         every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, reportId = 76L) } returns listOf(
@@ -167,11 +169,12 @@ internal class GetProjectPartnerReportExpenditureCalculatorTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "getContribution and NOT fill in currencies (status {0})")
-    @EnumSource(value = ReportStatus::class, names = ["Draft"], mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = ReportStatus::class, mode = EnumSource.Mode.EXCLUDE,
+        names = ["Draft", "ReOpenSubmittedLast", "ReOpenInControlLast"])
     fun `getContribution and NOT fill in`(status: ReportStatus) {
-        val report = mockk<ProjectPartnerReport>()
+        val report = mockk<ProjectPartnerReportStatusAndVersion>()
         every { report.status } returns status
-        every { reportPersistence.getPartnerReportById(PARTNER_ID, 78L) } returns report
+        every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, 78L) } returns report
 
         val notFilledInExpenditure = expenditure(15L)
         every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, reportId = 78L) } returns
@@ -225,10 +228,10 @@ internal class GetProjectPartnerReportExpenditureCalculatorTest : UnitTest() {
     }
     @Test
     fun `sensitive expenditure data visible for GDPR collaborator`() {
-        val report = mockk<ProjectPartnerReport>()
+        val report = mockk<ProjectPartnerReportStatusAndVersion>()
         val userId = AuthorizationUtil.applicantUser.user.id
         every { report.status } returns ReportStatus.Submitted
-        every { reportPersistence.getPartnerReportById(PARTNER_ID, 82L) } returns report
+        every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, 82L) } returns report
         every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, reportId = 82L) } returns
                 listOf(
                     expenditure(10L, sensitive = true).copy(

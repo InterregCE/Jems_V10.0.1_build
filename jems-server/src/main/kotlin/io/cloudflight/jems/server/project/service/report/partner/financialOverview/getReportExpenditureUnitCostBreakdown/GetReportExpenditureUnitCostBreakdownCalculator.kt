@@ -25,7 +25,7 @@ class GetReportExpenditureUnitCostBreakdownCalculator(
 
         val data = reportUnitCostPersistence.getUnitCost(partnerId = partnerId, reportId = reportId)
 
-        if (report.isOpen()) {
+        if (report.isOpenForNumbersChanges()) {
             val currentExpenditures = reportExpenditurePersistence.getPartnerReportExpenditureCosts(partnerId = partnerId, reportId = reportId)
             currentExpenditures.fillActualCurrencyRates(getActualCurrencyRates())
             data.fillInCurrent(current = currentExpenditures.getCurrentForUnitCosts())

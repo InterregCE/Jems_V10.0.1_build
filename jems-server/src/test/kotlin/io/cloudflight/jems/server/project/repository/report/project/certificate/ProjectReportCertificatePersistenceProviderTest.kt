@@ -47,6 +47,7 @@ class ProjectReportCertificatePersistenceProviderTest : UnitTest() {
                 status = ReportStatus.Certified,
                 applicationFormVersion = "v",
                 firstSubmission = null,
+                lastReSubmission = null,
                 controlEnd = null,
                 identification = identification,
                 createdAt = createdAt,

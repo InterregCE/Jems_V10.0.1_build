@@ -35,6 +35,8 @@ import io.mockk.mockk
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.math.BigDecimal.*
@@ -50,6 +52,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
         private val LAST_WEEK = LocalDate.now().minusWeeks(1)
         private val NEXT_WEEK = LocalDate.now().plusWeeks(1)
         private val LAST_YEAR = ZonedDateTime.now().minusYears(1)
+        private val LAST_MONTH = ZonedDateTime.now().minusMonths(1)
 
         private fun reportEntity(
             id: Long,
@@ -67,6 +70,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
                 status = status,
                 applicationFormVersion = "3.0",
                 firstSubmission = LAST_YEAR,
+                lastReSubmission = LAST_MONTH,
                 controlEnd = controlEnd,
                 identification = PartnerReportIdentificationEntity(
                     projectIdentifier = "projectIdentifier",
@@ -97,9 +101,11 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
             status = status,
             version = "3.0",
             firstSubmission = null,
+            lastReSubmission = LAST_MONTH,
             controlEnd = null,
             createdAt = createdAt,
             totalEligibleAfterControl = TEN,
+            totalAfterSubmitted = ONE,
             periodNumber = 2,
             startDate = LAST_WEEK,
             endDate = NEXT_WEEK,
@@ -178,6 +184,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
             status = ReportStatus.Draft,
             version = "3.0",
             firstSubmission = null,
+            lastReSubmission = LAST_MONTH,
             createdAt = createdAt,
             controlEnd = null,
             startDate = LAST_WEEK,
@@ -192,6 +199,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
             projectReportId = 54L,
             projectReportNumber = 540,
             totalEligibleAfterControl = TEN,
+            totalAfterSubmitted = ONE,
             deletable = false,
         )
 
@@ -266,6 +274,33 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
         )
     }
 
+    @ParameterizedTest(name = "reSubmitReportById - current: {0}")
+    @CsvSource(
+        value = [
+            "ReOpenSubmittedLast,Submitted",
+            "ReOpenSubmittedLimited,Submitted",
+            "ReOpenInControlLast,InControl",
+            "ReOpenInControlLimited,InControl",
+        ]
+    )
+    fun reSubmitReportById(current: ReportStatus, expected: ReportStatus) {
+        val NOW = ZonedDateTime.now()
+        val YESTERDAY = ZonedDateTime.now().minusDays(1)
+
+        val report = reportEntity(id = 46L, YESTERDAY, null, current)
+        every { partnerReportRepository.findByIdAndPartnerId(46L, 10L) } returns report
+
+        val reSubmittedReport = persistence.reSubmitReportById(10L, 46L, NOW)
+
+        assertThat(reSubmittedReport).isEqualTo(
+            draftReportSubmissionEntity(id = 46L, YESTERDAY).copy(
+                status = expected,
+                firstSubmission = LAST_YEAR,
+            )
+        )
+        assertThat(report.lastReSubmission).isEqualTo(NOW)
+    }
+
     @Test
     fun startControlOnReportById() {
         val YESTERDAY = ZonedDateTime.now().minusDays(1)
@@ -276,6 +311,20 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
         assertThat(persistence.startControlOnReportById(15L, 47L)).isEqualTo(
             draftReportSubmissionEntity(id = 47L, YESTERDAY).copy(
                 status = ReportStatus.InControl,
+            )
+        )
+    }
+
+    @Test
+    fun reOpenReportById() {
+        val YESTERDAY = ZonedDateTime.now().minusDays(1)
+
+        val report = reportEntity(id = 47L, YESTERDAY, null, ReportStatus.Submitted)
+        every { partnerReportRepository.findByIdAndPartnerId(47L, 17L) } returns report
+
+        assertThat(persistence.reOpenReportById(17L, 47L, ReportStatus.ReOpenSubmittedLast)).isEqualTo(
+            draftReportSubmissionEntity(id = 47L, YESTERDAY).copy(
+                status = ReportStatus.ReOpenSubmittedLast,
             )
         )
     }
@@ -369,6 +418,13 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
     fun exists() {
         every { partnerReportRepository.existsByPartnerIdAndId(PARTNER_ID, 25L) } returns false
         assertThat(persistence.exists(PARTNER_ID, 25L)).isFalse
+    }
+
+    @Test
+    fun existsByStatusIn() {
+        val statuses = mockk<Set<ReportStatus>>()
+        every { partnerReportRepository.existsByPartnerIdAndStatusIn(PARTNER_ID, statuses) } returns true
+        assertThat(persistence.existsByStatusIn(PARTNER_ID, statuses)).isTrue()
     }
 
     @Test

@@ -78,7 +78,7 @@ internal class DeleteProjectPartnerReportTest: UnitTest()  {
     fun `delete - invalid report because it is not most recent`() {
         every { reportPersistence.getCurrentLatestReportForPartner(PARTNER_ID) } returns report(ReportStatus.Draft)
         every { reportPersistence.deletePartnerReportById(any()) } answers { }
-        assertThrows<OnlyLastOpenReportCanBeDeleted> { interactor.delete(PARTNER_ID, 99L) }
+        assertThrows<OnlyLastInitiallyOpenReportCanBeDeleted> { interactor.delete(PARTNER_ID, 99L) }
         verify(exactly = 0) { reportPersistence.deletePartnerReportById(any()) }
     }
 
@@ -87,7 +87,7 @@ internal class DeleteProjectPartnerReportTest: UnitTest()  {
     fun `delete - invalid report because status not equals to draft`(status: ReportStatus) {
         every { reportPersistence.getCurrentLatestReportForPartner(PARTNER_ID) } returns report(status)
         every { reportPersistence.deletePartnerReportById(any()) } answers { }
-        assertThrows<OnlyLastOpenReportCanBeDeleted> { interactor.delete(PARTNER_ID, 100L) }
+        assertThrows<OnlyLastInitiallyOpenReportCanBeDeleted> { interactor.delete(PARTNER_ID, 100L) }
         verify(exactly = 0) { reportPersistence.deletePartnerReportById(any()) }
     }
 

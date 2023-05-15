@@ -356,6 +356,7 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
         every { versionPersistence.getLatestApprovedOrCurrent(PROJECT_ID) } returns "14.2.0"
         every { projectPersistence.getProject(PROJECT_ID, "14.2.0") } returns projectSummary(status)
         every { reportPersistence.countForPartner(partnerId) } returns 24
+        every { reportPersistence.existsByStatusIn(partnerId, ReportStatus.ARE_LAST_OPEN_STATUSES) } returns false
         val report = mockk<ProjectPartnerReport>()
         every { report.reportNumber } returns 7
         every { reportPersistence.getCurrentLatestReportForPartner(partnerId) } returns report
@@ -407,6 +408,7 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
         every { versionPersistence.getLatestApprovedOrCurrent(PROJECT_ID) } returns "14.2.0"
         every { projectPersistence.getProject(PROJECT_ID, "14.2.0") } returns projectSummary(ApplicationStatus.CONTRACTED)
         every { reportPersistence.countForPartner(partnerId) } returns 24
+        every { reportPersistence.existsByStatusIn(partnerId, ReportStatus.ARE_LAST_OPEN_STATUSES) } returns false
         val report = mockk<ProjectPartnerReport>()
         every { report.reportNumber } returns 9
         every { reportPersistence.getCurrentLatestReportForPartner(partnerId) } returns report
@@ -462,8 +464,26 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
         every { versionPersistence.getLatestApprovedOrCurrent(PROJECT_ID) } returns "6.7.2"
         every { projectPersistence.getProject(PROJECT_ID, "6.7.2") } returns projectSummary(status)
         every { reportPersistence.countForPartner(partnerId) } returns 24
+        every { reportPersistence.existsByStatusIn(partnerId, ReportStatus.ARE_LAST_OPEN_STATUSES) } returns false
 
         assertThrows<ReportCanBeCreatedOnlyWhenContractedException> { createReport.createReportFor(partnerId) }
+        verify(exactly = 0) { auditPublisher.publishEvent(any()) }
+    }
+
+    @ParameterizedTest(name = "cannotCreateReportWhenThereIsLastReOpenedReport and status {0}")
+    @EnumSource(
+        value = ApplicationStatus::class,
+        names = ["CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED"],
+    )
+    fun cannotCreateReportWhenThereIsLastReOpenedReport(status: ApplicationStatus) {
+        val partnerId = 67L
+        every { projectPartnerPersistence.getProjectIdForPartnerId(partnerId) } returns PROJECT_ID
+        every { versionPersistence.getLatestApprovedOrCurrent(PROJECT_ID) } returns "6.7.2"
+        every { projectPersistence.getProject(PROJECT_ID, "6.7.2") } returns projectSummary(status)
+        every { reportPersistence.countForPartner(partnerId) } returns 24
+        every { reportPersistence.existsByStatusIn(partnerId, ReportStatus.ARE_LAST_OPEN_STATUSES) } returns true
+
+        assertThrows<LastReOpenedReportException> { createReport.createReportFor(partnerId) }
         verify(exactly = 0) { auditPublisher.publishEvent(any()) }
     }
 

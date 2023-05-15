@@ -23,8 +23,8 @@ class DeleteProjectPartnerReport(
         val latestReport = reportPersistence.getCurrentLatestReportForPartner(partnerId)
             ?: throw ThereIsNoAnyReportForPartner()
 
-        if (latestReport.status.isClosed() || latestReport.id != reportId) {
-            throw OnlyLastOpenReportCanBeDeleted(lastOpenReport = latestReport)
+        if (latestReport.status.hasBeenClosed() || latestReport.id != reportId) {
+            throw OnlyLastInitiallyOpenReportCanBeDeleted(lastOpenReport = latestReport)
         }
 
         val projectId = partnerPersistence.getProjectIdForPartnerId(id = partnerId)

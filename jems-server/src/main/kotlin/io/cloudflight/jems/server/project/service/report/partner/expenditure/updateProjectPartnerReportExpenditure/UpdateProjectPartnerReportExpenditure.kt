@@ -109,7 +109,7 @@ class UpdateProjectPartnerReportExpenditure(
     }
 
     private fun validateReportNotClosed(status: ReportStatus) {
-        if (status.isClosed())
+        if (!status.isOpenInitially())
             throw ReportAlreadyClosed()
     }
 

@@ -18,6 +18,7 @@ enum class UserRolePermissionDTO(val key: String) {
     // region Monitor
     ProjectReportingView("ProjectReportingView"),
     ProjectReportingEdit("ProjectReportingEdit"),
+    ProjectReportingReOpen("ProjectReportingReOpen"),
     ProjectReportingProjectView("ProjectReportingProjectView"),
     ProjectReportingProjectEdit("ProjectReportingProjectEdit"),
     ProjectReportingChecklistAfterControl("ProjectReportingChecklistAfterControl"),
@@ -120,5 +121,4 @@ enum class UserRolePermissionDTO(val key: String) {
 
     AuditRetrieve("AuditRetrieve"),
     // endregion top navigation
-
 }

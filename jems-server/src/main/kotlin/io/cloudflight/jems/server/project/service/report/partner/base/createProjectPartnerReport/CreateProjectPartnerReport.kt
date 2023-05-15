@@ -20,17 +20,12 @@ import io.cloudflight.jems.server.project.service.report.model.partner.base.crea
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportIdentificationCreate
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.ProjectPartnerReportCreate
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.PartnerReportInvestmentSummary
-import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.create.CreateProjectPartnerReportWorkPackage
-import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.create.CreateProjectPartnerReportWorkPackageActivity
-import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.create.CreateProjectPartnerReportWorkPackageActivityDeliverable
-import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.create.CreateProjectPartnerReportWorkPackageOutput
 import io.cloudflight.jems.server.project.service.report.partner.partnerReportCreated
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackageFull
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.math.BigDecimal
 
 @Service
 class CreateProjectPartnerReport(
@@ -61,6 +56,7 @@ class CreateProjectPartnerReport(
         val project = projectPersistence.getProject(projectId = projectId, version = version)
 
         validateMaxAmountOfReports(currentAmount = reportPersistence.countForPartner(partnerId = partnerId))
+        validateNoReOpenedReports(reportPersistence.existsByStatusIn(partnerId, ReportStatus.ARE_LAST_OPEN_STATUSES))
         validateProjectIsContracted(project)
 
         val baseData = generateReportBaseData(
@@ -122,6 +118,11 @@ class CreateProjectPartnerReport(
     private fun validateMaxAmountOfReports(currentAmount: Int) {
         if (currentAmount >= MAX_REPORTS)
             throw MaxAmountOfReportsReachedException()
+    }
+
+    private fun validateNoReOpenedReports(areThereLastReOpenedReports: Boolean) {
+        if (areThereLastReOpenedReports)
+            throw LastReOpenedReportException()
     }
 
     private fun validateProjectIsContracted(project: ProjectFull) {

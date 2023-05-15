@@ -24,7 +24,7 @@ class GetReportExpenditureInvestmentsBreakdownCalculator(
         val report = reportPersistence.getPartnerReportStatusAndVersion(partnerId = partnerId, reportId).status
         val data = expenditureInvestmentPersistence.getInvestments(partnerId = partnerId, reportId = reportId)
 
-        if (report.isOpen()) {
+        if (report.isOpenForNumbersChanges()) {
             val currentExpenditures = reportExpenditurePersistence.getPartnerReportExpenditureCosts(partnerId = partnerId, reportId = reportId)
             currentExpenditures.fillActualCurrencyRates(getActualCurrencyRates())
             data.fillInCurrent(current = currentExpenditures.getCurrentForInvestments())

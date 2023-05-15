@@ -32,6 +32,7 @@ internal class ProjectPartnerReportControlOverviewPersistenceProviderTest: UnitT
             identification = mockk(),
             controlEnd = null,
             firstSubmission = mockk(),
+            lastReSubmission = mockk(),
             projectReport = mockk(),
         )
 

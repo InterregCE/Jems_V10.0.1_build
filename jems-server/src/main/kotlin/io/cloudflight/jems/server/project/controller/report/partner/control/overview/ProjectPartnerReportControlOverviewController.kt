@@ -2,8 +2,7 @@ package io.cloudflight.jems.server.project.controller.report.partner.control.ove
 
 import io.cloudflight.jems.api.project.dto.report.partner.control.overview.ControlDeductionOverviewDTO
 import io.cloudflight.jems.api.project.dto.report.partner.control.overview.ControlOverviewDTO
-import io.cloudflight.jems.api.project.dto.report.partner.control.overview.ControlWorkOverviewDTO
-import io.cloudflight.jems.api.project.report.partner.control.ProjectPartnerReportControlOverviewApi
+import io.cloudflight.jems.api.project.report.partner.control.ProjectPartnerControlReportOverviewApi
 import io.cloudflight.jems.server.project.service.report.partner.control.overview.getReportControlDeductionOverview.GetReportControlDeductionOverviewInteractor
 import io.cloudflight.jems.server.project.service.report.partner.control.overview.getReportControlOverview.GetReportControlOverviewInteractor
 import io.cloudflight.jems.server.project.service.report.partner.control.overview.getReportControlWorkOverview.GetReportControlWorkOverviewInteractor
@@ -16,7 +15,7 @@ class ProjectPartnerReportControlOverviewController(
     private val getReportControlOverview: GetReportControlOverviewInteractor,
     private val updateReportControlOverview: UpdateReportControlOverviewInteractor,
     private val getReportControlDeductionOverview: GetReportControlDeductionOverviewInteractor
-) : ProjectPartnerReportControlOverviewApi {
+) : ProjectPartnerControlReportOverviewApi {
 
     override fun getControlWorkOverview(partnerId: Long, reportId: Long) =
         getReportControlWorkOverview.get(partnerId = partnerId, reportId = reportId).toDto()

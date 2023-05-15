@@ -29,7 +29,7 @@ class GetReportExpenditureCostCategoryCalculatorService(
 
         val costCategories = data.toLinesModel()
 
-        if (report.isOpen()) {
+        if (report.isOpenForNumbersChanges()) {
             val currentExpenditures = reportExpenditurePersistence.getPartnerReportExpenditureCosts(partnerId = partnerId, reportId = reportId)
             currentExpenditures.fillActualCurrencyRates(getActualCurrencyRates())
             costCategories.fillInCurrent(current = currentExpenditures.calculateCurrent(data.options))

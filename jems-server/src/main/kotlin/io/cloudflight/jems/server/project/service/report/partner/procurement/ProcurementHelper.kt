@@ -22,8 +22,6 @@ fun ProjectPartnerReportProcurement.fillThisReportFlag(currentReportId: Long) = 
     createdInThisReport = reportId == currentReportId
 }
 
-fun ProjectPartnerReportStatusAndVersion.isClosed() = status.isClosed()
-
 fun ProjectPartnerReportProcurementChange.getStaticValidationResults(validator: GeneralValidatorService) = listOf(
     validator.notBlank(contractName, "contractName"),
     validator.maxLength(contractName, 50, "contractName"),
