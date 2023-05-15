@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.controllerInstitution.service.institutionPartn
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionAssignment
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignment
 import io.cloudflight.jems.server.project.repository.partner.PartnerPersistenceProvider
+import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class AssignInstitutionToPartner(
     private val controllerInstitutionPersistence: ControllerInstitutionPersistence,
+    private val projectPersistence: ProjectPersistence,
     private val partnerPersistence: PartnerPersistenceProvider,
     private val auditPublisher: ApplicationEventPublisher,
 ) : AssignInstitutionToPartnerInteractor {
@@ -51,13 +53,12 @@ class AssignInstitutionToPartner(
             partnerIdsToRemove = assignmentsToRemove.mapTo(HashSet()) { it.partnerId },
             assignmentsToSave = assignmentsToSaveOrUpdate
         ).also {
-            auditPublisher.publishEvent(
-                institutionPartnerAssignmentsChanged(
-                    context = this,
-                    assignmentsToSaveOrUpdate,
-                    assignmentsToRemove
-                )
-            )
+            institutionPartnerAssignmentsChanged(
+                context = this,
+                assignmentsToSaveOrUpdate,
+                assignmentsToRemove,
+                projectResolver = { projectPersistence.getProjectSummary(it) }
+            ).forEach { event -> auditPublisher.publishEvent(event) }
         }
     }
 

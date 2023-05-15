@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitution
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignment
+import io.cloudflight.jems.server.project.service.model.ProjectSummary
 
 fun controllerInstitutionChanged(
     context: Any,
@@ -16,9 +17,9 @@ fun controllerInstitutionChanged(
         context = context,
         auditCandidate = AuditCandidate(
             action = AuditAction.CONTROLLER_INSTITUTION_CHANGED,
-            description = "Control Institution created/modified: ID: ${controllerInstitution.id}, " +
-                "NAME:  ${controllerInstitution.name}, " +
-                "NUTS: ${nutsRegion3}, USERS: ${controllerInstitution.institutionUsers}"
+            description = "Control Institution created/modified: " +
+                    "ID: ${controllerInstitution.id}, NAME:  ${controllerInstitution.name}, " +
+                    "NUTS: ${nutsRegion3}, USERS: ${controllerInstitution.institutionUsers}"
         )
     )
 
@@ -26,35 +27,42 @@ fun controllerInstitutionChanged(
 fun institutionPartnerAssignmentsChanged(
     context: Any,
     institutionPartnerUpdatedAssignments: List<InstitutionPartnerAssignment>,
-    institutionPartnerRemovedAssignments: List<InstitutionPartnerAssignment>
-): AuditCandidateEvent {
-    val institutionPartnerAssignmentsUpdatedAsString = institutionPartnerUpdatedAssignments.asSequence()
-        .map { "ProjectID: ${it.partnerProjectId}, PartnerID: ${it.partnerId}, InstitutionID: ${it.institutionId} " }
-        .joinToString(",\n")
-    val institutionPartnerAssignmentsRemovedAsString = institutionPartnerRemovedAssignments.asSequence()
-        .map { "ProjectID: ${it.partnerProjectId}, Partner:ID ${it.partnerId}, InstitutionID: N/A" }
-        .joinToString(",\n")
-    val institutionAssignmentsAsString =
-        "$institutionPartnerAssignmentsUpdatedAsString,\n$institutionPartnerAssignmentsRemovedAsString"
-    return AuditCandidateEvent(
-        context = context,
-        AuditBuilder(AuditAction.INSTITUTION_PARTNER_ASSIGNMENT_CHANGED).description(
-            "Assignment of institution to partner changed to : $institutionAssignmentsAsString"
-        ).build()
-    )
+    institutionPartnerRemovedAssignments: List<InstitutionPartnerAssignment>,
+    projectResolver: (Long) -> ProjectSummary,
+): Set<AuditCandidateEvent> {
+    val assignmentsUpdated = institutionPartnerUpdatedAssignments.map {
+        it.partnerProjectId to "Assignment of institution to partner changed to:\n" +
+                "ProjectID: ${it.partnerProjectId}, PartnerID: ${it.partnerId}, InstitutionID: ${it.institutionId}"
+    }
+    val assignmentsDeleted = institutionPartnerRemovedAssignments.map {
+        it.partnerProjectId to "Assignment of institution to partner changed to:\n" +
+                "ProjectID: ${it.partnerProjectId}, PartnerID: ${it.partnerId}, InstitutionID: N/A"
+    }
+
+    return assignmentsUpdated.plus(assignmentsDeleted).map { (projectId, description) ->
+        AuditCandidateEvent(
+            context = context,
+            auditCandidate = AuditBuilder(AuditAction.INSTITUTION_PARTNER_ASSIGNMENT_CHANGED)
+                .project(projectResolver(projectId))
+                .description(description)
+                .build()
+        )
+    }.toSet()
 }
 
 fun institutionPartnerAssignmentRemoved(
     context: Any,
-    deletedAssignments: List<InstitutionPartnerAssignment>
-): AuditCandidateEvent {
-    val deletedAssignmentsString =
-        deletedAssignments.joinToString("\n") { "InstitutionID: ${it.institutionId} - PartnerID: ${it.partnerId}" }
-    return AuditCandidateEvent(
-        context = context,
-        AuditBuilder(
-            AuditAction.INSTITUTION_PARTNER_ASSIGNMENT_DROPPED
-        ).description("User ID: 0 User email: System \n $deletedAssignmentsString").build()
-    )
+    deletedAssignments: List<InstitutionPartnerAssignment>,
+    projectResolver: (Long) -> ProjectSummary,
+): Set<AuditCandidateEvent> {
+    return deletedAssignments.map {
+        AuditCandidateEvent(
+            context = context,
+            auditCandidate = AuditBuilder(AuditAction.INSTITUTION_PARTNER_ASSIGNMENT_DROPPED)
+                .project(projectResolver(it.partnerProjectId))
+                .description("User ID: 0 User email: System\nInstitutionID: ${it.institutionId} - PartnerID: ${it.partnerId}")
+                .build()
+        )
+    }.toSet()
 }
 
