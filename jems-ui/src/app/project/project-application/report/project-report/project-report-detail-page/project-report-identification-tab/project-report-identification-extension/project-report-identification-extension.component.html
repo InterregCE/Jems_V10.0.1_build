@@ -47,12 +47,14 @@
         </jems-multi-language-container>
 
         <ng-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS">
-            <div *ngIf="reportType !== TYPE_ENUM.Content && tableData.length > 0">
-                <h3>{{'project.application.project.report.partner.spending.profile.title' | translate }}</h3>
-                <p>{{'project.application.project.report.partner.spending.profile.explanation' | translate}}</p>
+            <div jemsNoWidthLimit *ngIf="reportType !== TYPE_ENUM.Content && tableData.length > 0">
+                <div jemsFormLayout>
+                    <h3>{{'project.application.project.report.partner.spending.profile.title' | translate }}</h3>
+                    <p>{{'project.application.project.report.partner.spending.profile.explanation' | translate}}</p>
+                </div>
 
-                <mat-table formArrayName="spendingProfiles" [dataSource]="tableData" [jemsTableConfig]="[{maxInRem: 2},{}, {}, {}, {}, {}]" jemsNoWidthLimit
-                           class="table-padding">
+                <mat-table formArrayName="spendingProfiles" [dataSource]="tableData" [jemsTableConfig]="[{maxInRem: 2},{}, {}, {}, {}, {}]"
+                           class="table-padding mt-3">
                     <ng-container matColumnDef="partnerNumber">
                         <th *matHeaderCellDef mat-header-cell scope="col" class="text-left">
                             {{ 'project.application.form.partner.table.number' | translate }}
@@ -92,6 +94,9 @@
                     <ng-container matColumnDef="totalReportedSoFar">
                         <th *matHeaderCellDef mat-header-cell scope="col" class="text-right">
                             {{ 'project.report.partner.spending.totalReportedSoFar' | translate }}
+                            <jems-context-info infoPosition="right"
+                                               infoText="{{ 'project.report.partner.spending.totalReportedSoFar.context.info' | translate }}">
+                            </jems-context-info>
                         </th>
                         <td *matCellDef="let control; let i = index" [formGroupName]="i" mat-cell class="text-right">
                             {{ (control.get('previouslyReported').value + control.get('currentReport').value) | asMoney }}
