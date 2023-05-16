@@ -231,7 +231,7 @@ export class PartnerReportComponent {
         },
         {
           displayedColumn: 'project.application.partner.reports.table.amount.submitted',
-          elementProperty: 'amountSubmitted',
+          elementProperty: 'totalAfterSubmitted',
           columnType: ColumnType.Decimal,
         },
         ...(thereIsCertified) ? [{
