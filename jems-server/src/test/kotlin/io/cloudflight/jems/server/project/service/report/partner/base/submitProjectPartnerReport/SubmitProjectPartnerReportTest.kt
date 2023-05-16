@@ -3,12 +3,16 @@ package io.cloudflight.jems.server.project.service.report.partner.base.submitPro
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO.MainFund
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution
+import io.cloudflight.jems.plugin.contract.pre_condition_check.ControlReportSamplingCheckPlugin
+import io.cloudflight.jems.plugin.contract.pre_condition_check.models.ControlReportSamplingCheckResult
 import io.cloudflight.jems.plugin.contract.pre_condition_check.models.PreConditionCheckResult
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
+import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
 import io.cloudflight.jems.server.currency.service.model.CurrencyConversion
 import io.cloudflight.jems.server.notification.handler.PartnerReportStatusChanged
+import io.cloudflight.jems.server.plugin.JemsPluginRegistry
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.repository.report.partner.model.ExpenditureVerificationUpdate
 import io.cloudflight.jems.server.project.service.ProjectPersistence
@@ -416,6 +420,15 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
     @MockK
     lateinit var projectPersistence: ProjectPersistence
 
+    @MockK
+    private lateinit var jemsPluginRegistry: JemsPluginRegistry
+
+    @MockK
+    private lateinit var expenditurePersistence: ProjectPartnerReportExpenditurePersistence
+
+    @MockK
+    private lateinit var callPersistence: CallPersistence
+
     @InjectMockKs
     lateinit var submitReport: SubmitProjectPartnerReport
 
@@ -427,7 +440,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
     @Test
     fun submit() {
         val report = mockk<ProjectPartnerReport>()
-        every { report.status } returns ReportStatus.Draft
+        every { report.status } returns ReportStatus.ReOpenInControlLast
         every { report.id } returns 35L
         every { report.identification.coFinancing } returns listOf(
             ProjectPartnerCoFinancing(MainFund, fund(id = 29L), percentage = BigDecimal.valueOf(1397, 2)),
@@ -482,7 +495,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         every { reportInvestmentPersistence.updateCurrentlyReportedValues(PARTNER_ID, reportId = 35L, capture(investmentSlot)) } answers { }
 
         val submissionTime = slot<ZonedDateTime>()
-        every { reportPersistence.submitReportById(any(), any(), capture(submissionTime)) } returns mockedResult
+        every { reportPersistence.updateStatusAndTimes(any(), any(), any(), any(), capture(submissionTime)) } returns mockedResult
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID, "5.6.0") } returns PROJECT_ID
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns mockk()
 
@@ -511,9 +524,16 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             ), expenditureVerification3
         )
 
+        every { callPersistence.getCallSimpleByPartnerId(PARTNER_ID).controlReportSamplingCheckPluginKey} returns "plugin-key"
+        val plugin = mockk<ControlReportSamplingCheckPlugin>()
+        every { plugin.check(PARTNER_ID, 35L) } returns ControlReportSamplingCheckResult(setOf(21L))
+        every { jemsPluginRegistry.get(ControlReportSamplingCheckPlugin::class, "plugin-key")} returns plugin
+        every { expenditurePersistence.markAsSampledAndLock(setOf(21L)) } answers { }
+
         submitReport.submit(PARTNER_ID, 35L)
 
-        verify(exactly = 1) { reportPersistence.submitReportById(PARTNER_ID, 35L, any()) }
+        verify(exactly = 1) { reportPersistence.updateStatusAndTimes(PARTNER_ID, 35L, ReportStatus.InControl, any(), any()) }
+        verify(exactly = 1) { expenditurePersistence.markAsSampledAndLock(setOf(21L)) }
         assertThat(submissionTime.captured).isAfter(ZonedDateTime.now().minusMinutes(1))
         assertThat(submissionTime.captured).isBefore(ZonedDateTime.now().plusMinutes(1))
 
@@ -580,7 +600,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         every { reportPersistence.getPartnerReportById(PARTNER_ID, 36L) } returns report
 
         assertThrows<ReportAlreadyClosed> { submitReport.submit(PARTNER_ID, 36L) }
-        verify(exactly = 0) { reportPersistence.submitReportById(any(), any(), any()) }
+        verify(exactly = 0) { reportPersistence.updateStatusAndTimes(any(), any(), any(), any(), any()) }
         verify(exactly = 0) { auditPublisher.publishEvent(any()) }
     }
 

@@ -1,8 +1,11 @@
 package io.cloudflight.jems.server.project.service.report.partner.base.submitProjectPartnerReport
 
+import io.cloudflight.jems.plugin.contract.pre_condition_check.ControlReportSamplingCheckPlugin
+import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
 import io.cloudflight.jems.server.notification.handler.PartnerReportStatusChanged
+import io.cloudflight.jems.server.plugin.JemsPluginRegistry
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
 import io.cloudflight.jems.server.project.repository.report.partner.model.ExpenditureVerificationUpdate
 import io.cloudflight.jems.server.project.service.ProjectPersistence
@@ -58,6 +61,9 @@ class SubmitProjectPartnerReport(
     private val projectControlReportExpenditurePersistence: ProjectPartnerReportExpenditureVerificationPersistence,
     private val auditPublisher: ApplicationEventPublisher,
     private val projectPersistence: ProjectPersistence,
+    private val jemsPluginRegistry: JemsPluginRegistry,
+    private val expenditurePersistence: ProjectPartnerReportExpenditurePersistence,
+    private val callPersistence: CallPersistence,
 ) : SubmitProjectPartnerReportInteractor {
 
     @CanEditPartnerReport
@@ -76,10 +82,17 @@ class SubmitProjectPartnerReport(
         if (needsRecalculation)
             storeCurrentValues(partnerId, report, expenditures)
 
-        return (if (report.status.isOpenInitially())
-            reportPersistence.submitReportById(partnerId, reportId = reportId, ZonedDateTime.now())
-        else
-            reportPersistence.reSubmitReportById(partnerId, reportId = reportId, ZonedDateTime.now())
+        val newStatus = report.status.submitStatus()
+        if (newStatus == ReportStatus.InControl) {
+            // perform auto-sampling
+            expenditurePersistence.markAsSampledAndLock(
+                expenditureIds = getSampledExpenditureIdsFromPlugin(partnerId, reportId = reportId)
+            )
+        }
+
+        return reportPersistence.updateStatusAndTimes(partnerId, reportId = reportId, status = newStatus,
+            firstSubmissionTime = if (report.status.isOpenInitially()) ZonedDateTime.now() else null /* no update */,
+            lastReSubmissionTime = if (!report.status.isOpenInitially()) ZonedDateTime.now() else null /* no update */,
         ).also { it ->
             val projectId = partnerPersistence.getProjectIdForPartnerId(id = partnerId, it.version)
             val projectSummary = projectPersistence.getProjectSummary(projectId)
@@ -228,6 +241,13 @@ class SubmitProjectPartnerReport(
             parked = false,
             verificationComment = null
         )
+    }
+
+    private fun getSampledExpenditureIdsFromPlugin(partnerId: Long, reportId: Long): Set<Long> {
+        val pluginKey = callPersistence.getCallSimpleByPartnerId(partnerId).controlReportSamplingCheckPluginKey
+        val plugin = jemsPluginRegistry.get(ControlReportSamplingCheckPlugin::class, key = pluginKey)
+        return runCatching { plugin.check(partnerId = partnerId, reportId = reportId).sampledExpenditureIds }
+            .getOrElse { setOf() }
     }
 
 }

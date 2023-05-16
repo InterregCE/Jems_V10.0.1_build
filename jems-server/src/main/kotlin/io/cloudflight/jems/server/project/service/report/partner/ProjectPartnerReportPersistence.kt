@@ -12,13 +12,13 @@ import java.time.ZonedDateTime
 
 interface ProjectPartnerReportPersistence {
 
-    fun submitReportById(partnerId: Long, reportId: Long, submissionTime: ZonedDateTime): ProjectPartnerReportSubmissionSummary
-
-    fun reSubmitReportById(partnerId: Long, reportId: Long, submissionTime: ZonedDateTime): ProjectPartnerReportSubmissionSummary
-
-    fun startControlOnReportById(partnerId: Long, reportId: Long): ProjectPartnerReportSubmissionSummary
-
-    fun reOpenReportById(partnerId: Long, reportId: Long, newStatus: ReportStatus): ProjectPartnerReportSubmissionSummary
+    fun updateStatusAndTimes(
+        partnerId: Long,
+        reportId: Long,
+        status: ReportStatus,
+        firstSubmissionTime: ZonedDateTime? = null,
+        lastReSubmissionTime: ZonedDateTime? = null,
+    ): ProjectPartnerReportSubmissionSummary
 
     fun finalizeControlOnReportById(
         partnerId: Long,

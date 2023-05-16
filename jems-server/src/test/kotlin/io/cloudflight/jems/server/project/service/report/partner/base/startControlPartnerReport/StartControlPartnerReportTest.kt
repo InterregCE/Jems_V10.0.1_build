@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service.report.partner.base.startCont
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.plugin.contract.pre_condition_check.ControlReportSamplingCheckPlugin
+import io.cloudflight.jems.plugin.contract.pre_condition_check.models.ControlReportSamplingCheckResult
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.call.service.CallPersistence
@@ -133,13 +134,16 @@ internal class StartControlPartnerReportTest : UnitTest() {
         val report = report(37L, status)
         every { reportPersistence.getPartnerReportById(PARTNER_ID, 37L) } returns report
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID, "5.6.1") } returns PROJECT_ID
-        every { reportPersistence.startControlOnReportById(any(), any()) } returns mockedResult
+        every { reportPersistence.updateStatusAndTimes(PARTNER_ID, 37L, ReportStatus.InControl) } returns mockedResult
+        every { expenditurePersistence.markAsSampledAndLock(setOf(21L)) } answers { }
         every { controlInstitutionPersistence.getControllerInstitutions(setOf(PARTNER_ID))} returns mapOf(Pair(PARTNER_ID, controllerInstitution))
         every { reportDesignatedControllerPersistence.create(PARTNER_ID, 37L, controllerInstitution.id)} returns Unit
         every { reportPersistence.getLastCertifiedPartnerReportId(PARTNER_ID)} returns 5
         every { controlOverviewPersistence.createPartnerControlReportOverview(PARTNER_ID, 37L, 5)} returns controlOverview
-        every { callPersistence.getCallSimpleByPartnerId(PARTNER_ID).controlReportSamplingCheckPluginKey} returns "control-report-sampling-check-off"
-        every { jemsPluginRegistry.get(ControlReportSamplingCheckPlugin::class, "control-report-sampling-check-off")} returns ControlReportSamplingCheckOff()
+        every { callPersistence.getCallSimpleByPartnerId(PARTNER_ID).controlReportSamplingCheckPluginKey} returns "pluginKey"
+        val plugin = mockk<ControlReportSamplingCheckPlugin>()
+        every { plugin.check(PARTNER_ID, 37L) } returns ControlReportSamplingCheckResult(setOf(21L))
+        every { jemsPluginRegistry.get(ControlReportSamplingCheckPlugin::class, "pluginKey")} returns plugin
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns mockk()
 
         val auditSlot = slot<AuditCandidateEvent>()
@@ -148,7 +152,7 @@ internal class StartControlPartnerReportTest : UnitTest() {
 
         interactor.startControl(PARTNER_ID, 37L)
 
-        verify(exactly = 1) { reportPersistence.startControlOnReportById(PARTNER_ID, 37L) }
+        verify(exactly = 1) { reportPersistence.updateStatusAndTimes(PARTNER_ID, 37L, ReportStatus.InControl) }
 
         assertThat(auditSlot.captured.auditCandidate.action).isEqualTo(AuditAction.PARTNER_REPORT_CONTROL_ONGOING)
         assertThat(auditSlot.captured.auditCandidate.project?.id).isEqualTo(PROJECT_ID.toString())
@@ -166,7 +170,7 @@ internal class StartControlPartnerReportTest : UnitTest() {
 
         assertThrows<ReportNotSubmitted> { interactor.startControl(PARTNER_ID, 39L) }
 
-        verify(exactly = 0) { reportPersistence.startControlOnReportById(any(), any()) }
+        verify(exactly = 0) { reportPersistence.updateStatusAndTimes(any(), any(), any()) }
         verify(exactly = 0) { auditPublisher.publishEvent(any()) }
     }
 

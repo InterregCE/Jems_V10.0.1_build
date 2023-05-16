@@ -106,7 +106,7 @@ export class FileManagementStore {
       .pipe(
         take(1),
         withLatestFrom(this.projectStore.projectId$),
-        switchMap(([category, projectId]) => this.projectFileService.uploadFileForm(file, projectId, (category as any)?.id, (category as any)?.type)),
+        switchMap(([category, projectId]) => this.projectFileService.uploadFileForm(file, (category as any)?.type, projectId, (category as any)?.id)),
         tap(() => this.filesChanged$.next()),
         tap(() => this.error$.next(null)),
         catchError(error => {
@@ -191,7 +191,7 @@ export class FileManagementStore {
     ])
       .pipe(
         switchMap(([category, projectId, pageIndex, pageSize, sort]) =>
-          this.projectFileService.listProjectFiles(projectId, (category as any)?.id, pageIndex, pageSize, sort, (category as any)?.type)
+          this.projectFileService.listProjectFiles(projectId, (category as any)?.type, (category as any)?.id, pageIndex, pageSize, sort)
         ),
         tap(page => {
           if (page.totalPages > 0 && page.number >= page.totalPages) {
