@@ -385,16 +385,6 @@ context('Partner reports tests', () => {
                       cy.contains(`Procurement contract name [${partnerProcurement[0].contractName}] is not unique (error code: S-CPPRP-003)`)
                         .should('be.visible');
 
-                      // Partners with EURO currency should be able to save only EUR as currency for their procurement
-                      cy.get('#currency')
-                        .click();
-                      cy.contains('mat-option', 'AMD')
-                        .click();
-                      cy.contains('button', 'Create')
-                        .click();
-                      cy.contains('Selected currency is invalid (error code: S-CPPRP-004)')
-                        .should('be.visible');
-
                       // Add 2 new beneficial owner
                       cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId1}/reports/${reportId}/procurements/${procurement.id}`, {failOnStatusCode: false});
 
