@@ -34,90 +34,193 @@
         <jems-api-error-content [error]="error"></jems-api-error-content>
     </jems-alert>
 
-    <ng-container *ngIf="data.partnerReports as partnerReports">
-        <jems-table *ngIf="partnerReports.length > 0"
-                    [configuration]="tableConfiguration"
-                    [rows]="partnerReports"
-                    [totalElements]="data.totalElements"
-                    [pageIndex]="pageStore.newPageIndex$ | async"
-                    (newPageIndex)="pageStore.newPageIndex$.next($event)"
-                    (newPageSize)="pageStore.newPageSize$.next($event)">
-        </jems-table>
-        <p *ngIf="!partnerReports?.length">{{'project.application.partner.reports.table.empty' | translate}}</p>
-    </ng-container>
+<!--    <ng-container *ngIf="data.partnerReports as partnerReports">-->
+<!--        <jems-table *ngIf="partnerReports.length > 0"-->
+<!--                    [configuration]="tableConfiguration"-->
+<!--                    [rows]="partnerReports"-->
+<!--                    [totalElements]="data.totalElements"-->
+<!--                    [pageIndex]="pageStore.newPageIndex$ | async"-->
+<!--                    (newPageIndex)="pageStore.newPageIndex$.next($event)"-->
+<!--                    (newPageSize)="pageStore.newPageSize$.next($event)">-->
+<!--        </jems-table>-->
+<!--        <p *ngIf="!partnerReports?.length">{{'project.application.partner.reports.table.empty' | translate}}</p>-->
+<!--    </ng-container>-->
 
+    <mat-table matSort matSortDisableClear [class.hide]="!data.partnerReports2.totalElements" [dataSource]="dataSource">
 
-</jems-project-page-template>
-
-<ng-template #numberingCell let-partnerReport>
-    <span *ngIf="partnerReport.reportNumber">
-        R.{{partnerReport.reportNumber}}</span>
-</ng-template>
-
-<ng-template #periodCell let-partnerReport>
-    <span *ngIf="partnerReport.periodDetail"
-          matTooltip="{{ (partnerReport.startDate | localeDate) || 'X' }} - {{ (partnerReport.endDate | localeDate) || 'X' }}">
-        {{ 'project.application.form.work.package.output.delivery.period.entry' | translate : {
-        periodNumber: partnerReport.periodDetail.number,
-        start: partnerReport.periodDetail.start,
-        end: partnerReport.periodDetail.end
-    } }}
-    </span>
-</ng-template>
-
-<ng-template #statusCell let-partnerReport>
-    <jems-partner-report-status [status]="partnerReport.status"></jems-partner-report-status>
-</ng-template>
-
-<ng-template #projectReportCell let-partnerReport>
-    <ng-container *ngIf="partnerReport.projectReportNumber">
-        <span *ngIf="canViewProjectReport">
-            <a [routerLink]="['/app', 'project', 'detail', this.projectId, 'projectReports', partnerReport.projectReportId, 'identification']">
-                PR.{{ partnerReport.projectReportNumber }}
-            </a>
-        </span>
-        <span *ngIf="!canViewProjectReport">
-            PR.{{ partnerReport.projectReportNumber }}
-        </span>
-    </ng-container>
-</ng-template>
-
-<ng-template #actionCell let-partnerReport>
-    <ng-container *ngIf="partnerReportDetail.partnerId$ | async as partnerId">
-        <ng-container *ngIf="partnerReport.status !== ProjectPartnerReportSummaryDTO.StatusEnum.Draft && (isControlButtonVisible$ | async)">
-            <jems-pending-button *ngIf="partnerReport.status === ProjectPartnerReportSummaryDTO.StatusEnum.Submitted" class="ml-1"
-                                 [disabled]="isStartControlButtonDisabled"
-                                 (clicked)="createControlReportForPartnerReport(partnerReport, partnerId)"
-                                 [pending]="getPendingActionStatus(partnerReport.id) | async">
-                {{'project.application.partner.reports.start.control' | translate}}
-            </jems-pending-button>
-            <a jemsText *ngIf="(ReportUtil.isControlReportExists(partnerReport.status))
-                         && ((pageStore.userCanEditReport$ | async) || (pageStore.userCanViewReport$ | async))"
-               mat-stroked-button type="submit" class="ml-1"
-               [routerLink]="partnerReport.routeToControl">
-                {{'project.application.partner.reports.open.control' | translate}}
-            </a>
+        <ng-container matColumnDef="id">
+            <mat-header-cell *matHeaderCellDef>
+                <span jemsText maxLines="2">{{ 'project.application.partner.reports.table.id' | translate }}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let report">R.{{ report.reportNumber }}</mat-cell>
         </ng-container>
-    </ng-container>
-</ng-template>
 
-<ng-template #deleteCell let-partnerReport>
-    <span matTooltip="{{ (partnerReport.deletable ? 'common.delete.entry.tooltip' : 'project.application.partner.report.deletion.not.possible.tooltip') | translate }}">
-        <button *ngIf="partnerReport.status === ProjectPartnerReportSummaryDTO.StatusEnum.Draft"
-                mat-icon-button color="accent"
-                [disabled]="!partnerReport.deletable"
-                (click)="delete(partnerReport);$event.stopPropagation();">
-            <mat-icon>delete</mat-icon>
-        </button>
-    </span>
-</ng-template>
+        <ng-container matColumnDef="status">
+            <mat-header-cell *matHeaderCellDef>
+                <span jemsText maxLines="2">{{ 'project.application.partner.reports.table.status' | translate }}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let report">
+                <jems-partner-report-status [status]="report.status"></jems-partner-report-status>
+            </mat-cell>
+        </ng-container>
 
-<ng-template #versionCell let-partnerReport>
-    <span>
-        {{partnerReport.linkedFormVersion}}
-    </span>
-    <mat-icon *ngIf="partnerReport.status === ProjectPartnerReportSummaryDTO.StatusEnum.Draft && isReportVersionNotLatestApproved(partnerReport.linkedFormVersion)"
-              matTooltip="{{'project.application.partner.report.warning.tooltip' | translate }}" color="accent" class="ml-1">
-        warning_amber
-    </mat-icon>
-</ng-template>
+        <ng-container matColumnDef="projectReport">
+            <mat-header-cell *matHeaderCellDef>
+                <span jemsText maxLines="2">{{ 'project.application.partner.reports.table.included' | translate }}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let report">
+                <span *ngIf="data.canViewProjectReport && report.projectReportNumber">
+                    <a [routerLink]="['/app', 'project', 'detail', this.projectId, 'projectReports', report.projectReportId, 'identification']">
+                        PR.{{ report.projectReportNumber }}
+                    </a>
+                </span>
+                <span *ngIf="!canViewProjectReport && report.projectReportNumber">PR.{{ report.projectReportNumber }}</span>
+            </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="version">
+            <mat-header-cell *matHeaderCellDef>
+                <span jemsText maxLines="2">{{ 'project.application.partner.reports.table.version' | translate }}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let report">
+                <span>{{ report.linkedFormVersion }}</span>
+                <mat-icon *ngIf="report.status === ProjectPartnerReportSummaryDTO.StatusEnum.Draft && report.linkedFormVersion !== currentApprovedVersion"
+                          matTooltip="{{ 'project.application.partner.report.warning.tooltip' | translate }}" color="accent" class="ml-1">
+                    warning_amber
+                </mat-icon>
+            </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="period">
+            <mat-header-cell *matHeaderCellDef>
+                <span jemsText maxLines="2">{{ 'project.application.partner.report.reporting.period' | translate }}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let report">
+                <span *ngIf="report.periodDetail"
+                      matTooltip="{{ (report.startDate | localeDate) || 'X' }} - {{ (report.endDate | localeDate) || 'X' }}">
+                    {{ 'project.application.form.work.package.output.delivery.period.entry' | translate : {
+                        periodNumber: report.periodDetail.number,
+                        start: report.periodDetail.start,
+                        end: report.periodDetail.end
+                    } }}
+                </span>
+            </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="createdAt">
+            <mat-header-cell *matHeaderCellDef>
+                <span jemsText maxLines="2">{{ 'project.application.partner.reports.table.created.at' | translate }}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let report">
+                <div class="date-time-cell">
+                    <div class="date">{{ report.createdAt | localeDate: 'L'}}</div>
+                    <div class="time">{{ report.createdAt | localeDate: 'LT'}}</div>
+                </div>
+            </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="firstSubmission">
+            <mat-header-cell *matHeaderCellDef>
+                <span jemsText maxLines="2">{{ 'project.application.partner.reports.table.first.submission' | translate }}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let report">
+                <div class="date-time-cell">
+                    <div class="date">{{ report.firstSubmission | localeDate: 'L'}}</div>
+                    <div class="time">{{ report.firstSubmission | localeDate: 'LT'}}</div>
+                </div>
+            </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="lastReSubmission">
+            <mat-header-cell *matHeaderCellDef>
+                <span jemsText maxLines="2">{{ 'project.application.partner.reports.table.last.submission' | translate }}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let report">
+                <div class="date-time-cell">
+                    <div class="date">{{ report.lastReSubmission | localeDate: 'L'}}</div>
+                    <div class="time">{{ report.lastReSubmission | localeDate: 'LT'}}</div>
+                </div>
+            </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="totalAfterSubmitted">
+            <mat-header-cell *matHeaderCellDef>
+                <span jemsText maxLines="2">{{ 'project.application.partner.reports.table.amount.submitted' | translate }}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let report">{{ report.totalAfterSubmitted | asMoney }}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="controlEnd">
+            <mat-header-cell *matHeaderCellDef>
+                <span jemsText maxLines="2">{{ 'project.application.partner.reports.table.control.end' | translate }}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let report">
+                <div class="date-time-cell">
+                    <div class="date">{{ report.controlEnd | localeDate: 'L'}}</div>
+                    <div class="time">{{ report.controlEnd | localeDate: 'LT'}}</div>
+                </div>
+            </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="totalEligible">
+            <mat-header-cell *matHeaderCellDef>
+                <span jemsText maxLines="2">{{ 'project.application.partner.report.control.tab.overviewAndFinalize.total.eligible.after.control' | translate }}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let report">{{ report.totalEligibleAfterControl | asMoney }}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="control">
+            <mat-header-cell *matHeaderCellDef>
+                <span jemsText maxLines="2">{{ 'project.application.partner.reports.table.control' | translate }}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let report">
+                <ng-container *ngIf="partnerReportDetail.partnerId$ | async as partnerId">
+                    <ng-container *ngIf="report.status !== ProjectPartnerReportSummaryDTO.StatusEnum.Draft && (isControlButtonVisible$ | async)">
+                        <jems-pending-button *ngIf="report.status === ProjectPartnerReportSummaryDTO.StatusEnum.Submitted" class="ml-1"
+                                             [disabled]="isStartControlButtonDisabled"
+                                             (clicked)="createControlReportForPartnerReport(report, partnerId)"
+                                             [pending]="getPendingActionStatus(report.id) | async">
+                            {{'project.application.partner.reports.start.control' | translate}}
+                        </jems-pending-button>
+                        <a jemsText *ngIf="(ReportUtil.isControlReportExists(report.status))
+                         && ((pageStore.userCanEditReport$ | async) || (pageStore.userCanViewReport$ | async))"
+                           mat-stroked-button type="submit" class="ml-1"
+                           [routerLink]="[report.id, 'controlReport', (report.status === ProjectPartnerReportSummaryDTO.StatusEnum.Certified || data.isController) ? 'identificationTab' : 'document']">
+                            {{'project.application.partner.reports.open.control' | translate}}
+                        </a>
+                    </ng-container>
+                </ng-container>
+            </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="delete">
+            <mat-header-cell *matHeaderCellDef>
+                <span jemsText maxLines="2">{{ 'common.delete.entry' | translate }}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let report">
+                <span matTooltip="{{ (report.deletable ? 'common.delete.entry.tooltip' : 'project.application.partner.report.deletion.not.possible.tooltip') | translate }}">
+                    <button *ngIf="report.status === ProjectPartnerReportSummaryDTO.StatusEnum.Draft"
+                            mat-icon-button color="accent" [disabled]="!report.deletable"
+                            (click)="delete(report);$event.stopPropagation();">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                </span>
+            </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns" [routerLink]="[row.id]"></mat-row>
+    </mat-table>
+
+    <jems-alert [show]="!data.partnerReports2.totalElements" [type]="Alert.INFO">
+        <p>{{ 'project.application.partner.reports.table.empty' | translate }}</p>
+    </jems-alert>
+
+    <jems-paginator *ngIf="data.partnerReports2.totalElements"
+                    (pageIndexChanged)="pageStore.newPageIndex$.next($event)"
+                    (pageSizeChanged)="pageStore.newPageSize$.next($event)"
+                    [currentPageIndex]="data.partnerReports2.number"
+                    [currentPageSize]="data.partnerReports2.size"
+                    [length]="data.partnerReports2.totalElements">
+    </jems-paginator>
+</jems-project-page-template>

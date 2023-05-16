@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, TemplateRef, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {
   PageProjectPartnerReportSummaryDTO,
@@ -13,7 +13,6 @@ import {
   ProjectApplicationFormSidenavService
 } from '../containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {RoutingService} from '@common/services/routing.service';
-import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
 import {APIError} from '@common/models/APIError';
@@ -30,7 +29,6 @@ import {MatDialog} from '@angular/material/dialog';
 import {
   PartnerControlReportStore
 } from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
-import {ColumnWidth} from '@common/components/table/model/column-width';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import {
   ProjectReportPageStore
@@ -38,6 +36,7 @@ import {
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import StatusEnum = ProjectPartnerReportSummaryDTO.StatusEnum;
 import {ReportUtil} from '@project/common/report-util';
+import {MatTableDataSource} from '@angular/material/table';
 
 @UntilDestroy()
 @Component({
@@ -52,25 +51,10 @@ export class PartnerReportComponent {
   successfulDeletionMessage: boolean;
   ReportUtil = ReportUtil;
 
-  @ViewChild('numberingCell', {static: true})
-  numberingCell: TemplateRef<any>;
-
-  @ViewChild('statusCell', {static: true})
-  statusCell: TemplateRef<any>;
-  @ViewChild('projectReportCell', {static: true})
-  projectReportCell: TemplateRef<any>;
-
-  @ViewChild('periodCell', {static: true})
-  periodCell: TemplateRef<any>;
-
-  @ViewChild('actionCell', {static: true})
-  actionCell: TemplateRef<any>;
-
-  @ViewChild('deleteCell', {static: true})
-  deleteCell: TemplateRef<any>;
-
-  @ViewChild('versionCell', {static: true})
-  versionCell: TemplateRef<any>;
+  private allColumns: string[] = ['id', 'status', 'projectReport', 'version', 'period', 'createdAt', 'firstSubmission',
+    'lastReSubmission', 'totalAfterSubmitted', 'controlEnd', 'totalEligible', 'control', 'delete'];
+  displayedColumns: string[] = [];
+  dataSource = new MatTableDataSource<ProjectPartnerReportSummaryDTO>();
 
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
   tableConfiguration: TableConfiguration;
@@ -79,12 +63,13 @@ export class PartnerReportComponent {
   error$ = new BehaviorSubject<APIError | null>(null);
   Alert = Alert;
   isStartControlButtonDisabled = false;
-  deletableReportId: number | null = null;
 
   data$: Observable<{
     totalElements: number;
-    partnerReports: ProjectPartnerReportSummaryDTO[];
+    // partnerReports: ProjectPartnerReportSummaryDTO[]; // TODO remove and rename
+    partnerReports2: PageProjectPartnerReportSummaryDTO;
     partner: ProjectPartnerSummaryDTO;
+    isController: boolean;
     canEditReport: boolean;
     currentApprovedVersion: string | undefined;
     canViewProjectReport: boolean;
@@ -130,6 +115,7 @@ export class PartnerReportComponent {
       projectReportPageStore.userCanViewReport$,
       pageStore.canCreateReport$,
     ]).pipe(
+      tap(([partnerReports, _]: [PageProjectPartnerReportSummaryDTO, ProjectPartnerSummaryDTO, boolean, boolean, ProjectVersionDTO | undefined, boolean, boolean]) => this.dataSource.data = partnerReports.content),
       map(([partnerReports, partner, canEditReport, isController, approvedVersion, canViewProjectReport, canCreateReport]: [PageProjectPartnerReportSummaryDTO, ProjectPartnerSummaryDTO, boolean, boolean, ProjectVersionDTO | undefined, boolean, boolean]) => {
           return {
             totalElements: partnerReports.totalElements,
@@ -137,6 +123,8 @@ export class PartnerReportComponent {
               ...report,
               routeToControl: `${report.id}/controlReport/${(report.status === StatusEnum.Certified || isController) ? 'identificationTab' : 'document'}`,
             })),
+            isController,
+            partnerReports2: partnerReports,
             partner,
             canEditReport,
             currentApprovedVersion: approvedVersion?.version,
@@ -146,18 +134,36 @@ export class PartnerReportComponent {
         }
       ),
       tap(data => {
-        data.partnerReports.forEach((report) => {
-          this.controlActionMap.set(report.id, new BehaviorSubject<boolean>(false));
-          if (report.reportNumber === data.totalElements && report.status === StatusEnum.Draft) {
-            this.deletableReportId = report.reportNumber;
+        const someDraft = data.partnerReports2.content
+          .find((x) => x.status === ProjectPartnerReportSummaryDTO.StatusEnum.Draft);
+        const someCertified = data.partnerReports2.content
+          .find((x) => x.status === ProjectPartnerReportSummaryDTO.StatusEnum.Certified);
+
+        this.displayedColumns.splice(0);
+        this.allColumns.forEach(column => {
+          if (column === 'delete' && (!data.canEditReport || !someDraft)) {
+            return;
           }
-          this.currentApprovedVersion = data.currentApprovedVersion ?? '';
-          this.canViewProjectReport = data.canViewProjectReport ?? false;
-          const someDraft = data.partnerReports
-            .find((x) => x.status === ProjectPartnerReportSummaryDTO.StatusEnum.Draft);
-          const someCertified = data.partnerReports
-            .find((x) => x.status === ProjectPartnerReportSummaryDTO.StatusEnum.Certified);
-          this.refreshColumns(data.canEditReport, !!someDraft, !!someCertified);
+          if (column === 'controlEnd' && (!someCertified)) {
+            return;
+          }
+          this.displayedColumns.push(column);
+        });
+        this.currentApprovedVersion = data.currentApprovedVersion ?? '';
+        this.canViewProjectReport = data.canViewProjectReport ?? false;
+
+        data.partnerReports2.content.forEach((report) => {
+          this.controlActionMap.set(report.id, new BehaviorSubject<boolean>(false));
+      //     if (report.reportNumber === data.totalElements && report.status === StatusEnum.Draft) {
+      //       this.deletableReportId = report.reportNumber;
+      //     }
+      //     this.currentApprovedVersion = data.currentApprovedVersion ?? '';
+      //     this.canViewProjectReport = data.canViewProjectReport ?? false;
+      //     const someDraft = data.partnerReports
+      //       .find((x) => x.status === ProjectPartnerReportSummaryDTO.StatusEnum.Draft);
+      //     const someCertified = data.partnerReports
+      //       .find((x) => x.status === ProjectPartnerReportSummaryDTO.StatusEnum.Certified);
+      //     this.refreshColumns(data.canEditReport, !!someDraft, !!someCertified);
         });
       })
     );
@@ -174,98 +180,6 @@ export class PartnerReportComponent {
         }
       )
     ).subscribe();
-  }
-
-  private refreshColumns(canEditReport: boolean, thereIsDraft: boolean, thereIsCertified: boolean) {
-    this.tableConfiguration = new TableConfiguration({
-      isTableClickable: true,
-      sortable: true,
-      columns: [
-        {
-          displayedColumn: 'project.application.partner.reports.table.id',
-          columnType: ColumnType.CustomComponent,
-          customCellTemplate: this.numberingCell,
-          columnWidth: ColumnWidth.IdColumn
-        },
-        {
-          displayedColumn: 'project.application.partner.reports.table.status',
-          columnType: ColumnType.CustomComponent,
-          customCellTemplate: this.statusCell,
-          columnWidth: ColumnWidth.ChipColumn
-        },
-        {
-          displayedColumn: 'project.application.partner.reports.table.included',
-          columnType: ColumnType.CustomComponent,
-          customCellTemplate: this.projectReportCell,
-          columnWidth: ColumnWidth.SmallColumn
-        },
-        {
-          displayedColumn: 'project.application.partner.reports.table.version',
-          elementProperty: 'linkedFormVersion',
-          customCellTemplate: this.versionCell,
-          columnWidth: ColumnWidth.SmallColumn
-        },
-        {
-          displayedColumn: 'project.application.partner.report.reporting.period',
-          columnType: ColumnType.CustomComponent,
-          customCellTemplate: this.periodCell,
-          columnWidth: ColumnWidth.MediumColumn
-        },
-        {
-          displayedColumn: 'project.application.partner.reports.table.created.at',
-          elementProperty: 'createdAt',
-          columnType: ColumnType.DateColumn,
-          columnWidth: ColumnWidth.DateColumn
-        },
-        {
-          displayedColumn: 'project.application.partner.reports.table.first.submission',
-          elementProperty: 'firstSubmission',
-          columnType: ColumnType.DateColumn,
-          columnWidth: ColumnWidth.DateColumn
-        },
-        {
-          displayedColumn: 'project.application.partner.reports.table.last.submission',
-          elementProperty: 'lastSubmission',
-          columnType: ColumnType.DateColumn,
-          columnWidth: ColumnWidth.DateColumn
-        },
-        {
-          displayedColumn: 'project.application.partner.reports.table.amount.submitted',
-          elementProperty: 'totalAfterSubmitted',
-          columnType: ColumnType.Decimal,
-        },
-        ...(thereIsCertified) ? [{
-          displayedColumn: 'project.application.partner.reports.table.control.end',
-          elementProperty: 'controlEnd',
-          columnType: ColumnType.DateColumn,
-          columnWidth: ColumnWidth.DateColumn
-        }, {
-          displayedColumn: 'project.application.partner.report.control.tab.overviewAndFinalize.total.eligible.after.control',
-          elementProperty: 'totalEligibleAfterControl',
-          columnType: ColumnType.Decimal,
-        }] : [],
-        {
-          displayedColumn: 'project.application.partner.reports.table.control',
-          columnType: ColumnType.CustomComponent,
-          customCellTemplate: this.actionCell,
-          clickable: false,
-        },
-        ...(canEditReport && thereIsDraft) ? [{
-          displayedColumn: 'common.delete.entry',
-          customCellTemplate: this.deleteCell,
-          columnWidth: ColumnWidth.DeletionColumn,
-          clickable: false,
-        }] : [],
-      ]
-    });
-
-    this.pageStore.partnerId$
-      .pipe(
-        distinctUntilChanged(),
-        filter(partnerId => !!partnerId),
-        tap(partnerId => this.initializeTableConfiguration(partnerId as any)),
-        untilDestroyed(this)
-      ).subscribe();
   }
 
   getPartnerTranslationString(partner: ProjectPartnerSummaryDTO): string {
@@ -309,10 +223,6 @@ export class PartnerReportComponent {
 
   getPendingActionStatus(reportId: number): any {
     return this.controlActionMap.get(reportId);
-  }
-
-  private initializeTableConfiguration(partnerId: number): void {
-    this.tableConfiguration.routerLink = `/app/project/detail/${this.projectId}/reporting/${partnerId}/reports/`;
   }
 
   private showErrorMessage(error: APIError): Observable<null> {
@@ -360,7 +270,4 @@ export class PartnerReportComponent {
       ).subscribe();
   }
 
-  isReportVersionNotLatestApproved(reportVersion: string): boolean {
-    return reportVersion !== this.currentApprovedVersion;
-  }
 }
