@@ -6,8 +6,10 @@ import io.cloudflight.jems.api.controllerInstitutions.dto.ControllerInstitutionD
 import io.cloudflight.jems.api.controllerInstitutions.dto.ControllerInstitutionListDTO
 import io.cloudflight.jems.api.controllerInstitutions.dto.InstitutionPartnerAssignmentDTO
 import io.cloudflight.jems.api.controllerInstitutions.dto.InstitutionPartnerDetailsDTO
+import io.cloudflight.jems.api.controllerInstitutions.dto.InstitutionPartnerSearchRequestDTO
 import io.cloudflight.jems.api.controllerInstitutions.dto.UpdateControllerInstitutionDTO
 import io.cloudflight.jems.api.controllerInstitutions.dto.UserInstitutionAccessLevelDTO
+import io.cloudflight.jems.api.nuts.dto.OutputNuts
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -60,8 +62,11 @@ interface ControllerInstitutionApi {
         ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
     )
-    @GetMapping("$ENDPOINT_API_CONTROLLERS/assignments")
-    fun getInstitutionPartnerAssignments(pageable: Pageable): Page<InstitutionPartnerDetailsDTO>
+    @PostMapping("$ENDPOINT_API_CONTROLLERS/assignments", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun getInstitutionPartnerAssignments(
+        pageable: Pageable,
+        @RequestBody(required = true) searchRequest: InstitutionPartnerSearchRequestDTO?
+    ): Page<InstitutionPartnerDetailsDTO>
 
     @ApiOperation("Assign institutions to partners")
     @PostMapping("$ENDPOINT_API_CONTROLLERS/assign", consumes = [MediaType.APPLICATION_JSON_VALUE])
@@ -78,4 +83,8 @@ interface ControllerInstitutionApi {
     @ApiOperation("Returns the list of users of a controller institution by institution id")
     @GetMapping("$ENDPOINT_API_CONTROLLERS/{institutionId}/users/{partnerId}")
     fun getUsersByControllerInstitutionId(@PathVariable partnerId: Long, @PathVariable institutionId: Long): List<UserSimpleDTO>
+
+    @ApiOperation("Get available NUTS from the controller institution(s) that the provided user is assigned to")
+    @GetMapping("$ENDPOINT_API_CONTROLLERS/checkMyAvailableRegions")
+    fun getAvailableRegions(): List<OutputNuts>
 }

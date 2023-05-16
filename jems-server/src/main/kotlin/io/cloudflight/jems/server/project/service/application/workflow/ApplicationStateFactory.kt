@@ -1,12 +1,35 @@
 package io.cloudflight.jems.server.project.service.application.workflow
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.project.authorization.ProjectAuthorization
 import io.cloudflight.jems.server.project.service.ProjectAssessmentPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus.*
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus.APPROVED
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus.APPROVED_WITH_CONDITIONS
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus.CONDITIONS_SUBMITTED
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus.CONTRACTED
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus.DRAFT
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus.ELIGIBLE
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus.INELIGIBLE
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus.IN_MODIFICATION
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus.MODIFICATION_PRECONTRACTING
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus.MODIFICATION_REJECTED
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus.MODIFICATION_SUBMITTED
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus.NOT_APPROVED
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus.RETURNED_TO_APPLICANT
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus.RETURNED_TO_APPLICANT_FOR_CONDITIONS
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus.STEP1_APPROVED
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus.STEP1_APPROVED_WITH_CONDITIONS
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus.STEP1_DRAFT
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus.STEP1_ELIGIBLE
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus.STEP1_INELIGIBLE
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus.STEP1_NOT_APPROVED
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus.STEP1_SUBMITTED
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus.SUBMITTED
 import io.cloudflight.jems.server.project.service.application.workflow.states.ApprovedApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.ApprovedApplicationWithConditionsState
 import io.cloudflight.jems.server.project.service.application.workflow.states.ConditionsSubmittedApplicationState
@@ -42,7 +65,8 @@ class ApplicationStateFactory(
     private val projectWorkflowPersistence: ProjectWorkflowPersistence,
     private val projectAuthorization: ProjectAuthorization,
     private val projectAssessmentPersistence: ProjectAssessmentPersistence,
-    private val projectVersionPersistence: ProjectVersionPersistence
+    private val projectVersionPersistence: ProjectVersionPersistence,
+    private val controllerInstitutionPersistence: ControllerInstitutionPersistence
 ) {
 
     fun getInstance(projectSummary: ProjectSummary) =
@@ -103,7 +127,8 @@ class ApplicationStateFactory(
                 auditPublisher,
                 securityService,
                 projectPersistence,
-                projectVersionPersistence
+                projectVersionPersistence,
+                controllerInstitutionPersistence
             )
             APPROVED_WITH_CONDITIONS -> ApprovedApplicationWithConditionsState(
                 projectSummary,

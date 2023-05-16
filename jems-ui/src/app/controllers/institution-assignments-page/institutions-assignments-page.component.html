@@ -4,6 +4,43 @@
 
     <jems-form (discard)="resetForm(data.rows, true)" (save)="saveForm()">
         <h3>{{'topbar.main.institutions.assignment' | translate}}</h3>
+
+        <ng-container>
+            <jems-filter-template *ngIf="filterData$ | async as filterData"
+                                  [formGroup]="filterForm"
+                                  [isThereAnyActiveFilter]="isThereAnyActiveFilter()">
+                <div alignItems="start" jemsMultiColumnRow display="block">
+                    <jems-filter-text-input type="number"
+                                            formControlName="callId"
+                                            label="project.table.column.name.call.id">
+                    </jems-filter-text-input>
+
+                    <jems-filter-text-input
+                            formControlName="projectId"
+                            label="project.table.column.name.project.id">
+                    </jems-filter-text-input>
+
+                    <jems-filter-text-input
+                            formControlName="acronym"
+                            label="project.table.column.name.acronym">
+                    </jems-filter-text-input>
+
+                    <jems-filter-text-input
+                            formControlName="partnerName"
+                            label="project.table.column.name.partner.name">
+                    </jems-filter-text-input>
+
+                    <jems-filter-nuts-input
+                            formControlName="partnerNuts"
+                            label="project.table.column.name.partner.nuts"
+                            [availableRegions]="filterData.partnerNuts">
+                    </jems-filter-nuts-input>
+
+                    <jems-context-info infoPosition="right" infoText="{{'common.filters.active.partner.nuts.tooltip' | translate}}"></jems-context-info>
+                </div>
+            </jems-filter-template>
+        </ng-container>
+
         <jems-table class="overflow-auto" *ngIf="data.rows.length"
                     [configuration]="data.tableConfiguration"
                     [rows]="data.rows"
@@ -58,5 +95,3 @@
 <ng-template #institutionNutsCell let-institutionAssignmentEntry>
     <p>{{institutionAssignmentEntry.partnerNuts3 ? institutionAssignmentEntry.partnerNuts3 : institutionAssignmentEntry.partnerAddress}}</p>
 </ng-template>
-
-

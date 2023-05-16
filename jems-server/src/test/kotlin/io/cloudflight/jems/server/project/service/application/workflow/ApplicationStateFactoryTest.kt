@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service.application.workflow
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.project.authorization.ProjectAuthorization
 import io.cloudflight.jems.server.project.service.ProjectAssessmentPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
@@ -20,13 +21,14 @@ import io.cloudflight.jems.server.project.service.application.workflow.states.Re
 import io.cloudflight.jems.server.project.service.application.workflow.states.SubmittedApplicationState
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.mockk.impl.annotations.InjectMockKs
+import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
+import java.util.stream.Stream
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.context.ApplicationEventPublisher
-import java.util.stream.Stream
 
 class ApplicationStateFactoryTest : UnitTest() {
 
@@ -65,6 +67,9 @@ class ApplicationStateFactoryTest : UnitTest() {
     @RelaxedMockK
     lateinit var projectVersionPersistence: ProjectVersionPersistence
 
+    @MockK
+    lateinit var controllerInstitutionPersistence: ControllerInstitutionPersistence
+
     @InjectMockKs
     private lateinit var applicationStateFactory: ApplicationStateFactory
 
@@ -89,5 +94,4 @@ class ApplicationStateFactoryTest : UnitTest() {
             Arguments.of(summary(ApplicationStatus.NOT_APPROVED), NotApprovedApplicationState::class.java),
         )
     }
-
 }

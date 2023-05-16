@@ -11,7 +11,7 @@ import {
 import {ContractingDimensionCodeDTO} from '@cat/api';
 import {NumberService} from '@common/services/number.service';
 import {Alert} from '@common/components/forms/alert';
-import {UntilDestroy} from "@ngneat/until-destroy";
+import {UntilDestroy} from '@ngneat/until-destroy';
 
 @UntilDestroy()
 @Component({

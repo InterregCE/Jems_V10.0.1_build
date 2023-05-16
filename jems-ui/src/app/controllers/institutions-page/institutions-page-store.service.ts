@@ -3,6 +3,7 @@ import {BehaviorSubject, combineLatest, merge, Observable, of, Subject} from 'rx
 import {
   ControllerInstitutionDTO,
   ControllerInstitutionsApiService,
+  OutputNuts,
   PageControllerInstitutionListDTO,
   UpdateControllerInstitutionDTO
 } from '@cat/api';
@@ -82,4 +83,7 @@ export class InstitutionsPageStore {
       );
   }
 
+  getNutsDefinedForCurrentUser(): Observable<OutputNuts[]> {
+    return this.controllerInstitutionsApiService.getAvailableRegions();
+  }
 }
