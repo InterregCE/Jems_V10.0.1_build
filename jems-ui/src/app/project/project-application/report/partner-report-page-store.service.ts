@@ -1,15 +1,15 @@
 import {Injectable} from '@angular/core';
 import {
   ControllerInstitutionsApiService,
-  PageProjectPartnerReportSummaryDTO,
+  PageProjectPartnerReportSummaryDTO, PaymentDetailDTO,
   ProjectPartnerReportService,
   ProjectPartnerReportSummaryDTO,
   ProjectPartnerSummaryDTO,
   ProjectPartnerUserCollaboratorService,
   UserRoleCreateDTO
 } from '@cat/api';
-import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
-import {filter, map, shareReplay, startWith, switchMap, take, tap} from 'rxjs/operators';
+import {BehaviorSubject, combineLatest, Observable, of, Subject} from 'rxjs';
+import {catchError, filter, map, shareReplay, startWith, switchMap, take, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {Log} from '@common/utils/log';
@@ -181,6 +181,9 @@ export class PartnerReportPageStore {
     return this.partnerId$
       .pipe(
         switchMap((partnerId) => this.projectPartnerReportService.canReportBeCreated(partnerId as number)),
+        catchError(() => {
+          return of(false as boolean);
+        })
       );
   }
 
