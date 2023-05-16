@@ -43,10 +43,10 @@ class CheckInstitutionPartnerAssignmentsTest : UnitTest() {
             )
         )
 
-        private fun projectSummary(ID: Long) = mockk<ProjectSummary> {
-            every { id } returns ID
-            every { customIdentifier } returns ID.toString()
-            every { acronym } returns ID.toString()
+        private fun projectSummary(id: Long) = mockk<ProjectSummary> {
+            every { this@mockk.id } returns id
+            every { customIdentifier } returns id.toString()
+            every { acronym } returns id.toString()
         }
     }
 
@@ -62,13 +62,11 @@ class CheckInstitutionPartnerAssignmentsTest : UnitTest() {
     @InjectMockKs
     lateinit var checkInstitutionPartnerAssignments: CheckInstitutionPartnerAssignments
 
-
     @BeforeEach
     fun resetMocks() {
         clearMocks(controllerInstitutionPersistence)
         clearMocks(auditPublisher)
     }
-
 
     @Test
     fun checkInstitutionAssignmentsToRemoveForUpdatedPartners() {

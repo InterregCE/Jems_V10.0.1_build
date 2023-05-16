@@ -99,7 +99,7 @@ export class PartnerReportProcurementIdentificationComponent {
     this.formService.setEditable(reportEditable && (isCreate || procurementIsFromThisReport));
     this.form.controls.reportNumber.disable();
     if (this.isReportReopenedLimited && !isCreate)
-      this.form.controls.contractName.disable();
+      {this.form.controls.contractName.disable();}
     this.formService.setCreation(isCreate);
   }
 
@@ -160,5 +160,4 @@ export class PartnerReportProcurementIdentificationComponent {
       this.resetForm(originalData, currentReportNumber);
     }
   }
-
 }

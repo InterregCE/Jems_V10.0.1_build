@@ -501,6 +501,12 @@ export class Permission {
           editPermissions: [PermissionsEnum.InstitutionsAssignmentUpdate],
           editTooltip: 'permission.top.bar.institutions.assignment.data',
         },
+        {
+          name: 'permission.top.bar.assignments.all.toggle',
+          mode: PermissionMode.TOGGLE_EDIT,
+          editPermissions: [PermissionsEnum.AssignmentsUnlimited],
+          infoMessage: 'permission.top.bar.assignments.all.info'
+        }
       ]
     },
     {

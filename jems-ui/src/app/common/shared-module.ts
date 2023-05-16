@@ -99,6 +99,7 @@ import {
   FileListTableWithFileLinkingComponent
 } from '@common/components/file-list/file-list-table-with-file-linking/file-list-table-with-file-linking.component';
 import {NotificationListComponent} from '@common/components/notification-list/notification-list.component';
+import {FilterNutsInputComponent} from '@common/components/filter/filter-nuts/filter-nuts-input.component';
 
 const modules = [
   CommonModule,
@@ -165,6 +166,7 @@ const declarations = [
   FilterDateInputComponent,
   FilterListInputComponent,
   FilterAutocompleteInputComponent,
+  FilterNutsInputComponent,
   SecondsToTimePipePipe,
   ChecklistAnswersComponent,
   ChecklistInstanceListComponent,

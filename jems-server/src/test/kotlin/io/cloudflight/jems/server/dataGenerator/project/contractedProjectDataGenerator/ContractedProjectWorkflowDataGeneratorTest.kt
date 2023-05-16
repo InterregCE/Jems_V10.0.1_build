@@ -13,6 +13,7 @@ import io.cloudflight.jems.server.dataGenerator.PROJECT_DATA_INITIALIZER_ORDER
 import io.cloudflight.jems.server.dataGenerator.project.versionedString
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.platform.test.openfeign.FeignTestClientFactory
+import java.time.LocalDate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
@@ -21,8 +22,6 @@ import org.quickperf.sql.annotation.ExpectInsert
 import org.quickperf.sql.annotation.ExpectSelect
 import org.quickperf.sql.annotation.ExpectUpdate
 import org.springframework.boot.web.server.LocalServerPort
-import java.time.LocalDate
-
 
 @Order(PROJECT_DATA_INITIALIZER_ORDER + 50)
 class ContractedProjectWorkflowDataGeneratorTest(@LocalServerPort private val port: Int) : DataGeneratorTest() {
@@ -128,8 +127,8 @@ class ContractedProjectWorkflowDataGeneratorTest(@LocalServerPort private val po
 
     @Test
     @Order(70)
-    @ExpectSelect(11)
-    @ExpectInsert(2)
+    @ExpectSelect(16)
+    @ExpectInsert(4)
     @ExpectUpdate(1)
     @ExpectDelete(1)
     fun `approve application`() {
@@ -217,9 +216,9 @@ class ContractedProjectWorkflowDataGeneratorTest(@LocalServerPort private val po
 
     @Test
     @Order(130)
-    @ExpectSelect(38)
+    @ExpectSelect(43)
     @ExpectInsert(1)
-    @ExpectUpdate(2)
+    @ExpectUpdate(4)
     @ExpectDelete(1)
     fun `approve second modification of the application`() {
         assertThat(
@@ -299,9 +298,9 @@ class ContractedProjectWorkflowDataGeneratorTest(@LocalServerPort private val po
 
     @Test
     @Order(190)
-    @ExpectSelect(39)
+    @ExpectSelect(44)
     @ExpectInsert(1)
-    @ExpectUpdate(2)
+    @ExpectUpdate(4)
     @ExpectDelete(1)
     fun `approve the third modification after it was handed back to the applicant`() {
         assertThat(

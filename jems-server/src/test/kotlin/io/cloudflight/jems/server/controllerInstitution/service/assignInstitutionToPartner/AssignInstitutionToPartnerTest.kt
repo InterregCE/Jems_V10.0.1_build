@@ -57,7 +57,6 @@ class AssignInstitutionToPartnerTest : UnitTest() {
     @InjectMockKs
     lateinit var assignInstitutionToPartner: AssignInstitutionToPartner
 
-
     @BeforeEach
     fun resetMocks() {
         clearMocks(partnerPersistence, controllerInstitutionPersistence)
@@ -123,5 +122,4 @@ class AssignInstitutionToPartnerTest : UnitTest() {
         AuditProject("${id}", "${id}", "${id}"),
         "Assignment of institution to partner changed to:\nProjectID: ${id}, PartnerID: ${id}, InstitutionID: ${id}"
     )
-
 }

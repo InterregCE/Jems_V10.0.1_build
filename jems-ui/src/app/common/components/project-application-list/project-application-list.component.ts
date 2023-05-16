@@ -30,7 +30,7 @@ export class ProjectApplicationListComponent {
     isTableClickable: true,
     columns: [
       {
-        displayedColumn: 'project.table.column.name.id',
+        displayedColumn: 'project.table.column.name.project.id',
         elementProperty: 'customIdentifier',
         sortProperty: 'customIdentifier',
         columnWidth: ColumnWidth.IdColumn
@@ -137,5 +137,4 @@ export class ProjectApplicationListComponent {
       this.filterForm.value.statuses?.length > 0 ||
       this.filterForm.value.calls?.length;
   }
-
 }

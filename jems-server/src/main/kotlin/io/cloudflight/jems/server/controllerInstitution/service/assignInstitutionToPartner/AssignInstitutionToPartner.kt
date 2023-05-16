@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.controllerInstitution.service.assignInstitutionToPartner
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.authorization.CanAssignInstitutionToPartner
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.service.institutionPartnerAssignmentsChanged
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionAssignment
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignment
@@ -43,11 +43,9 @@ class AssignInstitutionToPartner(
             )
         ).associateBy(keySelector = { it.first }, valueTransform = { it.second })
 
-
         validateAssignments(assignmentsToSaveOrUpdate.union(assignmentsToRemove), partnerToProjectIdMap)
         assignmentsToSaveOrUpdate.forEach { it.setPartnerProjectId(partnerToProjectIdMap[it.partnerId]!!) }
         assignmentsToRemove.forEach { it.setPartnerProjectId(partnerToProjectIdMap[it.partnerId]!!) }
-
 
         return controllerInstitutionPersistence.assignInstitutionToPartner(
             partnerIdsToRemove = assignmentsToRemove.mapTo(HashSet()) { it.partnerId },
@@ -61,7 +59,6 @@ class AssignInstitutionToPartner(
             ).forEach { event -> auditPublisher.publishEvent(event) }
         }
     }
-
 
     private fun validateAssignments(
         assignmentsToValidate: Set<InstitutionPartnerAssignment>,
@@ -77,5 +74,4 @@ class AssignInstitutionToPartner(
     private fun InstitutionPartnerAssignment.setPartnerProjectId(projectId: Long) {
         this.partnerProjectId = projectId
     }
-
 }

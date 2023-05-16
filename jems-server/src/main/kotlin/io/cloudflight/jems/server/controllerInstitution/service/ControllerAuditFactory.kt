@@ -23,7 +23,6 @@ fun controllerInstitutionChanged(
         )
     )
 
-
 fun institutionPartnerAssignmentsChanged(
     context: Any,
     institutionPartnerUpdatedAssignments: List<InstitutionPartnerAssignment>,
@@ -65,4 +64,3 @@ fun institutionPartnerAssignmentRemoved(
         )
     }.toSet()
 }
-

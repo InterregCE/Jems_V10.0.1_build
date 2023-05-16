@@ -92,7 +92,7 @@ class PartnerControlReportCheckSamplePlugin : ControlReportPartnerCheckPlugin {
     override fun getKey(): String =
         PartnerControlReportCheckPluginKey
 
-    override fun check(projectId: Long, reportId: Long) =
+    override fun check(partnerId: Long, reportId: Long) =
         PreConditionCheckResult(emptyList(), true)
 
     override fun getDescription(): String =

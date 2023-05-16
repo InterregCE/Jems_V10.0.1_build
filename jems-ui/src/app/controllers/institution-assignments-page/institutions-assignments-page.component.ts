@@ -3,6 +3,7 @@ import {combineLatest, Observable} from 'rxjs';
 import {
   InstitutionPartnerAssignmentDTO,
   InstitutionPartnerDetailsDTO,
+  OutputNuts,
   PageControllerInstitutionListDTO,
   UserRoleCreateDTO
 } from '@cat/api';
@@ -56,6 +57,17 @@ export class InstitutionsAssignmentsPageComponent{
     assignmentsToRemove: InstitutionPartnerAssignmentDTO[];
   } = {assignmentsToAdd: [], assignmentsToRemove: []};
 
+  filterData$: Observable<{
+    partnerNuts: OutputNuts[];
+  }>;
+
+  filterForm = this.formBuilder.group({
+    callId: '',
+    projectId: '',
+    acronym: '',
+    partnerName: '',
+    partnerNuts: [[]],
+  });
 
   institutionsAssignmentForm = this.formBuilder.group({
     institutionsPartnerAssignmentToRemove: this.formBuilder.array([]),
@@ -66,13 +78,46 @@ export class InstitutionsAssignmentsPageComponent{
   institutionsTobeAdded: {partnerId: number; institutionId: number}[] = [];
   institutionsTobeDeleted: {partnerId: number; institutionId: number}[] = [];
 
+  static fromNuts(nuts: OutputNuts[]): OutputNuts[] {
+    if (!nuts || nuts.length == 0) {
+      return [];
+    }
+
+    return nuts.map(area => this.fromRegion(null, area));
+  }
+
+  static fromRegion(parent: OutputNuts | null, region: OutputNuts): OutputNuts {
+    const outputNuts = {} as OutputNuts;
+    if (!region) {
+      return outputNuts;
+    }
+    outputNuts.code = region.code;
+    outputNuts.title = region.title;
+    if (region.areas?.length) {
+      outputNuts.areas = region.areas.map(area => this.fromRegion(outputNuts, area));
+    }
+
+    return outputNuts;
+  }
+
   constructor(public institutionAssignmentStore: InstitutionsAssignmentsStoreService,
               private permissionService: PermissionService,
               private controllerInstitutionStore: InstitutionsPageStore,
               private formService: FormService,
-              private formBuilder: FormBuilder,
-
+              private formBuilder: FormBuilder
 ) {
+    this.filterData$ = combineLatest([
+      this.institutionAssignmentStore.nutsDefinedForCurrentUser$
+    ]).pipe(
+        map(([outputNuts]) => InstitutionsAssignmentsPageComponent.fromNuts(outputNuts)),
+        map(outputNuts => ({ partnerNuts: outputNuts }))
+    );
+
+    this.filterForm.valueChanges.pipe(
+        tap(filters => this.institutionAssignmentStore.filter$.next(filters)),
+        untilDestroyed(this)
+    ).subscribe();
+
     this.data$ = combineLatest([
       this.institutionAssignmentStore.controllerInstitutionAssignmentPage$,
       this.controllerInstitutionStore.controllerInstitutionPage$,
@@ -111,7 +156,6 @@ export class InstitutionsAssignmentsPageComponent{
     this.formService.init(this.institutionsAssignmentForm);
   }
 
-
   private getTableConfig(): TableConfiguration {
     return new TableConfiguration({
       isTableClickable: false,
@@ -120,13 +164,13 @@ export class InstitutionsAssignmentsPageComponent{
           displayedColumn: 'controller.institutions.assignment.table.call.id.column.headline',
           elementProperty: 'callId',
           columnWidth: ColumnWidth.IdColumn,
-          sortProperty: 'callId',
+          sortProperty: 'partner.project.call.id',
         },
         {
           displayedColumn: 'controller.institutions.assignment.table.project.id.column.headline',
           elementProperty: 'projectCustomIdentifier',
           columnWidth: ColumnWidth.ChipColumn,
-          sortProperty: 'projectId',
+          sortProperty: 'partner.project.id',
         },
         {
           displayedColumn: 'controller.institutions.assignment.table.acronym.column.headline',
@@ -146,21 +190,21 @@ export class InstitutionsAssignmentsPageComponent{
           columnType: ColumnType.CustomComponent,
           columnWidth: ColumnWidth.ChipColumn,
           customCellTemplate: this.statusCell,
-          sortProperty: 'partnerStatus'
+          sortProperty: 'partnerActive'
         },
         {
           displayedColumn: 'controller.institutions.assignment.table.partner.name.column.headline',
           elementProperty: 'partnerName',
           columnType: ColumnType.StringColumn,
           columnWidth: ColumnWidth.MediumColumn,
-          sortProperty: 'partnerName',
+          sortProperty: 'partnerAbbreviation',
         },
         {
           displayedColumn: 'controller.institutions.assignment.table.partner.nuts.column.headline',
           columnType: ColumnType.CustomComponent,
           customCellTemplate: this.institutionNutsCell,
           columnWidth: ColumnWidth.MediumColumn,
-          sortProperty: 'partnerNuts3'
+          sortProperty: 'addressNuts3'
         },
         {
           displayedColumn: 'controller.institutions.assignment.table.institution.column.headline',
@@ -236,4 +280,11 @@ export class InstitutionsAssignmentsPageComponent{
     return this.institutionsAssignmentForm.get('institutionsPartnersAssignments')?.value.at(index);
   }
 
+  isThereAnyActiveFilter(): boolean {
+    return this.filterForm.value.callId?.length > 0 ||
+        this.filterForm.value.projectId?.length > 0 ||
+        this.filterForm.value.acronym?.length > 0 ||
+        this.filterForm.value.partnerName?.length > 0 ||
+        this.filterForm.value.partnerNuts?.length;
+  }
 }

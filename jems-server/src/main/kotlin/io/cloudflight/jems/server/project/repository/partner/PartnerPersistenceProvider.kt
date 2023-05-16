@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.repository.partner
 
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.payments.repository.advance.AdvancePaymentRepository
+import io.cloudflight.jems.server.controllerInstitution.service.model.ProjectPartnerAssignmentMetadata
 import io.cloudflight.jems.server.programme.repository.legalstatus.ProgrammeLegalStatusRepository
 import io.cloudflight.jems.server.programme.repository.stateaid.ProgrammeStateAidRepository
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
@@ -21,18 +21,18 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAd
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerContact
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerMotivation
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerPaymentSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerStateAid
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerPaymentSummary
+import java.sql.Timestamp
+import java.util.stream.Collectors
+import java.util.stream.StreamSupport
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
-import java.sql.Timestamp
-import java.util.stream.Collectors
-import java.util.stream.StreamSupport
 
 @Repository
 class PartnerPersistenceProvider(
@@ -251,6 +251,9 @@ class PartnerPersistenceProvider(
     override fun getPartnerProjectIdByPartnerIdAndProjectStatusIn(partnerIds: Set<Long>, projectStatuses: Set<ApplicationStatus>): List<Pair<Long, Long>> =
         projectPartnerRepository.getPartnerProjectIdByPartnerIdAndProjectStatusIn(partnerIds, projectStatuses).toList()
 
+    @Transactional(readOnly = true)
+    override fun getCurrentPartnerAssignmentMetadata(projectId: Long): List<ProjectPartnerAssignmentMetadata> =
+        projectPartnerRepository.findTop30ByProjectId(projectId).onlyAssignmentMetadata()
 
     /**
      * sets or updates the sort number for all partners for the specified project.
@@ -308,5 +311,4 @@ class PartnerPersistenceProvider(
         return projectPartnerRepository.getProjectIdByPartnerIdInFullHistory(partnerId)
             ?: throw ResourceNotFoundException("projectPartner")
     }
-
 }

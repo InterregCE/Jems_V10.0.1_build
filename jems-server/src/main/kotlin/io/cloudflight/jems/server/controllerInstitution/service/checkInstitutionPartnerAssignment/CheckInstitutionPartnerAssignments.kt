@@ -25,14 +25,12 @@ class CheckInstitutionPartnerAssignments(
             }
     }
 
-
     override fun checkInstitutionAssignmentsToRemoveForUpdatedInstitution(institutionId: Long) {
         controllerInstitutionPersistence.getInstitutionPartnerAssignmentsToDeleteByInstitutionId(institutionId)
             .takeIf { it.isNotEmpty() }?.let { assignmentsToDelete ->
                 deleteInstitutionPartnerAssignments(assignmentsToDelete)
             }
     }
-
 
     private fun deleteInstitutionPartnerAssignments(assignmentsToDelete: List<InstitutionPartnerAssignment>) {
         controllerInstitutionPersistence.assignInstitutionToPartner(
@@ -47,5 +45,4 @@ class CheckInstitutionPartnerAssignments(
         ).forEach { event -> auditPublisher.publishEvent(event) }
 
     }
-
 }
