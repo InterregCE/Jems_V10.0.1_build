@@ -337,8 +337,7 @@ context('Control report tests', () => {
           cy.contains('Run pre-submission check').scrollIntoView();
           cy.contains('Run pre-submission check').click();
           cy.get('jems-project-application-pre-condition-check-result').should('be.visible');
-          cy.contains('Finalize control').should('be.enabled');
-          cy.contains('Finalize control').click();
+          cy.contains('button', 'Finalize control').click();
           cy.contains('Confirm').should('be.visible').click();
           cy.contains('Certified').should('be.visible');
 
@@ -373,10 +372,9 @@ context('Control report tests', () => {
 
 function instantiateEmptyChecklist(applicationId, partnerId, reportId, checklistName) {
   cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/controlReport/controlChecklistsTab`, {failOnStatusCode: false});
-  cy.intercept(`api/programme/checklist/byType/CONTROL`).as('checklistsLoaded');
   cy.contains('Control checklists').should('be.visible').click();
-  cy.wait('@checklistsLoaded');
-  cy.contains('Select checklist template').should('be.visible').click()
+  cy.wait(500);
+  cy.contains('div', 'Select checklist template').should('be.visible').click()
   cy.contains('span', checklistName).should('be.visible').click();
   cy.contains('start new checklist').should('be.enabled').click();
 }
