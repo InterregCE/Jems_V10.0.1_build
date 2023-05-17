@@ -5,7 +5,7 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
-import io.cloudflight.jems.server.project.authorization.CanEditPartnerControlReportFile
+import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.file.uploadProjectFile.isFileTypeInvalid
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
@@ -30,7 +30,7 @@ class UploadFileToProjectPartnerReportProcurementGdprAttachment(
     private val sensitiveDataAuthorization: SensitiveDataAuthorizationService
 ) : UploadFileToProjectPartnerReportProcurementGdprAttachmentInteractor {
 
-    @CanEditPartnerControlReportFile
+    @CanEditPartnerReport
     @Transactional
     @ExceptionWrapper(UploadFileToProjectPartnerReportProcurementGdprAttachmentException::class)
     override fun uploadToGdprProcurement(

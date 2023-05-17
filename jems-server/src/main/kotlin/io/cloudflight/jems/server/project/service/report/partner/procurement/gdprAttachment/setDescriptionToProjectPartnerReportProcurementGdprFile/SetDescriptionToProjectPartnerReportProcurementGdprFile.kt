@@ -5,7 +5,7 @@ import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType.ProcurementGdprAttachment
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
-import io.cloudflight.jems.server.project.authorization.CanEditPartnerControlReportFile
+import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.partner.SensitiveDataAuthorizationService
 import org.springframework.stereotype.Service
@@ -20,7 +20,7 @@ class SetDescriptionToProjectPartnerReportProcurementGdprFile(
     private val sensitiveDataAuthorization: SensitiveDataAuthorizationService
 ) : SetDescriptionToProjectPartnerReportProcurementGdprFileInteractor {
 
-    @CanEditPartnerControlReportFile
+    @CanEditPartnerReport
     @Transactional
     @ExceptionWrapper(SetDescriptionToProjectPartnerReportFileException::class)
     override fun setDescription(partnerId: Long, reportId: Long, fileId: Long, procurementId: Long, description: String) {
