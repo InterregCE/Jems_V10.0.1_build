@@ -255,16 +255,16 @@ context('Project privileges tests', () => {
 
           // checking for the added users
           cy.contains('mat-row', firstApplicationAcronym).scrollIntoView().within(() => {
-            cy.contains('mat-chip[selected]', testData.monitorUser1.email).should('be.visible');
-            cy.contains('mat-chip[selected]', testData.monitorUser2.email).should('be.visible');
+            cy.contains('mat-chip[selected]', testData.monitorUser1.email).scrollIntoView().should('be.visible');
+            cy.contains('mat-chip[selected]', testData.monitorUser2.email).scrollIntoView().should('be.visible');
           })
           cy.contains('mat-row', secondApplicationAcronym).scrollIntoView().within(() => {
-            cy.contains('mat-chip[selected]', testData.monitorUser1.email).should('be.visible');
+            cy.contains('mat-chip[selected]', testData.monitorUser1.email).scrollIntoView().should('be.visible');
             cy.contains('mat-chip[selected]', testData.monitorUser2.email).should('not.exist');
           })
 
           // removing users from one of the projects
-          cy.contains('.mat-column-project-table-column-name-id', applicationId1).parent().within(() => {
+          cy.contains('.mat-column-project-table-column-name-project-id', applicationId1).parent().within(() => {
             cy.contains('mat-icon', 'highlight_off').click();
           })
           cy.contains('button', 'Save changes').click();
@@ -272,10 +272,10 @@ context('Project privileges tests', () => {
           cy.contains('Users has been successfully assigned to project(s).').should('not.exist');
 
           // checking for the removed users
-          cy.contains('.mat-column-project-table-column-name-id', applicationId1).parent().within(() => {
+          cy.contains('.mat-column-project-table-column-name-project-id', applicationId1).parent().within(() => {
             cy.get('mat-chip.mat-chip-selected-user').should('not.exist');
           })
-          cy.contains('.mat-column-project-table-column-name-id', applicationId2).parent().within(() => {
+          cy.contains('.mat-column-project-table-column-name-project-id', applicationId2).parent().within(() => {
             cy.contains('mat-chip.mat-chip-selected-user', testData.monitorUser1.email).should('exist');
           })
 

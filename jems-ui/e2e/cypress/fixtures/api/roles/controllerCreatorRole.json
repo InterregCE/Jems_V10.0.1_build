@@ -6,6 +6,7 @@
     "InstitutionsUnlimited",
     "InstitutionsRetrieve",
     "InstitutionsAssignmentUpdate",
-    "InstitutionsAssignmentRetrieve"
+    "InstitutionsAssignmentRetrieve",
+    "AssignmentsUnlimited"
   ]
 }
