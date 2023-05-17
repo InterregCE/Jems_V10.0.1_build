@@ -62,7 +62,6 @@ class SubmitProjectPartnerReport(
     private val auditPublisher: ApplicationEventPublisher,
     private val projectPersistence: ProjectPersistence,
     private val jemsPluginRegistry: JemsPluginRegistry,
-    private val expenditurePersistence: ProjectPartnerReportExpenditurePersistence,
     private val callPersistence: CallPersistence,
 ) : SubmitProjectPartnerReportInteractor {
 
@@ -82,15 +81,14 @@ class SubmitProjectPartnerReport(
         if (needsRecalculation)
             storeCurrentValues(partnerId, report, expenditures)
 
-        val newStatus = report.status.submitStatus()
-        if (newStatus == ReportStatus.InControl) {
+        if (report.status == ReportStatus.ReOpenInControlLast) {
             // perform auto-sampling
-            expenditurePersistence.markAsSampledAndLock(
+            reportExpenditurePersistence.markAsSampledAndLock(
                 expenditureIds = getSampledExpenditureIdsFromPlugin(partnerId, reportId = reportId)
             )
         }
 
-        return reportPersistence.updateStatusAndTimes(partnerId, reportId = reportId, status = newStatus,
+        return reportPersistence.updateStatusAndTimes(partnerId, reportId = reportId, status = report.status.submitStatus(),
             firstSubmissionTime = if (report.status.isOpenInitially()) ZonedDateTime.now() else null /* no update */,
             lastReSubmissionTime = if (!report.status.isOpenInitially()) ZonedDateTime.now() else null /* no update */,
         ).also { it ->
