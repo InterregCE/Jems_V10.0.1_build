@@ -78,9 +78,13 @@ class ProjectPartnerReportAuthorization(
         hasPermissionForPartner(partnerId = partnerId, VIEW)
 
     fun canReOpenPartnerReport(partnerId: Long): Boolean =
+        // assigned programme user
         hasPermissionForProject(
             UserRolePermission.ProjectReportingReOpen,
             projectId = partnerPersistence.getProjectIdForPartnerId(partnerId),
+        ) || (
+            // controller with EDIT
+            getLevelForUserController(partnerId = partnerId).hasEdit() && hasNonProjectAuthority(UserRolePermission.ProjectReportingReOpen)
         )
 
     private fun hasPermissionForPartner(partnerId: Long, levelNeeded: PartnerCollaboratorLevel): Boolean {
