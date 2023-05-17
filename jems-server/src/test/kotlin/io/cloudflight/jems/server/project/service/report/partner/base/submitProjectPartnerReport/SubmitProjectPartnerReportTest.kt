@@ -424,9 +424,6 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
     private lateinit var jemsPluginRegistry: JemsPluginRegistry
 
     @MockK
-    private lateinit var expenditurePersistence: ProjectPartnerReportExpenditurePersistence
-
-    @MockK
     private lateinit var callPersistence: CallPersistence
 
     @InjectMockKs
@@ -528,12 +525,12 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         val plugin = mockk<ControlReportSamplingCheckPlugin>()
         every { plugin.check(PARTNER_ID, 35L) } returns ControlReportSamplingCheckResult(setOf(21L))
         every { jemsPluginRegistry.get(ControlReportSamplingCheckPlugin::class, "plugin-key")} returns plugin
-        every { expenditurePersistence.markAsSampledAndLock(setOf(21L)) } answers { }
+        every { reportExpenditurePersistence.markAsSampledAndLock(setOf(21L)) } answers { }
 
         submitReport.submit(PARTNER_ID, 35L)
 
         verify(exactly = 1) { reportPersistence.updateStatusAndTimes(PARTNER_ID, 35L, ReportStatus.InControl, any(), any()) }
-        verify(exactly = 1) { expenditurePersistence.markAsSampledAndLock(setOf(21L)) }
+        verify(exactly = 1) { reportExpenditurePersistence.markAsSampledAndLock(setOf(21L)) }
         assertThat(submissionTime.captured).isAfter(ZonedDateTime.now().minusMinutes(1))
         assertThat(submissionTime.captured).isBefore(ZonedDateTime.now().plusMinutes(1))
 
