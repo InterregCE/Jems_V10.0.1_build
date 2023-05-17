@@ -5,13 +5,10 @@
         [isVersionedData]="false">
 
     <ng-container *ngIf="pageStore.userCanEditReport$ | async">
-        <p>
-            <jems-pending-button jemsText class="mb-3"
-                                 icon="add"
-                                 [routerLink]="'/app/project/detail/' + projectId + '/projectReports/create'">
-                {{'project.application.project.report.add' | translate}}
-            </jems-pending-button>
-        </p>
+        <a jemsText mat-raised-button [color]="'primary'" [routerLink]="'/app/project/detail/' + projectId + '/projectReports/create'">
+            <mat-icon>add</mat-icon>
+            {{'project.application.project.report.add' | translate}}
+        </a>
     </ng-container>
 
     <jems-alert [show]="successfulDeletionMessage"
@@ -64,9 +61,10 @@
                     <span *ngIf="projectReport.periodDetail"
                           matTooltip="{{ (projectReport.startDate | localeDate) || 'X' }} - {{ (projectReport.endDate | localeDate) || 'X' }}">
                         {{ 'project.application.form.work.package.output.delivery.period.entry' | translate : {
-                                        periodNumber: projectReport.periodDetail.number,
-                                        start: projectReport.periodDetail.start,
-                                        end: projectReport.periodDetail.end } }}
+                        periodNumber: projectReport.periodDetail.number,
+                        start: projectReport.periodDetail.start,
+                        end: projectReport.periodDetail.end
+                    } }}
                     </span>
                 </mat-cell>
             </ng-container>
