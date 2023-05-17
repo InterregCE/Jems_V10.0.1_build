@@ -34,19 +34,7 @@
         <jems-api-error-content [error]="error"></jems-api-error-content>
     </jems-alert>
 
-<!--    <ng-container *ngIf="data.partnerReports as partnerReports">-->
-<!--        <jems-table *ngIf="partnerReports.length > 0"-->
-<!--                    [configuration]="tableConfiguration"-->
-<!--                    [rows]="partnerReports"-->
-<!--                    [totalElements]="data.totalElements"-->
-<!--                    [pageIndex]="pageStore.newPageIndex$ | async"-->
-<!--                    (newPageIndex)="pageStore.newPageIndex$.next($event)"-->
-<!--                    (newPageSize)="pageStore.newPageSize$.next($event)">-->
-<!--        </jems-table>-->
-<!--        <p *ngIf="!partnerReports?.length">{{'project.application.partner.reports.table.empty' | translate}}</p>-->
-<!--    </ng-container>-->
-
-    <mat-table matSort matSortDisableClear [class.hide]="!data.partnerReports2.totalElements" [dataSource]="dataSource">
+    <mat-table matSort matSortDisableClear [class.hide]="!data.partnerReports.totalElements" [dataSource]="dataSource">
 
         <ng-container matColumnDef="id">
             <mat-header-cell *matHeaderCellDef>
@@ -212,15 +200,15 @@
         <mat-row *matRowDef="let row; columns: displayedColumns" [routerLink]="[row.id]"></mat-row>
     </mat-table>
 
-    <jems-alert [show]="!data.partnerReports2.totalElements" [type]="Alert.INFO">
+    <jems-alert [show]="!data.partnerReports.totalElements" [type]="Alert.INFO">
         <p>{{ 'project.application.partner.reports.table.empty' | translate }}</p>
     </jems-alert>
 
-    <jems-paginator *ngIf="data.partnerReports2.totalElements"
+    <jems-paginator *ngIf="data.partnerReports.totalElements"
                     (pageIndexChanged)="pageStore.newPageIndex$.next($event)"
                     (pageSizeChanged)="pageStore.newPageSize$.next($event)"
-                    [currentPageIndex]="data.partnerReports2.number"
-                    [currentPageSize]="data.partnerReports2.size"
-                    [length]="data.partnerReports2.totalElements">
+                    [currentPageIndex]="data.partnerReports.number"
+                    [currentPageSize]="data.partnerReports.size"
+                    [length]="data.partnerReports.totalElements">
     </jems-paginator>
 </jems-project-page-template>
