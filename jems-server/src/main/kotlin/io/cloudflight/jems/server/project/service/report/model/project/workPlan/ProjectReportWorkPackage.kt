@@ -21,6 +21,7 @@ data class ProjectReportWorkPackage(
 
     val previousCompleted: Boolean,
     val completed: Boolean,
+    val previousDescription: Set<InputTranslation>,
     val description: Set<InputTranslation>,
     val activities: List<ProjectReportWorkPackageActivity>,
     val outputs: List<ProjectReportWorkPackageOutput>,

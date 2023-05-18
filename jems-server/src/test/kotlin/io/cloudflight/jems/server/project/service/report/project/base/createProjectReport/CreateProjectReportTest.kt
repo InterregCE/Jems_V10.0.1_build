@@ -382,7 +382,8 @@ internal class CreateProjectReportTest : UnitTest() {
                 previousCompleted = true,
                 previousSpecificStatus = ProjectReportWorkPlanStatus.Fully,
                 previousSpecificExplanation = emptySet(),
-                previousCommunicationExplanation = emptySet()
+                previousCommunicationExplanation = emptySet(),
+                previousDescription = emptySet()
         )
 
         fun expectedToCreateModel(projectId: Long, created: ZonedDateTime) = ProjectReportCreateModel(
@@ -523,8 +524,15 @@ internal class CreateProjectReportTest : UnitTest() {
                                                                 deactivated = false,
                                                                 periodNumber = 12,
                                                                 previouslyReported = BigDecimal.valueOf(502),
+                                                                previousCurrentReport = BigDecimal.ZERO,
+                                                                previousProgress = emptySet(),
+                                                                progress = emptySet(),
+                                                                currentReport = BigDecimal.ZERO
                                                         ),
                                                 ),
+                                                previousProgress = emptySet(),
+                                                progress = emptySet(),
+                                                previousStatus = ProjectReportWorkPlanStatus.Not,
                                         ),
                                 ),
                                 outputs = listOf(
@@ -536,9 +544,22 @@ internal class CreateProjectReportTest : UnitTest() {
                                                 periodNumber = 16,
                                                 targetValue = BigDecimal.valueOf(10),
                                                 previouslyReported = BigDecimal.valueOf(845),
+                                                previousCurrentReport = BigDecimal.ZERO,
+                                                previousProgress = emptySet(),
+                                                progress = emptySet(),
+                                                currentReport = BigDecimal.ZERO
                                         ),
                                 ),
-                                investments = emptyList()
+                                investments = emptyList(),
+                                previousCommunicationStatus = ProjectReportWorkPlanStatus.Partly,
+                                previousCompleted = true,
+                                previousSpecificStatus = ProjectReportWorkPlanStatus.Fully,
+                                previousSpecificExplanation = emptySet(),
+                                previousCommunicationExplanation= emptySet(),
+                                specificExplanation = emptySet(),
+                                communicationExplanation = emptySet(),
+                                description = emptySet(),
+                                previousDescription = emptySet(),
                         ),
                 ),
                 targetGroups = listOf(

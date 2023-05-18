@@ -22,4 +22,6 @@ data class ProjectReportWorkPackageInvestmentCreate(
     val ownershipRetain: Set<InputTranslation>,
     val ownershipMaintenance: Set<InputTranslation>,
     val deactivated: Boolean,
+    val previousProgress: Set<InputTranslation>,
+    val progress: Set<InputTranslation>,
 )

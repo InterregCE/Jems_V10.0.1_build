@@ -431,7 +431,8 @@ class ProjectReportDataProviderImplTest : UnitTest() {
             previousCommunicationExplanation = communicationExplanation,
             previousCompleted = true,
             previousCommunicationStatus = ProjectReportWorkPlanStatus.Fully,
-            previousSpecificExplanation = specificExplanation
+            previousSpecificExplanation = specificExplanation,
+            previousDescription = description
         )
         private val expectedWorkPackage = ProjectReportWorkPackageData(
             id = 10L,

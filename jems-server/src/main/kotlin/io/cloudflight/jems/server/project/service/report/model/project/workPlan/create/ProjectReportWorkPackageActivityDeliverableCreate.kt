@@ -12,4 +12,9 @@ data class ProjectReportWorkPackageActivityDeliverableCreate(
 
     val periodNumber: Int?,
     val previouslyReported: BigDecimal,
+    val previousCurrentReport: BigDecimal,
+    val currentReport: BigDecimal,
+
+    val progress: Set<InputTranslation>,
+    val previousProgress: Set<InputTranslation>,
 )

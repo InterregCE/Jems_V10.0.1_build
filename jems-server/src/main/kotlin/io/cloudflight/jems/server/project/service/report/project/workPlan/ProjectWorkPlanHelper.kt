@@ -26,7 +26,7 @@ fun List<ProjectReportWorkPackage>.fillInFlags() = onEach {
         specificChanged
     )
 }
-fun hasActivityChanged(activity: ProjectReportWorkPackageActivity): ProjectReportWorkPlanFlag {
+fun hasActivityChanged(activity: ProjectReportWorkPackageActivity): ProjectReportWorkPlanFlag? {
     if (activity.status == ProjectReportWorkPlanStatus.Fully
         && activity.previousStatus != ProjectReportWorkPlanStatus.Fully) {
         return ProjectReportWorkPlanFlag.Green
@@ -36,18 +36,22 @@ fun hasActivityChanged(activity: ProjectReportWorkPackageActivity): ProjectRepor
                 || haveDeliverablesChanged(activity.deliverables))) {
         return ProjectReportWorkPlanFlag.Yellow
     }
-    return ProjectReportWorkPlanFlag.Gray
+    if (activity.status == ProjectReportWorkPlanStatus.Fully
+        && activity.previousStatus == ProjectReportWorkPlanStatus.Fully) {
+        return ProjectReportWorkPlanFlag.Gray
+    }
+    return null
 }
 
 fun haveDeliverablesChanged(deliverables: List<ProjectReportWorkPackageActivityDeliverable>): Boolean {
     val differences = deliverables.map {
-        it.currentReport != it.previousCurrentReport || it.previousProgress != it.progress
+        it.currentReport.compareTo(it.previousCurrentReport) != 0 || it.previousProgress != it.progress
     }
 
     return differences.contains(true)
 }
 
-fun hasCommunicationChanged(workpackage: ProjectReportWorkPackage): ProjectReportWorkPlanFlag {
+fun hasCommunicationChanged(workpackage: ProjectReportWorkPackage): ProjectReportWorkPlanFlag? {
     if (workpackage.communicationStatus == ProjectReportWorkPlanStatus.Fully
         && workpackage.previousCommunicationStatus != ProjectReportWorkPlanStatus.Fully) {
         return ProjectReportWorkPlanFlag.Green
@@ -56,10 +60,14 @@ fun hasCommunicationChanged(workpackage: ProjectReportWorkPackage): ProjectRepor
         && workpackage.communicationExplanation != workpackage.previousCommunicationExplanation) {
         return ProjectReportWorkPlanFlag.Yellow
     }
-    return ProjectReportWorkPlanFlag.Gray
+    if (workpackage.communicationStatus == ProjectReportWorkPlanStatus.Fully
+        && workpackage.previousCommunicationStatus == ProjectReportWorkPlanStatus.Fully) {
+        return ProjectReportWorkPlanFlag.Gray
+    }
+    return null
 }
 
-fun hasSpecificChanged(workpackage: ProjectReportWorkPackage): ProjectReportWorkPlanFlag {
+fun hasSpecificChanged(workpackage: ProjectReportWorkPackage): ProjectReportWorkPlanFlag? {
     if (workpackage.specificStatus == ProjectReportWorkPlanStatus.Fully
         && workpackage.previousSpecificStatus != ProjectReportWorkPlanStatus.Fully) {
         return ProjectReportWorkPlanFlag.Green
@@ -68,7 +76,11 @@ fun hasSpecificChanged(workpackage: ProjectReportWorkPackage): ProjectReportWork
         && workpackage.specificExplanation != workpackage.previousSpecificExplanation) {
         return ProjectReportWorkPlanFlag.Yellow
     }
-    return ProjectReportWorkPlanFlag.Gray
+    if (workpackage.specificStatus == ProjectReportWorkPlanStatus.Fully
+        && workpackage.previousSpecificStatus == ProjectReportWorkPlanStatus.Fully) {
+        return ProjectReportWorkPlanFlag.Gray
+    }
+    return null
 }
 
 fun hasWorkPlanChanged(
@@ -76,9 +88,9 @@ fun hasWorkPlanChanged(
     activities: List<ProjectReportWorkPackageActivity>,
     outputs: List<ProjectReportWorkPackageOutput>,
     investments: List<ProjectReportWorkPackageInvestment>,
-    communicationChanged: ProjectReportWorkPlanFlag,
-    specificChanged: ProjectReportWorkPlanFlag
-): ProjectReportWorkPlanFlag {
+    communicationChanged: ProjectReportWorkPlanFlag?,
+    specificChanged: ProjectReportWorkPlanFlag?
+): ProjectReportWorkPlanFlag? {
     val haveActivitiesChanged = activities.map { it.activityStatusLabel }.contains(ProjectReportWorkPlanFlag.Yellow)
     if (workpackage.completed
         && workpackage.previousCompleted != workpackage.completed) {
@@ -88,15 +100,20 @@ fun hasWorkPlanChanged(
         || specificChanged == ProjectReportWorkPlanFlag.Yellow
         || haveActivitiesChanged
         || haveOutputsChanged(outputs)
-        || haveInvestmentsChanged(investments)) {
+        || haveInvestmentsChanged(investments)
+        || workpackage.description != workpackage.previousDescription) {
         return ProjectReportWorkPlanFlag.Yellow
     }
-    return ProjectReportWorkPlanFlag.Gray
+    if (workpackage.completed
+        && workpackage.previousCompleted == workpackage.completed) {
+        return ProjectReportWorkPlanFlag.Gray
+    }
+    return null
 }
 
 fun haveOutputsChanged(outputs: List<ProjectReportWorkPackageOutput>): Boolean {
     val differences = outputs.map {
-        it.currentReport != it.previousCurrentReport || it.previousProgress != it.progress
+        it.currentReport.compareTo(it.previousCurrentReport) != 0 || it.previousProgress != it.progress
     }
 
     return differences.contains(true)

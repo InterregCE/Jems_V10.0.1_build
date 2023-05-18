@@ -70,6 +70,8 @@ fun List<ProjectWorkPackageFull>.toCreateEntity(
         communicationStatus = lastWorkPlan.firstOrNull { it.number == wp.workPackageNumber }?.communicationStatus,
         completed = lastWorkPlan.firstOrNull { it.number == wp.workPackageNumber }?.completed ?: false,
         activities = wp.activities.map { a ->
+            val previousActivity = lastWorkPlan.firstOrNull { it.number == wp.workPackageNumber }
+                ?.activities?.firstOrNull { it.number == a.activityNumber }
             ProjectReportWorkPackageActivityCreate(
                 activityId = a.id,
                 number = a.activityNumber,
@@ -77,9 +79,11 @@ fun List<ProjectWorkPackageFull>.toCreateEntity(
                 deactivated = a.deactivated,
                 startPeriodNumber = a.startPeriod,
                 endPeriodNumber = a.endPeriod,
-                status = lastWorkPlan.firstOrNull { it.number == wp.workPackageNumber }
-                    ?.activities?.firstOrNull { it.number == a.activityNumber }?.status,
+                status = previousActivity?.status,
                 deliverables = a.deliverables.map { d ->
+                    val previousDeliverable = lastWorkPlan.firstOrNull { it.number == wp.workPackageNumber }
+                        ?.activities?.firstOrNull { it.number == a.activityNumber }
+                        ?.deliverables?.firstOrNull { it.number == d.deliverableNumber }
                     ProjectReportWorkPackageActivityDeliverableCreate(
                         deliverableId = d.id,
                         number = d.deliverableNumber,
@@ -88,11 +92,20 @@ fun List<ProjectWorkPackageFull>.toCreateEntity(
                         periodNumber = d.period,
                         previouslyReported = previouslyReportedDeliverables[wp.workPackageNumber]
                             ?.get(a.activityNumber)?.get(d.deliverableNumber) ?: BigDecimal.ZERO,
+                        previousCurrentReport = previousDeliverable?.currentReport ?: BigDecimal.ZERO,
+                        currentReport = previousDeliverable?.currentReport ?: BigDecimal.ZERO,
+                        previousProgress = previousDeliverable?.progress ?: emptySet(),
+                        progress =previousDeliverable?.progress ?: emptySet()
                         )
                 },
+                previousProgress = previousActivity?.progress ?: emptySet(),
+                previousStatus = previousActivity?.status,
+                progress = previousActivity?.progress ?: emptySet()
             )
         },
         outputs = wp.outputs.map { o ->
+            val previousOutput = lastWorkPlan.firstOrNull { it.number == wp.workPackageNumber }
+                ?.outputs?.firstOrNull { it.number == o.outputNumber }
             ProjectReportWorkPackageOutputCreate(
                 number = o.outputNumber,
                 title = o.title,
@@ -101,9 +114,15 @@ fun List<ProjectWorkPackageFull>.toCreateEntity(
                 periodNumber = o.periodNumber,
                 targetValue = o.targetValue ?: BigDecimal.ZERO,
                 previouslyReported = previouslyReportedOutputs[wp.workPackageNumber]?.get(o.outputNumber) ?: BigDecimal.ZERO,
+                progress = previousOutput?.progress ?: emptySet(),
+                previousProgress = previousOutput?.progress ?: emptySet(),
+                previousCurrentReport = previousOutput?.currentReport ?: BigDecimal.ZERO,
+                currentReport = previousOutput?.currentReport ?: BigDecimal.ZERO
                 )
         },
         investments = wp.investments.map {i ->
+            val previousInvestment = lastWorkPlan.firstOrNull { it.number == wp.workPackageNumber }
+                ?.investments?.firstOrNull { it.number == i.investmentNumber }
             ProjectReportWorkPackageInvestmentCreate(
                 investmentId = i.id,
                 number = i.investmentNumber,
@@ -121,7 +140,18 @@ fun List<ProjectWorkPackageFull>.toCreateEntity(
                 ownershipRetain = i.ownershipRetain,
                 ownershipMaintenance = i.ownershipMaintenance,
                 deactivated = i.deactivated,
+                progress = previousInvestment?.progress ?: emptySet(),
+                previousProgress = previousInvestment?.progress ?: emptySet()
                 )
-        }
+        },
+        previousCommunicationExplanation = lastWorkPlan.firstOrNull { it.number == wp.workPackageNumber }?.communicationExplanation ?: emptySet(),
+        previousSpecificExplanation = lastWorkPlan.firstOrNull { it.number == wp.workPackageNumber }?.specificExplanation ?: emptySet(),
+        previousSpecificStatus = lastWorkPlan.firstOrNull { it.number == wp.workPackageNumber }?.specificStatus,
+        previousCompleted = lastWorkPlan.firstOrNull { it.number == wp.workPackageNumber }?.completed ?: false,
+        previousCommunicationStatus = lastWorkPlan.firstOrNull { it.number == wp.workPackageNumber }?.communicationStatus    ,
+        communicationExplanation = lastWorkPlan.firstOrNull { it.number == wp.workPackageNumber }?.communicationExplanation ?: emptySet(),
+        specificExplanation = lastWorkPlan.firstOrNull { it.number == wp.workPackageNumber }?.specificExplanation ?: emptySet(),
+        previousDescription = lastWorkPlan.firstOrNull { it.number == wp.workPackageNumber }?.description ?: emptySet(),
+        description = lastWorkPlan.firstOrNull { it.number == wp.workPackageNumber }?.description ?: emptySet()
     )
 }

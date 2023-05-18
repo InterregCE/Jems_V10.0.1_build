@@ -24,4 +24,6 @@ class ProjectReportWorkPackageTranslEntity(
     var previousCommunicationExplanation: String,
     @field:NotNull
     var description: String,
+    @field:NotNull
+    var previousDescription: String,
 ) : TranslationEntity()

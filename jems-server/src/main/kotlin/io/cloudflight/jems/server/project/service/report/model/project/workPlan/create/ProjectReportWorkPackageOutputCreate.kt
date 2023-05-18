@@ -13,4 +13,8 @@ data class ProjectReportWorkPackageOutputCreate(
     val periodNumber: Int?,
     val targetValue: BigDecimal,
     val previouslyReported: BigDecimal?,
+    val previousCurrentReport: BigDecimal,
+    val currentReport: BigDecimal,
+    val previousProgress: Set<InputTranslation>,
+    val progress: Set<InputTranslation>,
 )
