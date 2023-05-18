@@ -63,12 +63,28 @@ export class ProjectReportWorkPlanTabConstants {
     name: 'completed',
   };
 
+  public static WORK_PACKAGE_PREVIOUS_COMPLETED: AppControl = {
+    name: 'previousCompleted',
+  };
+
+  public static WORK_PLAN_STATUS_LABEL: AppControl = {
+    name: 'workPlanStatusLabel',
+  };
+
   public static WORK_PACKAGE_SPECIFIC_OBJECTIVE: AppControl = {
     name: 'specificObjective',
   };
 
   public static WORK_PACKAGE_SPECIFIC_STATUS: AppControl = {
     name: 'specificStatus',
+  };
+
+  public static WORK_PACKAGE_PREV_SPECIFIC_STATUS_FULLY_ACHIEVED: AppControl = {
+    name: 'isPreviousSpecificStatusFullyAchieved',
+  };
+
+  public static WORK_PACKAGE_SPECIFIC_STATUS_LABEL: AppControl = {
+    name: 'specificStatusLabel',
   };
 
   public static WORK_PACKAGE_SPECIFIC_EXPLANATION: AppControl = {
@@ -81,6 +97,14 @@ export class ProjectReportWorkPlanTabConstants {
 
   public static WORK_PACKAGE_COMMUNICATION_STATUS: AppControl = {
     name: 'communicationStatus',
+  };
+
+  public static WORK_PACKAGE_PREV_COMMUNICATION_STATUS_FULLY_ACHIEVED: AppControl = {
+    name: 'isPreviousCommunicationStatusFullyAchieved',
+  };
+
+  public static WORK_PACKAGE_COMMUNICATION_STATUS_LABEL: AppControl = {
+    name: 'communicationStatusLabel',
   };
 
   public static WORK_PACKAGE_COMMUNICATION_EXPLANATION: AppControl = {
@@ -109,6 +133,10 @@ export class ProjectReportWorkPlanTabConstants {
     name: 'deactivated',
   };
 
+  public static ACTIVITY_STATUS_LABEL: AppControl = {
+    name: 'activityStatusLabel',
+  };
+
   public static ACTIVITY_START_PERIOD: AppControl = {
     name: 'startPeriod',
   };
@@ -119,6 +147,10 @@ export class ProjectReportWorkPlanTabConstants {
 
   public static ACTIVITY_STATUS: AppControl = {
     name: 'status',
+  };
+
+  public static ACTIVITY_PREVIOUS_STATUS_FULLY_ACHIEVED: AppControl = {
+    name: 'isPreviousStatusFullyAchieved',
   };
 
   public static ACTIVITY_PROGRESS: AppControl = {

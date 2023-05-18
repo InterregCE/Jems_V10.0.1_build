@@ -45,6 +45,13 @@ export class ProjectReportWorkPlanTabComponent {
   specificStatus = Object.keys(ProjectReportWorkPackageDTO.SpecificStatusEnum);
   communicationStatus = Object.keys(ProjectReportWorkPackageDTO.CommunicationStatusEnum);
   activityStatus = Object.keys(ProjectReportWorkPackageActivityDTO.StatusEnum);
+  WorkPlanStatusLabelEnum = ProjectReportWorkPackageDTO.WorkPlanStatusLabelEnum;
+  SpecificStatusEnum = ProjectReportWorkPackageDTO.SpecificStatusEnum;
+  SpecificStatusLabelEnum = ProjectReportWorkPackageDTO.SpecificStatusLabelEnum;
+  CommunicationStatusEnum = ProjectReportWorkPackageDTO.CommunicationStatusEnum;
+  CommunicationStatusLabelEnum = ProjectReportWorkPackageDTO.CommunicationStatusLabelEnum;
+  ActivityStatusEnum = ProjectReportWorkPackageActivityDTO.StatusEnum;
+  ActivityStatusLabelEnum = ProjectReportWorkPackageActivityDTO.ActivityStatusLabelEnum;
 
   form = this.formBuilder.group({
     workPackages: this.formBuilder.array([])
@@ -181,18 +188,26 @@ export class ProjectReportWorkPlanTabComponent {
     const activities = dto.activities.map((activityDTO: ProjectReportWorkPackageActivityDTO) => this.extractActivitiesFormFromDTO(activityDTO));
     const outputs = dto.outputs.map((outputDTO: ProjectReportWorkPackageOutputDTO) => this.extractOutputsFormFromDTO(outputDTO));
     const investments = dto.investments.map((outputDTO: ProjectReportWorkPackageInvestmentDTO) => this.extractInvestmentsFormFromDTO(outputDTO));
+    const isPrevCommunicationProgressIncluded = dto.previousCommunicationStatus === ProjectReportWorkPackageDTO.PreviousCommunicationStatusEnum.Fully && dto.communicationStatusLabel === this.CommunicationStatusLabelEnum.Gray;
+    const isPrevSpecificProgressIncluded = dto.previousSpecificStatus === ProjectReportWorkPackageDTO.PreviousSpecificStatusEnum.Fully && dto.specificStatusLabel === this.SpecificStatusLabelEnum.Gray;
 
     return this.formBuilder.group({
       id: this.formBuilder.control(dto.id),
       number: this.formBuilder.control(dto.number),
       deactivated: this.formBuilder.control(dto.deactivated ?? false),
+      workPlanStatusLabel: this.formBuilder.control(dto.workPlanStatusLabel),
+      specificStatusLabel: this.formBuilder.control(dto.specificStatusLabel),
+      communicationStatusLabel: this.formBuilder.control(dto.communicationStatusLabel),
       completed: this.formBuilder.control(dto.completed),
+      previousCompleted: this.formBuilder.control(dto.previousCompleted),
       specificObjective: this.formBuilder.control(this.disableControl(dto.specificObjective)),
       specificStatus: this.formBuilder.control(dto.specificStatus),
-      specificExplanation: this.formBuilder.control(dto.specificExplanation),
+      isPreviousSpecificStatusFullyAchieved: this.formBuilder.control(dto.previousSpecificStatus === ProjectReportWorkPackageDTO.PreviousSpecificStatusEnum.Fully),
+      specificExplanation: isPrevSpecificProgressIncluded ? this.formBuilder.control(dto.previousSpecificExplanation) : this.formBuilder.control(dto.specificExplanation),
       communicationObjective: this.formBuilder.control(this.disableControl(dto.communicationObjective)),
       communicationStatus: this.formBuilder.control(dto.communicationStatus),
-      communicationExplanation: this.formBuilder.control(dto.communicationExplanation),
+      isPreviousCommunicationStatusFullyAchieved: this.formBuilder.control(dto.previousCommunicationStatus === ProjectReportWorkPackageDTO.PreviousCommunicationStatusEnum.Fully),
+      communicationExplanation: isPrevCommunicationProgressIncluded ? this.formBuilder.control(dto.previousCommunicationExplanation) : this.formBuilder.control(dto.communicationExplanation),
       description: this.formBuilder.control(dto.description ?? []),
       activities: this.formBuilder.array(activities ?? []),
       outputs: this.formBuilder.array(outputs ?? []),
@@ -201,7 +216,8 @@ export class ProjectReportWorkPlanTabComponent {
   }
 
   private extractActivitiesFormFromDTO(dto: ProjectReportWorkPackageActivityDTO): FormGroup {
-    const deliverables = dto.deliverables.map((deliverableDTO: ProjectReportWorkPackageActivityDeliverableDTO) => this.extractDeliverablesFormFromDTO(deliverableDTO));
+    const isPreviousProgressIncluded = dto.previousStatus === ProjectReportWorkPackageActivityDTO.PreviousStatusEnum.Fully && dto.activityStatusLabel === ProjectReportWorkPackageActivityDTO.ActivityStatusLabelEnum.Gray;
+    const deliverables = dto.deliverables.map((deliverableDTO: ProjectReportWorkPackageActivityDeliverableDTO) => this.extractDeliverablesFormFromDTO(deliverableDTO, isPreviousProgressIncluded));
 
     return this.formBuilder.group({
       id: this.formBuilder.control(dto.id),
@@ -211,23 +227,25 @@ export class ProjectReportWorkPlanTabComponent {
       startPeriod: this.formBuilder.control(dto.startPeriod ?? ''),
       endPeriod: this.formBuilder.control(dto.endPeriod ?? ''),
       status: this.formBuilder.control(dto.status),
-      progress: this.formBuilder.control(dto.progress ?? [], this.constants.ACTIVITY_PROGRESS.validators),
+      isPreviousStatusFullyAchieved: this.formBuilder.control(dto.previousStatus === ProjectReportWorkPackageActivityDTO.PreviousStatusEnum.Fully),
+      progress: isPreviousProgressIncluded ? this.formBuilder.control(dto.previousProgress ?? [], this.constants.ACTIVITY_PROGRESS.validators) : this.formBuilder.control(dto.progress ?? [], this.constants.ACTIVITY_PROGRESS.validators),
       attachment: this.formBuilder.control(dto.attachment),
       deliverables: this.formBuilder.array(deliverables ?? []),
+      activityStatusLabel: this.formBuilder.control(dto.activityStatusLabel),
     });
   }
 
-  private extractDeliverablesFormFromDTO(dto: ProjectReportWorkPackageActivityDeliverableDTO): FormGroup {
+  private extractDeliverablesFormFromDTO(dto: ProjectReportWorkPackageActivityDeliverableDTO, isPreviousProgressIncluded: boolean): FormGroup {
     return this.formBuilder.group({
       id: this.formBuilder.control(dto.id),
       number: this.formBuilder.control(dto.number),
       title: this.formBuilder.control(this.disableControl(dto.title ?? '')),
       deactivated: this.formBuilder.control(dto.deactivated ?? false),
       period: this.formBuilder.control(this.disableControl(dto.period ?? '')),
-      currentReport: this.formBuilder.control(dto.currentReport ?? 0),
+      currentReport: isPreviousProgressIncluded ? this.formBuilder.control(dto.previousCurrentReport ?? 0) : this.formBuilder.control(dto.currentReport ?? 0),
       previouslyReported: this.formBuilder.control(this.disableControl(dto.previouslyReported ?? 0)),
       totalReportedSoFar: this.formBuilder.control(this.disableControl((dto.currentReport ?? 0) + (dto.previouslyReported ?? 0))),
-      progress: this.formBuilder.control(dto.progress ?? ''),
+      progress: isPreviousProgressIncluded ? this.formBuilder.control(dto.previousProgress ?? '') : this.formBuilder.control(dto.progress ?? ''),
       attachment: this.formBuilder.control(dto.attachment),
     });
   }
