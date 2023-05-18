@@ -129,9 +129,16 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                                 deactivated = true,
                                 periodNumber = 4,
                                 previouslyReported = BigDecimal.valueOf(478L, 2),
+                                previousCurrentReport = BigDecimal.TEN,
+                                previousProgress = setOf(InputTranslation(SystemLanguage.EN, "progress")),
+                                progress = setOf(InputTranslation(SystemLanguage.EN, "progress")),
+                                currentReport = BigDecimal.TEN
                             ),
                         ),
-                    ),
+                        previousProgress = setOf(InputTranslation(SystemLanguage.EN, "progress")),
+                        progress = setOf(InputTranslation(SystemLanguage.EN, "progress")),
+                        previousStatus = ProjectReportWorkPlanStatus.Fully,
+                    )
                 ),
                 outputs = listOf(
                     ProjectReportWorkPackageOutputCreate(
@@ -142,9 +149,22 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                         periodNumber = 7,
                         targetValue = BigDecimal.valueOf(700),
                         previouslyReported = BigDecimal.valueOf(954L, 2),
+                        previousCurrentReport = BigDecimal.TEN,
+                        previousProgress = setOf(InputTranslation(SystemLanguage.EN, "progress")),
+                        progress = setOf(InputTranslation(SystemLanguage.EN, "progress")),
+                        currentReport = BigDecimal.TEN
                     ),
                 ),
-                investments = emptyList()
+                investments = emptyList(),
+                previousCommunicationStatus = ProjectReportWorkPlanStatus.Not,
+                previousCompleted = true,
+                previousSpecificStatus = null,
+                previousSpecificExplanation = setOf(InputTranslation(SystemLanguage.EN, "specific explanation")),
+                previousCommunicationExplanation= setOf(InputTranslation(SystemLanguage.EN, "communication explanation")),
+                specificExplanation = setOf(InputTranslation(SystemLanguage.EN, "specific explanation")),
+                communicationExplanation = setOf(InputTranslation(SystemLanguage.EN, "communication explanation")),
+                description = setOf(InputTranslation(SystemLanguage.EN, "desc-EN")),
+                previousDescription = setOf(InputTranslation(SystemLanguage.EN, "desc-EN")),
             ),
         )
 

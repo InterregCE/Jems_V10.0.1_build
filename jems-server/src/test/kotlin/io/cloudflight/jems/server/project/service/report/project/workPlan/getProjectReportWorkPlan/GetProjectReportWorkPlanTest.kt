@@ -96,6 +96,7 @@ class GetProjectReportWorkPlanTest: UnitTest() {
             previousSpecificStatus = ProjectReportWorkPlanStatus.Partly,
             previousCompleted = true,
             previousCommunicationStatus = ProjectReportWorkPlanStatus.Partly,
+            previousDescription = setOf(InputTranslation(SystemLanguage.EN, "[45] description new")),
         )
 
         private val expectedWorkPlan = ProjectReportWorkPackage(
@@ -138,7 +139,7 @@ class GetProjectReportWorkPlanTest: UnitTest() {
                     attachment = dummyFile,
                     previousProgress = setOf(InputTranslation(SystemLanguage.EN, "[99] progress new")),
                     previousStatus = ProjectReportWorkPlanStatus.Partly,
-                    activityStatusLabel = ProjectReportWorkPlanFlag.Gray
+                    activityStatusLabel = null
                 ),
             ),
             outputs = listOf(
@@ -164,9 +165,10 @@ class GetProjectReportWorkPlanTest: UnitTest() {
             previousSpecificStatus = ProjectReportWorkPlanStatus.Partly,
             previousSpecificExplanation = setOf(InputTranslation(SystemLanguage.EN, "[45] specificExplanation new")),
             previousCommunicationExplanation = setOf(InputTranslation(SystemLanguage.EN, "[45] communicationExplanation new")),
-            specificStatusLabel = ProjectReportWorkPlanFlag.Gray,
-            communicationStatusLabel = ProjectReportWorkPlanFlag.Gray,
-            workPlanStatusLabel = ProjectReportWorkPlanFlag.Gray
+            specificStatusLabel = null,
+            communicationStatusLabel = null,
+            workPlanStatusLabel = ProjectReportWorkPlanFlag.Gray,
+            previousDescription = setOf(InputTranslation(SystemLanguage.EN, "[45] description new")),
         )
     }
 

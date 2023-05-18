@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.report.project.workPlan.updateProjectReportWorkPlan
 
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
@@ -108,6 +109,7 @@ internal class UpdateProjectReportWorkPlanTest : UnitTest() {
                 previousSpecificStatus = ProjectReportWorkPlanStatus.Not,
                 previousCompleted = false,
                 previousCommunicationStatus = ProjectReportWorkPlanStatus.Not,
+                previousDescription = setOf(InputTranslation(SystemLanguage.EN, "[45] description")),
         )
 
         private val newWorkPlan = ProjectReportWorkPackage(
@@ -178,7 +180,8 @@ internal class UpdateProjectReportWorkPlanTest : UnitTest() {
                 previousCommunicationExplanation = setOf(InputTranslation(EN, "[45] communicationExplanation new")),
                 specificStatusLabel = ProjectReportWorkPlanFlag.Gray,
                 communicationStatusLabel = ProjectReportWorkPlanFlag.Gray,
-                workPlanStatusLabel = ProjectReportWorkPlanFlag.Gray
+                workPlanStatusLabel = ProjectReportWorkPlanFlag.Gray,
+                previousDescription = setOf(InputTranslation(SystemLanguage.EN, "[45] description new")),
         )
 
         private val updateWorkPlanModel = ProjectReportWorkPackageUpdate(

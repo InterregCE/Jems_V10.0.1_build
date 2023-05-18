@@ -90,7 +90,8 @@ class ProjectReportWorkPlanPersistenceProviderTest : UnitTest() {
                             communicationExplanation = "[$id] communicationExplanation",
                             description = "[$id] description",
                             previousSpecificExplanation = "[$id] specificExplanation",
-                            previousCommunicationExplanation = "[$id] communicationExplanation"
+                            previousCommunicationExplanation = "[$id] communicationExplanation",
+                            previousDescription = "[$id] previousDescription"
                     ),
             )
         }
@@ -308,7 +309,8 @@ class ProjectReportWorkPlanPersistenceProviderTest : UnitTest() {
                         previousSpecificExplanation = setOf(InputTranslation(SystemLanguage.EN, "[$wpId] specificExplanation")),
                         previousSpecificStatus = ProjectReportWorkPlanStatus.Partly,
                         previousCompleted = true,
-                        previousCommunicationStatus = ProjectReportWorkPlanStatus.Fully
+                        previousCommunicationStatus = ProjectReportWorkPlanStatus.Fully,
+                        previousDescription = setOf(InputTranslation(SystemLanguage.EN, "[$wpId] previousDescription")),
                 )
 
         private fun expectedOutput(outputId: Long) = listOf(

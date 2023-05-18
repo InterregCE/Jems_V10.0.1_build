@@ -93,7 +93,7 @@ class ProjectReportWorkPlanPersistenceProvider(
             this.completed = data.completed
 
             translatedValues.updateWith(
-                entitySupplier = { lang -> ProjectReportWorkPackageTranslEntity(TranslationId(this, lang), "", "", "", "", "", "", "") },
+                entitySupplier = { lang -> ProjectReportWorkPackageTranslEntity(TranslationId(this, lang), "", "", "", "", "", "", "", "") },
                 allTranslations = listOf(data.specificExplanation, data.communicationExplanation, data.description),
                 { e -> e.specificExplanation = data.specificExplanation.inLang(e.language()) },
                 { e -> e.communicationExplanation = data.communicationExplanation.inLang(e.language()) },

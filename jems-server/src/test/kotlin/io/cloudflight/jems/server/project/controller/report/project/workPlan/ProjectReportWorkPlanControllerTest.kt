@@ -101,6 +101,7 @@ internal class ProjectReportWorkPlanControllerTest : UnitTest() {
             previousCompleted = true,
             previousCommunicationExplanation = setOf(InputTranslation(SystemLanguage.EN, "comm-expl-EN")),
             previousSpecificStatus = ProjectReportWorkPlanStatus.Partly,
+            previousDescription = setOf(InputTranslation(SystemLanguage.EN, "desc-EN")),
             )
     )
     private val workPlanExpected = ProjectReportWorkPackageDTO(
@@ -169,6 +170,7 @@ internal class ProjectReportWorkPlanControllerTest : UnitTest() {
         previousCompleted = true,
         previousCommunicationStatus = ProjectReportWorkPlanStatusDTO.Fully,
         previousSpecificExplanation = setOf(InputTranslation(SystemLanguage.EN, "spec-expl-EN")),
+        previousDescription = setOf(InputTranslation(SystemLanguage.EN, "desc-EN")),
     )
 
     private val toUpdate = UpdateProjectReportWorkPackageDTO(

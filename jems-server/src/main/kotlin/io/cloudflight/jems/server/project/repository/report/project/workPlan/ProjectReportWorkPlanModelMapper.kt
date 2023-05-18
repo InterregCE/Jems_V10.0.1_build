@@ -51,7 +51,8 @@ fun List<ProjectReportWorkPackageEntity>.toModel(
         previousSpecificExplanation = it.translatedValues.extractField { it.previousSpecificExplanation },
         previousCommunicationStatus = it.previousCommunicationStatus,
         previousCompleted = it.previousCompleted,
-        previousCommunicationExplanation = it.translatedValues.extractField { it.previousCommunicationExplanation }
+        previousCommunicationExplanation = it.translatedValues.extractField { it.previousCommunicationExplanation },
+        previousDescription = it.translatedValues.extractField { it.previousDescription },
     )
 }
 
