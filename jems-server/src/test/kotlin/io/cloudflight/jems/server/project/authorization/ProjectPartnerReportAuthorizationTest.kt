@@ -178,6 +178,30 @@ internal class ProjectPartnerReportAuthorizationTest : UnitTest() {
         assertThat(reportAuthorization.canReOpenPartnerReport(42L)).isTrue()
     }
 
+    @Test
+    fun `canReOpenPartnerReport - controller user with view`() {
+        every { partnerPersistence.getProjectIdForPartnerId(43L) } returns 283L
+        every { currentUser.hasPermission(ProjectReportingReOpen) } returns true
+        every { currentUser.user.assignedProjects } returns emptySet()
+        every { currentUser.hasPermission(ProjectRetrieve) } returns false
+
+        every { securityService.getUserIdOrThrow() } returns 540L
+        every { controllerInstitutionPersistence.getControllerUserAccessLevelForPartner(540L, partnerId = 43L) } returns UserInstitutionAccessLevel.View
+        assertThat(reportAuthorization.canReOpenPartnerReport(43L)).isFalse()
+    }
+
+    @Test
+    fun `canReOpenPartnerReport - controller user with edit`() {
+        every { partnerPersistence.getProjectIdForPartnerId(44L) } returns 284L
+        every { currentUser.hasPermission(ProjectReportingReOpen) } returns true
+        every { currentUser.user.assignedProjects } returns emptySet()
+        every { currentUser.hasPermission(ProjectRetrieve) } returns false
+
+        every { securityService.getUserIdOrThrow() } returns 541L
+        every { controllerInstitutionPersistence.getControllerUserAccessLevelForPartner(541L, partnerId = 44L) } returns UserInstitutionAccessLevel.Edit
+        assertThat(reportAuthorization.canReOpenPartnerReport(44L)).isTrue()
+    }
+
     @ParameterizedTest(name = "control report - user can view - because is controller with {0}")
     @EnumSource(value = UserInstitutionAccessLevel::class)
     fun `control report - user can view - because is controller`(accessLevel: UserInstitutionAccessLevel) {
