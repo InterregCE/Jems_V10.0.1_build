@@ -61,7 +61,6 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   constants = PartnerReportExpendituresTabConstants;
   currencies: CurrencyDTO[];
   currentReport: ProjectPartnerReportDTO;
-  isReportEditable$: Observable<boolean>;
   data$: Observable<{
     expendituresCosts: ProjectPartnerReportExpenditureCostDTO[];
     costCategories: string[];
@@ -122,7 +121,6 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
               public permissionService: PermissionService,
               private partnerReportPageStore: PartnerReportPageStore,
               private projectStore: ProjectStore) {
-    this.isReportEditable$ = this.pageStore.isEditable$;
   }
 
   @ViewChildren('costOptionsSelect') private costOptionsSelect: QueryList<MatSelect>;
@@ -307,12 +305,13 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       === BudgetCostCategoryEnum.TRAVEL_AND_ACCOMMODATION_COSTS;
   }
 
-  resetForm(partnerReportExpenditures: ProjectPartnerReportExpenditureCostDTO[], isGDPRCompliant: boolean , isMonitorUser: boolean): void {
+  resetForm(partnerReportExpenditures: ProjectPartnerReportExpenditureCostDTO[], isGDPRCompliant: boolean , isMonitorUser: boolean, isReportEditable: boolean): void {
     this.availableCurrenciesPerRow = [];
     this.items.clear();
     partnerReportExpenditures.forEach(partnerReportExpenditure => this.addExpenditure(partnerReportExpenditure));
     this.tableData = [...this.items.controls];
-    this.formService.resetEditable();
+    this.formService.setEditable(isReportEditable);
+    this.formService.setDirty(false);
     this.items.controls.forEach((formGroup: FormGroup, index) => (
       this.disableOnReset(formGroup, index, isGDPRCompliant, isMonitorUser)));
 
@@ -383,7 +382,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     this.reportExpendituresForm = this.formBuilder.group({
       items: this.formBuilder.array([], Validators.maxLength(this.constants.MAX_NUMBER_OF_ITEMS))
     });
-    this.formService.init(this.reportExpendituresForm, this.pageStore.isEditable$);
+    this.formService.init(this.reportExpendituresForm);
   }
 
   private dataAsObservable(): void {
@@ -413,7 +412,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       this.partnerReportPageStore.userCanViewGdpr$,
       this.partnerReportPageStore.userCanEditReport$,
       this.permissionService.hasPermission(PermissionsEnum.ProjectReportingView),
-      this.isReportEditable$,
+      this.pageStore.isEditable$,
       this.partnerReportDetailPageStore.partnerId$,
       this.partnerReportDetailPageStore.partnerReportId$,
       this.projectStore.projectId$,
@@ -443,10 +442,9 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
         isReopened: ReportUtil.isPartnerReportReopened(currentReport.status),
         })
       ),
-      tap(data => this.resetForm(data.expendituresCosts, data.isGDPRCompliant, data.isMonitorUser)),
+      tap(data => this.resetForm(data.expendituresCosts, data.isGDPRCompliant, data.isMonitorUser, data.isReportEditable)),
       tap(data => this.contractIDs = data.contractIDs),
       tap(data => this.investmentsSummary = data.investmentsSummary),
-      tap(data => this.formService.setEditable(data.isReportEditable))
     );
 
   }
