@@ -72,21 +72,21 @@ fun PartnerReportExpenditureCostEntity.getParkingMetadata(): ExpenditureParkingM
     return null
 }
 
-fun ProjectPartnerReportExpenditureCost.toEntity(
+fun ProjectPartnerReportExpenditureCost.toNewEntity(
     reportEntity: ProjectPartnerReportEntity,
     lumpSums: Map<Long, PartnerReportLumpSumEntity>,
     unitCosts: Map<Long, PartnerReportUnitCostEntity>,
     investments: Map<Long, PartnerReportInvestmentEntity>,
 ) =
     PartnerReportExpenditureCostEntity(
-        id = id ?: 0L,
+        id = 0L,
         number = number,
         partnerReport = reportEntity,
-        reportLumpSum = if (lumpSumId != null) lumpSums[lumpSumId] else null,
-        reportUnitCost = if (unitCostId != null) unitCosts[unitCostId] else null,
+        reportLumpSum = lumpSumId?.let { lumpSums[it]!! },
+        reportUnitCost = unitCostId?.let { unitCosts[it]!! },
         costCategory = costCategory,
         gdpr = gdpr,
-        reportInvestment = if (investmentId != null) investments[investmentId] else null,
+        reportInvestment = investmentId?.let { investments[it]!! },
         procurementId = contractId,
         internalReferenceNumber = internalReferenceNumber,
         invoiceNumber = invoiceNumber,

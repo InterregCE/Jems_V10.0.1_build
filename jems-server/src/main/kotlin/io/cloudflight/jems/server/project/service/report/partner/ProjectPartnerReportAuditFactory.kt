@@ -52,7 +52,7 @@ fun partnerReportSubmitted(
                         "] [" +
                         (if (report.partnerRole == ProjectPartnerRole.LEAD_PARTNER) "LP" else "PP") +
                         "${report.partnerNumber}" +
-                        "] Partner report R.${report.reportNumber} submitted ${(if (isGdprSensitive) "[Contains sensitive data]" else "")}"
+                        "] Partner report R.${report.reportNumber} submitted${(if (isGdprSensitive) " [Contains sensitive data]" else "")}"
             )
             .build()
     )

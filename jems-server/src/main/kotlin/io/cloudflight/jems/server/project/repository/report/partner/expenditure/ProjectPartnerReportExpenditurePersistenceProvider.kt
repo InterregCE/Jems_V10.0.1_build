@@ -17,6 +17,7 @@ import io.cloudflight.jems.server.project.repository.report.partner.financialOve
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCurrencyRateChange
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportInvestment
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportUnitCost
@@ -56,7 +57,6 @@ class ProjectPartnerReportExpenditurePersistenceProvider(
         partnerId: Long,
         reportId: Long,
         expenditureCosts: List<ProjectPartnerReportExpenditureCost>,
-        doNotRenumber: Boolean,
     ): List<ProjectPartnerReportExpenditureCost> {
         val reportEntity = reportRepository.findByIdAndPartnerId(partnerId = partnerId, id = reportId)
 
@@ -81,10 +81,10 @@ class ProjectPartnerReportExpenditurePersistenceProvider(
             existingIds[newData.id].let { existing ->
                 when {
                     existing != null -> existing.apply {
-                        updateWith(newData, lumpSumsById, unitCostsById, investmentsById, if (doNotRenumber) this.number else newData.number)
+                        updateWith(newData, lumpSumsById, unitCostsById, investmentsById)
                     }
                     else -> reportExpenditureRepository.save(
-                        newData.toEntity(reportEntity, lumpSumsById, unitCostsById, investmentsById)
+                        newData.toNewEntity(reportEntity, lumpSumsById, unitCostsById, investmentsById)
                     )
                 }
             }
@@ -125,7 +125,7 @@ class ProjectPartnerReportExpenditurePersistenceProvider(
             it.partOfSample = true
             it.partOfSampleLocked = true
         }
-    
+
 
     @Transactional(readOnly = true)
     override fun existsByExpenditureId(partnerId: Long, reportId: Long, expenditureId: Long) =
@@ -177,13 +177,13 @@ class ProjectPartnerReportExpenditurePersistenceProvider(
         lumpSums: Map<Long, PartnerReportLumpSumEntity>,
         unitCosts: Map<Long, PartnerReportUnitCostEntity>,
         investments: Map<Long, PartnerReportInvestmentEntity>,
-        expenditureNumber: Int
     ) {
-        reportLumpSum = if (newData.lumpSumId != null) lumpSums[newData.lumpSumId] else null
-        reportUnitCost = if (newData.unitCostId != null) unitCosts[newData.unitCostId] else null
+        number = newData.number
+        reportLumpSum = newData.lumpSumId?.let { lumpSums[it]!! }
+        reportUnitCost = newData.unitCostId?.let { unitCosts[it]!! }
         costCategory = newData.costCategory
         gdpr = newData.gdpr
-        reportInvestment = if (newData.investmentId != null) investments[newData.investmentId] else null
+        reportInvestment = newData.investmentId?.let { investments[it]!! }
         procurementId = newData.contractId
         internalReferenceNumber = newData.internalReferenceNumber
         invoiceNumber = newData.invoiceNumber
@@ -197,7 +197,6 @@ class ProjectPartnerReportExpenditurePersistenceProvider(
         currencyCode = newData.currencyCode
         currencyConversionRate = newData.currencyConversionRate
         declaredAmountAfterSubmission = newData.declaredAmountAfterSubmission
-        number = expenditureNumber
 
         // update translations
         val toBeUpdatedComments = newData.comment.associateBy({ it.language }, { it.translation })

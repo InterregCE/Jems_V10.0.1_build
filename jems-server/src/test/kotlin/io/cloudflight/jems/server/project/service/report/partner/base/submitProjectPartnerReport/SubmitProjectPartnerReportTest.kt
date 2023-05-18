@@ -14,7 +14,6 @@ import io.cloudflight.jems.server.currency.service.model.CurrencyConversion
 import io.cloudflight.jems.server.notification.handler.PartnerReportStatusChanged
 import io.cloudflight.jems.server.plugin.JemsPluginRegistry
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
-import io.cloudflight.jems.server.project.repository.report.partner.model.ExpenditureVerificationUpdate
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.budget.model.ExpenditureCostCategoryCurrentlyReportedWithReIncluded
@@ -30,8 +29,8 @@ import io.cloudflight.jems.server.project.service.report.model.partner.ReportSta
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCurrencyRateChange
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
-import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ExpenditureCoFinancingCurrentWithReIncluded
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ReportExpenditureCostCategory
@@ -108,10 +107,10 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             pricePerUnit = BigDecimal.ZERO,
             declaredAmount = BigDecimal.valueOf(25448, 2),
             currencyCode = "CZK",
-            currencyConversionRate = BigDecimal.valueOf(254855, 4),
+            currencyConversionRate = BigDecimal.valueOf(33333L, 4),
             declaredAmountAfterSubmission = null,
             attachment = null,
-            parkingMetadata = mockk(),
+            parkingMetadata = null,
         )
 
         private val expenditure2 = ProjectPartnerReportExpenditureCost(
@@ -131,10 +130,14 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             pricePerUnit = BigDecimal.valueOf(485, 1),
             declaredAmount = BigDecimal.valueOf(485, 1),
             currencyCode = "EUR",
-            currencyConversionRate = null,
-            declaredAmountAfterSubmission = null,
+            currencyConversionRate = BigDecimal.valueOf(77895L, 4),
+            declaredAmountAfterSubmission = BigDecimal.valueOf(623L, 2),
             attachment = null,
-            parkingMetadata = null,
+            parkingMetadata = ExpenditureParkingMetadata(
+                reportOfOriginId = 70L,
+                reportOfOriginNumber = 5,
+                originalExpenditureNumber = 3
+            ),
         )
 
         private val expenditure3 = ProjectPartnerReportExpenditureCost(
@@ -160,126 +163,6 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             parkingMetadata = null,
         )
 
-        private val expenditureVerification1 = ProjectPartnerReportExpenditureVerification(
-            id = 630,
-            number = 1,
-            lumpSumId = null,
-            unitCostId = null,
-            costCategory = ReportBudgetCategory.StaffCosts,
-            gdpr = false,
-            investmentId = 10L,
-            contractId = 54L,
-            internalReferenceNumber = "internal-1",
-            invoiceNumber = "invoice-1",
-            invoiceDate = LocalDate.of(2022, 1, 1),
-            dateOfPayment = LocalDate.of(2022, 2, 1),
-            numberOfUnits = BigDecimal.ZERO,
-            pricePerUnit = BigDecimal.ZERO,
-            declaredAmount = BigDecimal.valueOf(25448, 2),
-            currencyCode = "CZK",
-            currencyConversionRate = null,
-            declaredAmountAfterSubmission = null,
-            attachment = null,
-            partOfSample = false,
-            certifiedAmount = BigDecimal.valueOf(9.99),
-            deductedAmount = BigDecimal.ZERO,
-            typologyOfErrorId = null,
-            verificationComment = null,
-            parked = false,
-            parkingMetadata = null,
-            partOfSampleLocked = false
-        )
-
-        private val expenditureVerification2 = ProjectPartnerReportExpenditureVerification(
-            id = 631,
-            number = 2,
-            lumpSumId = 22L,
-            unitCostId = null,
-            costCategory = ReportBudgetCategory.Multiple,
-            gdpr = false,
-            investmentId = null,
-            contractId = null,
-            internalReferenceNumber = null,
-            invoiceNumber = null,
-            invoiceDate = null,
-            dateOfPayment = null,
-            numberOfUnits = BigDecimal.ONE,
-            pricePerUnit = BigDecimal.valueOf(485, 1),
-            declaredAmount = BigDecimal.valueOf(485, 1),
-            currencyCode = "EUR",
-            currencyConversionRate = null,
-            declaredAmountAfterSubmission = null,
-            attachment = null,
-            partOfSample = false,
-            certifiedAmount = BigDecimal.valueOf(48.50).setScale(2),
-            deductedAmount = BigDecimal.ZERO,
-            typologyOfErrorId = null,
-            verificationComment = null,
-            parked = false,
-            parkingMetadata = null,
-            partOfSampleLocked = false
-        )
-
-        private val expenditureVerification3 = ProjectPartnerReportExpenditureVerification(
-            id = 632,
-            number = 3,
-            lumpSumId = null,
-            unitCostId = 15L,
-            costCategory = ReportBudgetCategory.InfrastructureCosts,
-            gdpr = true,
-            investmentId = null,
-            contractId = null,
-            internalReferenceNumber = null,
-            invoiceNumber = null,
-            invoiceDate = null,
-            dateOfPayment = null,
-            numberOfUnits = BigDecimal.ONE,
-            pricePerUnit = BigDecimal.valueOf(165, 1),
-            declaredAmount = BigDecimal.valueOf(165, 1),
-            currencyCode = "EUR",
-            currencyConversionRate = null,
-            declaredAmountAfterSubmission = null,
-            attachment = null,
-            partOfSample = false,
-            certifiedAmount = BigDecimal.valueOf(16.50).setScale(2),
-            deductedAmount = BigDecimal.ZERO,
-            typologyOfErrorId = null,
-            verificationComment = null,
-            parked = false,
-            parkingMetadata = null,
-            partOfSampleLocked = false
-        )
-
-        private val expenditureVerificationUpdate1 = ExpenditureVerificationUpdate(
-            id = 630,
-            partOfSample = false,
-            certifiedAmount = BigDecimal.valueOf(999, 2),
-            deductedAmount = BigDecimal.ZERO,
-            typologyOfErrorId = null,
-            verificationComment = null,
-            parked = false
-        )
-
-        private val expenditureVerificationUpdate2 = ExpenditureVerificationUpdate(
-            id = 631,
-            partOfSample = false,
-            certifiedAmount = BigDecimal.valueOf(4850, 2),
-            deductedAmount = BigDecimal.ZERO,
-            typologyOfErrorId = null,
-            verificationComment = null,
-            parked = false
-        )
-
-        private val expenditureVerificationUpdate3 = ExpenditureVerificationUpdate(
-            id = 632,
-            partOfSample = false,
-            certifiedAmount = BigDecimal.valueOf(1650, 2),
-            deductedAmount = BigDecimal.ZERO,
-            typologyOfErrorId = null,
-            verificationComment = null,
-            parked = false
-        )
-
         val options = mockk<ReportExpenditureCostCategory>().also {
             every { it.options } returns ProjectPartnerBudgetOptions(
                 partnerId = PARTNER_ID,
@@ -299,23 +182,23 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
                 travel = BigDecimal.valueOf(149, 2),
                 external = BigDecimal.ZERO,
                 equipment = BigDecimal.ZERO,
-                infrastructure = BigDecimal.valueOf(1650, 2),
+                infrastructure = BigDecimal.valueOf(165L, 1),
                 other = BigDecimal.ZERO,
-                lumpSum = BigDecimal.valueOf(4850, 2),
+                lumpSum = BigDecimal.valueOf(623L, 2),
                 unitCost = BigDecimal.ZERO,
-                sum = BigDecimal.valueOf(7927, 2),
+                sum = BigDecimal.valueOf(3700L, 2),
             ),
             currentlyReportedReIncluded = BudgetCostsCalculationResultFull(
-                staff = BigDecimal.valueOf(999, 2),
-                office = BigDecimal.valueOf(114, 2),
-                travel = BigDecimal.valueOf(149, 2),
+                staff = BigDecimal.ZERO,
+                office = BigDecimal.valueOf(0L, 2),
+                travel = BigDecimal.valueOf(0L, 2),
                 external = BigDecimal.ZERO,
                 equipment = BigDecimal.ZERO,
                 infrastructure = BigDecimal.ZERO,
                 other = BigDecimal.ZERO,
-                lumpSum = BigDecimal.valueOf(4850, 2),
+                lumpSum = BigDecimal.valueOf(623L, 2),
                 unitCost = BigDecimal.ZERO,
-                sum = BigDecimal.valueOf(6112, 2),
+                sum = BigDecimal.valueOf(623L, 2),
             )
         )
 
@@ -352,28 +235,34 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
 
         private val expectedCoFinancing = ReportExpenditureCoFinancingColumn(
             funds = mapOf(
-                29L to BigDecimal.valueOf(1107, 2),
-                35L to BigDecimal.valueOf(5003, 2),
-                null to BigDecimal.valueOf(1816, 2),
+                29L to BigDecimal.valueOf(516L, 2),
+                35L to BigDecimal.valueOf(2335L, 2),
+                null to BigDecimal.valueOf(847L, 2),
             ),
-            partnerContribution = BigDecimal.valueOf(1816, 2),
-            publicContribution = BigDecimal.valueOf(475, 2),
-            automaticPublicContribution = BigDecimal.valueOf(634, 2),
-            privateContribution = BigDecimal.valueOf(792, 2),
-            sum = BigDecimal.valueOf(7927, 2),
+            partnerContribution = BigDecimal.valueOf(847L, 2),
+            publicContribution = BigDecimal.valueOf(222L, 2),
+            automaticPublicContribution = BigDecimal.valueOf(296L, 2),
+            privateContribution = BigDecimal.valueOf(370L, 2),
+            sum = BigDecimal.valueOf(3700L, 2),
         )
 
         private val expectedReIncludedCoFinancing = ReportExpenditureCoFinancingColumn(
             funds = mapOf(
-                29L to BigDecimal.valueOf(853, 2),
-                35L to BigDecimal.valueOf(3857, 2),
-                null to BigDecimal.valueOf(1400, 2),
+                29L to BigDecimal.valueOf(87L, 2),
+                35L to BigDecimal.valueOf(393L, 2),
+                null to BigDecimal.valueOf(142L, 2),
             ),
-            partnerContribution = BigDecimal.valueOf(1400, 2),
-            publicContribution = BigDecimal.valueOf(366, 2),
-            automaticPublicContribution = BigDecimal.valueOf(488, 2),
-            privateContribution = BigDecimal.valueOf(611, 2),
-            sum = BigDecimal.valueOf(6112, 2),
+            partnerContribution = BigDecimal.valueOf(142L, 2),
+            publicContribution = BigDecimal.valueOf(37L, 2),
+            automaticPublicContribution = BigDecimal.valueOf(49L, 2),
+            privateContribution = BigDecimal.valueOf(62L, 2),
+            sum = BigDecimal.valueOf(623L, 2),
+        )
+
+        private val coFinancing = listOf(
+            ProjectPartnerCoFinancing(MainFund, fund(id = 29L), percentage = BigDecimal.valueOf(1397, 2)),
+            ProjectPartnerCoFinancing(MainFund, fund(id = 35L), percentage = BigDecimal.valueOf(6312, 2)),
+            ProjectPartnerCoFinancing(PartnerContribution, null, percentage = BigDecimal.valueOf(2291, 2)),
         )
 
     }
@@ -412,7 +301,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
     lateinit var reportInvestmentPersistence: ProjectPartnerReportInvestmentPersistence
 
     @MockK
-    lateinit var projectControlReportExpenditurePersistence: ProjectPartnerReportExpenditureVerificationPersistence
+    lateinit var reportExpenditureVerificationPersistence: ProjectPartnerReportExpenditureVerificationPersistence
 
     @MockK
     lateinit var auditPublisher: ApplicationEventPublisher
@@ -431,7 +320,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
 
     @BeforeEach
     fun reset() {
-        clearMocks(reportPersistence, reportExpenditurePersistence, auditPublisher)
+        clearMocks(reportPersistence, reportExpenditurePersistence, reportExpenditureVerificationPersistence, auditPublisher)
     }
 
     @Test
@@ -439,25 +328,16 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         val report = mockk<ProjectPartnerReport>()
         every { report.status } returns ReportStatus.ReOpenInControlLast
         every { report.id } returns 35L
-        every { report.identification.coFinancing } returns listOf(
-            ProjectPartnerCoFinancing(MainFund, fund(id = 29L), percentage = BigDecimal.valueOf(1397, 2)),
-            ProjectPartnerCoFinancing(MainFund, fund(id = 35L), percentage = BigDecimal.valueOf(6312, 2)),
-            ProjectPartnerCoFinancing(PartnerContribution, null, percentage = BigDecimal.valueOf(2291, 2)),
-        )
+        every { report.identification.coFinancing } returns coFinancing
 
         every { reportPersistence.getPartnerReportById(PARTNER_ID, 35L) } returns report
         every { preSubmissionCheck.preCheck(PARTNER_ID, reportId = 35L) } returns PreConditionCheckResult(emptyList(), true)
 
         every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, 35L) } returns
                 listOf(
-                    expenditure1, expenditure2.copy(
-                        parkingMetadata = ExpenditureParkingMetadata(
-                            reportOfOriginId = 70L,
-                            reportOfOriginNumber = 5,
-                            originalExpenditureNumber = 3
-                        ),
-                        currencyConversionRate = BigDecimal.valueOf(1)
-                    ), expenditure3
+                    expenditure1 /* CZK */,
+                    expenditure2 /* EUR, but re-included */,
+                    expenditure3 /* EUR */,
                 )
         every { currencyPersistence.findAllByIdYearAndIdMonth(year = YEAR, month = MONTH) } returns
                 listOf(
@@ -465,11 +345,6 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
                     CurrencyConversion("PLN", YEAR, MONTH, "", BigDecimal.valueOf(195, 2)), /* not used */
                     CurrencyConversion("EUR", YEAR, MONTH, "", BigDecimal.ONE),
                 )
-        val slotExpenditures = slot<List<ProjectPartnerReportExpenditureCost>>()
-        every {
-            reportExpenditurePersistence
-                .updatePartnerReportExpenditureCosts(PARTNER_ID, 35L, capture(slotExpenditures), true)
-        } returnsArgument 2
 
         every { reportExpenditureCostCategoryPersistence.getCostCategories(PARTNER_ID, reportId = 35L) } returns options
         val expenditureCcSlot = slot<ExpenditureCostCategoryCurrentlyReportedWithReIncluded>()
@@ -500,25 +375,19 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
         every { auditPublisher.publishEvent(ofType(PartnerReportStatusChanged::class)) } returns Unit
 
-        val slotExpenditureVerification = slot<List<ExpenditureVerificationUpdate>>()
+        val slotRates = slot<Collection<ProjectPartnerReportExpenditureCurrencyRateChange>>()
         every {
-            projectControlReportExpenditurePersistence
-                .updatePartnerControlReportExpenditureVerification(
+            reportExpenditureVerificationPersistence
+                .updateExpenditureCurrencyRatesAndClearVerification(
                     PARTNER_ID,
                     35L,
-                    capture(slotExpenditureVerification)
+                    capture(slotRates)
                 )
 
         } returns listOf(
-            expenditureVerification1,
-            expenditureVerification2.copy(
-                parkingMetadata = ExpenditureParkingMetadata(
-                    reportOfOriginId = 70L,
-                    reportOfOriginNumber = 5,
-                    originalExpenditureNumber = 3
-                ),
-                currencyConversionRate = BigDecimal.valueOf(1)
-            ), expenditureVerification3
+            expenditure1.copy(currencyConversionRate = BigDecimal.valueOf(254855, 4), declaredAmountAfterSubmission = BigDecimal.valueOf(999L, 2)),
+            expenditure2 /* untouched, because re-included */,
+            expenditure3.copy(currencyConversionRate = BigDecimal.ONE, declaredAmountAfterSubmission = BigDecimal.valueOf(165, 1)),
         )
 
         every { callPersistence.getCallSimpleByPartnerId(PARTNER_ID).controlReportSamplingCheckPluginKey} returns "plugin-key"
@@ -540,26 +409,9 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         assertThat(auditSlot.captured.auditCandidate.project?.name).isEqualTo("acronym")
         assertThat(auditSlot.captured.auditCandidate.entityRelatedId).isEqualTo(888L)
         assertThat(auditSlot.captured.auditCandidate.description).isEqualTo("[FG01_654] [PP1] Partner report R.4 submitted [Contains sensitive data]")
-        assertThat(slotExpenditureVerification.captured).containsExactlyInAnyOrder(
-            expenditureVerificationUpdate1,
-            expenditureVerificationUpdate2,
-            expenditureVerificationUpdate3
-        )
-        assertThat(slotExpenditures.captured).containsExactly(
-            expenditure1.copy(
-                currencyConversionRate = BigDecimal.valueOf(254855, 4),
-                declaredAmountAfterSubmission = BigDecimal.valueOf(999, 2),
-            ),
-            expenditure2.copy(
-                declaredAmountAfterSubmission = BigDecimal.valueOf(4850, 2),
-                parkingMetadata = ExpenditureParkingMetadata(
-                    reportOfOriginId = 70L,
-                    reportOfOriginNumber = 5,
-                    originalExpenditureNumber = 3
-                ),
-                currencyConversionRate = BigDecimal.valueOf(1)
-            ),
-            expenditure3.copy()
+        assertThat(slotRates.captured).containsExactly(
+            ProjectPartnerReportExpenditureCurrencyRateChange(630L, BigDecimal.valueOf(254855L, 4), BigDecimal.valueOf(999L, 2)),
+            ProjectPartnerReportExpenditureCurrencyRateChange(632L, BigDecimal.ONE, BigDecimal.valueOf(1650L, 2)),
         )
         assertThat(expenditureCcSlot.captured).isEqualTo(expectedPersistedExpenditureCostCategory)
         assertThat(coFinSlot.captured).isEqualTo(ExpenditureCoFinancingCurrentWithReIncluded(expectedCoFinancing, expectedReIncludedCoFinancing))
@@ -567,26 +419,76 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             mapOf(
                 22L to ExpenditureLumpSumCurrentWithReIncluded(
                     current = BigDecimal.valueOf(485, 1),
-                    currentReIncluded = BigDecimal.valueOf(485, 1)
-                )
+                    currentReIncluded = BigDecimal.valueOf(485, 1),
+                ),
             )
         )
         assertThat(unitCostSlot.captured).containsExactlyEntriesOf(
             mapOf(
                 15L to ExpenditureUnitCostCurrentWithReIncluded(
-                    current = BigDecimal.valueOf(1650, 2),
-                    currentReIncluded = BigDecimal.ZERO
-                )
+                    current = BigDecimal.valueOf(165L, 1),
+                    currentReIncluded = BigDecimal.ZERO,
+                ),
             )
         )
         assertThat(investmentSlot.captured).containsExactlyEntriesOf(
             mapOf(
                 10L to ExpenditureInvestmentCurrentWithReIncluded(
-                    current = BigDecimal.valueOf(999, 2),
-                    currentReIncluded = BigDecimal.valueOf(999, 2)
-                )
+                    current = BigDecimal.valueOf(999L, 2),
+                    currentReIncluded = BigDecimal.ZERO,
+                ),
             )
         )
+    }
+
+    @Test
+    fun `submit - no financial changes`() {
+        val report = mockk<ProjectPartnerReport>()
+        every { report.status } returns ReportStatus.ReOpenInControlLimited
+        every { report.id } returns 36L
+        every { report.identification.coFinancing } returns coFinancing
+
+        every { reportPersistence.getPartnerReportById(PARTNER_ID, 36L) } returns report
+        every { preSubmissionCheck.preCheck(PARTNER_ID, reportId = 36L) } returns PreConditionCheckResult(emptyList(), true)
+
+        every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, 36L) } returns emptyList()
+        every { currencyPersistence.findAllByIdYearAndIdMonth(year = YEAR, month = MONTH) } returns emptyList()
+
+        val submissionTime = slot<ZonedDateTime>()
+        every { reportPersistence.updateStatusAndTimes(any(), any(), any(), any(), capture(submissionTime)) } returns mockedResult
+        every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID, "5.6.0") } returns PROJECT_ID
+        every { projectPersistence.getProjectSummary(PROJECT_ID) } returns mockk()
+
+        val auditSlot = slot<AuditCandidateEvent>()
+        every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
+        every { auditPublisher.publishEvent(ofType(PartnerReportStatusChanged::class)) } returns Unit
+
+        val slotRates = slot<Collection<ProjectPartnerReportExpenditureCurrencyRateChange>>()
+        every {
+            reportExpenditureVerificationPersistence
+                .updateExpenditureCurrencyRatesAndClearVerification(
+                    PARTNER_ID,
+                    36L,
+                    capture(slotRates)
+                )
+
+        } returns emptyList()
+
+        submitReport.submit(PARTNER_ID, 36L)
+
+        verify(exactly = 1) { reportPersistence.updateStatusAndTimes(PARTNER_ID, 36L, ReportStatus.InControl, any(), any()) }
+        verify(exactly = 0) { reportExpenditurePersistence.markAsSampledAndLock(any()) }
+        assertThat(submissionTime.captured).isAfter(ZonedDateTime.now().minusMinutes(1))
+        assertThat(submissionTime.captured).isBefore(ZonedDateTime.now().plusMinutes(1))
+
+        assertThat(auditSlot.captured.auditCandidate.action).isEqualTo(AuditAction.PARTNER_REPORT_SUBMITTED)
+        assertThat(auditSlot.captured.auditCandidate.project?.id).isEqualTo(PROJECT_ID.toString())
+        assertThat(auditSlot.captured.auditCandidate.project?.customIdentifier).isEqualTo("FG01_654")
+        assertThat(auditSlot.captured.auditCandidate.project?.name).isEqualTo("acronym")
+        assertThat(auditSlot.captured.auditCandidate.entityRelatedId).isEqualTo(888L)
+        assertThat(auditSlot.captured.auditCandidate.description).isEqualTo("[FG01_654] [PP1] Partner report R.4 submitted")
+
+        assertThat(slotRates.captured).isEmpty()
     }
 
     @Test
@@ -610,7 +512,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         every { preSubmissionCheck.preCheck(PARTNER_ID, reportId = 44L) } returns PreConditionCheckResult(emptyList(), false)
 
         assertThrows<SubmissionNotAllowed> { submitReport.submit(PARTNER_ID, 44L) }
-        verify(exactly = 0) { reportExpenditurePersistence.updatePartnerReportExpenditureCosts(any(), any(), any(), any()) }
+        verify(exactly = 0) { reportExpenditureVerificationPersistence.updateExpenditureCurrencyRatesAndClearVerification(any(), any(), any()) }
     }
 
     @Test
@@ -625,7 +527,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         every { currencyPersistence.findAllByIdYearAndIdMonth(year = YEAR, month = MONTH) } returns emptyList()
 
         assertThrows<CurrencyRatesMissing> { submitReport.submit(PARTNER_ID, 40L) }
-        verify(exactly = 0) { reportExpenditurePersistence.updatePartnerReportExpenditureCosts(any(), any(), any(), any()) }
+        verify(exactly = 0) { reportExpenditureVerificationPersistence.updateExpenditureCurrencyRatesAndClearVerification(any(), any(), any()) }
     }
 
 }

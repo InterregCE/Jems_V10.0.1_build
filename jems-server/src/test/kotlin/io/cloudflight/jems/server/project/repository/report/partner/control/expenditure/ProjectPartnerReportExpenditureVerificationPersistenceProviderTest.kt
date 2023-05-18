@@ -12,9 +12,12 @@ import io.cloudflight.jems.server.project.entity.report.partner.expenditure.Part
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportInvestmentEntity
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportLumpSumEntity
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportUnitCostEntity
+import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.partner.expenditure.ProjectPartnerReportExpenditureRepository
 import io.cloudflight.jems.server.project.repository.report.partner.model.ExpenditureVerificationUpdate
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCurrencyRateChange
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
 import io.mockk.clearMocks
@@ -140,6 +143,34 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
                 partOfSampleLocked = false
             )
 
+        private fun dummyExpectedExpenditure(id: Long) =
+            ProjectPartnerReportExpenditureCost(
+                id = id,
+                number = 1,
+                lumpSumId = null,
+                unitCostId = null,
+                costCategory = ReportBudgetCategory.InfrastructureCosts,
+                gdpr = false,
+                investmentId = null,
+                contractId = 18L,
+                internalReferenceNumber = "irn",
+                invoiceNumber = "invoice",
+                invoiceDate = YESTERDAY,
+                dateOfPayment = TOMORROW,
+                description = setOf(InputTranslation(SystemLanguage.EN, "desc EN")),
+                comment = setOf(InputTranslation(SystemLanguage.EN, "comment EN")),
+                totalValueInvoice = BigDecimal.ONE,
+                vat = BigDecimal.ZERO,
+                numberOfUnits = BigDecimal.ONE,
+                pricePerUnit = BigDecimal.ZERO,
+                declaredAmount = BigDecimal.TEN,
+                currencyCode = "HUF",
+                currencyConversionRate = BigDecimal.valueOf(15L, 1),
+                declaredAmountAfterSubmission = BigDecimal.valueOf(33654L, 2),
+                attachment = JemsFileMetadata(dummyAttachment.id, dummyAttachment.name, dummyAttachment.uploaded),
+                parkingMetadata = null,
+            )
+
         private val dummyExpectedExpenditureUpdate = ExpenditureVerificationUpdate(
             id = EXPENDITURE_TO_UPDATE,
             partOfSample = true,
@@ -152,6 +183,8 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
     }
 
     @MockK
+    private lateinit var reportRepository: ProjectPartnerReportRepository
+    @MockK
     private lateinit var reportExpenditureRepository: ProjectPartnerReportExpenditureRepository
 
     @InjectMockKs
@@ -159,7 +192,7 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
 
     @BeforeEach
     fun reset() {
-        clearMocks(reportExpenditureRepository)
+        clearMocks(reportRepository, reportExpenditureRepository)
     }
 
     @Test
@@ -281,4 +314,39 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
         assertThat(result.first().currencyConversionRate).isEqualByComparingTo(BigDecimal.valueOf(368))
         assertThat(result.first().declaredAmountAfterSubmission).isEqualByComparingTo(BigDecimal.valueOf(3680))
     }
+
+    @Test
+    fun updateExpenditureCurrencyRatesAndClearVerification() {
+        val report = mockk<ProjectPartnerReportEntity>()
+        every { reportRepository.findByIdAndPartnerId(id = 55L, PARTNER_ID) } returns report
+
+        val rate = BigDecimal.valueOf(15L, 1)
+        val declared = BigDecimal.valueOf(33654L, 2)
+
+        val expenditure = dummyExpenditure(780L, report, gdpr = false)
+        expenditure.partOfSample = true
+        expenditure.partOfSampleLocked = true
+        expenditure.deductedAmount = BigDecimal.ONE
+        // verify before test that all values are not same as after test
+        assertThat(expenditure.currencyConversionRate).isNotEqualByComparingTo(rate)
+        assertThat(expenditure.declaredAmountAfterSubmission).isNotEqualByComparingTo(declared)
+        assertThat(expenditure.partOfSample).isTrue()
+        assertThat(expenditure.partOfSampleLocked).isTrue()
+        assertThat(expenditure.certifiedAmount).isNotEqualByComparingTo(expenditure.declaredAmountAfterSubmission)
+        assertThat(expenditure.deductedAmount).isNotEqualByComparingTo(BigDecimal.ZERO)
+        assertThat(expenditure.typologyOfErrorId).isNotNull()
+
+        every { reportExpenditureRepository.findByPartnerReportOrderByIdDesc(report) } returns
+                mutableListOf(expenditure)
+
+        val newRate = ProjectPartnerReportExpenditureCurrencyRateChange(
+            id = 780L,
+            currencyConversionRate = rate,
+            declaredAmountAfterSubmission = declared,
+        )
+
+        assertThat(persistence.updateExpenditureCurrencyRatesAndClearVerification(PARTNER_ID, reportId = 55L, setOf(newRate)))
+            .containsExactly(dummyExpectedExpenditure(780L))
+    }
+
 }
