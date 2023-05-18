@@ -1,18 +1,18 @@
 import {Injectable} from '@angular/core';
 import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
 import {
-    ControllerInstitutionsApiService,
-    ControlOverviewDTO,
-    PartnerUserCollaboratorDTO,
-    ProjectPartnerControlReportChangeDTO,
-    ProjectPartnerControlReportDTO,
-    ProjectPartnerDetailDTO,
-    ProjectPartnerReportControlOverviewService,
-    ProjectPartnerReportIdentificationService,
-    ProjectPartnerReportSummaryDTO,
-    ProjectPartnerService,
-    ProjectPartnerUserCollaboratorService, UserRoleDTO,
-    UserSimpleDTO,
+  ControllerInstitutionsApiService,
+  ControlOverviewDTO,
+  PartnerUserCollaboratorDTO,
+  ProjectPartnerControlReportChangeDTO,
+  ProjectPartnerControlReportDTO,
+  ProjectPartnerDetailDTO,
+  ProjectPartnerReportControlOverviewService, ProjectPartnerReportDTO,
+  ProjectPartnerReportIdentificationService,
+  ProjectPartnerReportSummaryDTO,
+  ProjectPartnerService,
+  ProjectPartnerUserCollaboratorService, UserRoleDTO,
+  UserSimpleDTO,
 } from '@cat/api';
 import {RoutingService} from '@common/services/routing.service';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
@@ -27,6 +27,7 @@ import {
 } from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {PermissionService} from '../../../../security/permissions/permission.service';
+import {ReportUtil} from '@project/common/report-util';
 
 @Injectable({providedIn: 'root'})
 export class PartnerControlReportStore {
@@ -158,8 +159,7 @@ export class PartnerControlReportStore {
         !!partnerId &&
         !!projectId &&
         !!reportId &&
-        status !== 'Draft' &&
-        status !== 'Submitted' &&
+        ReportUtil.isControlReportExists(status as ProjectPartnerReportDTO.StatusEnum) &&
         (isAllowed || (status === 'Certified' && isAllowedAfterFinalized))
           ? this.reportIdentificationService.getControlIdentification(Number(partnerId), Number(reportId))
             .pipe(
