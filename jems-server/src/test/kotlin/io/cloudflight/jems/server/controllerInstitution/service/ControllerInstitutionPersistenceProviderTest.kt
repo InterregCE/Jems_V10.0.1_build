@@ -491,8 +491,9 @@ class ControllerInstitutionPersistenceProviderTest : UnitTest() {
     fun getInstitutionPartnerAssignmentsByPartnerIdsIn() {
         val controllerInstitution = mockk<ControllerInstitutionPartnerEntity>()
         every { controllerInstitution.partnerId } returns 480L
+        every { controllerInstitution.partner.project.id } returns 80L
         every { controllerInstitution.institution?.id } returns 400L
-        every { controllerInstitution.projectIdentifier } returns "80"
+        every { controllerInstitution.projectIdentifier } returns "PROJ-80"
 
         val expectedAssignment = InstitutionPartnerAssignment(partnerId = 480L, institutionId = 400L, partnerProjectId = 80L)
 

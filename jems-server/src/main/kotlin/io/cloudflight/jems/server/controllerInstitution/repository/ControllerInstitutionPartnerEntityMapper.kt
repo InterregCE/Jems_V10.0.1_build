@@ -10,7 +10,7 @@ fun List<ControllerInstitutionPartnerEntity>.toModels() = map { it.toModel() }
 fun ControllerInstitutionPartnerEntity.toModel() = InstitutionPartnerAssignment(
     institutionId = institution?.id,
     partnerId = partnerId,
-    partnerProjectId = projectIdentifier.toLong()
+    partnerProjectId = partner.project.id,
 )
 
 fun ProjectPartnerAssignmentMetadata.toNewEntity(partner: ProjectPartnerEntity) = ControllerInstitutionPartnerEntity(

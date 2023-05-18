@@ -55,7 +55,7 @@ class ControllerInstitutionPersistenceProviderTest : UnitTest() {
 
         private fun dummyATInstitutionAssignmentEntity(): ControllerInstitutionPartnerEntity {
             val partnerMock = mockk<ProjectPartnerEntity> {
-                every { project.id } returns 1
+                every { project.id } returns 1L
                 every { project.call.id } returns 1
             }
             val institutionMock = mockk<ControllerInstitutionEntity> { every { id } returns 2L }
@@ -73,7 +73,7 @@ class ControllerInstitutionPersistenceProviderTest : UnitTest() {
                 every { addressCountryCode } returns "AT"
                 every { addressCity } returns "Wien"
                 every { addressPostalCode } returns "299281"
-                every { projectIdentifier } returns "00010"
+                every { projectIdentifier } returns "AT-00010"
                 every { projectAcronym } returns "Project Test"
             }
 
@@ -81,7 +81,7 @@ class ControllerInstitutionPersistenceProviderTest : UnitTest() {
         }
         private fun dummyROInstitutionAssignmentEntity(): ControllerInstitutionPartnerEntity {
             val partnerMock = mockk<ProjectPartnerEntity> {
-                every { project.id } returns 2
+                every { project.id } returns 2L
                 every { project.call.id } returns 1
             }
             val institutionMock = mockk<ControllerInstitutionEntity> { every { id } returns 2L }
@@ -99,7 +99,7 @@ class ControllerInstitutionPersistenceProviderTest : UnitTest() {
                 every { addressCountryCode } returns "RO"
                 every { addressCity } returns "Gorj"
                 every { addressPostalCode } returns "123456"
-                every { projectIdentifier } returns "0002"
+                every { projectIdentifier } returns "RO-0002"
                 every { projectAcronym } returns "Project Test #2"
             }
 
@@ -245,7 +245,7 @@ class ControllerInstitutionPersistenceProviderTest : UnitTest() {
         every { institutionPartnerRepository.getInstitutionPartnerAssignmentsToDeleteByProjectId(1L) } returns
                 listOf(dummyATInstitutionAssignmentEntity())
         assertThat(persistence.getInstitutionPartnerAssignmentsToDeleteByProjectId(1L))
-            .containsExactly(InstitutionPartnerAssignment(institutionId = 2L, partnerId = 1L, partnerProjectId = 10L))
+            .containsExactly(InstitutionPartnerAssignment(institutionId = 2L, partnerId = 1L, partnerProjectId = 1L))
     }
 
     @Test
