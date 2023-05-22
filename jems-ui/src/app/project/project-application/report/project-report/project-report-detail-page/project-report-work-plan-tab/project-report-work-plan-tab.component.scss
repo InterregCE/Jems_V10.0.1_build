@@ -71,26 +71,22 @@
   margin-right: 1rem;
 }
 
-.panel-description-green {
-  background-color: limegreen;
-}
-
-.panel-description-grey {
-  background-color: lightgray;
-}
-
-.panel-description-yellow {
-  background-color: gold;
-}
-
 .objective-header {
   font-size: 16px;
   font-weight: 400;
 }
 
 .status-chip {
-  background-color: transparent !important;
   flex-grow: 0 !important;
+  &.green-bg {
+    background-color: var(--success-color) !important;;
+  }
+  &.grey-bg {
+    background-color: lightgray !important;
+  }
+  &.yellow-bg {
+    background-color: gold !important;
+  }
 }
 
 

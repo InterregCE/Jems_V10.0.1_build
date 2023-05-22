@@ -190,6 +190,7 @@ export class ProjectReportWorkPlanTabComponent {
     const investments = dto.investments.map((outputDTO: ProjectReportWorkPackageInvestmentDTO) => this.extractInvestmentsFormFromDTO(outputDTO));
     const isPrevCommunicationProgressIncluded = dto.previousCommunicationStatus === ProjectReportWorkPackageDTO.PreviousCommunicationStatusEnum.Fully && dto.communicationStatusLabel === this.CommunicationStatusLabelEnum.Gray;
     const isPrevSpecificProgressIncluded = dto.previousSpecificStatus === ProjectReportWorkPackageDTO.PreviousSpecificStatusEnum.Fully && dto.specificStatusLabel === this.SpecificStatusLabelEnum.Gray;
+    const isPrevDescriptionIncluded = dto.previousCompleted && dto.workPlanStatusLabel === this.WorkPlanStatusLabelEnum.Gray;
 
     return this.formBuilder.group({
       id: this.formBuilder.control(dto.id),
@@ -208,7 +209,7 @@ export class ProjectReportWorkPlanTabComponent {
       communicationStatus: this.formBuilder.control(dto.communicationStatus),
       isPreviousCommunicationStatusFullyAchieved: this.formBuilder.control(dto.previousCommunicationStatus === ProjectReportWorkPackageDTO.PreviousCommunicationStatusEnum.Fully),
       communicationExplanation: isPrevCommunicationProgressIncluded ? this.formBuilder.control(dto.previousCommunicationExplanation) : this.formBuilder.control(dto.communicationExplanation),
-      description: this.formBuilder.control(dto.description ?? []),
+      description: isPrevDescriptionIncluded ? this.formBuilder.control(dto.previousDescription ?? []) : this.formBuilder.control(dto.description ?? []),
       activities: this.formBuilder.array(activities ?? []),
       outputs: this.formBuilder.array(outputs ?? []),
       investments: this.formBuilder.array(investments ?? [])
