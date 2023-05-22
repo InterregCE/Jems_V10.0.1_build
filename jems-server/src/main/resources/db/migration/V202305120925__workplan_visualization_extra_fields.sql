@@ -5,7 +5,7 @@ ALTER TABLE report_project_wp
 
 ALTER TABLE report_project_wp_transl
     ADD COLUMN previous_specific_explanation      TEXT(2000)   NOT NULL DEFAULT '' AFTER specific_explanation,
-    ADD COLUMN previous_communication_explanation TEXT(2000)   NOT NULL DEFAULT '' AFTER communication_explanation;
+    ADD COLUMN previous_communication_explanation TEXT(2000)   NOT NULL DEFAULT '' AFTER communication_explanation,
     ADD COLUMN previous_description TEXT(2000)   NOT NULL DEFAULT '' AFTER description;
 
 ALTER TABLE report_project_wp_activity_deliverable
