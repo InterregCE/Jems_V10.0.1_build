@@ -32,7 +32,7 @@
     <div jemsFormLayout>
         <h3> {{'programme.translation.management.' + fileType.toLowerCase() + '.translations' | translate}}</h3>
         <jems-pending-button *ngIf="(programmeEditableStateStore.hasEditPermission$ | async)"
-                            (click)="downloadDefaultTranslationFile(fileType)"
+                            (clicked)="downloadDefaultTranslationFile(fileType)"
                             [pending]="this.getInProgressSubjectByFileType(fileType) | async"
         >
             {{'programme.translation.management.get.default.translations' | translate}}
