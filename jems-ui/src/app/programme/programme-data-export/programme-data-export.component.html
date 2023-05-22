@@ -50,8 +50,8 @@
                 </mat-select>
             </mat-form-field>
 
-            <div jemsMultiColumnRow gap="10rem">
-                <mat-form-field jemsFormFieldWidth="xx-large">
+            <div jemsMultiColumnRow gap="2rem">
+                <mat-form-field  class="language-selector-width">
                     <mat-label>{{'programme.data.export.label.export.language' | translate}}</mat-label>
                     <mat-select formControlName="exportLanguage">
                         <mat-option *ngFor="let exportLanguage of data.exportLanguages" [value]="exportLanguage"
@@ -61,7 +61,7 @@
                     </mat-select>
                 </mat-form-field>
 
-                <mat-form-field jemsFormFieldWidth="xx-large">
+                <mat-form-field  class="language-selector-width">
                     <mat-label>{{'programme.data.export.label.input.language' | translate}}</mat-label>
                     <mat-select formControlName="inputLanguage">
                         <mat-option *ngFor="let inputLanguage of data.inputLanguages" [value]="inputLanguage"
@@ -73,7 +73,7 @@
             </div>
 
             <ng-container *ngIf="pluginOptionsDescription.length" class="pt-0">
-                <jems-alert [closable]="false" [show]="true" [type]="Alert.INFO" class="mt-5 mb-0">
+                <jems-alert [closable]="false" [show]="true" [type]="Alert.INFO">
                     <p>{{pluginOptionsDescription}}</p>
                 </jems-alert>
 
@@ -86,7 +86,7 @@
 
             <jems-pending-button jemsText
                                  [disabled]="data.isExportDisabled"
-                                 (click)="exportData(pluginKey, exportLanguage, inputLanguage, pluginOptions)">
+                                 (clicked)="exportData(pluginKey, exportLanguage, inputLanguage, pluginOptions)">
                 {{'programme.data.export.label.export.button' | translate}}
             </jems-pending-button>
         </form>

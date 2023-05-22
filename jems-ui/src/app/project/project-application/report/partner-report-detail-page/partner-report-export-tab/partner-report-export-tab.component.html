@@ -33,7 +33,7 @@
     </form>
     <jems-pending-button jemsText
                          [disabled]="!exportForm.valid || !exportLanguage || !inputLanguage"
-                         (click)="exportData()"
+                         (clicked)="exportData()"
                          [pending]="isExportingInProgress$ | async">
         {{'export.label.export.button' | translate}}
     </jems-pending-button>
