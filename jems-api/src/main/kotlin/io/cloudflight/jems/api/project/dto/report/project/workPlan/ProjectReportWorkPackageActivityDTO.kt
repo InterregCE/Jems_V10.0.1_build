@@ -22,5 +22,5 @@ data class ProjectReportWorkPackageActivityDTO(
 
     val deliverables: List<ProjectReportWorkPackageActivityDeliverableDTO>,
 
-    val activityStatusLabel: ProjectReportWorkPlanFlagDTO? = null
+    val activityStatusLabel: ProjectReportWorkPlanFlagDTO?
 )

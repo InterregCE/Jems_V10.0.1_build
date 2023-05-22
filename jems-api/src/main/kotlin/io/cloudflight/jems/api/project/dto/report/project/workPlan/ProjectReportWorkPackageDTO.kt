@@ -27,7 +27,7 @@ data class ProjectReportWorkPackageDTO(
     val outputs: List<ProjectReportWorkPackageOutputDTO>,
     val investments: List<ProjectReportWorkPackageInvestmentDTO>,
 
-    val specificStatusLabel: ProjectReportWorkPlanFlagDTO? = null,
-    val communicationStatusLabel: ProjectReportWorkPlanFlagDTO? = null,
-    val workPlanStatusLabel: ProjectReportWorkPlanFlagDTO? = null,
+    val specificStatusLabel: ProjectReportWorkPlanFlagDTO?,
+    val communicationStatusLabel: ProjectReportWorkPlanFlagDTO?,
+    val workPlanStatusLabel: ProjectReportWorkPlanFlagDTO?
 )

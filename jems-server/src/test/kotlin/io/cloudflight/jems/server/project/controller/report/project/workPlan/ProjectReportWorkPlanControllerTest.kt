@@ -143,7 +143,8 @@ internal class ProjectReportWorkPlanControllerTest : UnitTest() {
                     ),
                 ),
                 previousProgress = setOf(InputTranslation(SystemLanguage.EN, "act-progress-EN")),
-                previousStatus = ProjectReportWorkPlanStatusDTO.Not
+                previousStatus = ProjectReportWorkPlanStatusDTO.Not,
+                activityStatusLabel = null
             ),
         ),
         outputs = listOf(
@@ -171,6 +172,9 @@ internal class ProjectReportWorkPlanControllerTest : UnitTest() {
         previousCommunicationStatus = ProjectReportWorkPlanStatusDTO.Fully,
         previousSpecificExplanation = setOf(InputTranslation(SystemLanguage.EN, "spec-expl-EN")),
         previousDescription = setOf(InputTranslation(SystemLanguage.EN, "desc-EN")),
+        specificStatusLabel = null,
+        communicationStatusLabel = null,
+        workPlanStatusLabel = null,
     )
 
     private val toUpdate = UpdateProjectReportWorkPackageDTO(

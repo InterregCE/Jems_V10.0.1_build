@@ -44,12 +44,9 @@ fun ProjectReportWorkPackageCreate.toEntity(report: ProjectReportEntity) =
         val commMap = communicationObjective.associateBy( { it.language }, { it.translation } )
         val specExpMap = specificExplanation.associateBy( { it.language }, { it.translation } )
         val commExpMap = communicationExplanation.associateBy( { it.language }, { it.translation } )
-        val prevSpecExpMap = previousSpecificExplanation.associateBy( { it.language }, { it.translation } )
-        val prevCommExpMap = previousCommunicationExplanation.associateBy( { it.language }, { it.translation } )
-        val prevDescMap = previousDescription.associateBy( { it.language }, { it.translation } )
         val descMap = description.associateBy( { it.language }, { it.translation } )
 
-        val languages = specMap.keys union commMap.keys union specExpMap.keys union commExpMap.keys union prevSpecExpMap.keys union prevCommExpMap.keys union prevDescMap.keys union descMap.keys
+        val languages = specMap.keys union commMap.keys union specExpMap.keys union commExpMap.keys union descMap.keys
 
         translatedValues.addAll(
             languages.map {
@@ -60,9 +57,9 @@ fun ProjectReportWorkPackageCreate.toEntity(report: ProjectReportEntity) =
                     communicationObjective = commMap[it] ?: "",
                     communicationExplanation = commExpMap[it] ?: "",
                     description = descMap[it] ?: "",
-                    previousCommunicationExplanation = prevCommExpMap[it] ?: "",
-                    previousSpecificExplanation = prevSpecExpMap[it] ?: "",
-                    previousDescription = prevDescMap[it] ?: ""
+                    previousCommunicationExplanation = commExpMap[it] ?: "",
+                    previousSpecificExplanation = specExpMap[it] ?: "",
+                    previousDescription = descMap[it] ?: ""
                 )
             }
         )
@@ -82,9 +79,8 @@ fun ProjectReportWorkPackageActivityCreate.toEntity(wp: ProjectReportWorkPackage
     ).apply {
         val translMap = title.associateBy( { it.language }, { it.translation } )
         val progMap = progress.associateBy( { it.language }, { it.translation } )
-        val prevProgMap = previousProgress.associateBy( { it.language }, { it.translation } )
 
-        val languages = translMap.keys union progMap.keys union prevProgMap.keys
+        val languages = translMap.keys union progMap.keys
 
         translatedValues.addAll(
             languages.map {
@@ -92,7 +88,7 @@ fun ProjectReportWorkPackageActivityCreate.toEntity(wp: ProjectReportWorkPackage
                     TranslationId(this, it),
                     title = translMap[it] ?: "",
                     progress = progMap[it] ?: "",
-                    previousProgress = prevProgMap[it] ?: ""
+                    previousProgress = progMap[it] ?: ""
                 )
             }
         )
@@ -114,9 +110,8 @@ fun List<ProjectReportWorkPackageActivityDeliverableCreate>.toEntity(
     ).apply {
         val translMap = it.title.associateBy( { it.language }, { it.translation } )
         val progMap = it.progress.associateBy( { it.language }, { it.translation } )
-        val prevProgMap = it.previousProgress.associateBy( { it.language }, { it.translation } )
 
-        val languages = translMap.keys union progMap.keys union prevProgMap.keys
+        val languages = translMap.keys union progMap.keys
 
         translatedValues.addAll(
             languages.map {
@@ -124,7 +119,7 @@ fun List<ProjectReportWorkPackageActivityDeliverableCreate>.toEntity(
                     TranslationId(this, it),
                     title = translMap[it] ?: "",
                     progress = progMap[it] ?: "",
-                    previousProgress = prevProgMap[it] ?: ""
+                    previousProgress = progMap[it] ?: ""
                 )
             }
         )
@@ -150,9 +145,8 @@ fun List<ProjectReportWorkPackageOutputCreate>.toEntity(
         ).apply {
             val translMap = it.title.associateBy( { it.language }, { it.translation } )
             val progMap = it.progress.associateBy( { it.language }, { it.translation } )
-            val prevProgMap = it.previousProgress.associateBy( { it.language }, { it.translation } )
 
-            val languages = translMap.keys union progMap.keys union prevProgMap.keys
+            val languages = translMap.keys union progMap.keys
 
             translatedValues.addAll(
                 languages.map {
@@ -160,7 +154,7 @@ fun List<ProjectReportWorkPackageOutputCreate>.toEntity(
                         TranslationId(this, it),
                         title = translMap[it] ?: "",
                         progress = progMap[it] ?: "",
-                        previousProgress = prevProgMap[it] ?: ""
+                        previousProgress = progMap[it] ?: ""
                     )
                 }
             )
@@ -190,9 +184,8 @@ fun List<ProjectReportWorkPackageInvestmentCreate>.toEntity(
             val oRMap = it.ownershipRetain.associateBy( { it.language }, { it.translation } )
             val oMMap = it.ownershipMaintenance.associateBy( { it.language }, { it.translation } )
             val pMap = it.progress.associateBy( { it.language }, { it.translation } )
-            val pPMap = it.previousProgress.associateBy( { it.language }, { it.translation } )
 
-            val languages = titleMap.keys union jEMap.keys union jTRMap.keys union jBMap.keys union jPMap.keys union rMap.keys union dMap.keys union dEIMap.keys union oSLMap.keys union oRMap.keys union oMMap.keys union pMap.keys union pPMap.keys
+            val languages = titleMap.keys union jEMap.keys union jTRMap.keys union jBMap.keys union jPMap.keys union rMap.keys union dMap.keys union dEIMap.keys union oSLMap.keys union oRMap.keys union oMMap.keys union pMap.keys
 
             translatedValues.addAll(
                 languages.map {
@@ -210,7 +203,7 @@ fun List<ProjectReportWorkPackageInvestmentCreate>.toEntity(
                         ownershipRetain = oRMap[it] ?: "",
                         ownershipMaintenance = oMMap[it] ?: "",
                         progress =  pMap[it] ?: "",
-                        previousProgress =  pPMap[it] ?: ""
+                        previousProgress =  pMap[it] ?: ""
                     )
                 }
             )
