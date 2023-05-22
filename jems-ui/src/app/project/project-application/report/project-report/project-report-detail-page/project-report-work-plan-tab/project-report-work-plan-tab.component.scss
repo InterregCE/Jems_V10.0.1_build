@@ -55,3 +55,38 @@
   margin-bottom: 0.25rem;
   margin-right: 0.5rem;
 }
+
+.centered-header {
+  display: inline-flex;
+  align-items: center;
+}
+
+.green-icon {
+  color: green;
+}
+
+.mat-expansion-panel-header-description {
+  display: flex;
+  justify-content: flex-end;
+  margin-right: 1rem;
+}
+
+.objective-header {
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.status-chip {
+  flex-grow: 0 !important;
+  &.green-bg {
+    background-color: var(--success-color) !important;;
+  }
+  &.grey-bg {
+    background-color: lightgray !important;
+  }
+  &.yellow-bg {
+    background-color: gold !important;
+  }
+}
+
+

@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.model.project.workPlan.create
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanStatus
 import java.math.BigDecimal
 
 data class ProjectReportWorkPackageActivityDeliverableCreate(
@@ -11,4 +12,9 @@ data class ProjectReportWorkPackageActivityDeliverableCreate(
 
     val periodNumber: Int?,
     val previouslyReported: BigDecimal,
+    val previousCurrentReport: BigDecimal,
+    val currentReport: BigDecimal,
+
+    val progress: Set<InputTranslation>,
+    val previousProgress: Set<InputTranslation>,
 )

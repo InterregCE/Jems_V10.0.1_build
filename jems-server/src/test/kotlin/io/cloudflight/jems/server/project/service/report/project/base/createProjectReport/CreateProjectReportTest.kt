@@ -47,7 +47,9 @@ import io.cloudflight.jems.server.project.service.report.model.project.workPlan.
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageActivity
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanStatus
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageActivityCreate
+import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageActivityDeliverableCreate
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageCreate
+import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageOutputCreate
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportCreatePersistence
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.identification.ProjectReportIdentificationPersistence
@@ -370,10 +372,18 @@ internal class CreateProjectReportTest : UnitTest() {
                                 progress = emptySet(),
                                 attachment = null,
                                 deliverables = emptyList(),
+                                previousStatus = ProjectReportWorkPlanStatus.Not,
+                                previousProgress = emptySet()
                         )
                 ),
                 outputs = emptyList(),
-                investments = emptyList()
+                investments = emptyList(),
+                previousCommunicationStatus = ProjectReportWorkPlanStatus.Partly,
+                previousCompleted = true,
+                previousSpecificStatus = ProjectReportWorkPlanStatus.Fully,
+                previousSpecificExplanation = emptySet(),
+                previousCommunicationExplanation = emptySet(),
+                previousDescription = emptySet()
         )
 
         fun expectedToCreateModel(projectId: Long, created: ZonedDateTime) = ProjectReportCreateModel(
@@ -507,19 +517,26 @@ internal class CreateProjectReportTest : UnitTest() {
                                                 endPeriodNumber = 6,
                                                 status = ProjectReportWorkPlanStatus.Not,
                                                 deliverables = listOf(
-                                                        CreateProjectPartnerReportWorkPackageActivityDeliverable(
+                                                        ProjectReportWorkPackageActivityDeliverableCreate(
                                                                 deliverableId = 0L,
                                                                 number = 35,
                                                                 title = emptySet(),
                                                                 deactivated = false,
                                                                 periodNumber = 12,
                                                                 previouslyReported = BigDecimal.valueOf(502),
+                                                                previousCurrentReport = BigDecimal.ZERO,
+                                                                previousProgress = emptySet(),
+                                                                progress = emptySet(),
+                                                                currentReport = BigDecimal.ZERO
                                                         ),
                                                 ),
+                                                previousProgress = emptySet(),
+                                                progress = emptySet(),
+                                                previousStatus = ProjectReportWorkPlanStatus.Not,
                                         ),
                                 ),
                                 outputs = listOf(
-                                        CreateProjectPartnerReportWorkPackageOutput(
+                                        ProjectReportWorkPackageOutputCreate(
                                                 number = 16,
                                                 title = setOf(InputTranslation(SystemLanguage.EN, "title-out")),
                                                 deactivated = false,
@@ -527,9 +544,22 @@ internal class CreateProjectReportTest : UnitTest() {
                                                 periodNumber = 16,
                                                 targetValue = BigDecimal.valueOf(10),
                                                 previouslyReported = BigDecimal.valueOf(845),
+                                                previousCurrentReport = BigDecimal.ZERO,
+                                                previousProgress = emptySet(),
+                                                progress = emptySet(),
+                                                currentReport = BigDecimal.ZERO
                                         ),
                                 ),
-                                investments = emptyList()
+                                investments = emptyList(),
+                                previousCommunicationStatus = ProjectReportWorkPlanStatus.Partly,
+                                previousCompleted = true,
+                                previousSpecificStatus = ProjectReportWorkPlanStatus.Fully,
+                                previousSpecificExplanation = emptySet(),
+                                previousCommunicationExplanation= emptySet(),
+                                specificExplanation = emptySet(),
+                                communicationExplanation = emptySet(),
+                                description = emptySet(),
+                                previousDescription = emptySet(),
                         ),
                 ),
                 targetGroups = listOf(

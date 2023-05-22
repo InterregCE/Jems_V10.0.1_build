@@ -21,6 +21,8 @@ import io.cloudflight.jems.server.project.service.report.model.project.workPlan.
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageActivityDeliverable
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageInvestment
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageOutput
+import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanFlag
+import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanStatus
 import java.math.BigDecimal
 
 fun List<ProjectReportWorkPackageEntity>.toModel(
@@ -44,7 +46,13 @@ fun List<ProjectReportWorkPackageEntity>.toModel(
         description = it.translatedValues.extractField { it.description },
         activities = retrieveActivities.invoke(it).toActivitiesModel(periods, retrieveDeliverables),
         outputs = retrieveOutputs.invoke(it).toOutputsModel(periods),
-        investments = retrieveInvestments.invoke(it).toInvestmentsModel(periods)
+        investments = retrieveInvestments.invoke(it).toInvestmentsModel(periods),
+        previousSpecificStatus = it.previousSpecificStatus,
+        previousSpecificExplanation = it.translatedValues.extractField { it.previousSpecificExplanation },
+        previousCommunicationStatus = it.previousCommunicationStatus,
+        previousCompleted = it.previousCompleted,
+        previousCommunicationExplanation = it.translatedValues.extractField { it.previousCommunicationExplanation },
+        previousDescription = it.translatedValues.extractField { it.previousDescription },
     )
 }
 
@@ -63,6 +71,8 @@ fun List<ProjectReportWorkPackageActivityEntity>.toActivitiesModel(
         progress = it.translatedValues.extractField { it.progress },
         attachment = it.attachment?.toModel(),
         deliverables = retrieveDeliverables.invoke(it).toDeliverablesModel(periods),
+        previousStatus = it.previousStatus,
+        previousProgress = it.translatedValues.extractField { it.previousProgress }
     )
 }
 
@@ -79,6 +89,8 @@ fun List<ProjectReportWorkPackageActivityDeliverableEntity>.toDeliverablesModel(
         currentReport = it.currentReport,
         progress = it.translatedValues.extractField { it.progress },
         attachment = it.attachment?.toModel(),
+        previousCurrentReport = it.previousCurrentReport,
+        previousProgress = it.translatedValues.extractField { it.previousProgress}
     )
 }
 
@@ -97,6 +109,8 @@ fun List<ProjectReportWorkPackageOutputEntity>.toOutputsModel(
         previouslyReported = it.previouslyReported,
         progress = it.translatedValues.extractField { it.progress },
         attachment = it.attachment?.toModel(),
+        previousProgress = it.translatedValues.extractField { it.previousProgress },
+        previousCurrentReport = it.previousCurrentReport
     )
 }
 
@@ -110,7 +124,8 @@ fun List<ProjectReportWorkPackageInvestmentEntity>.toInvestmentsModel(
         deactivated = it.deactivated,
         period = it.expectedDeliveryPeriod?.let { periods[it] },
         progress = it.translatedValues.extractField { it.progress },
-        nutsRegion3 = it.address?.nutsRegion3
+        nutsRegion3 = it.address?.nutsRegion3,
+        previousProgress = it.translatedValues.extractField { it.previousProgress },
     )
 }
 

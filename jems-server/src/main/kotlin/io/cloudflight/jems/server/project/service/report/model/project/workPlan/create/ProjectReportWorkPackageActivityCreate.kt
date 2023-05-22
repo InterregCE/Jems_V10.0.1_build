@@ -11,6 +11,9 @@ data class ProjectReportWorkPackageActivityCreate(
     val deactivated: Boolean,
     val startPeriodNumber: Int?,
     val endPeriodNumber: Int?,
+    val previousStatus: ProjectReportWorkPlanStatus?,
     val status: ProjectReportWorkPlanStatus?,
-    val deliverables: List<CreateProjectPartnerReportWorkPackageActivityDeliverable>,
+    val previousProgress: Set<InputTranslation>,
+    val progress: Set<InputTranslation>,
+    val deliverables: List<ProjectReportWorkPackageActivityDeliverableCreate>,
 )

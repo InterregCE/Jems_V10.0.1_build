@@ -349,7 +349,9 @@ class ProjectReportDataProviderImplTest : UnitTest() {
             status = ProjectReportWorkPlanStatus.Fully,
             progress = setOf(InputTranslation(SystemLanguage.EN, "Progress")),
             attachment = null,
-            deliverables = emptyList()
+            deliverables = emptyList(),
+            previousStatus = ProjectReportWorkPlanStatus.Fully,
+            previousProgress = setOf(InputTranslation(SystemLanguage.EN, "Progress")),
         )
         private val expectedActivity = ProjectReportWorkPackageActivityData(
             id = 11L,
@@ -392,7 +394,9 @@ class ProjectReportDataProviderImplTest : UnitTest() {
             currentReport = BigDecimal.TEN,
             previouslyReported = BigDecimal.ONE,
             progress = setOf(InputTranslation(SystemLanguage.EN, "Progress")),
-            attachment = null
+            attachment = null,
+            previousProgress = setOf(InputTranslation(SystemLanguage.EN, "Progress")),
+            previousCurrentReport = BigDecimal.TEN
         )
         private val expectedOutput = ProjectReportWorkPackageOutputData(
             id = 12L,
@@ -422,7 +426,13 @@ class ProjectReportDataProviderImplTest : UnitTest() {
             description = description,
             activities = listOf(activity),
             outputs = listOf(output),
-            investments = emptyList()
+            investments = emptyList(),
+            previousSpecificStatus = ProjectReportWorkPlanStatus.Fully,
+            previousCommunicationExplanation = communicationExplanation,
+            previousCompleted = true,
+            previousCommunicationStatus = ProjectReportWorkPlanStatus.Fully,
+            previousSpecificExplanation = specificExplanation,
+            previousDescription = description
         )
         private val expectedWorkPackage = ProjectReportWorkPackageData(
             id = 10L,

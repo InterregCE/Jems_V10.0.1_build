@@ -11,12 +11,22 @@ data class ProjectReportWorkPackageCreate(
 
     val specificObjective: Set<InputTranslation>,
     val specificStatus: ProjectReportWorkPlanStatus?,
+    val previousSpecificStatus: ProjectReportWorkPlanStatus?,
+    val previousSpecificExplanation: Set<InputTranslation>,
+    val specificExplanation: Set<InputTranslation>,
 
     val communicationObjective: Set<InputTranslation>,
     val communicationStatus: ProjectReportWorkPlanStatus?,
+    val previousCommunicationStatus: ProjectReportWorkPlanStatus?,
+    val previousCommunicationExplanation: Set<InputTranslation>,
+    val communicationExplanation: Set<InputTranslation>,
+
+    val previousDescription: Set<InputTranslation>,
+    val description: Set<InputTranslation>,
 
     val completed: Boolean,
+    val previousCompleted: Boolean,
     val activities: List<ProjectReportWorkPackageActivityCreate>,
-    val outputs: List<CreateProjectPartnerReportWorkPackageOutput>,
+    val outputs: List<ProjectReportWorkPackageOutputCreate>,
     val investments: List<ProjectReportWorkPackageInvestmentCreate>,
 )

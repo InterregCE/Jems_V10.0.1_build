@@ -15,8 +15,10 @@ data class ProjectReportWorkPackageOutputDTO(
     val outputIndicator: OutputIndicatorSummaryDTO?,
     val period: ProjectPeriodDTO?,
     val targetValue: BigDecimal,
+    val previousCurrentReport: BigDecimal,
     val currentReport: BigDecimal,
     val previouslyReported: BigDecimal,
+    val previousProgress: Set<InputTranslation>,
     val progress: Set<InputTranslation>,
     val attachment: JemsFileMetadataDTO?,
 )

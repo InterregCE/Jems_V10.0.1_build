@@ -15,9 +15,15 @@ class ProjectReportWorkPackageTranslEntity(
     @field:NotNull
     var specificExplanation: String,
     @field:NotNull
+    var previousSpecificExplanation: String,
+    @field:NotNull
     val communicationObjective: String,
     @field:NotNull
     var communicationExplanation: String,
     @field:NotNull
+    var previousCommunicationExplanation: String,
+    @field:NotNull
     var description: String,
+    @field:NotNull
+    var previousDescription: String,
 ) : TranslationEntity()

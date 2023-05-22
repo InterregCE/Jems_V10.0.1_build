@@ -1,9 +1,12 @@
 package io.cloudflight.jems.server.project.entity.report.project.workPlan
 
 import io.cloudflight.jems.server.project.entity.AddressEntity
+import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanStatus
 import javax.persistence.CascadeType
 import javax.persistence.Embedded
 import javax.persistence.Entity
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
 import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType

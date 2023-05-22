@@ -11,5 +11,6 @@ data class ProjectReportWorkPackageInvestment (
 
     val period: ProjectPeriod?,
     val nutsRegion3: String?,
+    val previousProgress: Set<InputTranslation>,
     val progress: Set<InputTranslation>,
 )

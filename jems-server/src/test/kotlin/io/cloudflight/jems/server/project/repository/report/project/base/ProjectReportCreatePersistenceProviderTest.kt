@@ -55,7 +55,9 @@ import io.cloudflight.jems.server.project.service.report.model.project.base.crea
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPlanStatus
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageActivityCreate
+import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageActivityDeliverableCreate
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageCreate
+import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageOutputCreate
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -120,19 +122,26 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                         endPeriodNumber = 5,
                         status = ProjectReportWorkPlanStatus.Fully,
                         deliverables = listOf(
-                            CreateProjectPartnerReportWorkPackageActivityDeliverable(
+                            ProjectReportWorkPackageActivityDeliverableCreate(
                                 deliverableId = 400L,
                                 number = 4,
                                 title = setOf(InputTranslation(SystemLanguage.EN, "del-title-EN")),
                                 deactivated = true,
                                 periodNumber = 4,
                                 previouslyReported = BigDecimal.valueOf(478L, 2),
+                                previousCurrentReport = BigDecimal.TEN,
+                                previousProgress = setOf(InputTranslation(SystemLanguage.EN, "progress")),
+                                progress = setOf(InputTranslation(SystemLanguage.EN, "progress")),
+                                currentReport = BigDecimal.TEN
                             ),
                         ),
-                    ),
+                        previousProgress = setOf(InputTranslation(SystemLanguage.EN, "progress")),
+                        progress = setOf(InputTranslation(SystemLanguage.EN, "progress")),
+                        previousStatus = ProjectReportWorkPlanStatus.Fully,
+                    )
                 ),
                 outputs = listOf(
-                    CreateProjectPartnerReportWorkPackageOutput(
+                    ProjectReportWorkPackageOutputCreate(
                         number = 7,
                         title = setOf(InputTranslation(SystemLanguage.EN, "wp-out")),
                         deactivated = false,
@@ -140,9 +149,22 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                         periodNumber = 7,
                         targetValue = BigDecimal.valueOf(700),
                         previouslyReported = BigDecimal.valueOf(954L, 2),
+                        previousCurrentReport = BigDecimal.TEN,
+                        previousProgress = setOf(InputTranslation(SystemLanguage.EN, "progress")),
+                        progress = setOf(InputTranslation(SystemLanguage.EN, "progress")),
+                        currentReport = BigDecimal.TEN
                     ),
                 ),
-                investments = emptyList()
+                investments = emptyList(),
+                previousCommunicationStatus = ProjectReportWorkPlanStatus.Not,
+                previousCompleted = true,
+                previousSpecificStatus = null,
+                previousSpecificExplanation = setOf(InputTranslation(SystemLanguage.EN, "specific explanation")),
+                previousCommunicationExplanation= setOf(InputTranslation(SystemLanguage.EN, "communication explanation")),
+                specificExplanation = setOf(InputTranslation(SystemLanguage.EN, "specific explanation")),
+                communicationExplanation = setOf(InputTranslation(SystemLanguage.EN, "communication explanation")),
+                description = setOf(InputTranslation(SystemLanguage.EN, "desc-EN")),
+                previousDescription = setOf(InputTranslation(SystemLanguage.EN, "desc-EN")),
             ),
         )
 

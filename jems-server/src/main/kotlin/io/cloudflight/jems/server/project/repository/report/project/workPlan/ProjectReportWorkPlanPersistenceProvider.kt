@@ -93,7 +93,7 @@ class ProjectReportWorkPlanPersistenceProvider(
             this.completed = data.completed
 
             translatedValues.updateWith(
-                entitySupplier = { lang -> ProjectReportWorkPackageTranslEntity(TranslationId(this, lang), "", "", "", "", "") },
+                entitySupplier = { lang -> ProjectReportWorkPackageTranslEntity(TranslationId(this, lang), "", "", "", "", "", "", "", "") },
                 allTranslations = listOf(data.specificExplanation, data.communicationExplanation, data.description),
                 { e -> e.specificExplanation = data.specificExplanation.inLang(e.language()) },
                 { e -> e.communicationExplanation = data.communicationExplanation.inLang(e.language()) },
@@ -107,7 +107,7 @@ class ProjectReportWorkPlanPersistenceProvider(
         workPlanActivityRepository.findById(activityId).get().apply {
             this.status = status
             translatedValues.updateWith(
-                entitySupplier = { lang -> ProjectReportWorkPackageActivityTranslEntity(TranslationId(this, lang), "", "") },
+                entitySupplier = { lang -> ProjectReportWorkPackageActivityTranslEntity(TranslationId(this, lang), "", "", "") },
                 allTranslations = listOf(progress),
                 { e -> e.progress = progress.inLang(e.language()) },
             )
@@ -119,7 +119,7 @@ class ProjectReportWorkPlanPersistenceProvider(
         workPlanActivityDeliverableRepository.findById(deliverableId).get().apply {
             this.currentReport = currentReport
             this.translatedValues.updateWith(
-                entitySupplier = { lang -> ProjectReportWorkPackageActivityDeliverableTranslEntity(TranslationId(this, lang), "", "") },
+                entitySupplier = { lang -> ProjectReportWorkPackageActivityDeliverableTranslEntity(TranslationId(this, lang), "", "", "") },
                 allTranslations = listOf(progress),
                 { e -> e.progress = progress.inLang(e.language()) },
             )
@@ -131,7 +131,7 @@ class ProjectReportWorkPlanPersistenceProvider(
         workPlanOutputRepository.findById(outputId).get().apply {
             this.currentReport = currentReport
             this.translatedValues.updateWith(
-                entitySupplier = { lang -> ProjectReportWorkPackageOutputTranslEntity(TranslationId(this, lang), "", "") },
+                entitySupplier = { lang -> ProjectReportWorkPackageOutputTranslEntity(TranslationId(this, lang), "", "", "") },
                 allTranslations = listOf(progress),
                 { e -> e.progress = progress.inLang(e.language()) },
             )

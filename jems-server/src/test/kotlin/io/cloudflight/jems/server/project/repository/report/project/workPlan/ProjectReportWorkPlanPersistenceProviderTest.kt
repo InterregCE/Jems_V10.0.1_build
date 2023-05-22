@@ -77,6 +77,9 @@ class ProjectReportWorkPlanPersistenceProviderTest : UnitTest() {
                 specificStatus = ProjectReportWorkPlanStatus.Partly,
                 communicationStatus = ProjectReportWorkPlanStatus.Fully,
                 completed = true,
+                previousCommunicationStatus = ProjectReportWorkPlanStatus.Fully,
+                previousCompleted = true,
+                previousSpecificStatus = ProjectReportWorkPlanStatus.Partly
         ).apply {
             translatedValues.add(
                     ProjectReportWorkPackageTranslEntity(
@@ -86,6 +89,9 @@ class ProjectReportWorkPlanPersistenceProviderTest : UnitTest() {
                             communicationObjective = "[$id] communicationObjective",
                             communicationExplanation = "[$id] communicationExplanation",
                             description = "[$id] description",
+                            previousSpecificExplanation = "[$id] specificExplanation",
+                            previousCommunicationExplanation = "[$id] communicationExplanation",
+                            previousDescription = "[$id] previousDescription"
                     ),
             )
         }
@@ -112,7 +118,8 @@ class ProjectReportWorkPlanPersistenceProviderTest : UnitTest() {
                             ownershipSiteLocation = "",
                             ownershipRetain = "",
                             ownershipMaintenance = "",
-                            progress = "[$id] progress"
+                            progress = "[$id] progress",
+                            previousProgress = "[$id] progress"
                     ),
             )
         }
@@ -127,12 +134,14 @@ class ProjectReportWorkPlanPersistenceProviderTest : UnitTest() {
                 endPeriodNumber = 3,
                 status = ProjectReportWorkPlanStatus.Fully,
                 attachment = dummyAttachment,
+                previousStatus = ProjectReportWorkPlanStatus.Fully
         ).apply {
             translatedValues.add(
                     ProjectReportWorkPackageActivityTranslEntity(
                             TranslationId(this, SystemLanguage.EN),
                             title = "[$id] title",
                             progress = "[$id] progress",
+                            previousProgress = "[$id] progress",
                     ),
             )
         }
@@ -147,12 +156,14 @@ class ProjectReportWorkPlanPersistenceProviderTest : UnitTest() {
                 previouslyReported = BigDecimal.valueOf(1596L, 2),
                 currentReport = BigDecimal.valueOf(2145L, 2),
                 attachment = null,
+                previousCurrentReport = BigDecimal.valueOf(2145L, 2)
         ).apply {
             translatedValues.add(
                     ProjectReportWorkPackageActivityDeliverableTranslEntity(
                             TranslationId(this, SystemLanguage.EN),
                             title = "[$id] title deliverable",
                             progress = "[$id] progress deliverable",
+                            previousProgress = "[$id] progress deliverable",
                     ),
             )
         }
@@ -206,12 +217,14 @@ class ProjectReportWorkPlanPersistenceProviderTest : UnitTest() {
                 previouslyReported = BigDecimal.valueOf(1577L, 2),
                 currentReport = BigDecimal.valueOf(2875L, 2),
                 attachment = dummyAttachment,
+                previousCurrentReport = BigDecimal.valueOf(2875L, 2),
         ).apply {
             translatedValues.add(
                     ProjectReportWorkPackageOutputTranslEntity(
                             TranslationId(this, SystemLanguage.EN),
                             title = "[$id] output title",
                             progress = "[$id] output progress",
+                            previousProgress = "[$id] output progress",
                     )
             )
         }
@@ -251,8 +264,12 @@ class ProjectReportWorkPlanPersistenceProviderTest : UnitTest() {
                                                         currentReport = BigDecimal.valueOf(2145L, 2),
                                                         progress = setOf(InputTranslation(SystemLanguage.EN, "[$deliverableId] progress deliverable")),
                                                         attachment = null,
+                                                        previousProgress = setOf(InputTranslation(SystemLanguage.EN, "[$deliverableId] progress deliverable")),
+                                                        previousCurrentReport = BigDecimal.valueOf(2145L, 2),
                                                 ),
                                         ),
+                                    previousProgress = setOf(InputTranslation(SystemLanguage.EN, "[$activityId] progress")),
+                                    previousStatus = ProjectReportWorkPlanStatus.Fully
                                 ),
                         ),
                         outputs = listOf(
@@ -272,6 +289,8 @@ class ProjectReportWorkPlanPersistenceProviderTest : UnitTest() {
                                         currentReport = BigDecimal.valueOf(2875L, 2),
                                         progress = setOf(InputTranslation(SystemLanguage.EN, "[$outputId] output progress")),
                                         attachment = JemsFileMetadata(dummyAttachment.id, dummyAttachment.name, dummyAttachment.uploaded),
+                                        previousProgress = setOf(InputTranslation(SystemLanguage.EN, "[$outputId] output progress")),
+                                        previousCurrentReport = BigDecimal.valueOf(2875L, 2),
                                 ),
                         ),
                         investments = listOf(
@@ -282,9 +301,16 @@ class ProjectReportWorkPlanPersistenceProviderTest : UnitTest() {
                                         deactivated = false,
                                         period = null,
                                         nutsRegion3 = null,
-                                        progress = setOf(InputTranslation(language = SystemLanguage.EN, translation = "[$investmentId] progress"))
+                                        progress = setOf(InputTranslation(language = SystemLanguage.EN, translation = "[$investmentId] progress")),
+                                        previousProgress = setOf(InputTranslation(language = SystemLanguage.EN, translation = "[$investmentId] progress")),
                                 )
-                        )
+                        ),
+                        previousCommunicationExplanation = setOf(InputTranslation(SystemLanguage.EN, "[$wpId] communicationExplanation")),
+                        previousSpecificExplanation = setOf(InputTranslation(SystemLanguage.EN, "[$wpId] specificExplanation")),
+                        previousSpecificStatus = ProjectReportWorkPlanStatus.Partly,
+                        previousCompleted = true,
+                        previousCommunicationStatus = ProjectReportWorkPlanStatus.Fully,
+                        previousDescription = setOf(InputTranslation(SystemLanguage.EN, "[$wpId] previousDescription")),
                 )
 
         private fun expectedOutput(outputId: Long) = listOf(

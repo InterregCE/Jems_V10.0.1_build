@@ -13,10 +13,14 @@ data class ProjectReportWorkPackageActivityDTO(
     val startPeriod: ProjectPeriodDTO?,
     val endPeriod: ProjectPeriodDTO?,
 
+    val previousStatus: ProjectReportWorkPlanStatusDTO?,
     val status: ProjectReportWorkPlanStatusDTO?,
+    val previousProgress: Set<InputTranslation>,
     val progress: Set<InputTranslation>,
 
     val attachment: JemsFileMetadataDTO?,
 
     val deliverables: List<ProjectReportWorkPackageActivityDeliverableDTO>,
+
+    val activityStatusLabel: ProjectReportWorkPlanFlagDTO?
 )

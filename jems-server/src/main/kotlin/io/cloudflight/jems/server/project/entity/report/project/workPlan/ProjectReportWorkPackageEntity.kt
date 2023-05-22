@@ -51,10 +51,19 @@ class ProjectReportWorkPackageEntity(
     var specificStatus: ProjectReportWorkPlanStatus?,
 
     @Enumerated(EnumType.STRING)
+    var previousSpecificStatus: ProjectReportWorkPlanStatus?,
+
+    @Enumerated(EnumType.STRING)
     var communicationStatus: ProjectReportWorkPlanStatus?,
+
+    @Enumerated(EnumType.STRING)
+    var previousCommunicationStatus: ProjectReportWorkPlanStatus?,
 
     @field:NotNull
     var completed: Boolean,
+
+    @field:NotNull
+    var previousCompleted: Boolean,
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
     val translatedValues: MutableSet<ProjectReportWorkPackageTranslEntity> = mutableSetOf()
