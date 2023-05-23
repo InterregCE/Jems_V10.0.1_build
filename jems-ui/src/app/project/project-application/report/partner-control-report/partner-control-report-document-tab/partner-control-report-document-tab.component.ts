@@ -23,6 +23,7 @@ import {
   PartnerControlReportStore
 } from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
 import {FormService} from '@common/components/section/form/form.service';
+import {ReportUtil} from '@project/common/report-util';
 
 @UntilDestroy()
 @Component({
@@ -95,11 +96,11 @@ export class PartnerControlReportDocumentTabComponent {
   }
 
   private static isEditable(report: ProjectPartnerReportDTO): boolean {
-    return report.status === ProjectPartnerReportSummaryDTO.StatusEnum.InControl || report.status === ProjectPartnerReportSummaryDTO.StatusEnum.Certified;
+    return ReportUtil.isControlReportExists(report.status);
   }
 
   private static isDeletable(report: ProjectPartnerReportDTO): boolean {
-    return report.status === ProjectPartnerReportSummaryDTO.StatusEnum.InControl;
+    return ReportUtil.isControlReportOpen(report.status);
   }
 
   uploadFile(target: any): void {

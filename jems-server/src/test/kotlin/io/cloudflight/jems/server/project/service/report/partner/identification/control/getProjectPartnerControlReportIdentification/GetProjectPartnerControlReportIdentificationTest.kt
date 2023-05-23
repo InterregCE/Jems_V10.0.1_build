@@ -48,6 +48,7 @@ internal class GetProjectPartnerControlReportIdentificationTest : UnitTest() {
         private val YESTERDAY = LocalDate.now().minusDays(1)
         private val TOMORROW = LocalDate.now().plusDays(1)
         private val YEARS_AGO_10 = ZonedDateTime.now().minusYears(10)
+        private val YEARS_AGO_1 = ZonedDateTime.now().minusYears(1)
 
         private fun report(status: ReportStatus) = ProjectPartnerReport(
             id = 10L,
@@ -55,6 +56,7 @@ internal class GetProjectPartnerControlReportIdentificationTest : UnitTest() {
             status = status,
             version = "1.0",
             firstSubmission = YEARS_AGO_10,
+            lastResubmission = YEARS_AGO_1,
             identification = PartnerReportIdentification(
                 projectIdentifier = "projectIdentifier",
                 projectAcronym = "projectAcronym",
@@ -136,6 +138,7 @@ internal class GetProjectPartnerControlReportIdentificationTest : UnitTest() {
             reportPeriodStart = YESTERDAY.minusYears(1),
             reportPeriodEnd = TOMORROW.plusYears(1),
             reportFirstSubmission = YEARS_AGO_10,
+            reportLastResubmission = YEARS_AGO_1,
             controllerFormats = setOf(
                 ReportFileFormat.Electronic,
             ),

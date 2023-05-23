@@ -187,7 +187,8 @@ class ProjectPartnerReportIdentificationControllerTest : UnitTest() {
             type = ReportType.FinalReport,
             designatedController = designatedController,
             reportVerification = reportVerification,
-            reportControlEnd = TODAY
+            reportControlEnd = TODAY,
+            reportLastResubmission = LAST_WEEK
         )
 
         private val expectedDesignatedController = ReportDesignatedControllerDTO(
@@ -240,7 +241,8 @@ class ProjectPartnerReportIdentificationControllerTest : UnitTest() {
             type = ReportTypeDTO.FinalReport,
             designatedController = expectedDesignatedController,
             reportVerification = expectedReportVerification,
-            reportControlEnd = TODAY
+            reportControlEnd = TODAY,
+            reportLastResubmission = LAST_WEEK
         )
     }
 

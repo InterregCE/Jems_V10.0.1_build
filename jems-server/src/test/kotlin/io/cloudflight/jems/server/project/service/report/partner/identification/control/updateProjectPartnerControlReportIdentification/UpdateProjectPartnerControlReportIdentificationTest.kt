@@ -67,6 +67,7 @@ internal class UpdateProjectPartnerControlReportIdentificationTest : UnitTest() 
             status = status,
             version = "8.1",
             firstSubmission = YESTERDAY,
+            lastResubmission = null,
             identification = PartnerReportIdentification(
                 projectIdentifier = "projectIdentifier",
                 projectAcronym = "projectAcronym",
@@ -169,6 +170,7 @@ internal class UpdateProjectPartnerControlReportIdentificationTest : UnitTest() 
             reportPeriodStart = YEARS_AGO_5,
             reportPeriodEnd = YEARS_AGO_3,
             reportFirstSubmission = YESTERDAY,
+            reportLastResubmission = null,
             controllerFormats = setOf(ReportFileFormat.Originals),
             type = ReportType.FinalReport,
             designatedController = designatedController,
@@ -210,7 +212,7 @@ internal class UpdateProjectPartnerControlReportIdentificationTest : UnitTest() 
     }
 
     @ParameterizedTest(name = "updateControlIdentification (status {0})")
-    @EnumSource(value = ReportStatus::class, names = ["InControl"])
+    @EnumSource(value = ReportStatus::class, names = ["InControl", "ReOpenInControlLast", "ReOpenInControlLimited"])
     fun `updateControlIdentification - success`(status: ReportStatus) {
         val reportId = 66L + status.ordinal
 
@@ -250,7 +252,7 @@ internal class UpdateProjectPartnerControlReportIdentificationTest : UnitTest() 
     }
 
     @ParameterizedTest(name = "updateControlIdentification - wrong status (status {0})")
-    @EnumSource(value = ReportStatus::class, names = ["InControl"], mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = ReportStatus::class, names = ["InControl", "ReOpenInControlLast", "ReOpenInControlLimited"], mode = EnumSource.Mode.EXCLUDE)
     fun `updateControlIdentification - wrong status`(status: ReportStatus) {
         val reportId = 250L + status.ordinal
 

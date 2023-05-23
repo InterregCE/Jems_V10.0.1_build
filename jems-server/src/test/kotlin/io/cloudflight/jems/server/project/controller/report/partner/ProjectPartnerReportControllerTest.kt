@@ -152,6 +152,7 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
             status = reportSummary.status,
             version = reportSummary.version,
             firstSubmission = YESTERDAY,
+            lastResubmission = null,
             controlEnd = TODAY,
             identification = PartnerReportIdentification(
                 projectIdentifier = "projectIdentifier",

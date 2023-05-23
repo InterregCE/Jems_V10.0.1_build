@@ -138,6 +138,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
             status = ReportStatus.Draft,
             version = "6.5.1",
             firstSubmission = DATE_TIME_1,
+            lastResubmission = null,
             controlEnd = DATE_TIME_2,
 
             identification = PartnerReportIdentification(

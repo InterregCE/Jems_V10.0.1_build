@@ -45,7 +45,7 @@ class UpdateProjectPartnerControlReportIdentification(
         data: ProjectPartnerControlReportChange,
     ): ProjectPartnerControlReport {
         val report = reportPersistence.getPartnerReportById(partnerId, reportId = reportId)
-        validateReportInControl(status = report.status)
+        validateControlReportStatus(status = report.status)
         validateVerificationSize(data.reportVerification)
         validateInputs(data = data.designatedController)
         validateUsers(data.designatedController)
@@ -81,8 +81,8 @@ class UpdateProjectPartnerControlReportIdentification(
         )
     }
 
-    private fun validateReportInControl(status: ReportStatus) {
-        if (status.controlNotOpenAnymore())
+    private fun validateControlReportStatus(status: ReportStatus) {
+        if (status.controlNotEvenPartiallyOpen())
             throw ReportNotInControl()
     }
 

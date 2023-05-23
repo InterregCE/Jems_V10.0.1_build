@@ -30,6 +30,7 @@ import {Alert} from '@common/components/forms/alert';
 import {SecurityService} from '../../../../security/security.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {PermissionService} from '../../../../security/permissions/permission.service';
+import {ReportUtil} from '@project/common/report-util';
 
 @Component({
   selector: 'jems-control-checklist-instance-list',
@@ -118,7 +119,7 @@ export class ControlChecklistInstanceListComponent implements OnInit {
     ])
       .pipe(
         map(([level, reportStatus, canEditChecklistsAfterControl, canViewReport]) =>
-            (level === 'Edit' && reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.InControl)
+            (level === 'Edit' && ReportUtil.isControlReportOpen(reportStatus))
             ||
             ((level === 'Edit' || level === 'View' || canViewReport)
                 && reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Certified

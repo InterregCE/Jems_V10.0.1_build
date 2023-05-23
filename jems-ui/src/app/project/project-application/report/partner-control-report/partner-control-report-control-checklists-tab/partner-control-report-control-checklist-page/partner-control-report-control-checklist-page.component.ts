@@ -24,6 +24,7 @@ import {PermissionService} from '../../../../../../security/permissions/permissi
 import {
     PartnerControlReportStore
 } from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
+import {ReportUtil} from '@project/common/report-util';
 
 @Component({
   selector: 'jems-partner-control-report-control-checklist-page',
@@ -91,7 +92,7 @@ export class PartnerControlReportControlChecklistPageComponent {
       ])
           .pipe(
               map(([level, reportStatus, canEditChecklistsAfterControl, canViewReport]) =>
-                  (level === 'Edit' && reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.InControl)
+                  (level === 'Edit' && ReportUtil.isControlReportOpen(reportStatus))
                   ||
                   ((level === 'Edit' || level === 'View' || canViewReport)
                       && reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Certified

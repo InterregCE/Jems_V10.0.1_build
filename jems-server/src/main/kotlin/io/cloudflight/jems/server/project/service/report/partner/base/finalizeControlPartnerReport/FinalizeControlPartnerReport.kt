@@ -104,7 +104,7 @@ class FinalizeControlPartnerReport(
     }
 
     private fun validateReportIsInControl(report: ProjectPartnerReport) {
-        if (report.status.controlNotOpenAnymore())
+        if (report.status.controlNotFullyOpen())
             throw ReportNotInControl()
     }
 

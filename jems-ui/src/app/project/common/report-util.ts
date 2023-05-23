@@ -29,4 +29,12 @@ export class ReportUtil {
       ProjectPartnerReportDTO.StatusEnum.ReOpenInControlLast
     ].includes(status);
   }
+
+  static isControlReportOpen(status: ProjectPartnerReportDTO.StatusEnum): boolean {
+    return [
+      ProjectPartnerReportDTO.StatusEnum.InControl,
+      ProjectPartnerReportDTO.StatusEnum.ReOpenInControlLimited,
+      ProjectPartnerReportDTO.StatusEnum.ReOpenInControlLast
+    ].includes(status);
+  }
 }
