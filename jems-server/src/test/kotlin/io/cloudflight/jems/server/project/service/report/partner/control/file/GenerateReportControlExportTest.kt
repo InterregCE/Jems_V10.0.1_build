@@ -73,6 +73,7 @@ class GenerateReportControlExportTest : UnitTest() {
             status = ReportStatus.Certified,
             version = "1",
             firstSubmission = YESTERDAY,
+            lastResubmission = null,
             identification = PartnerReportIdentification(
                 projectIdentifier = "CLF00001",
                 projectAcronym = "acronym",

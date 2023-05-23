@@ -49,6 +49,7 @@ class GetReportControlOverviewServiceTest: UnitTest() {
             status = ReportStatus.Certified,
             version = "v1.0",
             firstSubmission = mockk(),
+            lastResubmission = null,
             identification = mockk(),
             controlEnd = null
         )

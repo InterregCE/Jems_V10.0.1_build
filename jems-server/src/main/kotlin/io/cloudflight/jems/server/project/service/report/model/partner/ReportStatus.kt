@@ -16,8 +16,9 @@ enum class ReportStatus {
     fun isOpenForNumbersChanges() = isOpenInitially() || this in ARE_LAST_OPEN_STATUSES
     fun isOpenInitially() = this == Draft
 
-    fun controlNotOpenAnymore() = this != InControl
+    fun controlNotEvenPartiallyOpen() = controlNotStartedYet() || isFinalized()
     fun controlNotStartedYet() = this !in CONTROL_STATUSES
+    fun controlNotFullyOpen() = this != InControl
 
     fun canNotBeReOpened() = this !in CAN_BE_OPENED_STATUSES
 

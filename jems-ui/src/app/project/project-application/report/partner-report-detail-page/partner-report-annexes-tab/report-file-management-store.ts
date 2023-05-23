@@ -36,6 +36,7 @@ import {FileManagementStore} from '@project/common/components/file-management/fi
 import {RoutingService} from '@common/services/routing.service';
 import {v4 as uuid} from 'uuid';
 import {FileListTableConstants} from '@common/components/file-list/file-list-table/file-list-table-constants';
+import {ReportUtil} from '@project/common/report-util';
 
 @Injectable({
   providedIn: 'root'
@@ -147,7 +148,7 @@ export class ReportFileManagementStore {
       this.reportStatus$,
     ]).pipe(
       map(([selectedCategory, reportStatus]) => {
-        return selectedCategory?.type === ReportFileCategoryTypeEnum.REPORT && reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Draft;
+        return selectedCategory?.type === ReportFileCategoryTypeEnum.REPORT && ReportUtil.isPartnerReportSubmittable(reportStatus);
       })
     );
   }

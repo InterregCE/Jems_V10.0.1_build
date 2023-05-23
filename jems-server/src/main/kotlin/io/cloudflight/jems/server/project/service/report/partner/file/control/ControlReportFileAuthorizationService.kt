@@ -34,7 +34,7 @@ class ControlReportFileAuthorizationService(
 
     private fun verifyStatus(status: ReportStatus, requireNotClosedControl: Boolean) {
         when (requireNotClosedControl) {
-            true -> if (status.controlNotOpenAnymore()) throw ReportControlNotOpen()
+            true -> if (status.controlNotEvenPartiallyOpen()) throw ReportControlNotOpen()
             else -> if (status.controlNotStartedYet()) throw ReportControlNotStartedYet()
         }
     }

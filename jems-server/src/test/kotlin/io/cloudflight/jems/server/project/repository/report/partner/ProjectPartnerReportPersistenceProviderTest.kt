@@ -158,6 +158,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
             status = ReportStatus.Draft,
             version = "3.0",
             firstSubmission = LAST_YEAR,
+            lastResubmission = LAST_MONTH,
             controlEnd = null,
             identification = PartnerReportIdentification(
                 projectIdentifier = "projectIdentifier",

@@ -106,7 +106,7 @@ export class PartnerControlReportStore {
       this.partnerReportDetailPageStore.reportStatus$
     ])
       .pipe(
-        map(([canEdit, status]) => canEdit && status === ProjectPartnerReportSummaryDTO.StatusEnum.InControl)
+        map(([canEdit, status]) => canEdit && ReportUtil.isControlReportOpen(status))
       );
   }
 

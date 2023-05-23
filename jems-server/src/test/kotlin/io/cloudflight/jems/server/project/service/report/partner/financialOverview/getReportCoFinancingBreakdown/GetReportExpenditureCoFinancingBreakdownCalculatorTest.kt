@@ -63,6 +63,7 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
                 version = "V_4.5",
                 identification = identification,
                 firstSubmission = LAST_YEAR,
+                lastResubmission = null,
                 controlEnd = null
             )
         }

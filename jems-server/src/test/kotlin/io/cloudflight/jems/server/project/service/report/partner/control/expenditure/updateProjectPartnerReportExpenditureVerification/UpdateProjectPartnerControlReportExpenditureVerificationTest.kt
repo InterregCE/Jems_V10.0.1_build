@@ -198,7 +198,8 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
         version = "v1.0",
         firstSubmission = ZonedDateTime.now(),
         identification = mockk(),
-        controlEnd = null
+        controlEnd = null,
+        lastResubmission = null,
     )
 
     @MockK
