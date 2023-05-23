@@ -21,9 +21,7 @@ fun List<ProjectReportWorkPackage>.fillInFlags() = onEach {
         it,
         it.activities,
         it.outputs,
-        it.investments,
-        communicationChanged,
-        specificChanged
+        it.investments
     )
 }
 fun hasActivityChanged(activity: ProjectReportWorkPackageActivity): ProjectReportWorkPlanFlag? {
@@ -87,18 +85,15 @@ fun hasWorkPlanChanged(
     workpackage: ProjectReportWorkPackage,
     activities: List<ProjectReportWorkPackageActivity>,
     outputs: List<ProjectReportWorkPackageOutput>,
-    investments: List<ProjectReportWorkPackageInvestment>,
-    communicationChanged: ProjectReportWorkPlanFlag?,
-    specificChanged: ProjectReportWorkPlanFlag?
+    investments: List<ProjectReportWorkPackageInvestment>
 ): ProjectReportWorkPlanFlag? {
-    val haveActivitiesChanged = activities.map { it.activityStatusLabel }.contains(ProjectReportWorkPlanFlag.Yellow)
     if (workpackage.completed
         && workpackage.previousCompleted != workpackage.completed) {
         return ProjectReportWorkPlanFlag.Green
     }
-    if (communicationChanged == ProjectReportWorkPlanFlag.Yellow
-        || specificChanged == ProjectReportWorkPlanFlag.Yellow
-        || haveActivitiesChanged
+    if (workpackage.communicationExplanation != workpackage.previousCommunicationExplanation
+        || workpackage.specificExplanation != workpackage.previousSpecificExplanation
+        || haveActivitiesChanged(activities)
         || haveOutputsChanged(outputs)
         || haveInvestmentsChanged(investments)
         || workpackage.description != workpackage.previousDescription) {
@@ -122,6 +117,14 @@ fun haveOutputsChanged(outputs: List<ProjectReportWorkPackageOutput>): Boolean {
 fun haveInvestmentsChanged(investments: List<ProjectReportWorkPackageInvestment>): Boolean {
     val differences = investments.map {
         it.previousProgress != it.progress
+    }
+
+    return differences.contains(true)
+}
+
+fun haveActivitiesChanged(activities: List<ProjectReportWorkPackageActivity>): Boolean {
+    val differences = activities.map {
+        it.previousProgress != it.progress || haveDeliverablesChanged(it.deliverables)
     }
 
     return differences.contains(true)
