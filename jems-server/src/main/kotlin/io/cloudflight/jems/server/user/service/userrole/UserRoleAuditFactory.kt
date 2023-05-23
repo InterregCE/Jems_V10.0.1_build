@@ -196,6 +196,34 @@ val DEFAULT_TOP_NAVIGATION_PERMISSIONS =
                 type = UserRolePermissionNodeType.HIDDEN_VIEW_EDIT,
             ),
             UserRolePermissionNode(
+                name = "Controller",
+                type = UserRolePermissionNodeType.SECTION_HEADER,
+                children = listOf(
+                    UserRolePermissionNode(
+                        name = "Institutions",
+                        viewPermissions = setOf(UserRolePermission.InstitutionsRetrieve),
+                        editPermissions = setOf(UserRolePermission.InstitutionsUpdate),
+                        type = UserRolePermissionNodeType.HIDDEN_VIEW_EDIT
+                    ),
+                    UserRolePermissionNode(
+                        name = "Unrestricted access to all institutions",
+                        viewPermissions = setOf(UserRolePermission.InstitutionsUnlimited),
+                        type = UserRolePermissionNodeType.HIDDEN_VIEW
+                    ),
+                    UserRolePermissionNode(
+                        name = "Assignment",
+                        viewPermissions = setOf(UserRolePermission.InstitutionsAssignmentRetrieve),
+                        editPermissions = setOf(UserRolePermission.InstitutionsAssignmentUpdate),
+                        type = UserRolePermissionNodeType.HIDDEN_VIEW_EDIT
+                    ),
+                    UserRolePermissionNode(
+                        name = "Unrestricted access to all assignments",
+                        viewPermissions = setOf(UserRolePermission.AssignmentsUnlimited),
+                        type = UserRolePermissionNodeType.HIDDEN_VIEW
+                    )
+                )
+            ),
+            UserRolePermissionNode(
                 name = "System",
                 type = UserRolePermissionNodeType.SECTION_HEADER,
                 children = listOf(
