@@ -50,7 +50,9 @@ export class AuditLogComponent implements OnInit {
   });
 
   actions = new Map<AuditSearchRequestDTO.ActionsEnum, AuditSearchRequestDTO.ActionsEnum>(
-    Object.values(AuditSearchRequestDTO.ActionsEnum).map(action => [action, action])
+    Object.values(AuditSearchRequestDTO.ActionsEnum)
+      .sort()
+      .map(action => [action, action])
   );
 
   constructor(private auditService: AuditService,
