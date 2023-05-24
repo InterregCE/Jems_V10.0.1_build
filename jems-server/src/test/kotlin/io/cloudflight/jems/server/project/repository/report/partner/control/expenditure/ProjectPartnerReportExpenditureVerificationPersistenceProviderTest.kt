@@ -318,6 +318,8 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
     @Test
     fun updateExpenditureCurrencyRatesAndClearVerification() {
         val report = mockk<ProjectPartnerReportEntity>()
+        every { report.id } returns 55L
+        every { report.number } returns 16
         every { reportRepository.findByIdAndPartnerId(id = 55L, PARTNER_ID) } returns report
 
         val rate = BigDecimal.valueOf(15L, 1)
@@ -327,17 +329,23 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
         expenditure.partOfSample = true
         expenditure.partOfSampleLocked = true
         expenditure.deductedAmount = BigDecimal.ONE
+        val expenditureReIncluded = dummyExpenditure(781L, report, gdpr = false, unParkedFrom = mockk())
+        expenditureReIncluded.partOfSample = true
+        expenditureReIncluded.partOfSampleLocked = true
+        expenditureReIncluded.deductedAmount = BigDecimal.ONE
         // verify before test that all values are not same as after test
-        assertThat(expenditure.currencyConversionRate).isNotEqualByComparingTo(rate)
-        assertThat(expenditure.declaredAmountAfterSubmission).isNotEqualByComparingTo(declared)
-        assertThat(expenditure.partOfSample).isTrue()
-        assertThat(expenditure.partOfSampleLocked).isTrue()
-        assertThat(expenditure.certifiedAmount).isNotEqualByComparingTo(expenditure.declaredAmountAfterSubmission)
-        assertThat(expenditure.deductedAmount).isNotEqualByComparingTo(BigDecimal.ZERO)
-        assertThat(expenditure.typologyOfErrorId).isNotNull()
+        setOf(expenditure, expenditureReIncluded).forEach {
+            assertThat(it.currencyConversionRate).isNotEqualByComparingTo(rate)
+            assertThat(it.declaredAmountAfterSubmission).isNotEqualByComparingTo(declared)
+            assertThat(it.partOfSample).isTrue()
+            assertThat(it.partOfSampleLocked).isTrue()
+            assertThat(it.certifiedAmount).isNotEqualByComparingTo(it.declaredAmountAfterSubmission)
+            assertThat(it.deductedAmount).isNotEqualByComparingTo(BigDecimal.ZERO)
+            assertThat(it.typologyOfErrorId).isNotNull()
+        }
 
         every { reportExpenditureRepository.findByPartnerReportOrderByIdDesc(report) } returns
-                mutableListOf(expenditure)
+                mutableListOf(expenditure, expenditureReIncluded)
 
         val newRate = ProjectPartnerReportExpenditureCurrencyRateChange(
             id = 780L,
@@ -346,7 +354,20 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
         )
 
         assertThat(persistence.updateExpenditureCurrencyRatesAndClearVerification(PARTNER_ID, reportId = 55L, setOf(newRate)))
-            .containsExactly(dummyExpectedExpenditure(780L))
+            .containsExactly(
+                // updated rate and cleared verification
+                dummyExpectedExpenditure(780L),
+                // only cleared verification
+                dummyExpectedExpenditure(781L).copy(
+                    currencyConversionRate = BigDecimal.valueOf(368L),
+                    declaredAmountAfterSubmission = BigDecimal.valueOf(3680L),
+                    parkingMetadata = ExpenditureParkingMetadata(
+                        reportOfOriginId = 55L,
+                        reportOfOriginNumber = 16,
+                        originalExpenditureNumber = 12,
+                    ),
+                ),
+            )
     }
 
 }

@@ -32,6 +32,10 @@ class ReIncludeParkedExpenditure(
     @Transactional
     @ExceptionWrapper(ReIncludeParkedExpenditureException::class)
     override fun reIncludeParkedExpenditure(partnerId: Long, reportId: Long, expenditureId: Long) {
+        val report = reportPersistence.getPartnerReportById(partnerId = partnerId, reportId = reportId)
+        if (!report.status.isOpenForNumbersChanges())
+            throw ReIncludingForbiddenIfReOpenedReportIsNotLast()
+
         val attachment = reportExpenditurePersistence.getExpenditureAttachment(partnerId, expenditureId = expenditureId)
 
         val newExpenditure = reportExpenditurePersistence
@@ -50,7 +54,6 @@ class ReIncludeParkedExpenditure(
             reportFilePersistence.updatePartnerReportExpenditureAttachment(expenditureId = newExpenditure.id, clonedFile)
         }
 
-        val report = reportPersistence.getPartnerReportById(partnerId = partnerId, reportId = reportId)
         auditPublisher.publishEvent(
             partnerReportExpenditureReIncluded(
                 context = this,

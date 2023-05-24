@@ -11,6 +11,7 @@ import io.cloudflight.jems.server.common.file.service.model.JemsFileCreate
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.common.file.service.model.UserSimple
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
@@ -28,6 +29,9 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
 import java.time.ZonedDateTime
 
@@ -57,11 +61,15 @@ internal class ReIncludeParkedExpenditureTest : UnitTest() {
 
     @BeforeEach
     fun reset() {
-        clearMocks(reportFilePersistence)
+        clearMocks(reportParkedExpenditurePersistence, reportExpenditurePersistence, reportFilePersistence, reportPersistence)
     }
 
-    @Test
-    fun `reIncludeParkedExpenditure - without attachment`() {
+    @ParameterizedTest(name = "reIncludeParkedExpenditure - without attachment - {0}")
+    @EnumSource(value = ReportStatus::class, names = ["Draft", "ReOpenSubmittedLast", "ReOpenInControlLast"])
+    fun `reIncludeParkedExpenditure - without attachment`(status: ReportStatus) {
+        val report = report(reportId = 40L, status)
+        every { reportPersistence.getPartnerReportById(partnerId = 4L, reportId = 40L) } returns report
+
         every { reportExpenditurePersistence.getExpenditureAttachment(4L, 400L) } returns null
         val mockedResult = mockk<ProjectPartnerReportExpenditureCost>()
         every { mockedResult.parkingMetadata } returns
@@ -69,9 +77,6 @@ internal class ReIncludeParkedExpenditureTest : UnitTest() {
         every { reportExpenditurePersistence.reIncludeParkedExpenditure(4L, 40L, 400L) } returns mockedResult
         every { reportParkedExpenditurePersistence.unParkExpenditures(setOf(400L)) } answers { }
         every { partnerPersistence.getProjectIdForPartnerId(id = 4L) } returns 8L
-
-        val report = report(reportId = 40L)
-        every { reportPersistence.getPartnerReportById(partnerId = 4L, reportId = 40L) } returns report
 
         val slotAudit = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(slotAudit)) } answers {}
@@ -87,6 +92,17 @@ internal class ReIncludeParkedExpenditureTest : UnitTest() {
             entityRelatedId = 40L,
             description = "Parked expenditure R10.11 was re-included in partner report R.16 by partner PP7",
         ))
+    }
+
+    @ParameterizedTest(name = "reIncludeParkedExpenditure - wrong status - {0}")
+    @EnumSource(value = ReportStatus::class, names = ["Draft", "ReOpenSubmittedLast", "ReOpenInControlLast"], mode = EnumSource.Mode.EXCLUDE)
+    fun `reIncludeParkedExpenditure - wrong status`(status: ReportStatus) {
+        val report = report(reportId = 50L, status)
+        every { reportPersistence.getPartnerReportById(partnerId = 4L, reportId = 50L) } returns report
+
+        assertThrows<ReIncludingForbiddenIfReOpenedReportIsNotLast> {
+            interactor.reIncludeParkedExpenditure(partnerId = 4L, reportId = 50L, expenditureId = 0L)
+        }
     }
 
     @Test
@@ -115,7 +131,7 @@ internal class ReIncludeParkedExpenditureTest : UnitTest() {
         val fileSlot = slot<JemsFileCreate>()
         every { reportFilePersistence.updatePartnerReportExpenditureAttachment(945L, capture(fileSlot)) } returns mockk()
 
-        val report = report(reportId = 50L)
+        val report = report(reportId = 50L, ReportStatus.Draft)
         every { reportPersistence.getPartnerReportById(partnerId = 5L, reportId = 50L) } returns report
 
         val slotAudit = slot<AuditCandidateEvent>()
