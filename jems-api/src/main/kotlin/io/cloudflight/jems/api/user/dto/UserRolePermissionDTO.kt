@@ -26,6 +26,8 @@ enum class UserRolePermissionDTO(val key: String) {
 
     ProjectContractingPartnerView("ProjectContractingPartnerView"),
     ProjectContractingPartnerEdit("ProjectContractingPartnerEdit"),
+    ProjectContractingPartnerStateAidView("ProjectContractingPartnerStateAidView"),
+    ProjectContractingPartnerStateAidEdit("ProjectContractingPartnerStateAidEdit"),
 
     ProjectContractingView("ProjectContractingView"),
     ProjectSetToContracted("ProjectSetToContracted"),

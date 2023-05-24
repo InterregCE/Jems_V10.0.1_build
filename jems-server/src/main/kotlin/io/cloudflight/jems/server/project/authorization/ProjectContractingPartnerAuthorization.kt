@@ -22,6 +22,10 @@ annotation class CanRetrieveProjectContractingPartner
 annotation class CanUpdateProjectContractingPartner
 
 @Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@projectContractingPartnerAuthorization.hasContractingStateAidEditPermission(#partnerId)")
+annotation class CanUpdateProjectContractingPartnerStateAid
+
+@Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("@projectContractingPartnerAuthorization.hasPartnersPermission(#projectId)")
 annotation class CanRetrieveProjectContractingPartners
 
@@ -90,5 +94,17 @@ class ProjectContractingPartnerAuthorization(
                 userId = securityService.getUserIdOrThrow(),
             )
         )
+
+    fun hasContractingStateAidEditPermission(partnerId: Long): Boolean {
+        val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
+
+        if (projectAuthorization.hasPermission(
+                UserRolePermission.ProjectContractingPartnerView,
+                projectId
+            ) && projectAuthorization.hasPermission(UserRolePermission.ProjectSetToContracted, projectId)
+        )
+            return true
+        return false
+    }
 
 }

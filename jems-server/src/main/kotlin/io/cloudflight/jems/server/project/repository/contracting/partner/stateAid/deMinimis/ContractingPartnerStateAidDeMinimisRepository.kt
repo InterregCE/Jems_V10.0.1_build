@@ -1,0 +1,8 @@
+package io.cloudflight.jems.server.project.repository.contracting.partner.stateAid.deMinimis
+
+import io.cloudflight.jems.server.project.entity.contracting.partner.ProjectContractingPartnerStateAidMinimisEntity
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.stereotype.Repository
+
+@Repository
+interface ContractingPartnerStateAidDeMinimisRepository: JpaRepository<ProjectContractingPartnerStateAidMinimisEntity, Long>
