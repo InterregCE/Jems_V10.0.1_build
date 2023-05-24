@@ -675,17 +675,14 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
                 .copy(parkingMetadata = ExpenditureParkingMetadata(75L, 4, 14)),
             dummyExpectedExpenditure(id = EXPENDITURE_TO_UPDATE, LUMP_SUM_ID, UNIT_COST_ID, INVESTMENT_ID, 2)
                 .copy(parkingMetadata = null),
-            dummyExpectedExpenditureNew(id = EXPENDITURE_TO_ADD_1, LUMP_SUM_ID, UNIT_COST_ID, INVESTMENT_ID, 3)
+            dummyExpectedExpenditureNew(id = 0L /* EXPENDITURE_TO_ADD_1 */, LUMP_SUM_ID, UNIT_COST_ID, INVESTMENT_ID, 3)
                 .copy(parkingMetadata = null),
-            dummyExpectedExpenditureNew(id = EXPENDITURE_TO_ADD_2, null, null, null, 4)
+            dummyExpectedExpenditureNew(id = 0L /* EXPENDITURE_TO_ADD_2 */, null, null, null, 4)
                 .copy(parkingMetadata = null),
         )
 
         assertThat(slotDeleted.captured).containsExactly(entityToDelete)
-        assertThat(slotSavedEntities.map { it.id }).containsExactly(
-            // order is important, because not-yet-existing elements will get ID based on insertion order
-            EXPENDITURE_TO_ADD_1, EXPENDITURE_TO_ADD_2
-        )
+        assertThat(slotSavedEntities.map { it.id }).hasSize(2)
 
         slotSavedEntities.forEachIndexed { index, it ->
             assertThat(it.reportLumpSum).isEqualTo(if (index == 0) lumpSum else null)

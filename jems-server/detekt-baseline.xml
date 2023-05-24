@@ -26,6 +26,7 @@
     <ID>ComplexMethod:ProjectNotificationHelper.kt$fun ApplicationStatus.toNotificationType(prevStatus: ApplicationStatus): NotificationType?</ID>
     <ID>ComplexMethod:ProjectPartnerEntityMapper.kt$fun ProjectPartnerEntity.copy( projectPartner: ProjectPartner? = null, legalStatusRef: ProgrammeLegalStatusEntity? = null, newAddresses: Set&lt;ProjectPartnerAddress&gt;? = null, newContacts: Set&lt;ProjectPartnerContact&gt;? = null, newMotivation: ProjectPartnerMotivation? = null, newPartnerContributions: List&lt;ProjectPartnerContribution&gt;? = null, ): ProjectPartnerEntity</ID>
     <ID>ComplexMethod:ProjectReportCreateModelMapper.kt$fun List&lt;ProjectReportWorkPackageInvestmentCreate&gt;.toEntity( wp: ProjectReportWorkPackageEntity )</ID>
+    <ID>ComplexMethod:UpdateProjectPartnerReportExpenditure.kt$UpdateProjectPartnerReportExpenditure$private fun ProjectPartnerReportExpenditureCost.toValidItem(validationData: ExpenditureValidationData): ProjectPartnerReportExpenditureCostUpdate</ID>
     <ID>FunctionOnlyReturningConstant:MockedMethodSignature.kt$MockedMethodSignature$@ExceptionWrapper(SampleWrapperException::class) fun methodWithAspectWhichReturnsNormally(): String</ID>
     <ID>FunctionOnlyReturningConstant:ProgrammeSetupAuthorization.kt$ProgrammeSetupAuthorization$ fun canReadProgrammeSetup()</ID>
     <ID>LargeClass:CreateProjectPartnerReportBudgetTest.kt$CreateProjectPartnerReportBudgetTest : UnitTest</ID>

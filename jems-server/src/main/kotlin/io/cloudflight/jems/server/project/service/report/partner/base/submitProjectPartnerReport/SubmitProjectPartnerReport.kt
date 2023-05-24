@@ -25,6 +25,7 @@ import io.cloudflight.jems.server.project.service.report.partner.contribution.ex
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.ProjectPartnerReportExpenditureVerificationPersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.fillCurrencyRates
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.withoutParked
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportLumpSumPersistence
@@ -58,7 +59,7 @@ class SubmitProjectPartnerReport(
     private val reportLumpSumPersistence: ProjectPartnerReportLumpSumPersistence,
     private val reportUnitCostPersistence: ProjectPartnerReportUnitCostPersistence,
     private val reportInvestmentPersistence: ProjectPartnerReportInvestmentPersistence,
-    private val projectControlReportExpenditurePersistence: ProjectPartnerReportExpenditureVerificationPersistence,
+    private val reportExpenditureVerificationPersistence: ProjectPartnerReportExpenditureVerificationPersistence,
     private val auditPublisher: ApplicationEventPublisher,
     private val projectPersistence: ProjectPersistence,
     private val jemsPluginRegistry: JemsPluginRegistry,
@@ -145,20 +146,11 @@ class SubmitProjectPartnerReport(
         if (notExistingRates.isNotEmpty())
             throw CurrencyRatesMissing(notExistingRates)
 
-        val updatedExpenditures = reportExpenditurePersistence.updatePartnerReportExpenditureCosts(
+        return reportExpenditureVerificationPersistence.updateExpenditureCurrencyRatesAndClearVerification(
             partnerId = partnerId,
             reportId = reportId,
-            expenditureCosts = expenditures.fillCurrencyRates(rates),
-            doNotRenumber = true,
+            newRates = expenditures.fillCurrencyRates(rates).withoutParked(),
         )
-
-        projectControlReportExpenditurePersistence.updatePartnerControlReportExpenditureVerification(
-            partnerId = partnerId,
-            reportId = reportId,
-            expenditureVerification = updatedExpenditures.emptyVerification(),
-        )
-
-        return updatedExpenditures
     }
 
     private fun saveCurrentCostCategories(
@@ -226,18 +218,6 @@ class SubmitProjectPartnerReport(
             partnerId = partnerId,
             reportId = reportId,
             currentlyReported = currentInvestments,
-        )
-    }
-
-    private fun List<ProjectPartnerReportExpenditureCost>.emptyVerification() = map {
-        ExpenditureVerificationUpdate(
-            id = it.id!!,
-            partOfSample = false,
-            certifiedAmount = it.declaredAmountAfterSubmission ?: BigDecimal.ZERO,
-            deductedAmount = BigDecimal.ZERO,
-            typologyOfErrorId = null,
-            parked = false,
-            verificationComment = null
         )
     }
 

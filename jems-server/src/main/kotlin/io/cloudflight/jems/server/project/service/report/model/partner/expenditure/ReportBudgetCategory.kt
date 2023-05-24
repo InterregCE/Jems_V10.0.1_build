@@ -7,5 +7,10 @@ enum class ReportBudgetCategory {
     ExternalCosts,
     EquipmentCosts,
     InfrastructureCosts,
-    Multiple,
+    Multiple;
+
+    fun investmentAllowed() = this !in setOf(StaffCosts, TravelAndAccommodationCosts)
+    fun procurementAllowed() = this != StaffCosts
+    fun invoiceNumberAllowed() = this != StaffCosts
+    fun vatAllowed() = this != StaffCosts
 }

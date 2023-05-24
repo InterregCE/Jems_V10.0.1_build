@@ -3,11 +3,9 @@ package io.cloudflight.jems.server.project.service.report.partner.expenditure
 import io.cloudflight.jems.server.common.anonymize
 import io.cloudflight.jems.server.currency.service.model.CurrencyConversion
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
-import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportLumpSum
-import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportUnitCost
-import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCostOld
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCurrencyRateChange
 import java.math.BigDecimal
-import java.math.RoundingMode
 
 fun List<ProjectPartnerReportExpenditureCost>.fillCurrencyRates(rates: Map<String, CurrencyConversion>) = map {
     it.apply {
@@ -20,30 +18,19 @@ fun List<ProjectPartnerReportExpenditureCost>.fillCurrencyRates(rates: Map<Strin
     }
 }
 
-fun List<ProjectPartnerReportExpenditureCost>.clearConversions(exceptReIncluded: Map<Long, ProjectPartnerReportExpenditureCost>) = map {
-    it.apply {
-        if (id in exceptReIncluded.keys) {
-            currencyCode = exceptReIncluded[id]!!.currencyCode
-            currencyConversionRate = exceptReIncluded[id]!!.currencyConversionRate
-            declaredAmountAfterSubmission = null
-        } else {
-            clearConversions()
-        }
-    }
-}
+fun List<ProjectPartnerReportExpenditureCost>.withoutParked() =
+    filter { it.parkingMetadata == null }
+        .map { ProjectPartnerReportExpenditureCurrencyRateChange(it.id!!, it.currencyConversionRate, it.declaredAmountAfterSubmission) }
 
-fun List<ProjectPartnerReportExpenditureCost>.clearParking() = map {
-    it.apply { it.parkingMetadata = null }
-}
 
-fun List<ProjectPartnerReportExpenditureCost>.reNumber(ignoreIds: Set<Long>): List<ProjectPartnerReportExpenditureCost> {
-    var skippedParked = 0
+fun List<ProjectPartnerReportExpenditureCost>.reNumberButSkipReIncluded(): List<ProjectPartnerReportExpenditureCost> {
+    var skippedReIncluded = 0
     this.forEachIndexed { index, expenditure ->
-        if (expenditure.id in ignoreIds) {
+        if (expenditure.parkingMetadata != null) {
             expenditure.number = 0
-            skippedParked += 1
+            skippedReIncluded += 1
         } else {
-            expenditure.number = index.plus(1).minus(skippedParked)
+            expenditure.number = index.plus(1).minus(skippedReIncluded)
         }
     }
     return this
@@ -66,43 +53,28 @@ fun List<ProjectPartnerReportExpenditureCost>.anonymizeSensitiveDataIf(canNotWor
     }
 }
 
-inline fun <T> Collection<T>.filterInvalidCurrencies(defaultCurrency: String?, extractFunction: (T) -> String) =
-    if (defaultCurrency == "EUR")
-        map { extractFunction.invoke(it) }.filterTo(HashSet()) { it != defaultCurrency }
-    else
-        emptySet()
-
-fun ProjectPartnerReportExpenditureCost.fillInLumpSum(lumpSum: ProjectPartnerReportLumpSum) {
-    unitCostId = null
-    lumpSumId = lumpSum.id
-    costCategory = ReportBudgetCategory.Multiple
-    investmentId = null
-    contractId = null
-    internalReferenceNumber = null
-    invoiceNumber = null
-    invoiceDate = null
-    dateOfPayment = null
-    totalValueInvoice = null
-    vat = null
-    numberOfUnits = BigDecimal.ONE
-    pricePerUnit = lumpSum.cost
-    declaredAmount = lumpSum.cost
-    currencyCode = "EUR"
-}
-
-fun ProjectPartnerReportExpenditureCost.fillInUnitCost(unitCost: ProjectPartnerReportUnitCost, currencyCodeValue: String) {
-    unitCostId = unitCost.id
-    lumpSumId = null
-    costCategory = unitCost.category
-    investmentId = null
-    contractId = null
-    internalReferenceNumber = null
-    invoiceNumber = null
-    invoiceDate = null
-    dateOfPayment = null
-    totalValueInvoice = null
-    vat = null
-    currencyCode = if (currencyCodeValue == "EUR" || currencyCodeValue == unitCost.foreignCurrencyCode) currencyCodeValue else "EUR"
-    pricePerUnit = if (currencyCode == "EUR") unitCost.costPerUnit else unitCost.costPerUnitForeignCurrency!!
-    declaredAmount = numberOfUnits.multiply(pricePerUnit).setScale(2, RoundingMode.DOWN)
-}
+fun ProjectPartnerReportExpenditureCost.asOld() = ProjectPartnerReportExpenditureCostOld(
+    id = id!!,
+    number = number,
+    lumpSumId = lumpSumId,
+    unitCostId = unitCostId,
+    gdpr = gdpr,
+    category = costCategory,
+    investmentId = investmentId,
+    procurementId = contractId,
+    internalReferenceNumber = internalReferenceNumber,
+    invoiceNumber = invoiceNumber,
+    invoiceDate = invoiceDate,
+    dateOfPayment = dateOfPayment,
+    comment = comment,
+    description = description,
+    totalValueInvoice = totalValueInvoice,
+    vat = vat,
+    numberOfUnits = numberOfUnits,
+    pricePerUnit = pricePerUnit,
+    declaredAmount = declaredAmount,
+    currencyCode = currencyCode,
+    currencyConversionRate = currencyConversionRate,
+    declaredAmountAfterSubmission = declaredAmountAfterSubmission,
+    parkingMetadata = parkingMetadata,
+)

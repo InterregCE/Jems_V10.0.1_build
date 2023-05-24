@@ -20,7 +20,6 @@ interface ProjectPartnerReportExpenditurePersistence {
         partnerId: Long,
         reportId: Long,
         expenditureCosts: List<ProjectPartnerReportExpenditureCost>,
-        doNotRenumber: Boolean = false,
     ): List<ProjectPartnerReportExpenditureCost>
 
     fun reIncludeParkedExpenditure(
