@@ -16,9 +16,7 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVa
 import io.cloudflight.jems.server.project.service.projectuser.UserProjectCollaboratorPersistence
 import io.cloudflight.jems.server.project.service.projectuser.UserProjectPersistence
 import io.cloudflight.jems.server.user.service.UserPersistence
-import io.cloudflight.jems.server.user.service.UserRolePersistence
 import io.cloudflight.jems.server.user.service.model.UserEmailNotification
-import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.UserSummary
@@ -32,7 +30,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.time.ZonedDateTime
 
-class ProjectNotificationHelperServiceTest {
+class ProjectNotificationRecipientServiceTest {
 
     companion object {
         private const val PROJECT_ID = 5L
@@ -192,16 +190,6 @@ class ProjectNotificationHelperServiceTest {
             userStatus = UserStatus.INACTIVE
         )
 
-        val programmeUserGlobal = UserSummary(
-            id = 118L,
-            email = "global.retrieve@programme.user",
-            sendNotificationsToEmail = true,
-            name = "bruno",
-            surname = "mars",
-            userRole = UserRoleSummary(id = 1151L, name = "aaaadmin", isDefault = false),
-            userStatus = UserStatus.ACTIVE,
-        )
-
         val controllerUser = UserSummary(
             id = 11L,
             email = "controller.edit@programme.user",
@@ -229,9 +217,6 @@ class ProjectNotificationHelperServiceTest {
     private lateinit var userPersistence: UserPersistence
 
     @MockK
-    private lateinit var userRolePersistence: UserRolePersistence
-
-    @MockK
     private lateinit var controllerInstitutionPersistence: ControllerInstitutionPersistence
 
     @InjectMockKs
@@ -249,17 +234,9 @@ class ProjectNotificationHelperServiceTest {
         )
         every { userProjectPersistence.getUsersForProject(PROJECT_ID) } returns setOf(programmeUser, programmeUserDeactivated)
 
-        every {
-            userRolePersistence.findRoleIdsHavingAndNotHavingPermissions(
-                UserRolePermission.getGlobalProjectRetrievePermissions(), emptySet()
-            )
-        } returns setOf(1151L)
-        every { userPersistence.findAllWithRoleIdIn(setOf(1151L)) } returns listOf(programmeUserGlobal)
-
         val result = projectNotificationHelper.getEmailsForProjectNotification(projectNotificationConfigAll, PROJECT_ID)
         assertThat(result).isEqualTo(
             mapOf(
-                programmeUserGlobal.email to UserEmailNotification(true, UserStatus.ACTIVE),
                 programmeUserDeactivated.email to UserEmailNotification(true, UserStatus.INACTIVE),
                 programmeUser.email to UserEmailNotification(true, UserStatus.ACTIVE),
                 leadPartnerCollaborator.userEmail to UserEmailNotification(true, UserStatus.ACTIVE),

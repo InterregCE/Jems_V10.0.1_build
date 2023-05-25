@@ -8,9 +8,7 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRo
 import io.cloudflight.jems.server.project.service.projectuser.UserProjectCollaboratorPersistence
 import io.cloudflight.jems.server.project.service.projectuser.UserProjectPersistence
 import io.cloudflight.jems.server.user.service.UserPersistence
-import io.cloudflight.jems.server.user.service.UserRolePersistence
 import io.cloudflight.jems.server.user.service.model.UserEmailNotification
-import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.cloudflight.jems.server.user.service.model.assignment.CollaboratorAssignedToProject
 import io.cloudflight.jems.server.user.service.model.assignment.PartnerCollaborator
@@ -23,7 +21,6 @@ class ProjectNotificationRecipientService(
     private val partnerPersistence: PartnerPersistence,
     private val userProjectPersistence: UserProjectPersistence,
     private val userPersistence: UserPersistence,
-    private val userRolePersistence: UserRolePersistence,
     private val controllerInstitutionPersistence: ControllerInstitutionPersistence,
 ) : ProjectNotificationRecipientServiceInteractor {
 
@@ -47,11 +44,11 @@ class ProjectNotificationRecipientService(
             partnerCollaboratorPersistence.findByProjectAndPartners(projectId, partnerIds)
                 .partnerCollaboratorEmails()
 
-        val programmeUsers = if (!notificationConfig.sendToProjectAssigned) emptyMap() else
+        val projectAssignedUsers = if (!notificationConfig.sendToProjectAssigned) emptyMap() else
             userProjectPersistence.getUsersForProject(projectId)
-                .emails() + getUsersWithProjectRetrievePermissions().emails()
+                .emails()
 
-        return managers + leadPartnerCollaborators + nonLeadPartnerCollaborators + programmeUsers
+        return managers + leadPartnerCollaborators + nonLeadPartnerCollaborators + projectAssignedUsers
     }
 
     override fun getEmailsForPartnerNotification(
@@ -71,10 +68,4 @@ class ProjectNotificationRecipientService(
     private fun List<CollaboratorAssignedToProject>.emails() =
         associateBy({ it.userEmail }, { UserEmailNotification(it.sendNotificationsToEmail, it.userStatus) })
 
-    private fun getUsersWithProjectRetrievePermissions() = userPersistence.findAllWithRoleIdIn(
-        roleIds = userRolePersistence.findRoleIdsHavingAndNotHavingPermissions(
-            needsToHaveAtLeastOneFrom = UserRolePermission.getGlobalProjectRetrievePermissions(),
-            needsNotToHaveAnyOf = emptySet(),
-        )
-    )
 }

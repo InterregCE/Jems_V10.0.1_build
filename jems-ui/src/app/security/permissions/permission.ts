@@ -449,6 +449,7 @@ export class Permission {
       viewPermissions: [PermissionsEnum.ProjectRetrieve],
       editPermissions: [PermissionsEnum.ProjectRetrieveEditUserAssignments],
       icon: 'description',
+      viewTooltip: 'permission.top.bar.applications.view',
       editTooltip: 'permission.top.bar.applications.edit'
     },
     {
