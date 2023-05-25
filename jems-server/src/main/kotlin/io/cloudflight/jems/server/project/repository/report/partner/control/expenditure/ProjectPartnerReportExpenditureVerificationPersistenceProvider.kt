@@ -53,16 +53,17 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProvider(
         val newById = newRates.associateBy { it.id }
 
         return reportExpenditureRepository.findByPartnerReportOrderByIdDesc(reportEntity).onEach {
+            // update rates
             if (newById.containsKey(it.id)) {
                 it.currencyConversionRate = newById[it.id]!!.currencyConversionRate
                 it.declaredAmountAfterSubmission = newById[it.id]!!.declaredAmountAfterSubmission
-
-                it.partOfSample = false
-                it.partOfSampleLocked = false
-                it.certifiedAmount = it.declaredAmountAfterSubmission ?: BigDecimal.ZERO
-                it.deductedAmount = BigDecimal.ZERO
-                it.typologyOfErrorId = null
             }
+            // clear verification
+            it.partOfSample = false
+            it.partOfSampleLocked = false
+            it.certifiedAmount = it.declaredAmountAfterSubmission ?: BigDecimal.ZERO
+            it.deductedAmount = BigDecimal.ZERO
+            it.typologyOfErrorId = null
         }.toModel()
     }
 

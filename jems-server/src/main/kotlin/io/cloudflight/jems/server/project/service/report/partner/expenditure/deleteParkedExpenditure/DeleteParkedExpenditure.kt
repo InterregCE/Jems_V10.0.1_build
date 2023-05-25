@@ -23,13 +23,16 @@ class DeleteParkedExpenditure(
     @Transactional
     @ExceptionWrapper(DeleteParkedExpenditureException::class)
     override fun deleteParkedExpenditure(partnerId: Long, reportId: Long, expenditureId: Long) {
+        val report = reportPersistence.getPartnerReportById(partnerId = partnerId, reportId = reportId)
+        if (!report.status.isOpenForNumbersChanges())
+            throw DeletingParkedForbiddenIfReOpenedReportIsNotLast()
+
         val parked = reportParkedExpenditurePersistence.getParkedExpendituresByIdForPartner(partnerId, ReportStatus.Certified)
         if (expenditureId !in parked.keys)
             throw ParkedExpenditureNotFound(expenditureId)
 
         reportParkedExpenditurePersistence.unParkExpenditures(setOf(expenditureId))
 
-        val report = reportPersistence.getPartnerReportById(partnerId = partnerId, reportId = reportId)
         auditPublisher.publishEvent(
             partnerReportExpenditureDeleted(
                 context = this,
