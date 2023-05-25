@@ -57,6 +57,7 @@ export class PartnerReportComponent {
     currentApprovedVersion: string | undefined;
     canViewProjectReport: boolean;
     canCreateReport: boolean;
+    lastReportIsNotReOpened: boolean;
   }>;
   currentApprovedVersion: string;
   canViewProjectReport: boolean;
@@ -96,10 +97,11 @@ export class PartnerReportComponent {
       pageStore.institutionUserCanViewControlReports$,
       versionStore.lastApprovedOrContractedVersion$,
       projectReportPageStore.userCanViewReport$,
+      pageStore.partnerReportLevel$,
       pageStore.canCreateReport$,
     ]).pipe(
-      tap(([partnerReports, _]: [PageProjectPartnerReportSummaryDTO, ProjectPartnerSummaryDTO, boolean, boolean, ProjectVersionDTO | undefined, boolean, boolean]) => this.dataSource.data = partnerReports.content),
-      map(([partnerReports, partner, canEditReport, isController, approvedVersion, canViewProjectReport, canCreateReport]: [PageProjectPartnerReportSummaryDTO, ProjectPartnerSummaryDTO, boolean, boolean, ProjectVersionDTO | undefined, boolean, boolean]) => {
+      tap(([partnerReports, _]: [PageProjectPartnerReportSummaryDTO, ProjectPartnerSummaryDTO, boolean, boolean, ProjectVersionDTO | undefined, boolean, string, boolean]) => this.dataSource.data = partnerReports.content),
+      map(([partnerReports, partner, canEditReport, isController, approvedVersion, canViewProjectReport, partnerReportLevel, lastReportIsNotReOpened]: [PageProjectPartnerReportSummaryDTO, ProjectPartnerSummaryDTO, boolean, boolean, ProjectVersionDTO | undefined, boolean, string, boolean]) => {
           return {
             totalElements: partnerReports.totalElements,
             partnerReports,
@@ -108,7 +110,8 @@ export class PartnerReportComponent {
             canEditReport,
             currentApprovedVersion: approvedVersion?.version,
             canViewProjectReport,
-            canCreateReport
+            canCreateReport: partnerReportLevel === 'EDIT',
+            lastReportIsNotReOpened,
           };
         }
       ),

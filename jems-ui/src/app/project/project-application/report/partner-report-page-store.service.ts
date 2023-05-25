@@ -176,17 +176,18 @@ export class PartnerReportPageStore {
       ),
     );
   }
-  
+
   canCreateReport(): Observable<boolean> {
     return combineLatest([
       this.partnerId$,
-      this.userCanEditReport$
+      this.partnerReportLevel$,
     ]).pipe(
-      switchMap(([partnerId, canEdit]) => {
-        if (canEdit)
+      switchMap(([partnerId, partnerCollaboratorLevel]) => {
+        if (partnerCollaboratorLevel === 'EDIT') {
           return this.projectPartnerReportService.canReportBeCreated(partnerId as number);
-        else
+        } else {
           return of(false);
+        }
       })
     );
   }
