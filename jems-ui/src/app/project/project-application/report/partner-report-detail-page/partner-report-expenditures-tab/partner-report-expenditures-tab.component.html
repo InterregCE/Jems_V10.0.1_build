@@ -3,9 +3,7 @@
                (discard)="refreshListOfExpenditures()">
         <h3>{{'project.application.partner.report.expenditures.title' | translate}}</h3>
         <p>{{'project.application.partner.report.expenditures.currencies.info.message' | translate}}</p>
-        <jems-alert *ngIf="data.isReopened" [show]="true" [type]="Alert.WARNING">
-            <p>{{'project.application.partner.report.expenditures.locked.due.to.reopened.message' | translate}}</p>
-        </jems-alert>
+
         <form jemsFormLayout [formGroup]="reportExpendituresForm">
             <div id="table-container" jemsNoWidthLimit *ngIf="tableData.length > 0">
                 <jems-multi-language-container>
@@ -199,21 +197,18 @@
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.contract.ID' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <div *ngIf="this.currentReport.status !== StatusEnum.Draft || (expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.contractId).errors)"
+                                <div *ngIf="!ReportUtil.isPartnerReportSubmittable(this.currentReport.status) && expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.contractId).errors"
                                       (click)="selectRow(i, 'contractId')" class="custom-wrapper pointer"
                                       [matTooltip]="getContractIdValue(control.get(constants.FORM_CONTROL_NAMES.contractId).value) ?? ('common.not.applicable.option' | translate)"
                                       [matTooltipClass]="'tooltip'"
                                       [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.contractId)">
                                     <div class="custom-dropdown-text">
-                                        <a *ngIf="control.get(constants.FORM_CONTROL_NAMES.contractId).value && currentReport.status !== StatusEnum.Draft"
+                                        <a *ngIf="control.get(constants.FORM_CONTROL_NAMES.contractId).value"
                                            [routerLink]="'/app/project/detail/' + data.projectId + '/reporting/' + data.partnerId + '/reports/' + data.partnerReportId + '/procurements/' + control.get(constants.FORM_CONTROL_NAMES.contractId).value">
                                            <span>
                                                 {{getContractIdValue(control.get(constants.FORM_CONTROL_NAMES.contractId).value)}}
                                            </span>
                                         </a>
-                                        <span *ngIf="control.get(constants.FORM_CONTROL_NAMES.contractId).value && currentReport.status === StatusEnum.Draft">
-                                                {{getContractIdValue(control.get(constants.FORM_CONTROL_NAMES.contractId).value)}}
-                                        </span>
                                         <span *ngIf="!control.get(constants.FORM_CONTROL_NAMES.contractId).value">
                                             {{'common.not.applicable.option' | translate}}
                                         </span>
@@ -223,7 +218,7 @@
                                     </div>
                                 </div>
 
-                                <mat-form-field *ngIf="this.currentReport.status === StatusEnum.Draft && (expenditureFormIndex === i || control.get(constants.FORM_CONTROL_NAMES.contractId).errors)" jemsFormFieldWidth="full">
+                                <mat-form-field *ngIf="ReportUtil.isPartnerReportSubmittable(this.currentReport.status) || (expenditureFormIndex === i || control.get(constants.FORM_CONTROL_NAMES.contractId).errors)" jemsFormFieldWidth="full">
                                     <mat-select
                                         #contractId
                                         [formControlName]="constants.FORM_CONTROL_NAMES.contractId"
@@ -682,6 +677,8 @@
                                 <button mat-icon-button *ngIf="reportExpendituresForm.enabled"
                                         [disabled]="!!control.get('attachment').value ||
                                         !data.isReportEditable ||
+                                        data.isReopenedLast ||
+                                        data.isReopenedLimited ||
                                         !deleteAllowed(control.get(constants.FORM_CONTROL_NAMES.costGDPR).value, data.isGDPRCompliant, data.canEdit)"
                                         (click)="removeItem(index)"
                                         class="delete-button"
@@ -704,7 +701,7 @@
                     </mat-table>
                 </jems-multi-language-container>
             </div>
-            <button *ngIf="data.isReportEditable"
+            <button *ngIf="data.isReportEditable && !data.isReopenedLast && !data.isReopenedLimited"
                     mat-stroked-button type="button" class="mt-2"
                     [disabled]="items.length >= constants.MAX_NUMBER_OF_ITEMS"
                     (click)="addNewItem()">
@@ -714,7 +711,7 @@
         </form>
 
         <jems-partner-report-expenditures-parked
-                *ngIf="data.parkedExpenditures.length && data.isReportEditable"
+                *ngIf="data.parkedExpenditures.length && data.isReportEditable && !data.isReopenedLimited"
                 [listDirty$]="formService.dirty$"
                 [expenditures]="data.parkedExpenditures"
                 [columns]="data.columnsToDisplay">

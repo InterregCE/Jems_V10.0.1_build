@@ -78,7 +78,8 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     partnerId: string | number | null;
     partnerReportId: number;
     projectId: number;
-    isReopened: boolean;
+    isReopenedLast: boolean;
+    isReopenedLimited: boolean;
   }>;
   tableConfiguration$: Observable<{
     columnsToDisplay: string[];
@@ -107,6 +108,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   readonly PERIOD_PREPARATION: number = 0;
   readonly PERIOD_CLOSURE: number = 255;
   Alert = Alert;
+  ReportUtil = ReportUtil;
 
   constructor(public pageStore: PartnerReportExpendituresStore,
               protected changeDetectorRef: ChangeDetectorRef,
@@ -268,7 +270,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     return  this.hasPartnerCurrencySetToEur() ? CurrencyCodesEnum.EUR : unitCost.foreignCurrencyCode ? '' : CurrencyCodesEnum.EUR;
   }
 
-  disableOnReset(control: FormGroup, index: number, isGDPRCompliant: boolean, isMonitorUser: boolean): void {
+  disableFieldSpecificOnReset(control: FormGroup, index: number, isGDPRCompliant: boolean, isMonitorUser: boolean): void {
     if (!isMonitorUser && (control.get('costGDPR')?.value === true && !isGDPRCompliant)) {
       control.disable();
     }
@@ -285,8 +287,18 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       if ((control?.get(this.constants.FORM_CONTROL_NAMES.costOptions) as FormControl)?.value !== null) {
         this.disableCostOptionSelectionRelatedFields(control, control.value?.costOptions?.type, index);
       }
-      if (control.get('reportOfOriginNumber')?.value) {
+      if (control.get('reportOfOriginNumber')?.value || this.currentReport.status === this.StatusEnum.ReOpenSubmittedLast || this.currentReport.status === this.StatusEnum.ReOpenInControlLast) {
         control.get('currencyCode')?.disable();
+      }
+    }
+  }
+
+  enableFieldSpecificOnReset(control: FormGroup, isReportEditable: boolean) {
+    if (isReportEditable && ReportUtil.isReopenedPartnerReportLimited(this.currentReport.status)) {
+      control.get('description')?.enable();
+      control.get('comment')?.enable();
+      if ((control.get(this.constants.FORM_CONTROL_NAMES.costOptions) as FormControl)?.value === null) {
+        control.get('contractId')?.enable();
       }
     }
   }
@@ -310,10 +322,15 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     this.items.clear();
     partnerReportExpenditures.forEach(partnerReportExpenditure => this.addExpenditure(partnerReportExpenditure));
     this.tableData = [...this.items.controls];
-    this.formService.setEditable(isReportEditable);
+    this.formService.setEditable(isReportEditable && ReportUtil.isReopenedPartnerReportLast(this.currentReport.status) || this.currentReport.status === this.StatusEnum.Draft);
     this.formService.setDirty(false);
-    this.items.controls.forEach((formGroup: FormGroup, index) => (
-      this.disableOnReset(formGroup, index, isGDPRCompliant, isMonitorUser)));
+    this.items.controls.forEach((formGroup: FormGroup, index) => {
+      if (this.formService.isEditable()) {
+        this.disableFieldSpecificOnReset(formGroup, index, isGDPRCompliant, isMonitorUser);
+      } else {
+        this.enableFieldSpecificOnReset(formGroup, isReportEditable);
+      }
+    });
 
     setTimeout(() => this.changeDetectorRef.detectChanges());
   }
@@ -435,12 +452,13 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
         isGDPRCompliant: isCurrentUserGDPRCompliant,
         canEdit,
         isMonitorUser,
-        isReportEditable: isReportEditable && !ReportUtil.isPartnerReportReopened(currentReport.status),
+        isReportEditable,
         partnerId,
         partnerReportId,
         projectId,
-        isReopened: ReportUtil.isPartnerReportReopened(currentReport.status),
-        })
+        isReopenedLast: ReportUtil.isReopenedPartnerReportLast(currentReport.status),
+        isReopenedLimited: ReportUtil.isReopenedPartnerReportLimited(currentReport.status)
+      })
       ),
       tap(data => this.resetForm(data.expendituresCosts, data.isGDPRCompliant, data.isMonitorUser, data.isReportEditable)),
       tap(data => this.contractIDs = data.contractIDs),
@@ -779,6 +797,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     const summary = this.investmentsSummary.find(s => s.id === investmentId);
     return summary?.toString() ?? '';
   }
+
   getInvestmentInactive(investmentId: number): boolean {
     const summary = this.investmentsSummary.find(s => s.id === investmentId);
     return summary?.deactivated || false;
@@ -885,7 +904,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   }
 
   deleteAllowed(valueGDPR: boolean, isGDPRCompliant: boolean, canEdit: boolean): boolean {
-    return  (!valueGDPR && canEdit) || (valueGDPR && isGDPRCompliant);
+    return (!valueGDPR && canEdit) || (valueGDPR && isGDPRCompliant);
   }
 
   toggleGDPR(index: number,  control: FormGroup, value: boolean): void {
