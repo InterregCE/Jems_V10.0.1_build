@@ -233,7 +233,8 @@ export class PartnerReportComponent {
     Forms.confirm(
       this.dialog, {
         title: 'project.application.partner.report.confirm.deletion.header',
-        message: {i18nKey: 'project.application.partner.report.confirm.deletion.message', i18nArguments: {id: partnerReport.reportNumber.toString()}}
+        message: {i18nKey: 'project.application.partner.report.confirm.deletion.message', i18nArguments: {id: partnerReport.reportNumber.toString()}},
+        warnMessage: 'project.application.partner.report.confirm.deletion.warning'
       })
       .pipe(
         take(1),
