@@ -11,12 +11,12 @@
         <div>{{'project.application.form.section.part.b.deactivated.partner.warning' | translate}}</div>
     </jems-alert>
 
-    <ng-container *ngIf="pageStore.userCanEditReport$ | async">
+    <ng-container *ngIf="data.canCreateReport">
         <p>
             <jems-pending-button jemsText class="mb-3"
                                  icon="add"
                                  (clicked)="createPartnerReport()"
-                                 [disabled]="!data.canCreateReport"
+                                 [disabled]="!data.lastReportIsNotReOpened"
                                  [pending]="actionPending">
                 {{'project.application.partner.reports.add' | translate}}
             </jems-pending-button>

@@ -103,7 +103,7 @@ fun List<ProjectReportWorkPackageActivityDeliverableCreate>.toEntity(
         deactivated = it.deactivated,
         deliverableId = it.deliverableId,
         periodNumber = it.periodNumber,
-        previouslyReported = it.previouslyReported ?: BigDecimal.ZERO,
+        previouslyReported = it.previouslyReported,
         currentReport = BigDecimal.ZERO,
         attachment = null,
         previousCurrentReport = BigDecimal.ZERO
