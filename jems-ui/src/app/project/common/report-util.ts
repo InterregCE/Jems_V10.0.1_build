@@ -37,4 +37,18 @@ export class ReportUtil {
       ProjectPartnerReportDTO.StatusEnum.ReOpenInControlLast
     ].includes(status);
   }
+
+  static isReopenedPartnerReportLast(status: ProjectPartnerReportDTO.StatusEnum): boolean {
+    return [
+      ProjectPartnerReportDTO.StatusEnum.ReOpenSubmittedLast,
+      ProjectPartnerReportDTO.StatusEnum.ReOpenInControlLast
+    ].includes(status);
+  }
+
+  static isReopenedPartnerReportLimited(status: ProjectPartnerReportDTO.StatusEnum): boolean {
+    return [
+      ProjectPartnerReportDTO.StatusEnum.ReOpenSubmittedLimited,
+      ProjectPartnerReportDTO.StatusEnum.ReOpenInControlLimited
+    ].includes(status);
+  }
 }
