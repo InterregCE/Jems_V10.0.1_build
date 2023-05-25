@@ -92,7 +92,9 @@ fun hasWorkPlanChanged(
         return ProjectReportWorkPlanFlag.Green
     }
     if (workpackage.communicationExplanation != workpackage.previousCommunicationExplanation
+        || workpackage.communicationStatus != workpackage.previousCommunicationStatus
         || workpackage.specificExplanation != workpackage.previousSpecificExplanation
+        || workpackage.specificStatus != workpackage.previousSpecificStatus
         || haveActivitiesChanged(activities)
         || haveOutputsChanged(outputs)
         || haveInvestmentsChanged(investments)
@@ -124,7 +126,9 @@ fun haveInvestmentsChanged(investments: List<ProjectReportWorkPackageInvestment>
 
 fun haveActivitiesChanged(activities: List<ProjectReportWorkPackageActivity>): Boolean {
     val differences = activities.map {
-        it.previousProgress != it.progress || haveDeliverablesChanged(it.deliverables)
+        it.previousProgress != it.progress
+                || it.previousStatus != it.status
+                || haveDeliverablesChanged(it.deliverables)
     }
 
     return differences.contains(true)
