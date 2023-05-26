@@ -9,3 +9,4 @@ out
 
 node_modules
 coverage
+/jems-server/transl-folder/Application-CallSpecific_no.properties
