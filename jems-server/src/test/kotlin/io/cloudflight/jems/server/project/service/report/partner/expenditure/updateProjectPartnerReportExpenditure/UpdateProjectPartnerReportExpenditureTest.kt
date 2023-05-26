@@ -150,7 +150,7 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
         val reportId = 644L
 
         // cover case for programme user
-        every { sensitiveDataAuthorization.isCurrentUserCollaboratorWithSensitiveFor(PARTNER_ID) } returns false
+        every { sensitiveDataAuthorization.isCurrentUserCollaboratorWithSensitiveFor(PARTNER_ID) } returns true
         every { securityService.currentUser?.hasPermission(UserRolePermission.ProjectReportingEdit) } returns true
 
         mockGenericData(reportId, status)
@@ -159,13 +159,33 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
 
         val newValue = expenditureDummy.copy(
             costCategory = ReportBudgetCategory.OfficeAndAdministrationCosts,
+            investmentId = 540L,
             contractId = 530L,
+            internalReferenceNumber = "new value",
+            invoiceNumber = "new value",
+            invoiceDate = LocalDate.now(),
+            dateOfPayment = LocalDate.now(),
             description = setOf(InputTranslation(SystemLanguage.PL, "desc PL")),
             comment = setOf(InputTranslation(SystemLanguage.PL, "comment PL")),
+            totalValueInvoice = BigDecimal.valueOf(999L),
+            vat = BigDecimal.valueOf(999L),
+            numberOfUnits = BigDecimal.valueOf(999L),
+            pricePerUnit  = BigDecimal.valueOf(999L),
+            declaredAmount  = BigDecimal.valueOf(999L),
+            currencyCode = "CZK",
+            gdpr = true
         )
 
         assertThat(interactor.updatePartnerReportExpenditureCosts(PARTNER_ID, reportId, listOf(newValue)))
-            .containsExactly(newValue)
+            .containsExactly(
+                expenditureDummy.copy(
+                    costCategory = ReportBudgetCategory.OfficeAndAdministrationCosts,
+                    gdpr = true,
+                    description = setOf(InputTranslation(SystemLanguage.PL, "desc PL")),
+                    comment = setOf(InputTranslation(SystemLanguage.PL, "comment PL")),
+                    contractId = 530L
+                )
+            )
     }
 
     @ParameterizedTest(name = "updatePartnerReportExpenditureCosts - only limited - gdpr sensitive - {0}")
