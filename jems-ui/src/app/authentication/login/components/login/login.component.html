@@ -30,8 +30,8 @@
         </mat-form-field>
 
         <div>
-            {{'user.terms.login.firstText' | translate}} <span><a
-                [href]="termsAndPrivacyPolicyUrl$ | async"> {{'user.terms.linkText' | translate}} </a></span>
+            {{'user.terms.login.firstText' | translate}} <span>
+            <a target="_blank" [href]="termsAndPrivacyPolicyUrl$ | async"> {{'user.terms.linkText' | translate}} </a></span>
         </div>
 
         <button jemsText mat-raised-button
