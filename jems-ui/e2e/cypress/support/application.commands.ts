@@ -73,6 +73,10 @@ declare global {
       getProjectUnitCosts(applicationId: number);
 
       getProjectProposedUnitCosts(applicationId: number);
+
+      getContractMonitoring(applicationId: number);
+
+      updateContractMonitoring(applicationId: number, contractMonitoring: {});
     }
   }
 }
@@ -322,6 +326,14 @@ Cypress.Commands.add('getProjectProposedUnitCosts', (applicationId: number) => {
     method: 'GET',
     url: `api/project/${applicationId}/costOption/unitCost?version=1.0`
   }).then(response => response.body);
+});
+
+Cypress.Commands.add('getContractMonitoring', (applicationId: number) => {
+  getContractMonitoring(applicationId);
+});
+
+Cypress.Commands.add('updateContractMonitoring', (applicationId: number, contractMonitoring: {}) => {
+  updateContractMonitoring(applicationId, contractMonitoring);
 });
 
 function createApplication(applicationDetails) {
@@ -587,6 +599,21 @@ function matchPartnersToActivities(activities) {
         activity.partnerIds = [this[activity.cypressReferencePartner]];
       }
     });
+  });
+}
+
+function getContractMonitoring(applicationId) {
+  cy.request({
+    method: 'GET',
+    url: `api/project/${applicationId}/contracting/monitoring`,
+  }).then((response) => response.body);
+}
+
+function updateContractMonitoring(applicationId, contractMonitoring) {
+  cy.request({
+    method: 'PUT',
+    url: `api/project/${applicationId}/contracting/monitoring`,
+    body: contractMonitoring
   });
 }
 
