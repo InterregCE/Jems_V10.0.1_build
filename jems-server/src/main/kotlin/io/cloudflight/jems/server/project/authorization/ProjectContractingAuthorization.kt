@@ -37,7 +37,9 @@ annotation class CanEditProjectManagers
 
 @Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("@projectContractingAuthorization.canViewReportingSchedule(#projectId) || " +
-    "@projectMonitoringAuthorization.canViewProjectMonitoring(#projectId)")
+    "@projectMonitoringAuthorization.canViewProjectMonitoring(#projectId) || " +
+    // whe applicant does not have ReportSchedule.VIEW but has ProjectReport.VIEW
+    "@projectReportAuthorization.canViewReport(#projectId)")
 annotation class CanRetrieveProjectReportingSchedule
 
 @Retention(AnnotationRetention.RUNTIME)
