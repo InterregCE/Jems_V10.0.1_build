@@ -1,14 +1,18 @@
 <jems-project-page-template
         *ngIf="data$ | async as data"
         [needsCard]="true"
-        titleKey="project.application.project.report.title"
+        titleKey="project.application.reporting.title"
+        subTitleKey="project.application.project.report.title"
         [isVersionedData]="false">
 
+    <h3>{{'project.application.project.report.title' | translate}}</h3>
     <ng-container *ngIf="pageStore.userCanEditReport$ | async">
-        <a jemsText mat-raised-button [color]="'primary'" [routerLink]="'/app/project/detail/' + projectId + '/projectReports/create'">
-            <mat-icon>add</mat-icon>
-            {{'project.application.project.report.add' | translate}}
-        </a>
+        <p class="mb-3">
+            <a jemsText mat-raised-button [color]="'primary'" [routerLink]="'/app/project/detail/' + projectId + '/projectReports/create'">
+                <mat-icon>add</mat-icon>
+                {{'project.application.project.report.add' | translate}}
+            </a>
+        </p>
     </ng-container>
 
     <jems-alert [show]="successfulDeletionMessage"
