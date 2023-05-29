@@ -606,7 +606,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       ...formGroup.getRawValue(),
       lumpSumId: formGroup.getRawValue()?.costOptions?.type === 'lumpSum' ? formGroup.getRawValue()?.costOptions.id : null,
       unitCostId: formGroup.getRawValue()?.costOptions?.type === 'unitCost' ? formGroup.getRawValue()?.costOptions.id : null,
-      gdpr: formGroup.value?.costGDPR
+      gdpr: formGroup.getRawValue()?.costGDPR
      }));
   }
 
