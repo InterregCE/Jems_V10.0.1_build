@@ -1,9 +1,5 @@
 @use '../partner-report-detail-page/partner-report-financial-overview-tab/remove-custom-table-overrides';
 
-.id-column-width {
-  max-width: 4rem;
-}
-
 .row-link:hover {
   cursor: pointer;
 }
@@ -16,4 +12,42 @@ mat-icon {
   font-size: 1.25em;
   line-height: 1.25em;
   vertical-align: middle;
+}
+
+mat-row, mat-header-row {
+  mat-cell, mat-header-cell {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  mat-header-cell {
+    line-height: 1.2em;
+  }
+}
+
+.mat-column-reportNumber {
+  min-width: 3rem;
+  max-width: 4rem;
+}
+.mat-column-status {
+  min-width: 10rem;
+}
+.mat-column-projectReport {
+  min-width: 3rem;
+}
+.mat-column-linkedFormVersion {
+  min-width: 3rem;
+}
+.mat-column-reportingPeriod {
+  min-width: 6.5rem;
+}
+.mat-column-type {
+  min-width: 8rem;
+}
+.mat-column-createdAt,
+.mat-column-firstSubmission {
+  min-width: 5rem;
+}
+.mat-column-delete {
+  min-width: 3rem;
+  max-width: 3rem;
 }

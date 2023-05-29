@@ -135,7 +135,7 @@
             <mat-header-cell *matHeaderCellDef>
                 <span jemsText maxLines="2">{{ 'project.application.partner.reports.table.amount.submitted' | translate }}</span>
             </mat-header-cell>
-            <mat-cell *matCellDef="let report">{{ report.totalAfterSubmitted | asMoney }}</mat-cell>
+            <mat-cell *matCellDef="let report" class="text-right">{{ report.totalAfterSubmitted | asMoney }}</mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="controlEnd">
@@ -154,7 +154,7 @@
             <mat-header-cell *matHeaderCellDef>
                 <span jemsText maxLines="2">{{ 'project.application.partner.report.control.tab.overviewAndFinalize.total.eligible.after.control' | translate }}</span>
             </mat-header-cell>
-            <mat-cell *matCellDef="let report">{{ report.totalEligibleAfterControl | asMoney }}</mat-cell>
+            <mat-cell *matCellDef="let report" class="text-right">{{ report.totalEligibleAfterControl | asMoney }}</mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="control">
