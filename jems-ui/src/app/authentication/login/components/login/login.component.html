@@ -57,19 +57,19 @@
     <div class="accessibility-statement">
         <span>
             {{'user.login.accessibility.statement.part.1' | translate}}
-            <a [href]="accessibilityStatementUrl$ | async">{{'user.login.accessibility.statement.part.2' | translate}}</a>
+            <a target="_blank" [href]="accessibilityStatementUrl$ | async">{{'user.login.accessibility.statement.part.2' | translate}}</a>
         </span>
     </div>
 
     <p class="interact-info">
         <span>{{'user.login.interact.project' | translate}}</span>
-        <a href="https://www.interact.eu" target="_blank">
+        <a target="_blank" href="https://www.interact.eu">
             <img class="logo" src="assets/logos/InteractLogo_96.png" alt="Logo Interact EU">
         </a>
     </p>
     <div class="developer-info">
                     <span>{{'user.login.interact.developer' | translate}}&nbsp;
-                        <a href="https://www.cloudflight.io">
+                        <a target="_blank" href="https://www.cloudflight.io">
                             <img class="logo-inline" src="assets/logos/CloudflightLogoWhite_128.png" alt="Logo Cloudflight">
                         </a>
                     </span>
