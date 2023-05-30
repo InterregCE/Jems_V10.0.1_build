@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.project.base.submitProjectReport
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import io.cloudflight.jems.server.notification.handler.ProjectReportStatusChanged
 import io.cloudflight.jems.server.project.authorization.CanEditProjectReport
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
@@ -69,12 +70,13 @@ class SubmitProjectReport(
             projectId = projectId,
             reportId = reportId,
             submissionTime = ZonedDateTime.now()
-        ).also {
+        ).also { projectReportSummary ->
+            auditPublisher.publishEvent(ProjectReportStatusChanged(this, projectReportSummary))
             auditPublisher.publishEvent(
                 projectReportSubmitted(
                     context = this,
                     projectId = projectId,
-                    report = it,
+                    report = projectReportSummary,
                     certificates = reportCertificatePersistence.listCertificatesOfProjectReport(reportId),
                 )
             )

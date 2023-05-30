@@ -28,7 +28,10 @@ enum class NotificationType {
     PartnerReportReOpenFromSubmitted,
     PartnerReportControlOngoing,
     PartnerReportReOpenFromControlOngoing,
-    PartnerReportCertified;
+    PartnerReportCertified,
+
+    // Project Report
+    ProjectReportSubmitted;
 
 
     companion object {
@@ -62,6 +65,10 @@ enum class NotificationType {
             PartnerReportReOpenFromControlOngoing,
             PartnerReportCertified,
         )
+
+        val projectReportNotifications = sortedSetOf(
+            ProjectReportSubmitted,
+        )
     }
 
     fun isProjectNotification() = this in projectNotifications
@@ -71,5 +78,9 @@ enum class NotificationType {
     fun isPartnerReportNotification() = this in partnerReportNotifications
 
     fun isNotPartnerReportNotification() = !isPartnerReportNotification()
+
+    fun isProjectReportNotification() = this in projectReportNotifications
+
+    fun isNotProjectReportNotification() = !isProjectReportNotification()
 
 }

@@ -16,6 +16,9 @@ import {
   PartnerReportNotificationsSettingsTabComponent
 } from './notifications-settings/partner-report-notifications-settings-tab/partner-report-notifications-settings-tab.component';
 import {CallTranslationsConfigurationComponent} from './translations/call-translations-configuration.component';
+import {
+  ProjectReportNotificationsSettingsTabComponent
+} from './notifications-settings/project-report-notifications-settings-tab/project-report-notifications-settings-tab.component';
 
 export const routes: Routes = [
   {
@@ -100,12 +103,17 @@ export const routes: Routes = [
               {
                 path: 'project',
                 component: ProjectNotificationsSettingsTabComponent,
-                data: {breadcrumb: 'project'}
+                data: {breadcrumb: 'call.detail.notifications.config.tab.project'}
+              },
+              {
+                path: 'projectReport',
+                component: ProjectReportNotificationsSettingsTabComponent,
+                data: {breadcrumb: 'call.detail.notifications.config.tab.project.report'}
               },
               {
                 path: 'partnerReport',
                 component: PartnerReportNotificationsSettingsTabComponent,
-                data: {breadcrumb: 'partner.report'}
+                data: {breadcrumb: 'call.detail.notifications.config.tab.partner.report'}
               }
             ]
           },

@@ -6,6 +6,9 @@ import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
+import io.cloudflight.jems.server.notification.handler.PartnerReportStatusChanged
+import io.cloudflight.jems.server.notification.handler.ProjectReportStatusChanged
+import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.model.ProjectHorizontalPrinciples
@@ -47,6 +50,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
+import org.mockito.Mock
 import org.springframework.context.ApplicationEventPublisher
 import java.math.BigDecimal
 import java.time.ZonedDateTime
@@ -225,6 +229,7 @@ internal class SubmitProjectReportTest : UnitTest() {
         every { reportCertificatePersistence.listCertificatesOfProjectReport(REPORT_ID) } returns listOf(certificate)
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
+        every { auditPublisher.publishEvent(ofType(ProjectReportStatusChanged::class)) } returns Unit
         every { reportIdentificationPersistence.getSpendingProfileCurrentValues(REPORT_ID) } returns mapOf()
         every { reportIdentificationPersistence.updateSpendingProfile(REPORT_ID, mapOf()) } returnsArgument 0
         every { reportCertificateCoFinancingPersistence.getCoFinancing(PROJECT_ID, REPORT_ID) } returns certificateCoFin

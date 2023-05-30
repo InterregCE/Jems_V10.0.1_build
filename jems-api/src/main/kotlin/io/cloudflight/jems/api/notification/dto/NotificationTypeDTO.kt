@@ -27,5 +27,8 @@ enum class NotificationTypeDTO {
     PartnerReportReOpenFromSubmitted,
     PartnerReportControlOngoing,
     PartnerReportReOpenFromControlOngoing,
-    PartnerReportCertified;
+    PartnerReportCertified,
+
+    // Project Report
+    ProjectReportSubmitted;
 }

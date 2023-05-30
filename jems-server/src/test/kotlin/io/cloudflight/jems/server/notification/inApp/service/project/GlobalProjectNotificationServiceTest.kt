@@ -69,6 +69,17 @@ class GlobalProjectNotificationServiceTest : UnitTest() {
             emailBody = "test"
         )
 
+        val projectReportSubmitted = ProjectNotificationConfiguration(
+            id = NotificationType.ProjectReportSubmitted,
+            active = true,
+            sendToManager = false,
+            sendToLeadPartner = false,
+            sendToProjectPartners = false,
+            sendToProjectAssigned = false,
+            sendToControllers = true,
+            emailSubject = "ProjectReport Submitted",
+            emailBody = "test"
+        )
 
     }
 
@@ -282,6 +293,65 @@ class GlobalProjectNotificationServiceTest : UnitTest() {
                     templateVariables = templateVariables.plus("body" to "test").map { Variable(it.key, it.value) }.toSet(),
                     recipients = setOf("controller@jems.eu"),
                     messageType = "PartnerReportSubmitted",
+                ),
+            )
+        )
+    }
+
+    @Test
+    fun `sendNotifications - projectReport`() {
+        val notificationType = NotificationType.ProjectReportSubmitted
+
+        every { projectPersistence.getCallIdOfProject(PROJECT_ID) } returns CALL_ID
+        every { callNotificationConfigPersistence.getActiveNotificationOfType(CALL_ID, notificationType) } returns projectReportSubmitted
+        every { projectNotificationRecipientServiceInteractor.getEmailsForProjectNotification(projectReportSubmitted, PROJECT_ID) } returns emptyMap()
+        every { callPersistence.getCallSummaryById(CALL_ID) } returns mockk {
+            every { id } returns CALL_ID
+            every { name } returns "call-name"
+        }
+        every { programmeDataPersistence.getProgrammeName() } returns "programme-name"
+
+        val slotNotification = slot<NotificationInApp>()
+        every { notificationPersistence.saveNotification(capture(slotNotification)) } answers { }
+        val slotEmail = slot<JemsAsyncMailEvent>()
+        every { eventPublisher.publishEvent(capture(slotEmail)) } answers { }
+
+        val variables = mapOf(
+            NotificationVariable.ProjectId to PROJECT_ID,
+            NotificationVariable.ProjectIdentifier to "P005",
+            NotificationVariable.ProjectAcronym to "5 acr",
+            NotificationVariable.ProjectReportId to 91L,
+            NotificationVariable.ProjectReportNumber to 1,
+        )
+        service.sendNotifications(notificationType, variables)
+
+        val templateVariables = variables.plus(
+            mapOf(
+                NotificationVariable.CallId to CALL_ID,
+                NotificationVariable.CallName to "call-name",
+                NotificationVariable.ProgrammeName to "programme-name",
+            )
+        ).mapKeys { it.key.variable }
+        assertThat(slotNotification.captured).isEqualTo(
+            NotificationInApp(
+                subject = "ProjectReport Submitted",
+                body = "test",
+                type = NotificationType.ProjectReportSubmitted,
+                time = slotNotification.captured.time,
+                templateVariables = templateVariables,
+                recipientsInApp = setOf(),
+                recipientsEmail = setOf(),
+                emailTemplate = "notification.html",
+            )
+        )
+        assertThat(slotEmail.captured).isEqualTo(
+            JemsAsyncMailEvent(
+                emailTemplateFileName = "notification.html",
+                mailNotificationInfo = MailNotificationInfo(
+                    subject = "ProjectReport Submitted",
+                    templateVariables = templateVariables.plus("body" to "test").map { Variable(it.key, it.value) }.toSet(),
+                    recipients = setOf(),
+                    messageType = "ProjectReportSubmitted",
                 ),
             )
         )
