@@ -67,14 +67,14 @@ class UpdateProjectPartnerReportExpenditure(
         val oldValues = reportExpenditurePersistence.getPartnerReportExpenditureCosts(partnerId, reportId = reportId)
             .map { it.asOld() }.associateBy { it.id }
 
-        val canEditSensitiveFlag  = sensitiveDataAuthorization.isCurrentUserCollaboratorWithSensitiveFor(partnerId)
-        val canEditPartnerSensitiveData = canEditSensitiveFlag || hasGlobalMonitorEdit()
+        val canEditSensitivenessFlag  = sensitiveDataAuthorization.isCurrentUserCollaboratorWithSensitiveFor(partnerId)
+        val canEditPartnerSensitiveData = canEditSensitivenessFlag || hasGlobalMonitorEdit()
 
         // old updated with new values and at the end add new ones to be created
         val toUpdate = oldValues.updateWith(
             new = newValues.minus(TO_CREATE).mapValues { it.value.first() },
             canEditPartnerSensitiveData = canEditPartnerSensitiveData,
-            canEditSensitiveFlag = canEditSensitiveFlag,
+            canEditSensitivenessFlag = canEditSensitivenessFlag,
             status = report.status,
         ).plus(newValues.toCreate())
             .reNumberButSkipReIncluded()
@@ -197,7 +197,7 @@ class UpdateProjectPartnerReportExpenditure(
     private fun Map<Long, ProjectPartnerReportExpenditureCostOld>.updateWith(
         new: Map<Long, ProjectPartnerReportExpenditureCostUpdate>,
         canEditPartnerSensitiveData: Boolean,
-        canEditSensitiveFlag: Boolean,
+        canEditSensitivenessFlag: Boolean,
         status: ReportStatus,
     ): List<ProjectPartnerReportExpenditureCost> {
         val deletedItems = keys.minus(new.keys)
@@ -205,7 +205,7 @@ class UpdateProjectPartnerReportExpenditure(
             throw DeletionNotAllowedAnymore()
 
         val deletedGdprItems = filter { it.key in deletedItems }.any { it.value.gdpr }
-        if (deletedGdprItems && !canEditSensitiveFlag)
+        if (deletedGdprItems && !canEditSensitivenessFlag)
             throw ExpenditureSensitiveDataRemoved()
 
         return this.minus(deletedItems).map { (id, old) ->
@@ -217,17 +217,17 @@ class UpdateProjectPartnerReportExpenditure(
                     newComment = newExp.comment,
                     newGdpr = newExp.gdpr,
                     canEditPartnerSensitiveData,
-                    canEditSensitiveFlag
+                    canEditSensitivenessFlag
                 )
             else
-                old.changeNumbersWith(new = newExp, canEditPartnerSensitiveData, canEditSensitiveFlag, status)
+                old.changeNumbersWith(new = newExp, canEditPartnerSensitiveData, canEditSensitivenessFlag, status)
         }
     }
 
     private fun ProjectPartnerReportExpenditureCostOld.changeNumbersWith(
         new: ProjectPartnerReportExpenditureCostUpdate,
         canEditPartnerSensitiveData: Boolean,
-        canEditSensitiveFlag: Boolean,
+        canEditSensitivenessFlag: Boolean,
         status: ReportStatus,
     ): ProjectPartnerReportExpenditureCost {
         // only initially open (not reopened) and not-reIncluded items
@@ -239,7 +239,7 @@ class UpdateProjectPartnerReportExpenditure(
             lumpSumId = new.lumpSumId,
             unitCostId = new.unitCostId,
             costCategory = new.category,
-            gdpr = if (canEditSensitiveFlag) new.gdpr else gdpr,
+            gdpr = if (canEditSensitivenessFlag) new.gdpr else gdpr,
             investmentId = new.investmentId,
             contractId = new.procurementId,
             internalReferenceNumber = new.internalReferenceNumber,
@@ -269,13 +269,13 @@ class UpdateProjectPartnerReportExpenditure(
         newComment: Set<InputTranslation>,
         newGdpr: Boolean,
         canEditPartnerSensitiveData: Boolean,
-        canEditSensitiveFlag: Boolean
+        canEditSensitivenessFlag: Boolean
     ) = toNewWithoutChange().apply {
         if (!gdpr || canEditPartnerSensitiveData) {
             contractId = newProcurementId
             description = newDescription
             comment = newComment
-            gdpr = if (canEditSensitiveFlag) newGdpr else gdpr
+            gdpr = if (canEditSensitivenessFlag) newGdpr else gdpr
         }
     }
 
