@@ -17,7 +17,7 @@ export class NotificationsSettingsComponent{
               private activatedRoute: ActivatedRoute,) { }
 
   activeTab(route: string): boolean {
-    return this.router.url?.includes(route);
+    return this.router.url?.endsWith(route);
   }
 
   routeTo(route: string): void {

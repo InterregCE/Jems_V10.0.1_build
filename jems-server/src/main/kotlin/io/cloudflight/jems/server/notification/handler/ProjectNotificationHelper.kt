@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.notification.inApp.service.model.NotificationT
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.*
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 
 fun ApplicationStatus.toNotificationType(prevStatus: ApplicationStatus): NotificationType? = when {
     this == ApplicationStatus.SUBMITTED && prevStatus == ApplicationStatus.DRAFT -> ProjectSubmitted
@@ -42,4 +43,9 @@ fun ReportStatus.toNotificationType(): NotificationType? = when(this) {
 
 fun NotificationType?.enforceIsPartnerReportNotification() = if (this != null && isPartnerReportNotification()) this else null
 
+fun ProjectReportStatus.toNotificationType(): NotificationType? = when(this) {
+    ProjectReportStatus.Submitted -> ProjectReportSubmitted
+    else -> null
+}.enforceIsProjectReportNotification()
 
+fun NotificationType?.enforceIsProjectReportNotification() = if (this != null && isProjectReportNotification()) this else null

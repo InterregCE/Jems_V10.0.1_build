@@ -14,8 +14,10 @@ export class CallNotificationSettingsStore {
   canEditCall$: Observable<boolean>;
   projectNotificationConfigurations$: Observable<ProjectNotificationConfigurationDTO[]>;
   partnerReportNotificationConfigurations$: Observable<ProjectNotificationConfigurationDTO[]>;
+  projectReportNotificationConfigurations$: Observable<ProjectNotificationConfigurationDTO[]>;
   private projectNotificationConfigurationsSaved$ = new Subject<ProjectNotificationConfigurationDTO[]>();
   private partnerReportNotificationConfigurationsSaved$ = new Subject<ProjectNotificationConfigurationDTO[]>();
+  private projectReportNotificationConfigurationsSaved$ = new Subject<ProjectNotificationConfigurationDTO[]>();
 
   constructor(
     private readonly callStore: CallStore,
@@ -25,6 +27,7 @@ export class CallNotificationSettingsStore {
     this.canEditCall$ = callStore.callIsEditable$;
     this.projectNotificationConfigurations$ = this.projectNotificationConfigurations();
     this.partnerReportNotificationConfigurations$ = this.partnerReportNotificationConfigurations();
+    this.projectReportNotificationConfigurations$ = this.projectReportNotificationConfigurations();
   }
 
 
@@ -44,6 +47,14 @@ export class CallNotificationSettingsStore {
     return merge(initialConfigurations$, this.partnerReportNotificationConfigurationsSaved$);
   }
 
+  private projectReportNotificationConfigurations(): Observable<ProjectNotificationConfigurationDTO[]> {
+    const initialConfigurations$ = this.callId$.pipe(
+      switchMap(callId => this.callNotificationService.getProjectReportNotificationsByCallId(callId)),
+    );
+
+    return merge(initialConfigurations$, this.projectReportNotificationConfigurationsSaved$);
+  }
+
   updateProjectNotifications(projectNotificationTemplates: ProjectNotificationConfigurationDTO[]): Observable<ProjectNotificationConfigurationDTO[]> {
     return this.callId$.pipe(
       switchMap(callId => this.callNotificationService.updateProjectNotifications(callId, projectNotificationTemplates)),
@@ -55,6 +66,13 @@ export class CallNotificationSettingsStore {
     return this.callId$.pipe(
       switchMap(callId => this.callNotificationService.updatePartnerReportNotifications(callId, partnerReportNotificationTemplates)),
       tap(configurations => this.partnerReportNotificationConfigurationsSaved$.next(configurations))
+    );
+  }
+
+  updateProjectReportNotifications(projectReportNotificationTemplates: ProjectNotificationConfigurationDTO[]): Observable<ProjectNotificationConfigurationDTO[]> {
+    return this.callId$.pipe(
+      switchMap(callId => this.callNotificationService.updateProjectReportNotifications(callId, projectReportNotificationTemplates)),
+      tap(configurations => this.projectReportNotificationConfigurationsSaved$.next(configurations))
     );
   }
 

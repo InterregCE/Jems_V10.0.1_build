@@ -33,6 +33,7 @@ class GlobalProjectNotificationService(
     override fun sendNotifications(type: NotificationType, variables: Map<NotificationVariable, Any>) = when {
         type.isProjectNotification() -> sendProjectNotification(type, variables)
         type.isPartnerReportNotification() -> sendPartnerReportNotification(type, variables)
+        type.isProjectReportNotification() -> sendProjectReportNotification(type, variables)
         else -> Unit
     }
 
@@ -60,8 +61,19 @@ class GlobalProjectNotificationService(
         sendInAppAndEmails(notificationConfig, emailsToNotify, variables)
     }
 
+    fun sendProjectReportNotification(type: NotificationType, variables: Map<NotificationVariable, Any>) {
+        validateVariables(variables, NotificationVariable.projectNotificationVariables)
+
+        val projectId = variables[NotificationVariable.ProjectId] as Long
+        val notificationConfig = getNotificationConfiguration(type, projectId) ?: return
+
+        val emailsToNotify = projectNotificationRecipientServiceInteractor.getEmailsForProjectNotification(notificationConfig, projectId)
+
+        sendInAppAndEmails(notificationConfig, emailsToNotify, variables)
+    }
+
     private fun getNotificationConfiguration(type: NotificationType, projectId: Long): ProjectNotificationConfiguration? {
-        return if (type.isProjectNotification() || type.isPartnerReportNotification()) {
+        return if (type.isProjectNotification() || type.isPartnerReportNotification() || type.isProjectReportNotification()) {
             callNotificationConfigPersistence.getActiveNotificationOfType(
                 callId = projectPersistence.getCallIdOfProject(projectId),
                 type = type

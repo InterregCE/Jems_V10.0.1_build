@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.call.service.notificationConfigurations.updatePartnerReportNotificationConfiguration
+package io.cloudflight.jems.server.call.service.notificationConfigurations.updateProjectReportNotificationConfiguration
 
 import io.cloudflight.jems.server.call.authorization.CanUpdateCall
 import io.cloudflight.jems.server.call.service.model.notificationConfigurations.ProjectNotificationConfiguration
@@ -8,13 +8,13 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class UpdatePartnerReportNotificationConfigurations(
+class UpdateProjectReportNotificationConfigurations(
     private val persistence: CallNotificationConfigurationsPersistence
-) : UpdatePartnerReportNotificationConfigurationsInteractor {
+) : UpdateProjectReportNotificationConfigurationsInteractor {
 
     @CanUpdateCall
     @Transactional
-    @ExceptionWrapper(UpdatePartnerReportNotificationConfigurationsException::class)
+    @ExceptionWrapper(UpdateProjectReportNotificationConfigurationsException::class)
     override fun update(
         callId: Long,
         projectNotificationConfigurations: List<ProjectNotificationConfiguration>
@@ -25,7 +25,7 @@ class UpdatePartnerReportNotificationConfigurations(
 
 
     private fun ifConfigurationIsValid(projectNotificationConfigurations: List<ProjectNotificationConfiguration>) =
-        with(projectNotificationConfigurations.filter { it.id.isNotPartnerReportNotification() }) {
+        with(projectNotificationConfigurations.filter { it.id.isNotProjectReportNotification() }) {
             if (this.isNotEmpty())
                 throw InvalidNotificationTypeException()
         }

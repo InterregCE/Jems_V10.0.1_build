@@ -92,16 +92,16 @@ class SubmitProjectPartnerReport(
         return reportPersistence.updateStatusAndTimes(partnerId, reportId = reportId, status = report.status.submitStatus(),
             firstSubmissionTime = if (report.status.isOpenInitially()) ZonedDateTime.now() else null /* no update */,
             lastReSubmissionTime = if (!report.status.isOpenInitially()) ZonedDateTime.now() else null /* no update */,
-        ).also { it ->
-            val projectId = partnerPersistence.getProjectIdForPartnerId(id = partnerId, it.version)
+        ).also { partnerReportSummary ->
+            val projectId = partnerPersistence.getProjectIdForPartnerId(id = partnerId, partnerReportSummary.version)
             val projectSummary = projectPersistence.getProjectSummary(projectId)
 
-            auditPublisher.publishEvent(PartnerReportStatusChanged(this, projectSummary, it))
+            auditPublisher.publishEvent(PartnerReportStatusChanged(this, projectSummary, partnerReportSummary))
             auditPublisher.publishEvent(
                 partnerReportSubmitted(
                     context = this,
                     projectId = projectId,
-                    report = it,
+                    report = partnerReportSummary,
                     isGdprSensitive = expenditures.any { it.gdpr }
                 )
             )
