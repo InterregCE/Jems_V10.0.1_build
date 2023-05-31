@@ -70,7 +70,8 @@ fun ProjectPartnerReport.toDto() = ProjectPartnerReportDTO(
     status = ReportStatusDTO.valueOf(status.name),
     linkedFormVersion = version,
 
-    identification = identification.toDto()
+    identification = identification.toDto(),
+    projectReportId = projectReportId
 )
 
 fun ReportStatus.toDto() = ReportStatusDTO.valueOf(name)

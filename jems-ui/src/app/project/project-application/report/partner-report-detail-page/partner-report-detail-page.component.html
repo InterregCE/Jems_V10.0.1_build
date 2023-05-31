@@ -8,7 +8,7 @@
             <div class="mb-3 reopen-wrapper">
                 <span class="status-label">Status</span>
                 <span class="ml-2"><jems-partner-report-status [status]="partnerReport.status" [longVersion]="false"></jems-partner-report-status></span>
-                <button *ngIf="data.hasReopenPermission && (partnerReport.status === StatusEnum.Submitted || partnerReport.status === StatusEnum.InControl)"
+                <button *ngIf="data.hasReopenPermission && (partnerReport.status === StatusEnum.Submitted || partnerReport.status === StatusEnum.InControl || partnerReport.status === StatusEnum.ReOpenCertified)"
                         mat-stroked-button type="button" class="ml-2"
                         (click)="reopenReport(data.partnerId, data.partnerReportId)">
                     <mat-icon>undo</mat-icon>

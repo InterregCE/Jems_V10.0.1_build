@@ -1,4 +1,11 @@
-import {AfterViewChecked, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild,} from '@angular/core';
+import {
+  AfterViewChecked,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {catchError, map, take, tap} from 'rxjs/operators';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -8,6 +15,7 @@ import {combineLatest, Observable, of} from 'rxjs';
 import {
   CurrencyDTO,
   IdNamePairDTO,
+  ProjectPartnerControlReportDTO,
   ProjectPartnerControlReportExpenditureVerificationDTO,
   ProjectPartnerControlReportExpenditureVerificationUpdateDTO,
   ProjectPartnerReportDTO,
@@ -17,10 +25,16 @@ import {
   TypologyErrorsDTO,
   UserRoleDTO
 } from '@cat/api';
-import {InvestmentSummary} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
+import {
+  InvestmentSummary
+} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
 import {CurrencyCodesEnum} from '@common/services/currency.store';
-import {PartnerFileManagementStore} from '@project/project-application/report/partner-report-detail-page/partner-file-management-store';
-import {PartnerReportDetailPageStore} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
+import {
+  PartnerFileManagementStore
+} from '@project/project-application/report/partner-report-detail-page/partner-file-management-store';
+import {
+  PartnerReportDetailPageStore
+} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 import {RoutingService} from '@common/services/routing.service';
 import {CustomTranslatePipe} from '@common/pipe/custom-translate-pipe';
 import {TranslateByInputLanguagePipe} from '@common/pipe/translate-by-input-language.pipe';
@@ -35,10 +49,13 @@ import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 import {MatTable} from '@angular/material/table';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
-import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {
   ProjectStore
 } from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {
+  PartnerControlReportStore
+} from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @UntilDestroy()
 @Component({
@@ -105,7 +122,8 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
               private customTranslatePipe: CustomTranslatePipe,
               private translateByInputLanguagePipe: TranslateByInputLanguagePipe,
               private permissionService: PermissionService,
-              private projectStore: ProjectStore) {
+              private projectStore: ProjectStore,
+              private reportControlStore: PartnerControlReportStore) {
   }
 
   ngOnInit(): void {
@@ -122,7 +140,8 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
           this.setColumnsToDisplay(investments, lumpSums.length > 0 || unitCosts.length > 0);
           this.setColumnsWidths(investments, lumpSums.length > 0 || unitCosts.length > 0);
           this.currentReport = currentReport;
-          this.isReportReopened = currentReport.status === ProjectPartnerReportDTO.StatusEnum.ReOpenInControlLast || currentReport.status === ProjectPartnerReportDTO.StatusEnum.ReOpenInControlLimited;
+          this.isReportReopened = currentReport.status === ProjectPartnerReportDTO.StatusEnum.ReOpenInControlLast
+              || currentReport.status === ProjectPartnerReportDTO.StatusEnum.ReOpenInControlLimited;
           this.isFormEditable = !this.isReportReopened && isEditable && !isFinalized;
         }
       ),
@@ -152,23 +171,28 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
     }
   }
 
-  disableOnReset(control: FormGroup): void {
+  disableOnReset(control: FormGroup, controlReport: ProjectPartnerControlReportDTO): void {
     control.get(this.constants.FORM_CONTROL_NAMES.certifiedAmount)?.disable();
     if (!this.isFormEditable || control.get(this.constants.FORM_CONTROL_NAMES.parked)?.value) {
       control.get(this.constants.FORM_CONTROL_NAMES.deductedAmount)?.disable();
     } else {
       control.get(this.constants.FORM_CONTROL_NAMES.deductedAmount)?.enable();
     }
+    if (!this.isFormEditable || (control.get(this.constants.FORM_CONTROL_NAMES.parkedOn)?.value && control.get(this.constants.FORM_CONTROL_NAMES.parkedOn)?.value <= controlReport.reportControlEnd)) {
+      control.get(this.constants.FORM_CONTROL_NAMES.parked)?.disable();
+    } else {
+      control.get(this.constants.FORM_CONTROL_NAMES.parked)?.enable();
+    }
   }
 
-  resetForm(partnerReportExpenditures: ProjectPartnerControlReportExpenditureVerificationDTO[]): void {
+  resetForm(partnerReportExpenditures: ProjectPartnerControlReportExpenditureVerificationDTO[], controlReport: ProjectPartnerControlReportDTO): void {
     this.availableCurrenciesPerRow = [];
     this.items.clear();
     partnerReportExpenditures.forEach((partnerReportExpenditure, expenditureIndex) => this.addExpenditure(partnerReportExpenditure, expenditureIndex));
     this.tableData = [...this.items.controls];
     this.formService.setEditable(this.isFormEditable);
 
-    this.items.controls.forEach((formGroup: FormGroup) => (this.disableOnReset(formGroup)));
+    this.items.controls.forEach((formGroup: FormGroup) => (this.disableOnReset(formGroup, controlReport)));
   }
 
   updateReportExpendituresControl(): void {
@@ -213,8 +237,9 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
       this.partnerReportPageStore.userCanViewGdpr$,
       this.projectStore.projectId$,
       this.partnerReportDetailPageStore.partnerId$,
+      this.reportControlStore.partnerControlReport$
     ]).pipe(
-      map(([typologyOfErrors, expendituresCosts, costCategories, investmentsSummary, contractIDs, reportCosts, isMonitorUser, isGdprCompliant, projectId, partnerId]: any) => ({
+      map(([typologyOfErrors, expendituresCosts, costCategories, investmentsSummary, contractIDs, reportCosts, isMonitorUser, isGdprCompliant, projectId, partnerId, controlReport]: any) => ({
           typologyOfErrors,
           expendituresCosts,
           costCategories,
@@ -225,9 +250,10 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
           projectId,
           partnerId,
           ...reportCosts,
-        })
+          controlReport
+          })
       ),
-      tap(data => this.resetForm(data.expendituresCosts)),
+      tap(data => this.resetForm(data.expendituresCosts, data.controlReport)),
       tap(data => this.contractIDs = data.contractIDs),
       tap(data => this.investmentsSummary = data.investmentsSummary),
     );
@@ -372,6 +398,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
         deductedAmount: this.formBuilder.control(this.getDeductedAmount(reportExpenditureControl)),
         typologyOfErrorId: this.formBuilder.control(reportExpenditureControl.typologyOfErrorId || null),
         parked: this.formBuilder.control(reportExpenditureControl.parked),
+        parkedOn: this.formBuilder.control(reportExpenditureControl.parkedOn != null ? reportExpenditureControl.parkedOn : null),
         verificationComment: this.formBuilder.control(reportExpenditureControl.verificationComment, [Validators.maxLength(1000)]),
       })
     );
@@ -408,12 +435,6 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
       .pipe(take(1))
       .subscribe();
   }
-
-  canViewSensitiveData(valueGDPR: boolean, isGDPRCompliant: boolean, isMonitorUser: boolean): boolean {
-    return !valueGDPR || (valueGDPR && (isGDPRCompliant || isMonitorUser));
-  }
-
-
   refreshListOfExpenditures(): void {
     this.pageStore.refreshExpenditures$.next(undefined);
   }

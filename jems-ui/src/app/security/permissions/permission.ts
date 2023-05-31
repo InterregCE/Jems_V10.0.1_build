@@ -208,6 +208,11 @@ export class Permission {
               name: 'project.application.partner.reports.checklist.after.control',
               mode: PermissionMode.TOGGLE_EDIT,
               editPermissions: [PermissionsEnum.ProjectReportingChecklistAfterControl],
+            },
+            {
+              name: 'project.application.partner.reports.control.reopen',
+              mode: PermissionMode.TOGGLE_EDIT,
+              editPermissions: [PermissionsEnum.ProjectPartnerControlReportingReOpen]
             }
           ]
         }

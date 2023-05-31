@@ -7,11 +7,14 @@ import {
   ProjectPartnerControlReportChangeDTO,
   ProjectPartnerControlReportDTO,
   ProjectPartnerDetailDTO,
-  ProjectPartnerReportControlOverviewService, ProjectPartnerReportDTO,
+  ProjectPartnerReportControlOverviewService,
+  ProjectPartnerReportDTO,
   ProjectPartnerReportIdentificationService,
+  ProjectPartnerReportService,
   ProjectPartnerReportSummaryDTO,
   ProjectPartnerService,
-  ProjectPartnerUserCollaboratorService, UserRoleDTO,
+  ProjectPartnerUserCollaboratorService,
+  UserRoleDTO,
   UserSimpleDTO,
 } from '@cat/api';
 import {RoutingService} from '@common/services/routing.service';
@@ -25,20 +28,22 @@ import {Log} from '@common/utils/log';
 import {
   PartnerReportDetailPageStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
-import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {PermissionService} from '../../../../security/permissions/permission.service';
 import {ReportUtil} from '@project/common/report-util';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Injectable({providedIn: 'root'})
 export class PartnerControlReportStore {
 
   partnerControlReport$: Observable<ProjectPartnerControlReportDTO>;
   controlReportEditable$: Observable<boolean>;
+  controlReportCertifiedReOpened$: Observable<boolean>;
   checklistInControlReportEditable$: Observable<boolean>;
   controlReportFinalized$: Observable<boolean>;
   partner$: Observable<ProjectPartnerDetailDTO>;
   controlInstitutionUsers$: Observable<UserSimpleDTO[]>;
   partnerControlReportOverview$: Observable<ControlOverviewDTO>;
+  updatedReportStatus$ = new Subject<ProjectPartnerReportSummaryDTO.StatusEnum>();
 
   partnerId$: Observable<number>;
   reportId$: Observable<number>;
@@ -88,9 +93,11 @@ export class PartnerControlReportStore {
     private controllerInstitutionsService: ControllerInstitutionsApiService,
     private projectPartnerReportControlOverviewService: ProjectPartnerReportControlOverviewService,
     private permissionService: PermissionService,
+    private projectPartnerReportService: ProjectPartnerReportService
   ) {
     this.partnerControlReport$ = this.partnerControlReport();
     this.controlReportEditable$ = this.controlReportEditable();
+    this.controlReportCertifiedReOpened$ = this.controlReportCertifiedReOpened();
     this.checklistInControlReportEditable$ = this.checklistInControlReportEditable();
     this.controlReportFinalized$ = this.controlReportFinalized();
     this.partner$ = this.partner();
@@ -106,7 +113,7 @@ export class PartnerControlReportStore {
       this.partnerReportDetailPageStore.reportStatus$
     ])
       .pipe(
-        map(([canEdit, status]) => canEdit && ReportUtil.isControlReportOpen(status))
+        map(([canEdit, status]) => canEdit && (ReportUtil.isControlReportOpen(status) || ReportUtil.isControlCertifiedReOpened(status)))
       );
   }
 
@@ -128,6 +135,12 @@ export class PartnerControlReportStore {
     return this.partnerReportDetailPageStore.reportStatus$.pipe(
             map(status => status === ProjectPartnerReportSummaryDTO.StatusEnum.Certified)
         );
+  }
+
+  private controlReportCertifiedReOpened(): Observable<boolean> {
+    return this.partnerReportDetailPageStore.reportStatus$.pipe(
+        map(status => status === ProjectPartnerReportSummaryDTO.StatusEnum.ReOpenCertified)
+    );
   }
 
   private partnerReportLevel(): Observable<PartnerUserCollaboratorDTO.LevelEnum | undefined> {
@@ -250,5 +263,14 @@ export class PartnerControlReportStore {
       switchMap(([partnerId, reportId]) => this.projectPartnerReportControlOverviewService.getControlOverview(partnerId, reportId)
       )
     );
+  }
+
+  reopenControlReport(partnerId: number, reportId: number): Observable<ProjectPartnerReportSummaryDTO.StatusEnum> {
+    return this.projectPartnerReportService.reOpenControlPartnerReport(partnerId, reportId)
+        .pipe(
+            map(status => status as ProjectPartnerReportSummaryDTO.StatusEnum),
+            tap(status => this.updatedReportStatus$.next(status)),
+            tap(status => Log.info('Changed status for control report', reportId, status))
+        );
   }
 }

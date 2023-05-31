@@ -40,6 +40,7 @@ export class PartnerControlReportExpenditureConstants {
     deductedAmount: 'deductedAmount',
     typologyOfErrorId: 'typologyOfErrorId',
     parked: 'parked',
+    parkedOn: 'parkedOn',
     verificationComment: 'verificationComment',
   };
 
