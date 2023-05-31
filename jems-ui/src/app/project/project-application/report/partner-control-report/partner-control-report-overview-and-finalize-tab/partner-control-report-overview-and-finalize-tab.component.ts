@@ -2,9 +2,11 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/co
 import {
   ControlDeductionOverviewDTO,
   ControlOverviewDTO,
-  ControlWorkOverviewDTO, PreConditionCheckResultDTO,
+  ControlWorkOverviewDTO,
+  PreConditionCheckResultDTO,
   ProjectPartnerReportControlOverviewService,
-  ProjectPartnerReportDTO, ProjectPartnerReportUnitCostDTO
+  ProjectPartnerReportDTO,
+  ProjectPartnerReportUnitCostDTO
 } from '@cat/api';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {catchError, finalize, map, take, tap} from 'rxjs/operators';
@@ -24,11 +26,11 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {Alert} from '@common/components/forms/alert';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
 import {LocaleDatePipe} from '@common/pipe/locale-date.pipe';
-import CategoryEnum = ProjectPartnerReportUnitCostDTO.CategoryEnum;
 import {
   PartnerReportFinancialOverviewStoreService
 } from '@project/project-application/report/partner-report-detail-page/partner-report-financial-overview-tab/partner-report-financial-overview-store.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import CategoryEnum = ProjectPartnerReportUnitCostDTO.CategoryEnum;
 
 @UntilDestroy()
 @Component({
@@ -110,8 +112,10 @@ export class PartnerControlReportOverviewAndFinalizeTabComponent{
       map(([overview, deduction, report, partnerId, userCanEdit, userCanView, controlReportOverview]: any) => ({
         overview,
         deduction,
-        finalizationAllowed: report.status === ProjectPartnerReportDTO.StatusEnum.InControl,
-        isReportReopened: report.status === ProjectPartnerReportDTO.StatusEnum.ReOpenInControlLast || report.status === ProjectPartnerReportDTO.StatusEnum.ReOpenInControlLimited,
+        finalizationAllowed: report.status === ProjectPartnerReportDTO.StatusEnum.InControl || report.status === ProjectPartnerReportDTO.StatusEnum.ReOpenCertified,
+        isReportReopened: report.status === ProjectPartnerReportDTO.StatusEnum.ReOpenInControlLast ||
+            report.status === ProjectPartnerReportDTO.StatusEnum.ReOpenInControlLimited ||
+            report.status === ProjectPartnerReportDTO.StatusEnum.ReOpenCertified,
         reportId: report.id,
         partnerId,
         userCanEdit,
@@ -247,4 +251,3 @@ export class PartnerControlReportOverviewAndFinalizeTabComponent{
     return this.localeDatePipe.transform(value);
   }
 }
-

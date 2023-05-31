@@ -390,6 +390,6 @@ export class ProjectReportWorkPlanTabComponent {
   }
 
   canExpandWorkPackage(completed: AbstractControl | null, status: AbstractControl | null): boolean {
-    return completed?.value && (status?.value === WorkPlanStatusLabelEnum.Yellow || status?.value === WorkPlanStatusLabelEnum.Green)
+    return completed?.value && (status?.value === WorkPlanStatusLabelEnum.Yellow || status?.value === WorkPlanStatusLabelEnum.Green);
   }
 }

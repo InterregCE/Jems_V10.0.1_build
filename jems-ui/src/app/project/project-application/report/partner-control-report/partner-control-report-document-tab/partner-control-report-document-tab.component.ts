@@ -7,10 +7,10 @@ import {
 } from '@project/project-application/report/partner-control-report/partner-control-report-document-tab/partner-control-report-file-management-store';
 import {finalize, map, switchMap, take} from 'rxjs/operators';
 import {
+  JemsFileDTO,
+  ProjectPartnerControlReportDTO,
   ProjectPartnerReportDTO,
   ProjectPartnerReportService,
-  ProjectPartnerReportSummaryDTO,
-  JemsFileDTO,
 } from '@cat/api';
 import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
 import {AcceptedFileTypesConstants} from '@project/common/components/file-management/accepted-file-types.constants';
@@ -61,8 +61,9 @@ export class PartnerControlReportDocumentTabComponent {
       this.controlReportFileStore.report$,
       this.securityService.currentUser.pipe(map(user => user?.id || 0)),
       this.partnerControlReportStore.canEditControlReport$,
+      this.partnerControlReportStore.partnerControlReport$
     ]).pipe(
-      map(([fileList, report, currentUserId, canEdit]) => ({
+      map(([fileList, report, currentUserId, canEdit, partnerControlReport]) => ({
         attachments: fileList.map((file: JemsFileDTO) => ({
           id: file.id,
           name: file.name,
@@ -72,7 +73,7 @@ export class PartnerControlReportDocumentTabComponent {
           sizeString: file.sizeString,
           description: file.description,
           editable: PartnerControlReportDocumentTabComponent.isEditable(report) && canEdit && file.author.id === currentUserId,
-          deletable: PartnerControlReportDocumentTabComponent.isDeletable(report) && canEdit && file.author.id === currentUserId,
+          deletable: PartnerControlReportDocumentTabComponent.isDeletable(report, partnerControlReport, file) && canEdit && file.author.id === currentUserId,
           tooltipIfNotDeletable: '',
           iconIfNotDeletable: '',
         })),
@@ -99,8 +100,13 @@ export class PartnerControlReportDocumentTabComponent {
     return ReportUtil.isControlReportExists(report.status);
   }
 
-  private static isDeletable(report: ProjectPartnerReportDTO): boolean {
-    return ReportUtil.isControlReportOpen(report.status);
+  private static isDeletable(
+      report: ProjectPartnerReportDTO,
+      controlReport: ProjectPartnerControlReportDTO,
+      file: JemsFileDTO
+  ): boolean {
+    return ReportUtil.isControlReportOpen(report.status) ||
+        (ReportUtil.isControlCertifiedReOpened(report.status) && file.uploaded > controlReport.reportControlEnd);
   }
 
   uploadFile(target: any): void {

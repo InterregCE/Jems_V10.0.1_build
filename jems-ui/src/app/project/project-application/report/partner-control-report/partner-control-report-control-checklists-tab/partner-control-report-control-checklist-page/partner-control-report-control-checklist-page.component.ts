@@ -1,15 +1,16 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {
-  ProjectApplicationFormSidenavService
+    ProjectApplicationFormSidenavService
 } from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {
-  PartnerControlReportControlChecklistPageStore
+    PartnerControlReportControlChecklistPageStore
 } from '@project/project-application/report/partner-control-report/partner-control-report-control-checklists-tab/partner-control-report-control-checklist-page/partner-control-report-control-checklist-page-store.service';
 import {
     ChecklistComponentInstanceDTO,
     ChecklistInstanceDetailDTO,
     ControllerInstitutionsApiService,
-    ProjectPartnerReportSummaryDTO, UserRoleDTO
+    ProjectPartnerReportSummaryDTO,
+    UserRoleDTO
 } from '@cat/api';
 import {FormService} from '@common/components/section/form/form.service';
 import {map, tap} from 'rxjs/operators';
@@ -17,14 +18,14 @@ import {RoutingService} from '@common/services/routing.service';
 import {ActivatedRoute} from '@angular/router';
 import {combineLatest, Observable} from 'rxjs';
 import {
-  PartnerReportDetailPageStore
+    PartnerReportDetailPageStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
-import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {PermissionService} from '../../../../../../security/permissions/permission.service';
 import {
     PartnerControlReportStore
 } from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
 import {ReportUtil} from '@project/common/report-util';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Component({
   selector: 'jems-partner-control-report-control-checklist-page',
@@ -92,7 +93,7 @@ export class PartnerControlReportControlChecklistPageComponent {
       ])
           .pipe(
               map(([level, reportStatus, canEditChecklistsAfterControl, canViewReport]) =>
-                  (level === 'Edit' && ReportUtil.isControlReportOpen(reportStatus))
+                  (level === 'Edit' && ReportUtil.isControlReportOpen(reportStatus) || ReportUtil.isControlCertifiedReOpened(reportStatus))
                   ||
                   ((level === 'Edit' || level === 'View' || canViewReport)
                       && reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Certified

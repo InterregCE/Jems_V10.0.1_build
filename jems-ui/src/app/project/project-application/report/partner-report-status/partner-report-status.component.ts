@@ -34,6 +34,7 @@ export class PartnerReportStatusComponent implements OnChanges {
       case 'ReOpenSubmittedLimited':
       case 'ReOpenInControlLast':
       case 'ReOpenInControlLimited':
+      case 'ReOpenCertified':
         return 'undo';
       case 'Submitted':
         return 'send';
@@ -57,6 +58,10 @@ export class PartnerReportStatusComponent implements OnChanges {
       ProjectPartnerReportSummaryDTO.StatusEnum.ReOpenInControlLimited,
     ].includes(currentStatus);
 
+    const isCertifiedReopened = [
+      ProjectPartnerReportSummaryDTO.StatusEnum.ReOpenCertified
+    ].includes(currentStatus);
+
     return [
       {
         status: isSubmissionReopened ? currentStatus : ProjectPartnerReportSummaryDTO.StatusEnum.Draft,
@@ -71,14 +76,14 @@ export class PartnerReportStatusComponent implements OnChanges {
         icon: this.getIconFromStatus(isControlReopened ? currentStatus : ProjectPartnerReportSummaryDTO.StatusEnum.Submitted),
       },
       {
-        status: ProjectPartnerReportSummaryDTO.StatusEnum.InControl,
+        status: isCertifiedReopened ? currentStatus : ProjectPartnerReportSummaryDTO.StatusEnum.InControl,
         joiningIcon: isControlReopened ? 'sync_alt' : 'trending_flat',
         enabled: this.isEnabled(currentStatus, 2),
-        icon: this.getIconFromStatus(ProjectPartnerReportSummaryDTO.StatusEnum.InControl),
+        icon: this.getIconFromStatus(isCertifiedReopened ? currentStatus : ProjectPartnerReportSummaryDTO.StatusEnum.InControl),
       },
       {
         status: ProjectPartnerReportSummaryDTO.StatusEnum.Certified,
-        joiningIcon: 'trending_flat',
+        joiningIcon: isCertifiedReopened ? 'sync_alt' : 'trending_flat',
         enabled: this.isEnabled(currentStatus, 3),
         icon: this.getIconFromStatus(ProjectPartnerReportSummaryDTO.StatusEnum.Certified),
       },
@@ -99,6 +104,7 @@ export class PartnerReportStatusComponent implements OnChanges {
       case 2: return [
         ProjectPartnerReportSummaryDTO.StatusEnum.InControl,
         ProjectPartnerReportSummaryDTO.StatusEnum.Certified,
+        ProjectPartnerReportSummaryDTO.StatusEnum.ReOpenCertified
       ].includes(currentChip);
       case 3: return currentChip === ProjectPartnerReportSummaryDTO.StatusEnum.Certified;
       default: return false;

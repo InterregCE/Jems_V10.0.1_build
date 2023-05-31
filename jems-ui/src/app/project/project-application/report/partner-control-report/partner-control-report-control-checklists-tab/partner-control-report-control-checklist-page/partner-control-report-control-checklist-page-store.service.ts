@@ -7,7 +7,7 @@ import {Log} from '@common/utils/log';
 import {SecurityService} from '../../../../../../security/security.service';
 import {ActivatedRoute} from '@angular/router';
 import {
-  PartnerControlReportStore
+    PartnerControlReportStore
 } from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
 
 @Injectable()
@@ -74,7 +74,8 @@ export class PartnerControlReportControlChecklistPageStore {
         this.securityService.currentUserDetails,
         this.reportControlStore.controlReportEditable$,
         this.reportControlStore.checklistInControlReportEditable$,
-        this.reportControlStore.partnerControlReport$
+        this.reportControlStore.partnerControlReport$,
+        this.reportControlStore.controlReportCertifiedReOpened$
     ])
       .pipe(
         map(([
@@ -82,11 +83,17 @@ export class PartnerControlReportControlChecklistPageStore {
              user,
              reportEditable,
             checklistEditableAfterControl,
-            controlReport
+            controlReport,
+            controlReportCertifiedReOpened
          ]) =>
-          checklist.status === ChecklistInstanceDetailDTO.StatusEnum.DRAFT
+         controlReportCertifiedReOpened ?
+            checklist.status === ChecklistInstanceDetailDTO.StatusEnum.DRAFT
             && user?.email === checklist.creatorEmail
-            && (reportEditable || (checklistEditableAfterControl && checklist.createdAt > controlReport.reportControlEnd))
+            && checklist.createdAt > controlReport.reportControlEnd
+             :
+             checklist.status === ChecklistInstanceDetailDTO.StatusEnum.DRAFT
+             && user?.email === checklist.creatorEmail
+             && (reportEditable || (checklistEditableAfterControl && checklist.createdAt > controlReport.reportControlEnd))
         )
       );
   }

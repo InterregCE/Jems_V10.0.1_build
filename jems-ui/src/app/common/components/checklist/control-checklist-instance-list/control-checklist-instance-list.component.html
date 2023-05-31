@@ -80,11 +80,21 @@
         <ng-container>
             <button
                     (click)="delete(checklist);$event.stopPropagation();"
-                    [disabled]="!isAfterControlChecklist(checklist.createdAt) || checklist.status !== Status.DRAFT || (userCanEditControlChecklists$ | async) === false || (currentUserIsCreator(checklist) === false)"
+                    [disabled]="!isAfterControlChecklist(checklist.createdAt) || checklist.status !== Status.DRAFT || (userCanEditControlChecklists$ | async) === false || !currentUserIsCreator(checklist)"
                     color="accent"
                     mat-icon-button
                     matTooltip="{{'common.delete.entry.tooltip' | translate}}">
                 <mat-icon>delete</mat-icon>
+            </button>
+        </ng-container>
+
+        <ng-container>
+            <button
+                    [disabled]="true"
+                    color="accent"
+                    mat-icon-button>
+                <mat-icon *ngIf="!isAfterControlChecklist(checklist.createdAt)" matTooltip="{{'common.checklist.locked.tooltip' | translate}}">lock</mat-icon>
+                <mat-icon *ngIf="isAfterControlChecklist(checklist.createdAt)">lock_open</mat-icon>
             </button>
         </ng-container>
 

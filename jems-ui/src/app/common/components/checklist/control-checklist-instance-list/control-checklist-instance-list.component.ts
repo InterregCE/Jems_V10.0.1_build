@@ -1,10 +1,13 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {
-    ChecklistInstanceDTO,
-    ControllerInstitutionsApiService,
-    IdNamePairDTO,
-    ProgrammeChecklistDetailDTO, ProjectPartnerReportSummaryDTO, UserDTO, UserRoleDTO,
+  ChecklistInstanceDTO,
+  ControllerInstitutionsApiService,
+  IdNamePairDTO,
+  ProgrammeChecklistDetailDTO,
+  ProjectPartnerReportSummaryDTO,
+  UserDTO,
+  UserRoleDTO,
 } from '@cat/api';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {
@@ -28,9 +31,9 @@ import {ChecklistItem} from '@common/components/checklist/checklist-item';
 import {AlertMessage} from '@common/components/file-list/file-list-table/alert-message';
 import {Alert} from '@common/components/forms/alert';
 import {SecurityService} from '../../../../security/security.service';
-import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {PermissionService} from '../../../../security/permissions/permission.service';
 import {ReportUtil} from '@project/common/report-util';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Component({
   selector: 'jems-control-checklist-instance-list',
@@ -119,7 +122,7 @@ export class ControlChecklistInstanceListComponent implements OnInit {
     ])
       .pipe(
         map(([level, reportStatus, canEditChecklistsAfterControl, canViewReport]) =>
-            (level === 'Edit' && ReportUtil.isControlReportOpen(reportStatus))
+            (level === 'Edit' && ReportUtil.isControlReportOpen(reportStatus) || ReportUtil.isControlCertifiedReOpened(reportStatus))
             ||
             ((level === 'Edit' || level === 'View' || canViewReport)
                 && reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Certified
