@@ -7,9 +7,11 @@
     <form [formGroup]="form" jemsFormLayout>
 
         <!-- WORK PACKAGES -->
+        <mat-accordion multi="true">
         <ng-container *ngFor="let workPackage of workPackages.controls; let workPackageIndex = index" [formArrayName]="constants.WORK_PACKAGES.name">
             <ng-container [formGroupName]="workPackageIndex">
-                <mat-expansion-panel class="work-package-panel my-3" [expanded]="false">
+                <mat-expansion-panel class="work-package-panel"
+                                     [expanded]="canExpandWorkPackage(workPackage.get(constants.WORK_PACKAGE_COMPLETED.name), workPackage.get(constants.WORK_PLAN_STATUS_LABEL.name))">
                     <mat-expansion-panel-header jemsNoWidthLimit>
                         <mat-panel-title>
                             <span class="mt-1" *ngIf="workPackage.get(constants.WORK_PACKAGE_DEACTIVATED.name)?.value">
@@ -106,7 +108,7 @@
                         </mat-chip-list>
                     </div>
 
-                    <div class="input-field-row mt-5">
+                    <div class="input-field-row mt-3">
                         <jems-multi-language-container class="input-field title" [switchButtonsVisible]="false">
                             <jems-multi-language-form-field minRows="1" type="textarea"
                                                             label="project.application.project.report.tab.work.plan.work.package.communication.objective"
@@ -132,7 +134,10 @@
                         </jems-multi-language-form-field>
                     </jems-multi-language-container>
 
-                    <p class="mt-3" [innerText]="'project.application.project.report.tab.work.plan.work.package.progress' | translate"></p>
+                    <div class="input-field-row mt-4">
+                        <span class="objective-header">{{ 'project.application.project.report.tab.work.plan.work.package.progress.header' | translate }}</span>
+                    </div>
+                    <p class="mt-3" [innerText]="'project.application.project.report.tab.work.plan.work.package.progress.subtitle' | translate"></p>
                     <jems-multi-language-container>
                         <jems-multi-language-form-field minRows="2" maxRows="4" type="textarea"
                                                         label="common.textarea.enter.text"
@@ -142,14 +147,18 @@
                     </jems-multi-language-container>
 
                     <!-- INVESTMENTS -->
+                    <h4 *ngIf="investments(workPackageIndex).controls.length" class="mb-4" [innerText]="'workpackage.tab.investments' | translate"></h4>
+
+                    <mat-accordion multi="true">
                     <ng-container *ngIf="investments(workPackageIndex).controls.length">
 
                         <div *ngFor="let investment of investments(workPackageIndex).controls; let investmentIndex = index"
-                             jemsNoWidthLimit [formArrayName]="constants.INVESTMENTS.name" class="mt-5">
+                             jemsNoWidthLimit [formArrayName]="constants.INVESTMENTS.name">
 
-                            <div class="table-container" [formGroupName]="investmentIndex" >
-                                <div class="table-header" jemsNoWidthLimit>
-                                    <h4 jemsMultiColumnRow class="my-1 table-header-inner">
+                            <ng-container class="table-container" [formGroupName]="investmentIndex" >
+                                <mat-expansion-panel [expanded]="false">
+                                <mat-expansion-panel-header class="table-header" jemsNoWidthLimit>
+                                    <mat-panel-title jemsMultiColumnRow class="my-1 table-header-inner">
                                         <mat-icon *ngIf="investment.get(constants.INVESTMENT_DEACTIVATED.name)?.value"
                                                   [matTooltip]="'project.application.form.partner.table.status.inactive' | translate">
                                             do_not_disturb
@@ -159,8 +168,8 @@
                                                 investmentNr: investment.get(constants.INVESTMENT_NUMBER.name)?.value}"></span>
                                         <span *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.TITLE"
                                               [innerText]="investment.get(constants.INVESTMENT_TITLE.name)?.value | translateByInputLanguage | async"></span>
-                                    </h4>
-                                </div>
+                                    </mat-panel-title>
+                                </mat-expansion-panel-header>
 
                                 <mat-form-field
                                         *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.EXPECTED_DELIVERY_PERIOD"
@@ -188,22 +197,29 @@
                                     </jems-multi-language-form-field>
                                 </jems-multi-language-container>
 
-                            </div>
+                                </mat-expansion-panel>
+                            </ng-container>
                         </div>
                     </ng-container>
+                    </mat-accordion>
 
-                    <div *ngIf="activities(workPackageIndex)?.value.length || outputs(workPackageIndex)?.value.length" class="my-5">
-                        <h4 [innerText]="'project.application.project.report.tab.work.plan.work.package.subtitle' | translate"></h4>
-                    </div>
 
                     <!-- ACTIVITIES -->
+                    <h4 class="mb-3" *ngIf="activities(workPackageIndex).controls.length" [innerText]="'workpackage.tab.activities' | translate"></h4>
+                    <div *ngIf="activities(workPackageIndex)?.value.length" class="my-3">
+                        <p [innerText]="'project.application.project.report.tab.work.plan.work.package.activity.deliverable.subtitle' | translate"></p>
+                    </div>
+
+                    <mat-accordion multi="true">
                     <ng-container *ngIf="activities(workPackageIndex).controls.length">
                         <div *ngFor="let activity of activities(workPackageIndex).controls; let activityIndex = index"
                              jemsNoWidthLimit [formArrayName]="constants.ACTIVITIES.name">
-                            <div class="table-container" [formGroupName]="activityIndex">
-
-                                <div class="table-header" jemsNoWidthLimit>
-                                    <h4 jemsMultiColumnRow class="my-1 table-header-inner">
+                            <ng-container class="table-container" [formGroupName]="activityIndex">
+                                <mat-expansion-panel
+                                        [expanded]="activity.get(constants.ACTIVITY_STATUS_LABEL.name)?.value === ActivityStatusLabelEnum.Yellow ||
+                                        activity.get(constants.ACTIVITY_STATUS_LABEL.name)?.value === ActivityStatusLabelEnum.Green">
+                                <mat-expansion-panel-header class="table-header" jemsNoWidthLimit>
+                                    <mat-panel-title jemsMultiColumnRow class="my-1 table-header-inner">
                                         <mat-icon *ngIf="activity.get(constants.ACTIVITY_DEACTIVATED.name)?.value"
                                                   [matTooltip]="'project.application.form.partner.table.status.inactive' | translate">
                                             do_not_disturb
@@ -216,7 +232,8 @@
                                                 activityNr: activity.get(constants.ACTIVITY_NUMBER.name)?.value}"></span>
                                         <span *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.TITLE"
                                               [innerText]="activity.get(constants.ACTIVITY_TITLE.name)?.value | translateByInputLanguage | async"></span>
-
+                                    </mat-panel-title>
+                                        <mat-panel-description class="centered-header" *ngIf="activity.get(constants.ACTIVITY_STATUS.name)?.value === ActivityStatusEnum.Fully">
                                         <mat-chip-list *ngIf="activity.get(constants.ACTIVITY_STATUS.name)?.value === ActivityStatusEnum.Fully">
                                             <mat-chip *ngIf="activity.get(constants.ACTIVITY_STATUS_LABEL.name)?.value === ActivityStatusLabelEnum.Green" class="ml-4 green-bg status-chip" [removable]="false" [selectable]="false" >
                                                 <span>{{'project.application.project.report.tab.work.plan.work.package.completed.in.this.report' | translate}}</span>
@@ -228,8 +245,8 @@
                                                 <span>{{'project.application.project.report.tab.work.plan.work.package.new.changes.after.completion' | translate}}</span>
                                             </mat-chip>
                                         </mat-chip-list>
-                                    </h4>
-                                </div>
+                                        </mat-panel-description>
+                                </mat-expansion-panel-header>
 
                                 <jems-multi-language-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.TITLE"
                                                                [switchButtonsVisible]="false">
@@ -362,19 +379,27 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                                </mat-expansion-panel>
+                            </ng-container>
                         </div>
 
                     </ng-container>
+                    </mat-accordion>
 
                     <!-- OUTPUTS  -->
+                    <h4 class="mb-3" *ngIf="outputs(workPackageIndex).controls.length" [innerText]="'workpackage.tab.outputs' | translate"></h4>
+                    <div *ngIf="outputs(workPackageIndex)?.value.length" class="my-3">
+                        <p [innerText]="'project.application.project.report.tab.work.plan.work.package.output.subtitle' | translate"></p>
+                    </div>
+
+                    <mat-accordion multi="true">
                     <div *ngIf="outputs(workPackageIndex).controls.length">
                         <div *ngFor="let output of outputs(workPackageIndex).controls; let outputIndex = index"
-                             jemsNoWidthLimit class="mt-2" [formArrayName]="constants.OUTPUTS.name">
-                            <div class="table-container" [formGroupName]="outputIndex">
-
-                                <div class="table-header" jemsNoWidthLimit>
-                                    <h4 jemsMultiColumnRow class="my-1 table-header-inner">
+                             jemsNoWidthLimit [formArrayName]="constants.OUTPUTS.name">
+                            <ng-container class="table-container" [formGroupName]="outputIndex">
+                                <mat-expansion-panel [expanded]="false">
+                                <mat-expansion-panel-header class="table-header" jemsNoWidthLimit>
+                                    <mat-panel-title jemsMultiColumnRow class="my-1 table-header-inner">
                                         <mat-icon *ngIf="output.get(constants.OUTPUT_DEACTIVATED.name)?.value"
                                                   [matTooltip]="'project.application.form.partner.table.status.inactive' | translate">
                                             do_not_disturb
@@ -387,8 +412,8 @@
                                                 outputNr: output.get(constants.OUTPUT_NUMBER.name)?.value}"></span>
                                         <span *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.TITLE"
                                               [innerText]="output.get(constants.OUTPUT_TITLE.name)?.value | translateByInputLanguage | async"></span>
-                                    </h4>
-                                </div>
+                                    </mat-panel-title>
+                                </mat-expansion-panel-header>
 
                                 <jems-multi-language-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.TITLE"
                                                                [switchButtonsVisible]="false">
@@ -464,13 +489,16 @@
                                                                (delete)="onDeleteOutput($event, workPackageIndex, outputIndex)">
                                     </jems-partner-actions-cell>
                                 </div>
-                            </div>
+                                </mat-expansion-panel>
+                            </ng-container>
                         </div>
                     </div>
+                    </mat-accordion>
+
                 </mat-expansion-panel>
             </ng-container>
         </ng-container>
-
+        </mat-accordion>
     </form>
 
 </jems-form>
