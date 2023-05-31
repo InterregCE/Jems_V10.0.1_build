@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.plugin.services.report
 
+import io.cloudflight.jems.plugin.contract.models.report.partner.identification.ProjectPartnerReportBaseData
 import io.cloudflight.jems.plugin.contract.models.report.partner.identification.ProjectPartnerReportData
 import io.cloudflight.jems.plugin.contract.models.report.partner.procurement.ProjectPartnerReportProcurementData
 import io.cloudflight.jems.plugin.contract.models.report.partner.workPlan.ProjectPartnerReportWorkPackageData
@@ -26,6 +27,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.stream.Stream
 
 @Service
 class ReportPartnerDataProviderImpl(
@@ -50,6 +52,11 @@ class ReportPartnerDataProviderImpl(
     override fun get(partnerId: Long, reportId: Long): ProjectPartnerReportData {
         val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
         return reportPersistence.getPartnerReportById(partnerId = partnerId, reportId = reportId).toDataModel(projectId)
+    }
+
+    @Transactional(readOnly = true)
+    override fun getAllPartnerReportIdsByProjectId(projectId: Long): Stream<ProjectPartnerReportBaseData> {
+        return reportPersistence.getAllPartnerReportIdsByProjectId(projectId)
     }
 
     @Transactional(readOnly = true)

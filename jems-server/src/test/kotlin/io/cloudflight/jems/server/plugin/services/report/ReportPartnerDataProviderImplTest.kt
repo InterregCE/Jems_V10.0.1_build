@@ -41,6 +41,7 @@ import io.cloudflight.jems.plugin.contract.models.report.partner.identification.
 import io.cloudflight.jems.plugin.contract.models.report.partner.identification.ReportFileFormatData
 import io.cloudflight.jems.plugin.contract.models.report.partner.identification.ReportStatusData
 import io.cloudflight.jems.plugin.contract.models.report.partner.identification.ReportTypeData
+import io.cloudflight.jems.plugin.contract.models.report.partner.identification.ProjectPartnerReportBaseData
 import io.cloudflight.jems.plugin.contract.models.report.partner.procurement.ProjectPartnerReportProcurementBeneficialOwnerData
 import io.cloudflight.jems.plugin.contract.models.report.partner.procurement.ProjectPartnerReportProcurementData
 import io.cloudflight.jems.plugin.contract.models.report.partner.procurement.ProjectPartnerReportProcurementSubcontractData
@@ -112,15 +113,16 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.slot
-import java.math.BigDecimal
-import java.time.LocalDate
-import java.time.ZonedDateTime
-import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
+import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.ZonedDateTime
+import java.util.UUID
+import java.util.stream.Stream
 
 internal class ReportPartnerDataProviderImplTest : UnitTest() {
 
@@ -839,6 +841,17 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
         every { reportPersistence.getPartnerReportById(partnerId = 21L, reportId = 96L) } returns report
         every { partnerPersistence.getProjectIdForPartnerId(21L) } returns PROJECT_ID
         assertThat(dataProvider.get(21L, reportId = 96L)).isEqualTo(expectedReport)
+    }
+
+    @Test
+    fun getAllPartnerReportIdsByProjectId() {
+        val streamData = Stream.of(
+            ProjectPartnerReportBaseData(80L, 75L, "v1.0", 1),
+            ProjectPartnerReportBaseData(81L, 75L, "v1.0", 2),
+            ProjectPartnerReportBaseData(82L, 76L, "v1.0", 1),
+        )
+        every { reportPersistence.getAllPartnerReportIdsByProjectId(projectId = PROJECT_ID) } returns streamData
+        assertThat(dataProvider.getAllPartnerReportIdsByProjectId(PROJECT_ID)).isEqualTo(streamData)
     }
 
     @Test

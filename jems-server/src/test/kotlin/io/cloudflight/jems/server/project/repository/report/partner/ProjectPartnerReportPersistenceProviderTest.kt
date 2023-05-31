@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.repository.report.partner
 
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
+import io.cloudflight.jems.plugin.contract.models.report.partner.identification.ProjectPartnerReportBaseData
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
@@ -44,6 +45,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import java.util.stream.Stream
 
 class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
 
@@ -347,6 +349,18 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
 
         assertThat(persistence.getPartnerReportById(partnerId = PARTNER_ID, reportId = 35L))
             .isEqualTo(draftReport(id = 35L, coFinancing = coFinancing, projectReportId = 54L))
+    }
+
+    @Test
+    fun getAllPartnerReportIdsByProjectId() {
+        val streamData = Stream.of(
+            ProjectPartnerReportBaseData(80L, 75L, "v1.0", 1),
+            ProjectPartnerReportBaseData(81L, 75L, "v1.0", 2),
+            ProjectPartnerReportBaseData(82L, 76L, "v1.0", 1),
+        )
+        every { partnerReportRepository.findAllPartnerReportIdsByProjectId(75L) } returns streamData
+        assertThat(persistence.getAllPartnerReportIdsByProjectId(75L))
+            .isEqualTo(streamData)
     }
 
     @Test

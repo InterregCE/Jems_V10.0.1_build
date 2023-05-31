@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.repository.report.partner
 
+import io.cloudflight.jems.plugin.contract.models.report.partner.identification.ProjectPartnerReportBaseData
 import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.repository.report.partner.model.CertificateSummary
 import io.cloudflight.jems.server.project.repository.report.partner.model.ReportSummary
@@ -11,6 +12,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 import java.math.BigDecimal
+import java.util.stream.Stream
 
 @Repository
 interface ProjectPartnerReportRepository : JpaRepository<ProjectPartnerReportEntity, Long> {
@@ -51,6 +53,23 @@ interface ProjectPartnerReportRepository : JpaRepository<ProjectPartnerReportEnt
     """
     )
     fun findAllByPartnerId(partnerId: Long, pageable: Pageable): Page<ReportSummary>
+
+    @Query(
+        """
+        SELECT new io.cloudflight.jems.plugin.contract.models.report.partner.identification.ProjectPartnerReportBaseData(
+            report.id,
+            report.partnerId,
+            report.applicationFormVersion,
+            report.number
+        )
+        FROM #{#entityName} AS report
+        LEFT JOIN project_partner projectPartner
+            ON report.partnerId = projectPartner.id
+        WHERE projectPartner.project.id = :projectId
+        ORDER BY projectPartner.project.id ASC, projectPartner.sortNumber ASC, report.number ASC
+    """
+    )
+    fun findAllPartnerReportIdsByProjectId(projectId: Long): Stream<ProjectPartnerReportBaseData>
 
     @Query("""
          SELECT

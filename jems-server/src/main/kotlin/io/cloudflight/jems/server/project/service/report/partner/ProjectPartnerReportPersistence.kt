@@ -1,14 +1,16 @@
 package io.cloudflight.jems.server.project.service.report.partner
 
+import io.cloudflight.jems.plugin.contract.models.report.partner.identification.ProjectPartnerReportBaseData
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.certificate.PartnerReportCertificate
-import java.time.ZonedDateTime
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import java.time.ZonedDateTime
+import java.util.stream.Stream
 
 interface ProjectPartnerReportPersistence {
 
@@ -32,6 +34,8 @@ interface ProjectPartnerReportPersistence {
     fun getPartnerReportById(partnerId: Long, reportId: Long): ProjectPartnerReport
 
     fun listPartnerReports(partnerId: Long, pageable: Pageable): Page<ProjectPartnerReportSummary>
+
+    fun getAllPartnerReportIdsByProjectId(projectId: Long): Stream<ProjectPartnerReportBaseData>
 
     fun listCertificates(partnerIds: Set<Long>, pageable: Pageable): Page<PartnerReportCertificate>
 
