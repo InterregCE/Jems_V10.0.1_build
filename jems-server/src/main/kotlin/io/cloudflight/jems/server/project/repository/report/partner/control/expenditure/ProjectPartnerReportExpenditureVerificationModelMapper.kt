@@ -1,43 +1,48 @@
 package io.cloudflight.jems.server.project.repository.report.partner.control.expenditure
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.server.project.entity.report.control.expenditure.PartnerReportParkedExpenditureEntity
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportExpenditureCostEntity
 import io.cloudflight.jems.server.project.repository.report.partner.expenditure.getParkingMetadata
 import io.cloudflight.jems.server.project.repository.report.partner.toModel
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
+import java.time.ZonedDateTime
 
-fun Collection<PartnerReportExpenditureCostEntity>.toExtendedModel() = map {
-    ProjectPartnerReportExpenditureVerification(
-        id = it.id,
-        number = it.number,
-        lumpSumId = it.reportLumpSum?.id,
-        unitCostId = it.reportUnitCost?.id,
-        costCategory = it.costCategory,
-        gdpr = it.gdpr,
-        investmentId = it.reportInvestment?.id,
-        contractId = it.procurementId,
-        internalReferenceNumber = it.internalReferenceNumber,
-        invoiceNumber = it.invoiceNumber,
-        invoiceDate = it.invoiceDate,
-        dateOfPayment = it.dateOfPayment,
-        totalValueInvoice = it.totalValueInvoice,
-        vat = it.vat,
-        numberOfUnits = it.numberOfUnits,
-        pricePerUnit = it.pricePerUnit,
-        declaredAmount = it.declaredAmount,
-        currencyCode = it.currencyCode,
-        currencyConversionRate = it.currencyConversionRate,
-        declaredAmountAfterSubmission = it.declaredAmountAfterSubmission,
-        attachment = it.attachment?.toModel(),
-        comment = it.translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.comment) },
-        description = it.translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.description) },
-        partOfSample = it.partOfSample,
-        partOfSampleLocked = it.partOfSampleLocked,
-        certifiedAmount = it.certifiedAmount,
-        deductedAmount = it.deductedAmount,
-        typologyOfErrorId = it.typologyOfErrorId,
-        parked = it.parked,
-        verificationComment = it.verificationComment,
-        parkingMetadata = it.getParkingMetadata(),
-    )
-}
+fun Collection<PartnerReportExpenditureCostEntity>.toExtendedModel(
+    parkedMetadataMap: Map<Long, PartnerReportParkedExpenditureEntity>
+) = map { it.toModel(parkedMetadataMap[it.id]?.parkedOn) }
+
+fun PartnerReportExpenditureCostEntity.toModel(expenditureParkedOn: ZonedDateTime?) = ProjectPartnerReportExpenditureVerification(
+    id = id,
+    number = number,
+    lumpSumId = reportLumpSum?.id,
+    unitCostId = reportUnitCost?.id,
+    costCategory = costCategory,
+    gdpr = gdpr,
+    investmentId = reportInvestment?.id,
+    contractId = procurementId,
+    internalReferenceNumber = internalReferenceNumber,
+    invoiceNumber = invoiceNumber,
+    invoiceDate = invoiceDate,
+    dateOfPayment = dateOfPayment,
+    totalValueInvoice = totalValueInvoice,
+    vat = vat,
+    numberOfUnits = numberOfUnits,
+    pricePerUnit = pricePerUnit,
+    declaredAmount = declaredAmount,
+    currencyCode = currencyCode,
+    currencyConversionRate = currencyConversionRate,
+    declaredAmountAfterSubmission = declaredAmountAfterSubmission,
+    attachment = attachment?.toModel(),
+    comment = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.comment) },
+    description = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.description) },
+    partOfSample = partOfSample,
+    partOfSampleLocked = partOfSampleLocked,
+    certifiedAmount = certifiedAmount,
+    deductedAmount = deductedAmount,
+    typologyOfErrorId = typologyOfErrorId,
+    parked = parked,
+    parkedOn = expenditureParkedOn,
+    verificationComment = verificationComment,
+    parkingMetadata = getParkingMetadata()
+)

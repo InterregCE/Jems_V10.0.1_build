@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.expenditu
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.ZonedDateTime
 
 data class ProjectPartnerReportExpenditureVerification(
     override val id: Long,
@@ -39,6 +40,7 @@ data class ProjectPartnerReportExpenditureVerification(
     var deductedAmount: BigDecimal,
     var typologyOfErrorId: Long?,
     var parked: Boolean,
+    var parkedOn: ZonedDateTime?,
     var verificationComment: String?,
 
     override val parkingMetadata: ExpenditureParkingMetadata?,

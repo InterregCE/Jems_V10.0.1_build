@@ -18,14 +18,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RequestPart
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 
 @Api("Project Partner Report")
@@ -94,6 +87,14 @@ interface ProjectPartnerReportApi {
     @ApiOperation("Re-Open partner report")
     @PostMapping("$ENDPOINT_API_PROJECT_PARTNER_REPORT/reOpen/{partnerId}/{reportId}")
     fun reOpenProjectPartnerReport(
+        @PathVariable partnerId: Long,
+        @PathVariable reportId: Long,
+    ): ReportStatusDTO
+
+
+    @ApiOperation("Re-Open control partner report")
+    @PostMapping("$ENDPOINT_API_PROJECT_PARTNER_REPORT/reOpenControl/byPartnerId/{partnerId}/byReportId/{reportId}")
+    fun reOpenControlPartnerReport(
         @PathVariable partnerId: Long,
         @PathVariable reportId: Long,
     ): ReportStatusDTO

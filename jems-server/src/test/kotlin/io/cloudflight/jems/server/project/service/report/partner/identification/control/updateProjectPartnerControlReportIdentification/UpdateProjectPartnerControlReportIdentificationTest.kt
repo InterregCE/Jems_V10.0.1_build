@@ -39,15 +39,15 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
 import io.mockk.slot
+import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.ZonedDateTime
+import java.util.Optional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
-import java.math.BigDecimal
-import java.time.LocalDate
-import java.time.ZonedDateTime
-import java.util.Optional
 
 internal class UpdateProjectPartnerControlReportIdentificationTest : UnitTest() {
 
@@ -68,6 +68,8 @@ internal class UpdateProjectPartnerControlReportIdentificationTest : UnitTest() 
             version = "8.1",
             firstSubmission = YESTERDAY,
             lastResubmission = null,
+            lastControlReopening = null,
+            projectReportId = null,
             identification = PartnerReportIdentification(
                 projectIdentifier = "projectIdentifier",
                 projectAcronym = "projectAcronym",
@@ -212,7 +214,7 @@ internal class UpdateProjectPartnerControlReportIdentificationTest : UnitTest() 
     }
 
     @ParameterizedTest(name = "updateControlIdentification (status {0})")
-    @EnumSource(value = ReportStatus::class, names = ["InControl", "ReOpenInControlLast", "ReOpenInControlLimited"])
+    @EnumSource(value = ReportStatus::class, names = ["InControl", "ReOpenCertified", "ReOpenInControlLast", "ReOpenInControlLimited"])
     fun `updateControlIdentification - success`(status: ReportStatus) {
         val reportId = 66L + status.ordinal
 
@@ -252,7 +254,11 @@ internal class UpdateProjectPartnerControlReportIdentificationTest : UnitTest() 
     }
 
     @ParameterizedTest(name = "updateControlIdentification - wrong status (status {0})")
-    @EnumSource(value = ReportStatus::class, names = ["InControl", "ReOpenInControlLast", "ReOpenInControlLimited"], mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(
+        value = ReportStatus::class,
+        names = ["InControl", "ReOpenInControlLast", "ReOpenInControlLimited", "ReOpenCertified"],
+        mode = EnumSource.Mode.EXCLUDE
+    )
     fun `updateControlIdentification - wrong status`(status: ReportStatus) {
         val reportId = 250L + status.ordinal
 

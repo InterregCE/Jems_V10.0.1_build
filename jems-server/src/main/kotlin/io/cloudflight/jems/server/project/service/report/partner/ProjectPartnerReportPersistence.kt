@@ -6,9 +6,9 @@ import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPa
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.certificate.PartnerReportCertificate
+import java.time.ZonedDateTime
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import java.time.ZonedDateTime
 
 interface ProjectPartnerReportPersistence {
 
@@ -18,6 +18,7 @@ interface ProjectPartnerReportPersistence {
         status: ReportStatus,
         firstSubmissionTime: ZonedDateTime? = null,
         lastReSubmissionTime: ZonedDateTime? = null,
+        lastControlReopening: ZonedDateTime? = null,
     ): ProjectPartnerReportSubmissionSummary
 
     fun finalizeControlOnReportById(

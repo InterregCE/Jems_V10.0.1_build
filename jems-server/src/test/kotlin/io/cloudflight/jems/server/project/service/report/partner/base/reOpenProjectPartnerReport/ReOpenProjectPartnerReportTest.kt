@@ -22,6 +22,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
@@ -29,7 +30,6 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
-import java.time.ZonedDateTime
 
 internal class ReOpenProjectPartnerReportTest : UnitTest() {
 
@@ -63,7 +63,7 @@ internal class ReOpenProjectPartnerReportTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "reOpen - cannot be reopened {0}")
-    @EnumSource(value = ReportStatus::class, names = ["Submitted", "InControl"], mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = ReportStatus::class, names = ["Submitted", "InControl", "ReOpenCertified"], mode = EnumSource.Mode.EXCLUDE)
     fun `reOpen - cannot be reopened`(status: ReportStatus) {
         every { reportPersistence.getPartnerReportStatusAndVersion(partnerId = 15L, reportId = 150L) } returns
                 ProjectPartnerReportStatusAndVersion(status, "V1")
@@ -78,6 +78,8 @@ internal class ReOpenProjectPartnerReportTest : UnitTest() {
             "Submitted,999,ReOpenSubmittedLimited",
             "InControl,160,ReOpenInControlLast",
             "InControl,999,ReOpenInControlLimited",
+            "ReOpenCertified,160,ReOpenInControlLast",
+            "ReOpenCertified,999,ReOpenInControlLimited",
         ]
     )
     fun reOpen(status: ReportStatus, lastReportId: Long, expectedStatus: ReportStatus) {

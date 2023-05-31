@@ -1,3 +1,4 @@
+
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.plugin.contract.export.ExportResult
 import io.cloudflight.jems.plugin.contract.export.partner.report.PartnerControlReportCertificatePlugin
@@ -30,17 +31,16 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import java.io.IOException
+import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.security.core.authority.SimpleGrantedAuthority
-import java.io.IOException
-import java.time.ZonedDateTime
 
 class GenerateReportControlCertificateTest : UnitTest() {
-
 
     companion object {
         const val pluginKey = "standard-partner-control-report-certificate-generate-plugin"
@@ -65,7 +65,6 @@ class GenerateReportControlCertificateTest : UnitTest() {
             )
         )
 
-
         val partnerReport = ProjectPartnerReport(
             id = REPORT_ID,
             reportNumber = 3,
@@ -73,6 +72,8 @@ class GenerateReportControlCertificateTest : UnitTest() {
             version = "1",
             firstSubmission = YESTERDAY,
             lastResubmission = null,
+            lastControlReopening = null,
+            projectReportId = null,
             identification = PartnerReportIdentification(
                 projectIdentifier = "CLF00001",
                 projectAcronym = "acronym",
@@ -190,6 +191,5 @@ class GenerateReportControlCertificateTest : UnitTest() {
         }
 
     }
-
 
 }

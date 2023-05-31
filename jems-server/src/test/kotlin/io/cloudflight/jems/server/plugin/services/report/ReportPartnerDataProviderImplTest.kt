@@ -112,15 +112,15 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.slot
+import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.ZonedDateTime
+import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
-import java.math.BigDecimal
-import java.time.LocalDate
-import java.time.ZonedDateTime
-import java.util.UUID
 
 internal class ReportPartnerDataProviderImplTest : UnitTest() {
 
@@ -140,6 +140,8 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
             firstSubmission = DATE_TIME_1,
             lastResubmission = null,
             controlEnd = DATE_TIME_2,
+            lastControlReopening = null,
+            projectReportId = null,
 
             identification = PartnerReportIdentification(
                 projectIdentifier = "identifier",
@@ -351,7 +353,11 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
             currencyConversionRate = BigDecimal.valueOf(0.84),
             declaredAmountAfterSubmission = BigDecimal.valueOf(8.4),
             attachment = JemsFileMetadata(47L, "file.xlsx", DATE_TIME_1),
-            parkingMetadata = ExpenditureParkingMetadata(reportOfOriginId = 75L, reportOfOriginNumber = 4, originalExpenditureNumber = 3),
+            parkingMetadata = ExpenditureParkingMetadata(
+                reportOfOriginId = 75L,
+                reportOfOriginNumber = 4,
+                originalExpenditureNumber = 3
+            ),
         )
 
         private val expectedExpenditure = ProjectPartnerReportExpenditureCostData(

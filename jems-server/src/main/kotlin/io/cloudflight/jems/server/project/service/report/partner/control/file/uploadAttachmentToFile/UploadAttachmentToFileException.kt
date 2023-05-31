@@ -26,3 +26,9 @@ class FileTypeNotSupported : ApplicationUnprocessableException(
     code = "$UPLOAD_ATTACHMENT_TO_FILE_ERROR_CODE_PREFIX-002",
     i18nMessage = I18nMessage("$UPLOAD_ATTACHMENT_TO_FILE_ERROR_KEY_PREFIX.type.not.supported")
 )
+
+
+class FileChangeNotAllowedException : ApplicationUnprocessableException(
+    code = "$UPLOAD_ATTACHMENT_TO_FILE_ERROR_CODE_PREFIX-003",
+    i18nMessage = I18nMessage("$UPLOAD_ATTACHMENT_TO_FILE_ERROR_KEY_PREFIX.change.not.allowed")
+)

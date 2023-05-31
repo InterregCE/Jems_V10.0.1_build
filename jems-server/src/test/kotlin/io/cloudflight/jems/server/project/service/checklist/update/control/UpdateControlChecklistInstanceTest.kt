@@ -49,6 +49,8 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import java.math.BigDecimal
+import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -56,8 +58,6 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
-import java.math.BigDecimal
-import java.time.ZonedDateTime
 
 internal class UpdateControlChecklistInstanceTest : UnitTest() {
 
@@ -258,6 +258,8 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
             firstSubmission = null,
             lastResubmission = null,
             controlEnd = TODAY,
+            lastControlReopening = null,
+            projectReportId = null,
             identification = PartnerReportIdentification(
                 projectIdentifier = "projectIdentifier",
                 projectAcronym = "projectAcronym",
@@ -431,9 +433,13 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
         every { securityService.getUserIdOrThrow() } returns creatorId
         every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
         every { partnerPersistence.getById(partnerId) } returns projectPartner
-        every { reportPersistence.getPartnerReportById(partnerId, reportId).reportNumber } returns controlReportId
-        every { reportPersistence.getPartnerReportById(partnerId, reportId).status } returns ReportStatus.InControl
-        every { reportPersistence.getPartnerReportById(partnerId, reportId).controlEnd } returns TODAY
+        val report = mockk<ProjectPartnerReport>()
+        every { reportPersistence.getPartnerReportById(partnerId, reportId) } returns report
+        every { report.reportNumber} returns controlReportId
+        every { report.status} returns ReportStatus.InControl
+        every { report.controlEnd} returns TODAY
+        every { report.lastControlReopening} returns TODAY
+
         every {
             persistence.getChecklistDetail(
                 checklistId,

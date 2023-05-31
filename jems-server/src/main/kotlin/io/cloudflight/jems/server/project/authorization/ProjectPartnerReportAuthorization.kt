@@ -13,9 +13,9 @@ import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaboratorPersistence
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
+import java.util.Optional
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
-import java.util.Optional
 
 @Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("@projectPartnerReportAuthorization.canEditPartnerReport(#partnerId, #reportId)")
@@ -55,6 +55,11 @@ annotation class CanEditPartnerControlReportFile
 @PreAuthorize("@projectPartnerReportAuthorization.canReOpenPartnerReport(#partnerId)")
 annotation class CanReOpenPartnerReport
 
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@projectPartnerReportAuthorization.canReOpenCertifiedReport(#partnerId)")
+annotation class CanReOpenCertifiedReport
+
 @Component
 class ProjectPartnerReportAuthorization(
     override val securityService: SecurityService,
@@ -86,6 +91,13 @@ class ProjectPartnerReportAuthorization(
             // controller with EDIT
             getLevelForUserController(partnerId = partnerId).hasEdit() && hasNonProjectAuthority(UserRolePermission.ProjectReportingReOpen)
         )
+
+    fun canReOpenCertifiedReport(partnerId: Long): Boolean =
+        hasPermissionForProject(
+            UserRolePermission.ProjectPartnerControlReportingReOpen,
+            projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
+    ) || ( // controller with EDIT
+            getLevelForUserController(partnerId = partnerId).hasEdit() && hasNonProjectAuthority(UserRolePermission.ProjectPartnerControlReportingReOpen))
 
     private fun hasPermissionForPartner(partnerId: Long, levelNeeded: PartnerCollaboratorLevel): Boolean {
         val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)

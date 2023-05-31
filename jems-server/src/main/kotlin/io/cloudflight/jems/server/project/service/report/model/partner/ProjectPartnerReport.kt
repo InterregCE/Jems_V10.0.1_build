@@ -11,5 +11,7 @@ data class ProjectPartnerReport(
     val lastResubmission: ZonedDateTime?,
     val controlEnd: ZonedDateTime?,
 
+    val lastControlReopening: ZonedDateTime?,
+    val projectReportId: Long?,
     val identification: PartnerReportIdentification
 )

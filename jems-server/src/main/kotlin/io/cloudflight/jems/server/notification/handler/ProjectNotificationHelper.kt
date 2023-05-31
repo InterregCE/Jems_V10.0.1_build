@@ -1,9 +1,41 @@
 package io.cloudflight.jems.server.notification.handler
 
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType
-import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.*
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.PartnerReportCertified
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.PartnerReportControlOngoing
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.PartnerReportReOpen
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.PartnerReportReOpenCertified
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.PartnerReportSubmitted
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.ProjectApproved
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.ProjectApprovedStep1
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.ProjectApprovedWithConditions
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.ProjectApprovedWithConditionsStep1
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.ProjectConditionsSubmitted
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.ProjectContracted
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.ProjectInModification
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.ProjectIneligible
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.ProjectIneligibleStep1
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.ProjectModificationApproved
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.ProjectModificationRejected
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.ProjectModificationSubmitted
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.ProjectNotApproved
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.ProjectNotApprovedStep1
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.ProjectReportSubmitted
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.ProjectResubmitted
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.ProjectReturnedForConditions
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.ProjectReturnedToApplicant
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.ProjectSubmitted
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.ProjectSubmittedStep1
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus.Submitted
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus.InControl
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus.Certified
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus.ReOpenCertified
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus.ReOpenSubmittedLast
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus.ReOpenInControlLast
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus.ReOpenSubmittedLimited
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus.ReOpenInControlLimited
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 
 fun ApplicationStatus.toNotificationType(prevStatus: ApplicationStatus): NotificationType? = when {
@@ -33,11 +65,11 @@ fun ApplicationStatus.toNotificationType(prevStatus: ApplicationStatus): Notific
 fun NotificationType?.enforceIsProjectNotification() = if (this != null && isProjectNotification()) this else null
 
 fun ReportStatus.toNotificationType(): NotificationType? = when(this) {
-    ReportStatus.Submitted -> PartnerReportSubmitted
-    ReportStatus.InControl -> PartnerReportControlOngoing
-    ReportStatus.Certified -> PartnerReportCertified
-    ReportStatus.ReOpenSubmittedLast, ReportStatus.ReOpenSubmittedLimited -> PartnerReportReOpenFromSubmitted
-    ReportStatus.ReOpenInControlLast, ReportStatus.ReOpenInControlLimited -> PartnerReportReOpenFromControlOngoing
+    Submitted -> PartnerReportSubmitted
+    InControl -> PartnerReportControlOngoing
+    Certified -> PartnerReportCertified
+    ReOpenCertified -> PartnerReportReOpenCertified
+    ReOpenSubmittedLast, ReOpenSubmittedLimited, ReOpenInControlLast, ReOpenInControlLimited -> PartnerReportReOpen
     else -> null
 }.enforceIsPartnerReportNotification()
 

@@ -55,6 +55,7 @@ import io.cloudflight.jems.server.project.service.report.partner.base.deleteProj
 import io.cloudflight.jems.server.project.service.report.partner.base.finalizeControlPartnerReport.FinalizeControlPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.getProjectPartnerReport.GetProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.getProjectReportPartnerList.GetProjectReportPartnerListInteractor
+import io.cloudflight.jems.server.project.service.report.partner.base.reOpenControlPartnerReport.ReOpenControlPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.reOpenProjectPartnerReport.ReOpenProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.runPartnerReportPreSubmissionCheck.RunPartnerReportPreSubmissionCheckInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.startControlPartnerReport.StartControlPartnerReportInteractor
@@ -75,6 +76,9 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.slot
 import io.mockk.verify
+import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.core.io.ByteArrayResource
@@ -84,9 +88,6 @@ import org.springframework.data.domain.Sort
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import java.math.BigDecimal
-import java.time.LocalDate
-import java.time.ZonedDateTime
 
 internal class ProjectPartnerReportControllerTest : UnitTest() {
 
@@ -154,6 +155,8 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
             firstSubmission = YESTERDAY,
             lastResubmission = null,
             controlEnd = TODAY,
+            lastControlReopening = null,
+            projectReportId = null,
             identification = PartnerReportIdentification(
                 projectIdentifier = "projectIdentifier",
                 projectAcronym = "projectAcronym",
@@ -286,6 +289,9 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
 
     @MockK
     lateinit var reOpenPartnerReport: ReOpenProjectPartnerReportInteractor
+
+    @MockK
+    lateinit var reOpenControlPartnerReport: ReOpenControlPartnerReportInteractor
 
     @MockK
     lateinit var startControlReport: StartControlPartnerReportInteractor
@@ -425,7 +431,6 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
         ))
     }
 
-
     @Test
     fun submitProjectPartnerReport() {
         every { submitPartnerReport.submit(18, 310) } returns ReportStatus.Submitted
@@ -436,6 +441,12 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
     fun reOpenProjectPartnerReport() {
         every { reOpenPartnerReport.reOpen(17, 311) } returns ReportStatus.ReOpenInControlLast
         assertThat(controller.reOpenProjectPartnerReport(17, 311)).isEqualTo(ReportStatusDTO.ReOpenInControlLast)
+    }
+
+    @Test
+    fun reOpenProjectPartnerControlReport() {
+        every { reOpenControlPartnerReport.reOpen(17, 311) } returns ReportStatus.ReOpenCertified
+        assertThat(controller.reOpenControlPartnerReport(17, 311)).isEqualTo(ReportStatusDTO.ReOpenCertified)
     }
 
     @Test

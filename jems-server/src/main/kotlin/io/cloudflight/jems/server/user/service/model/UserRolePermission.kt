@@ -19,6 +19,7 @@ enum class UserRolePermission(val key: String, val projectRelated: Boolean = fal
     ProjectReportingView("ProjectReportingView", true),
     ProjectReportingEdit("ProjectReportingEdit", true),
     ProjectReportingReOpen("ProjectReportingReOpen", true),
+    ProjectPartnerControlReportingReOpen("ProjectPartnerControlReportingReOpen", true),
     ProjectReportingProjectView("ProjectReportingProjectView", true),
     ProjectReportingProjectEdit("ProjectReportingProjectEdit", true),
     ProjectReportingChecklistAfterControl("ProjectReportingChecklistAfterControl", true),

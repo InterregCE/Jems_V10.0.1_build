@@ -148,7 +148,7 @@ internal class CreateControlChecklistInstanceTest : UnitTest() {
 
     @ParameterizedTest
     @EnumSource(value = ReportStatus::class, mode = EnumSource.Mode.EXCLUDE,
-        names = ["InControl", "ReOpenInControlLast", "ReOpenInControlLimited", "Certified"])
+        names = ["InControl", "ReOpenInControlLast", "ReOpenInControlLimited", "ReOpenCertified", "Certified"])
     fun `create control checklist - failed - report is locked`(status: ReportStatus) {
         every{
             reportPersistence.getPartnerReportStatusAndVersion(partnerId, reportId)

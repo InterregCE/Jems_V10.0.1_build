@@ -51,7 +51,10 @@ class GetReportControlOverviewServiceTest: UnitTest() {
             firstSubmission = mockk(),
             lastResubmission = null,
             identification = mockk(),
-            controlEnd = null
+            controlEnd = null,
+            lastControlReopening = null,
+            projectReportId = null,
+
         )
 
         private val lastCertifiedControlOverview = ControlOverview(

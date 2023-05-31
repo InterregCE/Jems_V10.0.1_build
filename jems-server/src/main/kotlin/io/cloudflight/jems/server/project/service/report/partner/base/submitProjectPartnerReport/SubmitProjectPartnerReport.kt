@@ -7,7 +7,6 @@ import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
 import io.cloudflight.jems.server.notification.handler.PartnerReportStatusChanged
 import io.cloudflight.jems.server.plugin.JemsPluginRegistry
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
-import io.cloudflight.jems.server.project.repository.report.partner.model.ExpenditureVerificationUpdate
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.budget.model.ExpenditureCostCategoryCurrentlyReportedWithReIncluded
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
@@ -89,7 +88,7 @@ class SubmitProjectPartnerReport(
             )
         }
 
-        return reportPersistence.updateStatusAndTimes(partnerId, reportId = reportId, status = report.status.submitStatus(),
+        return reportPersistence.updateStatusAndTimes(partnerId, reportId = reportId, status = report.status.submitStatus(report.hasControlReopenedBefore()),
             firstSubmissionTime = if (report.status.isOpenInitially()) ZonedDateTime.now() else null /* no update */,
             lastReSubmissionTime = if (!report.status.isOpenInitially()) ZonedDateTime.now() else null /* no update */,
         ).also { partnerReportSummary ->
@@ -107,6 +106,8 @@ class SubmitProjectPartnerReport(
             )
         }.status
     }
+
+    private fun ProjectPartnerReport.hasControlReopenedBefore() = this.lastControlReopening != null
 
     private fun validateReportIsStillOpen(report: ProjectPartnerReport) {
         if (report.status.isClosed())

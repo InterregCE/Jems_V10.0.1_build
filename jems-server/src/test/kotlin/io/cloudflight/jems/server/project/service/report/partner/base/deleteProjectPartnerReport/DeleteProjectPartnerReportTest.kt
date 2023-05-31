@@ -7,10 +7,10 @@ import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
-import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.PartnerReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -107,6 +107,8 @@ internal class DeleteProjectPartnerReportTest: UnitTest()  {
             firstSubmission = null,
             lastResubmission = null,
             controlEnd = TODAY,
+            lastControlReopening = null,
+            projectReportId = null,
             identification = PartnerReportIdentification(
                 projectIdentifier = "identifier",
                 projectAcronym = "acronym",

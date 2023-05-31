@@ -1,11 +1,11 @@
 package io.cloudflight.jems.server.project.service.report.partner.base.getProjectPartnerReport
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -86,6 +86,7 @@ internal class GetProjectPartnerReportTest : UnitTest() {
             report(15L, ReportStatus.ReOpenInControlLast).copy(totalAfterSubmitted = null),
             report(16L, ReportStatus.ReOpenInControlLimited),
             report(17L, ReportStatus.Certified),
+            report(18L, ReportStatus.ReOpenCertified)
         )
     }
 
@@ -111,6 +112,7 @@ internal class GetProjectPartnerReportTest : UnitTest() {
                         ReportStatus.ReOpenInControlLast,
                         ReportStatus.ReOpenInControlLimited,
                         ReportStatus.Certified,
+                        ReportStatus.ReOpenCertified,
                 )) BigDecimal.TEN else null,
                 totalAfterSubmitted = if (status in setOf(
                     ReportStatus.Draft,
@@ -126,6 +128,7 @@ internal class GetProjectPartnerReportTest : UnitTest() {
             report(26L, ReportStatus.ReOpenInControlLast).copy(totalAfterSubmitted = null),
             report(27L, ReportStatus.ReOpenInControlLimited),
             report(28L, ReportStatus.Certified),
+            report(29L, ReportStatus.ReOpenCertified),
         )
     }
 

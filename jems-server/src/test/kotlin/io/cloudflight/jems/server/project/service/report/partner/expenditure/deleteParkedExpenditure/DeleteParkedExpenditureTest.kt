@@ -20,13 +20,13 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
-import java.time.ZonedDateTime
 
 internal class DeleteParkedExpenditureTest : UnitTest() {
 
@@ -46,6 +46,8 @@ internal class DeleteParkedExpenditureTest : UnitTest() {
                 identification = identification,
                 controlEnd = null,
                 lastResubmission = null,
+                lastControlReopening = null,
+                projectReportId = null,
             )
         }
     }
@@ -72,7 +74,11 @@ internal class DeleteParkedExpenditureTest : UnitTest() {
     fun deleteParkedExpenditure(status: ReportStatus) {
         val partnerId = 47L
         val reportId = 470L
-        val expenditure = ExpenditureParkingMetadata(reportOfOriginId = 348L, reportOfOriginNumber = 1, originalExpenditureNumber = 2)
+        val expenditure = ExpenditureParkingMetadata(
+            reportOfOriginId = 348L,
+            reportOfOriginNumber = 1,
+            originalExpenditureNumber = 2
+        )
         every { reportParkedExpenditurePersistence.getParkedExpendituresByIdForPartner(partnerId, ReportStatus.Certified) } returns
             mapOf(845L to expenditure)
         every { reportParkedExpenditurePersistence.unParkExpenditures(setOf(845L)) } answers { }

@@ -2,8 +2,10 @@ package io.cloudflight.jems.server.project.service.report.partner.file.control
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
+import io.cloudflight.jems.server.common.file.service.model.JemsFile
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import org.springframework.stereotype.Service
@@ -25,11 +27,13 @@ class ControlReportFileAuthorizationService(
         // to make sure fileId corresponds to correct report, we need to verify it through location path
         val reportPrefix = JemsFileType.PartnerControlReport.generatePath(projectId, partnerId, reportId)
 
-        val author = filePersistence.getFileAuthor(partnerId = partnerId, pathPrefix = reportPrefix, fileId = fileId)
+        val file = filePersistence.getFile(partnerId = partnerId, pathPrefix = reportPrefix, fileId = fileId)
             ?: throw FileNotFound()
 
-        if (author.id != securityService.getUserIdOrThrow())
+        if (file.author.id != securityService.getUserIdOrThrow())
             throw UserIsNotOwnerOfFile()
+
+        verifyControlReOpenChanges(report, file, requireNotClosedControl)
     }
 
     private fun verifyStatus(status: ReportStatus, requireNotClosedControl: Boolean) {
@@ -37,5 +41,17 @@ class ControlReportFileAuthorizationService(
             true -> if (status.controlNotEvenPartiallyOpen()) throw ReportControlNotOpen()
             else -> if (status.controlNotStartedYet()) throw ReportControlNotStartedYet()
         }
+    }
+
+
+    private fun verifyControlReOpenChanges(
+        report: ProjectPartnerReport,
+        file: JemsFile,
+        requireNotClosedControl: Boolean
+    ) {
+
+        if (requireNotClosedControl && report.lastControlReopening != null && file.uploaded.isBefore(report.lastControlReopening))
+            throw ReportControlFileInControlReOpened()
+
     }
 }

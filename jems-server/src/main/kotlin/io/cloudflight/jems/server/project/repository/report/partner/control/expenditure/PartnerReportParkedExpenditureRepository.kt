@@ -19,4 +19,5 @@ interface PartnerReportParkedExpenditureRepository : JpaRepository<PartnerReport
         id: Long,
     ): PartnerReportParkedExpenditureEntity
 
+    fun findAllByParkedFromExpenditureIdIn(ids: Set<Long>): Iterable<PartnerReportParkedExpenditureEntity>
 }

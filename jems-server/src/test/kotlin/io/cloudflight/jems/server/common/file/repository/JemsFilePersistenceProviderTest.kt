@@ -158,22 +158,34 @@ class JemsFilePersistenceProviderTest: UnitTest() {
 
     @Test
     fun getFileAuthor() {
-        val reportFile = mockk<JemsFileMetadataEntity>()
-
         val user = mockk<UserEntity>()
         every { user.id } returns USER_ID
         every { user.email } returns "email 270"
         every { user.name } returns "name 270"
         every { user.surname } returns "surname 270"
 
-        every { reportFile.user } returns user
+
+        val reportFile =  JemsFileMetadataEntity(
+            id = 16L,
+            projectId = PROJECT_ID,
+            partnerId = null,
+            path = "",
+            minioBucket = BUCKET,
+            minioLocation = "filePathFull",
+            name = "name",
+            type = JemsFileType.Contract,
+            size = 45L,
+            user = user,
+            uploaded = LAST_WEEK,
+            description = "dummy description",
+        )
         every { projectFileMetadataRepository.findByPartnerIdAndPathPrefixAndId(
             partnerId = PARTNER_ID,
             pathPrefix = "prefix",
             id = 16L,
         ) } returns reportFile
         assertThat(
-            persistence.getFileAuthor(PARTNER_ID, "prefix", fileId = 16L)
+            persistence.getFile(PARTNER_ID, "prefix", fileId = 16L)?.author
         ).isEqualTo(UserSimple(USER_ID, "email 270", name = "name 270", "surname 270"))
     }
 
@@ -185,7 +197,7 @@ class JemsFilePersistenceProviderTest: UnitTest() {
             id = 16L,
         ) } returns null
         assertThat(
-            persistence.getFileAuthor(PARTNER_ID, "prefix", fileId = 16L)
+            persistence.getFile(PARTNER_ID, "prefix", fileId = 16L)?.author
         ).isNull()
     }
 

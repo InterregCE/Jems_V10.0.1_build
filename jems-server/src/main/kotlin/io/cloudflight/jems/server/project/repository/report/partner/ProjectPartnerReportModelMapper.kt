@@ -135,6 +135,9 @@ fun ProjectPartnerReportEntity.toModel(coFinancing: List<ProjectPartnerReportCoF
         firstSubmission = firstSubmission,
         lastResubmission = lastReSubmission,
         controlEnd = controlEnd,
+        lastControlReopening = lastControlReopening,
+
+        projectReportId = projectReport?.id,
 
         identification = PartnerReportIdentification(
             projectIdentifier = identification.projectIdentifier,
@@ -202,7 +205,8 @@ fun ProjectPartnerReportCreate.toEntity(
         currency = identification.currency
     ),
     projectReport = null,
-    lastReSubmission = null
+    lastReSubmission = null,
+    lastControlReopening = null
 )
 
 fun List<PreviouslyReportedFund>.toEntity(

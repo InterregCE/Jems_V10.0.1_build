@@ -19,12 +19,12 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import java.io.InputStream
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
-import java.io.InputStream
 
 class UploadFileToControlReportTest : UnitTest() {
 
@@ -99,7 +99,7 @@ class UploadFileToControlReportTest : UnitTest() {
 
     @ParameterizedTest(name = "uploadToControlReport - wrong status (status {0})")
     @EnumSource(value = ReportStatus::class, mode = EnumSource.Mode.EXCLUDE,
-        names = ["InControl", "ReOpenInControlLast", "ReOpenInControlLimited", "Certified"])
+        names = ["InControl", "ReOpenInControlLast", "ReOpenInControlLimited", "ReOpenCertified" ,"Certified"])
     fun `uploadToControlReport - wrong status`(status: ReportStatus) {
         val reportId = 56L
         val report = mockk<ProjectPartnerReport>()

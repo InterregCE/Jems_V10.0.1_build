@@ -19,13 +19,13 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
+import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
-import java.math.BigDecimal
-import java.time.LocalDate
-import java.time.ZonedDateTime
 
 internal class GetAvailableParkedExpenditureListTest : UnitTest() {
 
@@ -55,7 +55,11 @@ internal class GetAvailableParkedExpenditureListTest : UnitTest() {
                 currencyConversionRate = BigDecimal.valueOf(0.84),
                 declaredAmountAfterSubmission = BigDecimal.valueOf(8.4),
                 attachment = JemsFileMetadata(47L, "file.xlsx", ZonedDateTime.now()),
-                parkingMetadata = ExpenditureParkingMetadata(reportOfOriginId = 75L, reportOfOriginNumber = 4, originalExpenditureNumber = 3),
+                parkingMetadata = ExpenditureParkingMetadata(
+                    reportOfOriginId = 75L,
+                    reportOfOriginNumber = 4,
+                    originalExpenditureNumber = 3
+                ),
             ),
             lumpSum = ProjectPartnerReportParkedLinked(51L, 52L, 15, true),
             lumpSumName = setOf(InputTranslation(SystemLanguage.EN, "ls-name")),
