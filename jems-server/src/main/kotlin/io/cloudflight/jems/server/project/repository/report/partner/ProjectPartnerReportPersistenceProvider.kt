@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.repository.report.partner
 
+import io.cloudflight.jems.plugin.contract.models.report.partner.identification.ProjectPartnerReportBaseData
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime
+import java.util.stream.Stream
 
 @Repository
 class ProjectPartnerReportPersistenceProvider(
@@ -65,6 +67,11 @@ class ProjectPartnerReportPersistenceProvider(
     override fun listPartnerReports(partnerId: Long, pageable: Pageable): Page<ProjectPartnerReportSummary> =
         partnerReportRepository.findAllByPartnerId(partnerId = partnerId, pageable = pageable)
             .map { it.toModelSummary() }
+
+    @Transactional(readOnly = true)
+    override fun getAllPartnerReportIdsByProjectId(projectId: Long): Stream<ProjectPartnerReportBaseData> {
+        return partnerReportRepository.findAllPartnerReportIdsByProjectId(projectId)
+    }
 
     @Transactional(readOnly = true)
     override fun listCertificates(partnerIds: Set<Long>, pageable: Pageable): Page<PartnerReportCertificate> =
