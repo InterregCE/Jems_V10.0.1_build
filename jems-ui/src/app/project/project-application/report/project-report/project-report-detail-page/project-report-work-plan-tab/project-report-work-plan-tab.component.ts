@@ -29,6 +29,7 @@ import {
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-work-plan-tab/project-report-work-plan-tab.constants';
 import {NumberService} from '@common/services/number.service';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
+import WorkPlanStatusLabelEnum = ProjectReportWorkPackageDTO.WorkPlanStatusLabelEnum;
 
 @Component({
   selector: 'jems-project-report-work-plan-tab',
@@ -386,5 +387,9 @@ export class ProjectReportWorkPlanTabComponent {
 
   private disableControl(value: any) {
     return {value, disabled: true};
+  }
+
+  canExpandWorkPackage(completed: AbstractControl | null, status: AbstractControl | null): boolean {
+    return completed?.value && (status?.value === WorkPlanStatusLabelEnum.Yellow || status?.value === WorkPlanStatusLabelEnum.Green)
   }
 }
