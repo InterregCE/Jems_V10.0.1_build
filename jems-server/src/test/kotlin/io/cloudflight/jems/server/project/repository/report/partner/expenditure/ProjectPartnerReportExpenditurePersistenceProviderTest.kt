@@ -49,14 +49,14 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
+import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
-import java.math.BigDecimal
-import java.time.LocalDate
-import java.time.ZonedDateTime
 
 class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
 
@@ -169,7 +169,11 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
             currencyConversionRate = BigDecimal.valueOf(368),
             declaredAmountAfterSubmission = BigDecimal.valueOf(3680),
             attachment = JemsFileMetadata(dummyAttachment.id, dummyAttachment.name, dummyAttachment.uploaded),
-            parkingMetadata = ExpenditureParkingMetadata(reportOfOriginId = 75L, reportOfOriginNumber = 4, originalExpenditureNumber = 8),
+            parkingMetadata = ExpenditureParkingMetadata(
+                reportOfOriginId = 75L,
+                reportOfOriginNumber = 4,
+                originalExpenditureNumber = 8
+            ),
         )
 
         private fun dummyExpectedParkedExpenditure() = ProjectPartnerReportParkedExpenditure(
@@ -410,7 +414,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
             parkingMetadata = ExpenditureParkingMetadata(
                 reportOfOriginId = 11L,
                 reportOfOriginNumber = 111,
-                originalExpenditureNumber = 4,
+                originalExpenditureNumber = 4
             ),
         )
     }
@@ -708,6 +712,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
     fun reIncludeParkedExpenditure() {
         val partnerId = 17L
         val expenditureId = 54L
+        val parkedOn = ZonedDateTime.now()
 
         val reportOfOrigin = mockk<ProjectPartnerReportEntity>()
         every { reportOfOrigin.id } returns 11L
@@ -754,6 +759,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
             ),
             reportOfOrigin = reportOfOrigin,
             originalNumber = 4,
+            parkedOn = parkedOn
         )
         every { reportExpenditureRepository.save(any()) } returnsArgument 0
 
@@ -765,6 +771,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
     fun `reIncludeParkedExpenditure - first time parked`() {
         val partnerId = 18L
         val expenditureId = 55L
+        val parkedOn = ZonedDateTime.now()
 
         val reportOfOrigin = mockk<ProjectPartnerReportEntity>()
         val lumpSum = mockk<PartnerReportLumpSumEntity>()
@@ -800,6 +807,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
             ),
             reportOfOrigin = reportOfOrigin,
             originalNumber = 4,
+            parkedOn = parkedOn
         )
 
         val proLumpSum = mockk<PartnerReportLumpSumEntity>()
@@ -826,6 +834,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
     fun `reIncludeParkedExpenditure - first time parked - without links`() {
         val partnerId = 18L
         val expenditureId = 55L
+        val parkedOn = ZonedDateTime.now()
 
         val reportOfOrigin = mockk<ProjectPartnerReportEntity>()
 
@@ -850,6 +859,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
             ),
             reportOfOrigin = reportOfOrigin,
             originalNumber = 4,
+            parkedOn = parkedOn
         )
 
         every { reportExpenditureRepository.save(any()) } returnsArgument 0

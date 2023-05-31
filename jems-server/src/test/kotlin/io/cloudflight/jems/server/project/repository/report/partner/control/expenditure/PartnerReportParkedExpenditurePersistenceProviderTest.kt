@@ -18,6 +18,7 @@ import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.time.ZonedDateTime
 
 class PartnerReportParkedExpenditurePersistenceProviderTest : UnitTest() {
 
@@ -39,10 +40,11 @@ class PartnerReportParkedExpenditurePersistenceProviderTest : UnitTest() {
     @Test
     fun getParkedExpendituresByIdForPartner() {
         val originalReport = mockk<ProjectPartnerReportEntity>()
+        val dateTime = ZonedDateTime.now()
         every { originalReport.id } returns 40L
         every { originalReport.number } returns 401
 
-        val expenditure = PartnerReportParkedExpenditureEntity(parkedFromExpenditureId = 5499L, mockk(), originalReport, 21)
+        val expenditure = PartnerReportParkedExpenditureEntity(parkedFromExpenditureId = 5499L, mockk(), originalReport, 21, parkedOn = dateTime)
         every { reportParkedExpenditureRepository
             .findAllByParkedFromPartnerReportPartnerIdAndParkedFromPartnerReportStatus(
                 partnerId = 12L,
@@ -56,6 +58,7 @@ class PartnerReportParkedExpenditurePersistenceProviderTest : UnitTest() {
 
     @Test
     fun parkExpenditures() {
+        val dateTime = ZonedDateTime.now()
         val slotSaved = slot<Iterable<PartnerReportParkedExpenditureEntity>>()
         every { reportParkedExpenditureRepository.saveAll(capture(slotSaved)) } returnsArgument 0
 
@@ -65,7 +68,7 @@ class PartnerReportParkedExpenditurePersistenceProviderTest : UnitTest() {
         every { reportRepository.getById(444L) } returns report
 
         val toPark = setOf(
-            ParkExpenditureData(expenditureId = 24L, originalReportId = 444L, originalNumber = 7)
+            ParkExpenditureData(expenditureId = 24L, originalReportId = 444L, originalNumber = 7, parkedOn = dateTime)
         )
         persistence.parkExpenditures(toPark)
 
@@ -75,6 +78,7 @@ class PartnerReportParkedExpenditurePersistenceProviderTest : UnitTest() {
             assertThat(parkedFrom).isEqualTo(expenditure)
             assertThat(reportOfOrigin).isEqualTo(report)
             assertThat(originalNumber).isEqualTo(7)
+            assertThat(parkedOn).isEqualTo(dateTime)
         }
     }
 

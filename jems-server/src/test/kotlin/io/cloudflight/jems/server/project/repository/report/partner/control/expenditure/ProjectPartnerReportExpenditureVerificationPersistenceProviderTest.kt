@@ -25,13 +25,13 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
+import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.math.BigDecimal
-import java.time.LocalDate
-import java.time.ZonedDateTime
 
 class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitTest() {
     companion object {
@@ -139,7 +139,12 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
                 typologyOfErrorId = 1L,
                 verificationComment = "dummy comment",
                 parked = false,
-                parkingMetadata = ExpenditureParkingMetadata(reportOfOriginId = 600L, reportOfOriginNumber = 601, originalExpenditureNumber = 12),
+                parkedOn = null,
+                parkingMetadata = ExpenditureParkingMetadata(
+                    reportOfOriginId = 600L,
+                    reportOfOriginNumber = 601,
+                    originalExpenditureNumber = 12
+                ),
                 partOfSampleLocked = false
             )
 
@@ -184,8 +189,12 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
 
     @MockK
     private lateinit var reportRepository: ProjectPartnerReportRepository
+
     @MockK
     private lateinit var reportExpenditureRepository: ProjectPartnerReportExpenditureRepository
+
+    @MockK
+    private lateinit var reportExpenditureParkedRepository: PartnerReportParkedExpenditureRepository
 
     @InjectMockKs
     private lateinit var persistence: ProjectPartnerReportExpenditureVerificationPersistenceProvider
@@ -209,6 +218,8 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
         every { lumpSum.id } returns lumpSumId
         every { unitCost.id } returns unitCostId
         every { investment.id } returns investmentId
+
+        every { reportExpenditureParkedRepository.findAllByParkedFromExpenditureIdIn(setOf(14L)) } returns emptyList()
 
         val expenditure = dummyExpenditure(id = 14L, report, lumpSum, unitCost, investment, dummyExpenditure(id = 2L, report, gdpr = false), false)
         every { reportExpenditureRepository.findTop150ByPartnerReportIdAndPartnerReportPartnerIdOrderById(
@@ -279,6 +290,7 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
         every { reportExpenditureRepository
             .findTop150ByPartnerReportIdAndPartnerReportPartnerIdOrderById(reportId = 58L, PARTNER_ID)
         } returns mutableListOf(entityToUpdate)
+        every { reportExpenditureParkedRepository.findAllByParkedFromExpenditureIdIn(setOf(EXPENDITURE_TO_UPDATE)) } returns emptyList()
 
         val result = persistence
             .updatePartnerControlReportExpenditureVerification(
@@ -364,7 +376,7 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
                     parkingMetadata = ExpenditureParkingMetadata(
                         reportOfOriginId = 55L,
                         reportOfOriginNumber = 16,
-                        originalExpenditureNumber = 12,
+                        originalExpenditureNumber = 12
                     ),
                 ),
             )

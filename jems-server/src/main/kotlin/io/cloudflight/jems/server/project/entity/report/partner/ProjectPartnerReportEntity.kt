@@ -3,14 +3,7 @@ package io.cloudflight.jems.server.project.entity.report.partner
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import java.time.ZonedDateTime
-import javax.persistence.Embedded
-import javax.persistence.Entity
-import javax.persistence.EnumType
-import javax.persistence.Enumerated
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
-import javax.persistence.ManyToOne
+import javax.persistence.*
 import javax.validation.constraints.NotNull
 
 @Entity(name = "report_project_partner")
@@ -35,6 +28,7 @@ class ProjectPartnerReportEntity(
 
     var firstSubmission: ZonedDateTime?,
     var lastReSubmission: ZonedDateTime?,
+    var lastControlReopening: ZonedDateTime?,
 
     var controlEnd: ZonedDateTime?,
 

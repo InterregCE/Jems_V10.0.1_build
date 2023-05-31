@@ -26,6 +26,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -33,7 +34,6 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
-import java.time.ZonedDateTime
 
 internal class ReIncludeParkedExpenditureTest : UnitTest() {
 
@@ -73,7 +73,11 @@ internal class ReIncludeParkedExpenditureTest : UnitTest() {
         every { reportExpenditurePersistence.getExpenditureAttachment(4L, 400L) } returns null
         val mockedResult = mockk<ProjectPartnerReportExpenditureCost>()
         every { mockedResult.parkingMetadata } returns
-            ExpenditureParkingMetadata(reportOfOriginId = 75L, reportOfOriginNumber = 10, originalExpenditureNumber = 11)
+            ExpenditureParkingMetadata(
+                reportOfOriginId = 75L,
+                reportOfOriginNumber = 10,
+                originalExpenditureNumber = 11
+            )
         every { reportExpenditurePersistence.reIncludeParkedExpenditure(4L, 40L, 400L) } returns mockedResult
         every { reportParkedExpenditurePersistence.unParkExpenditures(setOf(400L)) } answers { }
         every { partnerPersistence.getProjectIdForPartnerId(id = 4L) } returns 8L

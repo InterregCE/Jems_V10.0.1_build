@@ -32,15 +32,18 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.verify
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Test
-import org.springframework.data.domain.PageImpl
-import org.springframework.data.domain.Pageable
-import java.math.BigDecimal.*
+import java.math.BigDecimal.ONE
+import java.math.BigDecimal.TEN
+import java.math.BigDecimal.ZERO
+import java.math.BigDecimal.valueOf
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
 
 class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
 
@@ -69,6 +72,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
                 firstSubmission = LAST_YEAR,
                 lastReSubmission = LAST_MONTH,
                 controlEnd = controlEnd,
+                lastControlReopening = null,
                 identification = PartnerReportIdentificationEntity(
                     projectIdentifier = "projectIdentifier",
                     projectAcronym = "projectAcronym",
@@ -152,7 +156,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
             type = legalStatusEntity.type,
         )
 
-        private fun draftReport(id: Long, coFinancing: List<ProjectPartnerCoFinancing>) = ProjectPartnerReport(
+        private fun draftReport(id: Long, coFinancing: List<ProjectPartnerCoFinancing>, projectReportId: Long? = null) = ProjectPartnerReport(
             id = id,
             reportNumber = 1,
             status = ReportStatus.Draft,
@@ -160,6 +164,8 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
             firstSubmission = LAST_YEAR,
             lastResubmission = LAST_MONTH,
             controlEnd = null,
+            lastControlReopening = null,
+            projectReportId = projectReportId,
             identification = PartnerReportIdentification(
                 projectIdentifier = "projectIdentifier",
                 projectAcronym = "projectAcronym",
@@ -295,7 +301,6 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
 
     @Test
     fun `updateStatusAndTimes - update status and no time change`() {
-        val NOW = ZonedDateTime.now()
         val YESTERDAY = ZonedDateTime.now().minusDays(1)
 
         val report = reportEntity(id = 47L, YESTERDAY, null, ReportStatus.Submitted)
@@ -341,7 +346,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
             coFinancingEntities(report)
 
         assertThat(persistence.getPartnerReportById(partnerId = PARTNER_ID, reportId = 35L))
-            .isEqualTo(draftReport(id = 35L, coFinancing = coFinancing))
+            .isEqualTo(draftReport(id = 35L, coFinancing = coFinancing, projectReportId = 54L))
     }
 
     @Test
@@ -397,6 +402,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
                 ReportStatus.InControl,
                 ReportStatus.ReOpenInControlLimited,
                 ReportStatus.Certified,
+                ReportStatus.ReOpenCertified,
             ))
         } returns setOf(18L)
         assertThat(persistence.getSubmittedPartnerReportIds(PARTNER_ID)).containsExactly(18L)
@@ -419,7 +425,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
     fun getCurrentLatestReportForPartner() {
         val report = reportEntity(id = 48L)
         every { partnerReportRepository.findFirstByPartnerIdOrderByIdDesc(PARTNER_ID) } returns report
-        assertThat(persistence.getCurrentLatestReportForPartner(PARTNER_ID)).isEqualTo(draftReport(48L, emptyList()))
+        assertThat(persistence.getCurrentLatestReportForPartner(PARTNER_ID)).isEqualTo(draftReport(48L, emptyList(), 54L))
     }
 
     @Test

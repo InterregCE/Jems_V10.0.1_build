@@ -30,7 +30,7 @@ class PartnerReportParkedExpenditurePersistenceProvider(
             ExpenditureParkingMetadata(
                 reportOfOriginId = it.reportOfOrigin.id,
                 reportOfOriginNumber = it.reportOfOrigin.number,
-                originalExpenditureNumber = it.originalNumber,
+                originalExpenditureNumber = it.originalNumber
             )
         ) }.toMap()
 
@@ -42,6 +42,7 @@ class PartnerReportParkedExpenditurePersistenceProvider(
                 parkedFrom = reportExpenditureRepository.getById(it.expenditureId),
                 reportOfOrigin = reportRepository.getById(it.originalReportId),
                 originalNumber = it.originalNumber,
+                parkedOn = it.parkedOn
             )
         }
         reportParkedExpenditureRepository.saveAll(newlyParked)

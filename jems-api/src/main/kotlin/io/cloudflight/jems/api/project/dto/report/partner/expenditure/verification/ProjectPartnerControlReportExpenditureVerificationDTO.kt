@@ -5,6 +5,7 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.BudgetCategoryDTO
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.ZonedDateTime
 
 data class ProjectPartnerControlReportExpenditureVerificationDTO(
     val id: Long?,
@@ -38,5 +39,6 @@ data class ProjectPartnerControlReportExpenditureVerificationDTO(
     val deductedAmount: BigDecimal,
     val typologyOfErrorId: Long?,
     val parked: Boolean,
+    val parkedOn: ZonedDateTime?,
     val verificationComment: String?
 )

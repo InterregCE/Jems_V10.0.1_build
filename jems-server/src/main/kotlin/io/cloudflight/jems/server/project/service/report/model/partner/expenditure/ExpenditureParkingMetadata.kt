@@ -3,5 +3,5 @@ package io.cloudflight.jems.server.project.service.report.model.partner.expendit
 data class ExpenditureParkingMetadata(
     val reportOfOriginId: Long,
     val reportOfOriginNumber: Int,
-    val originalExpenditureNumber: Int,
+    val originalExpenditureNumber: Int
 )

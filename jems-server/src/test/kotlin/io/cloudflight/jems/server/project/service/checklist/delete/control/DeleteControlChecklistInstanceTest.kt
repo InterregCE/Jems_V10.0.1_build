@@ -42,14 +42,14 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.slot
 import io.mockk.verify
+import java.math.BigDecimal
+import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
-import java.math.BigDecimal
-import java.time.ZonedDateTime
 
 internal class DeleteControlChecklistInstanceTest : UnitTest() {
 
@@ -170,6 +170,8 @@ internal class DeleteControlChecklistInstanceTest : UnitTest() {
             firstSubmission = null,
             lastResubmission = null,
             controlEnd = TODAY,
+            lastControlReopening = null,
+            projectReportId = null,
             identification = PartnerReportIdentification(
                 projectIdentifier = "projectIdentifier",
                 projectAcronym = "projectAcronym",

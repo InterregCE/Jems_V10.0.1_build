@@ -7,11 +7,13 @@ import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus.InControl
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus.ReOpenCertified
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus.ReOpenInControlLast
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus.ReOpenInControlLimited
-import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus.Submitted
-import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus.ReOpenSubmittedLimited
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus.ReOpenSubmittedLast
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus.ReOpenSubmittedLimited
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus.Submitted
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.partnerReportReOpened
 import org.springframework.context.ApplicationEventPublisher
@@ -52,9 +54,10 @@ class ReOpenProjectPartnerReport(
     }
 
     private fun calculateNewStatus(oldStatus: ReportStatus, isLastReport: Boolean) =
-        if (oldStatus == Submitted)
-            if (isLastReport) ReOpenSubmittedLast else ReOpenSubmittedLimited
-        else
-            if (isLastReport) ReOpenInControlLast else ReOpenInControlLimited
+        when(oldStatus) {
+            Submitted -> if (isLastReport) ReOpenSubmittedLast else ReOpenSubmittedLimited
+            InControl, ReOpenCertified -> if (isLastReport) ReOpenInControlLast else ReOpenInControlLimited
+            else -> throw ReportCanNotBeReOpened()
+        }
 
 }

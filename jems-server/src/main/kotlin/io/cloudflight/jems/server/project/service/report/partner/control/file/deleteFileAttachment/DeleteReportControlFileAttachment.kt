@@ -2,9 +2,9 @@ package io.cloudflight.jems.server.project.service.report.partner.control.file.d
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerControlReportFile
-import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.file.ProjectPartnerReportControlFilePersistence
+import io.cloudflight.jems.server.project.service.report.partner.control.file.validateCertificateFileAttachment
 import io.cloudflight.jems.server.project.service.report.partner.file.deleteProjectPartnerReportFile.FileNotFound
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -19,11 +19,17 @@ class DeleteReportControlFileAttachment(
     @Transactional()
     @ExceptionWrapper(DeleteReportControlFileAttachmentException::class)
     override fun deleteReportControlCertificateAttachment(partnerId: Long, reportId: Long, fileId: Long, attachmentId: Long) {
-        val certificate = projectPartnerReportControlFilePersistence.getByReportIdAndId(reportId, fileId)
-        if (certificate.signedFile == null)
+
+        val report = reportPersistence.getPartnerReportById(partnerId = partnerId, reportId = reportId)
+        val certificateFile = projectPartnerReportControlFilePersistence.getByReportIdAndId(reportId, fileId)
+
+        if (certificateFile.signedFile == null)
             throw FileNotFound()
 
-        if (reportPersistence.getPartnerReportById(partnerId, reportId).status !== ReportStatus.InControl)
+        validateCertificateFileAttachment(certificateFile, report.lastControlReopening) { DeletionNotAllowed() }
+
+
+        if (report.status.controlNotFullyOpen())
             throw DeletionNotAllowed()
 
         projectPartnerReportControlFilePersistence.deleteCertificateAttachment(fileId)

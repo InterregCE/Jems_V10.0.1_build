@@ -58,7 +58,12 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
         typologyOfErrorId = 15L,
         verificationComment = "comment dummy",
         parked = false,
-        parkingMetadata = ExpenditureParkingMetadata(reportOfOriginId = 70L, reportOfOriginNumber = 5, originalExpenditureNumber = 3),
+        parkedOn = null,
+        parkingMetadata = ExpenditureParkingMetadata(
+            reportOfOriginId = 70L,
+            reportOfOriginNumber = 5,
+            originalExpenditureNumber = 3
+        ),
         partOfSampleLocked = false
     )
 
@@ -92,7 +97,12 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
         typologyOfErrorId = 1,
         verificationComment = "test",
         parked = false,
-        parkingMetadata = ExpenditureParkingMetadata(reportOfOriginId = 72L, reportOfOriginNumber = 4, originalExpenditureNumber = 3),
+        parkedOn = null,
+        parkingMetadata = ExpenditureParkingMetadata(
+            reportOfOriginId = 72L,
+            reportOfOriginNumber = 4,
+            originalExpenditureNumber = 3
+        ),
         partOfSampleLocked = false
     )
 
@@ -126,7 +136,12 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
         typologyOfErrorId = 15L,
         verificationComment = "comment dummy",
         parked = false,
-        parkingMetadata = ExpenditureParkingMetadataDTO(reportOfOriginId = 70L, reportOfOriginNumber = 5, originalExpenditureNumber = 3),
+        parkedOn = null,
+        parkingMetadata = ExpenditureParkingMetadataDTO(
+            reportOfOriginId = 70L,
+            reportOfOriginNumber = 5,
+            originalExpenditureNumber = 3
+        ),
         partOfSampleLocked = false
     )
 
@@ -160,7 +175,12 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
         typologyOfErrorId = 1,
         verificationComment = "test",
         parked = false,
-        parkingMetadata = ExpenditureParkingMetadataDTO(reportOfOriginId = 72L, reportOfOriginNumber = 4, originalExpenditureNumber = 3),
+        parkedOn = null,
+        parkingMetadata = ExpenditureParkingMetadataDTO(
+            reportOfOriginId = 72L,
+            reportOfOriginNumber = 4,
+            originalExpenditureNumber = 3
+        ),
         partOfSampleLocked = false
     )
 

@@ -6,13 +6,13 @@ import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChe
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerControlReportChecklist
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstanceValidator
+import io.cloudflight.jems.server.project.service.checklist.isChecklistCratedBeforeControlReopen
 import io.cloudflight.jems.server.project.service.checklist.isChecklistCreatedAfterControl
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstance
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
 import io.cloudflight.jems.server.project.service.checklist.projectControlReportChecklistStatusChanged
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
@@ -66,6 +66,10 @@ class UpdateControlChecklistInstance(
         if (report.status.controlNotStartedYet() || isChecklistCreatedAfterControl(existing, report.controlEnd)
             || statusNotChanged || isFinishedNotByAuthor)
             throw UpdateControlChecklistInstanceStatusNotAllowedException()
+
+        if(isChecklistCratedBeforeControlReopen(existing, report.lastControlReopening)) {
+            throw UpdateControlChecklistInstanceNotAllowedAfterReopenException()
+        }
 
         return persistence.changeStatus(checklistId, status).also {
             auditPublisher.publishEvent(

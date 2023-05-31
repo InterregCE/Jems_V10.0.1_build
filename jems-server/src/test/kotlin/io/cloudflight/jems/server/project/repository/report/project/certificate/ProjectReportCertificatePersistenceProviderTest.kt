@@ -52,6 +52,7 @@ class ProjectReportCertificatePersistenceProviderTest : UnitTest() {
                 identification = identification,
                 createdAt = createdAt,
                 projectReport = projectReport,
+                lastControlReopening = null
             )
         }
 

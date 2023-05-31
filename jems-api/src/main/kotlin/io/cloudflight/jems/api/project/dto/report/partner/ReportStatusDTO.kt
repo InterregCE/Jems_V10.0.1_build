@@ -9,4 +9,5 @@ enum class ReportStatusDTO {
     ReOpenInControlLast,
     ReOpenInControlLimited,
     Certified,
+    ReOpenCertified;
 }

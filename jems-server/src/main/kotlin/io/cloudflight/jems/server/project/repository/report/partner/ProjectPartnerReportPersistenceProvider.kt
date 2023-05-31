@@ -25,12 +25,14 @@ class ProjectPartnerReportPersistenceProvider(
         status: ReportStatus,
         firstSubmissionTime: ZonedDateTime?,
         lastReSubmissionTime: ZonedDateTime?,
+        lastControlReopening: ZonedDateTime?,
     ) =
         partnerReportRepository.findByIdAndPartnerId(id = reportId, partnerId = partnerId)
             .apply {
                 this.status = status
                 firstSubmission = firstSubmissionTime ?: this.firstSubmission
                 lastReSubmission = lastReSubmissionTime ?: this.lastReSubmission
+                this.lastControlReopening = lastControlReopening ?: this.lastControlReopening
             }.toSubmissionSummary()
 
     @Transactional

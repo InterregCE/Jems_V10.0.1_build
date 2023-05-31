@@ -27,3 +27,8 @@ class UserIsNotOwnerOfFile : ApplicationAuthenticationException(
     code = "$CONTROL_REPORT_FILE_AUTH_SERVICE_ERROR_CODE_PREFIX-004",
     i18nMessage = I18nMessage("$CONTROL_REPORT_FILE_AUTH_SERVICE_ERROR_KEY_PREFIX.user.is.not.owner"),
 )
+
+class ReportControlFileInControlReOpened : ApplicationUnprocessableException(
+    code = "$CONTROL_REPORT_FILE_AUTH_SERVICE_ERROR_CODE_PREFIX-005",
+    i18nMessage = I18nMessage("$CONTROL_REPORT_FILE_AUTH_SERVICE_ERROR_KEY_PREFIX.report.in.control.reopened"),
+)

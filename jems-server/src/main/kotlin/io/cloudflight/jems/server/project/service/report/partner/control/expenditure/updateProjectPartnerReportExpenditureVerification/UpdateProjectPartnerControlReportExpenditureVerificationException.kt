@@ -32,3 +32,10 @@ class InvalidParkedExpenditure(invalidIds: Set<Long>) : ApplicationUnprocessable
         "$UPDATE_PROJECT_PARTNER_CONTROL_REPORT_EV_ERROR_KEY_PREFIX.parked.expenditure.should.have.empty.inputs"
     ) }),
 )
+
+class UnParkNotAllowedForPreviouslyCertifiedExpendituresException : ApplicationUnprocessableException(
+    code = "$UPDATE_PROJECT_PARTNER_CONTROL_REPORT_EV_ERROR_CODE_PREFIX-003",
+    i18nMessage = I18nMessage(
+        i18nKey = "$UPDATE_PROJECT_PARTNER_CONTROL_REPORT_EV_ERROR_KEY_PREFIX.unpark.not.allowed"
+    )
+)

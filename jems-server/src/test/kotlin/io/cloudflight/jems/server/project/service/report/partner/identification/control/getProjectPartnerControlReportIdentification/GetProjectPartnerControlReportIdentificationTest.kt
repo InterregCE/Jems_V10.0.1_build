@@ -9,7 +9,6 @@ import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.contracting.monitoring.getProjectContractingMonitoring.GetContractingMonitoringService
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
-import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.PartnerReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
@@ -17,28 +16,29 @@ import io.cloudflight.jems.server.project.service.report.model.partner.identific
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportSpendingProfile
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ProjectPartnerControlReport
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportDesignatedController
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportFileFormat
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportLocationOnTheSpotVerification
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportMethodology
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportOnTheSpotVerification
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportType
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportVerification
-import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportDesignatedController
-import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportIdentificationPersistence
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportDesignatedControllerPersistence
+import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportIdentificationPersistence
 import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportVerificationPersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.assertThrows
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.EnumSource
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
 import java.util.Optional.of
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 
 internal class GetProjectPartnerControlReportIdentificationTest : UnitTest() {
 
@@ -57,6 +57,8 @@ internal class GetProjectPartnerControlReportIdentificationTest : UnitTest() {
             version = "1.0",
             firstSubmission = YEARS_AGO_10,
             lastResubmission = YEARS_AGO_1,
+            lastControlReopening = null,
+            projectReportId = null,
             identification = PartnerReportIdentification(
                 projectIdentifier = "projectIdentifier",
                 projectAcronym = "projectAcronym",
@@ -190,7 +192,7 @@ internal class GetProjectPartnerControlReportIdentificationTest : UnitTest() {
 
     @ParameterizedTest(name = "getControlIdentification - wrong status (status {0})")
     @EnumSource(value = ReportStatus::class, mode = EnumSource.Mode.EXCLUDE,
-        names = ["InControl", "ReOpenInControlLast", "ReOpenInControlLimited", "Certified"])
+        names = ["InControl", "ReOpenInControlLast", "ReOpenInControlLimited", "Certified", "ReOpenCertified"])
     fun `getControlIdentification - wrong status`(status: ReportStatus) {
         val reportId = 15L + status.ordinal
         every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = reportId) } returns report(status)

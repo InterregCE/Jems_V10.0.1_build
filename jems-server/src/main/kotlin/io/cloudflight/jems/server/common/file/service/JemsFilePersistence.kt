@@ -2,7 +2,6 @@ package io.cloudflight.jems.server.common.file.service
 
 import io.cloudflight.jems.server.common.file.service.model.JemsFile
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
-import io.cloudflight.jems.server.common.file.service.model.UserSimple
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import java.io.InputStream
@@ -40,7 +39,7 @@ interface JemsFilePersistence {
         filterUserIds: Set<Long>,
     ): Page<JemsFile>
 
-    fun getFileAuthor(partnerId: Long, pathPrefix: String, fileId: Long): UserSimple?
+    fun getFile(partnerId: Long, pathPrefix: String, fileId: Long): JemsFile?
 
     fun downloadFile(partnerId: Long, fileId: Long): Pair<String, ByteArray>?
 

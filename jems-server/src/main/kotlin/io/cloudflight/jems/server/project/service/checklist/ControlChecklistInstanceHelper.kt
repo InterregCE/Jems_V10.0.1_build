@@ -12,3 +12,10 @@ fun isChecklistCreatedAfterControl(
     }
     return existing.createdAt < reportControlEndDate
 }
+
+fun isChecklistCratedBeforeControlReopen(existing: ChecklistInstanceDetail, lastControlReopening: ZonedDateTime?) =
+    if (lastControlReopening == null) {
+        false
+    } else {
+        existing.createdAt?.isBefore(lastControlReopening) == true
+    }
