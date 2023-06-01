@@ -844,14 +844,14 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
     }
 
     @Test
-    fun getAllPartnerReportIdsByProjectId() {
-        val streamData = Stream.of(
+    fun getAllPartnerReportsBaseDataByProjectId() {
+        val sequence = sequenceOf(
             ProjectPartnerReportBaseData(80L, 75L, "v1.0", 1),
             ProjectPartnerReportBaseData(81L, 75L, "v1.0", 2),
             ProjectPartnerReportBaseData(82L, 76L, "v1.0", 1),
         )
-        every { reportPersistence.getAllPartnerReportIdsByProjectId(projectId = PROJECT_ID) } returns streamData
-        assertThat(dataProvider.getAllPartnerReportIdsByProjectId(PROJECT_ID)).isEqualTo(streamData)
+        every { reportPersistence.getAllPartnerReportsBaseDataByProjectId(projectId = PROJECT_ID) } returns sequence
+        assertThat(dataProvider.getAllPartnerReportsBaseDataByProjectId(PROJECT_ID)).isEqualTo(sequence)
     }
 
     @Test

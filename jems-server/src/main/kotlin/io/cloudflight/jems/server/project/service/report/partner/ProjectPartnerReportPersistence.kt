@@ -35,7 +35,7 @@ interface ProjectPartnerReportPersistence {
 
     fun listPartnerReports(partnerId: Long, pageable: Pageable): Page<ProjectPartnerReportSummary>
 
-    fun getAllPartnerReportIdsByProjectId(projectId: Long): Stream<ProjectPartnerReportBaseData>
+    fun getAllPartnerReportsBaseDataByProjectId(projectId: Long): Sequence<ProjectPartnerReportBaseData>
 
     fun listCertificates(partnerIds: Set<Long>, pageable: Pageable): Page<PartnerReportCertificate>
 

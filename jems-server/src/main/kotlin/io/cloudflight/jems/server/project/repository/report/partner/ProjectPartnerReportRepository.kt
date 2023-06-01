@@ -69,7 +69,7 @@ interface ProjectPartnerReportRepository : JpaRepository<ProjectPartnerReportEnt
         ORDER BY projectPartner.project.id ASC, projectPartner.sortNumber ASC, report.number ASC
     """
     )
-    fun findAllPartnerReportIdsByProjectId(projectId: Long): Stream<ProjectPartnerReportBaseData>
+    fun findAllPartnerReportsBaseDataByProjectId(projectId: Long): Stream<ProjectPartnerReportBaseData>
 
     @Query("""
          SELECT

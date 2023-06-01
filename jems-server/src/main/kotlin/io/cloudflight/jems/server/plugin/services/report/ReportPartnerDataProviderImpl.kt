@@ -55,8 +55,8 @@ class ReportPartnerDataProviderImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun getAllPartnerReportIdsByProjectId(projectId: Long): Stream<ProjectPartnerReportBaseData> {
-        return reportPersistence.getAllPartnerReportIdsByProjectId(projectId)
+    override fun getAllPartnerReportsBaseDataByProjectId(projectId: Long): Sequence<ProjectPartnerReportBaseData> {
+        return reportPersistence.getAllPartnerReportsBaseDataByProjectId(projectId)
     }
 
     @Transactional(readOnly = true)
