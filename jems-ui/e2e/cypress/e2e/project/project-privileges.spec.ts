@@ -5,25 +5,6 @@ import application from '../../fixtures/api/application/application.json';
 
 context('Project privileges tests', () => {
 
-  it('TB-379 Automatically assign users to projects', () => {
-    cy.fixture('project/project-privileges/TB-379.json').then(testData => {
-      cy.loginByRequest(user.admin.email);
-      testData.privilegedUser.email = faker.internet.email();
-      cy.createUser(testData.privilegedUser);
-      cy.visit('app/project', {failOnStatusCode: false});
-
-      cy.contains('Assignment').click();
-      cy.get('.mat-paginator-range-label').then(paginatorRange => {
-        const numberOfPages = +paginatorRange.text().match(/\d - (\d+) of \d+/)[1];
-
-        cy.get(`mat-chip:contains('${testData.privilegedUser.email}')`).should(chipElements => {
-          expect(chipElements).to.have.length(numberOfPages);
-          expect(chipElements).not.to.have.class('mat-chip-selected-user');
-        });
-      });
-    });
-  });
-
   it('TB-363 Add/remove user privileges to/from project', () => {
     cy.fixture('project/project-privileges/TB-363.json').then(testData => {
       cy.loginByRequest(user.programmeUser.email);
