@@ -25,7 +25,7 @@ class UpdateCall(
     @ExceptionWrapper(UpdateCallException::class)
     override fun updateCall(call: Call): CallDetail {
         callValidator.validateCommonCall(call = call)
-        validateUniqueName(callId = call.id, callIdWithThisName = persistence.getCallIdForNameIfExists(call.name))
+        validateUniqueName(callId = call.id, callIdWithThisName = persistence.getCallIdForNameIfExists(call.name), call.name)
 
         val existingCall = persistence.getCallById(callId = call.id)
         validateCorrectStatus(call = call, oldCall = existingCall)
@@ -39,9 +39,9 @@ class UpdateCall(
         }
     }
 
-    private fun validateUniqueName(callId: Long, callIdWithThisName: Long?) {
+    private fun validateUniqueName(callId: Long, callIdWithThisName: Long?, checkedCallName: String) {
         if (callIdWithThisName != null && callIdWithThisName != callId)
-            throw CallNameNotUnique()
+            throw CallNameNotUnique(checkedCallName)
     }
 
     private fun validateCorrectStatus(call: Call, oldCall: CallDetail) {

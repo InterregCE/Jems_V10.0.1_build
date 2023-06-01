@@ -27,7 +27,7 @@ class CreateCall(
     @ExceptionWrapper(CreateCallException::class)
     override fun createCallInDraft(call: Call): CallDetail {
         callValidator.validateCommonCall(call = call)
-        validateUniqueName(callIdWithThisName = persistence.getCallIdForNameIfExists(call.name))
+        validateUniqueName(callIdWithThisName = persistence.getCallIdForNameIfExists(call.name), call.name)
         validateCorrectStatus(call = call)
 
         return persistence.createCall(
@@ -40,9 +40,9 @@ class CreateCall(
         }
     }
 
-    private fun validateUniqueName(callIdWithThisName: Long?) {
+    private fun validateUniqueName(callIdWithThisName: Long?, checkedCallName: String) {
         if (callIdWithThisName != null)
-            throw CallNameNotUnique()
+            throw CallNameNotUnique(checkedCallName)
     }
 
     private fun validateCorrectStatus(call: Call) {
