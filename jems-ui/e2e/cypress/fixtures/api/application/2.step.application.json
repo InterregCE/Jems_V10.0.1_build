@@ -600,49 +600,52 @@
               }
             ]
           }
-        },
-        "associatedOrganization": {
-          "nameInOriginalLanguage": "API generated associated organisation",
-          "nameInEnglish": "API generated associated organisation name in english",
-          "address": {
-            "country": "Egypt (EG)",
-            "countryCode": "EG",
-            "nutsRegion2": "Alexandria (EG01)",
-            "nutsRegion2Code": "EG01",
-            "nutsRegion3": "Alexandria (EG010)",
-            "nutsRegion3Code": "EG010",
-            "street": "Egyptstreet",
-            "houseNumber": "13",
-            "postalCode": "109099",
-            "city": "Cairo"
-          },
-          "contacts": [
-            {
-              "type": "LegalRepresentative",
-              "title": "Mr",
-              "firstName": "Legal",
-              "lastName": "Representative"
-            },
-            {
-              "type": "ContactPerson",
-              "title": "Ms",
-              "firstName": "Contact",
-              "lastName": "Persona",
-              "email": "contact@jems.eu",
-              "telephone": "+1234567890"
-            }
-          ],
-          "roleDescription": [
-            {
-              "translation": "API generated associated organisation role DE",
-              "language": "DE"
-            },
-            {
-              "translation": "API generated associated organisation role EN",
-              "language": "EN"
-            }
-          ]
         }
+      }
+    ],
+    "associatedOrganisations": [
+      {
+        "cypressReference": "Lead Partner v1",
+        "nameInOriginalLanguage": "API generated associated organisation",
+        "nameInEnglish": "API generated associated organisation name in english",
+        "address": {
+          "country": "Egypt (EG)",
+          "countryCode": "EG",
+          "nutsRegion2": "Alexandria (EG01)",
+          "nutsRegion2Code": "EG01",
+          "nutsRegion3": "Alexandria (EG010)",
+          "nutsRegion3Code": "EG010",
+          "street": "Egyptstreet",
+          "houseNumber": "13",
+          "postalCode": "109099",
+          "city": "Cairo"
+        },
+        "contacts": [
+          {
+            "type": "LegalRepresentative",
+            "title": "Mr",
+            "firstName": "Legal",
+            "lastName": "Representative"
+          },
+          {
+            "type": "ContactPerson",
+            "title": "Ms",
+            "firstName": "Contact",
+            "lastName": "Persona",
+            "email": "contact@jems.eu",
+            "telephone": "+1234567890"
+          }
+        ],
+        "roleDescription": [
+          {
+            "translation": "API generated associated organisation role DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated associated organisation role EN",
+            "language": "EN"
+          }
+        ]
       }
     ],
     "description": {

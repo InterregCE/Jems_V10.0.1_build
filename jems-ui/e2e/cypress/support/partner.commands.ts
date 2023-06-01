@@ -95,8 +95,12 @@ Cypress.Commands.add('deactivatePartner', (partnerId: number) => {
   });
 });
 
-Cypress.Commands.add('createAssociatedOrganization', (applicationId: number, partnerId: number, associatedOrganization) => {
-  createAssociatedOrganization(applicationId, partnerId, associatedOrganization);
+Cypress.Commands.add('createAssociatedOrganisation', (applicationId: number, associatedOrganisation) => {
+  createAssociatedOrganisation(applicationId, associatedOrganisation);
+});
+
+Cypress.Commands.add('createAssociatedOrganisations', (applicationId: number, associatedOrganisations: any[]) => {
+  createAssociatedOrganisations(applicationId, associatedOrganisations);
 });
 
 export function createPartner(applicationId: number, partnerDetails) {
@@ -276,12 +280,25 @@ function updateStateAid(partnerId, stateAid) {
   });
 }
 
-function createAssociatedOrganization(applicationId: number, partnerId: number, associatedOrganization) {
-  associatedOrganization.partnerId = partnerId
-  cy.request({
-    method: 'POST',
-    url: `api/project/${applicationId}/organization`,
-    body: associatedOrganization
+export function createAssociatedOrganisations(applicationId, associatedOrganisations) {
+  if (associatedOrganisations) {
+    associatedOrganisations.forEach(associatedOrganisation => {
+      createAssociatedOrganisation(applicationId, associatedOrganisation);
+    });
+  }
+}
+
+function createAssociatedOrganisation(applicationId, associatedOrganisation) {
+  // get/set partnerId based on the provided reference
+  cy.then(function () {
+    associatedOrganisation.partnerId = this[associatedOrganisation.cypressReference];
+    cy.request({
+      method: 'POST',
+      url: `api/project/${applicationId}/organization`,
+      body: associatedOrganisation
+    }).then(response => {
+      cy.wrap(response.body.id).as('associatedOrganisation');
+    });
   });
 }
 

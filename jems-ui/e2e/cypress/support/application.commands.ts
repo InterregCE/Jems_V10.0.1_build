@@ -1,5 +1,5 @@
 import {faker} from '@faker-js/faker';
-import {createPartners, updatePartnerData} from './partner.commands';
+import {createPartners, updatePartnerData, createAssociatedOrganisations} from './partner.commands';
 import {loginByRequest} from './login.commands';
 
 declare global {
@@ -299,14 +299,6 @@ Cypress.Commands.add('createProjectProposedUnitCosts', (applicationId: number, u
   });
 });
 
-Cypress.Commands.add('createAssociatedOrganisation', (applicationId: number, associatedOrganisation) => {
-  createAssociatedOrganisation(applicationId, associatedOrganisation);
-});
-
-Cypress.Commands.add('createAssociatedOrganisations', (applicationId: number, associatedOrganisations: any[]) => {
-  createAssociatedOrganisations(applicationId, associatedOrganisations);
-});
-
 Cypress.Commands.add('getProgrammeUnitCostsEnabledInCall', (callId: number) => {
   cy.request({
     method: 'GET',
@@ -567,28 +559,6 @@ function createProjectProposedUnitCost(applicationId, projectProposedUnitCost) {
 function createProjectProposedUnitCosts(applicationId: number, projectProposedUnitCosts: any[]) {
   projectProposedUnitCosts.forEach((projectProposedUnitCost: any) => {
     createProjectProposedUnitCost(applicationId, projectProposedUnitCost);
-  });
-}
-
-function createAssociatedOrganisations(applicationId, associatedOrganisations) {
-  if (associatedOrganisations) {
-    associatedOrganisations.forEach(associatedOrganisation => {
-      createAssociatedOrganisation(applicationId, associatedOrganisation);
-    });
-  }
-}
-
-function createAssociatedOrganisation(applicationId, associatedOrganisation) {
-  // get/set partnerId based on the provided reference
-  cy.then(function () {
-    associatedOrganisation.partnerId = this[associatedOrganisation.cypressReference];
-    cy.request({
-      method: 'POST',
-      url: `api/project/${applicationId}/organization`,
-      body: associatedOrganisation
-    }).then(response => {
-      cy.wrap(response.body.id).as('associatedOrganisation');
-    });
   });
 }
 
