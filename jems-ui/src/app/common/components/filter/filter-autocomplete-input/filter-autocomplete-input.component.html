@@ -1,6 +1,6 @@
 <mat-form-field *ngIf="!hasPartialLockingOfValues" [jemsFormFieldWidth]=formFieldWidth appearance="fill">
     <mat-label>{{label | translate}}</mat-label>
-    <mat-chip-list #filterChip [disabled]="isDisabled">
+    <mat-chip-list #filterChip [disabled]="isDisabled" aria-label="filter values">
         <mat-chip class="chip-option" *ngFor="let value of values"
                   [removable]="!isDisabled"
                   [selectable]="false">
@@ -13,7 +13,8 @@
                [matAutocomplete]="auto"
                [matChipInputFor]="filterChip"
                [placeholder]="placeholder | translate"
-               matInput>
+               matInput
+               aria-label="filter input">
         <jems-context-info *ngIf="infoContent.length > 0" infoText="{{infoContent}}" infoPosition="right">
         </jems-context-info>
         <mat-autocomplete #auto="matAutocomplete"
@@ -29,7 +30,7 @@
 
 <mat-form-field *ngIf="hasPartialLockingOfValues" [jemsFormFieldWidth]=formFieldWidth appearance="fill">
     <mat-label>{{label | translate}}</mat-label>
-    <mat-chip-list #filterChipWithPartiallyLockedData [disabled]="isDisabled">
+    <mat-chip-list #filterChipWithPartiallyLockedData [disabled]="isDisabled" aria-label="filter values">
         <mat-chip class="chip-option" *ngFor="let value of values"
                   [removable]="!isDisabled && value.canBeDeleted"
                   [selectable]="false">
@@ -42,7 +43,8 @@
                [matAutocomplete]="autoWithPartiallyLockedData"
                [matChipInputFor]="filterChipWithPartiallyLockedData"
                [placeholder]="placeholder | translate"
-               matInput>
+               matInput
+               aria-label="filter input">
         <jems-context-info *ngIf="infoContent.length > 0" infoText="{{infoContent}}" infoPosition="right">
         </jems-context-info>
         <mat-autocomplete #autoWithPartiallyLockedData="matAutocomplete"

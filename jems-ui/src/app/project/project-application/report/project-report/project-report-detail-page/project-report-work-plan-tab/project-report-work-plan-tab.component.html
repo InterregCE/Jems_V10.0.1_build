@@ -23,7 +23,7 @@
                             <span class="centered-header" [innerText]="('project.application.form.workpackage.form.header' | translate) + ' ' + workPackage.get(constants.WORK_PACKAGE_NUMBER.name)?.value"></span>
                         </mat-panel-title>
                         <mat-panel-description class="centered-header" *ngIf="workPackage.get(constants.WORK_PACKAGE_COMPLETED.name)?.value">
-                            <mat-chip-list>
+                            <mat-chip-list aria-label="status">
                                 <mat-chip *ngIf="workPackage.get(constants.WORK_PLAN_STATUS_LABEL.name)?.value === WorkPlanStatusLabelEnum.Green" class="green-bg status-chip" [removable]="false" [selectable]="false" >
                                     <span>{{'project.application.project.report.tab.work.plan.work.package.completed.in.this.report' | translate}}</span>
                                 </mat-chip>
@@ -50,7 +50,7 @@
                                 <mat-icon class="mr-2 green-icon">check_circle_outline</mat-icon>
                             </span>
                             <span class="objective-header">{{ 'project.application.project.report.tab.work.plan.work.package.project.objective' | translate }}</span>
-                            <mat-chip-list *ngIf="workPackage.get(constants.WORK_PACKAGE_SPECIFIC_STATUS.name)?.value === SpecificStatusEnum.Fully">
+                            <mat-chip-list *ngIf="workPackage.get(constants.WORK_PACKAGE_SPECIFIC_STATUS.name)?.value === SpecificStatusEnum.Fully" aria-label="status">
                                 <mat-chip *ngIf="workPackage.get(constants.WORK_PACKAGE_SPECIFIC_STATUS_LABEL.name)?.value === SpecificStatusLabelEnum.Green" class="ml-4 green-bg status-chip" [removable]="false" [selectable]="false" >
                                     <span>{{'project.application.project.report.tab.work.plan.work.package.completed.in.this.report' | translate}}</span>
                                 </mat-chip>
@@ -95,7 +95,7 @@
                             </span>
                         <span class="objective-header">{{ 'project.application.project.report.tab.work.plan.work.package.communication.objective' | translate }}</span>
 
-                        <mat-chip-list *ngIf="workPackage.get(constants.WORK_PACKAGE_COMMUNICATION_STATUS.name)?.value === CommunicationStatusEnum.Fully">
+                        <mat-chip-list *ngIf="workPackage.get(constants.WORK_PACKAGE_COMMUNICATION_STATUS.name)?.value === CommunicationStatusEnum.Fully" aria-label="status">
                             <mat-chip *ngIf="workPackage.get(constants.WORK_PACKAGE_COMMUNICATION_STATUS_LABEL.name)?.value === CommunicationStatusLabelEnum.Green" class="ml-4 green-bg status-chip" [removable]="false" [selectable]="false" >
                                 <span>{{'project.application.project.report.tab.work.plan.work.package.completed.in.this.report' | translate}}</span>
                             </mat-chip>
@@ -234,7 +234,7 @@
                                               [innerText]="activity.get(constants.ACTIVITY_TITLE.name)?.value | translateByInputLanguage | async"></span>
                                     </mat-panel-title>
                                         <mat-panel-description class="centered-header" *ngIf="activity.get(constants.ACTIVITY_STATUS.name)?.value === ActivityStatusEnum.Fully">
-                                        <mat-chip-list *ngIf="activity.get(constants.ACTIVITY_STATUS.name)?.value === ActivityStatusEnum.Fully">
+                                        <mat-chip-list *ngIf="activity.get(constants.ACTIVITY_STATUS.name)?.value === ActivityStatusEnum.Fully" aria-label="status">
                                             <mat-chip *ngIf="activity.get(constants.ACTIVITY_STATUS_LABEL.name)?.value === ActivityStatusLabelEnum.Green" class="ml-4 green-bg status-chip" [removable]="false" [selectable]="false" >
                                                 <span>{{'project.application.project.report.tab.work.plan.work.package.completed.in.this.report' | translate}}</span>
                                             </mat-chip>

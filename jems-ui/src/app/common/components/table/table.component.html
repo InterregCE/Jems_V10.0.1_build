@@ -8,10 +8,9 @@
         (pageSizeChanged)="currentPageSize = $event;newPageSize.emit($event)">
 </jems-paginator>
 
-<div id="table-wrapper">
+<div class="table-wrapper">
     <table matSort
            mat-table
-           id="table"
            [dataSource]="rows"
            (matSortChange)="sortRows.emit($event)"
            [class.multi-languages-table]="isMultiLanguage"

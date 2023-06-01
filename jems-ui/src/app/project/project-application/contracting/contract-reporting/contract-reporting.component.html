@@ -158,7 +158,8 @@
                                     type="button"
                                     [disabled] = "i >= data.reportingDeadlines.length || control.get('deadlineLinkedDraftProjectReportNumbers').value?.length > 0 || control.get('deadlineLinkedSubmittedProjectReportNumbers').value?.length > 0"
                                     (click)="$event.stopPropagation(); delete(i)"
-                                    matTooltip="{{'project.application.contract.reporting.action.delete.tooltip' | translate}}">
+                                    matTooltip="{{'project.application.contract.reporting.action.delete.tooltip' | translate}}"
+                                    aria-label="delete">
                                 <mat-icon>delete</mat-icon>
                             </button>
                         </div>
@@ -178,7 +179,8 @@
             <button *ngIf="tableData.length < 50 && data.canEdit && !data.isSectionLocked"
                     mat-stroked-button type="button" class="mt-2 mb-2"
                     (click)="addDeadlineData()"
-                    [disabled]="!data.projectStartDate">
+                    [disabled]="!data.projectStartDate"
+                    aria-label="add">
                 <mat-icon>add</mat-icon>
                 <span>{{'project.application.contract.reporting.button.add.deadline' | translate}}</span>
             </button>

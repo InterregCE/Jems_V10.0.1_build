@@ -2,7 +2,7 @@
     <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle>
         <ul>
             <li class="mat-tree-node">
-                <button mat-icon-button disabled></button>
+                <button mat-icon-button disabled aria-label="tree node toggle"></button>
                 <mat-checkbox
                         [(ngModel)]="node.checked"
                         [disabled]="disabled || (isLocked && node.initiallyChecked)"

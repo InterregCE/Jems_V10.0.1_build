@@ -10,7 +10,7 @@
 </jems-table>
 
 <ng-template #statusCell let-associatedOrganization>
-    <mat-chip-list>
+    <mat-chip-list aria-label="status">
         <mat-chip  [removable]="false" [selectable]="false">
             <ng-container *ngIf="associatedOrganization.active">
                 <mat-icon>person</mat-icon>
@@ -28,7 +28,8 @@
 <ng-template #deletionCellAssociatedOrganization let-associatedOrganization>
     <button *ngIf="editable" mat-icon-button color="accent"
             (click)="delete(associatedOrganization);$event.stopPropagation();"
-            matTooltip="{{'project.application.form.associatedOrganization.table.action.delete.tooltip' | translate}}">
+            matTooltip="{{'project.application.form.associatedOrganization.table.action.delete.tooltip' | translate}}"
+            aria-label="delete">
         <mat-icon>delete</mat-icon>
     </button>
 </ng-template>

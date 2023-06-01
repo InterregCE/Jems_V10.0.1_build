@@ -1,4 +1,4 @@
-<mat-chip-list>
+<mat-chip-list aria-label="status">
     <ng-container *ngFor="let currentChip of (longVersion ? statusesOrdered : [status]); let first = first">
         <mat-icon *ngIf="!first">trending_flat</mat-icon>
         <mat-chip [ngClass]="isEnabled(currentChip) ? ('status-' + currentChip) : 'status-Disabled'">

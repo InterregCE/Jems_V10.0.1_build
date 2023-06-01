@@ -16,12 +16,14 @@
                             </h4>
 
                             <button *ngIf="form.enabled && data.isAlreadyContracted" [disabled]="result.get('deactivated').value" type="button"
-                                    matTooltip="{{ 'project.results.deactivate.tooltip' | translate}}" (click)="deactivateResult(i)" mat-icon-button color="accent">
+                                    matTooltip="{{ 'project.results.deactivate.tooltip' | translate}}" (click)="deactivateResult(i)" mat-icon-button color="accent"
+                                    aria-label="deactivate">
                                 <mat-icon *ngIf="result.get('deactivated').value">delete_forever</mat-icon>
                                 <mat-icon *ngIf="!result.get('deactivated').value">do_not_disturb</mat-icon>
                             </button>
 
-                            <button *ngIf="form.enabled && !data.isAlreadyContracted" type="button" (click)="removeResult(i)" mat-icon-button color="accent">
+                            <button *ngIf="form.enabled && !data.isAlreadyContracted" type="button" (click)="removeResult(i)" mat-icon-button color="accent"
+                                    aria-label="delete">
                                 <mat-icon>delete</mat-icon>
                             </button>
                         </div>

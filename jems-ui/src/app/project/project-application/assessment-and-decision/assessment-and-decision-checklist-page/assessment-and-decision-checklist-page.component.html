@@ -23,7 +23,7 @@
 
         <div id="status" class="mb-3">
             {{'common.status' | translate}}:
-            <mat-chip-list class="mr-1 ml-1">
+            <mat-chip-list class="mr-1 ml-1" aria-label="status">
                 <mat-chip selected="true"
                           [class.draft]="data.checklist.status === Status.DRAFT"
                           [class.finished]="data.checklist.status === Status.FINISHED">

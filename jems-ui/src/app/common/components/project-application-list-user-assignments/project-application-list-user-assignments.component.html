@@ -58,7 +58,7 @@
     <mat-form-field appearance="fill" class="w-100 pt-2">
         <mat-label>{{ 'project.table.column.name.users' | translate }}</mat-label>
 
-        <mat-chip-list #chipList [disabled]="false" class="mt-2 mb-2">
+        <mat-chip-list #chipList [disabled]="false" class="mt-2 mb-2" aria-label="assigned users">
             <ng-container *ngFor="let userId of users(project.index).value;let userIndex = index">
                 <mat-chip *ngIf="getUserByIdFromAvailable(userId, project.availableUsers, project.users) as user"
                           color="primary" selected class="mat-chip-selected-user"
@@ -74,7 +74,8 @@
             <input #filterUsers
                    [matAutocomplete]="auto"
                    [matChipInputFor]="chipList"
-                   [matChipInputSeparatorKeyCodes]="separatorKeysCodes">
+                   [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                   aria-label="user to assign">
             <mat-autocomplete #auto="matAutocomplete"
                               (optionSelected)="addUser(project.index, $event.option.value); filterUsers.value = ''; filterUsers.blur()">
                 <mat-option class="mat-option-list-entry"
@@ -93,7 +94,8 @@
 <ng-template #callActionsCell let-project>
     <button mat-icon-button color="primary"
             matTooltip="{{'project.table.column.action.clear.tooltip' | translate}}"
-            (click)="clearUserProjectAssignments(project.index)">
+            (click)="clearUserProjectAssignments(project.index)"
+            aria-label="clear">
         <mat-icon>highlight_off</mat-icon>
     </button>
 </ng-template>

@@ -25,15 +25,15 @@
             <ul class="navbar-navigation-items main-navigation-items" *ngIf="currentUser && isAuthenticated">
                 <ng-container>
                     <li class="nav-item show-pointer" *ngFor="let item of menuItems$ | async"
-                        (click)="isNavBarCollapsed = true; router.navigate([item.route], {queryParams: {version: null}, queryParamsHandling: 'merge'})"
                         [ngClass]="{
                              'active-not-collapsed': router.url.startsWith(item.route) && !isNavBarCollapsed,
                              'active-collapsed': router.url.startsWith(item.route) && isNavBarCollapsed
                            }">
-                        <a class="nav-link">
+                        <button class="nav-link"
+                            (click)="isNavBarCollapsed = true; router.navigate([item.route], {queryParams: {version: null}, queryParamsHandling: 'merge'})">
                             <mat-icon  *ngIf="item.icon">{{item.icon}}</mat-icon>
                             <span class="nav-text" jemsText maxLines="2">{{item.name | translate}}</span>
-                        </a>
+                        </button>
                     </li>
                 </ng-container>
             </ul>
@@ -68,7 +68,7 @@
                 <li class="nav-item"
                     *ngIf="isAuthenticated && (editUserItem$ | async) as item"
                     [ngClass]="{'mt-2': !isNavBarCollapsed}">
-                    <button mat-icon-button class="matmenu-trigger" aria-label="user button" [matMenuTriggerFor]="menu">
+                    <button mat-icon-button class="matmenu-trigger" aria-label="user button" [matMenuTriggerFor]="menu" aria-label="menu">
                         <mat-icon  *ngIf="item.icon">{{item.icon}}</mat-icon>
                     </button>
                     <mat-menu #menu="matMenu" >

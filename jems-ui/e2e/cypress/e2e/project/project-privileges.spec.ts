@@ -108,7 +108,7 @@ context('Project privileges tests', () => {
         // Testing the view privileges
         cy.loginByRequest(testData.applicantView.email);
         cy.visit('/');
-        cy.get('#table:first').contains('div', applicationId).should('be.visible');
+        cy.get('mat-table:first').contains('div', applicationId).should('be.visible');
         cy.visit(`/app/project/detail/${applicationId}/applicationFormIdentification`, {failOnStatusCode: false});
         cy.get("textarea:first").should('have.attr', 'readonly');
         cy.contains('Project privileges').click();
@@ -312,7 +312,7 @@ context('Project privileges tests', () => {
 
   function testEditPrivileges(applicationId) {
     cy.visit('/');
-    cy.get('#table:first').contains('div', applicationId).should('be.visible');
+    cy.get('mat-table:first').contains('div', applicationId).should('be.visible');
     cy.visit(`/app/project/detail/${applicationId}/applicationFormIdentification`, {failOnStatusCode: false});
     cy.get("textarea:first").should('not.have.attr', 'readonly');
     cy.visit(`/app/project/detail/${applicationId}/export`, {failOnStatusCode: false});

@@ -108,7 +108,8 @@
 
     <button *ngIf="editable"
             mat-stroked-button type="button" class="mb-2"
-            (click)="addDimensionCodeData()">
+            (click)="addDimensionCodeData()"
+            aria-label="add">
         <mat-icon>add</mat-icon>
         <span>&nbsp;{{'project.application.contract.monitoring.project.intervention.code.add' | translate}}</span>
     </button>

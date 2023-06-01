@@ -34,7 +34,8 @@
                         </div>
 
                         <div>
-                            <button *ngIf="editable" type="button" (click)="deleteEntry(i)" mat-icon-button color="accent">
+                            <button *ngIf="editable" type="button" (click)="deleteEntry(i)" mat-icon-button color="accent"
+                                    aria-label="delete">
                                 <mat-icon>delete</mat-icon>
                             </button>
                         </div>
@@ -44,7 +45,8 @@
         </div>
     </jems-multi-language-container>
     <button jemsText *ngIf="editable && strategiesForm.controls?.length < 20" mat-stroked-button type="button"
-            (click)="addNewStrategy()">
+            (click)="addNewStrategy()"
+            aria-label="add">
         <mat-icon>add</mat-icon>
     </button>
 </div>

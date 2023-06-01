@@ -5,7 +5,8 @@
     <a *ngIf="data.isReportEditable" [disabled]="data.limitReached" class="mt-3"
        mat-raised-button color="primary"
        matTooltip="{{ data.limitReached ? ('project.application.partner.report.procurements.maximum.reached' | translate) : null }}"
-       [routerLink]="data.limitReached ? [] : [0]" [class.move-link-into-paginator]="data.procurements.totalElements">
+       [routerLink]="data.limitReached ? [] : [0]" [class.move-link-into-paginator]="data.procurements.totalElements"
+       aria-label="add">
         <mat-icon>add</mat-icon>{{ 'project.application.partner.report.procurements.add' | translate }}
     </a>
 
@@ -121,7 +122,8 @@
             </mat-header-cell>
             <mat-cell *matCellDef="let procurement" class="border-cell-left text-center">
                 <button *ngIf="procurement.createdInThisReport" (click)="deleteProcurement(procurement);$event.stopPropagation();"
-                        color="accent" mat-icon-button [disabled]="data.isReportReopenedLimited" >
+                        color="accent" mat-icon-button [disabled]="data.isReportReopenedLimited"
+                        aria-label="delete">
                     <mat-icon>delete</mat-icon>
                 </button>
             </mat-cell>

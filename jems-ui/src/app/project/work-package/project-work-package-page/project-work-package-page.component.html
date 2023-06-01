@@ -30,13 +30,15 @@
 
     <button *ngIf="(projectEditable$ | async) && (isAlreadyContracted$ | async) === false" mat-icon-button color="accent"
             (click)="$event.stopPropagation(); delete(workPackage, workPackageName.value)"
-            matTooltip="{{'project.application.form.workpackage.table.action.delete.tooltip' | translate}}">
+            matTooltip="{{'project.application.form.workpackage.table.action.delete.tooltip' | translate}}"
+            aria-label="delete">
         <mat-icon>delete</mat-icon>
     </button>
 
     <button *ngIf="(projectEditable$ | async) && (isAlreadyContracted$ | async)" mat-icon-button color="accent"
             (click)="$event.stopPropagation(); deactivate(workPackage, workPackageName.value)" [disabled]="workPackage.deactivated"
-            matTooltip="{{'project.application.form.workpackage.table.action.deactivate.tooltip' | translate}}">
+            matTooltip="{{'project.application.form.workpackage.table.action.deactivate.tooltip' | translate}}"
+            aria-label="deactivate">
         <mat-icon>do_not_disturb</mat-icon>
     </button>
 </ng-template>

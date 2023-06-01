@@ -64,7 +64,8 @@
                               class="mr-1 text-left fill-space-left-to-button" [matTooltip]="file.description">{{ file.description }}</span>
                         <button (click)="editDescription(file)" *ngIf="file.editable"
                                 [disabled]="descriptionForm.value.id && descriptionForm.value.id !== file.parentEntityId"
-                                color="primary" mat-icon-button matTooltip="{{ 'file.table.action.description.tooltip' | translate }}" class="my-fab">
+                                color="primary" mat-icon-button matTooltip="{{ 'file.table.action.description.tooltip' | translate }}" class="my-fab"
+                                aria-label="edit">
                             <mat-icon>edit</mat-icon>
                         </button>
                     </ng-container>
@@ -103,14 +104,16 @@
                     <button (click)="onDownload.emit(file)"
                             color="primary"
                             mat-icon-button
-                            matTooltip="{{'file.table.action.download.tooltip' | translate}}">
+                            matTooltip="{{'file.table.action.download.tooltip' | translate}}"
+                            aria-label="download">
                         <mat-icon fontSet="material-icons-outlined">file_download</mat-icon>
                     </button>
 
                     <span *ngIf="file.deletable || (file.tooltipIfNotDeletable !== '' && file.iconIfNotDeletable !== '')"
                           [matTooltip]="((file.deletable ? 'file.table.action.delete.tooltip' : file.tooltipIfNotDeletable) | translate)">
                         <button (click)="deleteFile(file)" [disabled]="!file.deletable || (deletingId$ | async) === file.id"
-                                color="accent" mat-icon-button>
+                                color="accent" mat-icon-button
+                                aria-label="delete">
                             <mat-icon [class.icon-hidden]="!file.deletable && !file.iconIfNotDeletable"
                                       *ngIf="(deletingId$ | async) !== file.id">
                                 {{ file.deletable ? 'delete' : file.iconIfNotDeletable }}

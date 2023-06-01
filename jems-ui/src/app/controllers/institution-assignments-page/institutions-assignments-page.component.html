@@ -56,7 +56,7 @@
 
 
 <ng-template #statusCell let-institutionAssignmentEntry>
-    <mat-chip-list>
+    <mat-chip-list aria-label="status">
         <mat-chip  [removable]="false" [selectable]="false">
             <ng-container *ngIf="institutionAssignmentEntry.partnerStatus">
                 <mat-icon>person</mat-icon>

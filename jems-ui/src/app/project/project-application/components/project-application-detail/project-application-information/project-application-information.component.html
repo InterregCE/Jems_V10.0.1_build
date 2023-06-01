@@ -1,6 +1,6 @@
 <div id="status" class="mb-3">
     {{'project.detail.table.status' | translate}}:
-    <mat-chip-list class="mr-1 ml-1">
+    <mat-chip-list class="mr-1 ml-1" aria-label="status">
         <mat-chip selected="true"
                   [class.draft]="hasDraftStatusColor()"
                   [class.submitted]="hasSubmittedStatusColor()"

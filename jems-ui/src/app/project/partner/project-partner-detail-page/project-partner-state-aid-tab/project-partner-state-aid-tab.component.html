@@ -116,7 +116,7 @@
 
         <mat-form-field *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.STATE_AID.RELEVANT_ACTIVITIES" class="example-chip-list" appearance="fill">
             <mat-label>{{ 'project.partner.state.aid.relevant.activities' | translate }}</mat-label>
-            <mat-chip-list #chipList [disabled]="!data.isEditable || data.activities.length === 0">
+            <mat-chip-list #chipList [disabled]="!data.isEditable || data.activities.length === 0" aria-label="list of activities">
                 <mat-chip
                         *ngFor="let activity of activities().value;let activityIndex = index"
                         [selectable]="false"
@@ -129,7 +129,8 @@
                         #filterActivities
                         [matAutocomplete]="auto"
                         [matChipInputFor]="chipList"
-                        [matChipInputSeparatorKeyCodes]="separatorKeysCodes">
+                        [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                        aria-label="activity to add">
             </mat-chip-list>
             <mat-autocomplete #auto="matAutocomplete"
                               (optionSelected)="addActivity($event.option.value); filterActivities.value = ''; filterActivities.blur()">

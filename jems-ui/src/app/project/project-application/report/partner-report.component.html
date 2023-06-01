@@ -189,7 +189,8 @@
                 <span matTooltip="{{ (report.deletable ? 'common.delete.entry.tooltip' : 'project.application.partner.report.deletion.not.possible.tooltip') | translate }}">
                     <button *ngIf="report.status === ProjectPartnerReportSummaryDTO.StatusEnum.Draft"
                             mat-icon-button color="accent" [disabled]="!report.deletable"
-                            (click)="delete(report);$event.stopPropagation();">
+                            (click)="delete(report);$event.stopPropagation();"
+                            aria-label="delete">
                         <mat-icon>delete</mat-icon>
                     </button>
                 </span>

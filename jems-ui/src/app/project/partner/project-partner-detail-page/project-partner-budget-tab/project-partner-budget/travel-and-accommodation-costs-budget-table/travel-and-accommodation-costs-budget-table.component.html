@@ -122,7 +122,8 @@
                                 <input [formControlName]="constants.FORM_CONTROL_NAMES.numberOfUnits"
                                        [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
                                        currencyMask matInput
-                                       type="decimal">
+                                       type="decimal"
+                                       aria-label="value">
                             </mat-form-field>
                         </mat-cell>
                         <mat-footer-cell *matFooterCellDef></mat-footer-cell>
@@ -142,7 +143,8 @@
                                         <input [formControlName]="constants.FORM_CONTROL_NAMES.pricePerUnit"
                                                [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
                                                currencyMask matInput
-                                               type="decimal">
+                                               type="decimal"
+                                               aria-label="value">
                                     </mat-form-field>
                                 </ng-template>
                             </ng-container>
@@ -186,7 +188,8 @@
                                            [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
                                            currencyMask
                                            matInput
-                                           type="decimal">
+                                           type="decimal"
+                                           aria-label="value">
                                 </ng-container>
                             </mat-form-field>
                         </mat-cell>
@@ -217,7 +220,8 @@
                                     color="accent" mat-icon-button
                                     matTooltip="{{'common.delete.entry.tooltip' | translate}}"
                                     tabindex="-1"
-                                    type="button">
+                                    type="button"
+                                    aria-label="delete">
                                 <mat-icon>delete</mat-icon>
                             </button>
                         </mat-cell>
@@ -243,14 +247,16 @@
 <ng-template #addTableButton>
     <p *ngIf="editable">
         <button jemsText (click)="addNewItem()" color="primary"
-                mat-raised-button>+ {{'project.partner.budget.button.add' | translate}}
+                mat-raised-button
+                aria-label="add">+ {{'project.partner.budget.button.add' | translate}}
         </button>
     </p>
 </ng-template>
 <ng-template #addItemButton let-numberOfItems>
     <button (click)="addNewItem()" *ngIf="editable" [disabled]="numberOfItems  >= constants.MAX_NUMBER_OF_ITEMS"
             mat-icon-button
-            type="button">
+            type="button"
+            aria-label="add item">
         <mat-icon>add</mat-icon>
     </button>
 </ng-template>
