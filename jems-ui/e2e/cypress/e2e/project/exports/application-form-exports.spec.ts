@@ -104,7 +104,7 @@ context('Application form exports', () => {
             cy.updateProjectManagement(applicationId, application2step.secondStep.description.management);
             cy.updateProjectLongTermPlans(applicationId, application2step.secondStep.description.longTermPlans);
             cy.updatePartnerData(partnerId, updatedPartner);
-            cy.createAssociatedOrganization(applicationId, partnerId, updatedPartner.associatedOrganization);
+            cy.createAssociatedOrganisations(applicationId, application2step.secondStep.associatedOrganisations);
             cy.runPreSubmissionCheck(applicationId);
             cy.submitProjectApplication(applicationId);
 
