@@ -12,7 +12,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime
-import java.util.stream.Stream
+import kotlin.streams.asSequence
 
 @Repository
 class ProjectPartnerReportPersistenceProvider(
@@ -69,8 +69,8 @@ class ProjectPartnerReportPersistenceProvider(
             .map { it.toModelSummary() }
 
     @Transactional(readOnly = true)
-    override fun getAllPartnerReportIdsByProjectId(projectId: Long): Stream<ProjectPartnerReportBaseData> {
-        return partnerReportRepository.findAllPartnerReportIdsByProjectId(projectId)
+    override fun getAllPartnerReportsBaseDataByProjectId(projectId: Long): Sequence<ProjectPartnerReportBaseData> {
+        return partnerReportRepository.findAllPartnerReportsBaseDataByProjectId(projectId).asSequence()
     }
 
     @Transactional(readOnly = true)
