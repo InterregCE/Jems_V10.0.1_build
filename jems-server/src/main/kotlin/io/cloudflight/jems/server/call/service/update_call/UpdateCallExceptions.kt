@@ -14,9 +14,10 @@ class UpdateCallException(cause: Throwable) : ApplicationException(
     cause = cause
 )
 
-class CallNameNotUnique : ApplicationUnprocessableException(
+class CallNameNotUnique(callName: String) : ApplicationUnprocessableException(
     code = "$UPDATE_CALL_ERROR_CODE_PREFIX-002",
     i18nMessage = I18nMessage("$UPDATE_CALL_ERROR_KEY_PREFIX.name.not.unique"),
+    message = "call with name $callName already exists",
 )
 
 class CallStatusChangeForbidden : ApplicationBadRequestException(
