@@ -25,8 +25,6 @@ context('Partners budget exports', () => {
         cy.contains('mat-option', 'Deutsch').click();
 
         cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/budget?exportLanguage=EN&inputLanguage=DE*`, 'xlsx').then(exportFile => {
-          const fileNameRegex = generateRegex(applicationId, application.identification.acronym);
-          expect(exportFile.fileName).to.match(fileNameRegex);
           cy.fixture('project/exports/partners-budget/TB-369-export-en-de.xlsx', null).parseXLSX().then(testDataFile => {
             const assertionMessage = 'Verify downloaded en-de xlsx file';
             expect(exportFile.content[0].data.slice(1), assertionMessage).to.deep.equal(testDataFile[0].data.slice(1));
@@ -40,8 +38,6 @@ context('Partners budget exports', () => {
         cy.contains('mat-option', 'English').click();
 
         cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/budget?exportLanguage=DE&inputLanguage=EN*`, 'xlsx').then(exportFile => {
-          const fileNameRegex = generateRegex(applicationId, application.identification.acronym);
-          expect(exportFile.fileName).to.match(fileNameRegex);
           cy.fixture('project/exports/partners-budget/TB-369-export-de-en.xlsx', null).parseXLSX().then(testDataFile => {
             const assertionMessage = 'Verify downloaded de-en lsx file';
             expect(exportFile.content[0].data.slice(1), assertionMessage).to.deep.equal(testDataFile[0].data.slice(1));
@@ -138,6 +134,8 @@ context('Partners budget exports', () => {
             cy.contains('mat-option', 'V.1.0').click();
 
             cy.contains('div#export-config button', 'Export').clickToDownload(`api/project/${applicationId}/export/budget?*version=1.0`, 'xlsx').then(exportFile => {
+              const fileNameRegex = generateRegex(applicationId, application2step.firstStep.identification.acronym, 1);
+              expect(exportFile.fileName).to.match(fileNameRegex);
               cy.fixture('project/exports/partners-budget/TB-370-v1.xlsx', null).parseXLSX().then(testDataFile => {
                 const assertionMessage = 'Verify downloaded xlsx file for step 1 (v1) version';
                 expect(exportFile.content[0].data.slice(1), assertionMessage).to.deep.equal(testDataFile[0].data.slice(1));
@@ -150,6 +148,8 @@ context('Partners budget exports', () => {
             cy.contains('mat-option', 'V.2.0').click();
 
             cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/budget?*version=2.0`, 'xlsx').then(exportFile => {
+              const fileNameRegex = generateRegex(applicationId, application2step.secondStep.identification.acronym, 2);
+              expect(exportFile.fileName).to.match(fileNameRegex);
               cy.fixture('project/exports/partners-budget/TB-370-v2.xlsx', null).parseXLSX().then(testDataFile => {
                 const assertionMessage = 'Verify downloaded xlsx file for step 2 (v2) version';
                 expect(exportFile.content[0].data.slice(1), assertionMessage).to.deep.equal(testDataFile[0].data.slice(1));
@@ -162,6 +162,8 @@ context('Partners budget exports', () => {
             cy.contains('mat-option', 'V.3.0').click();
 
             cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/budget?*version=3.0`, 'xlsx').then(exportFile => {
+              const fileNameRegex = generateRegex(applicationId, testData.approvedModificationData.identification.acronym, 3);
+              expect(exportFile.fileName).to.match(fileNameRegex);
               cy.fixture('project/exports/partners-budget/TB-370-v3.xlsx', null).parseXLSX().then(testDataFile => {
                 const assertionMessage = 'Verify downloaded xlsx file for approved (v3) version';
                 expect(exportFile.content[0].data.slice(1), assertionMessage).to.deep.equal(testDataFile[0].data.slice(1));
@@ -174,6 +176,8 @@ context('Partners budget exports', () => {
             cy.contains('mat-option', 'V.4.0').click();
 
             cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/budget?*version=4.0`, 'xlsx').then(exportFile => {
+              const fileNameRegex = generateRegex(applicationId, testData.rejectedModificationData.identification.acronym, 4);
+              expect(exportFile.fileName).to.match(fileNameRegex);
               cy.fixture('project/exports/partners-budget/TB-370-v4.xlsx', null).parseXLSX().then(testDataFile => {
                 const assertionMessage = 'Verify downloaded xlsx file for rejected (v4) version';
                 expect(exportFile.content[0].data.slice(1), assertionMessage).to.deep.equal(testDataFile[0].data.slice(1));
@@ -319,10 +323,10 @@ context('Partners budget exports', () => {
     });
   });
 
-  function generateRegex(applicationId, applicationAcronym) {
+  function generateRegex(applicationId, applicationAcronym, version) {
     const id = String(applicationId).padStart(5, '0');
     const today = new Date();
     const formattedToday = date.format(today, 'YYMM');
-    return new RegExp(`${id}_${applicationAcronym}_Budget_${formattedToday}\\d\\d_\\d{6}.xlsx`);
+    return new RegExp(`${id}_${applicationAcronym}_Budget_V${version}.0_${formattedToday}\\d\\d_\\d{6}.xlsx`);
   }
 });
