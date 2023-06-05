@@ -155,8 +155,11 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
             firstSubmission = YESTERDAY,
             lastResubmission = null,
             controlEnd = TODAY,
+
             lastControlReopening = null,
-            projectReportId = null,
+            projectReportId = 17L,
+            projectReportNumber = 170,
+
             identification = PartnerReportIdentification(
                 projectIdentifier = "projectIdentifier",
                 projectAcronym = "projectAcronym",
@@ -220,7 +223,9 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
                         percentage = BigDecimal.ONE,
                     )
                 )
-            )
+            ),
+            projectReportId = 17L,
+            projectReportNumber = 170,
         )
 
         private val reportFile = JemsFile(

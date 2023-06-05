@@ -43,11 +43,12 @@ internal class DeleteParkedExpenditureTest : UnitTest() {
                 status = status,
                 version = "V6",
                 firstSubmission = ZonedDateTime.now(),
-                identification = identification,
                 controlEnd = null,
                 lastResubmission = null,
                 lastControlReopening = null,
-                projectReportId = null,
+                projectReportId = 25L,
+                projectReportNumber = 250,
+                identification = identification,
             )
         }
     }

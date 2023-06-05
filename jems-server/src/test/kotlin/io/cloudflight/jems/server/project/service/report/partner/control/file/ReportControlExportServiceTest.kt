@@ -51,7 +51,8 @@ internal class ReportControlExportServiceTest : UnitTest() {
             firstSubmission = YESTERDAY,
             lastResubmission = null,
             lastControlReopening = null,
-            projectReportId = null,
+            projectReportId = 29L,
+            projectReportNumber = 290,
             identification = PartnerReportIdentification(
                 projectIdentifier = "CLF00001",
                 projectAcronym = "acronym",

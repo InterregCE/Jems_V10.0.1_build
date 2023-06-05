@@ -11,13 +11,13 @@ import org.springframework.transaction.event.TransactionPhase
 import org.springframework.transaction.event.TransactionalEventListener
 
 @Service
-class ExportControlReportOnReportStatusChangedEvent(
+class ExportControlReportOnFinalizationEvent(
     private val reportControlExportService: ReportControlExportService,
     private val reportPersistence: ProjectPartnerReportPersistence,
 ) {
     companion object {
         private const val controlReportExportPluginKey = "standard-partner-control-report-export-plugin"
-        private val logger = LoggerFactory.getLogger(ExportControlReportOnReportStatusChangedEvent::class.java)
+        private val logger = LoggerFactory.getLogger(ExportControlReportOnFinalizationEvent::class.java)
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -26,16 +26,15 @@ class ExportControlReportOnReportStatusChangedEvent(
         val reportId = event.partnerReportSummary.id
         val partnerId = event.partnerReportSummary.partnerId
         val projectId = event.projectSummary.id
-        if (event.partnerReportSummary.status == ReportStatus.ReOpenCertified) {
+        if (event.partnerReportSummary.status == ReportStatus.Certified) {
             try {
                 val report = reportPersistence.getPartnerReportById(partnerId = partnerId, reportId = reportId)
                 reportControlExportService.generate(report, partnerId = partnerId, projectId = projectId, controlReportExportPluginKey)
             } catch (e: RuntimeException) {
-                logger.warn(
+                logger.error(
                     "ReOpen Certified Report: Failed to generate export using plugin with key = $controlReportExportPluginKey " +
-                            "for the certified report with id = $reportId"
+                            "for the certified report with id = $reportId", e
                 )
-                logger.error(e.stackTraceToString())
             }
         }
     }

@@ -138,6 +138,7 @@ fun ProjectPartnerReportEntity.toModel(coFinancing: List<ProjectPartnerReportCoF
         lastControlReopening = lastControlReopening,
 
         projectReportId = projectReport?.id,
+        projectReportNumber = projectReport?.number,
 
         identification = PartnerReportIdentification(
             projectIdentifier = identification.projectIdentifier,

@@ -13,5 +13,7 @@ data class ProjectPartnerReport(
 
     val lastControlReopening: ZonedDateTime?,
     val projectReportId: Long?,
-    val identification: PartnerReportIdentification
+    val projectReportNumber: Int?,
+
+    val identification: PartnerReportIdentification,
 )

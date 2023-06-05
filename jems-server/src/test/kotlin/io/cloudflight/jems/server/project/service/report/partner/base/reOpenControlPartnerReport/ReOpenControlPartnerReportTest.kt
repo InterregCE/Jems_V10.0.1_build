@@ -14,14 +14,18 @@ import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPa
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
+import io.mockk.verify
 import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.context.ApplicationEventPublisher
 
 internal class ReOpenControlPartnerReportTest : UnitTest() {
@@ -59,6 +63,7 @@ internal class ReOpenControlPartnerReportTest : UnitTest() {
             controlEnd = reportControlEnd,
             lastControlReopening = lastControlReopening,
             projectReportId = projectReportId,
+            projectReportNumber = projectReportId?.toInt(),
             identification = mockk()
         )
 
@@ -75,6 +80,11 @@ internal class ReOpenControlPartnerReportTest : UnitTest() {
 
     @InjectMockKs
     private lateinit var interactor: ReOpenControlPartnerReport
+
+    @BeforeEach
+    fun clear() {
+        clearMocks(auditPublisher)
+    }
 
     @Test
     fun reOpen() {
@@ -118,6 +128,20 @@ internal class ReOpenControlPartnerReportTest : UnitTest() {
         )
         assertThat(eventNotif.captured.projectSummary).isEqualTo(projectSummary)
         assertThat(eventNotif.captured.partnerReportSummary).isEqualTo(mockResult)
+    }
+
+    @Test
+    fun `reOpen of already-used report`() {
+        val projectId = 64L
+        val reportId = 20L
+
+        every { reportPersistence.getPartnerReportById(partnerId = partnerId, reportId = reportId) } returns
+                partnerReport(ReportStatus.Certified, null, 14L)
+        every { projectPartnerRepository.getProjectIdForPartner(partnerId) } returns projectId
+
+        assertThrows<ReportCertificateException> { interactor.reOpen(partnerId, reportId) }
+
+        verify(exactly = 0) { auditPublisher.publishEvent(any()) }
     }
 
 }

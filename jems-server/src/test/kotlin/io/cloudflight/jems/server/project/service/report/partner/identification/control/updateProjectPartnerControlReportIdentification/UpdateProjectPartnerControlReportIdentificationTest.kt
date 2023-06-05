@@ -69,7 +69,8 @@ internal class UpdateProjectPartnerControlReportIdentificationTest : UnitTest() 
             firstSubmission = YESTERDAY,
             lastResubmission = null,
             lastControlReopening = null,
-            projectReportId = null,
+            projectReportId = 28L,
+            projectReportNumber = 280,
             identification = PartnerReportIdentification(
                 projectIdentifier = "projectIdentifier",
                 projectAcronym = "projectAcronym",

@@ -206,7 +206,8 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
         controlEnd = null,
         lastResubmission = null,
         lastControlReopening = null,
-        projectReportId = null
+        projectReportId = 44L,
+        projectReportNumber = 440,
     )
 
     @MockK

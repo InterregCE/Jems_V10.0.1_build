@@ -73,7 +73,8 @@ class GenerateReportControlCertificateTest : UnitTest() {
             firstSubmission = YESTERDAY,
             lastResubmission = null,
             lastControlReopening = null,
-            projectReportId = null,
+            projectReportId = 22L,
+            projectReportNumber = 220,
             identification = PartnerReportIdentification(
                 projectIdentifier = "CLF00001",
                 projectAcronym = "acronym",

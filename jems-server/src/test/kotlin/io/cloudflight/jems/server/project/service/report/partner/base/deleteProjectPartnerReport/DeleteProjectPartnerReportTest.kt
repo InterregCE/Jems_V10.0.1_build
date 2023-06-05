@@ -108,7 +108,8 @@ internal class DeleteProjectPartnerReportTest: UnitTest()  {
             lastResubmission = null,
             controlEnd = TODAY,
             lastControlReopening = null,
-            projectReportId = null,
+            projectReportId = 80L,
+            projectReportNumber = 800,
             identification = PartnerReportIdentification(
                 projectIdentifier = "identifier",
                 projectAcronym = "acronym",

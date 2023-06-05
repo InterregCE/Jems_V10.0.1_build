@@ -259,7 +259,8 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
             lastResubmission = null,
             controlEnd = TODAY,
             lastControlReopening = null,
-            projectReportId = null,
+            projectReportId = 24L,
+            projectReportNumber = 240,
             identification = PartnerReportIdentification(
                 projectIdentifier = "projectIdentifier",
                 projectAcronym = "projectAcronym",
