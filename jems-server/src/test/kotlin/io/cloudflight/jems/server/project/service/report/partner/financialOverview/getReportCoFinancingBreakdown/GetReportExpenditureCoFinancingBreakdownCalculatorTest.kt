@@ -61,12 +61,13 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
                 reportNumber = 1,
                 status = status,
                 version = "V_4.5",
-                identification = identification,
                 firstSubmission = LAST_YEAR,
                 lastResubmission = null,
                 controlEnd = null,
                 lastControlReopening = null,
-                projectReportId = null,
+                projectReportId = 26L,
+                projectReportNumber = 260,
+                identification = identification,
             )
         }
 

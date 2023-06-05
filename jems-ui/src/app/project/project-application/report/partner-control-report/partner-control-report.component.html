@@ -6,16 +6,23 @@
     <div class="mb-3 reopen-wrapper">
         <span class="status-label">Status</span>
         <span class="ml-2"><jems-partner-report-status [status]="data.report.status" [longVersion]="false"></jems-partner-report-status></span>
-        <jems-pending-button *ngIf="data.hasReopenPermission && data.report.status === ProjectPartnerReportDTO.StatusEnum.Certified"
-                             [disabled]="data.report.projectReportId !== null"
-                             [confirm]="{ title: 'project.application.partner.reports.control.reopen', message: 'project.application.partner.reports.control.reopen.confirm.message' }"
-                             [pending]="actionPending"
-                             [icon]="'undo'"
-                             class="ml-2"
-                             (clicked)="reopenControlReport(data.partnerId, data.report.id)">
+        <jems-pending-button
+                *ngIf="data.hasReopenPermission && data.report.status === ProjectPartnerReportDTO.StatusEnum.Certified"
+                [disabled]="!!data.report.projectReportId"
+                [confirm]="{
+                    title: 'project.application.partner.reports.control.reopen',
+                    message: 'project.application.partner.reports.control.reopen.confirm.message'
+                }"
+                [pending]="actionPending"
+                [icon]="'undo'"
+                class="ml-2"
+                (clicked)="reopenControlReport(data.partnerId, data.report.id)">
             {{'project.application.partner.reports.control.reopen' | translate}}
         </jems-pending-button>
-        <jems-context-info class="tooltip" *ngIf="data.report.projectReportId !== null" infoPosition="right" infoText="{{ 'common.certificate.is.included.tooltip' | translate : {id: data.report.projectReportId} }}"></jems-context-info>
+        <jems-context-info
+                *ngIf="data.report.projectReportId" class="tooltip" infoPosition="right"
+                infoText="{{ 'common.certificate.is.included.tooltip' | translate : { id: data.report.projectReportNumber } }}">
+        </jems-context-info>
     </div>
 
     <jems-alert *ngIf="error$ | async as error"

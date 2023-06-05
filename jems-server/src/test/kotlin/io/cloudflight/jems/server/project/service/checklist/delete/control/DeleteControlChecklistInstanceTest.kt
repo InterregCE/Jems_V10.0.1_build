@@ -171,7 +171,8 @@ internal class DeleteControlChecklistInstanceTest : UnitTest() {
             lastResubmission = null,
             controlEnd = TODAY,
             lastControlReopening = null,
-            projectReportId = null,
+            projectReportId = 96L,
+            projectReportNumber = 963,
             identification = PartnerReportIdentification(
                 projectIdentifier = "projectIdentifier",
                 projectAcronym = "projectAcronym",

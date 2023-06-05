@@ -159,7 +159,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
             type = legalStatusEntity.type,
         )
 
-        private fun draftReport(id: Long, coFinancing: List<ProjectPartnerCoFinancing>, projectReportId: Long? = null) = ProjectPartnerReport(
+        private fun draftReport(id: Long, coFinancing: List<ProjectPartnerCoFinancing>) = ProjectPartnerReport(
             id = id,
             reportNumber = 1,
             status = ReportStatus.Draft,
@@ -168,7 +168,8 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
             lastResubmission = LAST_MONTH,
             controlEnd = null,
             lastControlReopening = null,
-            projectReportId = projectReportId,
+            projectReportId = 54L,
+            projectReportNumber = 540,
             identification = PartnerReportIdentification(
                 projectIdentifier = "projectIdentifier",
                 projectAcronym = "projectAcronym",
@@ -349,7 +350,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
             coFinancingEntities(report)
 
         assertThat(persistence.getPartnerReportById(partnerId = PARTNER_ID, reportId = 35L))
-            .isEqualTo(draftReport(id = 35L, coFinancing = coFinancing, projectReportId = 54L))
+            .isEqualTo(draftReport(id = 35L, coFinancing = coFinancing))
     }
 
     @Test
@@ -446,7 +447,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
     fun getCurrentLatestReportForPartner() {
         val report = reportEntity(id = 48L)
         every { partnerReportRepository.findFirstByPartnerIdOrderByIdDesc(PARTNER_ID) } returns report
-        assertThat(persistence.getCurrentLatestReportForPartner(PARTNER_ID)).isEqualTo(draftReport(48L, emptyList(), 54L))
+        assertThat(persistence.getCurrentLatestReportForPartner(PARTNER_ID)).isEqualTo(draftReport(48L, emptyList()))
     }
 
     @Test

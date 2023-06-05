@@ -61,7 +61,8 @@ class GenerateReportControlExportTest : UnitTest() {
             firstSubmission = YESTERDAY,
             lastResubmission = null,
             lastControlReopening = null,
-            projectReportId = null,
+            projectReportId = 23L,
+            projectReportNumber = 230,
             identification = PartnerReportIdentification(
                 projectIdentifier = "CLF00001",
                 projectAcronym = "acronym",

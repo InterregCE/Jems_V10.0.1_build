@@ -142,8 +142,10 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
             firstSubmission = DATE_TIME_1,
             lastResubmission = null,
             controlEnd = DATE_TIME_2,
+
             lastControlReopening = null,
-            projectReportId = null,
+            projectReportId = 48L,
+            projectReportNumber = 480,
 
             identification = PartnerReportIdentification(
                 projectIdentifier = "identifier",

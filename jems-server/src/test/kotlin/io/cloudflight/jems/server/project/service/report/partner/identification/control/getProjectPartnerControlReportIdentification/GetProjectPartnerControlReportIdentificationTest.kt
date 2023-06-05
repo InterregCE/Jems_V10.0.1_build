@@ -58,7 +58,8 @@ internal class GetProjectPartnerControlReportIdentificationTest : UnitTest() {
             firstSubmission = YEARS_AGO_10,
             lastResubmission = YEARS_AGO_1,
             lastControlReopening = null,
-            projectReportId = null,
+            projectReportId = 27L,
+            projectReportNumber = 270,
             identification = PartnerReportIdentification(
                 projectIdentifier = "projectIdentifier",
                 projectAcronym = "projectAcronym",
