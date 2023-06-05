@@ -78,7 +78,7 @@ context('Partners budget exports', () => {
             cy.updateProjectManagement(applicationId, application2step.secondStep.description.management);
             cy.updateProjectLongTermPlans(applicationId, application2step.secondStep.description.longTermPlans);
             cy.updatePartnerData(partnerId, updatedPartner);
-            cy.createAssociatedOrganization(applicationId, partnerId, updatedPartner.associatedOrganization);
+            cy.createAssociatedOrganisation(applicationId, application2step.secondStep.associatedOrganisations[0]);
 
             partner.details.abbreviation = testData.secondStep.partnerAbbreviation;
             cy.createFullPartners(applicationId, [partner]);

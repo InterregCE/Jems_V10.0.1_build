@@ -30,8 +30,6 @@ declare global {
       updatePartnerStateAid(partnerId: number, stateAid);
 
       deactivatePartner(partnerId: number);
-
-      createAssociatedOrganization(applicationId: number, partnerId: number, stateAid);
     }
   }
 }
@@ -93,14 +91,6 @@ Cypress.Commands.add('deactivatePartner', (partnerId: number) => {
     method: 'PUT',
     url: `api/project/partner/${partnerId}/deactivate`
   });
-});
-
-Cypress.Commands.add('createAssociatedOrganisation', (applicationId: number, associatedOrganisation) => {
-  createAssociatedOrganisation(applicationId, associatedOrganisation);
-});
-
-Cypress.Commands.add('createAssociatedOrganisations', (applicationId: number, associatedOrganisations: any[]) => {
-  createAssociatedOrganisations(applicationId, associatedOrganisations);
 });
 
 export function createPartner(applicationId: number, partnerDetails) {
@@ -276,28 +266,6 @@ function updateStateAid(partnerId, stateAid) {
       method: 'PUT',
       url: `api/project/partner/${partnerId}/stateAid`,
       body: stateAid
-    });
-  });
-}
-
-export function createAssociatedOrganisations(applicationId, associatedOrganisations) {
-  if (associatedOrganisations) {
-    associatedOrganisations.forEach(associatedOrganisation => {
-      createAssociatedOrganisation(applicationId, associatedOrganisation);
-    });
-  }
-}
-
-function createAssociatedOrganisation(applicationId, associatedOrganisation) {
-  // get/set partnerId based on the provided reference
-  cy.then(function () {
-    associatedOrganisation.partnerId = this[associatedOrganisation.cypressReference];
-    cy.request({
-      method: 'POST',
-      url: `api/project/${applicationId}/organization`,
-      body: associatedOrganisation
-    }).then(response => {
-      cy.wrap(response.body.id).as('associatedOrganisation');
     });
   });
 }
