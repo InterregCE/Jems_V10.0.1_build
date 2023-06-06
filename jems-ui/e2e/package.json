@@ -16,10 +16,10 @@
     "@types/node": "^18.15.7",
     "compare-pdf": "^1.1.8",
     "cy2": "^4.0.6",
-    "cypress": "^12.8.1",
+    "cypress": "12.7.0",
     "date-and-time": "^2.4.3",
     "node-fetch": "^2.6.7",
-    "node-xlsx": "^0.21.0",
+    "node-xlsx": "^0.4.0",
     "typescript": "^5.0.2",
     "wait-on": "^7.0.1"
   }
