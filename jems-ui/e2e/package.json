@@ -19,7 +19,7 @@
     "cypress": "12.7.0",
     "date-and-time": "^2.4.3",
     "node-fetch": "^2.6.7",
-    "node-xlsx": "^0.4.0",
+    "node-xlsx": "^0.23.0",
     "typescript": "^5.0.2",
     "wait-on": "^7.0.1"
   }
