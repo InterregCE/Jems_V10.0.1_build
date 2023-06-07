@@ -6,7 +6,8 @@
 
     <button mat-stroked-button class="mt-2 mb-2"
             *ngIf="data.createInstitutionPermission"
-            [routerLink]="'/app/controller/create'">
+            [routerLink]="'/app/controller/create'"
+            aria-label="add">
         <mat-icon>add</mat-icon>&nbsp;{{'controllers.add.institution' | translate}}
     </button>
     <jems-table *ngIf="data.page.content.length"

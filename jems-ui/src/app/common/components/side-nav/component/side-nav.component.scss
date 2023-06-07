@@ -174,12 +174,35 @@
         opacity: 0.87;
         font-size: 0.85rem;
       }
-
+      &:hover {
+        background: rgba(255, 255, 255, 0.25) !important;
+      }
+      &:focus-visible {
+        background: none;
+        outline: 2px solid white;
+        outline-offset: -2px;
+      }
     }
     &:hover {
       background: none !important;
       .mat-expansion-indicator {
-        background: rgba(255, 255, 255, 0.75);
+        background: rgba(255, 255, 255, 0.2) !important;
+      }
+    }
+    &:focus-visible {
+      .mat-expansion-indicator {
+        outline: 2px solid white;
+        outline-offset: -2px;
+      }
+    }
+    &.panel-no-bullets {
+      ::ng-deep .mat-expansion-indicator {
+        display: none !important;
+      }
+      &:focus-visible {
+        background: none;
+        outline: 2px solid white;
+        outline-offset: -2px;
       }
     }
   }

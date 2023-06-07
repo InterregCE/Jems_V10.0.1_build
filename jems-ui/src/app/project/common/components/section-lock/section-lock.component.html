@@ -2,14 +2,16 @@
     <button *ngIf="!isLocked"
             mat-icon-button color="primary"
             (click)="lockSection()"
-            [disabled]="disabled$ | async">
+            [disabled]="disabled$ | async"
+            aria-label="lock section">
         <mat-icon>lock_open</mat-icon>
     </button>
 
     <button  *ngIf="isLocked"
              mat-icon-button color="primary"
              (click)="unlockSection()"
-             [disabled]="disabled$ | async">
+             [disabled]="disabled$ | async"
+             aria-label="unlock section">
         <mat-icon>lock</mat-icon>
     </button>
 </div>

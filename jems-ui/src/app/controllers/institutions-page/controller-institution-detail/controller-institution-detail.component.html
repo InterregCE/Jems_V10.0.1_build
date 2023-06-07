@@ -100,7 +100,8 @@
 
             <button mat-stroked-button class="mt-2 mb-2"
                     *jemsHasPermission="Permissions.InstitutionsUpdate"
-                    (click)="addUser()">
+                    (click)="addUser()"
+                    aria-label="add">
                 <mat-icon>add</mat-icon>&nbsp;{{'controllers.add.user' | translate}}
             </button>
 

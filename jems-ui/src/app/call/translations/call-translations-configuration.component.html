@@ -12,7 +12,7 @@
         </jems-alert>
 
         <input class="file-input" accept=".properties" type="file" #fileInput onclick="this.value=null;"
-               (change)="upload($event, data.callId)">
+               (change)="upload($event, data.callId)" aria-label="translation file">
 
         <jems-alert *ngFor="let alert of alerts$ | async" [show]="true" [type]="alert.type"
                     (closed)="dismissAlert(alert.id)" [disableMargins]="true" class="mb-2 block">
@@ -55,20 +55,24 @@
                 <mat-cell *matCellDef="let translation">
                     <span matTooltip="{{ 'call.detail.translations.default.tooltip' | translate }}">
                         <button color="primary" mat-icon-button [disabled]="!translation.defaultFromProgramme"
-                                (click)="downloadFromProgramme(data.callId, translation.language)">
+                                (click)="downloadFromProgramme(data.callId, translation.language)"
+                                aria-label="download">
                         <mat-icon fontSet="material-icons-outlined">description</mat-icon>
                         </button>
                     </span>
                     <button color="primary" mat-icon-button
-                            (click)="languageToUpload = translation.language; fileInput.click()">
+                            (click)="languageToUpload = translation.language; fileInput.click()"
+                            aria-label="upload">
                         <mat-icon>upload</mat-icon>
                     </button>
                     <button color="primary" mat-icon-button [disabled]="!translation.file"
-                            (click)="download(data.callId, translation.file)">
+                            (click)="download(data.callId, translation.file)"
+                            aria-label="download">
                         <mat-icon>download</mat-icon>
                     </button>
                     <button color="accent" mat-icon-button [disabled]="!translation.file"
-                            (click)="delete(data.callId, translation)">
+                            (click)="delete(data.callId, translation)"
+                            aria-label="delete">
                         <mat-icon>delete</mat-icon>
                     </button>
                 </mat-cell>

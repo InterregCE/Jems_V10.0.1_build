@@ -134,7 +134,8 @@
                                 type="button"
                                 *ngIf="control.value.createdInThisReport"
                                 [disabled]="!!control.get('attachment').value"
-                                (click)="removeContribution(i)">
+                                (click)="removeContribution(i)"
+                                aria-label="delete">
                             <mat-icon
                                     matTooltip="{{ (attachment(i).value ? 'project.application.partner.report.attachment.delete.file.first' : null) | translate }}">
                                 {{ attachment(i).value ? 'delete_forever' : 'delete'}}
@@ -152,7 +153,8 @@
                     jemsText mat-stroked-button
                     color="primary"
                     [disabled]="isReportReopenedLimited"
-                    (click)="addContribution(null)">
+                    (click)="addContribution(null)"
+                    aria-label="add">
                 <mat-icon>add</mat-icon>
             </button>
 

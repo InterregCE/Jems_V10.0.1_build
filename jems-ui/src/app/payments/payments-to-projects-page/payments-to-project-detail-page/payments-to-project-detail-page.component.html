@@ -9,7 +9,8 @@
         <div jemsMultiColumnRow>
             <a color="primary" class="mr-1" mat-icon-button
                routerLink=".."
-               matTooltip="{{ 'payments.payment.to.project.detail.back.tooltip.button' | translate }}">
+               matTooltip="{{ 'payments.payment.to.project.detail.back.tooltip.button' | translate }}"
+               aria-label="back">
                 <mat-icon class="icon-back" fontSet="material-icons-outlined">arrow_circle_left</mat-icon>
             </a>
             <h3 class="mb-4 put-icon-to-header-line">{{'payments.payment.to.project.detail.back.button' | translate}}</h3>
@@ -77,7 +78,8 @@
                                 </button>
                                 <button mat-icon-button *ngIf="installmentsArray(index).length" class="button-expand"
                                         [ngClass]="{'expanded' : getPaymentRowToggleStateAtIndex(index)}"
-                                        (click)="togglePaymentRowAtIndex(index)">
+                                        (click)="togglePaymentRowAtIndex(index)"
+                                        aria-label="expansion toggle">
                                     <mat-icon>expand_more</mat-icon>
                                 </button>
                             </div>
@@ -121,14 +123,16 @@
                                                <mat-form-field class="w-100">
                                                     <input matInput type="decimal" currencyMask
                                                            [options]="{allowNegative: true, max: constants.MAX_VALUE, align:'right'}"
-                                                           [formControlName]="constants.FORM_CONTROL_NAMES.amountPaid">
+                                                           [formControlName]="constants.FORM_CONTROL_NAMES.amountPaid"
+                                                           aria-label="value">
                                                </mat-form-field>
                                             </div>
                                             <div>
                                                 <mat-form-field class="w-100">
                                                     <input name="paymentDate"
                                                            [formControlName]="constants.FORM_CONTROL_NAMES.paymentDate" matInput
-                                                           [matDatepicker]="paymentDatePicker">
+                                                           [matDatepicker]="paymentDatePicker"
+                                                           aria-label="date">
                                                     <mat-error>
                                                         <jems-form-field-errors condensed="true" [errors]="installment.get(constants.FORM_CONTROL_NAMES.paymentDate)?.errors"></jems-form-field-errors>
                                                     </mat-error>
@@ -140,7 +144,8 @@
                                                 <mat-form-field class="w-100">
                                                     <input matInput #comment class="text-overflow-ellipsis"
                                                               [formControlName]="constants.FORM_CONTROL_NAMES.comment"
-                                                              [matTooltip]="installment.get(constants.FORM_CONTROL_NAMES.comment).value"/>
+                                                              [matTooltip]="installment.get(constants.FORM_CONTROL_NAMES.comment).value"
+                                                              aria-label="comment"/>
                                                     <mat-hint [jemsHintFor]="comment">
                                                         <jems-text-hint [currentLength]="comment.value.length" [maxLength]="500"></jems-text-hint>
                                                     </mat-hint>
@@ -181,7 +186,8 @@
                                                         class="delete-button"
                                                         color="accent" mat-icon-button
                                                         matTooltip="{{'common.delete.entry.tooltip' | translate}}"
-                                                        type="button">
+                                                        type="button"
+                                                        aria-label="delete">
                                                     <mat-icon>delete</mat-icon>
                                                 </button>
                                             </div>

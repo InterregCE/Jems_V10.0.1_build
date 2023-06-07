@@ -1,5 +1,6 @@
 <button *ngIf="!disabled" mat-icon-button color="accent"
         (click)="delete.emit(element)"
-        matTooltip="{{'project.application.form.partner.table.action.delete.tooltip' | translate}}">
+        matTooltip="{{'project.application.form.partner.table.action.delete.tooltip' | translate}}"
+        aria-label="delete">
     <mat-icon>delete</mat-icon>
 </button>

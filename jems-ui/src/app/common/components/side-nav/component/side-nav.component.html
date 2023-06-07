@@ -3,11 +3,14 @@
         <mat-expansion-panel class="mat-elevation-z0 application-form-foldout"
                              [expanded]="(currentUrl.getValue() === projectOverviewUrl && index === 1) ||
                              (currentUrl.getValue() !== projectOverviewUrl)"
-                             [disabled]="!data.bullets?.length"
                              [class.link]="data.route"
-                             (click)="sideNavService.navigate(data)"
-                             [class.route-active]="(currentUrl | async) | IsMenuActive : (data.baseRoute || data.route) : !data.baseRoute">
-            <mat-expansion-panel-header [ngClass]="{'has-children' : data.bullets?.length}">
+                             [class.route-active]="(currentUrl | async) | IsMenuActive : (data.baseRoute || data.route) : !data.baseRoute"
+                             (click)="$event.stopPropagation();sideNavService.navigate(data)">
+            <mat-expansion-panel-header role="button" tabindex="0"
+                    [class.panel-no-bullets]="!data.bullets?.length"
+                    (keyup.space)="sideNavService.navigate(data)"
+                    (keyup.enter)="sideNavService.navigate(data)"
+                    [ngClass]="{'has-children' : data.bullets?.length}">
                 <mat-panel-title>
                     <div class="title">
                         <mat-icon *ngIf="data.iconBeforeHeadline">{{data.iconBeforeHeadline}}</mat-icon>
@@ -22,11 +25,14 @@
                 <mat-expansion-panel *ngIf="!subtitle.headlineTemplate"
                                      class="mat-elevation-z0"
                                      [expanded]="true"
-                                     [disabled]="!subtitle.bullets?.length"
                                      [class.link]="subtitle.route"
                                      [class.route-active]="(currentUrl | async) | IsMenuActive : (subtitle.baseRoute || subtitle.route) : !subtitle.baseRoute"
-                                     (click)="sideNavService.navigate(subtitle)">
-                    <mat-expansion-panel-header class="header-level-2" [ngClass]="{'has-children' : subtitle.bullets?.length}">
+                                     (click)="$event.stopPropagation();sideNavService.navigate(subtitle)">
+                    <mat-expansion-panel-header class="header-level-2" role="button" tabindex="0"
+                                                [ngClass]="{'has-children' : subtitle.bullets?.length}"
+                                                [class.panel-no-bullets]="!subtitle.bullets?.length"
+                                                (keyup.space)="sideNavService.navigate(subtitle)"
+                                                (keyup.enter)="sideNavService.navigate(subtitle)">
                         <mat-panel-title>
                             <span class="title">
                                 <mat-icon *ngIf="subtitle.iconBeforeHeadline">{{subtitle.iconBeforeHeadline}}</mat-icon>
@@ -37,11 +43,13 @@
                     <mat-icon class="icon-after-headline"
                               *ngIf="subtitle.iconAfterHeadline">{{subtitle.iconAfterHeadline}}</mat-icon>
                     <ul class="level-3" *ngIf="subtitle.bullets?.length">
-                        <li *ngFor="let section of subtitle.bullets">
-                            <div class="icon-container-level-3"
+                        <li *ngFor="let section of subtitle.bullets"
+                            (click)="$event.stopPropagation();sideNavService.navigate(section)">
+                            <div class="icon-container-level-3" tabindex="0"
+                                 (keyup.space)="sideNavService.navigate(section)"
+                                 (keyup.enter)="sideNavService.navigate(section)"
                                  [class.link]="section.route"
-                                 [class.route-active]="(currentUrl | async) | IsMenuActive : (section.baseRoute || section.route) : !section.baseRoute"
-                                 (click)="sideNavService.navigate(section)">
+                                 [class.route-active]="(currentUrl | async) | IsMenuActive : (section.baseRoute || section.route) : !section.baseRoute">
                                 <mat-icon *ngIf="section.iconBeforeHeadline">{{section.iconBeforeHeadline}}</mat-icon>
                                 <span [class.icon]="section.iconBeforeHeadline">
                                     {{ section.headline.i18nKey | translate : section.headline.i18nArguments }}
@@ -50,11 +58,12 @@
                             <mat-icon class="icon-after-headline"
                                       *ngIf="section.iconAfterHeadline">{{section.iconAfterHeadline}}</mat-icon>
                             <ul class="level-4" *ngIf="section.bullets?.length">
-                                <li *ngFor="let subsection of section.bullets"
+                                <li *ngFor="let subsection of section.bullets" tabindex="0"
                                     [class.link]="section.route"
                                     [class.route-active]="(currentUrl | async) | IsMenuActive : (subsection.baseRoute || subsection.route) : !subsection.baseRoute"
+                                    (keyup.space)="sideNavService.navigate(subsection)"
+                                    (keyup.enter)="sideNavService.navigate(subsection)"
                                     (click)="$event.stopPropagation();sideNavService.navigate(subsection)">
-
                                     <div class="icon-container-level-4">
                                         <mat-icon
                                                 *ngIf="subsection.iconBeforeHeadline">{{subsection.iconBeforeHeadline}}</mat-icon>
@@ -62,7 +71,7 @@
                                     </div>
 
                                     <mat-chip-list *ngIf="subsection.badgeText" [selectable]="false"
-                                                   class="standard-chip-list">
+                                                   class="standard-chip-list" aria-label="status">
                                         <mat-chip class="standard-chip" disableRipple
                                                   [matTooltip]="subsection.badgeTooltip | translate">{{subsection.badgeText | translate}}</mat-chip>
                                     </mat-chip-list>

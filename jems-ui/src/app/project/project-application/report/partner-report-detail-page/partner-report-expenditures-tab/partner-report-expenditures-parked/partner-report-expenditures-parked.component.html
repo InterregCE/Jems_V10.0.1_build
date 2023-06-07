@@ -216,11 +216,13 @@
         <mat-cell *matCellDef="let exp" class="text-center border-cell-left">
             <button color="primary" mat-icon-button matTooltip="{{ 'project.application.partner.report.expenditures.re.include' | translate }}"
                     *ngIf="exp.canBeReIncluded"
-                    (click)="reInclude(exp)" [disabled]="listDirty$ | async">
+                    (click)="reInclude(exp)" [disabled]="listDirty$ | async"
+                    aria-label="re-include">
                 <mat-icon>sync</mat-icon>
             </button>
             <span matTooltip="{{ 'project.application.partner.report.expenditures.re.include.error' | translate }}">
-                <button mat-icon-button *ngIf="!exp.canBeReIncluded" [disabled]="true">
+                <button mat-icon-button *ngIf="!exp.canBeReIncluded" [disabled]="true"
+                        aria-label="re-include">
                     <mat-icon>sync_disabled</mat-icon>
                 </button>
             </span>

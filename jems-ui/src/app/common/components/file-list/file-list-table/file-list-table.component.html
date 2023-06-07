@@ -67,7 +67,8 @@
                           class="mr-1 text-left fill-space-left-to-button" [matTooltip]="file.description">{{ file.description }}</span>
                     <button (click)="editDescription(file)" *ngIf="file.editable && file.name !== SENSITIVE_FILE_NAME_MASK"
                             [disabled]="descriptionForm.value.id && descriptionForm.value.id !== file.id"
-                            color="primary" mat-icon-button matTooltip="{{ 'file.table.action.description.tooltip' | translate }}" class="my-fab">
+                            color="primary" mat-icon-button matTooltip="{{ 'file.table.action.description.tooltip' | translate }}" class="my-fab"
+                            aria-label="edit">
                         <mat-icon>edit</mat-icon>
                     </button>
                 </ng-container>
@@ -106,7 +107,8 @@
                     <button [disabled]="file.name === SENSITIVE_FILE_NAME_MASK"
                             (click)="onDownload.emit(file)"
                             color="primary"
-                            mat-icon-button>
+                            mat-icon-button
+                            aria-label="download">
                         <mat-icon fontSet="material-icons-outlined">
                             {{ file.name === SENSITIVE_FILE_NAME_MASK ? 'file_download_off' : 'file_download' }}
                         </mat-icon>
@@ -116,7 +118,7 @@
                 <span *ngIf="(file.deletable && file.name !== SENSITIVE_FILE_NAME_MASK) || (file.tooltipIfNotDeletable !== '' && file.iconIfNotDeletable !== '')"
                       [matTooltip]="((file.deletable && file.name !== SENSITIVE_FILE_NAME_MASK ? 'file.table.action.delete.tooltip' : file.tooltipIfNotDeletable) | translate)">
                     <button (click)="deleteFile(file)" [disabled]="!file.deletable || (deletingId$ | async) === file.id || file.name === SENSITIVE_FILE_NAME_MASK"
-                            color="accent" mat-icon-button>
+                            color="accent" mat-icon-button aria-label="delete">
                         <mat-icon [class.icon-hidden]="!file.deletable && !file.iconIfNotDeletable"
                                   *ngIf="(deletingId$ | async) !== file.id">
                             {{ file.name !== SENSITIVE_FILE_NAME_MASK && file.deletable ? 'delete' : file.iconIfNotDeletable }}

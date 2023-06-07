@@ -16,7 +16,8 @@
             <h3>{{'output.indicator.table.title' | translate}}</h3>
             <button jemsText mat-stroked-button
                     *jemsHasPermission="PermissionsEnum.ProgrammeSetupUpdate"
-                    [routerLink]="'/app/programme/indicators/outputIndicator/create'">
+                    [routerLink]="'/app/programme/indicators/outputIndicator/create'"
+                    aria-label="add">
                 <mat-icon>add</mat-icon>&nbsp;{{ 'programme.breadcrumb.outputIndicator.create' | translate }}
             </button>
             <jems-programme-output-indicators-list
@@ -35,7 +36,8 @@
             <h3>{{'result.indicator.table.title' | translate}}</h3>
             <button jemsText mat-stroked-button
                     *jemsHasPermission="PermissionsEnum.ProgrammeSetupUpdate"
-                    [routerLink]="'/app/programme/indicators/resultIndicator/create'">
+                    [routerLink]="'/app/programme/indicators/resultIndicator/create'"
+                    aria-label="add">
                 <mat-icon>add</mat-icon>&nbsp;{{ 'programme.breadcrumb.resultIndicator.create' | translate }}
             </button>
             <jems-programme-result-indicators-list

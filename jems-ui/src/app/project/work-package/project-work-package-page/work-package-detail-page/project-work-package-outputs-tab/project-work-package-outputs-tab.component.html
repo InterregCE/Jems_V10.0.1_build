@@ -21,7 +21,8 @@
                         <button *ngIf="data.isEditable" type="button" mat-icon-button color="accent" [disabled]="output.get('deactivated').value"
                                 matTooltip="{{ 'project.application.form.work.package.output.table.action.' +
                                  (data.isAlreadyContracted ? 'deactivate' : 'delete') + '.tooltip' | translate}}"
-                                (click)="data.isAlreadyContracted ? deactivateOutput(i) : removeOutput(i)">
+                                (click)="data.isAlreadyContracted ? deactivateOutput(i) : removeOutput(i)"
+                                [attr.aria-label]="output.get('deactivated').value ? 'delete' : (data.isAlreadyContracted ? 'deactivate' : 'delete')">
                             <mat-icon *ngIf="output.get('deactivated').value">delete_forever</mat-icon>
                             <mat-icon *ngIf="!output.get('deactivated').value">{{ data.isAlreadyContracted ? 'do_not_disturb' : 'delete' }}</mat-icon>
                         </button>

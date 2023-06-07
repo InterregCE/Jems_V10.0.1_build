@@ -409,10 +409,12 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
     }
   }
 
-  .nav-link {
+  button.nav-link {
     display: block;
     padding: 0 1rem;
     text-decoration: none;
+    background: none;
+    border: none;
     @include hover-focus() {
       text-decoration: none;
     }
@@ -510,6 +512,7 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
   }
   &:focus {
     background: var(--background-card);
+    outline: 2px solid var(--primary-color);
   }
 }
 .language-list {
@@ -555,16 +558,6 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
 .show-pointer {
   cursor: pointer;
 }
-
-.vertical-splitter {
-  height: 60%;
-  width: 1px;
-  opacity: 0.5;
-  position: absolute;
-  right: 0;
-  top: 20%;
-}
-
 .toolbar {
   position: relative;
   box-sizing: border-box;

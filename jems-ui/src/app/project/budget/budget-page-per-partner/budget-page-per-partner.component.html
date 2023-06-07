@@ -49,7 +49,7 @@
                     <div class="justify-end" [ngClass]="getBudgetPercentageByFund(fund, budget.budgets) > 0 ? 'percentage-of-total-container' : ''">
                         <div>{{ getBudgetAmountForFund(fund, budget.budgets) | asMoney }}</div>
                         <div *ngIf="getBudgetPercentageByFund(fund, budget.budgets) > 0" class="font-color-grey mat-small">
-                            {{getBudgetPercentageByFund(fund, budget.budgets)}} % of total
+                            {{getBudgetPercentageByFund(fund, budget.budgets)}} {{'project.partner.fund.percentage.of.total' | translate}}
                         </div>
                     </div>
                     <span class="justify-end"> {{getPercentageAmountForFund(fund, budget.budgets) | asMoney}}

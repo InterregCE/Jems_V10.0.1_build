@@ -168,7 +168,7 @@ $jems-sunny-palette: (
 );
 
 $light-primary: mat.define-palette($jems-primary-palette, 500);
-$light-accent: mat.define-palette($jems-accent-palette, 500);
+$light-accent: mat.define-palette($jems-accent-palette, 900);
 $light-warn: mat.define-palette($jems-warn-palette, 500);
 
 $light-theme: mat.define-light-theme($light-primary, $light-accent, $light-warn);

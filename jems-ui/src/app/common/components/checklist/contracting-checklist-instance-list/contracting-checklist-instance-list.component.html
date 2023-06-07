@@ -75,7 +75,8 @@
                 (click)="editContractingDescription(checklist)"
                 [disabled]="(userCanEditContractingChecklists$ | async) === false"
                 color="primary" mat-icon-button
-                matTooltip="{{ 'file.table.action.description.tooltip' | translate }}">
+                matTooltip="{{ 'file.table.action.description.tooltip' | translate }}"
+                aria-label="edit">
             <mat-icon>edit</mat-icon>
         </button>
     </ng-container>
@@ -86,7 +87,8 @@
                 [disabled]="checklist.status !== Status.DRAFT || (userCanEditContractingChecklists$ | async) === false || (pageStore.currentUserEmail$ | async) !== checklist.creatorEmail"
                 color="accent"
                 mat-icon-button
-                matTooltip="{{'common.delete.entry.tooltip' | translate}}">
+                matTooltip="{{'common.delete.entry.tooltip' | translate}}"
+                aria-label="delete">
             <mat-icon>delete</mat-icon>
         </button>
     </ng-container>

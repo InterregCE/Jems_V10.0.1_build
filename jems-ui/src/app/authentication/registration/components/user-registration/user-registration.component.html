@@ -72,7 +72,7 @@
                     <div *ngIf="captcha.realCaptcha" class="captcha-container">
                         <img label="captchaLabel" [src]="'data:image/jpg;base64,'+ captcha.realCaptcha" alt="#" />
                         <span class="refresh-captcha-icon">
-                              <mat-icon  (click)="refreshCaptcha()">refresh</mat-icon>
+                              <button mat-icon-button (click)="refreshCaptcha()"><mat-icon>refresh</mat-icon></button>
                         </span>
                     </div>
                     <mat-form-field *ngIf="captcha.realCaptcha">

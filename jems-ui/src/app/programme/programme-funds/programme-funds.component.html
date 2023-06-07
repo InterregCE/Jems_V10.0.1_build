@@ -67,7 +67,8 @@
                 <div *ngIf="formState === FormState.EDIT && fundsForm.controls.length <= 19">
                     <div>
                         <button mat-icon-button type="button"
-                                (click)="addNewFund()">
+                                (click)="addNewFund()"
+                                aria-label="add">
                             <mat-icon>add</mat-icon>
                         </button>
                     </div>

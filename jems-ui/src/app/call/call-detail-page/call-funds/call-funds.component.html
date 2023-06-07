@@ -20,7 +20,8 @@
 
                     <mat-form-field>
                         <input [options]="{min: 1, max: 100, align: 'right'}"
-                               currencyMask formControlName="rate" matInput name="fundRateValue" type="decimal">
+                               currencyMask formControlName="rate" matInput name="fundRateValue" type="decimal"
+                               aria-label="percentage value">
                         <span matSuffix>{{'project.partner.budget.options.staff.costs.flat.rate.percent' | translate}}</span>
                     </mat-form-field>
 

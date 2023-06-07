@@ -20,7 +20,7 @@
                               formControlName="defaultForRegisteredUser" class="user-role-checkbox"
                               (click)="$event.stopPropagation()">
                 </mat-checkbox>
-                <mat-chip-list [selectable]="false">
+                <mat-chip-list [selectable]="false" aria-label="default role">
                     <mat-chip class="user-role-chip" disableRipple>{{'userRole.default.flag' | translate}}</mat-chip>
                 </mat-chip-list>
                 <span>{{'userRole.default.flag.info' | translate}}</span>
@@ -49,7 +49,7 @@
                                        matTreeNodePadding
                                        [class.bg-dark]="node.parentIndex % 2 === 0">
                             <div class="permission-row-wrapper">
-                                <button mat-icon-button disabled></button>
+                                <button mat-icon-button disabled aria-label="expansion toggle"></button>
                                 <div [class.mat-body-strong]="node.level === 0">{{ node.name | translate }}</div>
 
                                 <div class="controls">
@@ -139,7 +139,7 @@
                                        matTreeNodePadding
                                        [class.bg-dark]="node.parentIndex % 2 === 0">
                             <div class="permission-row-wrapper">
-                                <button mat-icon-button disabled></button>
+                                <button mat-icon-button disabled aria-label="expansion toggle"></button>
                                 <div [class.mat-body-strong]="node.level === 0">{{ node.name | translate }}</div>
 
                                 <div class="controls">
@@ -206,7 +206,8 @@
                                        [class.bg-dark]="node.parentIndex % 2 === 0">
                             <div class="permission-row-wrapper">
                                 <button mat-icon-button matTreeNodeToggle
-                                        [attr.aria-label]="'Toggle ' + node.name">
+                                        [attr.aria-label]="'Toggle ' + node.name"
+                                        aria-label="tree node toggle">
                                     <mat-icon class="mat-icon-rtl-mirror">
                                         {{treeControlInspect.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
                                     </mat-icon>
@@ -237,7 +238,7 @@
                                        matTreeNodePadding
                                        [class.bg-dark]="node.parentIndex % 2 === 0">
                             <div class="permission-row-wrapper">
-                                <button mat-icon-button disabled></button>
+                                <button mat-icon-button disabled aria-label="expansion toggle"></button>
                                 <mat-icon class="mr-1 mb-1">{{icon(node.form)?.value}}</mat-icon>
                                 <div [class.mat-body-strong]="node.level === 0">{{ node.name | translate }}</div>
 
@@ -305,7 +306,8 @@
                                        [class.bg-dark]="node.parentIndex % 2 === 0">
                             <div class="permission-row-wrapper">
                                 <button mat-icon-button matTreeNodeToggle
-                                        [attr.aria-label]="'Toggle ' + node.name">
+                                        [attr.aria-label]="'Toggle ' + node.name"
+                                        aria-label="tree node toggle">
                                     <mat-icon class="mat-icon-rtl-mirror">
                                         {{treeControlTopNavigation.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
                                     </mat-icon>

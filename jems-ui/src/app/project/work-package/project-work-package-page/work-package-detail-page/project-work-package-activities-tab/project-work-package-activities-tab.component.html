@@ -21,7 +21,8 @@
                             <button *ngIf="form.enabled && data.isAlreadyContracted"  [disabled]="activity.get('deactivated').value"
                                     matTooltip="{{ 'project.work.package.tab.activity.deactivate.tooltip' | translate}}"
                                     type="button" mat-icon-button color="accent"
-                                    (click)="deactivateActivity(i)">
+                                    (click)="deactivateActivity(i)"
+                                    aria-label="deactivate">
                                 <mat-icon *ngIf="activity.get('deactivated').value">delete_forever</mat-icon>
                                 <mat-icon *ngIf="!activity.get('deactivated').value">do_not_disturb</mat-icon>
                             </button>
@@ -29,7 +30,8 @@
                             <button *ngIf="form.enabled && !data.isAlreadyContracted"
                                     matTooltip="{{ 'project.work.package.tab.activity.delete.tooltip' | translate}}"
                                     type="button" mat-icon-button color="accent"
-                                    (click)="removeActivity(i)">
+                                    (click)="removeActivity(i)"
+                                    aria-label="delete">
                                 <mat-icon >delete</mat-icon>
                             </button>
 
@@ -90,7 +92,7 @@
                         <mat-form-field class="example-chip-list" appearance="fill"
                                         *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.STATE_AID_PARTNERS_INVOLVED">
                             <mat-label>{{ 'project.work.package.tab.activity.partnersInvolved' | translate }}</mat-label>
-                            <mat-chip-list #chipList [disabled]="!data.isEditable || data.partners.length === 0 ">
+                            <mat-chip-list #chipList [disabled]="!data.isEditable || data.partners.length === 0 " aria-label="involved partners">
                                 <mat-chip
                                         *ngFor="let partner of partners(i).value;let partnerIndex = index"
                                         [selectable]="false"
@@ -104,7 +106,8 @@
                                         #filterPartners
                                         [matAutocomplete]="auto"
                                         [matChipInputFor]="chipList"
-                                        [matChipInputSeparatorKeyCodes]="separatorKeysCodes">
+                                        [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                        aria-label="partner to add">
                             </mat-chip-list>
                             <mat-autocomplete #auto="matAutocomplete"
                                               (optionSelected)="addPartner(i, $event.option.value, data.partners); filterPartners.value = ''; filterPartners.blur()">
@@ -163,7 +166,8 @@
                                                     <button *ngIf="form.enabled && data.isAlreadyContracted" [disabled]="deliverable.get('deactivated').value"
                                                             matTooltip="{{ 'project.work.package.tab.deliverables.deactivate.tooltip' | translate}}"
                                                             type="button" mat-icon-button color="accent"
-                                                            (click)="deactivateDeliverable(i, j)">
+                                                            (click)="deactivateDeliverable(i, j)"
+                                                            aria-label="deactivate">
                                                         <mat-icon *ngIf="deliverable.get('deactivated').value">delete_forever</mat-icon>
                                                         <mat-icon *ngIf="!deliverable.get('deactivated').value">do_not_disturb</mat-icon>
                                                     </button>
@@ -171,7 +175,8 @@
                                                     <button *ngIf="form.enabled && !data.isAlreadyContracted"
                                                             matTooltip="{{ 'project.work.package.tab.deliverables.delete.tooltip' | translate}}"
                                                             type="button" mat-icon-button color="accent"
-                                                            (click)="removeDeliverable(i, j)">
+                                                            (click)="removeDeliverable(i, j)"
+                                                            aria-label="delete">
                                                         <mat-icon >delete</mat-icon>
                                                     </button>
                                                 </div>
@@ -181,7 +186,8 @@
                                 </div>
                             </jems-multi-language-container>
                             <button jemsText *ngIf="addDeliverableVisible(i)" mat-stroked-button type="button"
-                                    (click)="addNewDeliverable(i)">
+                                    (click)="addNewDeliverable(i)"
+                                    aria-label="add">
                                 <mat-icon>add</mat-icon>
                             </button>
                         </ng-container>

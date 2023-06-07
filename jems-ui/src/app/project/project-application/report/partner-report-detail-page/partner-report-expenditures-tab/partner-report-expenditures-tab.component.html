@@ -684,7 +684,8 @@
                                         class="delete-button"
                                         color="accent"
                                         tabindex="-1"
-                                        type="button">
+                                        type="button"
+                                        aria-label="delete">
                                     <mat-icon *ngIf="editAllowed(control.get(constants.FORM_CONTROL_NAMES.costGDPR).value, data.isGDPRCompliant, data.canEdit, data.isMonitorUser)"
                                             matTooltip="{{ (attachment(index).value ? 'project.application.partner.report.attachment.delete.file.first' : null) | translate }}">
                                         {{ attachment(index).value ? 'delete_forever' : 'delete'}}
@@ -704,7 +705,8 @@
             <button *ngIf="data.isReportEditable && !data.isReopenedLast && !data.isReopenedLimited"
                     mat-stroked-button type="button" class="mt-2"
                     [disabled]="items.length >= constants.MAX_NUMBER_OF_ITEMS"
-                    (click)="addNewItem()">
+                    (click)="addNewItem()"
+                    aria-label="add">
                 <mat-icon>add</mat-icon>
                 <span>&nbsp;{{'project.application.partner.report.expenditures.tab.button.add' | translate}}</span>
             </button>

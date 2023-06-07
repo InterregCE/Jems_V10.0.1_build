@@ -36,13 +36,15 @@
         <button *ngIf="(workPackageInvestment.title | translateContainerLessInputsBySystemLanguage | async) as title; else noTitle"
                 mat-icon-button color="accent"
                 (click)="$event.stopPropagation();delete(workPackageInvestment, workPackageInvestment.isAlreadyContracted, title)"
-                matTooltip="{{ (workPackageInvestment.isAlreadyContracted ? 'project.application.form.workpackage.investment.table.action.deactivate.tooltip' : 'project.application.form.workpackage.investment.table.action.delete.tooltip') | translate }}">
+                matTooltip="{{ (workPackageInvestment.isAlreadyContracted ? 'project.application.form.workpackage.investment.table.action.deactivate.tooltip' : 'project.application.form.workpackage.investment.table.action.delete.tooltip') | translate }}"
+                [attr.aria-label]="workPackageInvestment.isAlreadyContracted ? 'deactivate' : 'delete'">
             <mat-icon>{{ workPackageInvestment.isAlreadyContracted ? 'do_not_disturb' : 'delete' }}</mat-icon>
         </button>
         <ng-template #noTitle>
             <button mat-icon-button color="accent"
                     (click)="$event.stopPropagation();delete(workPackageInvestment, workPackageInvestment.isAlreadyContracted)"
-                    matTooltip="{{(workPackageInvestment.isAlreadyContracted ? 'project.application.form.workpackage.investment.table.action.deactivate.tooltip' : 'project.application.form.workpackage.investment.table.action.delete.tooltip') | translate }}">
+                    matTooltip="{{(workPackageInvestment.isAlreadyContracted ? 'project.application.form.workpackage.investment.table.action.deactivate.tooltip' : 'project.application.form.workpackage.investment.table.action.delete.tooltip') | translate }}"
+                    [attr.aria-label]="workPackageInvestment.isAlreadyContracted ? 'deactivate' : 'delete'">
                 <mat-icon>{{ workPackageInvestment.isAlreadyContracted ? 'do_not_disturb' : 'delete' }}</mat-icon>
             </button>
         </ng-template>

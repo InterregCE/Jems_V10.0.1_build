@@ -18,7 +18,7 @@
 
     <div *ngIf="fileManagementStore.canUpload$ | async">
         <input #selectFile (change)="uploadFile($event?.target)" onclick="this.value=null;"
-               type="file" [accept]="acceptedFilesTypes">
+               type="file" [accept]="acceptedFilesTypes" aria-label="upload file">
         <jems-pending-button (clicked)="selectFile.click()"
                              type="secondary"
                              icon="file_upload"

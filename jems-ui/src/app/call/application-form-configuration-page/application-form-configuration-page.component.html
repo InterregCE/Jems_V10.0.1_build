@@ -20,7 +20,8 @@
                         <button mat-icon-button
                                 [style.visibility]="!node.expandable ? 'hidden' : ''"
                                 [style.marginLeft.rem]="node.level"
-                                (click)="treeControl.toggle(node)">
+                                (click)="treeControl.toggle(node)"
+                                aria-label="expansion toggle">
                             <mat-icon class="mat-icon-rtl-mirror">
                                 {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
                             </mat-icon>

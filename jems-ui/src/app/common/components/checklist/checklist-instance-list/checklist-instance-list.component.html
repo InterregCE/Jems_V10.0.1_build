@@ -64,13 +64,15 @@
             [disabled]="(pageStore.currentUserEmail$ | async) !== checklist.creatorEmail && (pageStore.userCanConsolidate$ | async) === false"
             mat-icon-button color="primary"
             (click)="setDescriptionEditable(checklist);$event.stopPropagation();"
-            matTooltip="{{'programme.checklists.edit.comment' | translate}}">
+            matTooltip="{{'programme.checklists.edit.comment' | translate}}"
+            aria-label="edit">
         <mat-icon>edit</mat-icon>
     </button>
     <button *ngIf="checklist.status === Status.DRAFT && (pageStore.currentUserEmail$ | async) === checklist.creatorEmail"
             mat-icon-button color="accent"
             (click)="delete(checklist);$event.stopPropagation();"
-            matTooltip="{{'common.delete.entry.tooltip' | translate}}">
+            matTooltip="{{'common.delete.entry.tooltip' | translate}}"
+            aria-label="delete">
         <mat-icon>delete</mat-icon>
     </button>
 </ng-template>

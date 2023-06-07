@@ -115,12 +115,14 @@
                 <input *ngIf="!allowsDecimalScore" class="text-right" type="integer" currencyMask matInput
                        [formControl]="controls.get('score')"
                        [(ngModel)]="sliderValues[index]"
-                       [maxLength]="3">
+                       [maxLength]="3"
+                       aria-label="score value">
 
                 <input *ngIf="allowsDecimalScore" class="text-right" type="decimal" currencyMask  matInput
                        [formControl]="controls.get('score') || {}"
                        [(ngModel)]="sliderValues[index]"
-                       [maxlength]="5">
+                       [maxlength]="5"
+                       aria-label="score value">
                 <mat-error>
                     <jems-form-field-errors class="error"
                                             [errors]="controls.get('score')?.errors"

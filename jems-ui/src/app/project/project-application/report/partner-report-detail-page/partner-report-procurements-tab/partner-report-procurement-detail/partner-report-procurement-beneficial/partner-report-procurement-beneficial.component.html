@@ -93,7 +93,8 @@
                 </mat-header-cell>
                 <mat-cell *matCellDef="let control; let i = index" class="border-cell-left text-center">
                     <button type="button" *ngIf="control.value?.createdInThisReport" (click)="deleteBeneficial(i)"
-                            color="accent" mat-icon-button>
+                            color="accent" mat-icon-button
+                            aria-label="delete">
                         <mat-icon>delete</mat-icon>
                     </button>
                 </mat-cell>
@@ -105,7 +106,8 @@
         </mat-table>
 
         <button type="button" mat-raised-button *ngIf="data.isReportEditable" jemsText class="mb-3 mt-3 mat-primary"
-                [disabled]="beneficials.length >= 10" (click)="addBeneficial()">
+                [disabled]="beneficials.length >= 10" (click)="addBeneficial()"
+                aria-label="add">
             <mat-icon>add</mat-icon>{{ 'project.application.partner.report.procurements.beneficial.add' | translate }}
         </button>
 

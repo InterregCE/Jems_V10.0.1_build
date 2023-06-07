@@ -18,7 +18,7 @@
   $warn: mat.get-color-from-palette(map-get($theme, warn));
 
   $text: mat.get-color-from-palette($foreground-palette, text);
-  $text-secondary: mat.get-color-from-palette($foreground-palette, secondary-text);
+  $text-secondary: mat.get-color-from-palette($foreground-palette, text, 0.6);
   $text-contrast: mat.get-color-from-palette($primary-theme, default-contrast);
   $text-contrast-lighter: mat.get-color-from-palette($primary-theme, lighter-contrast);
   $text-contrast-darker: mat.get-color-from-palette($primary-theme, darker-contrast);
@@ -42,7 +42,7 @@
   --table-highlight-color: #{if($is-dark-theme, lighten($background,2), lighten(mat.get-color-from-palette($primary-theme,50),5))};
   --table-hover-color: #c9e8fb;
   --table-border-color: #{if($is-dark-theme, $background, lighten(mat.get-color-from-palette(mat.$blue-gray-palette,100),1))};
-  --table-header-text-color: #{mat.get-color-from-palette(mat.$gray-palette,600,0.85)};
+  --table-header-text-color: #{mat.get-color-from-palette(mat.$gray-palette,600)};
 
   --light-yellow: #fde5c2;
   --pale-yellow: #fef5e7;

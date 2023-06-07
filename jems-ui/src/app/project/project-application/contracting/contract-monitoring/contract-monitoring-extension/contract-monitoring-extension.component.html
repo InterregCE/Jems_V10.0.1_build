@@ -101,7 +101,8 @@
 
         <button *ngIf="data.contractMonitoringEditable && !isAdditionalDataActivated && tableData.length < 25"
                 mat-stroked-button type="button" class="mt-2 mb-2"
-                (click)="addAdditionalEntryIntoForceData()">
+                (click)="addAdditionalEntryIntoForceData()"
+                aria-label="add">
             <mat-icon>add</mat-icon>
             <span>&nbsp;{{'project.application.contract.monitoring.project.entry.into.force.add' | translate}}</span>
         </button>

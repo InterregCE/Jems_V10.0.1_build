@@ -27,7 +27,7 @@ context('SPF Call Management tests', () => {
     cy.contains('button', 'Create').click();
 
     cy.contains('button', 'Publish call').should('be.disabled');
-    cy.contains('div#successMessage', 'pre-submission check plugin').should('be.visible');
+    cy.contains('div.successMessage', 'pre-submission check plugin').should('be.visible');
     cy.get('[formcontrolname="name"]:first').should('not.have.attr', 'readonly');
     for (const navItem of ['General call settings', 'Application form configuration', 'Budget Settings', 'Pre-submission check settings']) {
       cy.contains('div', navItem).should('be.visible');

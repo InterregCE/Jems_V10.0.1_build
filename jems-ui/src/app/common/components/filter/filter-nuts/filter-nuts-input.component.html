@@ -1,6 +1,6 @@
 <mat-form-field jemsFormFieldWidth="xx-large" appearance="fill">
     <mat-label>{{ label | translate }}</mat-label>
-    <mat-chip-list #filterChip>
+    <mat-chip-list #filterChip aria-label="filter values">
         <mat-chip class="chip-option" *ngFor="let value of valuesFull"
                   removable="true" [selectable]="false">
             <div matTooltipClass="filter-text-tooltip" matTooltip="{{ value.title }}">

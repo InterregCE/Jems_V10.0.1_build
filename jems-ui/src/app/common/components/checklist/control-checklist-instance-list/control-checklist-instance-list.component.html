@@ -72,7 +72,8 @@
                     (click)="editDescription(checklist)"
                     [disabled]="(userCanEditControlChecklists$ | async) === false"
                     color="primary" mat-icon-button
-                    matTooltip="{{ 'file.table.action.description.tooltip' | translate }}">
+                    matTooltip="{{ 'file.table.action.description.tooltip' | translate }}"
+                    aria-label="edit">
                 <mat-icon>edit</mat-icon>
             </button>
         </ng-container>
@@ -83,7 +84,8 @@
                     [disabled]="!isAfterControlChecklist(checklist.createdAt) || checklist.status !== Status.DRAFT || (userCanEditControlChecklists$ | async) === false || !currentUserIsCreator(checklist)"
                     color="accent"
                     mat-icon-button
-                    matTooltip="{{'common.delete.entry.tooltip' | translate}}">
+                    matTooltip="{{'common.delete.entry.tooltip' | translate}}"
+                    aria-label="delete">
                 <mat-icon>delete</mat-icon>
             </button>
         </ng-container>
@@ -92,7 +94,8 @@
             <button
                     [disabled]="true"
                     color="accent"
-                    mat-icon-button>
+                    mat-icon-button
+                    aria-label="lock status">
                 <mat-icon *ngIf="!isAfterControlChecklist(checklist.createdAt)" matTooltip="{{'common.checklist.locked.tooltip' | translate}}">lock</mat-icon>
                 <mat-icon *ngIf="isAfterControlChecklist(checklist.createdAt)">lock_open</mat-icon>
             </button>

@@ -20,7 +20,8 @@
 
     <div *ngIf="projectReportFileStore.isEditable$ | async">
         <input #selectFile (change)="uploadFile($event?.target)" onclick="this.value=null;"
-               type="file" [accept]="acceptedFilesTypes" [hidden]="true">
+               type="file" [accept]="acceptedFilesTypes" [hidden]="true"
+               aria-label="file to upload">
         <jems-pending-button *ngIf="data.canUserEdit"
                              type="secondary"
                              icon="file_upload"

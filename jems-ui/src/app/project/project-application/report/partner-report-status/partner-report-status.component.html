@@ -1,4 +1,4 @@
-<mat-chip-list>
+<mat-chip-list aria-label="status">
     <ng-container *ngFor="let currentChip of statuses; let first = first">
         <mat-icon *ngIf="currentChip.joiningIcon && !first">{{ currentChip.joiningIcon }}</mat-icon>
         <mat-chip [ngClass]="currentChip.enabled ? ('status-' + currentChip.status) : 'status-Disabled'">
