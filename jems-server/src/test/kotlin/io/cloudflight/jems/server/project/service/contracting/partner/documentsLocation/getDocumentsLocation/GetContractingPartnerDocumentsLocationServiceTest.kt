@@ -2,13 +2,14 @@ package io.cloudflight.jems.server.project.service.contracting.partner.documents
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.contracting.partner.documentsLocation.ContractingPartnerDocumentsLocation
+import io.cloudflight.jems.server.project.service.contracting.partner.documentsLocation.ContractingPartnerDocumentsLocationPersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 
-internal class GetContractingPartnerDocumentsLocationTest: UnitTest()  {
+internal class GetContractingPartnerDocumentsLocationServiceTest: UnitTest() {
 
     companion object {
         const val partnerId = 20L
@@ -38,16 +39,16 @@ internal class GetContractingPartnerDocumentsLocationTest: UnitTest()  {
     }
 
     @MockK
-    lateinit var service: GetContractingPartnerDocumentsLocationService
+    lateinit var documentsLocationPersistence: ContractingPartnerDocumentsLocationPersistence
 
     @InjectMockKs
-    lateinit var interactor: GetContractingPartnerDocumentsLocation
+    lateinit var getContractingPartnerDocumentsLocationService: GetContractingPartnerDocumentsLocationService
 
     @Test
     fun `get documents location`() {
-        every { service
+        every { documentsLocationPersistence
             .getDocumentsLocation(partnerId)
         } returns documentsLocation
-        Assertions.assertThat(interactor.getDocumentsLocation(partnerId)).isEqualTo(documentsLocation)
+        Assertions.assertThat(getContractingPartnerDocumentsLocationService.getDocumentsLocation(partnerId)).isEqualTo(documentsLocation)
     }
 }

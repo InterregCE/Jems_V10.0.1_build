@@ -11,19 +11,12 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class GetContractingManagement(
-    private val contractingManagementPersistence: ContractingManagementPersistence,
-    private val projectPersistence: ProjectPersistenceProvider,
-    private val validator: ContractingValidator,
-    ): GetContractingManagementInteractor {
+    private val getContractingManagementService: GetContractingManagementService,
+): GetContractingManagementInteractor {
 
     @CanViewProjectManagers
-    @Transactional(readOnly = true)
     @ExceptionWrapper(GetContractingManagementException::class)
-    override fun getContractingManagement(projectId: Long): List<ProjectContractingManagement> {
-        projectPersistence.getProjectSummary(projectId).let { projectSummary ->
-            validator.validateProjectStepAndStatus(projectSummary)
-        }
-        return contractingManagementPersistence.getContractingManagement(projectId)
-    }
+    override fun getContractingManagement(projectId: Long): List<ProjectContractingManagement> =
+        getContractingManagementService.getContractingManagement(projectId)
 
 }

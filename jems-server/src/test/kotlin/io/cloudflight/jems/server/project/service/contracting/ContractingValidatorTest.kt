@@ -179,7 +179,7 @@ class ContractingValidatorTest : UnitTest() {
     @Test
     fun `should be successful if project status is correct`() {
         assertDoesNotThrow {
-            validator.validateProjectStepAndStatus(projectSummary)
+            ContractingValidator.validateProjectStepAndStatus(projectSummary)
         }
     }
 
@@ -195,7 +195,7 @@ class ContractingValidatorTest : UnitTest() {
         )
 
         val ex = assertThrows<ContractingDeniedException> {
-            validator.validateProjectStepAndStatus(projectSummary)
+            ContractingValidator.validateProjectStepAndStatus(projectSummary)
         }
         assertEquals(CONTRACTING_ERROR, ex.i18nMessage.i18nKey)
     }
@@ -212,7 +212,7 @@ class ContractingValidatorTest : UnitTest() {
         )
 
         val ex = assertThrows<ContractingDeniedException> {
-            validator.validateProjectStepAndStatus(projectSummary)
+            ContractingValidator.validateProjectStepAndStatus(projectSummary)
         }
         assertEquals(CONTRACTING_ERROR, ex.i18nMessage.i18nKey)
     }
@@ -229,7 +229,7 @@ class ContractingValidatorTest : UnitTest() {
         )
 
         assertDoesNotThrow {
-            validator.validateProjectStatusForModification(projectSummary)
+            ContractingValidator.validateProjectStatusForModification(projectSummary)
         }
     }
 
@@ -245,7 +245,7 @@ class ContractingValidatorTest : UnitTest() {
         )
 
         val ex = assertThrows<ContractingModificationDeniedException> {
-            validator.validateProjectStatusForModification(projectSummary)
+            ContractingValidator.validateProjectStatusForModification(projectSummary)
         }
         assertEquals(CONTRACTING_MODIFICATION_ERROR, ex.i18nMessage.i18nKey)
     }

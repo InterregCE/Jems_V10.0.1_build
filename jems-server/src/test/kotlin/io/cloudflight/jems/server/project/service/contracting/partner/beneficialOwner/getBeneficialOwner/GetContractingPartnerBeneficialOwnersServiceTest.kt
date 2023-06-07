@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.service.contracting.partner.beneficia
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.contracting.partner.beneficialOwner.ContractingPartnerBeneficialOwner
-import io.cloudflight.jems.server.project.service.contracting.partner.beneficialOwner.getBeneficialOwners.GetContractingPartnerBeneficialOwners
+import io.cloudflight.jems.server.project.service.contracting.partner.beneficialOwner.ContractingPartnerBeneficialOwnersPersistence
 import io.cloudflight.jems.server.project.service.contracting.partner.beneficialOwner.getBeneficialOwners.GetContractingPartnerBeneficialOwnersService
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -10,7 +10,7 @@ import io.mockk.impl.annotations.MockK
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 
-internal class GetContractingPartnerBeneficialOwnersTest: UnitTest() {
+internal class GetContractingPartnerBeneficialOwnersServiceTest: UnitTest() {
 
     companion object {
         private val beneficialOwner1 = ContractingPartnerBeneficialOwner(
@@ -32,20 +32,21 @@ internal class GetContractingPartnerBeneficialOwnersTest: UnitTest() {
     }
 
     @MockK
-    lateinit var getContractingPartnerBeneficialOwnersService: GetContractingPartnerBeneficialOwnersService
+    lateinit var beneficialOwnersPersistence: ContractingPartnerBeneficialOwnersPersistence
 
     @InjectMockKs
-    lateinit var interactor: GetContractingPartnerBeneficialOwners
+    lateinit var getContractingPartnerBeneficialOwnersService: GetContractingPartnerBeneficialOwnersService
 
     @Test
     fun `get beneficial owners`() {
         val partnerId = 20L
-        every { getContractingPartnerBeneficialOwnersService
+        every { beneficialOwnersPersistence
             .getBeneficialOwners(partnerId)
         } returns listOf(
-            beneficialOwner1, beneficialOwner2
+            beneficialOwner1,
+            beneficialOwner2
         )
-        Assertions.assertThat(interactor.getBeneficialOwners(partnerId))
+        Assertions.assertThat(getContractingPartnerBeneficialOwnersService.getBeneficialOwners(partnerId))
             .containsExactly(
                 beneficialOwner1,
                 beneficialOwner2

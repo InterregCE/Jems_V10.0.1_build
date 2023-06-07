@@ -12,25 +12,10 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class GetContractInfo(
-    private val projectContractInfoPersistence: ProjectContractInfoPersistence,
-    private val getContractingMonitoringService: GetContractingMonitoringService,
-    private val projectPersistence: ProjectPersistenceProvider,
-    private val validator: ContractingValidator
+    private val getContractInfoService: GetContractInfoService,
 ): GetContractInfoInteractor {
 
     @CanViewContractsAndAgreements
-    @Transactional(readOnly = true)
     @ExceptionWrapper(GetContractInfoException::class)
-    override fun getContractInfo(projectId: Long): ProjectContractInfo {
-        projectPersistence.getProjectSummary(projectId).let { projectSummary ->
-            validator.validateProjectStepAndStatus(projectSummary)
-        }
-        val projectContractingMonitoring = getContractingMonitoringService.getProjectContractingMonitoring(projectId)
-        return projectContractInfoPersistence.getContractInfo(projectId).also {
-            it.projectStartDate = projectContractingMonitoring.startDate
-            it.projectEndDate = projectContractingMonitoring.endDate
-            it.subsidyContractDate =
-                projectContractingMonitoring.addDates.maxByOrNull { addDate -> addDate.number }?.entryIntoForceDate
-        }
-    }
+    override fun getContractInfo(projectId: Long): ProjectContractInfo = getContractInfoService.getContractInfo(projectId)
 }

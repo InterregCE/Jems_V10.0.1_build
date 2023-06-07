@@ -28,7 +28,7 @@ class UpdateContractingManagement(
         validator.validateSectionLock(ProjectContractingSection.ProjectManagers, projectId)
 
         projectPersistence.getProjectSummary(projectId).let { projectSummary ->
-            validator.validateProjectStepAndStatus(projectSummary)
+            ContractingValidator.validateProjectStepAndStatus(projectSummary)
             validator.validateManagerContacts(projectManagers)
         }
         return contractingManagementPersistence.updateContractingManagement(projectManagers)

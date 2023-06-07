@@ -9,13 +9,11 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class GetContractingPartnerBankingDetails(
-    private val bankingDetailsPersistence: ContractingPartnerBankingDetailsPersistence
+    private val getContractingPartnerBankingDetailsService: GetContractingPartnerBankingDetailsService
 ) : GetContractingPartnerBankingDetailsInteractor {
 
     @CanRetrieveProjectContractingPartner
-    @Transactional(readOnly = true)
     @ExceptionWrapper(GetContractingPartnerBankingDetailsException::class)
-    override fun getBankingDetails(partnerId: Long): ContractingPartnerBankingDetails? {
-        return bankingDetailsPersistence.getBankingDetails(partnerId)
-    }
+    override fun getBankingDetails(partnerId: Long): ContractingPartnerBankingDetails? =
+        getContractingPartnerBankingDetailsService.getBankingDetails(partnerId)
 }
