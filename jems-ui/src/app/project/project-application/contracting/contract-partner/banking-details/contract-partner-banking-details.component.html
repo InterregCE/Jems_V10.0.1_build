@@ -69,6 +69,21 @@
                 </jems-form-field-errors>
             </mat-error>
         </mat-form-field>
+        <mat-form-field>
+            <mat-label>{{ 'project.application.contract.partner.section.banking.details.internalReferenceNr' | translate }}</mat-label>
+            <input #internalReferenceNr formControlName="internalReferenceNr" matInput
+                   [ngModel]="activeBankingDetails?.internalReferenceNr">
+            <mat-hint [jemsHintFor]="internalReferenceNr"
+                      [hide]="partnerBankingDetailsForm.get('internalReferenceNr')?.errors !== null">
+                <jems-text-hint [currentLength]="internalReferenceNr?.value?.length"
+                                [maxLength]="50"></jems-text-hint>
+            </mat-hint>
+            <mat-error>
+                <jems-form-field-errors
+                        [errors]="partnerBankingDetailsForm?.controls?.internalReferenceNr?.errors">
+                </jems-form-field-errors>
+            </mat-error>
+        </mat-form-field>
 
         <h4>{{'project.application.contract.partner.section.banking.details.partner.subtitle.bank' | translate}}</h4>
         <mat-form-field [matTooltip]="bankName.value">
@@ -127,6 +142,18 @@
             <mat-error>
                 <jems-form-field-errors
                         [errors]="partnerBankingDetailsForm?.controls?.postalCode?.errors">
+                </jems-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>{{ 'project.application.contract.partner.section.banking.details.city' | translate }}</mat-label>
+            <input #city formControlName="city" matInput [ngModel]="activeBankingDetails?.city">
+            <mat-hint [jemsHintFor]="city" [hide]="partnerBankingDetailsForm.get('city')?.errors !== null">
+                <jems-text-hint [currentLength]="city?.value?.length" [maxLength]="50"></jems-text-hint>
+            </mat-hint>
+            <mat-error>
+                <jems-form-field-errors
+                        [errors]="partnerBankingDetailsForm?.controls?.city?.errors">
                 </jems-form-field-errors>
             </mat-error>
         </mat-form-field>

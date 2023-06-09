@@ -4,17 +4,18 @@ import {FormService} from '@common/components/section/form/form.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {combineLatest, Observable, of} from 'rxjs';
 import {
-  ContractingPartnerBankingDetailsDTO,
-  OutputNuts,
-  ProjectContractingPartnerBankingDetailsService,
-  ProjectPartnerSummaryDTO
+    ContractingPartnerBankingDetailsDTO,
+    OutputNuts,
+    ProjectContractingPartnerBankingDetailsService,
+    ProjectPartnerSummaryDTO
 } from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {catchError, map, startWith, switchMap, take, tap} from 'rxjs/operators';
 import {ContractPartnerStore} from '@project/project-application/contracting/contract-partner/contract-partner.store';
-import {ProjectAssociatedOrganizationStore} from '@project/project-application/containers/project-application-form-page/services/project-associated-organization-store.service';
+import {
+    ProjectAssociatedOrganizationStore
+} from '@project/project-application/containers/project-application-form-page/services/project-associated-organization-store.service';
 import {ProjectPartnerRoleEnum} from '@project/model/ProjectPartnerRoleEnum';
-import {ContractingSectionLockStore} from '@project/project-application/contracting/contracting-section-lock.store';
 
 @UntilDestroy()
 @Component({
@@ -42,10 +43,12 @@ export class ContractPartnerBankingDetailsComponent {
         accountNumber: ['', Validators.maxLength(50)],
         accountIBAN: ['', Validators.maxLength(50)],
         accountSwiftBICCode: ['', Validators.maxLength(50)],
+        internalReferenceNr: ['', Validators.maxLength(50)],
         bankName: ['', Validators.maxLength(100)],
         streetName: ['', Validators.maxLength(50)],
         streetNumber: ['', Validators.maxLength(20)],
         postalCode: ['', Validators.maxLength(20)],
+        city: ['', Validators.maxLength(50)],
         country: [''],
         countryCode: [''],
         nutsTwoRegion: [''],
@@ -219,10 +222,12 @@ export class ContractPartnerBankingDetailsComponent {
         this.partnerBankingDetailsForm.controls.accountNumber.setValue(bankingDetails?.accountNumber);
         this.partnerBankingDetailsForm.controls.accountIBAN.setValue(bankingDetails?.accountIBAN);
         this.partnerBankingDetailsForm.controls.accountSwiftBICCode.setValue(bankingDetails?.accountSwiftBICCode);
+        this.partnerBankingDetailsForm.controls.internalReferenceNr.setValue(bankingDetails?.internalReferenceNr);
         this.partnerBankingDetailsForm.controls.bankName.setValue(bankingDetails?.bankName);
         this.partnerBankingDetailsForm.controls.streetName.setValue(bankingDetails?.streetName);
         this.partnerBankingDetailsForm.controls.streetNumber.setValue(bankingDetails?.streetNumber);
         this.partnerBankingDetailsForm.controls.postalCode.setValue(bankingDetails?.postalCode);
+        this.partnerBankingDetailsForm.controls.city.setValue(bankingDetails?.city);
         this.partnerBankingDetailsForm.controls.country.setValue(bankingDetails?.country);
         this.partnerBankingDetailsForm.controls.nutsTwoRegion.setValue(bankingDetails?.nutsTwoRegion);
         this.partnerBankingDetailsForm.controls.nutsThreeRegion.setValue(bankingDetails?.nutsThreeRegion);
@@ -246,10 +251,12 @@ export class ContractPartnerBankingDetailsComponent {
             accountNumber: this.partnerBankingDetailsForm.value.accountNumber,
             accountIBAN: this.partnerBankingDetailsForm.value.accountIBAN,
             accountSwiftBICCode: this.partnerBankingDetailsForm.value.accountSwiftBICCode,
+            internalReferenceNr: this.partnerBankingDetailsForm.value.internalReferenceNr,
             bankName: this.partnerBankingDetailsForm.value.bankName,
             streetName: this.partnerBankingDetailsForm.value.streetName,
             streetNumber: this.partnerBankingDetailsForm.value.streetNumber,
             postalCode: this.partnerBankingDetailsForm.value.postalCode,
+            city: this.partnerBankingDetailsForm.value.city,
             country: this.partnerBankingDetailsForm.value.country,
             nutsTwoRegion: this.partnerBankingDetailsForm.value.nutsTwoRegion,
             nutsThreeRegion: this.partnerBankingDetailsForm.value.nutsThreeRegion

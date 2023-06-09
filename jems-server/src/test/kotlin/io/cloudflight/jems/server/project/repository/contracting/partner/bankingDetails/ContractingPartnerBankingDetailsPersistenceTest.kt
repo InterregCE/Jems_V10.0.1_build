@@ -21,6 +21,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.slot
 import io.mockk.verify
+import java.util.Optional
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -28,12 +29,12 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
-import java.util.Optional
 
 internal class ContractingPartnerBankingDetailsPersistenceTest : UnitTest() {
 
     companion object {
-        const val projectId = 1L
+        private const val projectId = 1L
+        private const val partnerId = 2L
 
         private val projectSummary = ProjectSummary(
             id = projectId,
@@ -45,45 +46,51 @@ internal class ContractingPartnerBankingDetailsPersistenceTest : UnitTest() {
         )
 
         private val bankingDetails = ContractingPartnerBankingDetails(
-            partnerId = 1L,
+            partnerId = partnerId,
             accountHolder = "Test",
             accountNumber = "123",
             accountIBAN = "RO99BT123",
             accountSwiftBICCode = "MIDT123",
+            internalReferenceNr = "IRNR",
             bankName = "BT",
             streetName = "Test",
             streetNumber = "42A",
             postalCode = "000123",
+            city = "city dummy",
             country = "Österreich (AT)",
             nutsTwoRegion = "Wien (AT13)",
             nutsThreeRegion = "Wien (AT130)"
         )
 
         private val bankingDetailsToBeUpdatedTo = ContractingPartnerBankingDetails(
-            partnerId = 1L,
+            partnerId = partnerId,
             accountHolder = "Testing",
             accountNumber = "1234",
             accountIBAN = "RO99BT1234",
             accountSwiftBICCode = "MIDT1234",
+            internalReferenceNr = "IRNR-new",
             bankName = "BTI",
             streetName = "Testing",
             streetNumber = "42B",
             postalCode = "0001243",
-            country = "Österreich (AT)",
-            nutsTwoRegion = "Wien (AT13)",
-            nutsThreeRegion = "Wien (AT130)"
+            city = "city dummy new",
+            country = "Antarctica (AQ)",
+            nutsTwoRegion = "Antractica (AQ00)",
+            nutsThreeRegion = "Antarctica (AQ000)"
         )
 
         private val bankingDetailsEntity = ProjectContractingPartnerBankingDetailsEntity(
-            partnerId = 1L,
+            partnerId = partnerId,
             accountHolder = "Test",
             accountNumber = "123",
             accountIBAN = "RO99BT123",
             accountSwiftBICCode = "MIDT123",
+            internalReferenceNr = "IRNR",
             bankName = "BT",
             streetName = "Test",
             streetNumber = "42A",
             postalCode = "000123",
+            city = "city dummy",
             country = "Österreich (AT)",
             nutsTwoRegion = "Wien (AT13)",
             nutsThreeRegion = "Wien (AT130)"
@@ -112,10 +119,9 @@ internal class ContractingPartnerBankingDetailsPersistenceTest : UnitTest() {
 
     @Test
     fun `get banking details - success`() {
-        val partnerId = 1L
-
         every { bankingDetailsRepository.findByPartnerId(partnerId) } returns bankingDetailsEntity
         every { projectPartnerRepository.findById(partnerId) } returns Optional.of(projectPartnerEntity())
+
         Assertions.assertThat(persistence.getBankingDetails(partnerId)).isEqualTo(bankingDetails)
     }
 
@@ -159,7 +165,9 @@ internal class ContractingPartnerBankingDetailsPersistenceTest : UnitTest() {
                         "accountHolder changed from '${bankingDetails.accountHolder}' to '${bankingDetailsToBeUpdatedTo.accountHolder}',\n" +
                         "accountNumber changed from '${bankingDetails.accountNumber}' to '${bankingDetailsToBeUpdatedTo.accountNumber}',\n" +
                         "accountIBAN changed from '${bankingDetails.accountIBAN}' to '${bankingDetailsToBeUpdatedTo.accountIBAN}',\n" +
-                        "accountSwiftBICCode changed from '${bankingDetails.accountSwiftBICCode}' to '${bankingDetailsToBeUpdatedTo.accountSwiftBICCode}'"
+                        "accountSwiftBICCode changed from '${bankingDetails.accountSwiftBICCode}' to '${bankingDetailsToBeUpdatedTo.accountSwiftBICCode}',\n" +
+                        "internalReferenceNr changed from '${bankingDetails.internalReferenceNr}' to '${bankingDetailsToBeUpdatedTo.internalReferenceNr}',\n" +
+                        "city changed from '${bankingDetails.city}' to '${bankingDetailsToBeUpdatedTo.city}'"
             )
         )
     }
@@ -208,7 +216,6 @@ internal class ContractingPartnerBankingDetailsPersistenceTest : UnitTest() {
 
     @Test
     fun `update banking details - different projectId`() {
-        val partnerId = 1L
         val projectId = 2L // different from 'projectPartnerEntity()'
 
         every { projectPartnerRepository.findById(partnerId) } returns Optional.of(projectPartnerEntity())
