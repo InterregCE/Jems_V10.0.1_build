@@ -14,35 +14,39 @@ import org.junit.jupiter.api.Test
 
 internal class ContractingPartnerBankingDetailsControllerTest : UnitTest() {
 
-    private val partnerId = 1L
-    private val projectId = 1L
-
     companion object {
+        private const val partnerId = 1L
+        private const val projectId = 2L
+
         private val bankingDetails = ContractingPartnerBankingDetails(
-            partnerId = 1L,
+            partnerId = partnerId,
             accountHolder = "Test",
             accountNumber = "123",
             accountIBAN = "RO99BT123",
             accountSwiftBICCode = "MIDT123",
+            internalReferenceNr = "internalReferenceNr",
             bankName = "BT",
             streetName = "Test",
             streetNumber = "42A",
             postalCode = "000123",
+            city = "Wien",
             country = "Österreich (AT)",
             nutsTwoRegion = "Wien (AT13)",
             nutsThreeRegion = "Wien (AT130)"
         )
 
         private val bankingDetailsDTO = ContractingPartnerBankingDetailsDTO(
-            partnerId = 1L,
+            partnerId = partnerId,
             accountHolder = "Test",
             accountNumber = "123",
             accountIBAN = "RO99BT123",
             accountSwiftBICCode = "MIDT123",
+            internalReferenceNr = "internalReferenceNr",
             bankName = "BT",
             streetName = "Test",
             streetNumber = "42A",
             postalCode = "000123",
+            city = "Wien",
             country = "Österreich (AT)",
             nutsTwoRegion = "Wien (AT13)",
             nutsThreeRegion = "Wien (AT130)"

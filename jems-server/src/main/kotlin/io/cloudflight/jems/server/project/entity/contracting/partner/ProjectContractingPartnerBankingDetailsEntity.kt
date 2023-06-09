@@ -23,7 +23,10 @@ class ProjectContractingPartnerBankingDetailsEntity (
     var accountIBAN: String?,
 
     @Column(name = "account_swift_bic_code")
-    var accountSwiftBICCode: String?,
+    val accountSwiftBICCode: String?,
+
+    @Column(name = "internal_reference_nr")
+    val internalReferenceNr: String?,
 
     @Column(name = "bank_name")
     var bankName: String?,
@@ -36,6 +39,8 @@ class ProjectContractingPartnerBankingDetailsEntity (
 
     @Column(name = "postal_code")
     var postalCode: String?,
+
+    val city: String?,
 
     @Column(name = "country")
     var country: String?,
