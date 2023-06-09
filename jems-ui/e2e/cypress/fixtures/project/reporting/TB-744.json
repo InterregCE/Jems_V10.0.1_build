@@ -1,0 +1,38 @@
+{
+  "partnerCollaborator": [
+    {
+      "userEmail": "applicant.user@jems.eu",
+      "level": "EDIT"
+    }
+  ],
+  "procurement": {
+    "id": 0,
+    "contractName": "PP - Rather important procurement",
+    "referenceNumber": "2000",
+    "contractDate": "2023-03-01",
+    "contractType": "Nervous handshake",
+    "contractAmount": 300,
+    "currencyCode": "EUR",
+    "supplierName": "Cloudflight Bus Company",
+    "vatNumber": "3333333",
+    "comment": "I have nothing to say, your honor."
+  },
+  "beneficialOwner": {
+    "birth": "1968-04-01",
+    "createdInThisReport": true,
+    "firstName": "Haywood",
+    "id": 0,
+    "lastName": "Floyd",
+    "vatNumber": "333333"
+  },
+  "subcontract": {
+    "createdInThisReport": true,
+    "contractName": "Master Chief helmet",
+    "referenceNumber": "HALO-3",
+    "contractDate": "2022-03-09",
+    "contractAmount": 100,
+    "currencyCode": "USD",
+    "supplierName": "Bungie",
+    "vatNumber": "111333"
+  }
+}

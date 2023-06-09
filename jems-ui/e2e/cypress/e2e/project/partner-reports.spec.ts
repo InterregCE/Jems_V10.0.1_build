@@ -1216,6 +1216,161 @@ context('Partner reports tests', () => {
     });
   });
 
+
+    it('TB-744 Partner report can be submitted', function () {
+        cy.fixture('project/reporting/TB-744.json').then(testData => {
+            cy.loginByRequest(user.programmeUser.email);
+            cy.createCall(call).then(callId => {
+
+                application.details.projectCallId = callId;
+                cy.publishCall(callId);
+                cy.loginByRequest(user.applicantUser.email);
+
+                cy.createContractedApplication(application, user.programmeUser.email).then(applicationId => {
+
+                    const partnerId1 = this[application.partners[0].details.abbreviation];
+
+                    cy.loginByRequest(user.applicantUser.email);
+                    cy.assignPartnerCollaborators(applicationId, partnerId1, testData.partnerCollaborator);
+
+                    cy.addPartnerReport(partnerId1).then(reportId => {
+                        cy.addPublicProcurement(partnerId1, reportId, testData.procurement)
+                            .then(procurement => {
+                                cy.updatePartnerReportIdentification(partnerId1, reportId, partnerReportIdentification);
+                                cy.updatePartnerReportExpenditures(partnerId1, reportId, partnerReportExpenditures)
+                                    .then(response => {
+                                        for (let i = 0; i < response.length; i++) {
+                                            partnerParkedExpenditures[i].id = response[i].id;
+                                        }
+                                    });
+                                cy.addBeneficialOwnerToProcurement(partnerId1, reportId, procurement.id, testData.beneficialOwner);
+                                cy.addSubcontractorToProcurement(partnerId1, reportId, procurement.id, testData.subcontract);
+                                cy.addAttachmentToProcurement('fileToUpload.txt', 'project/reporting/', partnerId1, reportId, procurement.id);
+
+
+                                cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId1}/reports/${reportId}/workplan`, {failOnStatusCode: false});
+                                cy.contains('mat-panel-title', 'Work package 1').click();
+                                cy.get('div.activity-container > jems-multi-language-container input').eq(0)
+                                    .scrollIntoView()
+                                    .invoke('show')
+                                    .selectFile('cypress/fixtures/project/reporting/fileToUpload.txt')
+                                    .invoke('hide');
+
+                                // submit report
+                                cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId1}/reports/${reportId}/submission`, {failOnStatusCode: false});
+                                cy.contains('Submit partner report').should('be.disabled');
+
+                                cy.contains('Run pre-submission check').should('be.enabled').click();
+
+                                cy.contains('Submit partner report', {timeout: 2000}).should('be.enabled').click();
+                                cy.contains('button', 'Confirm').should('be.visible').click();
+                            });
+
+                        verifyIdentification(applicationId, partnerId1, reportId);
+                        verifyWorkplan(applicationId, partnerId1, reportId);
+                        verifyProcurements(applicationId, partnerId1, reportId);
+                        verifyExpendituresCheckbox(applicationId, partnerId1, reportId);
+                        verifyContributions(applicationId, partnerId1, reportId);
+                        verifyAnnexesEditable(applicationId, partnerId1, reportId);
+                        verifyReportExport(applicationId, partnerId1, reportId);
+
+                    });
+                });
+            });
+        });
+    });
+
+    //region TB-744 METHODS
+    function verifyIdentification(applicationId, partnerId1, reportId) {
+        cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId1}/reports/${reportId}/identification`, {failOnStatusCode: false});
+        cy.get('input[name="startDate"]').should('be.disabled');
+        cy.get('input[name="endDate"]').should('be.disabled');
+        cy.get('mat-select').should('have.class', 'mat-select-disabled');
+    }
+
+    function verifyWorkplan(applicationId, partnerId1, reportId) {
+        cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId1}/reports/${reportId}/workplan`, {failOnStatusCode: false});
+        cy.contains('mat-panel-title', 'Work package 1').click();
+
+        cy.get('input[type="checkbox"]').each(cb => {
+            cy.wrap(cb).should('be.disabled');
+        });
+
+        cy.contains('div', 'A 1.1').parent().within(() => {
+            cy.get('jems-partner-actions-cell').scrollIntoView().within((e) => {
+                cy.contains('mat-icon', 'file_download').should('be.visible');
+                expect(e).to.not.contain('cancel');
+            });
+        });
+    }
+
+    function verifyProcurements(applicationId, partnerId1, reportId) {
+        cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId1}/reports/${reportId}/procurements`, {failOnStatusCode: false});
+
+        cy.contains('PP - Rather important procurement').click();
+
+        cy.get('jems-partner-procurement-identification input[name="reportNumber"]')
+            .should('be.disabled');
+
+        cy.get('jems-partner-procurement-identification input[name="contractName"]')
+            .should('be.disabled');
+
+        cy.get('jems-partner-procurement-identification input[name="referenceNumber"]')
+            .should('be.disabled');
+
+        cy.get('jems-partner-procurement-identification input[name="contractDate"]')
+            .should('be.disabled');
+
+        cy.get('jems-partner-procurement-identification input[name="contractType"]')
+            .should('be.disabled');
+
+        cy.get('jems-partner-procurement-identification input[name="contractAmount"]')
+            .should('be.disabled');
+
+        cy.get('mat-select[formcontrolname="currencyCode"]')
+            .should('have.class', 'mat-select-disabled');
+
+        cy.get('jems-partner-procurement-identification input[name="supplierName"]')
+            .should('be.disabled');
+
+        cy.get('jems-partner-procurement-identification input[name="vatNumber"]')
+            .should('be.disabled');
+
+        cy.get('[label="project.application.partner.report.procurements.table.comment"] textarea')
+            .should('be.disabled');
+    }
+
+    function verifyExpendituresCheckbox(applicationId, partnerId, reportId) {
+        cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/expenditures`, {failOnStatusCode: false});
+        cy.get('input[type="checkbox"]').each(cb => {
+            cy.wrap(cb).should('be.disabled');
+        });
+    }
+
+    function verifyContributions(applicationId, partnerId, reportId) {
+        cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/contribution`, {failOnStatusCode: false});
+        cy.get('input[type="decimal"]').each(input => {
+            cy.wrap(input).should('be.disabled');
+        });
+    }
+
+    function verifyAnnexesEditable(applicationId, partnerId, reportId) {
+        cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/annexes`, {failOnStatusCode: false});
+        cy.contains('mat-card', 'Report annexes').within(() => {
+            cy.contains('button', 'Upload file').should('not.exist');
+        });
+    }
+
+    function verifyReportExport(applicationId, partnerId, reportId) {
+        cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/export`, {failOnStatusCode: false});
+        cy.contains('div', 'Export Plugin').find('mat-select').click();
+        cy.contains('mat-option', 'Partner Report (Example) export').should('be.visible');
+        cy.contains('mat-option', 'Partner Report budget (Example) export').click();
+        cy.contains('button', 'Export').should('be.enabled');
+    }
+
+    // endregion
+
   //region TB-554 METHODS
   function verifyReport(reportInfo) {
     cy.contains('Partner report ID').next().should('contain.text', reportInfo.partnerReportId);

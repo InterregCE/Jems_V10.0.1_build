@@ -74,7 +74,7 @@ context('Application annexes tests', () => {
           cy.visit(`/app/project/detail/${applicationId}`, {failOnStatusCode: false});
           cy.contains('Application annexes').click();
           cy.get('mat-table').within(() => {
-            cy.contains('mat-ivon', 'delete').should('not.exist');
+            cy.contains('mat-icon', 'delete').should('not.exist');
             cy.contains('mat-icon', 'download').should('be.visible');
             cy.contains('mat-icon', 'download').clickToDownload(`api/project/${applicationId}/file/download/?*`, 'txt').then(returnValue => {
               cy.wrap(returnValue.fileName === 'application-attachment.txt').as('assertion');
