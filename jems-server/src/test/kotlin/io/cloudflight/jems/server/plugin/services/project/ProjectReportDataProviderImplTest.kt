@@ -11,7 +11,6 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionC.management.Pr
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.management.ProjectHorizontalPrinciplesEffectData
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.relevance.ProjectTargetGroupData
 import io.cloudflight.jems.plugin.contract.models.report.partner.identification.ProjectPartnerReportPeriodData
-import io.cloudflight.jems.plugin.contract.models.report.project.financialOverview.CertificateUnitCostBreakdownData
 import io.cloudflight.jems.plugin.contract.models.report.project.financialOverview.BudgetCostsCalculationResultFullData
 import io.cloudflight.jems.plugin.contract.models.report.project.financialOverview.CertificateCoFinancingBreakdownData
 import io.cloudflight.jems.plugin.contract.models.report.project.financialOverview.CertificateCoFinancingBreakdownLineData
@@ -23,10 +22,12 @@ import io.cloudflight.jems.plugin.contract.models.report.project.financialOvervi
 import io.cloudflight.jems.plugin.contract.models.report.project.financialOverview.CertificateInvestmentBreakdownLineData
 import io.cloudflight.jems.plugin.contract.models.report.project.financialOverview.CertificateLumpSumBreakdownData
 import io.cloudflight.jems.plugin.contract.models.report.project.financialOverview.CertificateLumpSumBreakdownLineData
+import io.cloudflight.jems.plugin.contract.models.report.project.financialOverview.CertificateUnitCostBreakdownData
 import io.cloudflight.jems.plugin.contract.models.report.project.financialOverview.CertificateUnitCostBreakdownLineData
-import io.cloudflight.jems.plugin.contract.models.report.project.identification.ProjectReportIdentificationData
 import io.cloudflight.jems.plugin.contract.models.report.project.identification.ContractingDeadlineTypeData
+import io.cloudflight.jems.plugin.contract.models.report.project.identification.ProjectReportBaseData
 import io.cloudflight.jems.plugin.contract.models.report.project.identification.ProjectReportData
+import io.cloudflight.jems.plugin.contract.models.report.project.identification.ProjectReportIdentificationData
 import io.cloudflight.jems.plugin.contract.models.report.project.identification.ProjectReportIdentificationTargetGroupData
 import io.cloudflight.jems.plugin.contract.models.report.project.identification.ProjectReportPeriodData
 import io.cloudflight.jems.plugin.contract.models.report.project.identification.ProjectReportSpendingProfileData
@@ -34,8 +35,8 @@ import io.cloudflight.jems.plugin.contract.models.report.project.identification.
 import io.cloudflight.jems.plugin.contract.models.report.project.partnerCertificates.PartnerReportCertificateData
 import io.cloudflight.jems.plugin.contract.models.report.project.projectResults.ProjectReportResultData
 import io.cloudflight.jems.plugin.contract.models.report.project.projectResults.ProjectReportResultPrincipleData
-import io.cloudflight.jems.plugin.contract.models.report.project.workPlan.ProjectReportWorkPackageData
 import io.cloudflight.jems.plugin.contract.models.report.project.workPlan.ProjectReportWorkPackageActivityData
+import io.cloudflight.jems.plugin.contract.models.report.project.workPlan.ProjectReportWorkPackageData
 import io.cloudflight.jems.plugin.contract.models.report.project.workPlan.ProjectReportWorkPackageOutputData
 import io.cloudflight.jems.plugin.contract.models.report.project.workPlan.ProjectReportWorkPackageOutputIndicatorSummaryData
 import io.cloudflight.jems.plugin.contract.models.report.project.workPlan.ProjectReportWorkPackageStatusData
@@ -50,11 +51,11 @@ import io.cloudflight.jems.server.project.service.model.ProjectHorizontalPrincip
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
 import io.cloudflight.jems.server.project.service.partner.model.NaceGroupLevel
 import io.cloudflight.jems.server.project.service.partner.model.PartnerSubType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
@@ -95,13 +96,12 @@ import io.cloudflight.jems.server.project.service.report.project.workPlan.Projec
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Test
-import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
-
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
+import org.springframework.data.domain.Pageable
 
 class ProjectReportDataProviderImplTest : UnitTest() {
 
@@ -856,6 +856,18 @@ class ProjectReportDataProviderImplTest : UnitTest() {
         } returns reportData
         every { projectPersistence.getProjectPeriods(PROJECT_ID, any()) } returns listOf(projectPeriod)
         assertThat(dataProvider.get(PROJECT_ID, reportId = REPORT_ID)).isEqualTo(expectedReportData)
+    }
+
+    @Test
+    fun getAllProjectReportsBaseDataByProjectId() {
+        val sequence = sequenceOf(
+            ProjectReportBaseData(80L, "v1.0", 1),
+            ProjectReportBaseData(81L, "v1.0", 2),
+            ProjectReportBaseData(82L, "v1.0", 1),
+        )
+
+        every { projectReportPersistence.getAllProjectReportsBaseDataByProjectId(PROJECT_ID) } returns sequence
+        assertThat(dataProvider.getAllProjectReportsBaseDataByProjectId(PROJECT_ID)).isEqualTo(sequence)
     }
 
     @Test
