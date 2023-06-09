@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.repository.report.project.base
 
+import io.cloudflight.jems.plugin.contract.models.report.project.identification.ProjectReportBaseData
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.entity.contracting.reporting.ProjectContractingReportingEntity
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
@@ -16,14 +17,15 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.verify
+import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.ZonedDateTime
+import java.util.stream.Stream
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
-import java.math.BigDecimal
-import java.time.LocalDate
-import java.time.ZonedDateTime
 
 class ProjectReportPersistenceProviderTest : UnitTest() {
 
@@ -127,6 +129,24 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
         val report = reportEntity(42L, projectId)
         every { projectReportRepository.findAllByProjectId(projectId, Pageable.unpaged()) } returns PageImpl(listOf(report))
         assertThat(persistence.listReports(projectId, Pageable.unpaged())).containsExactly(report(42L, projectId))
+    }
+
+    @Test
+    fun getAllProjectReportsBaseDataByProjectId() {
+        val streamData = Stream.of(
+            ProjectReportBaseData(80L, "v1.0", 1),
+            ProjectReportBaseData(81L, "v1.0", 2),
+            ProjectReportBaseData(82L, "v1.0", 1),
+        )
+        val sequence = sequenceOf(
+            ProjectReportBaseData(80L, "v1.0", 1),
+            ProjectReportBaseData(81L, "v1.0", 2),
+            ProjectReportBaseData(82L, "v1.0", 1),
+        )
+
+        every { projectReportRepository.findAllProjectReportsBaseDataByProjectId(75L) } returns streamData
+        assertThat(persistence.getAllProjectReportsBaseDataByProjectId(75L).toList())
+            .isEqualTo(sequence.toList())
     }
 
     @Test

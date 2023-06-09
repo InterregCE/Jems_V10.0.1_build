@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.repository.report.project.base
 
+import io.cloudflight.jems.plugin.contract.models.report.project.identification.ProjectReportBaseData
 import io.cloudflight.jems.server.project.repository.contracting.reporting.ProjectContractingReportingRepository
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.project.identification.ProjectReportSpendingProfileRepository
@@ -9,13 +10,14 @@ import io.cloudflight.jems.server.project.service.report.model.project.ProjectRe
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportDeadline
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
+import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.ZonedDateTime
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
-import java.math.BigDecimal
-import java.time.LocalDate
-import java.time.ZonedDateTime
+import kotlin.streams.asSequence
 
 @Repository
 class ProjectReportPersistenceProvider(
@@ -28,6 +30,10 @@ class ProjectReportPersistenceProvider(
     @Transactional(readOnly = true)
     override fun listReports(projectId: Long, pageable: Pageable): Page<ProjectReportModel> =
         projectReportRepository.findAllByProjectId(projectId, pageable).map { it.toModel() }
+
+    @Transactional(readOnly = true)
+    override fun getAllProjectReportsBaseDataByProjectId(projectId: Long): Sequence<ProjectReportBaseData> =
+        projectReportRepository.findAllProjectReportsBaseDataByProjectId(projectId).asSequence()
 
     @Transactional(readOnly = true)
     override fun getReportById(projectId: Long, reportId: Long): ProjectReportModel =

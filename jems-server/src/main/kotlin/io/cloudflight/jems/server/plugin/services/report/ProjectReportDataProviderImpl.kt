@@ -6,6 +6,7 @@ import io.cloudflight.jems.plugin.contract.models.report.project.financialOvervi
 import io.cloudflight.jems.plugin.contract.models.report.project.financialOverview.CertificateInvestmentBreakdownData
 import io.cloudflight.jems.plugin.contract.models.report.project.financialOverview.CertificateLumpSumBreakdownData
 import io.cloudflight.jems.plugin.contract.models.report.project.financialOverview.CertificateUnitCostBreakdownData
+import io.cloudflight.jems.plugin.contract.models.report.project.identification.ProjectReportBaseData
 import io.cloudflight.jems.plugin.contract.models.report.project.identification.ProjectReportData
 import io.cloudflight.jems.plugin.contract.models.report.project.identification.ProjectReportIdentificationData
 import io.cloudflight.jems.plugin.contract.models.report.project.partnerCertificates.PartnerReportCertificateData
@@ -31,6 +32,7 @@ import io.cloudflight.jems.server.project.service.report.project.resultPrinciple
 import io.cloudflight.jems.server.project.service.report.project.workPlan.ProjectReportWorkPlanPersistence
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class ProjectReportDataProviderImpl(
@@ -55,6 +57,10 @@ class ProjectReportDataProviderImpl(
             val periods = projectPersistence.getProjectPeriods(report.projectId, report.linkedFormVersion)
             report.toServiceModel { periodNumber -> periods.first { it.number == periodNumber } }
         }.toDataModel()
+
+    @Transactional(readOnly = true)
+    override fun getAllProjectReportsBaseDataByProjectId(projectId: Long): Sequence<ProjectReportBaseData> =
+        projectReportPersistence.getAllProjectReportsBaseDataByProjectId(projectId)
 
     override fun getIdentification(projectId: Long, reportId: Long): ProjectReportIdentificationData =
         this.getIdentificationPersistence.getReportIdentification(projectId, reportId).apply {
@@ -103,11 +109,9 @@ class ProjectReportDataProviderImpl(
         this.reportCertificateInvestmentCalculatorService.getSubmittedOrCalculateCurrent(projectId, reportId)
             .toDataModel()
 
-
     override fun getLumpSumOverview(projectId: Long, reportId: Long): CertificateLumpSumBreakdownData =
         this.getReportCertificateLumpSumBreakdownCalculator.getSubmittedOrCalculateCurrent(projectId, reportId)
             .toDataModel()
-
 
     override fun getUnitCostOverview(projectId: Long, reportId: Long): CertificateUnitCostBreakdownData =
         this.reportCertificateUnitCostCalculatorService.getSubmittedOrCalculateCurrent(projectId, reportId)

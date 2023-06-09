@@ -1,19 +1,22 @@
 package io.cloudflight.jems.server.project.service.report.project.base
 
+import io.cloudflight.jems.plugin.contract.models.report.project.identification.ProjectReportBaseData
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportDeadline
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 
 interface ProjectReportPersistence {
 
     fun listReports(projectId: Long, pageable: Pageable): Page<ProjectReportModel>
+
+    fun getAllProjectReportsBaseDataByProjectId(projectId: Long): Sequence<ProjectReportBaseData>
 
     fun getReportById(projectId: Long, reportId: Long): ProjectReportModel
 
