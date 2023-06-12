@@ -157,17 +157,17 @@ internal class ContractingPartnerBankingDetailsPersistenceTest : UnitTest() {
             AuditCandidate(
                 action = AuditAction.PROJECT_CONTRACT_PARTNER_INFO_CHANGE,
                 project = AuditProject(
-                    id = projectSummary.id.toString(),
-                    customIdentifier = projectSummary.customIdentifier,
-                    name = projectSummary.acronym
+                    id = "1",
+                    customIdentifier = "01",
+                    name = "project acronym"
                 ),
                 description = "Banking Details fields changed for partner $partnerName:\n" +
-                        "accountHolder changed from '${bankingDetails.accountHolder}' to '${bankingDetailsToBeUpdatedTo.accountHolder}',\n" +
-                        "accountNumber changed from '${bankingDetails.accountNumber}' to '${bankingDetailsToBeUpdatedTo.accountNumber}',\n" +
-                        "accountIBAN changed from '${bankingDetails.accountIBAN}' to '${bankingDetailsToBeUpdatedTo.accountIBAN}',\n" +
-                        "accountSwiftBICCode changed from '${bankingDetails.accountSwiftBICCode}' to '${bankingDetailsToBeUpdatedTo.accountSwiftBICCode}',\n" +
-                        "internalReferenceNr changed from '${bankingDetails.internalReferenceNr}' to '${bankingDetailsToBeUpdatedTo.internalReferenceNr}',\n" +
-                        "city changed from '${bankingDetails.city}' to '${bankingDetailsToBeUpdatedTo.city}'"
+                        "accountHolder changed from 'Test' to 'Testing',\n" +
+                        "accountNumber changed from '123' to '1234',\n" +
+                        "accountIBAN changed from 'RO99BT123' to 'RO99BT1234',\n" +
+                        "accountSwiftBICCode changed from 'MIDT123' to 'MIDT1234',\n" +
+                        "internalReferenceNr changed from 'IRNR' to 'IRNR-new',\n" +
+                        "city changed from 'city dummy' to 'city dummy new'"
             )
         )
     }
@@ -191,9 +191,9 @@ internal class ContractingPartnerBankingDetailsPersistenceTest : UnitTest() {
             AuditCandidate(
                 action = AuditAction.PROJECT_CONTRACT_PARTNER_INFO_CHANGE,
                 project = AuditProject(
-                    id = projectSummary.id.toString(),
-                    customIdentifier = projectSummary.customIdentifier,
-                    name = projectSummary.acronym
+                    id = "1",
+                    customIdentifier = "01",
+                    name = "project acronym"
                 ),
                 description = "Banking Details fields changed for partner $partnerName:\n(no-change)"
             )
