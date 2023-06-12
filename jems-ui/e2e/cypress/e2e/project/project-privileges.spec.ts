@@ -20,7 +20,7 @@ context('Project privileges tests', () => {
         // Add user privileges to the project
         cy.visit(`app/project/detail/${applicationId}/privileges`, {failOnStatusCode: false});
         cy.get('jems-application-form-privileges-expansion-panel').then(applicationFormUsers => {
-          cy.wrap(applicationFormUsers).contains('+').click();
+          cy.wrap(applicationFormUsers).contains('add').click();
           cy.wrap(applicationFormUsers).find('input[formcontrolname="userEmail"]').last().type(testData.projectCollaborator.email);
           cy.wrap(applicationFormUsers).contains('Save changes').click();
 
@@ -99,7 +99,7 @@ context('Project privileges tests', () => {
         cy.contains('div', 'Project collaborators were saved successfully').should('be.visible');
 
         //checking whether the user can be added twice
-        cy.contains('button', '+').click();
+        cy.contains('button', 'add').click();
         cy.get('input:last').type(testData.applicantView.email);
         cy.contains('div', 'The user emails must be unique').should('be.visible');
         cy.contains('button', 'Discard changes').click();
@@ -108,10 +108,11 @@ context('Project privileges tests', () => {
         // Testing the view privileges
         cy.loginByRequest(testData.applicantView.email);
         cy.visit('/');
-        cy.get('mat-table:first').contains('div', applicationId).should('be.visible');
+        cy.get('jems-table:first').contains('div', applicationId).should('be.visible');
         cy.visit(`/app/project/detail/${applicationId}/applicationFormIdentification`, {failOnStatusCode: false});
         cy.get("textarea:first").should('have.attr', 'readonly');
         cy.contains('Project privileges').click();
+        cy.get('mat-button-toggle-group:last').contains('span', 'view').parent().parent().should('be.disabled');
         cy.get('mat-button-toggle-group:last').contains('span', 'view').click();
         cy.contains('button', 'Save changes').should('not.exist');
         cy.contains('Export').click();
@@ -168,12 +169,12 @@ context('Project privileges tests', () => {
       cy.createApplication(application).then(applicationId => {
         cy.visit(`/app/project/detail/${applicationId}/privileges`, {failOnStatusCode: false});
       });
-      cy.contains('button', '+').click();
+      cy.contains('button', 'add').click();
       cy.get('input:last').type(faker.internet.email());
       cy.contains('button', 'Save changes').click();
       cy.contains('div', 'Input data are not valid').should('be.visible');
       cy.get('.jems-layout-row:last').contains('mat-icon', 'delete').click();
-      cy.contains('button', '+').click();
+      cy.contains('button', 'add').click();
       cy.get('input:last').type(testData.programmeUser.email);
       cy.contains('button', 'Save changes').click();
       cy.contains('div', 'Input data are not valid').should('be.visible');
@@ -312,7 +313,7 @@ context('Project privileges tests', () => {
 
   function testEditPrivileges(applicationId) {
     cy.visit('/');
-    cy.get('mat-table:first').contains('div', applicationId).should('be.visible');
+    cy.get('jems-table:first').contains('div', applicationId).should('be.visible');
     cy.visit(`/app/project/detail/${applicationId}/applicationFormIdentification`, {failOnStatusCode: false});
     cy.get("textarea:first").should('not.have.attr', 'readonly');
     cy.visit(`/app/project/detail/${applicationId}/export`, {failOnStatusCode: false});
@@ -333,7 +334,7 @@ context('Project privileges tests', () => {
     cy.visit(`/app/project/detail/${applicationId}`, {failOnStatusCode: false});
     cy.wait(100);
     cy.contains('div', 'Project privileges').click();
-    cy.contains('button', '+').click();
+    cy.contains('button', 'add').click();
     cy.get('input:last').type(newUser.email);
     cy.get('mat-button-toggle-group:last').contains('span', privilegeLevel).click();
     cy.contains('button', 'Save changes').click();
