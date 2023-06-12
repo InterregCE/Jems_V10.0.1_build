@@ -14,9 +14,11 @@ export class ReportUtil {
 
   static isControlReportExists(status: ProjectPartnerReportDTO.StatusEnum): boolean {
     return [
-      ProjectPartnerReportDTO.StatusEnum.Certified,
       ProjectPartnerReportDTO.StatusEnum.InControl,
-      ProjectPartnerReportDTO.StatusEnum.ReOpenCertified
+      ProjectPartnerReportDTO.StatusEnum.ReOpenInControlLast,
+      ProjectPartnerReportDTO.StatusEnum.ReOpenInControlLimited,
+      ProjectPartnerReportDTO.StatusEnum.Certified,
+      ProjectPartnerReportDTO.StatusEnum.ReOpenCertified,
     ].includes(status);
   }
 
