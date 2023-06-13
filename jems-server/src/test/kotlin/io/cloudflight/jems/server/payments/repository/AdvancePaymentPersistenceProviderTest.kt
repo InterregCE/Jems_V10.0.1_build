@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.payments.repository
 
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO
 import io.cloudflight.jems.server.UnitTest
@@ -186,7 +185,7 @@ class AdvancePaymentPersistenceProviderTest: UnitTest() {
             id = paymentId,
             projectCustomIdentifier = project.customIdentifier,
             projectAcronym = project.acronym,
-            partnerType = ProjectPartnerRoleDTO.PARTNER,
+            partnerType = ProjectPartnerRole.PARTNER,
             partnerNumber = partnerDetail.sortNumber,
             partnerAbbreviation = partnerDetail.abbreviation,
             programmeFund = fund,

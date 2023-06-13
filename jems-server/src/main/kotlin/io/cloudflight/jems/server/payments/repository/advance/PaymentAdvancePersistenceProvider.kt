@@ -10,6 +10,7 @@ import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentUpdate
 import io.cloudflight.jems.server.payments.repository.toDetailModel
 import io.cloudflight.jems.server.payments.repository.toEntity
+import io.cloudflight.jems.server.payments.repository.toModel
 import io.cloudflight.jems.server.payments.repository.toModelList
 import io.cloudflight.jems.server.payments.service.advance.PaymentAdvancePersistence
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
@@ -45,6 +46,11 @@ class PaymentAdvancePersistenceProvider(
     override fun list(pageable: Pageable): Page<AdvancePayment> {
         return advancePaymentRepository.findAll(pageable).toModelList()
     }
+
+    @Transactional(readOnly = true)
+    override fun getPaymentsByProjectId(projectId: Long): List<AdvancePayment> =
+         advancePaymentRepository.findAllByProjectId(projectId).map { it.toModel() }
+
 
     @Transactional
     override fun deleteByPaymentId(paymentId: Long) {

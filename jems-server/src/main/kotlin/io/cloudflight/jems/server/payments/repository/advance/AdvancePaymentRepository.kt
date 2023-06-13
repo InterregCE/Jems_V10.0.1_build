@@ -5,4 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface AdvancePaymentRepository: JpaRepository<AdvancePaymentEntity, Long>
+interface AdvancePaymentRepository: JpaRepository<AdvancePaymentEntity, Long> {
+
+    fun findAllByProjectId(projectId: Long): List<AdvancePaymentEntity>
+}
