@@ -6,9 +6,9 @@
     "run": "cypress run --browser chrome",
     "open": "cypress open --e2e --browser chrome",
     "pretest": "wait-on $CYPRESS_BASE_URL -t 20000",
-    "test": "cy2 run -b chrome --parallel --record -k xxx --ci-build-id $CYPRESS_BUILD_ID",
-    "test_firefox": "cy2 run -b firefox --parallel --record -k xxx --ci-build-id $CYPRESS_BUILD_ID",
-    "test_edge": "cy2 run -b edge --parallel --record -k xxx --ci-build-id $CYPRESS_BUILD_ID"
+    "test": "npx cypress-cloud -b chrome --parallel --record -k xxx --ci-build-id $CYPRESS_BUILD_ID",
+    "test_firefox": "npx cypress-cloud -b firefox --parallel --record -k xxx --ci-build-id $CYPRESS_BUILD_ID",
+    "test_edge": "npx cypress-cloud -b edge --parallel --record -k xxx --ci-build-id $CYPRESS_BUILD_ID"
   },
   "author": "Cloudflight GmbH",
   "devDependencies": {
