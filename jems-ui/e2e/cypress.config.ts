@@ -1,4 +1,5 @@
 import {defineConfig} from 'cypress';
+const { cloudPlugin } = require('cypress-cloud/plugin');
 import date from 'date-and-time';
 import xlsx from 'node-xlsx';
 import fetch from 'node-fetch';
@@ -156,7 +157,7 @@ export default defineConfig({
       });
 
       console.log('JIRA executionKey set to: ' + config.env.executionKey);
-      return config;
+      return cloudPlugin(on, config);
     }
   },
 })
