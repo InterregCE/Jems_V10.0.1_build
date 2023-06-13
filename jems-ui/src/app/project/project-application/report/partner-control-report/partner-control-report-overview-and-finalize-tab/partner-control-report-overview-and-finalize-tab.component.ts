@@ -31,6 +31,7 @@ import {
 } from '@project/project-application/report/partner-report-detail-page/partner-report-financial-overview-tab/partner-report-financial-overview-store.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import CategoryEnum = ProjectPartnerReportUnitCostDTO.CategoryEnum;
+import {ReportUtil} from '@project/common/report-util';
 
 @UntilDestroy()
 @Component({
@@ -56,7 +57,8 @@ export class PartnerControlReportOverviewAndFinalizeTabComponent{
     overview: ControlWorkOverviewDTO;
     deduction: ControlDeductionOverviewDTO;
     finalizationAllowed: boolean;
-    isReportReopened: boolean;
+    controlOpenButReportAlso: boolean;
+    hideFinalizeSection: boolean;
     reportId: number;
     partnerId: number;
     userCanEdit: boolean;
@@ -112,10 +114,10 @@ export class PartnerControlReportOverviewAndFinalizeTabComponent{
       map(([overview, deduction, report, partnerId, userCanEdit, userCanView, controlReportOverview]: any) => ({
         overview,
         deduction,
-        finalizationAllowed: report.status === ProjectPartnerReportDTO.StatusEnum.InControl || report.status === ProjectPartnerReportDTO.StatusEnum.ReOpenCertified,
-        isReportReopened: report.status === ProjectPartnerReportDTO.StatusEnum.ReOpenInControlLast ||
-            report.status === ProjectPartnerReportDTO.StatusEnum.ReOpenInControlLimited ||
-            report.status === ProjectPartnerReportDTO.StatusEnum.ReOpenCertified,
+        finalizationAllowed: ReportUtil.controlCanBeFinalized(report.status),
+        controlOpenButReportAlso: report.status === ProjectPartnerReportDTO.StatusEnum.ReOpenInControlLast ||
+            report.status === ProjectPartnerReportDTO.StatusEnum.ReOpenInControlLimited,
+        hideFinalizeSection: ReportUtil.controlFinalized(report.status),
         reportId: report.id,
         partnerId,
         userCanEdit,
@@ -124,7 +126,7 @@ export class PartnerControlReportOverviewAndFinalizeTabComponent{
       })),
       tap(() => this.initForm()),
       tap(data => this.resetForm(data.controlReportOverview)),
-      tap(data => this.disableForms(data.userCanEdit))
+      tap(data => this.disableForms(data.userCanEdit, data.finalizationAllowed))
     );
   }
 
@@ -175,8 +177,8 @@ export class PartnerControlReportOverviewAndFinalizeTabComponent{
     this.overviewForm.controls.lastCertifiedReportNumber.setValue(partnerControlReport.lastCertifiedReportNumber);
   }
 
-  private disableForms(userCanEdit: boolean): void {
-    if (this.overviewForm.controls.controlWorkEndDate.value != null || !userCanEdit) {
+  private disableForms(userCanEdit: boolean, finalizationAllowed: boolean): void {
+    if (!finalizationAllowed || !userCanEdit) {
       this.overviewForm.disable();
     }
   }

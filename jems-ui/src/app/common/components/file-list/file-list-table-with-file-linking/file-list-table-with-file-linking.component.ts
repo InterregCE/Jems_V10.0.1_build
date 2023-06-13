@@ -251,11 +251,6 @@ export class FileListTableWithFileLinkingComponent implements OnInit, OnChanges,
     return this.attachmentForm.at(index).get('attachment') as FormControl;
   }
 
-  isDescriptionEditAllowed(): boolean {
-    return (this.reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.InControl ||
-      this.reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Certified) && this.isUserAllowedToEditReport;
-  }
-
   areFileOperationsAllowed(file: any): boolean {
     return (this.reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.InControl && this.isUserAllowedToEditReport) ||
     (this.reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Certified && this.isUserAllowedToEditReport && file === null);
