@@ -126,10 +126,7 @@
         <jems-alert show="true" *ngIf="data.userCanView && !data.userCanEdit && data.finalizationAllowed" [type]="Alert.INFO" [closable]="false">
             <span>{{ 'project.application.partner.report.finalize.no.edit.permission' | translate }}</span>
         </jems-alert>
-        <jems-alert show="true" *ngIf="data.userCanEdit && !data.finalizationAllowed" [type]="Alert.INFO" [closable]="false">
-            <span>{{ 'project.application.partner.report.finalize.wrong.status' | translate }}</span>
-        </jems-alert>
-        <jems-alert show="true" *ngIf="data.isReportReopened" [type]="Alert.WARNING">
+        <jems-alert show="true" *ngIf="data.controlOpenButReportAlso" [type]="Alert.WARNING" [closable]="false">
             <p>{{'project.application.partner.report.finalize.reopened.message' | translate}}</p>
         </jems-alert>
 
@@ -140,28 +137,30 @@
                 [reportId]=data.reportId>
         </jems-partner-control-report-generate-control-report-and-certificate>
 
-        <h3>{{'project.application.partner.report.title.finalize' | translate}}</h3>
-        <jems-alert show="true" *ngIf="data.userCanEdit && !data.finalizationAllowed" [type]="Alert.INFO" [closable]="false">
-            <span>{{ 'project.application.partner.report.finalize.wrong.status' | translate }}</span>
-        </jems-alert>
-        <div jemsNoWidthLimit *ngIf="data.userCanEdit && data.finalizationAllowed && !overviewForm.dirty" class="mt-3">
-            <jems-pending-button [pending]="preCheckPending" [disabled]="finalizationAvailable" class="mr-2 mt-2"
-                                 (clicked)="runPreCheckOnControlReport(data.partnerId, data.reportId)">
-                {{ 'project.detail.button.pre.condition.check' | translate }}
-            </jems-pending-button>
+        <ng-container *ngIf="data.userCanEdit && !data.hideFinalizeSection">
+            <h3>{{'project.application.partner.report.title.finalize' | translate}}</h3>
+            <jems-alert show="true" *ngIf="!data.finalizationAllowed" [type]="Alert.INFO" [closable]="false">
+                <span>{{ 'project.application.partner.report.finalize.wrong.status' | translate }}</span>
+            </jems-alert>
+            <div jemsNoWidthLimit *ngIf="data.finalizationAllowed && !overviewForm.dirty" class="mt-3">
+                <jems-pending-button [pending]="preCheckPending" [disabled]="finalizationAvailable" class="mr-2 mt-2"
+                                     (clicked)="runPreCheckOnControlReport(data.partnerId, data.reportId)">
+                    {{ 'project.detail.button.pre.condition.check' | translate }}
+                </jems-pending-button>
 
-            <mat-icon class="mr-2 vertical-middle">trending_flat</mat-icon>
+                <mat-icon class="mr-2 vertical-middle">trending_flat</mat-icon>
 
-            <jems-pending-button
-                    [confirm]="{ title: 'project.application.partner.report.button.finalize', message: 'project.application.partner.report.finalize.dialog.message' }"
-                    [pending]="finalizationLoading"
-                    [disabled]="!finalizationAvailable"
-                    [icon]="'workspace_premium'"
-                    (clicked)="finalizeReport(data.partnerId, data.reportId)"
-                    class="mr-2 mt-2">
-                {{ 'project.application.partner.report.button.finalize' | translate }}
-            </jems-pending-button>
-        </div>
+                <jems-pending-button
+                        [confirm]="{ title: 'project.application.partner.report.button.finalize', message: 'project.application.partner.report.finalize.dialog.message' }"
+                        [pending]="finalizationLoading"
+                        [disabled]="!finalizationAvailable"
+                        [icon]="'workspace_premium'"
+                        (clicked)="finalizeReport(data.partnerId, data.reportId)"
+                        class="mr-2 mt-2">
+                    {{ 'project.application.partner.report.button.finalize' | translate }}
+                </jems-pending-button>
+            </div>
+        </ng-container>
 
         <jems-alert *ngIf="error$ | async as error"
                     [show]="!!error.i18nMessage?.i18nKey"

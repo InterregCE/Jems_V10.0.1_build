@@ -47,4 +47,14 @@ export class ReportUtil {
       ProjectPartnerReportDTO.StatusEnum.ReOpenInControlLimited
     ].includes(status);
   }
+
+  static controlFinalized(status: ProjectPartnerReportDTO.StatusEnum): boolean {
+    return status === ProjectPartnerReportDTO.StatusEnum.Certified;
+  }
+
+  static controlCanBeFinalized(status: ProjectPartnerReportDTO.StatusEnum): boolean {
+    return status === ProjectPartnerReportDTO.StatusEnum.InControl
+      || status === ProjectPartnerReportDTO.StatusEnum.ReOpenCertified;
+  }
+
 }

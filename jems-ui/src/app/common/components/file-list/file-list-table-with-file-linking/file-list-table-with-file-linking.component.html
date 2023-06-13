@@ -59,7 +59,7 @@
                 </mat-header-cell>
                 <mat-cell *matCellDef="let file" class="justify-end">
 
-                    <ng-container *ngIf="descriptionForm.value.id !== file.parentEntityId && isDescriptionEditAllowed()">
+                    <ng-container *ngIf="descriptionForm.value.id !== file.parentEntityId">
                         <span *ngIf="file.description" jemsText maxLines="2"
                               class="mr-1 text-left fill-space-left-to-button" [matTooltip]="file.description">{{ file.description }}</span>
                         <button (click)="editDescription(file)" *ngIf="file.editable"
@@ -70,7 +70,7 @@
                         </button>
                     </ng-container>
 
-                    <form [formGroup]="descriptionForm" *ngIf="descriptionForm.value.id === file.parentEntityId && isDescriptionEditAllowed()" class="w-100">
+                    <form [formGroup]="descriptionForm" *ngIf="descriptionForm.value.id === file.parentEntityId" class="w-100">
                         <jems-expandable-textarea class="w-100"
                                                   label="file.table.column.name.description"
                                                   [control]="descriptionForm.controls.description"
