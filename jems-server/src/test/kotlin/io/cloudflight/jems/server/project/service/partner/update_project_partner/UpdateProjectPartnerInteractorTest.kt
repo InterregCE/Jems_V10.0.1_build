@@ -34,6 +34,7 @@ import org.junit.jupiter.api.TestFactory
 import org.junit.jupiter.api.assertThrows
 
 internal class UpdateProjectPartnerInteractorTest : UnitTest() {
+
     @MockK
     lateinit var persistence: PartnerPersistence
 
@@ -73,10 +74,10 @@ internal class UpdateProjectPartnerInteractorTest : UnitTest() {
             verify(exactly = 1) { generalValidator.notBlank(projectPartner.abbreviation, "abbreviation") }
             verify(exactly = 1) { generalValidator.maxLength(projectPartner.abbreviation, 15, "abbreviation") }
             verify(exactly = 1) {
-                generalValidator.maxLength(projectPartner.nameInOriginalLanguage, 100, "nameInOriginalLanguage")
+                generalValidator.maxLength(projectPartner.nameInOriginalLanguage, 250, "nameInOriginalLanguage")
             }
             verify(exactly = 1) {
-                generalValidator.maxLength(projectPartner.nameInEnglish, 100, "nameInEnglish")
+                generalValidator.maxLength(projectPartner.nameInEnglish, 250, "nameInEnglish")
             }
             verify(exactly = 1) { generalValidator.notNull(projectPartner.legalStatusId, "legalStatusId") }
             verify(exactly = 1) {

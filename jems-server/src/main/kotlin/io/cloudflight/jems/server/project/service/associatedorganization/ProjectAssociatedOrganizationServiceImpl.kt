@@ -90,13 +90,13 @@ class ProjectAssociatedOrganizationServiceImpl(
         projectAssociatedOrganizationRepo.saveAll(projectAssociatedOrganisations)
     }
 
-    private fun validateAssociatedOrganization(inputAssociatedOrganizaion: InputProjectAssociatedOrganization) =
+    private fun validateAssociatedOrganization(inputAssociatedOrganization: InputProjectAssociatedOrganization) =
         generalValidator.throwIfAnyIsInvalid(
-            generalValidator.notNull(inputAssociatedOrganizaion.partnerId, "partnerId"),
-            generalValidator.notNull(inputAssociatedOrganizaion.nameInOriginalLanguage, "nameInOriginalLanguage"),
-            generalValidator.maxLength(inputAssociatedOrganizaion.nameInOriginalLanguage, 100, "nameInOriginalLanguage"),
-            generalValidator.notNull(inputAssociatedOrganizaion.nameInEnglish, "nameInOriginalLanguage"),
-            generalValidator.maxLength(inputAssociatedOrganizaion.nameInEnglish, 100, "nameInOriginalLanguage"),
-            generalValidator.maxSize(inputAssociatedOrganizaion.contacts, 2, "contacts"),
+            generalValidator.notNull(inputAssociatedOrganization.partnerId, "partnerId"),
+            generalValidator.notNull(inputAssociatedOrganization.nameInOriginalLanguage, "nameInOriginalLanguage"),
+            generalValidator.maxLength(inputAssociatedOrganization.nameInOriginalLanguage, 250, "nameInOriginalLanguage"),
+            generalValidator.notNull(inputAssociatedOrganization.nameInEnglish, "nameInOriginalLanguage"),
+            generalValidator.maxLength(inputAssociatedOrganization.nameInEnglish, 250, "nameInOriginalLanguage"),
+            generalValidator.maxSize(inputAssociatedOrganization.contacts, 2, "contacts"),
         )
 }

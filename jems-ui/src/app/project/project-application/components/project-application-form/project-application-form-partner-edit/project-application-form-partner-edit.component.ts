@@ -12,13 +12,17 @@ import {catchError, map, startWith, take, tap} from 'rxjs/operators';
 import {MatDialog} from '@angular/material/dialog';
 import {Forms} from '@common/utils/forms';
 import {FormService} from '@common/components/section/form/form.service';
-import {ProjectPartnerStore} from '../../../containers/project-application-form-page/services/project-partner-store.service';
+import {
+  ProjectPartnerStore
+} from '../../../containers/project-application-form-page/services/project-partner-store.service';
 import {combineLatest, Observable, of} from 'rxjs';
 import {ActivatedRoute} from '@angular/router';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {Tools} from '@common/utils/tools';
 import {RoutingService} from '@common/services/routing.service';
-import {ProjectApplicationFormPartnerEditConstants} from '@project/project-application/components/project-application-form/project-application-form-partner-edit/constants/project-application-form-partner-edit.constants';
+import {
+  ProjectApplicationFormPartnerEditConstants
+} from '@project/project-application/components/project-application-form/project-application-form-partner-edit/constants/project-application-form-partner-edit.constants';
 import {ProjectPartnerRoleEnum} from '@project/model/ProjectPartnerRoleEnum';
 import {ProjectPartner} from '@project/model/ProjectPartner';
 import {TranslateService} from '@ngx-translate/core';
@@ -61,8 +65,8 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
       Validators.pattern(/(?!^\s+$)^.*$/m)]
     ],
     role: ['', Validators.required],
-    nameInOriginalLanguage: ['', Validators.maxLength(100)],
-    nameInEnglish: [[], Validators.maxLength(100)],
+    nameInOriginalLanguage: ['', Validators.maxLength(250)],
+    nameInEnglish: [[], Validators.maxLength(250)],
     department: [],
     partnerType: [0],
     spfBeneficiaryType: [''],
@@ -75,10 +79,6 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
     vat: ['', Validators.maxLength(50)],
     vatRecovery: ['']
   });
-
-  roleErrors = {
-    required: 'project.partner.role.should.not.be.empty',
-  };
   legalStatusErrors = {
     required: 'project.partner.legal.status.should.not.be.empty'
   };

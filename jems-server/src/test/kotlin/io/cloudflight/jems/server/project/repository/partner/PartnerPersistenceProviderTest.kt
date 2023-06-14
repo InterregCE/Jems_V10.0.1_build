@@ -56,6 +56,11 @@ import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import java.math.BigDecimal
+import java.sql.Timestamp
+import java.time.LocalDateTime
+import java.time.ZonedDateTime
+import java.util.Optional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -63,11 +68,6 @@ import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
-import java.math.BigDecimal
-import java.sql.Timestamp
-import java.time.LocalDateTime
-import java.time.ZonedDateTime
-import java.util.Optional
 
 class PartnerPersistenceProviderTest {
 
@@ -217,8 +217,8 @@ class PartnerPersistenceProviderTest {
 
     @Test
     fun findAllByProjectIdUnpaged() {
-        every { projectPartnerRepository.findTop30ByProjectId(0) } returns PageImpl(emptyList())
-        every { projectPartnerRepository.findTop30ByProjectId(1) } returns PageImpl(listOf(projectPartnerEntity()))
+        every { projectPartnerRepository.findTop50ByProjectId(0) } returns PageImpl(emptyList())
+        every { projectPartnerRepository.findTop50ByProjectId(1) } returns PageImpl(listOf(projectPartnerEntity()))
 
         assertThat(persistence.findTop30ByProjectId(0)).isEmpty()
         assertThat(persistence.findTop30ByProjectId(1)).containsExactly(projectPartnerDetail(id = PARTNER_ID))
@@ -254,7 +254,7 @@ class PartnerPersistenceProviderTest {
         every { projectPartnerRepository.save(any()) } returns projectPartnerEntity
         // also handle sorting
         val projectPartners = listOf(projectPartnerEntity, projectPartnerWithProject)
-        every { projectPartnerRepository.findTop30ByProjectId(1, any()) } returns projectPartners
+        every { projectPartnerRepository.findTop50ByProjectId(1, any()) } returns projectPartners
         every { projectPartnerRepository.saveAll(any<Iterable<ProjectPartnerEntity>>()) } returnsArgument 0
 
         assertThat(persistence.create(PROJECT_ID, projectPartnerRequest, true)).isEqualTo(projectPartnerDetail(sortNumber = 1))
@@ -271,7 +271,7 @@ class PartnerPersistenceProviderTest {
         every { projectPartnerRepository.countByProjectId(any()) } returns 2
 
         assertThat(persistence.create(PROJECT_ID, projectPartnerRequest, false)).isEqualTo(projectPartnerDetail(sortNumber = 2))
-        verify (atLeast = 0, atMost = 0) {projectPartnerRepository.findTop30ByProjectId(PROJECT_ID)}
+        verify (atLeast = 0, atMost = 0) {projectPartnerRepository.findTop50ByProjectId(PROJECT_ID)}
     }
 
     @Test
@@ -296,7 +296,7 @@ class PartnerPersistenceProviderTest {
         every { projectPartnerRepository.save(any()) } returns updatedEntity
         // also handle sorting
         val projectPartners = listOf(projectPartnerEntity(), updatedEntity)
-        every { projectPartnerRepository.findTop30ByProjectId(PROJECT_ID, any()) } returns projectPartners
+        every { projectPartnerRepository.findTop50ByProjectId(PROJECT_ID, any()) } returns projectPartners
 
         assertThrows<ProjectNotFoundException> { persistence.create(0, projectPartnerRequest, true) }
         assertThat(
@@ -312,7 +312,7 @@ class PartnerPersistenceProviderTest {
         )
         every { projectPartnerRepository.deleteById(projectPartnerWithOrganization.id) } returns Unit
         every {
-            projectPartnerRepository.findTop30ByProjectId(project.id, any())
+            projectPartnerRepository.findTop50ByProjectId(project.id, any())
         } returns emptySet()
         every { projectPartnerRepository.saveAll(emptyList()) } returns emptyList()
 
@@ -325,7 +325,7 @@ class PartnerPersistenceProviderTest {
         every { projectPartnerRepository.findById(PARTNER_ID) } returns Optional.of(projectPartnerEntity())
         every { projectPartnerRepository.deleteById(PARTNER_ID) } returns Unit
         every {
-            projectPartnerRepository.findTop30ByProjectId(project.id, any())
+            projectPartnerRepository.findTop50ByProjectId(project.id, any())
         } returns emptySet()
         every { projectPartnerRepository.saveAll(emptyList()) } returns emptyList()
 

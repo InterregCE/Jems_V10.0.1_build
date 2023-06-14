@@ -12,7 +12,7 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDe
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
-const val MAX_NUMBER_OF_PROJECT_PARTNERS = 30
+const val MAX_NUMBER_OF_PROJECT_PARTNERS = 50 // previous value = 30
 
 @Service
 class CreateProjectPartner(
@@ -49,8 +49,8 @@ class CreateProjectPartner(
             generalValidator.notNull(partner.role, "role"),
             generalValidator.notBlank(partner.abbreviation, "abbreviation"),
             generalValidator.maxLength(partner.abbreviation, 15, "abbreviation"),
-            generalValidator.maxLength(partner.nameInOriginalLanguage, 100, "nameInOriginalLanguage"),
-            generalValidator.maxLength(partner.nameInEnglish, 100, "nameInEnglish"),
+            generalValidator.maxLength(partner.nameInOriginalLanguage, 250, "nameInOriginalLanguage"),
+            generalValidator.maxLength(partner.nameInEnglish, 250, "nameInEnglish"),
             generalValidator.notNull(partner.legalStatusId, "legalStatusId"),
             generalValidator.maxLength(partner.otherIdentifierNumber, 50, "otherIdentifierNumber"),
             generalValidator.maxLength(partner.otherIdentifierDescription, 100, "otherIdentifierDescription"),
@@ -60,9 +60,7 @@ class CreateProjectPartner(
         )
 
     private fun shouldResortPartnersByRole(projectId: Long) =
-        projectPersistence.getProjectSummary(projectId).let { projectSummary ->
-            projectSummary.status.isModifiableStatusBeforeApproved()
-        }
+        projectPersistence.getProjectSummary(projectId).status.isModifiableStatusBeforeApproved()
 
     private fun isProjectCallNonStandard(projectId: Long) =
         projectPersistence.getProjectCallSettings(projectId).callType != CallType.STANDARD

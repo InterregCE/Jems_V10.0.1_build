@@ -209,7 +209,7 @@ private fun invalid(message: String? = null, fieldErrors: Map<String, I18nFieldE
 private fun validateDimensionCodes(dimensionCodes: List<Map<ProgrammeObjectiveDimension, List<String>>>) {
     val flattenedDimensionCodes = dimensionCodes.flatMap { it.values }
 
-    if (flattenedDimensionCodes.any { it.size > 20}) {
+    if (flattenedDimensionCodes.any { it.size > 40}) {
         invalid("programme.priority.dimension.codes.size.invalid")
     }
     if (flattenedDimensionCodes.flatten().any { it.toIntOrNull() == null || it.toInt() < 1}) {

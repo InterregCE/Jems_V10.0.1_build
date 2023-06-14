@@ -58,7 +58,7 @@
             <mat-hint [jemsHintFor]="nameInOriginalLanguageInput"
                       [hide]="controls?.nameInOriginalLanguage?.errors !== null">
                 <jems-text-hint [currentLength]="nameInOriginalLanguageInput?.value?.length"
-                               [maxLength]="100"></jems-text-hint>
+                               [maxLength]="250"></jems-text-hint>
             </mat-hint>
             <mat-error>
                 <jems-form-field-errors
@@ -72,7 +72,7 @@
             <jems-multi-language-form-field
                     label="project.organization.english.name.label"
                     formControlName="nameInEnglish"
-                    maxLength="100">
+                    maxLength="250">
             </jems-multi-language-form-field>
         </jems-multi-language-container>
 

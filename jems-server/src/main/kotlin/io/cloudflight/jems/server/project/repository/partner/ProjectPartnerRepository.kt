@@ -14,14 +14,14 @@ import io.cloudflight.jems.server.project.entity.partner.cofinancing.PartnerCont
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerTotalBudgetEntry
+import java.sql.Timestamp
+import java.util.Optional
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
-import java.sql.Timestamp
-import java.util.Optional
 
 @Repository
 interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
@@ -32,9 +32,9 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
 
     fun findAllByProjectId(projectId: Long, pageable: Pageable): Page<ProjectPartnerEntity>
 
-    fun findTop30ByProjectId(projectId: Long): Iterable<ProjectPartnerEntity>
+    fun findTop50ByProjectId(projectId: Long): Iterable<ProjectPartnerEntity>
 
-    fun findTop30ByProjectId(projectId: Long, sort: Sort): Iterable<ProjectPartnerEntity>
+    fun findTop50ByProjectId(projectId: Long, sort: Sort): Iterable<ProjectPartnerEntity>
 
     fun findFirstByProjectIdAndRole(projectId: Long, role: ProjectPartnerRole): Optional<ProjectPartnerEntity>
 
@@ -518,7 +518,6 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
     )
     fun getAllPartnerTotalBudgetDataAsOfTimestamp(partnerIds: Set<Long>, timestamp: Timestamp): List<ProjectPartnerTotalBudgetEntry>
 
-
     @Query(
         """
         SELECT spfCosts.partner_id as partnerId, spfCostsPeriod.period_number as periodNumber,
@@ -531,7 +530,6 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
         nativeQuery = true
     )
     fun getSpfBudgetByBeneficiaryId(partnerId: Long): List<ProjectSpfBeneficiaryBudgetPerPeriodRow>
-
 
     @Query(
         """

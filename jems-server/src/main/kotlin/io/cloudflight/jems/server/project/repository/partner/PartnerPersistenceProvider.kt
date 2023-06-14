@@ -92,7 +92,7 @@ class PartnerPersistenceProvider(
         return projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {
                 StreamSupport.stream(
-                    projectPartnerRepository.findTop30ByProjectId(projectId, sort).spliterator(),
+                    projectPartnerRepository.findTop50ByProjectId(projectId, sort).spliterator(),
                     false
                 ).map { it.toModel() }.collect(Collectors.toList())
             },
@@ -125,7 +125,7 @@ class PartnerPersistenceProvider(
     override fun findTop30ByProjectId(projectId: Long, version: String?): Iterable<ProjectPartnerDetail> {
         return projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {
-                projectPartnerRepository.findTop30ByProjectId(projectId).map { it.toProjectPartnerDetail() }.toSet()
+                projectPartnerRepository.findTop50ByProjectId(projectId).map { it.toProjectPartnerDetail() }.toSet()
             },
             previousVersionFetcher = { timestamp ->
                 projectPartnerRepository.findByProjectIdAsOfTimestamp(projectId, timestamp).toModel()
@@ -253,7 +253,7 @@ class PartnerPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getCurrentPartnerAssignmentMetadata(projectId: Long): List<ProjectPartnerAssignmentMetadata> =
-        projectPartnerRepository.findTop30ByProjectId(projectId).onlyAssignmentMetadata()
+        projectPartnerRepository.findTop50ByProjectId(projectId).onlyAssignmentMetadata()
 
     /**
      * sets or updates the sort number for all partners for the specified project.
@@ -266,7 +266,7 @@ class PartnerPersistenceProvider(
             )
         )
 
-        projectPartnerRepository.findTop30ByProjectId(projectId, sort)
+        projectPartnerRepository.findTop50ByProjectId(projectId, sort)
             .forEachIndexed { index, old -> old.sortNumber = index.plus(1) }
     }
 

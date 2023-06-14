@@ -9,7 +9,6 @@ import io.cloudflight.jems.server.common.validator.GeneralValidatorDefaultImpl
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.priority.getStringOfLength
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
-import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ExpenditureCostCategoryBreakdown
@@ -20,6 +19,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.identific
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportSpendingProfile
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportFileFormat
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportType
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.GetReportExpenditureCostCategoryCalculatorService
 import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportIdentificationPersistence
 import io.mockk.MockKAnnotations
@@ -28,12 +28,12 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import java.math.BigDecimal
+import java.time.LocalDate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.math.BigDecimal
-import java.time.LocalDate
 
 internal class UpdateProjectPartnerReportIdentificationTest : UnitTest() {
 
@@ -67,14 +67,14 @@ internal class UpdateProjectPartnerReportIdentificationTest : UnitTest() {
             startDate = TOMORROW,
             endDate = YESTERDAY,
             period = 2,
-            summary = setOf(InputTranslation(EN, getStringOfLength(2001))),
-            problemsAndDeviations = setOf(InputTranslation(EN, getStringOfLength(2001))),
+            summary = setOf(InputTranslation(EN, getStringOfLength(5001))),
+            problemsAndDeviations = setOf(InputTranslation(EN, getStringOfLength(5001))),
             targetGroups = listOf(
                 emptySet(),
                 setOf(InputTranslation(EN, getStringOfLength(2001))),
             ),
             nextReportForecast = BigDecimal.valueOf(999_999_999_9901, 4),
-            spendingDeviations = setOf(InputTranslation(EN, getStringOfLength(2001))),
+            spendingDeviations = setOf(InputTranslation(EN, getStringOfLength(5001))),
         )
 
         private fun saveResult(
@@ -126,7 +126,7 @@ internal class UpdateProjectPartnerReportIdentificationTest : UnitTest() {
 
     lateinit var generalValidator: GeneralValidatorService
 
-    lateinit var updateIdentification: UpdateProjectPartnerReportIdentification
+    private lateinit var updateIdentification: UpdateProjectPartnerReportIdentification
 
     @BeforeEach
     fun setup() {
@@ -179,10 +179,10 @@ internal class UpdateProjectPartnerReportIdentificationTest : UnitTest() {
 
         assertThat(ex.formErrors).hasSize(7)
         assertThat(ex.formErrors["summary.language.en"]).isEqualTo(I18nMessage(
-            "common.error.field.max.length", mapOf("actualLength" to "2001", "requiredLength" to "2000")
+            "common.error.field.max.length", mapOf("actualLength" to "5001", "requiredLength" to "5000")
         ))
         assertThat(ex.formErrors["problemsAndDeviations.language.en"]).isEqualTo(I18nMessage(
-            "common.error.field.max.length", mapOf("actualLength" to "2001", "requiredLength" to "2000")
+            "common.error.field.max.length", mapOf("actualLength" to "5001", "requiredLength" to "5000")
         ))
         assertThat(ex.formErrors["descriptionOfTheTargetGroup[1].language.en"]).isEqualTo(I18nMessage(
             "common.error.field.max.length", mapOf("actualLength" to "2001", "requiredLength" to "2000")
@@ -193,7 +193,7 @@ internal class UpdateProjectPartnerReportIdentificationTest : UnitTest() {
             "common.error.field.number.out.of.range", mapOf("number" to "999999999.9901", "min" to "0", "max" to "999999999.99")
         ))
         assertThat(ex.formErrors["spendingDeviations.language.en"]).isEqualTo(I18nMessage(
-            "common.error.field.max.length", mapOf("actualLength" to "2001", "requiredLength" to "2000")
+            "common.error.field.max.length", mapOf("actualLength" to "5001", "requiredLength" to "5000")
         ))
     }
 
