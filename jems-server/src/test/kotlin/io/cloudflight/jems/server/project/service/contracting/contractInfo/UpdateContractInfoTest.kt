@@ -13,11 +13,7 @@ import io.cloudflight.jems.server.project.service.contracting.contractInfo.updat
 import io.cloudflight.jems.server.project.service.contracting.contractInfo.updateContractInfo.UpdateContractInfoException
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractInfo
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
-import io.mockk.every
-import io.mockk.verify
-import io.mockk.just
-import io.mockk.Runs
-import io.mockk.slot
+import io.mockk.*
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.RelaxedMockK
 import org.assertj.core.api.Assertions.assertThat
@@ -70,8 +66,9 @@ class UpdateContractInfoTest: UnitTest() {
 
     @Test
     fun `update project contract info`() {
+        mockkObject(ContractingValidator.Companion)
         every { projectPersistence.getProjectSummary(1L) } returns projectSummary(ApplicationStatus.APPROVED)
-        every { validator.validateProjectStepAndStatus(projectSummary(ApplicationStatus.APPROVED)) } just Runs
+        every { ContractingValidator.validateProjectStepAndStatus(projectSummary(ApplicationStatus.APPROVED)) } just Runs
         every { projectContractInfoPersistence.updateContractInfo(1L, any()) } returns projectContractingInfo
 
         assertThat(updateContractInfo.updateContractInfo(1L, ProjectContractInfo(
@@ -92,8 +89,9 @@ class UpdateContractInfoTest: UnitTest() {
             subsidyContractDate = null,
             partnershipAgreementDate = LocalDate.of(2022, 9, 19)
         )
+        mockkObject(ContractingValidator.Companion)
         every { projectPersistence.getProjectSummary(1L) } returns projectSummary(ApplicationStatus.CONTRACTED)
-        every { validator.validateProjectStepAndStatus(projectSummary(ApplicationStatus.CONTRACTED)) } just Runs
+        every { ContractingValidator.validateProjectStepAndStatus(projectSummary(ApplicationStatus.CONTRACTED)) } just Runs
         every { projectContractInfoPersistence.getContractInfo(1L) } returns projectContractingInfo
         every { projectContractInfoPersistence.updateContractInfo(1L, any()) } returns expectedResult
 
@@ -118,8 +116,9 @@ class UpdateContractInfoTest: UnitTest() {
 
     @Test
     fun `update contract info for not approved projects throws exception`() {
+        mockkObject(ContractingValidator.Companion)
         every { projectPersistence.getProjectSummary(1L) } returns projectSummary(ApplicationStatus.SUBMITTED)
-        every { validator.validateProjectStatusForModification(projectSummary(ApplicationStatus.SUBMITTED)) } throws UpdateContractInfoException(
+        every { ContractingValidator.validateProjectStatusForModification(projectSummary(ApplicationStatus.SUBMITTED)) } throws UpdateContractInfoException(
             ContractingModificationDeniedException()
         )
 

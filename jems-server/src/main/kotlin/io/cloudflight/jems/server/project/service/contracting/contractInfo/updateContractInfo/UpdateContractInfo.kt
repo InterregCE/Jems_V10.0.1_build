@@ -28,7 +28,7 @@ class UpdateContractInfo(
         validator.validateSectionLock(ProjectContractingSection.ContractsAgreements, projectId)
 
         projectPersistence.getProjectSummary(projectId).let { projectSummary ->
-            validator.validateProjectStatusForModification(projectSummary)
+            ContractingValidator.validateProjectStatusForModification(projectSummary)
             val partnerShipAgreement =
                 projectContractInfoPersistence.getContractInfo(projectId).partnershipAgreementDate
             val updatedContractInfo = projectContractInfoPersistence.updateContractInfo(projectId, contractInfo)

@@ -12,7 +12,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import org.springframework.stereotype.Service
 
 @Service
-class ContractingValidator(
+open class ContractingValidator(
     private val validator: GeneralValidatorService,
     private val projectContractingSectionLockPersistence: ProjectContractingSectionLockPersistence,
     private val contractingPartnerLockPersistence: ContractingPartnerLockPersistence
@@ -20,27 +20,40 @@ class ContractingValidator(
 
     companion object {
         const val MAX_NUMBER_OF_ADD_DATES = 25
+
+        fun validateProjectStepAndStatus(projectSummary: ProjectSummary) {
+            if (projectSummary.isInStep1() ||
+                (projectSummary.isInStep2() && projectSummary.isNotApprovedOrAnyStatusAfterApproved())
+            ) {
+                throw ContractingDeniedException()
+            }
+        }
+
+        fun validateProjectStatusForModification(projectSummary: ProjectSummary) {
+            if (!projectSummary.status.isAlreadyApproved()
+                && !projectSummary.status.isModifiableStatusAfterApproved()
+                && !projectSummary.status.isModificationSubmitted()) {
+                throw ContractingModificationDeniedException()
+            }
+        }
+
+        private fun ProjectSummary.isNotApprovedOrAnyStatusAfterApproved(): Boolean =
+            status !in listOf(
+                ApplicationStatus.APPROVED,
+                ApplicationStatus.CONTRACTED,
+                ApplicationStatus.APPROVED_WITH_CONDITIONS,
+                ApplicationStatus.MODIFICATION_PRECONTRACTING,
+                ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED,
+                ApplicationStatus.IN_MODIFICATION,
+                ApplicationStatus.MODIFICATION_SUBMITTED,
+                ApplicationStatus.MODIFICATION_REJECTED
+            )
     }
 
     fun validateManagerContacts(projectManagers: List<ProjectContractingManagement>) {
         projectManagers.forEach { contact -> validateContact(contact) }
     }
 
-    fun validateProjectStepAndStatus(projectSummary: ProjectSummary) {
-        if (projectSummary.isInStep1() ||
-            (projectSummary.isInStep2() && projectSummary.isNotApprovedOrAnyStatusAfterApproved())
-        ) {
-            throw ContractingDeniedException()
-        }
-    }
-
-    fun validateProjectStatusForModification(projectSummary: ProjectSummary) {
-        if (!projectSummary.status.isAlreadyApproved()
-            && !projectSummary.status.isModifiableStatusAfterApproved()
-            && !projectSummary.status.isModificationSubmitted()) {
-            throw ContractingModificationDeniedException()
-        }
-    }
 
     fun validateMonitoringInput(monitoring: ProjectContractingMonitoring) =
         validator.throwIfAnyIsInvalid(
@@ -71,19 +84,6 @@ class ContractingValidator(
                 validator.matches(managerContact.email, EMAIL_REGEX, "email", "project.contact.email.wrong.format"),
             validator.maxLength(managerContact.telephone, 25, "telephone"),
         )
-
     }
-
-    fun ProjectSummary.isNotApprovedOrAnyStatusAfterApproved(): Boolean =
-        status !in listOf(
-            ApplicationStatus.APPROVED,
-            ApplicationStatus.CONTRACTED,
-            ApplicationStatus.APPROVED_WITH_CONDITIONS,
-            ApplicationStatus.MODIFICATION_PRECONTRACTING,
-            ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED,
-            ApplicationStatus.IN_MODIFICATION,
-            ApplicationStatus.MODIFICATION_SUBMITTED,
-            ApplicationStatus.MODIFICATION_REJECTED
-        )
 
 }

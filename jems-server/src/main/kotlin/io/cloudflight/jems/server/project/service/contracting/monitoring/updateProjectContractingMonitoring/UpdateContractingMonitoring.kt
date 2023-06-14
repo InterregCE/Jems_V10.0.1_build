@@ -51,7 +51,7 @@ class UpdateContractingMonitoring(
         contractMonitoring: ProjectContractingMonitoring
     ): ProjectContractingMonitoring {
         projectPersistence.getProjectSummary(projectId).let { projectSummary ->
-            validator.validateProjectStatusForModification(projectSummary)
+            ContractingValidator.validateProjectStatusForModification(projectSummary)
             validator.validateMonitoringInput(contractMonitoring)
 
             val version = versionPersistence.getLatestApprovedOrCurrent(projectId = projectId)

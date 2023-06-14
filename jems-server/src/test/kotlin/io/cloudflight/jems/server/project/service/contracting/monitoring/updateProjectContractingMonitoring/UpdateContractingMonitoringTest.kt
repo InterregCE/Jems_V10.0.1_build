@@ -35,14 +35,10 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPar
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
-import io.mockk.clearMocks
-import io.mockk.every
+import io.mockk.*
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
-import io.mockk.mockk
-import io.mockk.slot
-import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -210,7 +206,6 @@ class UpdateContractingMonitoringTest : UnitTest() {
     @Test
     fun `add project management to approved application`() {
         every { projectPersistence.getProjectSummary(projectId) } returns projectSummary
-        every { validator.validateProjectStatusForModification(projectSummary) } returns Unit
         every { contractingMonitoringPersistence.getContractingMonitoring(projectId) } returns monitoring.copy(
             fastTrackLumpSums = lumpSums
         )
@@ -229,7 +224,6 @@ class UpdateContractingMonitoringTest : UnitTest() {
         every {
             projectPersistence.getProjectSummary(projectId)
         } returns projectSummary.copy(status = ApplicationStatus.CONTRACTED)
-        every { validator.validateProjectStatusForModification(projectSummary) } returns Unit
         val monitoringOther = monitoring.copy(
             fastTrackLumpSums = lumpSumsUpdated
         )
@@ -248,10 +242,11 @@ class UpdateContractingMonitoringTest : UnitTest() {
 
     @Test
     fun `add project management to contracted application and fields changed`() {
+        mockkObject(ContractingValidator.Companion)
         every {
             projectPersistence.getProjectSummary(projectId)
         } returns projectSummary.copy(status = ApplicationStatus.CONTRACTED)
-        every { validator.validateProjectStatusForModification(projectSummary) } returns Unit
+        every { ContractingValidator.validateProjectStatusForModification(projectSummary) } returns Unit
         val oldDate = ZonedDateTime.parse("2022-06-02T10:00:00+02:00").toLocalDate()
         val lumpSumsNotReady = listOf(lumpSums.first().copy(readyForPayment = false))
         every {
@@ -384,9 +379,10 @@ class UpdateContractingMonitoringTest : UnitTest() {
 
     @Test
     fun `add project management to NOT approved application`() {
+        mockkObject(ContractingValidator.Companion)
         every { projectPersistence.getProjectSummary(projectId) } returns projectSummary
         every {
-            validator.validateProjectStatusForModification(projectSummary)
+            ContractingValidator.validateProjectStatusForModification(projectSummary)
         } throws ContractingModificationDeniedException()
 
         assertThrows<ContractingModificationDeniedException> {
@@ -397,11 +393,9 @@ class UpdateContractingMonitoringTest : UnitTest() {
     @Test
     fun `add project management with too many additional dates`() {
         every { projectPersistence.getProjectSummary(projectId) } returns projectSummary
-        every { validator.validateProjectStatusForModification(projectSummary) } returns Unit
         every {
             validator.validateMonitoringInput(monitoring)
         } throws ContractingModificationDeniedException()
-
         assertThrows<ContractingModificationDeniedException> {
             updateContractingMonitoring.updateContractingMonitoring(projectId, monitoring)
         }
@@ -412,7 +406,6 @@ class UpdateContractingMonitoringTest : UnitTest() {
         every {
             projectPersistence.getProjectSummary(projectId)
         } returns projectSummary.copy(status = ApplicationStatus.CONTRACTED)
-        every { validator.validateProjectStatusForModification(projectSummary) } returns Unit
         val oldDate = ZonedDateTime.parse("2022-06-02T10:00:00+02:00").toLocalDate()
         every {
             contractingMonitoringPersistence.getContractingMonitoring(projectId)

@@ -3,24 +3,22 @@ package io.cloudflight.jems.server.project.service.contracting.management
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.project.service.contracting.ContractingDeniedException
 import io.cloudflight.jems.server.project.service.contracting.ContractingValidator
-import io.cloudflight.jems.server.project.service.contracting.management.updateProjectContractingManagement.UpdateContractingManagement
-import io.cloudflight.jems.server.project.service.contracting.management.updateProjectContractingManagement.UpdateContractingManagementException
+import io.cloudflight.jems.server.project.service.contracting.management.getProjectContractingManagement.GetContractingManagementException
+import io.cloudflight.jems.server.project.service.contracting.management.getProjectContractingManagement.GetContractingManagementService
 import io.cloudflight.jems.server.project.service.contracting.model.ManagementType
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingManagement
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockkObject
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.time.ZonedDateTime
 
-class UpdateContractingManagementTest : UnitTest() {
+internal class GetContractingManagementServiceTest: UnitTest() {
 
     companion object {
 
@@ -77,38 +75,29 @@ class UpdateContractingManagementTest : UnitTest() {
     @MockK
     lateinit var projectPersistence: ProjectPersistenceProvider
 
-    @RelaxedMockK
-    lateinit var validator: ContractingValidator
-
     @InjectMockKs
-    lateinit var updateContractingManagement: UpdateContractingManagement
+    lateinit var getContractingManagementService: GetContractingManagementService
 
     @Test
-    fun `add project management to approved application`() {
+    fun `get project management for approved application`() {
         mockkObject(ContractingValidator.Companion)
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary
         every { ContractingValidator.validateProjectStepAndStatus(projectSummary) } returns Unit
-        every { validator.validateManagerContacts(projectManagers) } returns Unit
-        every { contractingManagementPersistence.updateContractingManagement(projectManagers) } returns projectManagers
+        every { contractingManagementPersistence.getContractingManagement(PROJECT_ID) } returns projectManagers
 
-        Assertions.assertThat(updateContractingManagement.updateContractingManagement(PROJECT_ID, projectManagers))
+        Assertions.assertThat(getContractingManagementService.getContractingManagement(PROJECT_ID))
             .isEqualTo(projectManagers)
     }
 
     @Test
-    fun `add project management to NOT approved application`() {
+    fun `get project management for NOT approved application throws exception`() {
         mockkObject(ContractingValidator.Companion)
-        every { validator.validateManagerContacts(projectManagers) } returns Unit
-        every { contractingManagementPersistence.updateContractingManagement(projectManagers) } returns projectManagers
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary
-        every { ContractingValidator.validateProjectStepAndStatus(projectSummary) } throws UpdateContractingManagementException(
-            ContractingDeniedException()
+        every { ContractingValidator.validateProjectStepAndStatus(projectSummary) } throws GetContractingManagementException(
+            RuntimeException()
         )
-
-        assertThrows<UpdateContractingManagementException> {
-            updateContractingManagement.updateContractingManagement(
-                PROJECT_ID, projectManagers
-            )
-        }.cause to (ContractingDeniedException().code == "S-PCM-001")
+        assertThrows<GetContractingManagementException> {
+            getContractingManagementService.getContractingManagement(PROJECT_ID)
+        }
     }
 }
