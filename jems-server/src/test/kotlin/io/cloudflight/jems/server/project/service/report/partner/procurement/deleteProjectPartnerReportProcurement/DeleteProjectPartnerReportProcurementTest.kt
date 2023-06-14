@@ -39,7 +39,7 @@ internal class DeleteProjectPartnerReportProcurementTest : UnitTest() {
     @EnumSource(value = ReportStatus::class, names = ["Draft", "ReOpenSubmittedLast", "ReOpenInControlLast"])
     fun delete(status: ReportStatus) {
         every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = 3L) } returns
-            ProjectPartnerReportStatusAndVersion(status, "4.5.8")
+            ProjectPartnerReportStatusAndVersion(reportId = 3L, status, "4.5.8")
         every { reportProcurementPersistence.deletePartnerReportProcurement(PARTNER_ID, reportId = 3L, 587L) } answers { }
 
         interactor.delete(PARTNER_ID, reportId = 3L, procurementId = 587L)
@@ -52,7 +52,7 @@ internal class DeleteProjectPartnerReportProcurementTest : UnitTest() {
     @EnumSource(value = ReportStatus::class, names = ["Draft", "ReOpenSubmittedLast", "ReOpenInControlLast"], mode = EnumSource.Mode.EXCLUDE)
     fun `delete - not draft`(status: ReportStatus) {
         every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = 3L) } returns
-            ProjectPartnerReportStatusAndVersion(status, "4.5.8")
+            ProjectPartnerReportStatusAndVersion(3L, status, "4.5.8")
 
         assertThrows<ReportAlreadyClosed> { interactor.delete(PARTNER_ID, reportId = 3L, procurementId = 587L) }
     }

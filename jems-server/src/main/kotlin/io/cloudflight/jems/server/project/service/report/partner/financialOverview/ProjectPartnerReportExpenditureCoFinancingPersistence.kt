@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service.report.partner.financialOverv
 
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ExpenditureCoFinancingCurrent
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ExpenditureCoFinancingCurrentWithReIncluded
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ExpenditureCoFinancingPrevious
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancingColumn
 import java.math.BigDecimal
@@ -10,7 +11,7 @@ interface ProjectPartnerReportExpenditureCoFinancingPersistence {
 
     fun getCoFinancing(partnerId: Long, reportId: Long): ReportExpenditureCoFinancing
 
-    fun getCoFinancingCumulative(reportIds: Set<Long>): ExpenditureCoFinancingCurrent
+    fun getCoFinancingCumulative(submittedReportIds: Set<Long>, finalizedReportIds: Set<Long>): ExpenditureCoFinancingPrevious
 
     fun updateCurrentlyReportedValues(partnerId: Long, reportId: Long, currentlyReported: ExpenditureCoFinancingCurrentWithReIncluded)
 

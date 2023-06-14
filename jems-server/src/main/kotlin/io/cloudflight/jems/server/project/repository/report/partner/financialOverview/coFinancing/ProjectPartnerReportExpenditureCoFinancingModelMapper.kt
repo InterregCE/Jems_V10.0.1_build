@@ -59,6 +59,14 @@ fun ReportProjectPartnerExpenditureCoFinancingEntity.toModel(
         privateContribution = privateContributionPreviouslyReportedParked,
         sum = sumPreviouslyReportedParked,
     ),
+    previouslyValidated = ReportExpenditureCoFinancingColumn(
+        funds = coFinancing.associateBy({ it.programmeFund?.id }, { it.previouslyValidated }),
+        partnerContribution = partnerContributionPreviouslyValidated,
+        publicContribution = publicContributionPreviouslyValidated,
+        automaticPublicContribution = automaticPublicContributionPreviouslyValidated,
+        privateContribution = privateContributionPreviouslyValidated,
+        sum = sumPreviouslyValidated,
+    ),
     previouslyPaid = ReportExpenditureCoFinancingColumn(
         funds = coFinancing.associateBy({ it.programmeFund?.id }, { it.previouslyPaid }),
         partnerContribution = BigDecimal.ZERO,

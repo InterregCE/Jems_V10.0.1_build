@@ -20,7 +20,7 @@ import {MatTableDataSource} from '@angular/material/table';
 export class PartnerBreakdownCoFinancingComponent implements OnChanges {
 
   certifiedColumns = ['totalEligibleAfterControl'];
-  columnsAvailable = ['type', 'totalEligibleBudget', 'previouslyReported', 'currentReport', 'totalEligibleAfterControl', 'totalReportedSoFar', 'totalReportedSoFarPercentage', 'remainingBudget', 'previouslyPaid'];
+  columnsAvailable = ['type', 'totalEligibleBudget', 'previouslyReported', 'currentReport', 'totalEligibleAfterControl', 'totalReportedSoFar', 'totalReportedSoFarPercentage', 'remainingBudget', 'previouslyValidated', 'previouslyPaid'];
   displayedColumns = this.columnsAvailable;
 
   @Input()

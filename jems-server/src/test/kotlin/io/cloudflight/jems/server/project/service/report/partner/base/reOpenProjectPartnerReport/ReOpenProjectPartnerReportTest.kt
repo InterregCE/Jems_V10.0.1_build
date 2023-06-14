@@ -66,7 +66,7 @@ internal class ReOpenProjectPartnerReportTest : UnitTest() {
     @EnumSource(value = ReportStatus::class, names = ["Submitted", "InControl", "ReOpenCertified"], mode = EnumSource.Mode.EXCLUDE)
     fun `reOpen - cannot be reopened`(status: ReportStatus) {
         every { reportPersistence.getPartnerReportStatusAndVersion(partnerId = 15L, reportId = 150L) } returns
-                ProjectPartnerReportStatusAndVersion(status, "V1")
+                ProjectPartnerReportStatusAndVersion(150L, status, "V1")
         assertThrows<ReportCanNotBeReOpened> { interactor.reOpen(15L, reportId = 150L) }
         verify(exactly = 0) { auditPublisher.publishEvent(any()) }
     }
@@ -84,7 +84,7 @@ internal class ReOpenProjectPartnerReportTest : UnitTest() {
     )
     fun reOpen(status: ReportStatus, lastReportId: Long, expectedStatus: ReportStatus) {
         every { reportPersistence.getPartnerReportStatusAndVersion(partnerId = 18L, reportId = 160L) } returns
-                ProjectPartnerReportStatusAndVersion(status, "V1")
+                ProjectPartnerReportStatusAndVersion(160L, status, "V1")
 
         val latestReport = mockk<ProjectPartnerReport>()
         every { latestReport.id } returns lastReportId

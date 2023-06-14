@@ -28,8 +28,9 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
     companion object {
         private const val PARTNER_ID = 597L
 
-        private fun report(status: ReportStatus) =
+        private fun report(reportId: Long, status: ReportStatus) =
             ProjectPartnerReportStatusAndVersion(
+                reportId = reportId,
                 status = status,
                 version = "V_7.2",
             )
@@ -262,7 +263,7 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
     @EnumSource(value = ReportStatus::class, names = ["Draft", "ReOpenSubmittedLast", "ReOpenInControlLast"])
     fun getOpen(status: ReportStatus) {
         val reportId = 97658L
-        every { reportPersistence.getPartnerReportStatusAndVersion(partnerId = PARTNER_ID, reportId) } returns report(status)
+        every { reportPersistence.getPartnerReportStatusAndVersion(partnerId = PARTNER_ID, reportId) } returns report(reportId, status)
         every { reportLumpSumPersistence.getLumpSum(partnerId = PARTNER_ID, reportId = reportId) } returns
             listOf(
                 lumpSum_1.copy(currentReport = BigDecimal.ZERO),
@@ -292,7 +293,7 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
     @EnumSource(value = ReportStatus::class, names = ["Draft", "ReOpenSubmittedLast", "ReOpenInControlLast"], mode = EnumSource.Mode.EXCLUDE)
     fun getClosed(status: ReportStatus) {
         val reportId = 97658L
-        every { reportPersistence.getPartnerReportStatusAndVersion(partnerId = PARTNER_ID, reportId) } returns report(status)
+        every { reportPersistence.getPartnerReportStatusAndVersion(partnerId = PARTNER_ID, reportId) } returns report(reportId, status)
         every { reportLumpSumPersistence.getLumpSum(partnerId = PARTNER_ID, reportId = reportId) } returns
             listOf(
                 lumpSum_1.copy(totalEligibleAfterControl = BigDecimal.valueOf(38, 1)),

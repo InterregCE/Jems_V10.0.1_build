@@ -221,6 +221,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
                 current = ONE,
                 totalEligibleAfterControl = ZERO,
                 previouslyReported = TEN,
+                previouslyValidated = ONE,
                 previouslyPaid = ONE,
                 currentParked = ONE,
                 currentReIncluded = ONE,
@@ -234,6 +235,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
                 current = ZERO,
                 totalEligibleAfterControl = ZERO,
                 previouslyReported = ONE,
+                previouslyValidated = TEN,
                 previouslyPaid = ZERO,
                 currentParked = ONE,
                 currentReIncluded = ONE,
@@ -339,7 +341,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
         val report = reportEntity(id = 75L)
         every { partnerReportRepository.findByIdAndPartnerId(75L, 20L) } returns report
         assertThat(persistence.getPartnerReportStatusAndVersion(partnerId = 20L, reportId = 75L))
-            .isEqualTo(ProjectPartnerReportStatusAndVersion(ReportStatus.Draft, "3.0"))
+            .isEqualTo(ProjectPartnerReportStatusAndVersion(75L, ReportStatus.Draft, "3.0"))
     }
 
     @Test
@@ -416,8 +418,12 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
 
     @Test
     fun getSubmittedPartnerReportIds() {
+        val report18 = mockk<ProjectPartnerReportEntity>()
+        every { report18.id } returns 18L
+        every { report18.status } returns ReportStatus.InControl
+        every { report18.applicationFormVersion } returns "AFv2"
         every { partnerReportRepository
-            .findAllIdsByPartnerIdAndStatusIn(PARTNER_ID, setOf(
+            .findAllByPartnerIdAndStatusInOrderByNumberDesc(PARTNER_ID, setOf(
                 // it's important to verify those statuses, as they are considered as "closed" financially-wise
                 ReportStatus.Submitted,
                 ReportStatus.ReOpenSubmittedLimited,
@@ -426,8 +432,10 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
                 ReportStatus.Certified,
                 ReportStatus.ReOpenCertified,
             ))
-        } returns setOf(18L)
-        assertThat(persistence.getSubmittedPartnerReportIds(PARTNER_ID)).containsExactly(18L)
+        } returns listOf(report18)
+        assertThat(persistence.getSubmittedPartnerReports(PARTNER_ID)).containsExactly(
+            ProjectPartnerReportStatusAndVersion(18L, ReportStatus.InControl, "AFv2")
+        )
     }
 
     @Test

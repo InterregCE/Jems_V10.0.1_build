@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.repository.report.partner.financialOv
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportCoFinancingRepository
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ExpenditureCoFinancingCurrent
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ExpenditureCoFinancingCurrentWithReIncluded
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ExpenditureCoFinancingPrevious
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancingColumn
@@ -27,11 +28,14 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProvider(
             )
 
     @Transactional(readOnly = true)
-    override fun getCoFinancingCumulative(reportIds: Set<Long>): ExpenditureCoFinancingCurrent {
-        val cumulativeByFund = partnerReportCoFinancingRepository.findCumulativeForReportIds(reportIds)
+    override fun getCoFinancingCumulative(submittedReportIds: Set<Long>, finalizedReportIds: Set<Long>): ExpenditureCoFinancingPrevious {
+        val cumulativeByFund = partnerReportCoFinancingRepository.findCumulativeForReportIds(submittedReportIds)
             .associateBy { it.reportFundId }
-        return ExpenditureCoFinancingCurrent(
-            current = with(expenditureCoFinancingRepository.findCumulativeForReportIds(reportIds)) {
+        val cumulativeValidatedByFund = partnerReportCoFinancingRepository.findCumulativeTotalsForReportIds(finalizedReportIds)
+            .associateBy { it.reportFundId }
+
+        return ExpenditureCoFinancingPrevious(
+            previous = with(expenditureCoFinancingRepository.findCumulativeForReportIds(submittedReportIds)) {
                 ReportExpenditureCoFinancingColumn(
                     funds = cumulativeByFund.mapValues { it.value.currentSum },
                     partnerContribution = partnerContribution,
@@ -41,7 +45,7 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProvider(
                     sum = sum,
                 )
             },
-            currentParked = with(expenditureCoFinancingRepository.findCumulativeParkedForReportIds(reportIds)) {
+            previousParked = with(expenditureCoFinancingRepository.findCumulativeParkedForReportIds(submittedReportIds)) {
                 ReportExpenditureCoFinancingColumn(
                     funds = cumulativeByFund.mapValues { it.value.currentParkedSum },
                     partnerContribution = partnerContribution,
@@ -50,7 +54,17 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProvider(
                     privateContribution = privateContribution,
                     sum = sum,
                 )
-            }
+            },
+            previousValidated = with(expenditureCoFinancingRepository.findCumulativeTotalsForReportIds(finalizedReportIds)) {
+                ReportExpenditureCoFinancingColumn(
+                    funds = cumulativeValidatedByFund.mapValues { it.value.sum },
+                    partnerContribution = partnerContribution,
+                    publicContribution = publicContribution,
+                    automaticPublicContribution = automaticPublicContribution,
+                    privateContribution = privateContribution,
+                    sum = sum,
+                )
+            },
         )
     }
 

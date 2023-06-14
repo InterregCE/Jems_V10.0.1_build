@@ -222,6 +222,7 @@ fun List<PreviouslyReportedFund>.toEntity(
         current = ZERO,
         totalEligibleAfterControl = ZERO,
         previouslyReported = fund.previouslyReported,
+        previouslyValidated = fund.previouslyValidated,
         previouslyPaid = fund.previouslyPaid,
         currentParked = ZERO,
         currentReIncluded = ZERO,
@@ -258,6 +259,12 @@ fun PreviouslyReportedCoFinancing.toEntity(
         automaticPublicContributionPreviouslyReported = previouslyReportedAutoPublic,
         privateContributionPreviouslyReported = previouslyReportedPrivate,
         sumPreviouslyReported = previouslyReportedSum,
+
+        partnerContributionPreviouslyValidated = previouslyValidatedPartner,
+        publicContributionPreviouslyValidated = previouslyValidatedPublic,
+        automaticPublicContributionPreviouslyValidated = previouslyValidatedAutoPublic,
+        privateContributionPreviouslyValidated = previouslyValidatedPrivate,
+        sumPreviouslyValidated = previouslyValidatedSum,
 
         partnerContributionCurrentParked = ZERO,
         publicContributionCurrentParked = ZERO,

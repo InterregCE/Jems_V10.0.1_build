@@ -190,7 +190,7 @@ internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
         names = ["Draft", "ReOpenSubmittedLast", "ReOpenSubmittedLimited", "ReOpenInControlLast", "ReOpenInControlLimited"])
     fun update(status: ReportStatus) {
         every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = 11L) } returns
-            ProjectPartnerReportStatusAndVersion(status, "4.12.0")
+            ProjectPartnerReportStatusAndVersion(11L, status, "4.12.0")
         every { reportWpPersistence.getPartnerReportWorkPlanById(PARTNER_ID, reportId = 11) } returnsMany listOf(
             listOf(oldWorkPlan),
             listOf(newWorkPlan),
@@ -218,7 +218,7 @@ internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
     @Test
     fun `update - no changes`() {
         every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = 12L) } returns
-            ProjectPartnerReportStatusAndVersion(ReportStatus.Draft, "4.12.0")
+            ProjectPartnerReportStatusAndVersion(12L, ReportStatus.Draft, "4.12.0")
         every { reportWpPersistence.getPartnerReportWorkPlanById(PARTNER_ID, reportId = 12) } returnsMany listOf(
             listOf(oldWorkPlan),
             listOf(oldWorkPlan),
@@ -244,7 +244,7 @@ internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
         names = ["Draft", "ReOpenSubmittedLast", "ReOpenSubmittedLimited", "ReOpenInControlLast", "ReOpenInControlLimited"])
     fun `update - wrong status`(status: ReportStatus) {
         every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = 0L) } returns
-            ProjectPartnerReportStatusAndVersion(status, "4.12.0")
+            ProjectPartnerReportStatusAndVersion(0L, status, "4.12.0")
         assertThrows<ReportAlreadyClosed> { updateWorkPlan.update(PARTNER_ID, reportId = 0L, emptyList()) }
     }
 }

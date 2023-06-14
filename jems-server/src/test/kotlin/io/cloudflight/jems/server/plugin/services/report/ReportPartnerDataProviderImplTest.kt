@@ -394,13 +394,14 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
             totalEligibleBudget = BigDecimal.valueOf(1),
             previouslyReported = BigDecimal.valueOf(2),
             previouslyReportedParked = BigDecimal.valueOf(15L, 1),
-            previouslyPaid = BigDecimal.valueOf(3),
             currentReport = BigDecimal.valueOf(4),
             currentReportReIncluded = BigDecimal.valueOf(35L, 1),
             totalEligibleAfterControl = BigDecimal.valueOf(8),
             totalReportedSoFar = BigDecimal.valueOf(5),
             totalReportedSoFarPercentage = BigDecimal.valueOf(6),
             remainingBudget = BigDecimal.valueOf(7),
+            previouslyValidated = BigDecimal.valueOf(92, 1),
+            previouslyPaid = BigDecimal.valueOf(3),
         )
 
         private val coFinancing = ExpenditureCoFinancingBreakdown(

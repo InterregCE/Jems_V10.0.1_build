@@ -33,8 +33,9 @@ internal class GetReportExpenditureUnitCostBreakdownCalculatorTest : UnitTest() 
         private val YEAR = LocalDate.now().year
         private val MONTH = LocalDate.now().monthValue
 
-        private fun report(status: ReportStatus) =
+        private fun report(reportId: Long, status: ReportStatus) =
             ProjectPartnerReportStatusAndVersion(
+                reportId = reportId,
                 status = status,
                 version = "V_1.1",
             )
@@ -208,7 +209,7 @@ internal class GetReportExpenditureUnitCostBreakdownCalculatorTest : UnitTest() 
     @EnumSource(value = ReportStatus::class, names = ["Draft", "ReOpenSubmittedLast", "ReOpenInControlLast"])
     fun getOpen(status: ReportStatus) {
         val reportId = 97658L
-        every { reportPersistence.getPartnerReportStatusAndVersion(partnerId = PARTNER_ID, reportId) } returns report(status)
+        every { reportPersistence.getPartnerReportStatusAndVersion(partnerId = PARTNER_ID, reportId) } returns report(reportId, status)
         every { reportUnitCostPersistence.getUnitCost(partnerId = PARTNER_ID, reportId = reportId) } returns
             listOf(
                 unitCost_1.copy(currentReport = BigDecimal.ZERO),
@@ -241,7 +242,7 @@ internal class GetReportExpenditureUnitCostBreakdownCalculatorTest : UnitTest() 
     @EnumSource(value = ReportStatus::class, names = ["Draft", "ReOpenSubmittedLast", "ReOpenInControlLast"], mode = EnumSource.Mode.EXCLUDE)
     fun getClosed(status: ReportStatus) {
         val reportId = 97658L
-        every { reportPersistence.getPartnerReportStatusAndVersion(partnerId = PARTNER_ID, reportId) } returns report(status)
+        every { reportPersistence.getPartnerReportStatusAndVersion(partnerId = PARTNER_ID, reportId) } returns report(reportId, status)
         every { reportUnitCostPersistence.getUnitCost(partnerId = PARTNER_ID, reportId = reportId) } returns
             listOf(
                 unitCost_1.copy(

@@ -96,6 +96,7 @@ internal class CreateControlChecklistInstanceTest : UnitTest() {
 
     private fun getProjectPartnerReportStatusAndVersion(status: ReportStatus) =
         ProjectPartnerReportStatusAndVersion(
+            reportId = 647L,
             status = status,
             version = "1.0"
         )

@@ -36,6 +36,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceSpecialTest : Un
         private val TODAY = ZonedDateTime.now()
 
         private fun reportWithStatus(status: ReportStatus) = ProjectPartnerReportStatusAndVersion(
+            reportId = 28L,
             status = status,
             version = "",
         )

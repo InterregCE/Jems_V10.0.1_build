@@ -31,6 +31,8 @@ class ProjectPartnerReportCoFinancingEntity(
     @field:NotNull
     val previouslyReported: BigDecimal,
     @field:NotNull
+    val previouslyValidated: BigDecimal,
+    @field:NotNull
     val previouslyPaid: BigDecimal,
 
     // parking

@@ -33,7 +33,8 @@ class GetReportExpenditureInvestmentsBreakdownCalculatorTest : UnitTest() {
         private val YEAR = LocalDate.now().year
         private val MONTH = LocalDate.now().monthValue
 
-        private fun report(status: ReportStatus) = ProjectPartnerReportStatusAndVersion(
+        private fun report(reportId: Long, status: ReportStatus) = ProjectPartnerReportStatusAndVersion(
+            reportId = reportId,
             status = status,
             version = "V_4.5",
         )
@@ -238,7 +239,7 @@ class GetReportExpenditureInvestmentsBreakdownCalculatorTest : UnitTest() {
         val reportId = 1L
         val partnerId = 2L
 
-        every { reportPersistence.getPartnerReportStatusAndVersion(partnerId = partnerId, reportId) } returns report(status)
+        every { reportPersistence.getPartnerReportStatusAndVersion(partnerId = partnerId, reportId) } returns report(reportId, status)
 
         every { expenditureInvestmentPersistence.getInvestments(partnerId, reportId) } returns
             listOf(
@@ -271,7 +272,7 @@ class GetReportExpenditureInvestmentsBreakdownCalculatorTest : UnitTest() {
         val reportId = 3L
         val partnerId = 4L
 
-        every { reportPersistence.getPartnerReportStatusAndVersion(partnerId = partnerId, reportId) } returns report(status)
+        every { reportPersistence.getPartnerReportStatusAndVersion(partnerId = partnerId, reportId) } returns report(reportId, status)
         every { expenditureInvestmentPersistence.getInvestments(partnerId, reportId) } returns
             listOf(
                 investment_1.copy(totalEligibleAfterControl = BigDecimal.valueOf(80L)),
