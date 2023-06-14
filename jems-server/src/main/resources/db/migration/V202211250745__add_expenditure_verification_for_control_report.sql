@@ -9,4 +9,6 @@ ALTER TABLE report_project_partner_expenditure
                 ON DELETE SET NULL
                 ON UPDATE RESTRICT;
 
-UPDATE report_project_partner_expenditure SET certified_amount = declared_amount_after_submission;
+UPDATE report_project_partner_expenditure
+SET certified_amount = declared_amount_after_submission
+WHERE declared_amount_after_submission IS NOT NULL;
