@@ -1,9 +1,7 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {RoutingService} from '@common/services/routing.service';
-import {
-    PartnerReportDetailPageStore
-} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
+import {PartnerReportDetailPageStore} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {ProjectPartnerReportDTO, UserRoleDTO} from '@cat/api';
 import {catchError, finalize, map, tap} from 'rxjs/operators';
@@ -11,9 +9,7 @@ import {PartnerReportPageStore} from '@project/project-application/report/partne
 import {PermissionService} from '../../../../security/permissions/permission.service';
 import {MatDialog} from '@angular/material/dialog';
 import {APIError} from '@common/models/APIError';
-import {
-    PartnerControlReportStore
-} from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
+import {PartnerControlReportStore} from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
 import {Alert} from '@common/components/forms/alert';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
@@ -95,6 +91,13 @@ export class PartnerControlReportComponent {
 
   routeTo(route: string): void {
     this.router.navigate([route], {relativeTo: this.activatedRoute, queryParamsHandling: 'merge'});
+  }
+
+  public redirectToReport(reportId: number): void {
+    this.router.navigate([`../../${reportId}/identification`], {
+      relativeTo: this.activatedRoute,
+      queryParamsHandling: 'merge'
+    })
   }
 
   private redirectToReportList(): void {

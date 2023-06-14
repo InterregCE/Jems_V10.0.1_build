@@ -87,10 +87,10 @@
                 <span *ngIf="report.periodDetail"
                       matTooltip="{{ (report.startDate | localeDate) || 'X' }} - {{ (report.endDate | localeDate) || 'X' }}">
                     {{ 'project.application.form.work.package.output.delivery.period.entry' | translate : {
-                        periodNumber: report.periodDetail.number,
-                        start: report.periodDetail.start,
-                        end: report.periodDetail.end
-                    } }}
+                    periodNumber: report.periodDetail.number,
+                    start: report.periodDetail.start,
+                    end: report.periodDetail.end
+                } }}
                 </span>
             </mat-cell>
         </ng-container>
@@ -152,7 +152,8 @@
 
         <ng-container matColumnDef="totalEligible">
             <mat-header-cell *matHeaderCellDef>
-                <span jemsText maxLines="2">{{ 'project.application.partner.report.control.tab.overviewAndFinalize.total.eligible.after.control' | translate }}</span>
+                <span jemsText
+                      maxLines="2">{{ 'project.application.partner.report.control.tab.overviewAndFinalize.total.eligible.after.control' | translate }}</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let report" class="text-right">{{ report.totalEligibleAfterControl | asMoney }}</mat-cell>
         </ng-container>
@@ -162,22 +163,9 @@
                 <span jemsText maxLines="2">{{ 'project.application.partner.reports.table.control' | translate }}</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let report">
-                <ng-container *ngIf="partnerReportDetail.partnerId$ | async as partnerId">
-                    <ng-container *ngIf="report.status !== ProjectPartnerReportSummaryDTO.StatusEnum.Draft && (isControlButtonVisible$ | async)">
-                        <jems-pending-button *ngIf="report.status === ProjectPartnerReportSummaryDTO.StatusEnum.Submitted" class="ml-1"
-                                             [disabled]="isStartControlButtonDisabled"
-                                             (clicked)="createControlReportForPartnerReport(report, partnerId)"
-                                             [pending]="getPendingActionStatus(report.id) | async">
-                            {{'project.application.partner.reports.start.control' | translate}}
-                        </jems-pending-button>
-                        <a jemsText *ngIf="(ReportUtil.isControlReportExists(report.status))
-                         && ((pageStore.userCanEditReport$ | async) || (pageStore.userCanViewReport$ | async))"
-                           mat-stroked-button type="submit" class="ml-1"
-                           [routerLink]="[report.id, 'controlReport', (report.status === ProjectPartnerReportSummaryDTO.StatusEnum.Certified || data.isController) ? 'identificationTab' : 'document']">
-                            {{'project.application.partner.reports.open.control' | translate}}
-                        </a>
-                    </ng-container>
-                </ng-container>
+                <jems-start-control-report [reportId]="report.id"
+                                           [reportStatus]="report.status"
+                                           (onError)="showErrorMessage($event)"></jems-start-control-report>
             </mat-cell>
         </ng-container>
 
