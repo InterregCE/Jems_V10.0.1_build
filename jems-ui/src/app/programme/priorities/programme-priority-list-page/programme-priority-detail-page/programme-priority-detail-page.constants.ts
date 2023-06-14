@@ -69,7 +69,7 @@ export class ProgrammePriorityDetailPageConstants {
 
   public static dimensionCodesSize: (control: FormGroup) => ValidatorFn = (objective: FormGroup) => (valueControl: FormControl): ValidationErrors | null => {
     const selected = objective.get(ProgrammePriorityDetailPageConstants.POLICY_SELECTED.name)?.value;
-    if (selected && valueControl?.value?.length > 20) {
+    if (selected && valueControl?.value?.length > 40) {
       return {maxSize: true} as any;
     }
     return null;

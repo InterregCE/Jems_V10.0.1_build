@@ -30,20 +30,20 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDe
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
-import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportCreatePersistence
-import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
-import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportIdentificationCreate
-import io.cloudflight.jems.server.project.service.report.model.partner.base.create.ProjectPartnerReportCreate
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportBaseData
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportBudget
+import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportIdentificationCreate
+import io.cloudflight.jems.server.project.service.report.model.partner.base.create.ProjectPartnerReportCreate
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.PartnerReportInvestmentSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.create.CreateProjectPartnerReportWorkPackage
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.create.CreateProjectPartnerReportWorkPackageActivity
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.create.CreateProjectPartnerReportWorkPackageActivityDeliverable
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.create.CreateProjectPartnerReportWorkPackageOutput
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportCreatePersistence
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable
@@ -57,6 +57,8 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import java.math.BigDecimal
+import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -64,8 +66,6 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
-import java.math.BigDecimal
-import java.time.ZonedDateTime
 
 internal class CreateProjectPartnerReportTest : UnitTest() {
 
@@ -493,7 +493,7 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
         every { projectPartnerPersistence.getProjectIdForPartnerId(partnerId) } returns PROJECT_ID
         every { versionPersistence.getLatestApprovedOrCurrent(PROJECT_ID) } returns "6.7.2"
         every { projectPersistence.getProject(PROJECT_ID, "6.7.2") } returns projectSummary(ApplicationStatus.CONTRACTED)
-        every { reportPersistence.countForPartner(partnerId) } returns 25
+        every { reportPersistence.countForPartner(partnerId) } returns 100
 
         assertThrows<MaxAmountOfReportsReachedException> { createReport.createReportFor(partnerId) }
         verify(exactly = 0) { auditPublisher.publishEvent(any()) }

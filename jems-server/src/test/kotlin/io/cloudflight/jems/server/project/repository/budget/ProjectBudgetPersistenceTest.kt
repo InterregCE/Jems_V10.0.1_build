@@ -230,7 +230,7 @@ class ProjectBudgetPersistenceTest {
                 )
             )
         )
-        every { projectPartnerRepository.findTop30ByProjectId(eq(1), any()) } returns partners
+        every { projectPartnerRepository.findTop50ByProjectId(eq(1), any()) } returns partners
         assertThat(projectBudgetPersistence.getPartnersForProjectId(1))
             .containsExactlyInAnyOrder(
                 ProjectPartnerSummary(
@@ -453,7 +453,7 @@ class ProjectBudgetPersistenceTest {
         )
         val partnerIds = partners.map { it.id }.toSet()
 
-        every { projectPartnerRepository.findTop30ByProjectId(1L) } returns partners
+        every { projectPartnerRepository.findTop50ByProjectId(1L) } returns partners
         every { projectPartnerUnitCostRepository.findProjectUnitCosts(partnerIds) } returns listOf(mockPRow)
 
         assertThat(projectBudgetPersistence.getProjectUnitCosts(1L)).containsExactly(
@@ -512,7 +512,7 @@ class ProjectBudgetPersistenceTest {
         )
 
         every { projectVersionRepo.findTimestampByVersion(any(), version) } returns timestamp
-        every { projectPartnerRepository.findTop30ByProjectId(1L) } returns partners
+        every { projectPartnerRepository.findTop50ByProjectId(1L) } returns partners
         every {
             projectPartnerRepository.findTop30ByProjectIdSortBySortNumberAsOfTimestamp(
                 any(),
@@ -535,6 +535,5 @@ class ProjectBudgetPersistenceTest {
             )
         )
     }
-
 
 }
