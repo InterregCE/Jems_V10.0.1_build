@@ -28,7 +28,6 @@ import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.ProjectVersionSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
 import java.time.LocalDate
-import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
@@ -70,10 +69,10 @@ fun projectVersionSnapshotCreated(
 ): AuditCandidateEvent =
     AuditCandidateEvent(
         context = context,
-        auditCandidate = AuditBuilder(AuditAction.APPLICATION_VERSION_SNAPSHOT_CREATED)
+        auditCandidate = AuditBuilder(AuditAction.APPLICATION_SNAPSHOT_CREATED)
             .project(projectSummary)
             .description(
-                "New project version \"V.${projectVersion.version}\" is created by user: ${projectVersion.user.email} on " +
+                "Project application snapshot \"V.${projectVersion.version}\" has been created by ${projectVersion.user.email} " +
                         projectVersion.createdAt.toLocalDateTime().withNano(0)
                             .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
             ).build()
@@ -91,7 +90,7 @@ fun projectVersionRecorded(
             .project(projectSummary)
             .description(
                 "New project version \"V.$version\" is recorded by user: $userEmail on " +
-                        ZonedDateTime.now(ZoneOffset.UTC).withNano(0).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                        ZonedDateTime.now().withNano(0).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
             ).build()
     )
 

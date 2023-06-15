@@ -25,12 +25,40 @@ val DEFAULT_USER_INSPECT_PERMISSIONS =
                 type = UserRolePermissionNodeType.SECTION_HEADER,
                 children = listOf(
                     UserRolePermissionNode(
-                        name = "Reporting",
-                        viewPermissions = setOf(UserRolePermission.ProjectReportingView),
-                        editPermissions = setOf(UserRolePermission.ProjectReportingEdit),
+                        name = "Project reports",
+                        viewPermissions = setOf(UserRolePermission.ProjectReportingProjectView),
+                        editPermissions = setOf(UserRolePermission.ProjectReportingProjectEdit),
                         type = UserRolePermissionNodeType.HIDDEN_VIEW_EDIT,
-                    )
-                )),
+                    ),
+                    UserRolePermissionNode(
+                        name = "Partner reports",
+                        type = UserRolePermissionNodeType.SECTION_HEADER,
+                        children = listOf(
+                            UserRolePermissionNode(
+                                name = "Partner reports",
+                                viewPermissions = setOf(UserRolePermission.ProjectReportingView),
+                                editPermissions = setOf(UserRolePermission.ProjectReportingEdit),
+                                type = UserRolePermissionNodeType.HIDDEN_VIEW_EDIT,
+                            ),
+                            UserRolePermissionNode(
+                                name = "Reopen partner report",
+                                editPermissions = setOf(UserRolePermission.ProjectReportingReOpen),
+                                type = UserRolePermissionNodeType.TOGGLE_EDIT,
+                            ),
+                            UserRolePermissionNode(
+                                name = "Instantiate checklists after control finalized",
+                                editPermissions = setOf(UserRolePermission.ProjectReportingChecklistAfterControl),
+                                type = UserRolePermissionNodeType.TOGGLE_EDIT,
+                            ),
+                            UserRolePermissionNode(
+                                name = "Reopen control report",
+                                editPermissions = setOf(UserRolePermission.ProjectPartnerControlReportingReOpen),
+                                type = UserRolePermissionNodeType.TOGGLE_EDIT,
+                            ),
+                        )
+                    ),
+                )
+            ),
             UserRolePermissionNode(
                 name = "Contracting",
                 type = UserRolePermissionNodeType.SECTION_HEADER,
@@ -39,6 +67,30 @@ val DEFAULT_USER_INSPECT_PERMISSIONS =
                         name = "Contract monitoring",
                         viewPermissions = setOf(UserRolePermission.ProjectContractingView),
                         editPermissions = setOf(UserRolePermission.ProjectSetToContracted),
+                        type = UserRolePermissionNodeType.HIDDEN_VIEW_EDIT,
+                    ),
+                    UserRolePermissionNode(
+                        name = "Contracts and agreements",
+                        viewPermissions = setOf(UserRolePermission.ProjectContractsView),
+                        editPermissions = setOf(UserRolePermission.ProjectContractsEdit),
+                        type = UserRolePermissionNodeType.HIDDEN_VIEW_EDIT,
+                    ),
+                    UserRolePermissionNode(
+                        name = "Project managers",
+                        viewPermissions = setOf(UserRolePermission.ProjectContractingManagementView),
+                        editPermissions = setOf(UserRolePermission.ProjectContractingManagementEdit),
+                        type = UserRolePermissionNodeType.HIDDEN_VIEW_EDIT,
+                    ),
+                    UserRolePermissionNode(
+                        name = "Project reporting schedule",
+                        viewPermissions = setOf(UserRolePermission.ProjectContractingReportingView),
+                        editPermissions = setOf(UserRolePermission.ProjectContractingReportingEdit),
+                        type = UserRolePermissionNodeType.HIDDEN_VIEW_EDIT,
+                    ),
+                    UserRolePermissionNode(
+                        name = "Partner details",
+                        viewPermissions = setOf(UserRolePermission.ProjectContractingPartnerView),
+                        editPermissions = setOf(UserRolePermission.ProjectContractingPartnerEdit),
                         type = UserRolePermissionNodeType.HIDDEN_VIEW_EDIT,
                     )
             )),
@@ -103,6 +155,28 @@ val DEFAULT_USER_INSPECT_PERMISSIONS =
                                 editPermissions = setOf(UserRolePermission.ProjectFileAssessmentUpdate),
                                 type = UserRolePermissionNodeType.HIDDEN_VIEW_EDIT,
                             ),
+                            UserRolePermissionNode(
+                                name = "Assessment checklists",
+                                type = UserRolePermissionNodeType.SECTION_HEADER,
+                                children = listOf(
+                                    UserRolePermissionNode(
+                                        name = "Instantiate assessment checklists",
+                                        editPermissions = setOf(UserRolePermission.ProjectAssessmentChecklistUpdate),
+                                        type = UserRolePermissionNodeType.TOGGLE_EDIT,
+                                    ),
+                                    UserRolePermissionNode(
+                                        name = "Consolidate assessment checklists",
+                                        editPermissions = setOf(UserRolePermission.ProjectAssessmentChecklistConsolidate),
+                                        type = UserRolePermissionNodeType.TOGGLE_EDIT,
+                                    ),
+                                    UserRolePermissionNode(
+                                        name = "Visible checklists table",
+                                        viewPermissions = setOf(UserRolePermission.ProjectAssessmentChecklistSelectedRetrieve),
+                                        editPermissions = setOf(UserRolePermission.ProjectAssessmentChecklistSelectedUpdate),
+                                        type = UserRolePermissionNodeType.HIDDEN_VIEW_EDIT,
+                                    ),
+                                )
+                            )
                         )
                     ),
                     UserRolePermissionNode(
@@ -131,6 +205,18 @@ val DEFAULT_USER_INSPECT_PERMISSIONS =
                                 type = UserRolePermissionNodeType.HIDDEN_VIEW_EDIT,
                             ),
                         )
+                    ),
+                    UserRolePermissionNode(
+                        name = "Project privileges",
+                        viewPermissions = setOf(UserRolePermission.ProjectMonitorCollaboratorsRetrieve),
+                        editPermissions = setOf(UserRolePermission.ProjectMonitorCollaboratorsUpdate),
+                        type = UserRolePermissionNodeType.HIDDEN_VIEW_EDIT,
+                    ),
+                    UserRolePermissionNode(
+                        name = "Shared folder",
+                        viewPermissions = setOf(UserRolePermission.ProjectMonitorSharedFolderView),
+                        editPermissions = setOf(UserRolePermission.ProjectMonitorSharedFolderEdit),
+                        type = UserRolePermissionNodeType.HIDDEN_VIEW_EDIT,
                     )
                 )
             )
@@ -147,6 +233,11 @@ val DEFAULT_TOP_NAVIGATION_PERMISSIONS =
                 name = "Dashboard",
                 type = UserRolePermissionNodeType.SECTION_HEADER,
                 children = listOf(
+                    UserRolePermissionNode(
+                        name = "Notifications",
+                        viewPermissions = setOf(UserRolePermission.NotificationsRetrieve),
+                        type = UserRolePermissionNodeType.HIDDEN_VIEW,
+                    ),
                     UserRolePermissionNode(
                         name = "My applications",
                         viewPermissions = setOf(UserRolePermission.ProjectsWithOwnershipRetrieve),
@@ -252,7 +343,7 @@ val DEFAULT_TOP_NAVIGATION_PERMISSIONS =
 fun userRoleCreated(context: Any, userRole: UserRole): AuditCandidateEvent =
     AuditCandidateEvent(
         context = context,
-        auditCandidate = AuditBuilder(AuditAction.ROLE_PRIVILEGES_CREATED)
+        auditCandidate = AuditBuilder(AuditAction.ROLE_PRIVILEGES_CHANGED)
             .description("A new user role ${userRole.name} was created:\n${getRoleAsString(userRole)}")
             .build()
     )
