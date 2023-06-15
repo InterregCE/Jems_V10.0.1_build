@@ -14,7 +14,6 @@ import io.cloudflight.jems.server.payments.model.regular.contributionMeta.Contri
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import java.util.Collections
 
 interface PaymentRegularPersistence {
 

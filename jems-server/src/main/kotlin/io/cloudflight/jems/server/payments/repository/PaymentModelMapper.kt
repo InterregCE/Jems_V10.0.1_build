@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.payments.repository
 
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.common.entity.toInstant
 import io.cloudflight.jems.server.payments.entity.AdvancePaymentEntity
@@ -27,6 +26,7 @@ import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumEntity
 import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.service.toOutputUser
@@ -247,7 +247,7 @@ fun AdvancePaymentEntity.toModel(): AdvancePayment {
         id = id,
         projectCustomIdentifier = projectCustomIdentifier,
         projectAcronym = projectAcronym ?: "",
-        partnerType = ProjectPartnerRoleDTO.valueOf(partnerRole.name),
+        partnerType = ProjectPartnerRole.valueOf(partnerRole.name),
         partnerNumber = partnerSortNumber,
         partnerAbbreviation = partnerAbbreviation ?: "",
         paymentAuthorized = isPaymentAuthorizedInfo,

@@ -1,10 +1,10 @@
 package io.cloudflight.jems.server.payments.service.advance
 
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.payments.service.advance.getAdvancePayments.GetAdvancePayments
 import io.cloudflight.jems.server.payments.model.advance.AdvancePayment
+import io.cloudflight.jems.server.payments.service.advance.getAdvancePayments.GetAdvancePayments
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -28,7 +28,7 @@ class GetAdvancePaymentsTest: UnitTest() {
             id = paymentId,
             projectCustomIdentifier = "identifier",
             projectAcronym = "acronym",
-            partnerType = ProjectPartnerRoleDTO.PARTNER,
+            partnerType = ProjectPartnerRole.PARTNER,
             partnerNumber =  2,
             partnerAbbreviation = "partner",
             programmeFund = fund,

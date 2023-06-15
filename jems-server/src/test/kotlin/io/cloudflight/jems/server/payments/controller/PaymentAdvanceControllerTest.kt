@@ -7,12 +7,12 @@ import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.payments.service.advance.deleteAdvancePayment.DeleteAdvancePaymentInteractor
-import io.cloudflight.jems.server.payments.service.advance.getAdvancePaymentDetail.GetAdvancePaymentDetailInteractor
-import io.cloudflight.jems.server.payments.service.advance.getAdvancePayments.GetAdvancePaymentsInteractor
 import io.cloudflight.jems.server.payments.model.advance.AdvancePayment
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentUpdate
+import io.cloudflight.jems.server.payments.service.advance.deleteAdvancePayment.DeleteAdvancePaymentInteractor
+import io.cloudflight.jems.server.payments.service.advance.getAdvancePaymentDetail.GetAdvancePaymentDetailInteractor
+import io.cloudflight.jems.server.payments.service.advance.getAdvancePayments.GetAdvancePaymentsInteractor
 import io.cloudflight.jems.server.payments.service.advance.updateAdvancePaymentDetail.UpdateAdvancePaymentDetailInteractor
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
@@ -55,7 +55,7 @@ class PaymentAdvanceControllerTest : UnitTest() {
             id = paymentId,
             projectCustomIdentifier = "dummyProj1",
             projectAcronym = "dummyAcronym",
-            partnerType = ProjectPartnerRoleDTO.LEAD_PARTNER,
+            partnerType = ProjectPartnerRole.LEAD_PARTNER,
             partnerNumber = null,
             partnerAbbreviation = "abbr.",
             programmeFund = fund,
