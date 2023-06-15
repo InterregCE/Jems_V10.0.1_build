@@ -1,13 +1,18 @@
-<ng-container *ngIf="pageStore.partnerSummary$ | async as partnerReportSummary">
+<ng-container *ngIf="pageStore.partnerSummary$ | async as partnerSummary">
     <ng-container *ngIf="data$ | async as data">
         <jems-project-page-template *ngIf="pageStore.partnerReport$ | async as partnerReport"
                                     [titleText]="'project.application.partner.reports.title.number' | translate : {reportNumber: partnerReport?.reportNumber}"
-                                    [subTitleText]="'common.label.project.partner.role.shortcut.' + partnerReport?.identification?.partnerRole | adaptTranslationKeyByCallType | async | translate : {partner: partnerReport?.identification?.partnerNumber + ' ' + partnerReportSummary.abbreviation}"
+                                    [subTitleText]="'common.label.project.partner.role.shortcut.' + partnerReport?.identification?.partnerRole | adaptTranslationKeyByCallType | async | translate : {partner: partnerReport?.identification?.partnerNumber + ' ' + partnerSummary.abbreviation}"
                                     [isVersionedData]="false">
 
             <div class="mb-3 reopen-wrapper">
                 <span class="status-label">Status</span>
                 <span class="ml-2"><jems-partner-report-status [status]="partnerReport.status" [longVersion]="false"></jems-partner-report-status></span>
+
+                <jems-start-control-report [reportId]="partnerReport.id"
+                                           [reportStatus]="partnerReport.status"
+                                           (onError)="showErrorMessage($event)"></jems-start-control-report>
+
                 <button *ngIf="data.hasReopenPermission && (partnerReport.status === StatusEnum.Submitted || partnerReport.status === StatusEnum.InControl || partnerReport.status === StatusEnum.ReOpenCertified)"
                         mat-stroked-button type="button" class="ml-2"
                         (click)="reopenReport(data.partnerId, data.partnerReportId)">

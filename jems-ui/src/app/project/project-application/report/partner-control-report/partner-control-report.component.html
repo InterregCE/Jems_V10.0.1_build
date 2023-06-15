@@ -1,11 +1,17 @@
 <jems-project-page-template [isVersionedData]="false"
-        *ngIf="data$ | async as data"
-        [titleKey]="('project.application.partner.control.report.title' | translate : { reportNumber: data.report?.reportNumber })"
-        [subTitleText]="('common.label.project.partner.role.shortcut.' + data.report?.identification?.partnerRole | adaptTranslationKeyByCallType | async | translate : { partner: data.partnerName }) + ', ' + data.projectAcronym">
+                            *ngIf="data$ | async as data"
+                            [titleKey]="('project.application.partner.control.report.title' | translate : { reportNumber: data.report?.reportNumber })"
+                            [subTitleText]="('common.label.project.partner.role.shortcut.' + data.report?.identification?.partnerRole | adaptTranslationKeyByCallType | async | translate : { partner: data.partnerName }) + ', ' + data.projectAcronym">
 
     <div class="mb-3 reopen-wrapper">
         <span class="status-label">Status</span>
         <span class="ml-2"><jems-partner-report-status [status]="data.report.status" [longVersion]="false"></jems-partner-report-status></span>
+
+        <a jemsText mat-stroked-button type="submit" class="ml-1"
+                (click)="redirectToReport(data.report.id)">
+            {{'project.application.partner.reports.switch.report' | translate}}
+        </a>
+
         <jems-pending-button
                 *ngIf="data.hasReopenPermission && data.report.status === ProjectPartnerReportDTO.StatusEnum.Certified"
                 [disabled]="!!data.report.projectReportId"

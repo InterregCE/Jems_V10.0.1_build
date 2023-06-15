@@ -95,7 +95,7 @@ export class PartnerReportDetailPageComponent {
     ).subscribe();
   }
 
-  private showErrorMessage(error: APIError): Observable<null> {
+  public showErrorMessage(error: APIError): Observable<null> {
     this.error$.next(error);
     setTimeout(() => {
       this.error$.next(null);

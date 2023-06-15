@@ -531,6 +531,7 @@ import {
 } from '@project/project-application/report/partner-report-detail-page/partner-report-procurements-tab/partner-report-procurement-detail/partner-report-procurement-gdpr-attachment/partner-report-procurement-gdpr-attachment.component';
 import { DemimisStateAidComponent } from './project-application/contracting/contract-partner/demimis-state-aid/demimis-state-aid.component';
 import { GberStateAidComponent } from './project-application/contracting/contract-partner/gber-state-aid/gber-state-aid.component';
+import { StartControlReportComponent } from './project-application/report/start-control-report/start-control-report.component';
 
 @NgModule({
   declarations: [
@@ -717,6 +718,7 @@ import { GberStateAidComponent } from './project-application/contracting/contrac
     SharedFolderPageComponent,
     DemimisStateAidComponent,
     GberStateAidComponent,
+    StartControlReportComponent,
   ],
   imports: [
     SharedModule,
