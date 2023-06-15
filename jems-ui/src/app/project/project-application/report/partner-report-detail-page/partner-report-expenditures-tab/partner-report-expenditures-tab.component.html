@@ -501,7 +501,7 @@
                         <ng-container matColumnDef="numberOfUnits">
                             <mat-header-cell class="end-flex-header-table" *matHeaderCellDef>
                                         <span jemsText
-                                              maxLines="2">{{'project.application.partner.report.expenditures.tab.number.of.units' | translate}}</span>
+                                              maxLines="2" class="align-right">{{'project.application.partner.report.expenditures.tab.number.of.units' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <div *ngIf="control.get(constants.FORM_CONTROL_NAMES.costOptions).value && (expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.numberOfUnits).errors)"
@@ -514,6 +514,7 @@
 
                                 <mat-form-field jemsFormFieldWidth="full" *ngIf="control.get(constants.FORM_CONTROL_NAMES.costOptions).value && (expenditureFormIndex === i || control.get(constants.FORM_CONTROL_NAMES.numberOfUnits).errors)" (keyup)="onUpdateNumberOfUnits(i)">
                                     <input [formControlName]="constants.FORM_CONTROL_NAMES.numberOfUnits"
+                                           [options]="{align:'right'}"
                                            matInput
                                            currencyMask
                                            type="decimal" #numberOfUnitsInput>
