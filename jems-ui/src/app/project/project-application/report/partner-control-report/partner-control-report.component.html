@@ -7,10 +7,10 @@
         <span class="status-label">Status</span>
         <span class="ml-2"><jems-partner-report-status [status]="data.report.status" [longVersion]="false"></jems-partner-report-status></span>
 
-        <button jemsText mat-stroked-button type="submit" class="ml-1"
+        <a jemsText mat-stroked-button type="submit" class="ml-1"
                 (click)="redirectToReport(data.report.id)">
             {{'project.application.partner.reports.switch.report' | translate}}
-        </button>
+        </a>
 
         <jems-pending-button
                 *ngIf="data.hasReopenPermission && data.report.status === ProjectPartnerReportDTO.StatusEnum.Certified"
