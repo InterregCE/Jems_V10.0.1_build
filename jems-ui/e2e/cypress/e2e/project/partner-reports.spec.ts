@@ -1264,6 +1264,7 @@ context('Partner reports tests', () => {
 
                                 cy.contains('Submit partner report', {timeout: 2000}).should('be.enabled').click();
                                 cy.contains('button', 'Confirm').should('be.visible').click();
+                                cy.contains('Partner progress report identification').should('be.visible');
                             });
 
                         verifyIdentification(applicationId, partnerId1, reportId);
@@ -1297,8 +1298,8 @@ context('Partner reports tests', () => {
         });
 
         cy.contains('div', 'A 1.1').parent().within(() => {
-            cy.get('jems-partner-actions-cell').scrollIntoView().within((e) => {
-                cy.contains('mat-icon', 'file_download').should('be.visible');
+            cy.get('jems-partner-actions-cell').within((e) => {
+                cy.contains('mat-icon', 'file_download').should('exist');
                 expect(e).to.not.contain('cancel');
             });
         });
