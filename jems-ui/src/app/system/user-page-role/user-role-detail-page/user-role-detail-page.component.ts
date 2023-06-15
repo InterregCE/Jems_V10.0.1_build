@@ -78,6 +78,8 @@ export class UserRoleDetailPageComponent {
   dataSourceInspectProjects = new MatTreeFlatDataSource(this.treeControlInspect, this.treeFlattener);
   dataSourceTopNavigation = new MatTreeFlatDataSource(this.treeControlTopNavigation, this.treeFlattener);
 
+  private editablePermissionsWithHardCodedChildren = ["project.application.contract.partner.section.title"];
+
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
               private activatedRoute: ActivatedRoute,
@@ -291,6 +293,14 @@ export class UserRoleDetailPageComponent {
       return this.formBuilder.group({
         name: perm.name,
         parentIndex,
+        mode: perm.mode,
+        // TODO remove 'disabled' when all permissions are used correctly and not just mocked
+        disabled: perm.disabled,
+        state: perm.state ? perm.state : this.getCurrentState(perm, currentRolePermissions),
+        hideTooltip: perm.hideTooltip,
+        viewTooltip: perm.viewTooltip,
+        editTooltip: perm.editTooltip,
+        infoMessage: perm.infoMessage,
         icon: perm.icon,
         subtree: this.formBuilder.array(
           perm.children.map(child => this.extractFormPermissionSubGroup(child, currentRolePermissions, parentIndex))
@@ -349,6 +359,13 @@ export class UserRoleDetailPageComponent {
     if (!permissionNode.children?.length) {
       const state = this.state(nodeForm)?.value;
       return UserRoleDetailPageComponent.getPermissionsForState(state, permissionNode);
+    }
+
+
+    // MP2-2560 - this story introduces parent nodes with permissions that have hardcoded children
+    if (this.editablePermissionsWithHardCodedChildren.indexOf(permissionNode.name || '') > -1) {
+        const state = this.state(nodeForm)?.value;
+        return UserRoleDetailPageComponent.getPermissionsForState(state, permissionNode);
     }
 
     return permissionNode.children.flatMap((node: PermissionNode, index: number) =>

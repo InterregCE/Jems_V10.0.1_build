@@ -1,0 +1,90 @@
+<jems-form *ngIf="data$ | async as data"
+           (save)="saveForm()"
+           (discard)="resetForm()">
+    <form jemsFormLayout [formGroup]="gberForm">
+
+        <h4>{{'project.application.contract.partner.section.gber' | translate}}</h4>
+        <mat-form-field class="date">
+            <mat-label>{{'project.application.contract.partner.section.gber.date.of.aid' | translate | dateFormatInfo}}</mat-label>
+            <input formControlName="dateOfGrantingAid" matInput>
+        </mat-form-field>
+
+        <mat-table *ngIf="tableData.length > 0"
+                   id="gber-funds-table"
+                   class="mt-3 mb-3 form-width-limit"
+                   [jemsTableConfig]="[{maxInRem: 20},{}]"
+                   [dataSource]="tableData"
+                   formArrayName="funds">
+            <ng-container matColumnDef="fund" stickyEnd>
+                <mat-header-cell *matHeaderCellDef>{{'project.application.contract.partner.section.gber.fund' | translate}}</mat-header-cell>
+                <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                    <mat-form-field>
+                        <mat-select formControlName="fund" class="no-arrow">
+                            <mat-option *ngFor="let fund of fundList"
+                                        [value]="fund">
+                                {{fund.abbreviation | translateBySystemLanguage | async}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="coFinancing">
+                <mat-header-cell *matHeaderCellDef class="justify-end">{{'project.application.contract.partner.section.gber.rate' | translate}}</mat-header-cell>
+                <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                    <input currencyMask matInput formControlName="percentage" type="decimal" [options]="{min: 0, align: 'right'}">
+                    <div class="pl-1" matSuffix>%</div>
+                </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let myRowData; columns: displayedColumns; let rowIndex =index"></mat-row>
+
+        </mat-table>
+
+        <mat-form-field>
+            <mat-label>{{'project.application.contract.partner.section.gber.amount.granted' | translate}}</mat-label>
+            <input currencyMask formControlName="amountGrantedAid" matInput type="decimal">
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>{{'project.application.contract.partner.section.gber.aid.intensity' | translate}}</mat-label>
+            <input currencyMask matInput formControlName="aidIntensity" type="decimal">
+            <div class="pl-1" matSuffix>%</div>
+            <mat-error>
+                <jems-form-field-errors [errors]="gberForm?.get('aidIntensity')?.errors" [messages]="aidIntensityErrors">
+                </jems-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>{{'project.application.contract.partner.section.gber.sector' | translate}}</mat-label>
+            <input formControlName="sector" matInput>
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>{{'project.application.contract.partner.section.gber.location' | translate}}</mat-label>
+            <mat-select formControlName="locationInAssistedArea" [disabled]="data.isPartnerLocked || !data.canEdit">
+                <mat-option [value]="LocationInAssistedArea.AAREA">
+                    {{'project.application.contract.partner.section.gber.location.a.area' | translate}}
+                </mat-option>
+                <mat-option [value]="LocationInAssistedArea.CAREA">
+                    {{'project.application.contract.partner.section.gber.location.c.area' | translate}}
+                </mat-option>
+                <mat-option [value]="LocationInAssistedArea.OTHERAREA">
+                    {{'project.application.contract.partner.section.gber.location.other.area' | translate}}
+                </mat-option>
+                <mat-option [value]="LocationInAssistedArea.NOTAPPLICABLE">
+                    {{'project.application.contract.partner.section.gber.location.not.applicable' | translate}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <jems-expandable-textarea [control]="gberForm.controls.comment"
+                                  [errors]="gberForm.controls.comment.errors"
+                                  [minRows]="1"
+                                  [characterLimit]="2000"
+                                  [label]="'project.application.contract.partner.section.gber.comment' | translate"
+                                  class="comment">
+        </jems-expandable-textarea>
+    </form>
+</jems-form>

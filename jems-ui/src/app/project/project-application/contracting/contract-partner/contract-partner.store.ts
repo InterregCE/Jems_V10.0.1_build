@@ -9,15 +9,20 @@ import {
 import {filter, map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {
-  ContractingPartnerBeneficialOwnerDTO,
-  ContractingPartnerDocumentsLocationDTO,
-  ProjectContractingPartnerBeneficialOwnerService,
-  ProjectContractingPartnerLocationOfDocumentsService,
-  ProjectPartnerSummaryDTO,
-  ProjectPartnerUserCollaboratorService,
-  ProjectStatusDTO,
-  ProjectUserCollaboratorDTO,
-  UserRoleCreateDTO,
+    ContractingPartnerBeneficialOwnerDTO,
+    ContractingPartnerDocumentsLocationDTO,
+    ContractingPartnerStateAidDeMinimisDTO,
+    ContractingPartnerStateAidDeMinimisSectionDTO,
+    ContractingPartnerStateAidGberDTO,
+    ContractingPartnerStateAidGberSectionDTO,
+    ProjectContractingPartnerBeneficialOwnerService,
+    ProjectContractingPartnerLocationOfDocumentsService,
+    ProjectContractingPartnerStateAidService,
+    ProjectPartnerSummaryDTO,
+    ProjectPartnerUserCollaboratorService,
+    ProjectStatusDTO,
+    ProjectUserCollaboratorDTO,
+    UserRoleCreateDTO,
 } from '@cat/api';
 import {Log} from '@common/utils/log';
 import {PermissionService} from '../../../../security/permissions/permission.service';
@@ -39,10 +44,14 @@ export class ContractPartnerStore {
   beneficialOwners$: Observable<ContractingPartnerBeneficialOwnerDTO[]>;
   documentsLocation$: Observable<ContractingPartnerDocumentsLocationDTO>;
   savedBeneficialOwners$ = new Subject<ContractingPartnerBeneficialOwnerDTO[]>();
+  savedDeMinimis$ = new Subject<ContractingPartnerStateAidDeMinimisSectionDTO>();
+  savedGber$ = new Subject<ContractingPartnerStateAidGberSectionDTO>();
   savedDocumentsLocation$ = new Subject<ContractingPartnerDocumentsLocationDTO>();
   userCanEditContractPartner$: Observable<boolean>;
   userCanViewContractPartner$: Observable<boolean>;
   isPartnerLocked$: Observable<boolean>;
+  deMinimis$: Observable<ContractingPartnerStateAidDeMinimisSectionDTO | null>;
+  GBER$: Observable<ContractingPartnerStateAidGberSectionDTO | null>;
 
   constructor(
       private projectPartnerStore: ProjectPartnerStore,
@@ -53,6 +62,7 @@ export class ContractPartnerStore {
       private partnerUserCollaboratorService: ProjectPartnerUserCollaboratorService,
       private documentsLocationService: ProjectContractingPartnerLocationOfDocumentsService,
       private contractingStore: ContractingStore,
+      private projectContractingPartnerStateAidService: ProjectContractingPartnerStateAidService
   ) {
     this.partnerId$ = this.partnerId();
     this.projectId$ = this.projectStore.projectId$;
@@ -62,6 +72,8 @@ export class ContractPartnerStore {
     this.userCanViewContractPartner$ = this.userCanViewContractPartner();
     this.documentsLocation$ = this.documentsLocation();
     this.isPartnerLocked$ = this.isPartnerLocked();
+    this.deMinimis$ = this.deMinimis();
+    this.GBER$ = this.GBER();
   }
 
   updateBeneficialOwners(beneficialOwners: ContractingPartnerBeneficialOwnerDTO[]) {
@@ -95,6 +107,46 @@ export class ContractPartnerStore {
         shareReplay(1)
       );
   }
+
+    private deMinimis(): Observable<ContractingPartnerStateAidDeMinimisSectionDTO | null> {
+        const initialData$ = this.partnerId$
+            .pipe(
+                switchMap((partnerId) => this.projectContractingPartnerStateAidService.getDeMinimisSection(partnerId as number)),
+            );
+        return merge(initialData$, this.savedDeMinimis$)
+            .pipe(
+                shareReplay(1)
+            );
+    }
+
+    private GBER(): Observable<ContractingPartnerStateAidGberSectionDTO | null> {
+        const initialData$ = this.partnerId$
+            .pipe(
+                switchMap((partnerId) => this.projectContractingPartnerStateAidService.getGberSection(partnerId as number)),
+            );
+        return merge(initialData$, this.savedGber$)
+            .pipe(
+                shareReplay(1)
+            );
+    }
+
+    updateDeMinimis(deMinimis: ContractingPartnerStateAidDeMinimisDTO) {
+        return this.partnerId$
+            .pipe(
+                switchMap((partnerId) => this.projectContractingPartnerStateAidService.updateDeMinimisSection(partnerId as number, deMinimis)),
+                tap(saved => Log.info('Saved deMinimis', saved)),
+                tap(data => this.savedDeMinimis$.next(data))
+            );
+    }
+
+    updateGber(gber: ContractingPartnerStateAidGberDTO) {
+        return this.partnerId$
+            .pipe(
+                switchMap((partnerId) => this.projectContractingPartnerStateAidService.updateGberSection(partnerId as number, gber)),
+                tap(saved => Log.info('Saved gber', saved)),
+                tap(data => this.savedGber$.next(data))
+            );
+    }
 
   private userCanEditContractPartner(): Observable<boolean> {
     return combineLatest([

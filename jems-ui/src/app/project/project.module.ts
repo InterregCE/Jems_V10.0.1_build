@@ -529,6 +529,8 @@ import {
 import {
   PartnerReportProcurementGdprAttachmentComponent
 } from '@project/project-application/report/partner-report-detail-page/partner-report-procurements-tab/partner-report-procurement-detail/partner-report-procurement-gdpr-attachment/partner-report-procurement-gdpr-attachment.component';
+import { DemimisStateAidComponent } from './project-application/contracting/contract-partner/demimis-state-aid/demimis-state-aid.component';
+import { GberStateAidComponent } from './project-application/contracting/contract-partner/gber-state-aid/gber-state-aid.component';
 
 @NgModule({
   declarations: [
@@ -713,6 +715,8 @@ import {
     ProjectBreakdownPerPartnerComponent,
     ProjectReportIdentificationExtensionResultOutputComponent,
     SharedFolderPageComponent,
+    DemimisStateAidComponent,
+    GberStateAidComponent,
   ],
   imports: [
     SharedModule,
