@@ -68,7 +68,7 @@ export class StartControlReportComponent {
     });
   }
 
-  createControlReportForPartnerReport(partnerReportId: number, partnerId: string | number | null, isButtonDisabled: boolean): void {
+  createControlReportForPartnerReport(partnerId: string | number | null, reportId: number, isButtonDisabled: boolean): void {
     if (isButtonDisabled) {
       return;
     }
@@ -85,22 +85,22 @@ export class StartControlReportComponent {
       take(1),
       tap((answer) => {
         if (answer) {
-          this.changeStatusOfReport(partnerId, partnerReportId);
+          this.changeStatusOfReport(partnerId, reportId);
         } else {
           this.pendingAction = false;
         }
       })).subscribe();
   }
 
-  private changeStatusOfReport(partnerId: string | number | null, partnerReportId: number): void {
+  private changeStatusOfReport(partnerId: string | number | null, reportId: number): void {
     if (!partnerId) {
       return;
     }
 
-    this.partnerReportDetailStore.startControlOnPartnerReport(Number(partnerId), partnerReportId)
+    this.partnerReportDetailStore.startControlOnPartnerReport(Number(partnerId), reportId)
       .pipe(
         take(1),
-        tap(() => this.redirectToControl(partnerReportId)),
+        tap(() => this.redirectToControl(reportId)),
         catchError((error) => {
           this.onError.emit(error.error);
           return of(null);
