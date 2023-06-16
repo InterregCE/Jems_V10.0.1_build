@@ -27,8 +27,6 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAd
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddressType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
-import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.create.CreateProjectPartnerReportWorkPackageActivityDeliverable
-import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.create.CreateProjectPartnerReportWorkPackageOutput
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReport
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportUpdate
@@ -669,7 +667,7 @@ internal class CreateProjectReportTest : UnitTest() {
         every { projectPersistence.getProject(projectId, "version") } returns project(projectId, status)
         every { projectPersistence.getProjectPeriods(projectId, "version") } returns listOf(ProjectPeriod(4, 17, 22))
         every { reportPersistence.getCurrentLatestReportFor(projectId) } returns currentLatestReport(7)
-        every { projectPartnerPersistence.findTop30ByProjectId(projectId, "version") } returns listOf(leadPartner())
+        every { projectPartnerPersistence.findTop50ByProjectId(projectId, "version") } returns listOf(leadPartner())
         every { projectDescriptionPersistence.getBenefits(projectId, "version") } returns projectRelevanceBenefits()
         every { reportPersistence.getSubmittedProjectReportIds(projectId) } returns listOf(Pair(11L, ContractingDeadlineType.Both))
         every { projectWorkPackagePersistence.getWorkPackagesWithAllDataByProjectId(projectId, "version") } returns listOf(workPackage)

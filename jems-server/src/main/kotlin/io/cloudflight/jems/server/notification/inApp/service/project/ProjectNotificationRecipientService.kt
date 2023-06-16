@@ -32,7 +32,7 @@ class ProjectNotificationRecipientService(
             userProjectCollaboratorPersistence.getUserIdsForProject(projectId).emails()
 
         val partnerIdsByType = if (!notificationConfig.sendToLeadPartner && !notificationConfig.sendToProjectPartners) emptyMap() else
-            partnerPersistence.findTop30ByProjectId(projectId).groupBy({ it.role }, { it.id })
+            partnerPersistence.findTop50ByProjectId(projectId).groupBy({ it.role }, { it.id })
         val leadPartnerId = partnerIdsByType[ProjectPartnerRole.LEAD_PARTNER]?.firstOrNull()
         val partnerIds = partnerIdsByType[ProjectPartnerRole.PARTNER]?.toSet() ?: emptySet()
 

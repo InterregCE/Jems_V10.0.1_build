@@ -140,7 +140,7 @@ class ProjectBudgetPersistenceProvider(
                 ).toProjectPartner()
             },
             previousVersionFetcher = { timestamp ->
-                projectPartnerRepository.findTop30ByProjectIdSortBySortNumberAsOfTimestamp(projectId, timestamp)
+                projectPartnerRepository.findTop50ByProjectIdSortBySortNumberAsOfTimestamp(projectId, timestamp)
                     .map { it.toProjectPartnerHistoricalData() }
             }) ?: emptyList()
 
@@ -186,7 +186,7 @@ class ProjectBudgetPersistenceProvider(
             },
             previousVersionFetcher = { timestamp ->
                 budgetUnitCostRepository.findProjectUnitCostsAsOfTimestamp(
-                    projectPartnerRepository.findTop30ByProjectIdSortBySortNumberAsOfTimestamp(
+                    projectPartnerRepository.findTop50ByProjectIdSortBySortNumberAsOfTimestamp(
                         projectId,
                         timestamp
                     ).map { it.id }.toSet(), timestamp

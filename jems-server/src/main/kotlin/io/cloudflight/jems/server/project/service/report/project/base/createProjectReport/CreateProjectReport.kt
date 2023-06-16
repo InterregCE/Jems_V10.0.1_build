@@ -80,7 +80,7 @@ class CreateProjectReport(
         )
 
         val latestReportNumber = reportPersistence.getCurrentLatestReportFor(projectId)?.reportNumber ?: 0
-        val partners = projectPartnerPersistence.findTop30ByProjectId(projectId, version).toSet()
+        val partners = projectPartnerPersistence.findTop50ByProjectId(projectId, version).toSet()
         val leadPartner = partners.firstOrNull { it.role == ProjectPartnerRole.LEAD_PARTNER }
         val submittedReports = reportPersistence.getSubmittedProjectReportIds(projectId)
         val submittedReportIds = submittedReports.mapTo(HashSet()) { it.first }

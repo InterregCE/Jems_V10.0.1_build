@@ -907,7 +907,7 @@ class ProjectReportDataProviderImplTest : UnitTest() {
 
     @Test
     fun getPartnerCertificates() {
-        every { partnerPersistence.findTop30ByProjectId(PROJECT_ID) } returns listOf(leadPartner)
+        every { partnerPersistence.findTop50ByProjectId(PROJECT_ID) } returns listOf(leadPartner)
 
         every {
             projectReportCertificatePersistence.listCertificates(

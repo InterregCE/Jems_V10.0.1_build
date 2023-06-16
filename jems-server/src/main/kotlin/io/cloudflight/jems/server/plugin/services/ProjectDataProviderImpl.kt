@@ -106,7 +106,7 @@ class ProjectDataProviderImpl(
         val legalStatuses = programmeLegalStatusPersistence.getMax20Statuses()
         val lumpSums = projectLumpSumPersistence.getLumpSums(projectId, version)
 
-        val partners = partnerPersistence.findTop30ByProjectId(projectId, version)
+        val partners = partnerPersistence.findTop50ByProjectId(projectId, version)
         val partnersSummary = partners.toProjectPartnerSummary()
         val partnerIds = partners.mapTo(HashSet()) { it.id }
         val partnersBudgetOptions = budgetOptionsPersistence.getBudgetOptions(partnerIds, projectId, version)

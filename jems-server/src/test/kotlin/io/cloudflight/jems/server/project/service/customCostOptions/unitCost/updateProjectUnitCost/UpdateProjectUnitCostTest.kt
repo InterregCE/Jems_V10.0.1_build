@@ -32,7 +32,6 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
-import org.aspectj.weaver.patterns.ConcreteCflowPointcut
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -259,7 +258,7 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
         val partnerId = 190L
         val partner = mockk<ProjectPartnerDetail>()
         every { partner.id } returns partnerId
-        every { partnerPersistence.findTop30ByProjectId(PROJECT_ID) } returns listOf(partner)
+        every { partnerPersistence.findTop50ByProjectId(PROJECT_ID) } returns listOf(partner)
 
         val deleteSlots = categories.map { Pair(it, slot<Set<Long>>()) }.toMap()
         mockBudgetUpdates(partnerId, deleteSlots)
@@ -366,7 +365,7 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
         val partnerId = 195L
         val partner = mockk<ProjectPartnerDetail>()
         every { partner.id } returns partnerId
-        every { partnerPersistence.findTop30ByProjectId(PROJECT_ID) } returns listOf(partner)
+        every { partnerPersistence.findTop50ByProjectId(PROJECT_ID) } returns listOf(partner)
 
         val deleteSlots = categories.map { Pair(it, slot<Set<Long>>()) }.toMap()
         mockBudgetUpdates(partnerId, deleteSlots)
@@ -408,7 +407,7 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
         val partnerId = 199L
         val partner = mockk<ProjectPartnerDetail>()
         every { partner.id } returns partnerId
-        every { partnerPersistence.findTop30ByProjectId(PROJECT_ID) } returns listOf(partner)
+        every { partnerPersistence.findTop50ByProjectId(PROJECT_ID) } returns listOf(partner)
 
         val deleteSlots = categories.map { Pair(it, slot<Set<Long>>()) }.toMap()
         mockBudgetUpdates(partnerId, deleteSlots)
@@ -453,7 +452,7 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
         val partnerId = 203L
         val partner = mockk<ProjectPartnerDetail>()
         every { partner.id } returns partnerId
-        every { partnerPersistence.findTop30ByProjectId(PROJECT_ID) } returns listOf(partner)
+        every { partnerPersistence.findTop50ByProjectId(PROJECT_ID) } returns listOf(partner)
 
         every { programmeUnitCostPersistence.updateUnitCost(any()) } returnsArgument 0
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary
@@ -463,7 +462,7 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
         assertThat(interactor.updateProjectUnitCost(PROJECT_ID, oldUnitCost.copy(projectId = null))).isEqualTo(oldUnitCost.copy())
         verify(exactly = 1) { programmeUnitCostPersistence.updateUnitCost(oldUnitCost) }
 
-        verify(exactly = 0) { partnerPersistence.findTop30ByProjectId(any()) }
+        verify(exactly = 0) { partnerPersistence.findTop50ByProjectId(any()) }
 
         verify(exactly = 1) { auditPublisher.publishEvent(any()) }
     }

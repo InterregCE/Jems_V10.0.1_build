@@ -257,7 +257,7 @@ class ProjectBudgetPersistenceTest {
         every { mockPRow.nutsRegion3 } returns "nutsRegion3"
         every { projectVersionRepo.findTimestampByVersion(1L, version) } returns timestamp
         every {
-            projectPartnerRepository.findTop30ByProjectIdSortBySortNumberAsOfTimestamp(
+            projectPartnerRepository.findTop50ByProjectIdSortBySortNumberAsOfTimestamp(
                 1L,
                 timestamp
             )
@@ -514,7 +514,7 @@ class ProjectBudgetPersistenceTest {
         every { projectVersionRepo.findTimestampByVersion(any(), version) } returns timestamp
         every { projectPartnerRepository.findTop50ByProjectId(1L) } returns partners
         every {
-            projectPartnerRepository.findTop30ByProjectIdSortBySortNumberAsOfTimestamp(
+            projectPartnerRepository.findTop50ByProjectIdSortBySortNumberAsOfTimestamp(
                 any(),
                 timestamp
             )

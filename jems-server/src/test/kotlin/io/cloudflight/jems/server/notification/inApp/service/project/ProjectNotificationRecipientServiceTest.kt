@@ -225,7 +225,7 @@ class ProjectNotificationRecipientServiceTest {
     @Test
     fun getEmailsForProjectNotificationAllActive() {
         every { userProjectCollaboratorPersistence.getUserIdsForProject(PROJECT_ID) } returns listOf(projectManager, projectManagerDeactivated)
-        every { partnerPersistence.findTop30ByProjectId(PROJECT_ID) } returns listOf(leadPartner, partner)
+        every { partnerPersistence.findTop50ByProjectId(PROJECT_ID) } returns listOf(leadPartner, partner)
         every { partnerCollaboratorPersistence.findByProjectAndPartners(PROJECT_ID, setOf(2L)) } returns setOf(leadPartnerCollaborator)
         every { partnerCollaboratorPersistence.findByProjectAndPartners(PROJECT_ID, setOf(3L)) } returns setOf(
             partnerCollaborator,

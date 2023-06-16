@@ -317,9 +317,9 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
                 ON entity.id = addresses.partner_id AND addresses.type = 'Organization'
         WHERE entity.project_id = :projectId
         ORDER BY entity.sort_number ASC
-        LIMIT 30
+        LIMIT 50
     """, nativeQuery = true)
-    fun findTop30ByProjectIdSortBySortNumberAsOfTimestamp(
+    fun findTop50ByProjectIdSortBySortNumberAsOfTimestamp(
         projectId: Long,
         timestamp: Timestamp
     ): List<PartnerSimpleRow>
