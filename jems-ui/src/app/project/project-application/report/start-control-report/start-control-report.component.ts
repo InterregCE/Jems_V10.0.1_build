@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {ProjectPartnerReportDTO, ProjectPartnerReportSummaryDTO} from '@cat/api';
-import {combineLatest, Observable, of} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {Forms} from '@common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {PartnerReportDetailPageStore} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
@@ -27,7 +27,7 @@ export class StartControlReportComponent {
   @Output()
   onError = new EventEmitter<APIError>();
 
-  pendingAction = false;
+  pendingAction = new BehaviorSubject<boolean>(false);
   data$: Observable<{
     partnerId: string | number | null,
     canViewReport: boolean,
@@ -73,7 +73,7 @@ export class StartControlReportComponent {
       return;
     }
 
-    this.pendingAction = true;
+    this.pendingAction.next(true);
     Forms.confirm(
       this.dialog,
       {
@@ -87,7 +87,7 @@ export class StartControlReportComponent {
         if (answer) {
           this.changeStatusOfReport(partnerId, reportId);
         } else {
-          this.pendingAction = false;
+          this.pendingAction.next(false);
         }
       })).subscribe();
   }
@@ -105,7 +105,7 @@ export class StartControlReportComponent {
           this.onError.emit(error.error);
           return of(null);
         }),
-        finalize(() => this.pendingAction = false)
+        finalize(() => this.pendingAction.next(false))
       ).subscribe();
   }
 }
