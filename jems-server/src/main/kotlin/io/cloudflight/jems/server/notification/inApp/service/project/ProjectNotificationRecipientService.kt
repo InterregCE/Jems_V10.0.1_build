@@ -63,7 +63,14 @@ class ProjectNotificationRecipientService(
         projectId: Long,
         partnerId: Long,
     ): Map<String, UserEmailNotification> {
-        return if (!notificationConfig.sendToLeadPartner && !notificationConfig.sendToProjectPartners) emptyMap() else
+        if (!notificationConfig.sendToLeadPartner && !notificationConfig.sendToProjectPartners)
+            return emptyMap()
+        val partnerDetails = partnerPersistence.getById(partnerId)
+        val sendToPartner = when(partnerDetails.role) {
+            ProjectPartnerRole.LEAD_PARTNER -> notificationConfig.sendToLeadPartner
+            ProjectPartnerRole.PARTNER -> notificationConfig.sendToProjectPartners
+        }
+        return if (!sendToPartner) emptyMap() else
             partnerCollaboratorPersistence.findByProjectAndPartners(projectId, setOf(partnerId))
                 .partnerCollaboratorEmails()
     }
