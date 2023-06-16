@@ -52,5 +52,5 @@ data class AssignUserCollaboratorToPartnerEventListeners(
         }
 
     private fun collaboratorsWithLevels(collaborators: Set<PartnerCollaborator>): String =
-        collaborators.joinToString(", ") { "${it.userEmail}: ${it.level}" }
+        collaborators.joinToString(", ") { "${it.userEmail}: ${it.level} " + if (it.gdpr) "GDPR" else "" }
 }

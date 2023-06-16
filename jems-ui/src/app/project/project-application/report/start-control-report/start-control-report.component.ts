@@ -1,9 +1,11 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {ProjectPartnerReportDTO, ProjectPartnerReportSummaryDTO} from '@cat/api';
+import {ProjectPartnerReportDTO} from '@cat/api';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {Forms} from '@common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
-import {PartnerReportDetailPageStore} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
+import {
+  PartnerReportDetailPageStore
+} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 import {catchError, finalize, map, take, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {ActivatedRoute} from '@angular/router';
@@ -29,11 +31,11 @@ export class StartControlReportComponent {
 
   pendingAction = new BehaviorSubject<boolean>(false);
   data$: Observable<{
-    partnerId: string | number | null,
-    canViewReport: boolean,
-    isController: boolean,
-    isButtonVisible: boolean,
-    isButtonDisabled: boolean
+    partnerId: string | number | null;
+    canViewReport: boolean;
+    isController: boolean;
+    isButtonVisible: boolean;
+    isButtonDisabled: boolean;
   }>;
 
   constructor(

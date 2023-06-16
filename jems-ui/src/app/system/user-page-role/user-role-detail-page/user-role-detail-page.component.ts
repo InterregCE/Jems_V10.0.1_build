@@ -78,7 +78,7 @@ export class UserRoleDetailPageComponent {
   dataSourceInspectProjects = new MatTreeFlatDataSource(this.treeControlInspect, this.treeFlattener);
   dataSourceTopNavigation = new MatTreeFlatDataSource(this.treeControlTopNavigation, this.treeFlattener);
 
-  private editablePermissionsWithHardCodedChildren = ["project.application.contract.partner.section.title"];
+  private editablePermissionsWithHardCodedChildren = ['project.application.contract.partner.section.title'];
 
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,

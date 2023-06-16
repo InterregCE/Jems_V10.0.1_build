@@ -97,7 +97,7 @@ export class PartnerControlReportComponent {
     this.router.navigate([`../../${reportId}/identification`], {
       relativeTo: this.activatedRoute,
       queryParamsHandling: 'merge'
-    })
+    });
   }
 
   private redirectToReportList(): void {
