@@ -16,6 +16,10 @@
         </p>
     </ng-container>
 
+    <jems-alert [show]="!data.projectReports.totalElements" [type]="Alert.INFO">
+        <p>{{'project.application.project.report.table.empty' | translate}}</p>
+    </jems-alert>
+
     <jems-alert [show]="successfulDeletionMessage"
                 [type]="Alert.SUCCESS">
         <p>{{'project.application.project.report.successful.deletion.message' | translate}}</p>
