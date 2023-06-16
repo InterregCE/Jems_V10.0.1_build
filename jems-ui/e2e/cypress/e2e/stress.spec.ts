@@ -16,7 +16,7 @@ it('TB-1054 Application with all data maxed out can be created and exported', ()
 
     const randomString = faker.random.words(1000);
     const numberOfPeriods = 10; // max 999, max supported 60
-    const numberOfPartners = 30; // max 30
+    const numberOfPartners = 50; // max 50
     const numberOfOrganisations = 30; // max 30
     const numberOfCostItems = 5; // no limit, max supported 30
     const numberOfWorkPackages = 5; // max 20
@@ -116,7 +116,7 @@ it('TB-1054 Application with all data maxed out can be created and exported', ()
                 number: 1
               }]
             };
-            
+
             const unitCostItem: any = {
               numberOfUnits: 1,
               unitCostId: 7,
