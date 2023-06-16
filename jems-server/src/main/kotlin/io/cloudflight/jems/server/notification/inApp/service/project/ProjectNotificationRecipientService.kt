@@ -24,13 +24,24 @@ class ProjectNotificationRecipientService(
     private val controllerInstitutionPersistence: ControllerInstitutionPersistence,
 ) : ProjectNotificationRecipientServiceInteractor {
 
-    override fun getEmailsForProjectNotification(
+    override fun getEmailsForProjectManagersAndAssignedUsers(
         notificationConfig: ProjectNotificationConfiguration,
         projectId: Long
     ): Map<String, UserEmailNotification> {
         val managers = if (!notificationConfig.sendToManager) emptyMap() else
             userProjectCollaboratorPersistence.getUserIdsForProject(projectId).emails()
 
+        val projectAssignedUsers = if (!notificationConfig.sendToProjectAssigned) emptyMap() else
+            userProjectPersistence.getUsersForProject(projectId)
+                .emails()
+
+        return managers + projectAssignedUsers
+    }
+
+    override fun getEmailsForPartners(
+        notificationConfig: ProjectNotificationConfiguration,
+        projectId: Long
+    ): Map<String, UserEmailNotification> {
         val partnerIdsByType = if (!notificationConfig.sendToLeadPartner && !notificationConfig.sendToProjectPartners) emptyMap() else
             partnerPersistence.findTop50ByProjectId(projectId).groupBy({ it.role }, { it.id })
         val leadPartnerId = partnerIdsByType[ProjectPartnerRole.LEAD_PARTNER]?.firstOrNull()
@@ -44,14 +55,20 @@ class ProjectNotificationRecipientService(
             partnerCollaboratorPersistence.findByProjectAndPartners(projectId, partnerIds)
                 .partnerCollaboratorEmails()
 
-        val projectAssignedUsers = if (!notificationConfig.sendToProjectAssigned) emptyMap() else
-            userProjectPersistence.getUsersForProject(projectId)
-                .emails()
-
-        return managers + leadPartnerCollaborators + nonLeadPartnerCollaborators + projectAssignedUsers
+        return leadPartnerCollaborators + nonLeadPartnerCollaborators
     }
 
-    override fun getEmailsForPartnerNotification(
+    override fun getEmailsForSpecificPartner(
+        notificationConfig: ProjectNotificationConfiguration,
+        projectId: Long,
+        partnerId: Long,
+    ): Map<String, UserEmailNotification> {
+        return if (!notificationConfig.sendToLeadPartner && !notificationConfig.sendToProjectPartners) emptyMap() else
+            partnerCollaboratorPersistence.findByProjectAndPartners(projectId, setOf(partnerId))
+                .partnerCollaboratorEmails()
+    }
+
+    override fun getEmailsForPartnerControllers(
         notificationConfig: ProjectNotificationConfiguration,
         partnerId: Long
     ): Map<String, UserEmailNotification> {
