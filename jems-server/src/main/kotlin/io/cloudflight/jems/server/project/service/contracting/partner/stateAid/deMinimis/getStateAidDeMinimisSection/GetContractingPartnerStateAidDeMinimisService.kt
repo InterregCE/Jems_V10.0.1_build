@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.contracting.partner.stateAid.
 import io.cloudflight.jems.api.programme.dto.stateaid.ProgrammeStateAidMeasure
 import io.cloudflight.jems.api.project.contracting.partner.ContractingPartnerStateAidDeMinimisMeasure
 import io.cloudflight.jems.server.programme.service.ProgrammeDataServiceImpl
+import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_funds.GetPartnerBudgetPerFundService
 import io.cloudflight.jems.server.project.service.contracting.model.partner.stateAid.ContractingPartnerStateAidDeMinimis
 import io.cloudflight.jems.server.project.service.contracting.model.partner.stateAid.ContractingPartnerStateAidDeMinimisSection
@@ -21,16 +22,18 @@ class GetContractingPartnerStateAidDeMinimisService(
     private val getContractingMonitoringService: GetContractingMonitoringService,
     private val partnerPersistence: PartnerPersistence,
     private val partnerBudgetPerFundService: GetPartnerBudgetPerFundService,
-    private val programmeDataService: ProgrammeDataServiceImpl
+    private val programmeDataService: ProgrammeDataServiceImpl,
+    private val versionPersistence: ProjectVersionPersistence
 ) {
 
     @Transactional(readOnly = true)
     fun getDeMinimisSection(partnerId: Long): ContractingPartnerStateAidDeMinimisSection? {
         val deMinimisData = this.contractingPartnerStateAidDeMinimisPersistence.findById(partnerId)
-        val partnerData = this.partnerPersistence.getById(partnerId)
-        val projectContractingMonitoring = getContractingMonitoringService.getProjectContractingMonitoring(partnerData.projectId)
-        val partnerStateAid = this.partnerPersistence.getPartnerStateAid(partnerId)
-        val partnerBudgetPerFund = this.partnerBudgetPerFundService.getProjectPartnerBudgetPerFund(partnerData.projectId, null)
+        val projectId = this.partnerPersistence.getProjectIdForPartnerId(partnerId)
+        val lastApprovedVersion = this.versionPersistence.getLatestApprovedOrCurrent(projectId)
+        val projectContractingMonitoring = getContractingMonitoringService.getProjectContractingMonitoring(projectId)
+        val partnerStateAid = this.partnerPersistence.getPartnerStateAid(partnerId, lastApprovedVersion)
+        val partnerBudgetPerFund = this.partnerBudgetPerFundService.getProjectPartnerBudgetPerFund(projectId, lastApprovedVersion)
             .filter { it.partner?.id == partnerId }.firstOrNull()
 
         return if(stateAidSectionShouldBeDisplayed(partnerStateAid) && hasPartnerStateAidMinimisSelected(partnerStateAid.stateAidScheme?.measure) ) {

@@ -29,19 +29,13 @@ import java.time.LocalDate
 
 
 const val PROJECT_ID = 1L
-
 const val PARTNER_ID = 2L
-
+const val LAST_APPROVED_VERSION = "1.0"
 val date1 = LocalDate.now().plusDays(1)
-
 val date2 = LocalDate.now().plusDays(2)
-
 val date3 = LocalDate.now().plusDays(3)
-
 val fund1 = ProgrammeFund(id = 1L, selected = true, type = ProgrammeFundType.ERDF)
-
 val fund2 = ProgrammeFund(id = 2L, selected = true, type = ProgrammeFundType.IPA_III)
-
 val fund3 = ProgrammeFund(id = 3L, selected = true, type = ProgrammeFundType.OTHER)
 
 val addDates = listOf(
@@ -49,7 +43,6 @@ val addDates = listOf(
     ProjectContractingMonitoringAddDate(projectId = PROJECT_ID, number = 2, entryIntoForceDate = date2),
     ProjectContractingMonitoringAddDate(projectId = PROJECT_ID, number = 3, entryIntoForceDate = date3),
 )
-
 val expectedDateOfGrantingAid = addDates.maxByOrNull { addDate -> addDate.number }?.entryIntoForceDate
 
 val expectedEmptyGberSectionModel = ContractingPartnerStateAidGberSection(
@@ -156,7 +149,6 @@ fun getSpfCofinancing(): ProjectPartnerCoFinancingAndContributionSpf {
         partnerContributions = emptyList(),
     )
 }
-
 
 
 fun getPartnerFunds(): Set<PartnerBudgetPerFund> {

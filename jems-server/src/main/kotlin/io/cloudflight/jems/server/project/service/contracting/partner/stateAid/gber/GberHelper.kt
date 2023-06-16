@@ -10,11 +10,11 @@ import org.springframework.stereotype.Service
 class GberHelper(
     private val projectPartnerCoFinancingPersistence: ProjectPartnerCoFinancingPersistence
 ) {
-    fun getSelectedFundsListForPartner(partnerId: Long): List<ProgrammeFundType?> {
-        val selectedPartnerFunds = projectPartnerCoFinancingPersistence.getCoFinancingAndContributions(partnerId).finances
+    fun getSelectedFundsListForPartner(partnerId: Long, lastApprovedVersion: String): List<ProgrammeFundType?> {
+        val selectedPartnerFunds = projectPartnerCoFinancingPersistence.getCoFinancingAndContributions(partnerId, lastApprovedVersion).finances
                 .filter { it.fundType == ProjectPartnerCoFinancingFundTypeDTO.MainFund }
                 .map { it.fund?.type }
-        val selectedSpfPartnerFunds = projectPartnerCoFinancingPersistence.getSpfCoFinancingAndContributions(partnerId).finances
+        val selectedSpfPartnerFunds = projectPartnerCoFinancingPersistence.getSpfCoFinancingAndContributions(partnerId, lastApprovedVersion).finances
                 .filter { it.fundType == ProjectPartnerCoFinancingFundTypeDTO.MainFund }
                 .map { it.fund?.type }
 
@@ -23,8 +23,8 @@ class GberHelper(
         } else selectedSpfPartnerFunds
     }
 
-    fun getPartnerFunds(partnerId: Long, budgetPerFund: Set<PartnerBudgetPerFund>): Set<PartnerBudgetPerFund> {
-        val selectedFundsByPartner = this.getSelectedFundsListForPartner(partnerId)
+    fun getPartnerFunds(partnerId: Long, budgetPerFund: Set<PartnerBudgetPerFund>, lastApprovedVersion: String): Set<PartnerBudgetPerFund> {
+        val selectedFundsByPartner = this.getSelectedFundsListForPartner(partnerId, lastApprovedVersion)
 
         return budgetPerFund.filter { selectedFundsByPartner.contains(it.fund?.type) }.toSet()
     }

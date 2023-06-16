@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service.contracting.partner.stateAid.
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectContractingPartnerStateAid
+import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_funds.GetPartnerBudgetPerFundService
 import io.cloudflight.jems.server.project.service.contracting.ContractingValidator
 import io.cloudflight.jems.server.project.service.contracting.model.partner.stateAid.ContractingPartnerStateAidGber
@@ -20,6 +21,7 @@ class UpdateContractingPartnerStateAidGber(
     private val getContractingMonitoringService: GetContractingMonitoringService,
     private val partnerBudgetPerFundService: GetPartnerBudgetPerFundService,
     private val partnerPersistence: PartnerPersistence,
+    private val versionPersistence: ProjectVersionPersistence,
     private val gberHelper: GberHelper,
     private val validator: ContractingValidator
     ): UpdateContractingPartnerStateAidGberInteractor {
@@ -34,11 +36,13 @@ class UpdateContractingPartnerStateAidGber(
         validator.validatePartnerLock(partnerId)
 
         val updatedGberEntity = this.contractingPartnerStateAidGberPersistence.saveGber(partnerId, gberData)
-        val partnerData = this.partnerPersistence.getById(partnerId)
-        val projectContractingMonitoring = getContractingMonitoringService.getProjectContractingMonitoring(partnerData.projectId)
-        val partnerBudgetPerFund = this.partnerBudgetPerFundService.getProjectPartnerBudgetPerFund(partnerData.projectId, null)
+        val projectId = this.partnerPersistence.getProjectIdForPartnerId(partnerId)
+        val lastApprovedVersion = this.versionPersistence.getLatestApprovedOrCurrent(projectId)
+        val partnerData = this.partnerPersistence.getById(partnerId, lastApprovedVersion)
+        val projectContractingMonitoring = getContractingMonitoringService.getProjectContractingMonitoring(projectId)
+        val partnerBudgetPerFund = this.partnerBudgetPerFundService.getProjectPartnerBudgetPerFund(projectId, lastApprovedVersion)
             .filter { it.partner?.id == partnerId }.firstOrNull()
-        val fundsSelectedByPartner = gberHelper.getPartnerFunds(partnerId, partnerBudgetPerFund?.budgetPerFund ?: emptySet())
+        val fundsSelectedByPartner = gberHelper.getPartnerFunds(partnerId, partnerBudgetPerFund?.budgetPerFund ?: emptySet(), lastApprovedVersion)
 
         return ContractingPartnerStateAidGberSection(
             partnerId = updatedGberEntity.partnerId,
