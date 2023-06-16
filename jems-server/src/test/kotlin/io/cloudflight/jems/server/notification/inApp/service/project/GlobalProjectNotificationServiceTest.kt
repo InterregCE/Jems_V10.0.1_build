@@ -118,10 +118,12 @@ class GlobalProjectNotificationServiceTest : UnitTest() {
 
         every { projectPersistence.getCallIdOfProject(PROJECT_ID) } returns CALL_ID
         every { callNotificationConfigPersistence.getActiveNotificationOfType(CALL_ID, notifType) } returns step1submittedToAll
-        every { projectNotificationRecipientServiceInteractor.getEmailsForProjectNotification(step1submittedToAll, PROJECT_ID) } returns mapOf(
+        every { projectNotificationRecipientServiceInteractor.getEmailsForProjectManagersAndAssignedUsers(step1submittedToAll, PROJECT_ID) } returns mapOf(
+            "manager.inactive@jems.eu" to UserEmailNotification(true, UserStatus.INACTIVE),
+        )
+        every { projectNotificationRecipientServiceInteractor.getEmailsForPartners(step1submittedToAll, PROJECT_ID) } returns mapOf(
             "lead-partner@jems.eu" to UserEmailNotification(true, UserStatus.ACTIVE),
             "partner.no-email@jems.eu" to UserEmailNotification(false, UserStatus.ACTIVE),
-            "manager.inactive@jems.eu" to UserEmailNotification(true, UserStatus.INACTIVE),
         )
         every { callPersistence.getCallSummaryById(CALL_ID) } returns mockk {
             every { id } returns CALL_ID
@@ -179,7 +181,8 @@ class GlobalProjectNotificationServiceTest : UnitTest() {
 
         every { projectPersistence.getCallIdOfProject(PROJECT_ID) } returns CALL_ID
         every { callNotificationConfigPersistence.getActiveNotificationOfType(CALL_ID, notifType) } returns submittedNone
-        every { projectNotificationRecipientServiceInteractor.getEmailsForProjectNotification(submittedNone, PROJECT_ID) } returns emptyMap()
+        every { projectNotificationRecipientServiceInteractor.getEmailsForProjectManagersAndAssignedUsers(submittedNone, PROJECT_ID) } returns emptyMap()
+        every { projectNotificationRecipientServiceInteractor.getEmailsForPartners(submittedNone, PROJECT_ID) } returns emptyMap()
         every { callPersistence.getCallSummaryById(CALL_ID) } returns mockk {
             every { id } returns CALL_ID
             every { name } returns "call-name"
@@ -236,8 +239,12 @@ class GlobalProjectNotificationServiceTest : UnitTest() {
 
         every { projectPersistence.getCallIdOfProject(PROJECT_ID) } returns CALL_ID
         every { callNotificationConfigPersistence.getActiveNotificationOfType(CALL_ID, notificationType) } returns partnerReportSubmitted
-        every { projectNotificationRecipientServiceInteractor.getEmailsForProjectNotification(partnerReportSubmitted, PROJECT_ID) } returns emptyMap()
-        every { projectNotificationRecipientServiceInteractor.getEmailsForPartnerNotification(partnerReportSubmitted, 91L) } returns mapOf(
+        every { projectNotificationRecipientServiceInteractor.getEmailsForProjectManagersAndAssignedUsers(
+            partnerReportSubmitted, PROJECT_ID) } returns emptyMap()
+        every { projectNotificationRecipientServiceInteractor.getEmailsForSpecificPartner(partnerReportSubmitted, PROJECT_ID, 91L) } returns mapOf(
+            "lead-partner@jems.eu" to UserEmailNotification(true, UserStatus.ACTIVE),
+        )
+        every { projectNotificationRecipientServiceInteractor.getEmailsForPartnerControllers(partnerReportSubmitted, 91L) } returns mapOf(
             "controller@jems.eu" to UserEmailNotification(true, UserStatus.ACTIVE),
             "controller.inactive@jems.eu" to UserEmailNotification(true, UserStatus.INACTIVE),
             "controller.no-email@jems.eu" to UserEmailNotification(false, UserStatus.ACTIVE),
@@ -280,8 +287,8 @@ class GlobalProjectNotificationServiceTest : UnitTest() {
                 type = NotificationType.PartnerReportSubmitted,
                 time = slotNotification.captured.time,
                 templateVariables = templateVariables,
-                recipientsInApp = setOf("controller@jems.eu", "controller.inactive@jems.eu", "controller.no-email@jems.eu"),
-                recipientsEmail = setOf("controller@jems.eu"),
+                recipientsInApp = setOf("lead-partner@jems.eu", "controller@jems.eu", "controller.inactive@jems.eu", "controller.no-email@jems.eu"),
+                recipientsEmail = setOf("lead-partner@jems.eu", "controller@jems.eu"),
                 emailTemplate = "notification.html",
             )
         )
@@ -291,7 +298,7 @@ class GlobalProjectNotificationServiceTest : UnitTest() {
                 mailNotificationInfo = MailNotificationInfo(
                     subject = "PartnerReport Submitted",
                     templateVariables = templateVariables.plus("body" to "test").map { Variable(it.key, it.value) }.toSet(),
-                    recipients = setOf("controller@jems.eu"),
+                    recipients = setOf("lead-partner@jems.eu", "controller@jems.eu"),
                     messageType = "PartnerReportSubmitted",
                 ),
             )
@@ -304,7 +311,12 @@ class GlobalProjectNotificationServiceTest : UnitTest() {
 
         every { projectPersistence.getCallIdOfProject(PROJECT_ID) } returns CALL_ID
         every { callNotificationConfigPersistence.getActiveNotificationOfType(CALL_ID, notificationType) } returns projectReportSubmitted
-        every { projectNotificationRecipientServiceInteractor.getEmailsForProjectNotification(projectReportSubmitted, PROJECT_ID) } returns emptyMap()
+        every { projectNotificationRecipientServiceInteractor.getEmailsForProjectManagersAndAssignedUsers(
+            projectReportSubmitted, PROJECT_ID) } returns emptyMap()
+        every { projectNotificationRecipientServiceInteractor.getEmailsForPartners(projectReportSubmitted, PROJECT_ID) } returns mapOf(
+            "lead-partner@jems.eu" to UserEmailNotification(true, UserStatus.ACTIVE),
+            "pp@jems.eu" to UserEmailNotification(true, UserStatus.ACTIVE)
+        )
         every { callPersistence.getCallSummaryById(CALL_ID) } returns mockk {
             every { id } returns CALL_ID
             every { name } returns "call-name"
@@ -339,8 +351,8 @@ class GlobalProjectNotificationServiceTest : UnitTest() {
                 type = NotificationType.ProjectReportSubmitted,
                 time = slotNotification.captured.time,
                 templateVariables = templateVariables,
-                recipientsInApp = setOf(),
-                recipientsEmail = setOf(),
+                recipientsInApp = setOf("lead-partner@jems.eu", "pp@jems.eu"),
+                recipientsEmail = setOf("lead-partner@jems.eu", "pp@jems.eu"),
                 emailTemplate = "notification.html",
             )
         )
@@ -350,7 +362,7 @@ class GlobalProjectNotificationServiceTest : UnitTest() {
                 mailNotificationInfo = MailNotificationInfo(
                     subject = "ProjectReport Submitted",
                     templateVariables = templateVariables.plus("body" to "test").map { Variable(it.key, it.value) }.toSet(),
-                    recipients = setOf(),
+                    recipients = setOf("lead-partner@jems.eu", "pp@jems.eu"),
                     messageType = "ProjectReportSubmitted",
                 ),
             )

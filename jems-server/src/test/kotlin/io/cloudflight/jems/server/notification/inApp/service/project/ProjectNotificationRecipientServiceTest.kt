@@ -26,6 +26,7 @@ import io.cloudflight.jems.server.utils.PARTNER_ID
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.time.ZonedDateTime
@@ -63,8 +64,8 @@ class ProjectNotificationRecipientServiceTest {
             id = NotificationType.PartnerReportSubmitted,
             active = true,
             sendToManager = false,
-            sendToLeadPartner = false,
-            sendToProjectPartners = false,
+            sendToLeadPartner = true,
+            sendToProjectPartners = true,
             sendToProjectAssigned = false,
             sendToControllers = true,
             emailSubject = "PartnerReport Submitted",
@@ -220,29 +221,18 @@ class ProjectNotificationRecipientServiceTest {
     private lateinit var controllerInstitutionPersistence: ControllerInstitutionPersistence
 
     @InjectMockKs
-    private lateinit var projectNotificationHelper: ProjectNotificationRecipientService
+    private lateinit var service: ProjectNotificationRecipientService
 
     @Test
-    fun getEmailsForProjectNotificationAllActive() {
+    fun getEmailsForProjectManagersAndAssignedUsers() {
         every { userProjectCollaboratorPersistence.getUserIdsForProject(PROJECT_ID) } returns listOf(projectManager, projectManagerDeactivated)
-        every { partnerPersistence.findTop50ByProjectId(PROJECT_ID) } returns listOf(leadPartner, partner)
-        every { partnerCollaboratorPersistence.findByProjectAndPartners(PROJECT_ID, setOf(2L)) } returns setOf(leadPartnerCollaborator)
-        every { partnerCollaboratorPersistence.findByProjectAndPartners(PROJECT_ID, setOf(3L)) } returns setOf(
-            partnerCollaborator,
-            partnerCollaboratorDeactivated,
-            partnerCollaboratorActiveButFlagFalse
-        )
         every { userProjectPersistence.getUsersForProject(PROJECT_ID) } returns setOf(programmeUser, programmeUserDeactivated)
 
-        val result = projectNotificationHelper.getEmailsForProjectNotification(projectNotificationConfigAll, PROJECT_ID)
+        val result = service.getEmailsForProjectManagersAndAssignedUsers(projectNotificationConfigAll, PROJECT_ID)
         assertThat(result).isEqualTo(
             mapOf(
                 programmeUserDeactivated.email to UserEmailNotification(true, UserStatus.INACTIVE),
                 programmeUser.email to UserEmailNotification(true, UserStatus.ACTIVE),
-                leadPartnerCollaborator.userEmail to UserEmailNotification(true, UserStatus.ACTIVE),
-                partnerCollaborator.userEmail to UserEmailNotification(true, UserStatus.ACTIVE),
-                partnerCollaboratorDeactivated.userEmail to UserEmailNotification(true, UserStatus.INACTIVE),
-                partnerCollaboratorActiveButFlagFalse.userEmail to UserEmailNotification(false, UserStatus.ACTIVE),
                 projectManager.userEmail to UserEmailNotification(true, UserStatus.ACTIVE),
                 projectManagerDeactivated.userEmail to UserEmailNotification(true, UserStatus.UNCONFIRMED),
             )
@@ -250,19 +240,46 @@ class ProjectNotificationRecipientServiceTest {
     }
 
     @Test
-    fun getEmailsForProjectNotificationNoneActive() {
-        val result = projectNotificationHelper.getEmailsForProjectNotification(projectNotificationConfigNone, PROJECT_ID)
+    fun getEmailsForProjectManagersAndAssignedUsersNoneActive() {
+        val result = service.getEmailsForProjectManagersAndAssignedUsers(projectNotificationConfigNone, PROJECT_ID)
         assertThat(result).isEqualTo(emptyMap<String, UserEmailNotification>())
     }
 
     @Test
-    fun getEmailsForPartnerReportNotification() {
+    fun getEmailsForPartnerControllers() {
         every { controllerInstitutionPersistence.getRelatedUserIdsForPartner(PARTNER_ID) } returns setOf(controllerUser.id)
         every { userPersistence.findAllByIds(setOf(controllerUser.id)) } returns listOf(controllerUser)
 
-        val result = projectNotificationHelper.getEmailsForPartnerNotification(partnerReportNotificationConfig, PARTNER_ID)
+        val result = service.getEmailsForPartnerControllers(partnerReportNotificationConfig, PARTNER_ID)
         assertThat(result).isEqualTo(mapOf(
             controllerUser.email to UserEmailNotification(true, UserStatus.ACTIVE)
+        ))
+    }
+
+    @Test
+    fun getEmailsForPartners() {
+        every { partnerPersistence.findTop50ByProjectId(PROJECT_ID) } returns listOf(leadPartner, partner)
+        every { partnerCollaboratorPersistence.findByProjectAndPartners(PROJECT_ID, setOf(2L)) } returns setOf(leadPartnerCollaborator)
+        every { partnerCollaboratorPersistence.findByProjectAndPartners(PROJECT_ID, setOf(3L)) } returns setOf(
+            partnerCollaborator,
+        )
+        val result = service.getEmailsForPartners(partnerReportNotificationConfig, PROJECT_ID)
+        assertThat(result).isEqualTo(mapOf(
+            "lp.collaborator@jems.eu" to UserEmailNotification(true, UserStatus.ACTIVE),
+            "pp.collaborator@jems.eu" to UserEmailNotification(true, UserStatus.ACTIVE)
+        ))
+    }
+
+    @Test
+    fun getEmailsForSpecificPartner() {
+        val partnerDetail: ProjectPartnerDetail = mockk()
+        every { partnerPersistence.getById(3L) } returns partnerDetail
+        every { partnerDetail.role } returns ProjectPartnerRole.PARTNER
+        every { partnerCollaboratorPersistence.findByProjectAndPartners(PROJECT_ID, setOf(3L)) } returns setOf(partnerCollaborator)
+
+        val result = service.getEmailsForSpecificPartner(partnerReportNotificationConfig, PROJECT_ID, 3L)
+        assertThat(result).isEqualTo(mapOf(
+            "pp.collaborator@jems.eu" to UserEmailNotification(true, UserStatus.ACTIVE)
         ))
     }
 }
