@@ -4,7 +4,7 @@ import {
   ChecklistInstanceSelectionDTO,
   ChecklistInstanceService,
   ContractingChecklistInstanceService,
-  IdNamePairDTO,
+  IdNamePairDTO, PluginInfoDTO, PluginService,
   ProgrammeChecklistDetailDTO,
   ProgrammeChecklistService,
   UserRoleDTO
@@ -23,6 +23,7 @@ export class ContractingChecklistInstanceListStore {
 
   currentUserEmail$: Observable<string>;
   userCanChangeSelection$: Observable<boolean>;
+  availablePlugins$: Observable<PluginInfoDTO[]>;
 
   private listChanged$ = new Subject();
 
@@ -40,9 +41,11 @@ export class ContractingChecklistInstanceListStore {
               private checklistInstanceService: ChecklistInstanceService,
               private programmeChecklistService: ProgrammeChecklistService,
               private permissionService: PermissionService,
-              private securityService: SecurityService) {
+              private securityService: SecurityService,
+              private pluginService: PluginService) {
     this.currentUserEmail$ = this.currentUserEmail();
     this.userCanChangeSelection$ = this.permissionService.hasPermission(UserRoleDTO.PermissionsEnum.ProjectSetToContracted);
+    this.availablePlugins$ = this.availablePlugins();
   }
 
   selectedInstances(relatedType: ProgrammeChecklistDetailDTO.TypeEnum, relatedId: number): Observable<ChecklistInstanceSelectionDTO[]> {
@@ -81,7 +84,6 @@ export class ContractingChecklistInstanceListStore {
       );
   }
 
-
   createInstance(projectId: number, relatedToId: number, programmeChecklistId: number): Observable<number> {
     return this.contractingChecklistInstanceService.createContractingChecklistInstance(projectId, {relatedToId, programmeChecklistId})
       .pipe(
@@ -91,11 +93,15 @@ export class ContractingChecklistInstanceListStore {
       );
   }
 
-  currentUserEmail(): Observable<string> {
+  private currentUserEmail(): Observable<string> {
     return this.securityService.currentUser
       .pipe(
         map(user => user?.name || '')
       );
+  }
+
+  private availablePlugins(): Observable<PluginInfoDTO[]> {
+    return this.pluginService.getAvailablePluginList(PluginInfoDTO.TypeEnum.CHECKLISTEXPORT);
   }
 
   updateInstanceDescription(checklistId: number,projectId: number, description: string): Observable<number> {

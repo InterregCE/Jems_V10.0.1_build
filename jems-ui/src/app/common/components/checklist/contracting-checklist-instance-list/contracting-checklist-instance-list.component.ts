@@ -10,7 +10,7 @@ import {TableConfiguration} from '@common/components/table/model/table.configura
 import {
   ChecklistInstanceDTO,
   ChecklistInstanceSelectionDTO,
-  IdNamePairDTO,
+  IdNamePairDTO, PluginInfoDTO, PluginService,
   ProgrammeChecklistDetailDTO,
   UserRoleCreateDTO,
 } from '@cat/api';
@@ -33,6 +33,8 @@ import {AlertMessage} from '@common/components/file-list/file-list-table/alert-m
 import {Alert} from '@common/components/forms/alert';
 import {ChecklistItem} from '@common/components/checklist/checklist-item';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
+import {LanguageStore} from '@common/services/language-store.service';
+import {DownloadService} from '@common/services/download.service';
 
 @Component({
   selector: 'jems-contracting-checklist-instance-list',
@@ -87,6 +89,8 @@ export class ContractingChecklistInstanceListComponent implements OnInit {
               private formBuilder: FormBuilder,
               public routingService: RoutingService,
               private activatedRoute: ActivatedRoute,
+              private languageStore: LanguageStore,
+              private downloadService: DownloadService,
               private dialog: MatDialog,
               private permissionService: PermissionService) {
     this.contractingPageStore = pageStore;
@@ -207,5 +211,20 @@ export class ContractingChecklistInstanceListComponent implements OnInit {
       this.checklistInstances[checklistInstancesIndex].description = description ?? '';
       this.checklistInstances$ = of(this.checklistInstances);
     }
+  }
+
+  download(checklistId: number) {
+    combineLatest([
+      this.pageStore.availablePlugins$,
+      this.languageStore.currentSystemLanguage$,
+    ]).pipe(
+      take(1),
+      map(([plugins, systemLanguage]) => {
+        const plugin = plugins[0];
+        if (plugin?.type) {
+          const url = `/api/contractingChecklist/byProjectId/${this.projectId}/export/${checklistId}?exportLanguage=${systemLanguage}&pluginKey=${plugin.key}`;
+          this.downloadService.download(url, 'checklist-export.pdf').pipe().subscribe();
+        }
+      })).subscribe();
   }
 }

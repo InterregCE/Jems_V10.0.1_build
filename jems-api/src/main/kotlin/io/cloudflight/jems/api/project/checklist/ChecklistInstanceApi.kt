@@ -1,6 +1,7 @@
 package io.cloudflight.jems.api.project.checklist
 
 import io.cloudflight.jems.api.programme.dto.checklist.ProgrammeChecklistTypeDTO
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.checklist.ChecklistConsolidatorOptionsDTO
 import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceDTO
 import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceDetailDTO
@@ -9,13 +10,16 @@ import io.cloudflight.jems.api.project.dto.checklist.CreateChecklistInstanceDTO
 import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceStatusDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
+import org.springframework.core.io.ByteArrayResource
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
 
 @Api("Checklist Instance")
 interface ChecklistInstanceApi {
@@ -74,6 +78,15 @@ interface ChecklistInstanceApi {
     fun updateChecklistDescription(@PathVariable checklistId: Long, @RequestBody description: String?): ChecklistInstanceDTO
 
     @ApiOperation("Delete a checklist instance")
-    @DeleteMapping("${ENDPOINT_API_CHECKLIST_INSTANCE}/{checklistId}")
+    @DeleteMapping("$ENDPOINT_API_CHECKLIST_INSTANCE/{checklistId}")
     fun deleteChecklistInstance(@PathVariable checklistId: Long)
+
+    @ApiOperation("Export checklist instance")
+    @GetMapping("$ENDPOINT_API_CHECKLIST_INSTANCE/export/{projectId}/{checklistId}")
+    fun exportChecklistInstance(
+        @PathVariable projectId: Long,
+        @PathVariable checklistId: Long,
+        @RequestParam exportLanguage: SystemLanguage,
+        @RequestParam(required = false) pluginKey: String?,
+    ): ResponseEntity<ByteArrayResource>
 }

@@ -106,7 +106,7 @@ export class ChecklistUtilsComponent {
         {
           displayedColumn: 'file.table.column.name.action',
           customCellTemplate: actions,
-          columnWidth: ColumnWidth.SmallColumn,
+          columnWidth: ColumnWidth.MediumColumn,
           clickable: false
         }
       ]

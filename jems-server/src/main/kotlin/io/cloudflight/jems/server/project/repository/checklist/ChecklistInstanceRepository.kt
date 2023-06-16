@@ -47,4 +47,6 @@ interface ChecklistInstanceRepository : JpaRepository<ChecklistInstanceEntity, L
         programmeChecklistType: ProgrammeChecklistType,
         relatedToId: Long
     ): ChecklistInstanceEntity
+
+    fun existsByIdAndRelatedToId(id: Long, relatedToId: Long): Boolean
 }

@@ -34,6 +34,9 @@ import {SecurityService} from '../../../../security/security.service';
 import {PermissionService} from '../../../../security/permissions/permission.service';
 import {ReportUtil} from '@project/common/report-util';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import {LanguageStore} from '@common/services/language-store.service';
+import {DownloadService} from '@common/services/download.service';
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 
 @Component({
   selector: 'jems-control-checklist-instance-list',
@@ -44,7 +47,6 @@ import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 })
 export class ControlChecklistInstanceListComponent implements OnInit {
   Status = ChecklistInstanceDTO.StatusEnum;
-  projectId: number;
   currentUser: UserDTO | null;
   isInstantiationInProgress = false;
 
@@ -86,6 +88,7 @@ export class ControlChecklistInstanceListComponent implements OnInit {
   @ViewChild('tableInstances') tableInstances: TableComponent;
 
   constructor(public pageStore: ControlChecklistInstanceListStore,
+              private projectStore: ProjectStore,
               private formService: FormService,
               private routingService: RoutingService,
               private activatedRoute: ActivatedRoute,
@@ -94,8 +97,9 @@ export class ControlChecklistInstanceListComponent implements OnInit {
               private controllerInstitutionService: ControllerInstitutionsApiService,
               private partnerReportDetailPageStore: PartnerReportDetailPageStore,
               private permissionService: PermissionService,
-              private securityService: SecurityService) {
-    this.projectId = this.activatedRoute.snapshot.params.projectId;
+              private securityService: SecurityService,
+              private languageStore: LanguageStore,
+              private downloadService: DownloadService) {
     this.checklistUtils = new ChecklistUtilsComponent();
     this.userCanEditControlChecklists$ = this.userCanEditControlChecklists();
     this.securityService.currentUserDetails.subscribe(
@@ -252,5 +256,21 @@ export class ControlChecklistInstanceListComponent implements OnInit {
           return true;
       }
       return createdAt > this.controlReportControlFinalizedDate;
+  }
+
+  download(checklistId: number) {
+    combineLatest([
+      this.pageStore.availablePlugins$,
+      this.languageStore.currentSystemLanguage$,
+      this.projectStore.projectId$,
+    ]).pipe(
+      take(1),
+      map(([plugins, systemLanguage, projectId]) => {
+        const plugin = plugins[0];
+        if (plugin?.type) {
+          const url = `/api/controlChecklist/byPartnerId/${this.partnerId}/byReportId/${this.relatedId}/export/${checklistId}?exportLanguage=${systemLanguage}&pluginKey=${plugin.key}`;
+          this.downloadService.download(url, 'checklist-export.pdf').pipe().subscribe();
+        }
+      })).subscribe();
   }
 }

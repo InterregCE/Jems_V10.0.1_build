@@ -208,6 +208,7 @@ internal class ProjectPartnerReportAuthorizationTest : UnitTest() {
         val userId = 10L + accessLevel.ordinal
         every { securityService.getUserIdOrThrow() } returns userId
         every { controllerInstitutionPersistence.getControllerUserAccessLevelForPartner(userId, partnerId = 50L) } returns accessLevel
+        every { reportPersistence.getPartnerReportById(50, 0L) } returns mockk()
         assertThat(reportAuthorization.canViewPartnerControlReport(50L, 0L)).isTrue
     }
 

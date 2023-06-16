@@ -78,8 +78,8 @@ internal class ProjectChecklistDataProviderImplTest : UnitTest() {
                     question = "is it?",
                     weight = BigDecimal.ONE,
                     score = BigDecimal.ONE,
-                    questionMetadataJson = "{\"score\":1,\"justification\":\"not provided\"}",
-                    answerMetadataJson = "{\"question\":\"is it?\",\"weight\":1}",
+                    answerMetadataJson = "{\"score\":1,\"justification\":\"not provided\"}",
+                    questionMetadataJson = "{\"question\":\"is it?\",\"weight\":1}",
                 ),
             ),
         )
