@@ -3,11 +3,13 @@ package io.cloudflight.jems.server.project.service.contracting.partner.stateAid.
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.repository.contracting.partner.stateAid.gber.toModel
+import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_funds.GetPartnerBudgetPerFundService
 import io.cloudflight.jems.server.project.service.contracting.ContractingModificationDeniedException
 import io.cloudflight.jems.server.project.service.contracting.ContractingValidator
 import io.cloudflight.jems.server.project.service.contracting.monitoring.getProjectContractingMonitoring.GetContractingMonitoringService
 import io.cloudflight.jems.server.project.service.contracting.partner.partnerLock.ContractingPartnerLockPersistence
+import io.cloudflight.jems.server.project.service.contracting.partner.stateAid.deMinimis.LAST_APPROVED_VERSION
 import io.cloudflight.jems.server.project.service.contracting.partner.stateAid.gber.ContractingPartnerStateAidGberPersistence
 import io.cloudflight.jems.server.project.service.contracting.partner.stateAid.gber.GberHelper
 import io.cloudflight.jems.server.project.service.contracting.partner.stateAid.gber.PARTNER_ID
@@ -27,7 +29,9 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPar
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
@@ -52,10 +56,13 @@ class UpdateGberSectionTest : UnitTest() {
     lateinit var validator: GeneralValidatorService
 
     @MockK
-    lateinit var  projectContractingSectionLockPersistence: ProjectContractingSectionLockPersistence
+    lateinit var projectContractingSectionLockPersistence: ProjectContractingSectionLockPersistence
 
     @MockK
     lateinit var contractingPartnerLockPersistence: ContractingPartnerLockPersistence
+
+    @RelaxedMockK
+    lateinit var versionPersistence: ProjectVersionPersistence
 
     @InjectMockKs
     lateinit var contractingValidator: ContractingValidator
@@ -65,6 +72,23 @@ class UpdateGberSectionTest : UnitTest() {
 
     @InjectMockKs
     lateinit var updateContractingPartnerStateAidGber: UpdateContractingPartnerStateAidGber
+
+    @BeforeEach
+    fun setup() {
+        every { partnerPersistence.getById(PARTNER_ID, LAST_APPROVED_VERSION) } returns getPartnerData()
+        every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID) } returns PROJECT_ID
+        every { versionPersistence.getLatestApprovedOrCurrent(PROJECT_ID) } returns LAST_APPROVED_VERSION
+        every {
+            projectPartnerCoFinancingPersistence.getCoFinancingAndContributions(
+                PARTNER_ID, LAST_APPROVED_VERSION
+            )
+        } returns getCofinancing()
+        every {
+            projectPartnerCoFinancingPersistence.getSpfCoFinancingAndContributions(
+                PARTNER_ID, LAST_APPROVED_VERSION
+            )
+        } returns getSpfCofinancing()
+    }
 
     @Test
     fun updateGberData() {
@@ -77,11 +101,7 @@ class UpdateGberSectionTest : UnitTest() {
         every { contractingPartnerLockPersistence.isLocked(PARTNER_ID) } returns false
         every { contractingPartnerStateAidGberPersistence.findById(PARTNER_ID) } returns gberModel
         every { getContractingMonitoringService.getProjectContractingMonitoring(PROJECT_ID) } returns getContractMonitoring()
-        every { partnerPersistence.getById(PARTNER_ID) } returns getPartnerData()
-        every { partnerBudgetPerFundService.getProjectPartnerBudgetPerFund(PROJECT_ID, null) } returns partnerFunds
-
-        every { projectPartnerCoFinancingPersistence.getCoFinancingAndContributions(PARTNER_ID) } returns getCofinancing()
-        every { projectPartnerCoFinancingPersistence.getSpfCoFinancingAndContributions(PARTNER_ID) } returns getSpfCofinancing()
+        every { partnerBudgetPerFundService.getProjectPartnerBudgetPerFund(PROJECT_ID, LAST_APPROVED_VERSION) } returns partnerFunds
 
         assertThat(updateContractingPartnerStateAidGber.updateGberSection(PARTNER_ID, gberModel)).isEqualTo(
             expectedGberSection
@@ -99,12 +119,13 @@ class UpdateGberSectionTest : UnitTest() {
         every { contractingPartnerLockPersistence.isLocked(PARTNER_ID) } returns true
         every { contractingPartnerStateAidGberPersistence.findById(PARTNER_ID) } returns gberModel
         every { getContractingMonitoringService.getProjectContractingMonitoring(PROJECT_ID) } returns getContractMonitoring()
-        every { partnerPersistence.getById(PARTNER_ID) } returns getPartnerData()
-        every { partnerBudgetPerFundService.getProjectPartnerBudgetPerFund(PROJECT_ID, null) } returns partnerFunds
+        every { partnerBudgetPerFundService.getProjectPartnerBudgetPerFund(PROJECT_ID, LAST_APPROVED_VERSION) } returns partnerFunds
 
-        every { projectPartnerCoFinancingPersistence.getCoFinancingAndContributions(PARTNER_ID) } returns getCofinancing()
-        every { projectPartnerCoFinancingPersistence.getSpfCoFinancingAndContributions(PARTNER_ID) } returns getSpfCofinancing()
-
-        assertThrows<ContractingModificationDeniedException> { updateContractingPartnerStateAidGber.updateGberSection(PARTNER_ID, gberModel) }
+        assertThrows<ContractingModificationDeniedException> {
+            updateContractingPartnerStateAidGber.updateGberSection(
+                PARTNER_ID,
+                gberModel
+            )
+        }
     }
 }

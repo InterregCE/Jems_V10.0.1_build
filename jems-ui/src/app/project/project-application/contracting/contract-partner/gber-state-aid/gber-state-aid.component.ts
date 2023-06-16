@@ -97,14 +97,12 @@ export class GberStateAidComponent implements OnInit {
   ngOnInit(): void {
     this.success$
       .pipe(
-        take(1),
         tap((data) => this.formService.setSuccess(data)),
       )
       .subscribe();
 
     this.error$
       .pipe(
-        take(1),
         tap((data) => this.formService.setError(data)),
       )
       .subscribe();

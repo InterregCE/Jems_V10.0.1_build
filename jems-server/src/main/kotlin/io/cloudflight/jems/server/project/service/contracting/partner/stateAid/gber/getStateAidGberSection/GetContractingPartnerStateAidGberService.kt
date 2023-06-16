@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service.contracting.partner.stateAid.
 
 import io.cloudflight.jems.api.programme.dto.stateaid.ProgrammeStateAidMeasure
 import io.cloudflight.jems.api.project.contracting.partner.ContractingPartnerStateAidDeMinimisMeasure
+import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_funds.GetPartnerBudgetPerFundService
 import io.cloudflight.jems.server.project.service.contracting.model.partner.stateAid.ContractingPartnerStateAidGberSection
 import io.cloudflight.jems.server.project.service.contracting.monitoring.getProjectContractingMonitoring.GetContractingMonitoringService
@@ -20,17 +21,20 @@ class GetContractingPartnerStateAidGberService(
     private val partnerPersistence: PartnerPersistence,
     private val partnerBudgetPerFundService: GetPartnerBudgetPerFundService,
     private val gberHelper: GberHelper,
+    private val versionPersistence: ProjectVersionPersistence
 ) {
 
     @Transactional(readOnly = true)
     fun getGberSection(partnerId: Long): ContractingPartnerStateAidGberSection? {
         val gberData = this.contractingPartnerStateAidGberPersistence.findById(partnerId)
-        val partnerData = this.partnerPersistence.getById(partnerId)
-        val projectContractingMonitoring = getContractingMonitoringService.getProjectContractingMonitoring(partnerData.projectId)
-        val partnerStateAid = this.partnerPersistence.getPartnerStateAid(partnerId)
-        val partnerBudgetPerFund = this.partnerBudgetPerFundService.getProjectPartnerBudgetPerFund(partnerData.projectId, null)
+        val projectId = this.partnerPersistence.getProjectIdForPartnerId(partnerId)
+        val lastApprovedVersion = this.versionPersistence.getLatestApprovedOrCurrent(projectId)
+        val partnerData = this.partnerPersistence.getById(partnerId, lastApprovedVersion)
+        val projectContractingMonitoring = getContractingMonitoringService.getProjectContractingMonitoring(projectId)
+        val partnerStateAid = this.partnerPersistence.getPartnerStateAid(partnerId, lastApprovedVersion)
+        val partnerBudgetPerFund = this.partnerBudgetPerFundService.getProjectPartnerBudgetPerFund(projectId, lastApprovedVersion)
             .filter { it.partner?.id == partnerId }.firstOrNull()
-        val fundsSelectedByPartner = gberHelper.getPartnerFunds(partnerId, partnerBudgetPerFund?.budgetPerFund ?: emptySet())
+        val fundsSelectedByPartner = gberHelper.getPartnerFunds(partnerId, partnerBudgetPerFund?.budgetPerFund ?: emptySet(), lastApprovedVersion)
 
         return if(stateAidSectionShouldBeDisplayed(partnerStateAid) && !hasPartnerStateAidMinimisSelected(partnerStateAid.stateAidScheme?.measure)) {
             ContractingPartnerStateAidGberSection(

@@ -49,6 +49,7 @@ const val COUNTRY_AT = "Österreich"
 const val COUNTRY_AT_CODE = "AT"
 const val COUNTRY_SK = "Slovakia"
 const val COUNTRY_SK_CODE = "SK"
+const val LAST_APPROVED_VERSION = "1.0"
 val leadPartner = ProjectPartnerDetail(
     projectId = PROJECT_ID,
     id = 2L,
