@@ -38,7 +38,7 @@ internal class GetListOfCertificateTest : UnitTest() {
     fun `listCertificates - default sort`() {
         val partner = mockk<ProjectPartnerDetail>()
         every { partner.id } returns 714L
-        every { partnerPersistence.findTop30ByProjectId(18L) } returns listOf(partner)
+        every { partnerPersistence.findTop50ByProjectId(18L) } returns listOf(partner)
 
         val mockResult = mockk<Page<PartnerReportCertificate>>()
         val slotPageable = slot<Pageable>()
@@ -58,7 +58,7 @@ internal class GetListOfCertificateTest : UnitTest() {
     fun `listCertificates - custom sort`() {
         val partner = mockk<ProjectPartnerDetail>()
         every { partner.id } returns 715L
-        every { partnerPersistence.findTop30ByProjectId(19L) } returns listOf(partner)
+        every { partnerPersistence.findTop50ByProjectId(19L) } returns listOf(partner)
 
         val mockResult = mockk<Page<PartnerReportCertificate>>()
         val slotPageable = slot<Pageable>()

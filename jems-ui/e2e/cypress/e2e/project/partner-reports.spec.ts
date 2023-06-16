@@ -792,7 +792,7 @@ context('Partner reports tests', () => {
             });
 
             openModification(applicationId);
-            verify30PartnersLimit(applicationId);
+            verify50PartnersLimit(applicationId);
           });
       });
     });
@@ -2012,7 +2012,7 @@ context('Partner reports tests', () => {
   function preparePartnersList(testData, application) {
     application.partners = [];
 
-    for (let i = 0; i < 29; i++) {
+    for (let i = 0; i < 49; i++) {
       const tempPartner = JSON.parse(JSON.stringify(testData.partner));
 
       if (i === 0) {
@@ -2129,6 +2129,7 @@ context('Partner reports tests', () => {
       .then(() => {
         partnerIdsToDisable.forEach(id => {
           cy.get(`mat-expansion-panel-header:contains("${application.partners[id].details.abbreviation}")`)
+            .first()
             .scrollIntoView()
             .contains('mat-icon', 'person_off')
             .should(displayFlag)
@@ -2142,6 +2143,7 @@ context('Partner reports tests', () => {
     cy.get(`mat-expansion-panel-header:contains(${headerTitle})`)
       .next('div')
       .find(`span:contains("${disabledPartnerAbbreviation}")`)
+      .first()
       .click()
       .then(() => {
         cy.contains('div', "You are currently viewing a deactivated partner.")
@@ -2169,12 +2171,12 @@ context('Partner reports tests', () => {
       .then((foundElement) => {
         if (shouldPartnerBeDisplayed) {
           cy.wrap(foundElement)
-            .find(`li:contains("PP30")`)
+            .find(`li:contains("PP50")`)
             .scrollIntoView()
             .should(displayFlag)
         } else {
           cy.wrap(foundElement)
-            .find(`li:contains("PP30")`)
+            .find(`li:contains("PP50")`)
             .should(displayFlag)
         }
       });
@@ -2188,12 +2190,12 @@ context('Partner reports tests', () => {
       .then((foundElement) => {
         if (shouldPartnerBeDisplayed) {
           cy.wrap(foundElement)
-            .get(`mat-expansion-panel-header:contains("PP30")`)
+            .get(`mat-expansion-panel-header:contains("PP50")`)
             .scrollIntoView()
             .should(displayFlag)
         } else {
           cy.wrap(foundElement)
-            .get(`mat-expansion-panel-header:contains("PP30")`)
+            .get(`mat-expansion-panel-header:contains("PP50")`)
             .should(displayFlag)
         }
       });
@@ -2234,7 +2236,7 @@ context('Partner reports tests', () => {
     })
   }
 
-  function verify30PartnersLimit(applicationId) {
+  function verify50PartnersLimit(applicationId) {
     loginByRequest(user.applicantUser.email).then(() => {
       cy.visit(`app/project/detail/${applicationId}/applicationFormPartner`, {failOnStatusCode: false});
       cy.contains('Add new partner')
@@ -2242,7 +2244,7 @@ context('Partner reports tests', () => {
       cy.contains('button', 'Partner')
         .click();
       cy.get(`[name='abbreviation']`)
-        .type('PP31');
+        .type('PP51');
       cy.get(`[name='legalStatusId']`)
         .click()
       cy.contains('Public')
@@ -2252,7 +2254,7 @@ context('Partner reports tests', () => {
 
       cy.contains('Failed to create the project partner (error code: S-CPP)')
         .should('be.visible');
-      cy.contains('It is not possible to add more than "30" partner to the project application (error code: S-CPP-005)')
+      cy.contains('It is not possible to add more than "50" partner to the project application (error code: S-CPP-005)')
         .should('be.visible');
     });
   }

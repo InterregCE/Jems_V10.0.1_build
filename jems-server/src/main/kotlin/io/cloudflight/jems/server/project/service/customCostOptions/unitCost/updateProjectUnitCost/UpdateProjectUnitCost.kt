@@ -76,7 +76,7 @@ class UpdateProjectUnitCost(
         deselectedCategories: Set<BudgetCategory>,
         coverageTypeChanged: Boolean,
     ) {
-        val partnerIds = partnerPersistence.findTop30ByProjectId(unitCost.projectId!!).mapTo(HashSet()) { it.id }
+        val partnerIds = partnerPersistence.findTop50ByProjectId(unitCost.projectId!!).mapTo(HashSet()) { it.id }
 
         val unitCostForStaffCostsTable =
             if (coverageTypeChanged || deselectedCategories.contains(BudgetCategory.StaffCosts)) null else unitCost

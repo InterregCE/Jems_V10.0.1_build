@@ -78,7 +78,7 @@ class ProjectReportDataProviderImpl(
         ).toDataModel()
 
     override fun getPartnerCertificates(projectId: Long, reportId: Long): List<PartnerReportCertificateData> {
-        val partnerIds = partnerPersistence.findTop30ByProjectId(projectId).mapTo(HashSet()) { it.id }
+        val partnerIds = partnerPersistence.findTop50ByProjectId(projectId).mapTo(HashSet()) { it.id }
         return projectReportCertificatePersistence.listCertificates(
             partnerIds,
             pageable = Pageable.unpaged()

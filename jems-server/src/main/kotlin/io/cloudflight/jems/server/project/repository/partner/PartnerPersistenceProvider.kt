@@ -97,7 +97,7 @@ class PartnerPersistenceProvider(
                 ).map { it.toModel() }.collect(Collectors.toList())
             },
             previousVersionFetcher = { timestamp ->
-                projectPartnerRepository.findTop30ByProjectIdSortBySortNumberAsOfTimestamp(projectId, timestamp)
+                projectPartnerRepository.findTop50ByProjectIdSortBySortNumberAsOfTimestamp(projectId, timestamp)
                     .map { it.toProjectPartnerDTOHistoricalData() }
             }
         ) ?: emptyList()
@@ -122,7 +122,7 @@ class PartnerPersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun findTop30ByProjectId(projectId: Long, version: String?): Iterable<ProjectPartnerDetail> {
+    override fun findTop50ByProjectId(projectId: Long, version: String?): Iterable<ProjectPartnerDetail> {
         return projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {
                 projectPartnerRepository.findTop50ByProjectId(projectId).map { it.toProjectPartnerDetail() }.toSet()

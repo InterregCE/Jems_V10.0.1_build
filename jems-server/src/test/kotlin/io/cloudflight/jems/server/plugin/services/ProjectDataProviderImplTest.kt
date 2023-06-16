@@ -829,7 +829,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         every { projectPersistence.getProject(id) } returns project
         every { projectVersionPersistence.getAllVersionsByProjectId(id) } returns projectVersions
         every { projectDescriptionPersistence.getProjectDescription(id) } returns projectDescription
-        every { partnerPersistence.findTop30ByProjectId(id) } returns listOf(projectPartner)
+        every { partnerPersistence.findTop50ByProjectId(id) } returns listOf(projectPartner)
         every {
             budgetOptionsPersistence.getBudgetOptions(
                 setOf(projectPartner.id),
@@ -1588,7 +1588,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 projectTransferability = emptySet()
             )
         )
-        every { partnerPersistence.findTop30ByProjectId(id) } returns emptyList()
+        every { partnerPersistence.findTop50ByProjectId(id) } returns emptyList()
         every { associatedOrganizationPersistence.findAllByProjectId(id) } returns emptyList()
         every { resultPersistence.getResultsForProject(id, null) } returns emptyList()
         every { workPackagePersistence.getWorkPackagesWithAllDataByProjectId(id) } returns emptyList()

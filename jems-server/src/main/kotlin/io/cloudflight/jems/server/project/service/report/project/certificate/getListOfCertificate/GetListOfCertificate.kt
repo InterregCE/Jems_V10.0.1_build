@@ -29,7 +29,7 @@ class GetListOfCertificate(
     @Transactional
     @ExceptionWrapper(GetListOfCertificateException::class)
     override fun listCertificates(projectId: Long, reportId: Long, pageable: Pageable): Page<PartnerReportCertificate> {
-        val partnerIds = partnerPersistence.findTop30ByProjectId(projectId).mapTo(HashSet()) { it.id }
+        val partnerIds = partnerPersistence.findTop50ByProjectId(projectId).mapTo(HashSet()) { it.id }
         val pageableDefault = if (pageable.sort.isSorted) pageable else PageRequest.of(pageable.pageNumber, pageable.pageSize, defaultSort(reportId))
         return projectReportCertificatePersistence.listCertificates(partnerIds, pageable = pageableDefault)
     }

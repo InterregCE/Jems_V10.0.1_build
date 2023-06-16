@@ -220,8 +220,8 @@ class PartnerPersistenceProviderTest {
         every { projectPartnerRepository.findTop50ByProjectId(0) } returns PageImpl(emptyList())
         every { projectPartnerRepository.findTop50ByProjectId(1) } returns PageImpl(listOf(projectPartnerEntity()))
 
-        assertThat(persistence.findTop30ByProjectId(0)).isEmpty()
-        assertThat(persistence.findTop30ByProjectId(1)).containsExactly(projectPartnerDetail(id = PARTNER_ID))
+        assertThat(persistence.findTop50ByProjectId(0)).isEmpty()
+        assertThat(persistence.findTop50ByProjectId(1)).containsExactly(projectPartnerDetail(id = PARTNER_ID))
     }
 
     @Test
@@ -232,7 +232,7 @@ class PartnerPersistenceProviderTest {
         every { projectVersionRepo.findTimestampByVersion(PROJECT_ID, version) } returns timestamp
         every { projectPartnerRepository.findByProjectIdAsOfTimestamp(PROJECT_ID, timestamp) } returns partnerDetailRows()
 
-        assertThat(persistence.findTop30ByProjectId(PROJECT_ID, version)).containsExactly(projectPartnerDetail(id = PARTNER_ID))
+        assertThat(persistence.findTop50ByProjectId(PROJECT_ID, version)).containsExactly(projectPartnerDetail(id = PARTNER_ID))
     }
 
     @Test
