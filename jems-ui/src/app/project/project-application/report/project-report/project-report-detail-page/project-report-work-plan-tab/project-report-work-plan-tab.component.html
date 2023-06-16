@@ -334,9 +334,9 @@
                                                 <mat-form-field class="input-field">
                                                     <mat-label
                                                             [innerText]="'project.application.project.report.tab.work.plan.deliverable.period' | translate"></mat-label>
-                                                    <input matInput disabled [value]="activity.get(constants.DELIVERABLE_PERIOD.name)?.value
+                                                    <input matInput disabled [value]="deliverable.get(constants.DELIVERABLE_PERIOD.name)?.value
                                                         && 'project.application.form.work.package.output.delivery.period.entry' | translate :
-                                                        getPeriodArguments(activity.get(constants.DELIVERABLE_PERIOD.name)?.value )">
+                                                        getPeriodArguments(deliverable.get(constants.DELIVERABLE_PERIOD.name)?.value )">
                                                 </mat-form-field>
 
                                                 <mat-form-field class="input-field">
