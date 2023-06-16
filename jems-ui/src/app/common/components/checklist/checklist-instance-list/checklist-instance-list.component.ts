@@ -2,13 +2,7 @@ import {ChangeDetectionStrategy, Component, Input, OnInit, TemplateRef, ViewChil
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {ColumnWidth} from '@common/components/table/model/column-width';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
-import {
-  ChecklistInstanceDTO,
-  ChecklistInstanceSelectionDTO,
-  IdNamePairDTO,
-  ProgrammeChecklistDetailDTO,
-  UserRoleDTO
-} from '@cat/api';
+import {ChecklistInstanceDTO, ChecklistInstanceSelectionDTO, IdNamePairDTO, ProgrammeChecklistDetailDTO, UserRoleDTO} from '@cat/api';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {ChecklistInstanceListStore} from '@common/components/checklist/checklist-instance-list/checklist-instance-list-store.service';
 import {catchError, filter, finalize, map, switchMap, take, tap} from 'rxjs/operators';
@@ -25,6 +19,9 @@ import {ChecklistUtilsComponent} from '@common/components/checklist/checklist-ut
 import {Alert} from '@common/components/forms/alert';
 import {AlertMessage} from '@common/components/file-list/file-list-table/alert-message';
 import {v4 as uuid} from 'uuid';
+import {DownloadService} from '@common/services/download.service';
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {LanguageStore} from '@common/services/language-store.service';
 
 @Component({
   selector: 'jems-checklist-instance-list',
@@ -85,10 +82,13 @@ export class ChecklistInstanceListComponent implements OnInit {
   });
 
   constructor(public pageStore: ChecklistInstanceListStore,
+              private projectStore: ProjectStore,
               private formService: FormService,
               private formBuilder: FormBuilder,
               private routingService: RoutingService,
+              private downloadService: DownloadService,
               private activatedRoute: ActivatedRoute,
+              private languageStore: LanguageStore,
               private dialog: MatDialog) {
     this.checklistPageStore = pageStore;
     this.checklistUtils = new ChecklistUtilsComponent();
@@ -201,7 +201,7 @@ export class ChecklistInstanceListComponent implements OnInit {
           displayedColumn: 'checklists.instance.visible',
           customCellTemplate: this.visibleCell,
           columnWidth: ColumnWidth.DateColumn,
-          infoMessage:'checklists.instance.visible.tooltip',
+          infoMessage: 'checklists.instance.visible.tooltip',
           clickable: false
         }
         ] : [{
@@ -219,8 +219,8 @@ export class ChecklistInstanceListComponent implements OnInit {
     this.pageStore.createInstance(this.relatedType, this.relatedId, this.selectedTemplate.id)
       .pipe(
         tap(instanceId => this.routingService.navigate(
-          ['checklist', instanceId],
-          {relativeTo: this.activatedRoute}
+            ['checklist', instanceId],
+            {relativeTo: this.activatedRoute}
           )
         ),
         finalize(() => this.isInstantiationInProgress = false)
@@ -229,7 +229,7 @@ export class ChecklistInstanceListComponent implements OnInit {
 
   save(original: ChecklistInstanceSelectionDTO[]): void {
     const allIds = original.map(ch => ch.id);
-    const visibilities = allIds.reduce((resultObject: {[index: number]: any}, id) => {
+    const visibilities = allIds.reduce((resultObject: { [index: number]: any }, id) => {
       resultObject[id] = this.visibilities.value.includes(id);
       return resultObject;
     }, {});
@@ -281,10 +281,10 @@ export class ChecklistInstanceListComponent implements OnInit {
       .pipe(
         take(1),
         tap(() => this.showDescriptionUpdateAlert({
-            id: uuid(),
-            type: Alert.SUCCESS,
-            i18nMessage: 'checklists.instances.description.change.message.success',
-          } as AlertMessage)),
+          id: uuid(),
+          type: Alert.SUCCESS,
+          i18nMessage: 'checklists.instances.description.change.message.success',
+        } as AlertMessage)),
         tap(() => this.updateChecklistInstancesAfterSave(this.descriptionForm.value.id, this.descriptionForm.value.description)),
         catchError(error => {
           this.showDescriptionUpdateAlert({
@@ -325,4 +325,19 @@ export class ChecklistInstanceListComponent implements OnInit {
     }
   }
 
+  download(checklistId: number) {
+    combineLatest([
+      this.pageStore.availablePlugins$,
+      this.projectStore.projectId$,
+      this.languageStore.currentSystemLanguage$,
+    ]).pipe(
+      take(1),
+      map(([plugins, projectId, systemLanguage]) => {
+        const plugin = plugins[0];
+        if (plugin?.type) {
+          const url = `/api/checklist/instance/export/${projectId}/${checklistId}?exportLanguage=${systemLanguage}&pluginKey=${plugin.key}`;
+          this.downloadService.download(url, 'checklist-export.pdf').pipe().subscribe();
+        }
+      })).subscribe();
+  }
 }

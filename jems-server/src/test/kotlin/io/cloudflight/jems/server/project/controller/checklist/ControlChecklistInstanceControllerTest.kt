@@ -5,11 +5,14 @@ import io.cloudflight.jems.api.programme.dto.checklist.ProgrammeChecklistTypeDTO
 import io.cloudflight.jems.api.programme.dto.checklist.metadata.HeadlineMetadataDTO
 import io.cloudflight.jems.api.programme.dto.checklist.metadata.OptionsToggleMetadataDTO
 import io.cloudflight.jems.api.programme.dto.checklist.metadata.TextInputMetadataDTO
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.checklist.*
 import io.cloudflight.jems.api.project.dto.checklist.metadata.HeadlineInstanceMetadataDTO
 import io.cloudflight.jems.api.project.dto.checklist.metadata.OptionsToggleInstanceMetadataDTO
 import io.cloudflight.jems.api.project.dto.checklist.metadata.TextInputInstanceMetadataDTO
+import io.cloudflight.jems.plugin.contract.export.ExportResult
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.toResponseEntity
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistComponentInstance
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
@@ -17,6 +20,7 @@ import io.cloudflight.jems.server.programme.service.checklist.model.metadata.*
 import io.cloudflight.jems.server.project.controller.controlChecklist.ControlChecklistInstanceController
 import io.cloudflight.jems.server.project.service.checklist.create.control.CreateControlChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.delete.control.DeleteControlChecklistInstanceInteractor
+import io.cloudflight.jems.server.project.service.checklist.export.control.ExportControlChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.getDetail.control.GetControlChecklistInstanceDetailInteractor
 import io.cloudflight.jems.server.project.service.checklist.getInstances.control.GetControlChecklistInstancesInteractor
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstance
@@ -176,6 +180,9 @@ internal class ControlChecklistInstanceControllerTest: UnitTest() {
     @MockK
     lateinit var deleteInteractor: DeleteControlChecklistInstanceInteractor
 
+    @MockK
+    lateinit var exportInteractor: ExportControlChecklistInstanceInteractor
+
     @Test
     fun `get control checklists`() {
         every { getControlChecklistInteractor.getControlChecklistInstances(partnerId, reportId) } returns listOf(checklist)
@@ -210,5 +217,17 @@ internal class ControlChecklistInstanceControllerTest: UnitTest() {
         Assertions.assertThat(controller.createControlChecklistInstance(partnerId, reportId, createChecklistInstanceDTO))
             .usingRecursiveComparison()
             .isEqualTo(checklistDetailDTO)
+    }
+
+    @Test
+    fun `export control checklist`() {
+        val exportResult = ExportResult(
+            "content-type",
+            "filename.pdf",
+            ByteArray(10),
+        )
+        every { exportInteractor.export(partnerId, reportId, checklistId, SystemLanguage.CS, null) } returns exportResult
+        Assertions.assertThat(controller.exportControlChecklistInstance(partnerId, reportId, checklistId, SystemLanguage.CS, null))
+            .isEqualTo(exportResult.toResponseEntity())
     }
 }

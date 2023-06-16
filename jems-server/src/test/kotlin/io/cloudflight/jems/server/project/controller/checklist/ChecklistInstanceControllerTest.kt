@@ -5,6 +5,7 @@ import io.cloudflight.jems.api.programme.dto.checklist.ProgrammeChecklistTypeDTO
 import io.cloudflight.jems.api.programme.dto.checklist.metadata.HeadlineMetadataDTO
 import io.cloudflight.jems.api.programme.dto.checklist.metadata.OptionsToggleMetadataDTO
 import io.cloudflight.jems.api.programme.dto.checklist.metadata.TextInputMetadataDTO
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.checklist.ChecklistComponentInstanceDTO
 import io.cloudflight.jems.api.project.dto.checklist.ChecklistConsolidatorOptionsDTO
 import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceDTO
@@ -15,10 +16,11 @@ import io.cloudflight.jems.api.project.dto.checklist.CreateChecklistInstanceDTO
 import io.cloudflight.jems.api.project.dto.checklist.metadata.HeadlineInstanceMetadataDTO
 import io.cloudflight.jems.api.project.dto.checklist.metadata.OptionsToggleInstanceMetadataDTO
 import io.cloudflight.jems.api.project.dto.checklist.metadata.TextInputInstanceMetadataDTO
+import io.cloudflight.jems.plugin.contract.export.ExportResult
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.toResponseEntity
 import io.cloudflight.jems.server.programme.service.checklist.delete.DeleteChecklistInstanceInteractor
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistComponentInstance
-import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstance
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineInstanceMetadata
@@ -26,15 +28,17 @@ import io.cloudflight.jems.server.programme.service.checklist.model.metadata.Hea
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleInstanceMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.TextInputMetadata
-import io.cloudflight.jems.server.project.service.checklist.update.UpdateChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.consolidateInstance.ConsolidateChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.create.CreateChecklistInstanceInteractor
+import io.cloudflight.jems.server.project.service.checklist.export.ExportChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.getDetail.GetChecklistInstanceDetailInteractor
 import io.cloudflight.jems.server.project.service.checklist.getInstances.GetChecklistInstancesInteractor
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstance
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
 import io.cloudflight.jems.server.project.service.checklist.model.CreateChecklistInstanceModel
 import io.cloudflight.jems.server.project.service.checklist.model.metadata.TextInputInstanceMetadata
+import io.cloudflight.jems.server.project.service.checklist.update.UpdateChecklistInstanceInteractor
 import io.mockk.Runs
 import io.mockk.clearMocks
 import io.mockk.every
@@ -42,6 +46,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.just
+import io.mockk.mockk
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -199,6 +204,9 @@ class ChecklistInstanceControllerTest : UnitTest() {
     @MockK
     lateinit var deleteInteractor: DeleteChecklistInstanceInteractor
 
+    @MockK
+    lateinit var exportInteractor: ExportChecklistInstanceInteractor
+
     @RelaxedMockK
     lateinit var consolidateInteractor: ConsolidateChecklistInstanceInteractor
 
@@ -348,4 +356,19 @@ class ChecklistInstanceControllerTest : UnitTest() {
         assertThat(controller.updateChecklistDescription(1L, "test"))
             .isEqualTo(checklistDTO)
     }
+
+    @Test
+    fun `export checklist`() {
+        val exportResult = ExportResult(
+            "content-type",
+            "filename.pdf",
+            ByteArray(10),
+        )
+
+        every { exportInteractor.export(RELATED_TO_ID, CHECKLIST_ID, SystemLanguage.DA, null) } returns exportResult
+        assertThat(controller.exportChecklistInstance(RELATED_TO_ID, CHECKLIST_ID, SystemLanguage.DA, null))
+            .isEqualTo(exportResult.toResponseEntity())
+    }
+
+
 }

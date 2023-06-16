@@ -71,13 +71,20 @@
 <ng-template #actionsCell let-checklist>
 
     <ng-container>
-        <button
-                (click)="editContractingDescription(checklist)"
+        <button (click)="editContractingDescription(checklist)"
                 [disabled]="(userCanEditContractingChecklists$ | async) === false"
                 color="primary" mat-icon-button
                 matTooltip="{{ 'file.table.action.description.tooltip' | translate }}"
                 aria-label="edit">
             <mat-icon>edit</mat-icon>
+        </button>
+    </ng-container>
+
+    <ng-container>
+        <button mat-icon-button color="primary"
+                matTooltip="{{'programme.checklists.export' | translate }}"
+                (click)="download(checklist.id)">
+            <mat-icon>download</mat-icon>
         </button>
     </ng-container>
 

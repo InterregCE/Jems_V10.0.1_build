@@ -75,7 +75,7 @@ fun List<ChecklistComponentInstance>.toDataModel() = map {
         question = it.programmeMetadata.question,
         weight = it.programmeMetadata.weight,
         score = it.instanceMetadata.score,
-        questionMetadataJson = it.instanceMetadata.toJson(),
-        answerMetadataJson = it.programmeMetadata.toJson(),
+        questionMetadataJson = it.programmeMetadata.toJson(),
+        answerMetadataJson = it.instanceMetadata.toJson(),
     )
 }

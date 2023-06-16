@@ -79,6 +79,14 @@
         </ng-container>
 
         <ng-container>
+            <button mat-icon-button color="primary"
+                    matTooltip="{{'programme.checklists.export' | translate }}"
+                    (click)="download(checklist.id)">
+                <mat-icon>download</mat-icon>
+            </button>
+        </ng-container>
+
+        <ng-container>
             <button
                     (click)="delete(checklist);$event.stopPropagation();"
                     [disabled]="!isAfterControlChecklist(checklist.createdAt) || checklist.status !== Status.DRAFT || (userCanEditControlChecklists$ | async) === false || !currentUserIsCreator(checklist)"

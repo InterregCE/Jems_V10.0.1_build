@@ -1,18 +1,22 @@
 package io.cloudflight.jems.api.project.controlChecklist
 
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceDTO
 import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceDetailDTO
 import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceStatusDTO
 import io.cloudflight.jems.api.project.dto.checklist.CreateChecklistInstanceDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
+import org.springframework.core.io.ByteArrayResource
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
 
 @Api("Control checklist Instance")
 interface ControlChecklistInstanceApi {
@@ -78,4 +82,14 @@ interface ControlChecklistInstanceApi {
         @PathVariable checklistId: Long,
         @RequestBody description: String?
     ): ChecklistInstanceDTO
+
+    @ApiOperation("Export control checklist instance")
+    @GetMapping("$ENDPOINT_API_CONTROL_CHECKLIST_INSTANCE/export/{checklistId}")
+    fun exportControlChecklistInstance(
+        @PathVariable partnerId: Long,
+        @PathVariable reportId: Long,
+        @PathVariable checklistId: Long,
+        @RequestParam exportLanguage: SystemLanguage,
+        @RequestParam(required = false) pluginKey: String?,
+    ): ResponseEntity<ByteArrayResource>
 }

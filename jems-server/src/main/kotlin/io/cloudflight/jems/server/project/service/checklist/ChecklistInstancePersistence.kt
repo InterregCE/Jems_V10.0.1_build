@@ -34,4 +34,6 @@ interface ChecklistInstancePersistence {
     fun consolidateChecklistInstance(checklistId: Long, consolidated: Boolean): ChecklistInstance
 
     fun changeStatus(checklistId: Long, status: ChecklistInstanceStatus): ChecklistInstance
+
+    fun existsByIdAndRelatedToId(id: Long, relatedToId: Long): Boolean
 }

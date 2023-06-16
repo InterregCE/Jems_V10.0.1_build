@@ -157,11 +157,12 @@ class ProjectPartnerReportAuthorization(
             userId = securityService.getUserIdOrThrow(),
             partnerId = partnerId,
         )
+        val report = reportPersistence.getPartnerReportById(partnerId, reportId = reportId)
+
         // controller institutions
         if (controllerPermission != null)
             return true
 
-        val report = reportPersistence.getPartnerReportById(partnerId, reportId = reportId)
         return report.status.isFinalized() && hasPermissionForPartner(partnerId = partnerId, VIEW)
     }
 

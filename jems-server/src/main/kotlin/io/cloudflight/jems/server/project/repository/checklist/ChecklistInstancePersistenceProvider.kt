@@ -129,6 +129,10 @@ class ChecklistInstancePersistenceProvider(
         return checklistInstance.toModel()
     }
 
+    @Transactional(readOnly = true)
+    override fun existsByIdAndRelatedToId(id: Long, relatedToId: Long): Boolean =
+        repository.existsByIdAndRelatedToId(id, relatedToId)
+
     private fun getChecklistOrThrow(id: Long): ChecklistInstanceEntity =
         repository.findById(id).orElseThrow { GetChecklistInstanceDetailNotFoundException() }
 }
