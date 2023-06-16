@@ -39,7 +39,7 @@ interface ProjectPartnerReportPersistence {
 
     fun listCertificates(partnerIds: Set<Long>, pageable: Pageable): Page<PartnerReportCertificate>
 
-    fun getSubmittedPartnerReportIds(partnerId: Long): Set<Long>
+    fun getSubmittedPartnerReports(partnerId: Long): List<ProjectPartnerReportStatusAndVersion>
 
     fun getReportIdsBefore(partnerId: Long, beforeReportId: Long): Set<Long>
 

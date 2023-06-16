@@ -15,7 +15,8 @@
 .mat-column-totalEligibleAfterControl,
 .mat-column-totalReportedSoFar,
 .mat-column-totalReportedSoFarPercentage,
-.mat-column-remainingBudget {
+.mat-column-remainingBudget,
+.mat-column-previouslyValidated {
   padding-left: .5rem;
 }
 
@@ -25,7 +26,8 @@
 .mat-column-currentReport,
 .mat-column-totalEligibleAfterControl,
 .mat-column-totalReportedSoFar,
-.mat-column-remainingBudget {
+.mat-column-remainingBudget,
+.mat-column-previouslyValidated {
   min-width: 8rem;
 }
 

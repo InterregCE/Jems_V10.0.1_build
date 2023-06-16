@@ -59,13 +59,14 @@ class ProjectPartnerReportFinancialOverviewControllerTest : UnitTest() {
             totalEligibleBudget = BigDecimal.ONE,
             previouslyReported = BigDecimal.TEN,
             previouslyReportedParked = BigDecimal.valueOf(100),
-            previouslyPaid = BigDecimal.ONE,
             currentReport = BigDecimal.ZERO,
             currentReportReIncluded = BigDecimal.valueOf(100),
             totalEligibleAfterControl = BigDecimal.ONE,
             totalReportedSoFar = BigDecimal.ONE,
             totalReportedSoFarPercentage = BigDecimal.TEN,
             remainingBudget = BigDecimal.ZERO,
+            previouslyValidated = BigDecimal.valueOf(7),
+            previouslyPaid = BigDecimal.ONE,
         )
 
         private val dummyLineLumpSum = ExpenditureLumpSumBreakdownLine(
@@ -181,14 +182,15 @@ class ProjectPartnerReportFinancialOverviewControllerTest : UnitTest() {
             fundId = null,
             totalEligibleBudget = BigDecimal.ONE,
             previouslyReported = BigDecimal.TEN,
-            previouslyPaid = BigDecimal.ONE,
             currentReport = BigDecimal.ZERO,
             totalEligibleAfterControl = BigDecimal.ONE,
             totalReportedSoFar = BigDecimal.ONE,
             totalReportedSoFarPercentage = BigDecimal.TEN,
             remainingBudget = BigDecimal.ZERO,
             previouslyReportedParked = BigDecimal.valueOf(100),
-            currentReportReIncluded = BigDecimal.valueOf(100)
+            currentReportReIncluded = BigDecimal.valueOf(100),
+            previouslyValidated = BigDecimal.valueOf(7),
+            previouslyPaid = BigDecimal.ONE,
         )
 
         private val expectedDummyLineLumpSum = ExpenditureLumpSumBreakdownLineDTO(

@@ -144,7 +144,7 @@ internal class UpdateProjectPartnerReportIdentificationTest : UnitTest() {
     fun updateIdentification() {
         val reportId = 66L
         every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = reportId) } returns
-            ProjectPartnerReportStatusAndVersion(ReportStatus.Draft, "17.0.1")
+            ProjectPartnerReportStatusAndVersion(reportId, ReportStatus.Draft, "17.0.1")
         every { reportIdentificationPersistence.getAvailablePeriods(PARTNER_ID, reportId = reportId) } returns periods
         val slotData = slot<io.cloudflight.jems.server.project.service.report.model.partner.identification.UpdateProjectPartnerReportIdentification>()
         every { reportIdentificationPersistence.updatePartnerReportIdentification(PARTNER_ID, reportId = reportId, capture(slotData)) } returns saveResult()
@@ -164,14 +164,14 @@ internal class UpdateProjectPartnerReportIdentificationTest : UnitTest() {
     @Test
     fun `updateIdentification - report closed`() {
         every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = 5L) } returns
-            ProjectPartnerReportStatusAndVersion(ReportStatus.Submitted, "1")
+            ProjectPartnerReportStatusAndVersion(5L, ReportStatus.Submitted, "1")
         assertThrows<ReportAlreadyClosed> { updateIdentification.updateIdentification(PARTNER_ID, reportId = 5L, mockk()) }
     }
 
     @Test
     fun `updateIdentification - wrong inputs`() {
         every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = 8L) } returns
-            ProjectPartnerReportStatusAndVersion(ReportStatus.Draft, "4.0.0")
+            ProjectPartnerReportStatusAndVersion(8L, ReportStatus.Draft, "4.0.0")
 
         val ex = assertThrows<AppInputValidationException> {
             updateIdentification.updateIdentification(PARTNER_ID, reportId = 8L, updateDataInvalid)
@@ -201,7 +201,7 @@ internal class UpdateProjectPartnerReportIdentificationTest : UnitTest() {
     fun `updateIdentification - wrong period`() {
         val reportId = 75L
         every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = reportId) } returns
-            ProjectPartnerReportStatusAndVersion(ReportStatus.Draft, "8.0")
+            ProjectPartnerReportStatusAndVersion(reportId, ReportStatus.Draft, "8.0")
 
         every { reportIdentificationPersistence.getAvailablePeriods(PARTNER_ID, reportId = reportId) } returns periods
 

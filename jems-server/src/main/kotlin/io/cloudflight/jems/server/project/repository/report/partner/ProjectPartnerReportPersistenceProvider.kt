@@ -54,7 +54,7 @@ class ProjectPartnerReportPersistenceProvider(
         reportId: Long
     ): ProjectPartnerReportStatusAndVersion =
         partnerReportRepository.findByIdAndPartnerId(id = reportId, partnerId = partnerId).let {
-            ProjectPartnerReportStatusAndVersion(it.status, it.applicationFormVersion)
+            ProjectPartnerReportStatusAndVersion(it.id, it.status, it.applicationFormVersion)
         }
 
     @Transactional(readOnly = true)
@@ -78,8 +78,9 @@ class ProjectPartnerReportPersistenceProvider(
         partnerReportRepository.findAllCertificates(partnerIds, pageable).map { it.toModel() }
 
     @Transactional(readOnly = true)
-    override fun getSubmittedPartnerReportIds(partnerId: Long): Set<Long> =
-        partnerReportRepository.findAllIdsByPartnerIdAndStatusIn(partnerId, ReportStatus.FINANCIALLY_CLOSED_STATUSES)
+    override fun getSubmittedPartnerReports(partnerId: Long): List<ProjectPartnerReportStatusAndVersion> =
+        partnerReportRepository.findAllByPartnerIdAndStatusInOrderByNumberDesc(partnerId, ReportStatus.FINANCIALLY_CLOSED_STATUSES)
+            .map { ProjectPartnerReportStatusAndVersion(it.id, it.status, it.applicationFormVersion) }
 
     @Transactional(readOnly = true)
     override fun getLastCertifiedPartnerReportId(partnerId: Long): Long? =

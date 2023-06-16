@@ -98,7 +98,7 @@ class GetReportControlOverviewServiceTest: UnitTest() {
                 controlOverview
         every { projectPartnerReportPersistence.getLastCertifiedPartnerReportId(PARTNER_ID) } returns null
         every { projectPartnerReportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, REPORT_ID) } returns
-                ProjectPartnerReportStatusAndVersion(ReportStatus.InControl, "v1.0")
+                ProjectPartnerReportStatusAndVersion(REPORT_ID, ReportStatus.InControl, "v1.0")
 
         Assertions.assertThat(interactor.get(PARTNER_ID, REPORT_ID)).isEqualTo(controlOverview)
     }
@@ -111,7 +111,7 @@ class GetReportControlOverviewServiceTest: UnitTest() {
         every { projectPartnerReportPersistence.getPartnerReportById(PARTNER_ID, 10L) } returns lastCertifiedReport
         every { controlOverviewPersistence.getPartnerControlReportOverview(PARTNER_ID, 10L) } returns lastCertifiedControlOverview
         every { projectPartnerReportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, REPORT_ID) } returns
-                ProjectPartnerReportStatusAndVersion(ReportStatus.InControl, "v1.0")
+                ProjectPartnerReportStatusAndVersion(REPORT_ID, ReportStatus.InControl, "v1.0")
 
         Assertions.assertThat(interactor.get(PARTNER_ID, REPORT_ID)).isEqualTo(controlOverviewAfterLastCertified)
     }
@@ -122,7 +122,7 @@ class GetReportControlOverviewServiceTest: UnitTest() {
                 finalizedControlOverview
         every { projectPartnerReportPersistence.getLastCertifiedPartnerReportId(PARTNER_ID) } returns null
         every { projectPartnerReportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, REPORT_ID) } returns
-                ProjectPartnerReportStatusAndVersion(ReportStatus.Certified, "v1.0")
+                ProjectPartnerReportStatusAndVersion(REPORT_ID, ReportStatus.Certified, "v1.0")
 
         Assertions.assertThat(interactor.get(PARTNER_ID, REPORT_ID)).isEqualTo(finalizedControlOverview)
     }

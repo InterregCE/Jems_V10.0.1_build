@@ -33,7 +33,8 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
         private const val PARTNER_ID = 591L
         private val TODAY = ZonedDateTime.now()
 
-        private fun reportWithStatus(status: ReportStatus) = ProjectPartnerReportStatusAndVersion(
+        private fun reportWithStatus(reportId: Long, status: ReportStatus) = ProjectPartnerReportStatusAndVersion(
+            reportId = reportId,
             status = status,
             version = "",
         )
@@ -767,7 +768,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
     @Test
     fun `get - is not submitted - no office`() {
         every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = 18L) } returns
-            reportWithStatus(status = ReportStatus.Draft)
+            reportWithStatus(18L, status = ReportStatus.Draft)
         every { reportExpenditureCostCategoryPersistence.getCostCategories(PARTNER_ID, reportId = 18L) } returns data
         every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, reportId = 18L) } returns listOf(
             expenditureLumpSum,
@@ -785,7 +786,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
     @Test
     fun `get - is not submitted - office on direct`() {
         every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = 19L) } returns
-            reportWithStatus(status = ReportStatus.Draft)
+            reportWithStatus(19L, status = ReportStatus.Draft)
         every { reportExpenditureCostCategoryPersistence.getCostCategories(PARTNER_ID, reportId = 19L) } returns data
             .copy(options = data.options.copy(officeAndAdministrationOnDirectCostsFlatRate = 10))
         every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, reportId = 19L) } returns listOf(
@@ -804,7 +805,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
     @Test
     fun `get - is not submitted - office on staff`() {
         every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = 20L) } returns
-            reportWithStatus(status = ReportStatus.Draft)
+            reportWithStatus(20L, status = ReportStatus.Draft)
         every { reportExpenditureCostCategoryPersistence.getCostCategories(PARTNER_ID, reportId = 20L) } returns data
             .copy(options = data.options.copy(officeAndAdministrationOnStaffCostsFlatRate = 15))
         every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, reportId = 20L) } returns listOf(
@@ -823,7 +824,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
     @Test
     fun `get - is submitted`() {
         every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = 25L) } returns
-            reportWithStatus(status = ReportStatus.Submitted)
+            reportWithStatus(25L, status = ReportStatus.Submitted)
         every { reportExpenditureCostCategoryPersistence.getCostCategories(PARTNER_ID, reportId = 25L) } returns data
 
         assertThat(service.getSubmittedOrCalculateCurrent(PARTNER_ID, reportId = 25L)).isEqualTo(expectedOutputWhenSubmitted)

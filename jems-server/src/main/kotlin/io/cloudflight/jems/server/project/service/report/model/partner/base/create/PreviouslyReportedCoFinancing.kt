@@ -22,4 +22,10 @@ data class PreviouslyReportedCoFinancing(
     val previouslyReportedParkedAutoPublic: BigDecimal,
     val previouslyReportedParkedPrivate: BigDecimal,
     val previouslyReportedParkedSum: BigDecimal,
+
+    val previouslyValidatedPartner: BigDecimal,
+    val previouslyValidatedPublic: BigDecimal,
+    val previouslyValidatedAutoPublic: BigDecimal,
+    val previouslyValidatedPrivate: BigDecimal,
+    val previouslyValidatedSum: BigDecimal,
 )
