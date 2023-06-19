@@ -94,7 +94,7 @@
             <div jemsFormFieldWidth="half" class="small-toggle-group justify-center">
                 <div jemsLabel
                      [ngClass]="{'empty': !toggleContent.checked && !toggleFinance.checked && !toggleBoth.checked, 'mat-required-marker': availableDeadlines.length === 0}">
-                    {{'project.application.partner.control.report.report.type' | translate}}
+                    {{'project.application.project.report.type' | translate}}
                 </div>
                 <mat-button-toggle-group [required]="availableDeadlines.length === 0" formControlName="type" [disabled]="availableDeadlines.length !== 0">
                     <mat-button-toggle #toggleContent [value]="ProjectReportDTO.TypeEnum.Content">
