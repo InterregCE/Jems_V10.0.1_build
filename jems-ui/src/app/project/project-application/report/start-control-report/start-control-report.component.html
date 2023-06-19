@@ -3,7 +3,7 @@
         <jems-pending-button *ngIf="reportStatus === ProjectPartnerReportDTO.StatusEnum.Submitted" class="ml-1"
                              [pending]="pendingAction | async"
                              [disabled]="data.isButtonDisabled"
-                             (clicked)="createControlReportForPartnerReport(reportId, data.partnerId, data.isButtonDisabled)">
+                             (clicked)="createControlReportForPartnerReport(data.partnerId, reportId, data.isButtonDisabled)">
             {{'project.application.partner.reports.start.control' | translate}}
         </jems-pending-button>
         <button jemsText *ngIf="ReportUtil.isControlReportExists(reportStatus) && data.canViewReport"
