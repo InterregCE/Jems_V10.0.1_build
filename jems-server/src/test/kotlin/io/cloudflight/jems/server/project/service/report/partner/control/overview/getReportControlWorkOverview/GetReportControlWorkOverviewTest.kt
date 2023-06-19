@@ -27,6 +27,7 @@ internal class GetReportControlWorkOverviewTest : UnitTest() {
             .get(PARTNER_ID, reportId = 22L)
         } returns ControlWorkOverview( declaredByPartner = BigDecimal.TEN,
             inControlSample = BigDecimal.ONE,
+            declaredByPartnerFlatRateSum = BigDecimal.ZERO,
             parked = BigDecimal.valueOf(115, 2),
             deductedByControl = BigDecimal.valueOf(724L, 2),
             eligibleAfterControl = BigDecimal.valueOf(161L, 2),
@@ -37,6 +38,7 @@ internal class GetReportControlWorkOverviewTest : UnitTest() {
         assertThat(interactor.get(PARTNER_ID, reportId = 22L)).isEqualTo(
             ControlWorkOverview(
                 declaredByPartner = BigDecimal.TEN,
+                declaredByPartnerFlatRateSum = BigDecimal.ZERO,
                 inControlSample = BigDecimal.ONE,
                 inControlSamplePercentage = BigDecimal.valueOf(1000L, 2),
                 parked = BigDecimal.valueOf(115, 2),

@@ -19,6 +19,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import java.math.BigDecimal
@@ -169,8 +170,9 @@ internal class GetReportControlWorkOverviewServiceTest : UnitTest() {
         assertThat(getReportControlWorkOverviewService.get(PARTNER_ID, reportId = 22L)).isEqualTo(
             ControlWorkOverview(
                 declaredByPartner = BigDecimal.valueOf(119L),
+                declaredByPartnerFlatRateSum = BigDecimal.valueOf(112L),
                 inControlSample = BigDecimal.valueOf(1L),
-                inControlSamplePercentage = BigDecimal.valueOf(84L, 2),
+                inControlSamplePercentage = BigDecimal.valueOf(1429L, 2),
                 parked = BigDecimal.valueOf(129L),
                 deductedByControl = BigDecimal.valueOf(-20L),
                 eligibleAfterControl = BigDecimal.valueOf(10L),
@@ -196,12 +198,67 @@ internal class GetReportControlWorkOverviewServiceTest : UnitTest() {
         assertThat(getReportControlWorkOverviewService.get(PARTNER_ID, reportId = 22L)).isEqualTo(
             ControlWorkOverview(
                 declaredByPartner = BigDecimal.valueOf(119L),
+                declaredByPartnerFlatRateSum = BigDecimal.valueOf(112L),
                 inControlSample = BigDecimal.valueOf(1L),
-                inControlSamplePercentage = BigDecimal.valueOf(84L, 2),
+                inControlSamplePercentage = BigDecimal.valueOf(1429L, 2),
                 parked = BigDecimal.valueOf(115, 2),
                 deductedByControl = BigDecimal.valueOf(11624L, 2),
                 eligibleAfterControl = BigDecimal.valueOf(161L, 2),
                 eligibleAfterControlPercentage = BigDecimal.valueOf(135L, 2),
+            )
+        )
+    }
+
+    @Test
+    fun `get - flat rate sum is calculated correctly`() {
+        val options = ProjectPartnerBudgetOptions(
+            partnerId = PARTNER_ID,
+            officeAndAdministrationOnStaffCostsFlatRate = 2,
+            officeAndAdministrationOnDirectCostsFlatRate = null,
+            travelAndAccommodationOnStaffCostsFlatRate = null,
+            staffCostsFlatRate = 10,
+            otherCostsOnStaffCostsFlatRate = 5,
+        )
+
+        val currentlyReported = BudgetCostsCalculationResultFull(
+                staff = BigDecimal.valueOf(110),
+                office = BigDecimal.valueOf(111),
+                travel = BigDecimal.valueOf(112),
+                external = BigDecimal.valueOf(113),
+                equipment = BigDecimal.valueOf(114),
+                infrastructure = BigDecimal.valueOf(115),
+                other = BigDecimal.valueOf(116),
+                lumpSum = BigDecimal.valueOf(117),
+                unitCost = BigDecimal.valueOf(118),
+                sum = BigDecimal.valueOf(1026),
+        )
+
+        val report = mockk<ProjectPartnerReport>()
+        every { report.status } returns ReportStatus.InControl
+        every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = 22L) } returns report
+
+        every {
+            reportControlExpenditurePersistence
+                .getPartnerControlReportExpenditureVerification(PARTNER_ID, reportId = 22L)
+        } returns listOfExpenditures
+
+        every {
+            reportExpenditureCostCategoryPersistence.getCostCategories(
+                PARTNER_ID,
+                reportId = 22L
+            )
+        } returns costOptions.copy(options = options, currentlyReported = currentlyReported)
+
+        assertThat(getReportControlWorkOverviewService.get(PARTNER_ID, reportId = 22L)).isEqualTo(
+            ControlWorkOverview(
+                declaredByPartner = BigDecimal.valueOf(1026L),
+                declaredByPartnerFlatRateSum = BigDecimal.valueOf(337L),
+                inControlSample = BigDecimal.valueOf(1L),
+                inControlSamplePercentage = BigDecimal.valueOf(15L, 2),
+                parked = BigDecimal.valueOf(0, 2),
+                deductedByControl = BigDecimal.valueOf(102600L, 2),
+                eligibleAfterControl = BigDecimal.valueOf(0, 2),
+                eligibleAfterControlPercentage = BigDecimal.valueOf(0, 2),
             )
         )
     }

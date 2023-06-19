@@ -29,6 +29,7 @@ class ProjectPartnerReportControlOverviewControllerTest : UnitTest() {
 
         private val dummyWorkOverview = ControlWorkOverview(
             declaredByPartner = BigDecimal.valueOf(1L),
+            declaredByPartnerFlatRateSum = BigDecimal.ZERO,
             inControlSample = BigDecimal.valueOf(2L),
             inControlSamplePercentage = BigDecimal.valueOf(3L),
             parked = BigDecimal.valueOf(4L),
@@ -39,6 +40,7 @@ class ProjectPartnerReportControlOverviewControllerTest : UnitTest() {
 
         private val expectedWorkOverview = ControlWorkOverviewDTO(
             declaredByPartner = BigDecimal.valueOf(1L),
+            declaredByPartnerFlatRateSum = BigDecimal.ZERO,
             inControlSample = BigDecimal.valueOf(2L),
             inControlSamplePercentage = BigDecimal.valueOf(3L),
             parked = BigDecimal.valueOf(4L),

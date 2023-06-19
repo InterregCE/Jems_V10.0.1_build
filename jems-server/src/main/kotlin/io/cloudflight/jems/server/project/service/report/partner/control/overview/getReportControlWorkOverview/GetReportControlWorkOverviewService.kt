@@ -1,5 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.partner.control.overview.getReportControlWorkOverview
 
+import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.report.model.partner.control.overview.ControlWorkOverview
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
@@ -40,11 +42,13 @@ class GetReportControlWorkOverviewService(
             currentExpenditures.calculateCertified(costCategories.options).sum
 
         val currentReportSum = costCategories.currentlyReported.sum
+        val currentReportSumWithoutFlatRates = costCategories.currentlyReported.sumIgnoringFlatRates(costCategories.options)
 
         return ControlWorkOverview(
             declaredByPartner = currentReportSum,
+            declaredByPartnerFlatRateSum = costCategories.currentlyReported.flatRatesSum(costCategories.options),
             inControlSample = controlSample,
-            inControlSamplePercentage = controlSample.percentageOf(currentReportSum) ?: BigDecimal.ZERO,
+            inControlSamplePercentage = controlSample.percentageOf(currentReportSumWithoutFlatRates) ?: BigDecimal.ZERO,
             parked = parkedSum,
             deductedByControl = currentReportSum.minus(eligibleAfterControl).minus(parkedSum),
             eligibleAfterControl = eligibleAfterControl,
@@ -57,4 +61,23 @@ class GetReportControlWorkOverviewService(
     private fun Collection<ProjectPartnerReportExpenditureVerification>.onlySamplingOnes() =
         filter { it.partOfSample }.map { it.declaredAmountAfterSubmission }
 
+    private fun BudgetCostsCalculationResultFull.sumIgnoringFlatRates(options: ProjectPartnerBudgetOptions) =
+        sum.minus(this.flatRatesSum(options))
+
+    private fun BudgetCostsCalculationResultFull.flatRatesSum(options: ProjectPartnerBudgetOptions): BigDecimal {
+        var flatRatesSum = BigDecimal.ZERO
+        with(options) {
+            if (hasFlatRateOffice()) { flatRatesSum += office }
+            if (hasFlatRateTravel()) { flatRatesSum += travel }
+            if (hasFlatRateStaff()) { flatRatesSum += staff }
+            if (hasFlatRateOther()) { flatRatesSum += other }
+        }
+        return flatRatesSum
+    }
+
+    private fun ProjectPartnerBudgetOptions.hasFlatRateOffice() =
+        officeAndAdministrationOnDirectCostsFlatRate != null || officeAndAdministrationOnStaffCostsFlatRate != null
+    private fun ProjectPartnerBudgetOptions.hasFlatRateTravel() = travelAndAccommodationOnStaffCostsFlatRate != null
+    private fun ProjectPartnerBudgetOptions.hasFlatRateStaff() = staffCostsFlatRate != null
+    private fun ProjectPartnerBudgetOptions.hasFlatRateOther() = otherCostsOnStaffCostsFlatRate != null
 }
