@@ -40,6 +40,7 @@ class ProjectReportInvestmentPersistenceProviderTest : UnitTest() {
             currentReIncluded = BigDecimal.valueOf(101),
             currentParked = BigDecimal.valueOf(100),
             deactivated = false,
+            previouslyValidated = BigDecimal.valueOf(5)
         )
 
         private val expectedInvestment = ExpenditureInvestmentBreakdownLine(
@@ -55,6 +56,7 @@ class ProjectReportInvestmentPersistenceProviderTest : UnitTest() {
             previouslyReportedParked = BigDecimal.valueOf(1000),
             currentReportReIncluded = BigDecimal.valueOf(101),
             deactivated = false,
+            previouslyValidated = BigDecimal.valueOf(5)
         )
 
     }

@@ -10,7 +10,7 @@ interface ProjectPartnerReportExpenditureCostCategoryPersistence {
 
     fun getCostCategories(partnerId: Long, reportId: Long): ReportExpenditureCostCategory
 
-    fun getCostCategoriesCumulative(reportIds: Set<Long>): ExpenditureCostCategoryPreviouslyReportedWithParked
+    fun getCostCategoriesCumulative(reportIds: Set<Long>, finalizedReportIds: Set<Long>): ExpenditureCostCategoryPreviouslyReportedWithParked
 
     fun updateCurrentlyReportedValues(
         partnerId: Long,

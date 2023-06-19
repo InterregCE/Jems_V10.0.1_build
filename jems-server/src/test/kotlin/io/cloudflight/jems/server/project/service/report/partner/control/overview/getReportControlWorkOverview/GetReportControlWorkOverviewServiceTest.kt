@@ -89,6 +89,7 @@ internal class GetReportControlWorkOverviewServiceTest : UnitTest() {
             ),
             previouslyReported = mockk(),
             previouslyReportedParked = mockk(),
+            previouslyValidated = mockk()
         )
 
         fun expenditure(

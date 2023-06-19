@@ -69,6 +69,7 @@ internal class GetProjectPartnerReportIdentificationServiceTest : UnitTest() {
             currentReport = BigDecimal.valueOf(21),
             currentReportReIncluded = BigDecimal.valueOf(11),
             totalEligibleAfterControl = BigDecimal.valueOf(4235, 2) /* not important */,
+            previouslyValidated = BigDecimal.valueOf(5)
         )
     }
 

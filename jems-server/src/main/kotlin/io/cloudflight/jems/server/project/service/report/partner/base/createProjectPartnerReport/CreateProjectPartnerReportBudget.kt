@@ -30,7 +30,6 @@ import io.cloudflight.jems.server.project.service.report.model.partner.base.crea
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.create.CreateProjectPartnerReportContribution
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.PartnerReportInvestmentSummary
-import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ExpenditureCoFinancingCurrent
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ExpenditureCoFinancingPrevious
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ReportExpenditureCostCategory
@@ -103,7 +102,7 @@ class CreateProjectPartnerReportBudget(
 
         val readyForPaymentLumpSums = paymentPersistence.getCoFinancingAndContributionsCumulative(partnerId)
         val previouslyReportedCostCategories = reportExpenditureCostCategoryPersistence
-            .getCostCategoriesCumulative(submittedReportIds)
+            .getCostCategoriesCumulative(submittedReportIds, finalizedReportIds)
             .addExtraPaymentReadyFastTrackLumpSums(readyForPaymentLumpSums.sum)
 
         return PartnerReportBudget(
@@ -113,17 +112,20 @@ class CreateProjectPartnerReportBudget(
                     partnerId = partnerId,
                     previouslyReported = reportLumpSumPersistence.getLumpSumCumulative(submittedReportIds),
                     previouslyPaid = installmentsPaid.byLumpSum(),
+                    previouslyValidated = reportLumpSumPersistence.getLumpSumCumulativeAfterControl(finalizedReportIds)
                 ),
             unitCosts = getSetOfUnitCostsWithTotalAndNumberOfUnits(
                 staffCosts
                     .plus(travelCosts)
                     .plus(externalAndEquipmentAndInfrastructure)
                     .plus(unitCosts),
-                previouslyReported = reportUnitCostPersistence.getUnitCostCumulative(submittedReportIds)
+                previouslyReported = reportUnitCostPersistence.getUnitCostCumulative(submittedReportIds),
+                previouslyValidated = reportUnitCostPersistence.getValidatedUnitCostCumulative(finalizedReportIds)
             ),
             investments = investments.toPartnerReportInvestments(
                 budgetEntries = externalAndEquipmentAndInfrastructure,
-                previouslyReported = reportInvestmentPersistence.getInvestmentsCumulative(submittedReportIds)
+                previouslyReported = reportInvestmentPersistence.getInvestmentsCumulative(submittedReportIds),
+                previouslyValidated = reportInvestmentPersistence.getInvestmentsCumulativeAfterControl(finalizedReportIds)
             ),
             budgetPerPeriod = (
                 getPartnerBudgetPerPeriod.getPartnerBudgetPerPeriod(projectId = projectId, version)
@@ -133,7 +135,7 @@ class CreateProjectPartnerReportBudget(
                 options = projectPartnerBudgetOptionsPersistence.getBudgetOptions(partnerId, version) ?: ProjectPartnerBudgetOptions(partnerId),
                 budget = budget,
                 previouslyReportedWithParked = previouslyReportedCostCategories,
-            ),
+             ),
             previouslyReportedCoFinancing = reportExpenditureCoFinancingPersistence
                 .getCoFinancingCumulative(submittedReportIds, finalizedReportIds)
                 .toCreateModel(
@@ -213,6 +215,7 @@ class CreateProjectPartnerReportBudget(
     private fun List<PartnerReportInvestmentSummary>.toPartnerReportInvestments(
         budgetEntries: List<BudgetGeneralCostEntry>,
         previouslyReported: Map<Long, ExpenditureInvestmentCurrent>,
+        previouslyValidated: Map<Long, BigDecimal>
     ): List<PartnerReportInvestment> {
         val byInvestment = budgetEntries
             .filter { it.investmentId != null }
@@ -228,7 +231,7 @@ class CreateProjectPartnerReportBudget(
                 total = byInvestment.getOrDefault(it.investmentId, ZERO),
                 previouslyReported = previouslyReported.get(it.investmentId)?.current ?: ZERO,
                 previouslyReportedParked = previouslyReported.get(it.investmentId)?.currentParked ?: ZERO,
-                previouslyValidated = ZERO, // TODO
+                previouslyValidated = previouslyValidated.get(it.investmentId) ?: ZERO,
             )
         }
     }
@@ -237,6 +240,7 @@ class CreateProjectPartnerReportBudget(
         partnerId: Long,
         previouslyReported: Map<Int, ExpenditureLumpSumCurrent>,
         previouslyPaid: Map<Long, Map<Int, BigDecimal>>,
+        previouslyValidated: Map<Int, BigDecimal>
     ) = map {
         val lumpSumPartnerShare = it.lumpSumContributions.firstOrNull { it.partnerId == partnerId }?.amount ?: ZERO
 
@@ -252,7 +256,7 @@ class CreateProjectPartnerReportBudget(
             total = lumpSumPartnerShare,
             previouslyReported = fromPrevious,
             previouslyReportedParked = previouslyReported.get(it.orderNr)?.currentParked ?: ZERO,
-            previouslyValidated = ZERO, // TODO
+            previouslyValidated = previouslyValidated.get(it.orderNr) ?: ZERO,
             previouslyPaid = previouslyPaid.get(it.programmeLumpSumId)?.get(it.orderNr) ?: ZERO,
         )
     }
@@ -262,6 +266,7 @@ class CreateProjectPartnerReportBudget(
     private fun getSetOfUnitCostsWithTotalAndNumberOfUnits(
         budgetEntries: List<BaseBudgetEntry>,
         previouslyReported: Map<Long, ExpenditureUnitCostCurrent>,
+        previouslyValidated: Map<Long, BigDecimal>
     ): Set<PartnerReportUnitCostBase> {
         return budgetEntries.filter { it.unitCostId != null }
             .groupBy { it.unitCostId!! }.entries
@@ -272,7 +277,7 @@ class CreateProjectPartnerReportBudget(
                     numberOfUnits = budgetEntries.sumOf { it.numberOfUnits },
                     previouslyReported = previouslyReported.get(unitCostId)?.current ?: ZERO,
                     previouslyReportedParked = previouslyReported.get(unitCostId)?.currentParked ?: ZERO,
-                    previouslyValidated = ZERO, // TODO
+                    previouslyValidated = previouslyValidated.get(unitCostId) ?: ZERO,
                 )
             }
     }
@@ -315,7 +320,7 @@ class CreateProjectPartnerReportBudget(
         currentlyReportedParked = fillZeros(),
         currentlyReportedReIncluded = fillZeros(),
         previouslyReportedParked = previouslyReportedWithParked.previouslyReportedParked,
-        previouslyValidated = fillZeros(), // TODO
+        previouslyValidated = previouslyReportedWithParked.previouslyValidated,
     )
 
     private fun fillZeros() = BudgetCostsCalculationResultFull(

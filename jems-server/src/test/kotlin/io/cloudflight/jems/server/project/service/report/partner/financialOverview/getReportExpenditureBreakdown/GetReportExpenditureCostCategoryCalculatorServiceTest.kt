@@ -132,6 +132,18 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
                 unitCost = BigDecimal.valueOf(480),
                 sum = BigDecimal.valueOf(490),
             ),
+            previouslyValidated =  BudgetCostsCalculationResultFull(
+                staff = BigDecimal.valueOf(500),
+                office = BigDecimal.valueOf(510),
+                travel = BigDecimal.valueOf(520),
+                external = BigDecimal.valueOf(530),
+                equipment = BigDecimal.valueOf(540),
+                infrastructure = BigDecimal.valueOf(550),
+                other = BigDecimal.valueOf(560),
+                lumpSum = BigDecimal.valueOf(570),
+                unitCost = BigDecimal.valueOf(580),
+                sum = BigDecimal.valueOf(590),
+            ),
         )
 
         val expenditureLumpSum = ProjectPartnerReportExpenditureCost(
@@ -307,6 +319,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
                 totalReportedSoFar = BigDecimal.valueOf(70000, 2),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(70000, 2),
                 remainingBudget = BigDecimal.valueOf(-60000, 2),
+                previouslyValidated = BigDecimal.valueOf(500)
             ),
             office = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
@@ -319,6 +332,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
                 totalReportedSoFar = BigDecimal.valueOf(310),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(28182, 2),
                 remainingBudget = BigDecimal.valueOf(-200),
+                previouslyValidated = BigDecimal.valueOf(510)
             ),
             travel = ExpenditureCostCategoryBreakdownLine(
                 flatRate = 15,
@@ -331,6 +345,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
                 totalReportedSoFar = BigDecimal.valueOf(38000, 2),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(31667, 2),
                 remainingBudget = BigDecimal.valueOf(-26000, 2),
+                previouslyValidated = BigDecimal.valueOf(520)
             ),
             external = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
@@ -343,6 +358,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
                 totalReportedSoFar = BigDecimal.valueOf(56000, 2),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(43077, 2),
                 remainingBudget = BigDecimal.valueOf(-43000, 2),
+                previouslyValidated = BigDecimal.valueOf(530)
             ),
             equipment = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
@@ -355,6 +371,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
                 totalReportedSoFar = BigDecimal.valueOf(47500, 2),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(33929, 2),
                 remainingBudget = BigDecimal.valueOf(-33500, 2),
+                previouslyValidated = BigDecimal.valueOf(540)
             ),
             infrastructure = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
@@ -367,6 +384,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
                 totalReportedSoFar = BigDecimal.valueOf(47250, 2),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(31500, 2),
                 remainingBudget = BigDecimal.valueOf(-32250, 2),
+                previouslyValidated = BigDecimal.valueOf(550)
             ),
             other = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
@@ -379,6 +397,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
                 totalReportedSoFar = BigDecimal.valueOf(360),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(22500, 2),
                 remainingBudget = BigDecimal.valueOf(-200),
+                previouslyValidated = BigDecimal.valueOf(560)
             ),
             lumpSum = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
@@ -391,6 +410,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
                 totalReportedSoFar = BigDecimal.valueOf(39431, 2),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(23195, 2),
                 remainingBudget = BigDecimal.valueOf(-22431, 2),
+                previouslyValidated = BigDecimal.valueOf(570)
             ),
             unitCost = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
@@ -403,6 +423,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
                 totalReportedSoFar = BigDecimal.valueOf(52319, 2),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(29066, 2),
                 remainingBudget = BigDecimal.valueOf(-34319, 2),
+                previouslyValidated = BigDecimal.valueOf(580)
             ),
             total = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
@@ -415,6 +436,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
                 totalReportedSoFar = BigDecimal.valueOf(417500, 2),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(33135, 2),
                 remainingBudget = BigDecimal.valueOf(-291500, 2),
+                previouslyValidated = BigDecimal.valueOf(590)
             ),
         )
 
@@ -430,6 +452,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
                 totalReportedSoFar = BigDecimal.valueOf(70000, 2),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(70000, 2),
                 remainingBudget = BigDecimal.valueOf(-60000, 2),
+                previouslyValidated = BigDecimal.valueOf(500)
             ),
             office = ExpenditureCostCategoryBreakdownLine(
                 flatRate = 10,
@@ -442,6 +465,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
                 totalReportedSoFar = BigDecimal.valueOf(40475, 2),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(36795, 2),
                 remainingBudget = BigDecimal.valueOf(-29475, 2),
+                previouslyValidated = BigDecimal.valueOf(510)
             ),
             travel = ExpenditureCostCategoryBreakdownLine(
                 flatRate = 15,
@@ -454,6 +478,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
                 totalReportedSoFar = BigDecimal.valueOf(38000, 2),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(31667, 2),
                 remainingBudget = BigDecimal.valueOf(-26000, 2),
+                previouslyValidated = BigDecimal.valueOf(520)
             ),
             external = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
@@ -466,6 +491,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
                 totalReportedSoFar = BigDecimal.valueOf(56000, 2),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(43077, 2),
                 remainingBudget = BigDecimal.valueOf(-43000, 2),
+                previouslyValidated = BigDecimal.valueOf(530)
             ),
             equipment = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
@@ -478,6 +504,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
                 totalReportedSoFar = BigDecimal.valueOf(47500, 2),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(33929, 2),
                 remainingBudget = BigDecimal.valueOf(-33500, 2),
+                previouslyValidated = BigDecimal.valueOf(540)
             ),
             infrastructure = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
@@ -490,6 +517,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
                 totalReportedSoFar = BigDecimal.valueOf(47250, 2),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(31500, 2),
                 remainingBudget = BigDecimal.valueOf(-32250, 2),
+                previouslyValidated = BigDecimal.valueOf(550)
             ),
             other = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
@@ -502,6 +530,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
                 totalReportedSoFar = BigDecimal.valueOf(360),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(22500, 2),
                 remainingBudget = BigDecimal.valueOf(-200),
+                previouslyValidated = BigDecimal.valueOf(560)
             ),
             lumpSum = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
@@ -514,6 +543,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
                 totalReportedSoFar = BigDecimal.valueOf(39431, 2),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(23195, 2),
                 remainingBudget = BigDecimal.valueOf(-22431, 2),
+                previouslyValidated = BigDecimal.valueOf(570)
             ),
             unitCost = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
@@ -526,6 +556,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
                 totalReportedSoFar = BigDecimal.valueOf(52319, 2),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(29066, 2),
                 remainingBudget = BigDecimal.valueOf(-34319, 2),
+                previouslyValidated = BigDecimal.valueOf(580)
             ),
             total = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
@@ -538,6 +569,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
                 totalReportedSoFar = BigDecimal.valueOf(426975, 2),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(33887, 2),
                 remainingBudget = BigDecimal.valueOf(-300975, 2),
+                previouslyValidated = BigDecimal.valueOf(590)
             ),
         )
 
@@ -553,6 +585,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
                 totalReportedSoFar = BigDecimal.valueOf(70000, 2),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(70000, 2),
                 remainingBudget = BigDecimal.valueOf(-60000, 2),
+                previouslyValidated = BigDecimal.valueOf(500)
             ),
             office = ExpenditureCostCategoryBreakdownLine(
                 flatRate = 15,
@@ -565,6 +598,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
                 totalReportedSoFar = BigDecimal.valueOf(37000, 2),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(33636, 2),
                 remainingBudget = BigDecimal.valueOf(-26000, 2),
+                previouslyValidated = BigDecimal.valueOf(510)
             ),
             travel = ExpenditureCostCategoryBreakdownLine(
                 flatRate = 15,
@@ -577,6 +611,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
                 totalReportedSoFar = BigDecimal.valueOf(38000, 2),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(31667, 2),
                 remainingBudget = BigDecimal.valueOf(-26000, 2),
+                previouslyValidated = BigDecimal.valueOf(520)
             ),
             external = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
@@ -589,6 +624,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
                 totalReportedSoFar = BigDecimal.valueOf(56000, 2),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(43077, 2),
                 remainingBudget = BigDecimal.valueOf(-43000, 2),
+                previouslyValidated = BigDecimal.valueOf(530)
             ),
             equipment = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
@@ -601,6 +637,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
                 totalReportedSoFar = BigDecimal.valueOf(47500, 2),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(33929, 2),
                 remainingBudget = BigDecimal.valueOf(-33500, 2),
+                previouslyValidated = BigDecimal.valueOf(540)
             ),
             infrastructure = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
@@ -613,6 +650,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
                 totalReportedSoFar = BigDecimal.valueOf(47250, 2),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(31500, 2),
                 remainingBudget = BigDecimal.valueOf(-32250, 2),
+                previouslyValidated = BigDecimal.valueOf(550)
             ),
             other = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
@@ -625,6 +663,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
                 totalReportedSoFar = BigDecimal.valueOf(360),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(22500, 2),
                 remainingBudget = BigDecimal.valueOf(-200),
+                previouslyValidated = BigDecimal.valueOf(560)
             ),
             lumpSum = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
@@ -637,6 +676,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
                 totalReportedSoFar = BigDecimal.valueOf(39431, 2),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(23195, 2),
                 remainingBudget = BigDecimal.valueOf(-22431, 2),
+                previouslyValidated = BigDecimal.valueOf(570)
             ),
             unitCost = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
@@ -649,6 +689,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
                 totalReportedSoFar = BigDecimal.valueOf(52319, 2),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(29066, 2),
                 remainingBudget = BigDecimal.valueOf(-34319, 2),
+                previouslyValidated = BigDecimal.valueOf(580)
             ),
             total = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
@@ -661,6 +702,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
                 totalReportedSoFar = BigDecimal.valueOf(423500, 2),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(33611, 2),
                 remainingBudget = BigDecimal.valueOf(-297500, 2),
+                previouslyValidated = BigDecimal.valueOf(590)
             ),
         )
 

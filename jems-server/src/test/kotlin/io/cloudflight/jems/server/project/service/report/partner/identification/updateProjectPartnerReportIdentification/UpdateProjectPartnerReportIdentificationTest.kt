@@ -111,6 +111,7 @@ internal class UpdateProjectPartnerReportIdentificationTest : UnitTest() {
             currentReport = BigDecimal.ONE,
             currentReportReIncluded = BigDecimal.ONE,
             totalEligibleAfterControl = BigDecimal.valueOf(4235, 2) /* not important */,
+            previouslyValidated = BigDecimal.valueOf(5)
         )
 
     }

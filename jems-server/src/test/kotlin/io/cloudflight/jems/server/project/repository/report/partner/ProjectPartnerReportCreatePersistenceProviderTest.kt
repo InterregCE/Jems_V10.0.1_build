@@ -77,6 +77,7 @@ import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
+import java.math.BigDecimal
 import java.math.BigDecimal.ONE
 import java.math.BigDecimal.TEN
 import java.math.BigDecimal.ZERO
@@ -208,6 +209,7 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
                         previouslyReported = valueOf(7, 1),
                         previouslyPaid = valueOf(7, 1),
                         previouslyReportedParked = valueOf(1000),
+                        previouslyValidated = valueOf(5)
                     ),
                 ),
                 unitCosts = setOf(
@@ -216,7 +218,8 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
                         numberOfUnits = ONE,
                         totalCost = ONE,
                         previouslyReported = valueOf(5, 1),
-                        previouslyReportedParked = ZERO
+                        previouslyReportedParked = ZERO,
+                        previouslyValidated = valueOf(6)
                     )
                 ),
                 budgetPerPeriod = listOf(
@@ -304,6 +307,18 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
                         unitCost = valueOf(38),
                         sum = valueOf(39),
                     ),
+                    previouslyValidated = BudgetCostsCalculationResultFull(
+                        staff = valueOf(30),
+                        office = valueOf(31),
+                        travel = valueOf(32),
+                        external = valueOf(33),
+                        equipment = valueOf(34),
+                        infrastructure = valueOf(35),
+                        other = valueOf(36),
+                        lumpSum = valueOf(37),
+                        unitCost = valueOf(38),
+                        sum = valueOf(39),
+                    ),
                     previouslyReportedParked = BudgetCostsCalculationResultFull(
                         staff = valueOf(60),
                         office = valueOf(61),
@@ -366,6 +381,7 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
                         previouslyReported = valueOf(50L),
                         previouslyReportedParked = valueOf(130),
                         deactivated = false,
+                        previouslyValidated = valueOf(10)
                     )
                 )
             ),

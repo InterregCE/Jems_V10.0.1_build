@@ -50,11 +50,11 @@ fun PartnerReportLumpSum.toEntity(
     current = BigDecimal.ZERO,
     totalEligibleAfterControl = BigDecimal.ZERO,
     previouslyReported = previouslyReported,
+    previouslyValidated = previouslyValidated,
     previouslyPaid = previouslyPaid,
     currentParked = BigDecimal.ZERO,
     currentReIncluded = BigDecimal.ZERO,
-    previouslyReportedParked = previouslyReportedParked,
-    previouslyValidated = previouslyValidated,
+    previouslyReportedParked = previouslyReportedParked
 )
 
 fun PartnerReportUnitCostBase.toEntity(

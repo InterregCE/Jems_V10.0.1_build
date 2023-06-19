@@ -43,7 +43,6 @@ import io.cloudflight.jems.server.project.service.report.model.partner.base.crea
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.create.CreateProjectPartnerReportContribution
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.PartnerReportInvestmentSummary
-import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ExpenditureCoFinancingCurrent
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ExpenditureCoFinancingPrevious
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.investments.ExpenditureInvestmentCurrent
@@ -350,6 +349,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         previouslyReported = BigDecimal.valueOf(30),
         previouslyReportedParked = BigDecimal.valueOf(100),
         deactivated = false,
+        previouslyValidated = BigDecimal.valueOf(5)
     )
 
     private val expectedTotal = BudgetCostsCalculationResultFull(
@@ -366,7 +366,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
     )
 
     private val previousExpenditures = ExpenditureCostCategoryPreviouslyReportedWithParked(
-        BudgetCostsCalculationResultFull(
+        previouslyReported = BudgetCostsCalculationResultFull(
             staff = BigDecimal.valueOf(30),
             office = BigDecimal.valueOf(31),
             travel = BigDecimal.valueOf(32),
@@ -378,7 +378,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
             unitCost = BigDecimal.valueOf(38),
             sum = BigDecimal.valueOf(39),
         ),
-        BudgetCostsCalculationResultFull(
+        previouslyReportedParked = BudgetCostsCalculationResultFull(
             staff = BigDecimal.valueOf(40),
             office = BigDecimal.valueOf(41),
             travel = BigDecimal.valueOf(42),
@@ -390,6 +390,18 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
             unitCost = BigDecimal.valueOf(48),
             sum = BigDecimal.valueOf(49),
         ),
+        previouslyValidated = BudgetCostsCalculationResultFull(
+            staff = BigDecimal.valueOf(50),
+            office = BigDecimal.valueOf(51),
+            travel = BigDecimal.valueOf(52),
+            external = BigDecimal.valueOf(53),
+            equipment = BigDecimal.valueOf(55),
+            infrastructure = BigDecimal.valueOf(55),
+            other = BigDecimal.valueOf(56),
+            lumpSum = BigDecimal.valueOf(57),
+            unitCost = BigDecimal.valueOf(58),
+            sum = BigDecimal.valueOf(59),
+        )
     )
 
     private val previousReportedCoFinancing = ReportExpenditureCoFinancingColumn(
@@ -548,6 +560,10 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         )
     )
 
+     private val expectedValidatedLumpSums = mapOf(Pair(14, BigDecimal.valueOf(5)), Pair(15, BigDecimal.valueOf(6)), Pair(16, BigDecimal.valueOf(10)))
+     private val expectedValidatedUnitCost = mapOf(Pair(6L, BigDecimal.TEN))
+     private val expectedValidatedInvestments = mapOf(Pair(485L, BigDecimal.valueOf(5)))
+
     @MockK
     lateinit var reportPersistence: ProjectPartnerReportPersistence
 
@@ -623,7 +639,8 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
                 total = BigDecimal.TEN,
                 previouslyReported = BigDecimal.TEN,
                 previouslyPaid = BigDecimal.ZERO,
-                previouslyReportedParked = BigDecimal.TEN
+                previouslyReportedParked = BigDecimal.TEN,
+                previouslyValidated = BigDecimal.valueOf(5)
             ),
             PartnerReportLumpSum(
                 lumpSumId = 45L,
@@ -632,7 +649,8 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
                 total = BigDecimal.valueOf(13),
                 previouslyReported = BigDecimal.valueOf(100),
                 previouslyPaid = BigDecimal.ZERO,
-                previouslyReportedParked = BigDecimal.TEN
+                previouslyReportedParked = BigDecimal.TEN,
+                previouslyValidated = BigDecimal.valueOf(6)
             ),
             PartnerReportLumpSum(
                 lumpSumId = 45L,
@@ -642,7 +660,8 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
                 total = BigDecimal.valueOf(1033, 2),
                 previouslyReported = BigDecimal.valueOf(21033, 2),
                 previouslyPaid = BigDecimal.valueOf(11),
-                previouslyReportedParked = BigDecimal.TEN
+                previouslyReportedParked = BigDecimal.TEN,
+                previouslyValidated = BigDecimal.valueOf(10)
             ),
         )
         assertThat(result.unitCosts.map { it.unitCostId }).containsExactlyInAnyOrder(4, 5, 6, 7, 8, 9, 10)
@@ -686,7 +705,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
             )
         } returns investmentSummaries
         every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(partnerId, 408L) } returns emptyList()
-        every { reportExpenditureCoFinancingPersistence.getCoFinancingCumulative(setOf(408L), emptySet()) } returns ExpenditureCoFinancingPrevious(
+        every { reportExpenditureCoFinancingPersistence.getCoFinancingCumulative(setOf(408L, 409L), setOf(409L)) } returns ExpenditureCoFinancingPrevious(
             previous = previousReportedCoFinancing.copy(funds = emptyMap()),
             previousParked = previousReportedCoFinancing.copy(funds = emptyMap()),
             previousValidated = previousValidatedCoFinancing.copy(funds = emptyMap()),
@@ -728,16 +747,21 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         val partner = mockk<ProjectPartnerSummary>()
         every { partner.id } returns partnerId
 
-        val reportSubmitted_408 = ProjectPartnerReportStatusAndVersion(
-            408L, ReportStatus.Submitted, "AFv4"
+        val submittedReports = listOf(
+            ProjectPartnerReportStatusAndVersion(
+                408L, ReportStatus.Submitted, "AFv4"
+            ),
+            ProjectPartnerReportStatusAndVersion(
+                409L, ReportStatus.Certified, "AFv5"
+            )
         )
 
         // contribution
-        every { reportPersistence.getSubmittedPartnerReports(partnerId) } returns listOf(reportSubmitted_408)
-        every { reportContributionPersistence.getAllContributionsForReportIds(setOf(408L)) } returns previousContributions
+        every { reportPersistence.getSubmittedPartnerReports(partnerId) } returns submittedReports
+        every { reportContributionPersistence.getAllContributionsForReportIds(setOf(408L, 409L)) } returns previousContributions
         // lump sums
         every { lumpSumPersistence.getLumpSums(projectId, version) } returns lumpSums(partnerId)
-        every { reportLumpSumPersistence.getLumpSumCumulative(setOf(408L)) } returns
+        every { reportLumpSumPersistence.getLumpSumCumulative(setOf(408L, 409L)) } returns
             mapOf(
                 14 to ExpenditureLumpSumCurrent(current = BigDecimal.TEN, currentParked = BigDecimal.TEN),
                 15 to ExpenditureLumpSumCurrent(current = BigDecimal.valueOf(100), currentParked = BigDecimal.TEN),
@@ -765,14 +789,14 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
             )
         } returns infrastructureCosts
         every { partnerBudgetCostsPersistence.getBudgetUnitCosts(setOf(partnerId), version) } returns unitCosts
-        every { reportUnitCostPersistence.getUnitCostCumulative(setOf(408L)) } returns
+        every { reportUnitCostPersistence.getUnitCostCumulative(setOf(408L, 409L)) } returns
             mapOf(
                 6L to ExpenditureUnitCostCurrent(current = BigDecimal.TEN, currentParked = BigDecimal.ZERO),
                 7L to ExpenditureUnitCostCurrent(current = BigDecimal.valueOf(100), currentParked = BigDecimal.ZERO),
                 8L to ExpenditureUnitCostCurrent(current = BigDecimal.ZERO, currentParked = BigDecimal.ZERO)
             )
         // investments
-        every { reportInvestmentPersistence.getInvestmentsCumulative(setOf(408L)) } returns mapOf(
+        every { reportInvestmentPersistence.getInvestmentsCumulative(setOf(408L, 409L)) } returns mapOf(
             485L to ExpenditureInvestmentCurrent(
                 current = BigDecimal.valueOf(30),
                 currentParked = BigDecimal.valueOf(100)
@@ -794,12 +818,15 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         )
         // previously reported
         every { paymentPersistence.getCoFinancingAndContributionsCumulative(partnerId) } returns previousPayments
-        every { reportExpenditureCostCategoryPersistence.getCostCategoriesCumulative(setOf(408L)) } returns previousExpenditures
-        every { reportExpenditureCoFinancingPersistence.getCoFinancingCumulative(setOf(408L), emptySet()) } returns ExpenditureCoFinancingPrevious(
+        every { reportExpenditureCostCategoryPersistence.getCostCategoriesCumulative(setOf(408L, 409L), setOf(409L)) } returns previousExpenditures
+        every { reportExpenditureCoFinancingPersistence.getCoFinancingCumulative(setOf(408L, 409L), setOf(409L)) } returns ExpenditureCoFinancingPrevious(
             previous = previousReportedCoFinancing,
             previousParked = previousReportedCoFinancing,
             previousValidated = previousValidatedCoFinancing,
         )
+        every { reportLumpSumPersistence.getLumpSumCumulativeAfterControl(setOf(409L)) } returns expectedValidatedLumpSums
+        every { reportUnitCostPersistence.getValidatedUnitCostCumulative(setOf(409L)) } returns expectedValidatedUnitCost
+        every { reportInvestmentPersistence.getInvestmentsCumulativeAfterControl(setOf(409L)) } returns expectedValidatedInvestments
 
         return partner
     }
