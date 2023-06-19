@@ -32,10 +32,9 @@ export class StartControlReportComponent {
   pendingAction = new BehaviorSubject<boolean>(false);
   data$: Observable<{
     partnerId: string | number | null;
-    canViewReport: boolean;
     isController: boolean;
-    isButtonVisible: boolean;
-    isButtonDisabled: boolean;
+    canView: boolean;
+    canEdit: boolean;
   }>;
 
   constructor(
@@ -54,11 +53,10 @@ export class StartControlReportComponent {
     ]).pipe(
       map(([partnerId, institutionView, institutionEdit, projectView, projectEdit]) => ({
         partnerId,
-        canViewReport: projectView || projectEdit,
-        isController: institutionView,
-        isButtonVisible: (institutionView || institutionEdit) || projectView || projectEdit,
-        isButtonDisabled: (institutionView && !institutionEdit) || !institutionEdit
-      }))
+        isController: institutionView || institutionEdit,
+        canView: (institutionView || institutionEdit) || projectView || projectEdit,
+        canEdit: institutionEdit
+      })),
     );
   }
 
@@ -110,4 +108,5 @@ export class StartControlReportComponent {
         finalize(() => this.pendingAction.next(false))
       ).subscribe();
   }
+
 }
