@@ -11,5 +11,6 @@ data class PartnerReportInvestment(
     val deactivated: Boolean,
     val total: BigDecimal,
     val previouslyReported: BigDecimal,
-    val previouslyReportedParked: BigDecimal
+    val previouslyReportedParked: BigDecimal,
+    val previouslyValidated: BigDecimal,
 )

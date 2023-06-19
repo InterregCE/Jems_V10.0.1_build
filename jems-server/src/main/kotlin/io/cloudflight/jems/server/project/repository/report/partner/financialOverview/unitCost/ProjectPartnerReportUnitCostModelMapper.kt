@@ -16,4 +16,5 @@ fun PartnerReportUnitCostEntity.toModel() = ExpenditureUnitCostBreakdownLine(
     currentReport = current,
     currentReportReIncluded = currentReIncluded,
     totalEligibleAfterControl = totalEligibleAfterControl,
+    previouslyValidated = previouslyValidated,
 )

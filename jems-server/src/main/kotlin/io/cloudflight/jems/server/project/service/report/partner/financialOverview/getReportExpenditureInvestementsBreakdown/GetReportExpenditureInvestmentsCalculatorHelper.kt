@@ -31,7 +31,8 @@ private fun emptyLine() = ExpenditureInvestmentBreakdownLine(
     totalEligibleAfterControl = BigDecimal.ZERO,
     totalReportedSoFar = BigDecimal.ZERO,
     totalReportedSoFarPercentage = BigDecimal.ZERO,
-    remainingBudget = BigDecimal.ZERO
+    remainingBudget = BigDecimal.ZERO,
+    previouslyValidated = BigDecimal.ZERO,
 )
 
 fun List<ExpenditureInvestmentBreakdownLine>.sumUp() =
@@ -42,6 +43,7 @@ fun List<ExpenditureInvestmentBreakdownLine>.sumUp() =
         resultingTotalLine.totalEligibleAfterControl += investment.totalEligibleAfterControl
         resultingTotalLine.previouslyReportedParked += investment.previouslyReportedParked
         resultingTotalLine.currentReportReIncluded += investment.currentReportReIncluded
+        resultingTotalLine.previouslyValidated += investment.previouslyValidated
         return@fold resultingTotalLine
     }
 

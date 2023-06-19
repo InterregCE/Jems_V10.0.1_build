@@ -72,6 +72,17 @@ class ReportProjectPartnerExpenditureCostCategoryEntity(
     @field:NotNull val unitCostPreviouslyReported: BigDecimal,
     @field:NotNull val sumPreviouslyReported: BigDecimal,
 
+    @field:NotNull val staffPreviouslyValidated: BigDecimal,
+    @field:NotNull val officePreviouslyValidated: BigDecimal,
+    @field:NotNull val travelPreviouslyValidated: BigDecimal,
+    @field:NotNull val externalPreviouslyValidated: BigDecimal,
+    @field:NotNull val equipmentPreviouslyValidated: BigDecimal,
+    @field:NotNull val infrastructurePreviouslyValidated: BigDecimal,
+    @field:NotNull val otherPreviouslyValidated: BigDecimal,
+    @field:NotNull val lumpSumPreviouslyValidated: BigDecimal,
+    @field:NotNull val unitCostPreviouslyValidated: BigDecimal,
+    @field:NotNull val sumPreviouslyValidated: BigDecimal,
+
     // Parking
 
     @field:NotNull var staffCurrentParked: BigDecimal,

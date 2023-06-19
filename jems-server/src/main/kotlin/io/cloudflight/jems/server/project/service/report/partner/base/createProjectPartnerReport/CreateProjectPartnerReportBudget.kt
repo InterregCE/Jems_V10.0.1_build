@@ -227,7 +227,8 @@ class CreateProjectPartnerReportBudget(
                 deactivated = it.deactivated,
                 total = byInvestment.getOrDefault(it.investmentId, ZERO),
                 previouslyReported = previouslyReported.get(it.investmentId)?.current ?: ZERO,
-                previouslyReportedParked = previouslyReported.get(it.investmentId)?.currentParked ?: ZERO
+                previouslyReportedParked = previouslyReported.get(it.investmentId)?.currentParked ?: ZERO,
+                previouslyValidated = ZERO, // TODO
             )
         }
     }
@@ -251,6 +252,7 @@ class CreateProjectPartnerReportBudget(
             total = lumpSumPartnerShare,
             previouslyReported = fromPrevious,
             previouslyReportedParked = previouslyReported.get(it.orderNr)?.currentParked ?: ZERO,
+            previouslyValidated = ZERO, // TODO
             previouslyPaid = previouslyPaid.get(it.programmeLumpSumId)?.get(it.orderNr) ?: ZERO,
         )
     }
@@ -269,7 +271,8 @@ class CreateProjectPartnerReportBudget(
                     totalCost = budgetEntries.sumOf { it.rowSum!! },
                     numberOfUnits = budgetEntries.sumOf { it.numberOfUnits },
                     previouslyReported = previouslyReported.get(unitCostId)?.current ?: ZERO,
-                    previouslyReportedParked = previouslyReported.get(unitCostId)?.currentParked ?: ZERO
+                    previouslyReportedParked = previouslyReported.get(unitCostId)?.currentParked ?: ZERO,
+                    previouslyValidated = ZERO, // TODO
                 )
             }
     }
@@ -312,6 +315,7 @@ class CreateProjectPartnerReportBudget(
         currentlyReportedParked = fillZeros(),
         currentlyReportedReIncluded = fillZeros(),
         previouslyReportedParked = previouslyReportedWithParked.previouslyReportedParked,
+        previouslyValidated = fillZeros(), // TODO
     )
 
     private fun fillZeros() = BudgetCostsCalculationResultFull(

@@ -20,7 +20,8 @@ import CategoryEnum = ProjectPartnerReportUnitCostDTO.CategoryEnum;
 export class PartnerBreakdownCostCategoryComponent implements OnChanges {
 
   certifiedColumns = ['totalEligibleAfterControl'];
-  columnsAvailable = ['type', 'flatRate', 'totalEligibleBudget', 'previouslyReported', 'currentReport', 'totalEligibleAfterControl', 'totalReportedSoFar', 'totalReportedSoFarPercentage', 'remainingBudget'];
+  columnsAvailable = ['type', 'flatRate', 'totalEligibleBudget', 'previouslyReported', 'currentReport', 'totalEligibleAfterControl',
+    'totalReportedSoFar', 'totalReportedSoFarPercentage', 'remainingBudget', 'previouslyValidated'];
   displayedColumns = this.columnsAvailable;
 
   @Input()

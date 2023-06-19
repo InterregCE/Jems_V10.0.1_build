@@ -10,4 +10,5 @@ data class PartnerReportLumpSum(
     val previouslyReported: BigDecimal,
     val previouslyReportedParked: BigDecimal,
     val previouslyPaid: BigDecimal,
+    val previouslyValidated: BigDecimal,
 )

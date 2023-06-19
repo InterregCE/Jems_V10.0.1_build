@@ -24,6 +24,7 @@ private fun emptyLine() = ExpenditureUnitCostBreakdownLine(
     currentReport = BigDecimal.ZERO,
     currentReportReIncluded = BigDecimal.ZERO,
     totalEligibleAfterControl = BigDecimal.ZERO,
+    previouslyValidated = BigDecimal.ZERO,
 )
 
 fun List<ExpenditureUnitCostBreakdownLine>.sumUp() =
@@ -34,6 +35,7 @@ fun List<ExpenditureUnitCostBreakdownLine>.sumUp() =
         resultingTotalLine.totalEligibleAfterControl += unitCost.totalEligibleAfterControl
         resultingTotalLine.previouslyReportedParked += unitCost.previouslyReportedParked
         resultingTotalLine.currentReportReIncluded += unitCost.currentReportReIncluded
+        resultingTotalLine.previouslyValidated += unitCost.previouslyValidated
         return@fold resultingTotalLine
     }
 

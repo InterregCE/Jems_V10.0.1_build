@@ -82,6 +82,15 @@
         <mat-footer-cell *matFooterCellDef class="text-right">{{ breakdown.total.totalReportedSoFarPercentage | asMoney }}&nbsp;%</mat-footer-cell>
     </ng-container>
 
+    <ng-container matColumnDef="previouslyValidated">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{ 'project.application.partner.report.financial.previouslyValidated' | translate }}</span>
+            <jems-context-info infoPosition="right" infoText="{{ 'project.application.partner.report.financial.previouslyValidated.tooltip' | translate}}"></jems-context-info>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let line" class="text-right">{{ line.previouslyValidated | asMoney }}</mat-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right">{{ breakdown.total.previouslyValidated | asMoney }}</mat-footer-cell>
+    </ng-container>
+
     <ng-container matColumnDef="remainingBudget">
         <mat-header-cell *matHeaderCellDef class="text-right">
             <span jemsText maxLines="2">{{ 'project.application.partner.report.financial.remaining.budget' | translate }}</span>

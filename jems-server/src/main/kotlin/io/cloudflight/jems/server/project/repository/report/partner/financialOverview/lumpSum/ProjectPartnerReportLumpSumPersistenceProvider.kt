@@ -33,6 +33,7 @@ class ProjectPartnerReportLumpSumPersistenceProvider(
                 previouslyReportedParked = it.previouslyReportedParked,
                 currentReportReIncluded = it.currentReIncluded,
                 totalEligibleAfterControl = it.totalEligibleAfterControl,
+                previouslyValidated = it.previouslyValidated,
             ) }
 
     @Transactional(readOnly = true)
