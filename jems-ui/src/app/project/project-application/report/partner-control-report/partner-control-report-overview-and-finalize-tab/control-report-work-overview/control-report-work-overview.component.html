@@ -1,4 +1,4 @@
-<mat-table jemsNoWidthLimit
+<mat-table jemsNoWidthLimit multiTemplateDataRows
            [jemsTableConfig]="[{minInRem: 8, maxInRem: 14}, {minInRem: 8, maxInRem: 14}, {minInRem: 8, maxInRem: 13}, {minInRem: 8, maxInRem: 14}, {minInRem: 8, maxInRem: 14}, {minInRem: 8, maxInRem: 14}, {minInRem: 8, maxInRem: 13}]"
            [dataSource]="dataSource">
     <ng-container matColumnDef="declaredByPartner">
@@ -55,6 +55,20 @@
         <mat-cell *matCellDef="let element"> {{element.eligibleAfterControlPercentage | asMoney}}%</mat-cell>
     </ng-container>
 
+    <ng-container matColumnDef="declaredByPartnerFlatRateSum">
+        <td mat-cell *matCellDef="let element">
+            <div>
+                <mat-icon class="sub-row-indent">subdirectory_arrow_right</mat-icon>
+                <span>{{'project.application.partner.report.control.tab.overviewAndFinalize.total.declared.partner.flat.rate.sum' | translate}}</span>
+                <div class="flex-center">
+                    {{element.declaredByPartnerFlatRateSum | asMoney}}
+                </div>
+            </div>
+        </td>
+    </ng-container>
+
+
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
     <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+    <tr mat-row *matRowDef="let row; columns: ['declaredByPartnerFlatRateSum']"></tr>
 </mat-table>

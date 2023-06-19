@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { ControlWorkOverviewDTO, ProjectPartnerReportUnitCostDTO } from '@cat/api';
-import { MatTableDataSource } from '@angular/material/table';
+import {ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
+import {ControlWorkOverviewDTO} from '@cat/api';
+import {MatTableDataSource} from '@angular/material/table';
 
 @Component({
   selector: 'jems-control-report-work-overview',
