@@ -11,7 +11,7 @@ import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceStatusDTO
 import io.cloudflight.jems.api.project.dto.checklist.CreateChecklistInstanceDTO
 import io.cloudflight.jems.server.common.toResponseEntity
 import io.cloudflight.jems.server.programme.controller.checklist.toModel
-import io.cloudflight.jems.server.programme.service.checklist.delete.DeleteChecklistInstanceInteractor
+import io.cloudflight.jems.server.project.service.checklist.delete.DeleteChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.consolidateInstance.ConsolidateChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.create.CreateChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.export.ExportChecklistInstanceInteractor
@@ -67,8 +67,8 @@ class ChecklistInstanceController(
     override fun updateChecklistDescription(checklistId: Long, description: String?): ChecklistInstanceDTO =
         updateInteractor.updateDescription(checklistId, description).toDto()
 
-    override fun deleteChecklistInstance(checklistId: Long) =
-        deleteInteractor.deleteById(checklistId)
+    override fun deleteChecklistInstance(checklistId: Long, projectId: Long) =
+        deleteInteractor.deleteById(checklistId, projectId)
 
     override fun exportChecklistInstance(
         projectId: Long,

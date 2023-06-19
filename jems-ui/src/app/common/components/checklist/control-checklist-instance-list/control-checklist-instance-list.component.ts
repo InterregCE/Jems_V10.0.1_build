@@ -262,14 +262,13 @@ export class ControlChecklistInstanceListComponent implements OnInit {
     combineLatest([
       this.pageStore.availablePlugins$,
       this.languageStore.currentSystemLanguage$,
-      this.projectStore.projectId$,
     ]).pipe(
       take(1),
-      map(([plugins, systemLanguage, projectId]) => {
+      map(([plugins, systemLanguage]) => {
         const plugin = plugins[0];
         if (plugin?.type) {
           const url = `/api/controlChecklist/byPartnerId/${this.partnerId}/byReportId/${this.relatedId}/export/${checklistId}?exportLanguage=${systemLanguage}&pluginKey=${plugin.key}`;
-          this.downloadService.download(url, 'checklist-export.pdf').pipe().subscribe();
+          this.downloadService.download(url, 'checklist-export.pdf').subscribe();
         }
       })).subscribe();
   }

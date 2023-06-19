@@ -8,11 +8,19 @@ import io.cloudflight.jems.server.programme.repository.checklist.ProgrammeCheckl
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistComponentInstance
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
-import io.cloudflight.jems.server.programme.service.checklist.model.metadata.*
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineInstanceMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleInstanceMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.TextInputMetadata
 import io.cloudflight.jems.server.project.entity.checklist.ChecklistComponentInstanceEntity
 import io.cloudflight.jems.server.project.entity.checklist.ChecklistComponentInstanceId
 import io.cloudflight.jems.server.project.entity.checklist.ChecklistInstanceEntity
-import io.cloudflight.jems.server.project.service.checklist.model.*
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstance
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceSearchRequest
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
+import io.cloudflight.jems.server.project.service.checklist.model.CreateChecklistInstanceModel
 import io.cloudflight.jems.server.project.service.checklist.model.metadata.TextInputInstanceMetadata
 import io.cloudflight.jems.server.project.service.checklist.update.UpdateChecklistInstanceStatusNotFinishedException
 import io.cloudflight.jems.server.user.entity.UserEntity
@@ -251,19 +259,21 @@ class ChecklistInstancePersistenceTest : UnitTest() {
     fun `find checklists`() {
 
         val predicate = slot<Predicate>()
-        persistence.findChecklistInstances(ChecklistInstanceSearchRequest(
-            relatedToId = 1,
-            type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
-            status = ChecklistInstanceStatus.FINISHED,
-            visible = true,
-        ))
+        persistence.findChecklistInstances(
+            ChecklistInstanceSearchRequest(
+                relatedToId = 1,
+                type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
+                status = ChecklistInstanceStatus.FINISHED,
+                visible = true,
+            )
+        )
 
         verify { repository.findAll(capture(predicate)) }
         assertThat(predicate.captured.toString()).isEqualTo(
             "checklistInstanceEntity.relatedToId = 1 " +
-                "&& checklistInstanceEntity.programmeChecklist.type = APPLICATION_FORM_ASSESSMENT " +
-                "&& checklistInstanceEntity.status = FINISHED " +
-                "&& checklistInstanceEntity.visible = true"
+                    "&& checklistInstanceEntity.programmeChecklist.type = APPLICATION_FORM_ASSESSMENT " +
+                    "&& checklistInstanceEntity.status = FINISHED " +
+                    "&& checklistInstanceEntity.visible = true"
         )
     }
 
@@ -303,9 +313,9 @@ class ChecklistInstancePersistenceTest : UnitTest() {
 
     @Test
     fun getChecklistDetail() {
-        val optionalCheckList = Optional.of(checkListEntity())
-        every { repository.findById(ID) } returns optionalCheckList
-        assertThat(persistence.getChecklistDetail(ID))
+        every { repository.findByIdAndProgrammeChecklistTypeAndRelatedToId(ID, ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT, 3L) } returns
+                checkListEntity()
+        assertThat(persistence.getChecklistDetail(ID, ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT, 3L))
             .usingRecursiveComparison()
             .isEqualTo(checkLisDetail)
     }

@@ -1,19 +1,6 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Input,
-  OnInit,
-  TemplateRef,
-  ViewChild
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
-import {
-  ChecklistInstanceDTO,
-  ChecklistInstanceSelectionDTO,
-  IdNamePairDTO, PluginInfoDTO, PluginService,
-  ProgrammeChecklistDetailDTO,
-  UserRoleCreateDTO,
-} from '@cat/api';
+import {ChecklistInstanceDTO, ChecklistInstanceSelectionDTO, IdNamePairDTO, ProgrammeChecklistDetailDTO, UserRoleCreateDTO,} from '@cat/api';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {catchError, filter, finalize, map, switchMap, take, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
@@ -32,9 +19,9 @@ import {ChecklistUtilsComponent} from '@common/components/checklist/checklist-ut
 import {AlertMessage} from '@common/components/file-list/file-list-table/alert-message';
 import {Alert} from '@common/components/forms/alert';
 import {ChecklistItem} from '@common/components/checklist/checklist-item';
-import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 import {LanguageStore} from '@common/services/language-store.service';
 import {DownloadService} from '@common/services/download.service';
+import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
 @Component({
   selector: 'jems-contracting-checklist-instance-list',
@@ -223,7 +210,7 @@ export class ContractingChecklistInstanceListComponent implements OnInit {
         const plugin = plugins[0];
         if (plugin?.type) {
           const url = `/api/contractingChecklist/byProjectId/${this.projectId}/export/${checklistId}?exportLanguage=${systemLanguage}&pluginKey=${plugin.key}`;
-          this.downloadService.download(url, 'checklist-export.pdf').pipe().subscribe();
+          this.downloadService.download(url, 'checklist-export.pdf').subscribe();
         }
       })).subscribe();
   }

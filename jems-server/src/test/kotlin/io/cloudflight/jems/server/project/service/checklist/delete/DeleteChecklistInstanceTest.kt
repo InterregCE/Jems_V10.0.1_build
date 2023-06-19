@@ -6,8 +6,6 @@ import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.programme.service.checklist.delete.DeleteChecklistInstance
-import io.cloudflight.jems.server.programme.service.checklist.delete.DeleteChecklistInstanceStatusNotAllowedException
 import io.cloudflight.jems.server.project.service.checklist.getInstances.GetChecklistInstanceDetailNotFoundException
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistComponentInstance
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
@@ -66,7 +64,7 @@ internal class DeleteChecklistInstanceTest : UnitTest() {
                 ProgrammeChecklistComponentType.OPTIONS_TOGGLE,
                 2,
                 OptionsToggleMetadata("What option do you choose", "yes", "no", "maybe", ""),
-                OptionsToggleInstanceMetadata("yes","test")
+                OptionsToggleInstanceMetadata("yes", "test")
             ),
             ChecklistComponentInstance(
                 4L,
@@ -116,11 +114,11 @@ internal class DeleteChecklistInstanceTest : UnitTest() {
     fun `delete checklist - OK`() {
         every { userAuthorization.getUser() } returns user
         every { securityService.getUserIdOrThrow() } returns user.id
-        every { persistence.getChecklistDetail(CHECKLIST_ID) } returns checkLisDetail
+        every { persistence.getChecklistDetail(CHECKLIST_ID, ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT, 1L) } returns checkLisDetail
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
         every { persistence.deleteById(CHECKLIST_ID) } answers {}
-        deleteChecklistInstance.deleteById(CHECKLIST_ID)
+        deleteChecklistInstance.deleteById(CHECKLIST_ID, 1L)
         verify { persistence.deleteById(CHECKLIST_ID) }
 
         verify(exactly = 1) { auditPublisher.publishEvent(capture(auditSlot)) }
@@ -135,15 +133,17 @@ internal class DeleteChecklistInstanceTest : UnitTest() {
 
     @Test
     fun `delete checklist - not existing`() {
-        every { persistence.getChecklistDetail(-1) } throws GetChecklistInstanceDetailNotFoundException()
+        every { persistence.getChecklistDetail(-1L, ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT, -2L) } throws
+                GetChecklistInstanceDetailNotFoundException()
         assertThrows<GetChecklistInstanceDetailNotFoundException> {
-            deleteChecklistInstance.deleteById(-1L)
+            deleteChecklistInstance.deleteById(-1L, -2L)
         }
     }
 
     @Test
     fun `delete checklist - is already in FINISHED status`() {
-        every { persistence.getChecklistDetail(CHECKLIST_ID) } returns checkLisDetailWithFinishStatus
-        assertThrows<DeleteChecklistInstanceStatusNotAllowedException> { deleteChecklistInstance.deleteById(CHECKLIST_ID) }
+        every { persistence.getChecklistDetail(CHECKLIST_ID, ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT, 1L) } returns
+                checkLisDetailWithFinishStatus
+        assertThrows<DeleteChecklistInstanceStatusNotAllowedException> { deleteChecklistInstance.deleteById(CHECKLIST_ID, 1L) }
     }
 }

@@ -19,13 +19,12 @@ annotation class CanUpdateChecklistAssessment
 annotation class CanDeleteChecklistAssessment
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectChecklistAuthorization" +
-    ".hasPermissionOrAsController('ProjectAssessmentChecklistSelectedRetrieve', #relatedToId)   ")
+@PreAuthorize("@projectChecklistAuthorization.hasPermissionOrAsController('ProjectAssessmentChecklistSelectedRetrieve', #relatedToId)")
 annotation class CanViewChecklistAssessmentSelection
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@authorization.hasPermission('ProjectAssessmentChecklistSelectedRetrieve', #relatedToId) || " +
-    "@authorization.hasPermission('ProjectAssessmentChecklistUpdate', #relatedToId)")
+@PreAuthorize("@projectChecklistAuthorization.hasPermissionOrAsController('ProjectAssessmentChecklistSelectedRetrieve', #relatedToId) || " +
+    "@projectChecklistAuthorization.hasPermissionOrAsController('ProjectAssessmentChecklistUpdate', #relatedToId)")
 annotation class CanViewChecklistAssessment
 
 @Retention(AnnotationRetention.RUNTIME)
