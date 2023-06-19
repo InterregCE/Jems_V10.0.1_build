@@ -69,8 +69,6 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProvider(
                 it.declaredAmountAfterSubmission = newById[it.id]!!.declaredAmountAfterSubmission
             }
             // clear verification
-            it.partOfSample = false
-            it.partOfSampleLocked = false
             it.certifiedAmount = it.declaredAmountAfterSubmission ?: BigDecimal.ZERO
             it.deductedAmount = BigDecimal.ZERO
             it.typologyOfErrorId = null
