@@ -87,8 +87,8 @@ export class ChecklistInstanceListStore {
       );
   }
 
-  deleteChecklistInstance(id: number): Observable<void> {
-    return this.checklistInstanceService.deleteChecklistInstance(id)
+  deleteChecklistInstance(id: number, projectId: number): Observable<void> {
+    return this.checklistInstanceService.deleteChecklistInstance(id, projectId)
       .pipe(
         take(1),
         tap(() => this.listChanged$.next()),

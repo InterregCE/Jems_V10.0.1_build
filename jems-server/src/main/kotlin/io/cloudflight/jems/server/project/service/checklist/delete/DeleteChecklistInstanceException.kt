@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.programme.service.checklist.delete
+package io.cloudflight.jems.server.project.service.checklist.delete
 
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.common.exception.ApplicationException

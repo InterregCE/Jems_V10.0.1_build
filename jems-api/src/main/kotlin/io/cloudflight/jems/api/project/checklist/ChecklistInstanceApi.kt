@@ -78,8 +78,8 @@ interface ChecklistInstanceApi {
     fun updateChecklistDescription(@PathVariable checklistId: Long, @RequestBody description: String?): ChecklistInstanceDTO
 
     @ApiOperation("Delete a checklist instance")
-    @DeleteMapping("$ENDPOINT_API_CHECKLIST_INSTANCE/{checklistId}")
-    fun deleteChecklistInstance(@PathVariable checklistId: Long)
+    @DeleteMapping("$ENDPOINT_API_CHECKLIST_INSTANCE/{projectId}/{checklistId}")
+    fun deleteChecklistInstance(@PathVariable checklistId: Long, @PathVariable projectId: Long)
 
     @ApiOperation("Export checklist instance")
     @GetMapping("$ENDPOINT_API_CHECKLIST_INSTANCE/export/{projectId}/{checklistId}")

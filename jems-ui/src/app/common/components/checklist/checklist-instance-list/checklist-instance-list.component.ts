@@ -64,6 +64,9 @@ export class ChecklistInstanceListComponent implements OnInit {
   @ViewChild('consolidateCell', {static: true})
   consolidateCell: TemplateRef<any>;
 
+  @ViewChild('downloadCell', {static: true})
+  downloadCell: TemplateRef<any>;
+
   @ViewChild('visibleCell', {static: true})
   visibleCell: TemplateRef<any>;
 
@@ -130,7 +133,7 @@ export class ChecklistInstanceListComponent implements OnInit {
       .pipe(
         take(1),
         filter(answer => !!answer),
-        switchMap(() => this.pageStore.deleteChecklistInstance(checklist.id)),
+        switchMap(() => this.pageStore.deleteChecklistInstance(checklist.id, this.relatedId)),
         tap(() => {
           this.checklistInstances = this.checklistInstances.filter(c => c.id !== checklist.id);
           this.selectedChecklists = this.selectedChecklists.filter(c => c.id !== checklist.id);
@@ -197,6 +200,12 @@ export class ChecklistInstanceListComponent implements OnInit {
           sortProperty: 'description',
           customCellTemplate: this.descriptionCell,
         },
+        {
+          displayedColumn: 'checklists.instance.export',
+          customCellTemplate: this.downloadCell,
+          columnWidth: ColumnWidth.SmallColumn,
+          clickable: false
+        },
         ...selection ? [{
           displayedColumn: 'checklists.instance.visible',
           customCellTemplate: this.visibleCell,
@@ -209,7 +218,7 @@ export class ChecklistInstanceListComponent implements OnInit {
           customCellTemplate: this.actionsCell,
           columnWidth: ColumnWidth.SmallColumn,
           clickable: false
-        }]
+        }],
       ]
     });
   }
@@ -336,7 +345,7 @@ export class ChecklistInstanceListComponent implements OnInit {
         const plugin = plugins[0];
         if (plugin?.type) {
           const url = `/api/checklist/instance/export/${projectId}/${checklistId}?exportLanguage=${systemLanguage}&pluginKey=${plugin.key}`;
-          this.downloadService.download(url, 'checklist-export.pdf').pipe().subscribe();
+          this.downloadService.download(url, 'checklist-export.pdf').subscribe();
         }
       })).subscribe();
   }

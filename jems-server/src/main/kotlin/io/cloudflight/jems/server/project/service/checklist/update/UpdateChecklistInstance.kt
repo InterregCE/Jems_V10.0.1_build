@@ -1,8 +1,7 @@
 package io.cloudflight.jems.server.project.service.checklist.update
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstance
-import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
+import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
 import io.cloudflight.jems.server.project.authorization.CanUpdateChecklistAssessment
 import io.cloudflight.jems.server.project.authorization.CanUpdateChecklistAssessmentSelection
 import io.cloudflight.jems.server.project.authorization.ProjectChecklistAuthorization
@@ -10,6 +9,8 @@ import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePer
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstanceValidator
 import io.cloudflight.jems.server.project.service.checklist.checklistSelectionUpdate
 import io.cloudflight.jems.server.project.service.checklist.checklistStatusChanged
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstance
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
 import io.cloudflight.jems.server.user.service.authorization.UserAuthorization
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
@@ -30,7 +31,8 @@ class UpdateChecklistInstance(
     @Transactional
     @ExceptionWrapper(UpdateChecklistInstanceException::class)
     override fun update(checklist: ChecklistInstanceDetail): ChecklistInstanceDetail {
-        val existing = persistence.getChecklistDetail(checklist.id)
+        val existing = persistence.getChecklistDetail(
+            id = checklist.id, type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT, relatedToId = checklist.relatedToId!!)
 
         if (existing.status != checklist.status)
             throw UpdateChecklistInstanceStatusNotAllowedException()
@@ -47,13 +49,13 @@ class UpdateChecklistInstance(
         val existing = persistence.getChecklistSummary(checklistId)
 
         val consolidatorCanReturnToDraft = existing.status == ChecklistInstanceStatus.FINISHED
-            && status == ChecklistInstanceStatus.DRAFT
-            && this.userAuthorization.hasPermissionForProject(UserRolePermission.ProjectAssessmentChecklistConsolidate, existing.relatedToId!!)
-            && !existing.consolidated
+                && status == ChecklistInstanceStatus.DRAFT
+                && this.userAuthorization.hasPermissionForProject(UserRolePermission.ProjectAssessmentChecklistConsolidate, existing.relatedToId!!)
+                && !existing.consolidated
 
         val assessorCanFinish = existing.status == ChecklistInstanceStatus.DRAFT
-            && status == ChecklistInstanceStatus.FINISHED
-            && userAuthorization.getUser().email == existing.creatorEmail
+                && status == ChecklistInstanceStatus.FINISHED
+                && userAuthorization.getUser().email == existing.creatorEmail
 
         if (!consolidatorCanReturnToDraft && !assessorCanFinish)
             throw UpdateChecklistInstanceStatusNotAllowedException()
@@ -72,7 +74,7 @@ class UpdateChecklistInstance(
     @CanUpdateChecklistAssessmentSelection
     @Transactional
     @ExceptionWrapper(UpdateChecklistInstanceException::class)
-    override fun updateSelection(selection: Map<Long,  Boolean>) =
+    override fun updateSelection(selection: Map<Long, Boolean>) =
         persistence.updateSelection(selection).let {
             auditPublisher.publishEvent(
                 checklistSelectionUpdate(

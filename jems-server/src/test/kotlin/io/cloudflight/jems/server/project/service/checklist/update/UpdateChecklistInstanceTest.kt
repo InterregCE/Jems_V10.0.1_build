@@ -218,14 +218,17 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
         generalValidator = GeneralValidatorDefaultImpl()
         checklistInstanceValidator = mockk()
         checklistInstanceValidator = ChecklistInstanceValidator(generalValidator)
-        updateChecklistInstance = UpdateChecklistInstance(persistence, auditPublisher,
-            checklistInstanceValidator, userAuthorization, checklistAuthorization)
+        updateChecklistInstance = UpdateChecklistInstance(
+            persistence, auditPublisher,
+            checklistInstanceValidator, userAuthorization, checklistAuthorization
+        )
     }
 
     @Test
     fun `update - successfully`() {
         every { persistence.update(checkLisDetail) } returns checkLisDetail
-        every { persistence.getChecklistDetail(checkLisDetail.id) } returns checklistInstanceDetail(ChecklistInstanceStatus.DRAFT)
+        every { persistence.getChecklistDetail(checkLisDetail.id, ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT, RELATED_TO_ID) } returns
+                checklistInstanceDetail(ChecklistInstanceStatus.DRAFT)
         Assertions.assertThat(updateChecklistInstance.update(checkLisDetail))
             .isEqualTo(checkLisDetail)
     }
@@ -255,7 +258,7 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
 
     @Test
     fun `update - checkLisDetail is already in FINISHED status`() {
-        every { persistence.getChecklistDetail(CHECKLIST_ID) } returns checkLisDetail
+        every { persistence.getChecklistDetail(CHECKLIST_ID, ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT, RELATED_TO_ID) } returns checkLisDetail
         assertThrows<UpdateChecklistInstanceStatusNotAllowedException> {
             updateChecklistInstance.update(checklistInstanceDetail(ChecklistInstanceStatus.FINISHED))
         }
@@ -283,14 +286,18 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
 
     @Test
     fun `update - text input component max length exception`() {
-        every { persistence.getChecklistDetail(checkLisDetailWithErrorOnTextInput.id) } returns checkLisDetailWithErrorOnTextInput
+        every {
+            persistence.getChecklistDetail(checkLisDetailWithErrorOnTextInput.id, ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT, RELATED_TO_ID)
+        } returns checkLisDetailWithErrorOnTextInput
 
         assertThrows<AppInputValidationException> { updateChecklistInstance.update(checkLisDetailWithErrorOnTextInput) }
     }
 
     @Test
     fun `update - options toggle justification field max length exception`() {
-        every { persistence.getChecklistDetail(checkLisDetailWithErrorOnOptionsToggle.id) } returns checkLisDetailWithErrorOnOptionsToggle
+        every {
+            persistence.getChecklistDetail(checkLisDetailWithErrorOnOptionsToggle.id, ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT, RELATED_TO_ID)
+        } returns checkLisDetailWithErrorOnOptionsToggle
         every { persistence.update(checkLisDetailWithErrorOnOptionsToggle) } returns checkLisDetailWithErrorOnOptionsToggle
 
         assertThrows<AppInputValidationException> { updateChecklistInstance.update(checkLisDetailWithErrorOnOptionsToggle) }
@@ -298,7 +305,8 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
 
     @Test
     fun `update - score justification field max length exception`() {
-        every { persistence.getChecklistDetail(checkLisDetailWithErrorOnScore.id) } returns checkLisDetailWithErrorOnScore
+        every { persistence.getChecklistDetail(checkLisDetailWithErrorOnScore.id, ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT, RELATED_TO_ID) } returns
+                checkLisDetailWithErrorOnScore
 
         assertThrows<AppInputValidationException> { updateChecklistInstance.update(checkLisDetailWithErrorOnScore) }
     }
@@ -319,7 +327,7 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
                 action = AuditAction.ASSESSMENT_CHECKLIST_VISIBILITY_CHANGE,
                 project = AuditProject(id = checklist.relatedToId.toString()),
                 description = "[" + checklist.id + "] [" + checklist.type + "]" +
-                    " [" + checklist.name + "]" + " set to visibility true"
+                        " [" + checklist.name + "]" + " set to visibility true"
             )
         )
     }
@@ -340,7 +348,7 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
                 action = AuditAction.ASSESSMENT_CHECKLIST_VISIBILITY_CHANGE,
                 project = AuditProject(id = checklist.relatedToId.toString()),
                 description = "[" + checklist.id + "] [" + checklist.type + "]" +
-                    " [" + checklist.name + "]" + " set to visibility false"
+                        " [" + checklist.name + "]" + " set to visibility false"
             )
         )
     }

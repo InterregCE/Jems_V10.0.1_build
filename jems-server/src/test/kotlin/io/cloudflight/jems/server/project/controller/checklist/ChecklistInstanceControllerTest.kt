@@ -19,7 +19,6 @@ import io.cloudflight.jems.api.project.dto.checklist.metadata.TextInputInstanceM
 import io.cloudflight.jems.plugin.contract.export.ExportResult
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.toResponseEntity
-import io.cloudflight.jems.server.programme.service.checklist.delete.DeleteChecklistInstanceInteractor
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistComponentInstance
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
@@ -30,6 +29,7 @@ import io.cloudflight.jems.server.programme.service.checklist.model.metadata.Opt
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.TextInputMetadata
 import io.cloudflight.jems.server.project.service.checklist.consolidateInstance.ConsolidateChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.create.CreateChecklistInstanceInteractor
+import io.cloudflight.jems.server.project.service.checklist.delete.DeleteChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.export.ExportChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.getDetail.GetChecklistInstanceDetailInteractor
 import io.cloudflight.jems.server.project.service.checklist.getInstances.GetChecklistInstancesInteractor
@@ -46,7 +46,6 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.just
-import io.mockk.mockk
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -326,8 +325,8 @@ class ChecklistInstanceControllerTest : UnitTest() {
 
     @Test
     fun `delete checklist`() {
-        every { deleteInteractor.deleteById(CHECKLIST_ID) } just Runs
-        assertDoesNotThrow { controller.deleteChecklistInstance(CHECKLIST_ID) }
+        every { deleteInteractor.deleteById(CHECKLIST_ID, RELATED_TO_ID) } just Runs
+        assertDoesNotThrow { controller.deleteChecklistInstance(CHECKLIST_ID, RELATED_TO_ID) }
     }
 
     @Test
