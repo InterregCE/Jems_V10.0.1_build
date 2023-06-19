@@ -64,12 +64,13 @@ fun ApplicationStatus.toNotificationType(prevStatus: ApplicationStatus): Notific
 
 fun NotificationType?.enforceIsProjectNotification() = if (this != null && isProjectNotification()) this else null
 
-fun ReportStatus.toNotificationType(): NotificationType? = when(this) {
-    Submitted -> PartnerReportSubmitted
-    InControl -> PartnerReportControlOngoing
-    Certified -> PartnerReportCertified
-    ReOpenCertified -> PartnerReportReOpenCertified
-    ReOpenSubmittedLast, ReOpenSubmittedLimited, ReOpenInControlLast, ReOpenInControlLimited -> PartnerReportReOpen
+fun ReportStatus.toNotificationType(previousReportStatus: ReportStatus): NotificationType? = when {
+    this == Submitted || (this == InControl && (previousReportStatus == ReOpenInControlLimited ||
+        previousReportStatus == ReOpenInControlLast)) -> PartnerReportSubmitted
+    this == InControl -> PartnerReportControlOngoing
+    this == Certified -> PartnerReportCertified
+    this == ReOpenCertified -> PartnerReportReOpenCertified
+    setOf(ReOpenSubmittedLast, ReOpenSubmittedLimited, ReOpenInControlLast, ReOpenInControlLimited).contains(this) -> PartnerReportReOpen
     else -> null
 }.enforceIsPartnerReportNotification()
 

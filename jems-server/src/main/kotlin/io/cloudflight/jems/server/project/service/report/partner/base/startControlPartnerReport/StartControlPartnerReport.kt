@@ -60,7 +60,7 @@ class StartControlPartnerReport(
             val projectId = partnerPersistence.getProjectIdForPartnerId(id = partnerId, it.version)
             val projectSummary = projectPersistence.getProjectSummary(projectId)
 
-            auditPublisher.publishEvent(PartnerReportStatusChanged(this, projectSummary, it))
+            auditPublisher.publishEvent(PartnerReportStatusChanged(this, projectSummary, it, report.status))
             auditPublisher.publishEvent(partnerReportStartedControl(this, projectId, it))
         }.status
     }

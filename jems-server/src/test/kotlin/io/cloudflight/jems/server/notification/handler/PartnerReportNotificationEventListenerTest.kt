@@ -76,10 +76,10 @@ class PartnerReportNotificationEventListenerTest : UnitTest() {
 
         val partnerReportSummary = partnerReportSummary(partnerReportStatus)
         listener.sendNotifications(
-            PartnerReportStatusChanged(mockk(), projectSummary(), partnerReportSummary)
+            PartnerReportStatusChanged(mockk(), projectSummary(), partnerReportSummary, mockk())
         )
 
-        verify(exactly = 1) { notificationProjectService.sendNotifications(partnerReportStatus.toNotificationType()!!, any()) }
+        verify(exactly = 1) { notificationProjectService.sendNotifications(partnerReportStatus.toNotificationType(mockk())!!, any()) }
         assertThat(slotVariable.captured).containsExactly(
             entry(NotificationVariable.ProjectId, PROJECT_ID),
             entry(NotificationVariable.ProjectIdentifier, "01"),
