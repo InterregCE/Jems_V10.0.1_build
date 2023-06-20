@@ -92,6 +92,14 @@ val DEFAULT_USER_INSPECT_PERMISSIONS =
                         viewPermissions = setOf(UserRolePermission.ProjectContractingPartnerView),
                         editPermissions = setOf(UserRolePermission.ProjectContractingPartnerEdit),
                         type = UserRolePermissionNodeType.HIDDEN_VIEW_EDIT,
+                        children = listOf(
+                            UserRolePermissionNode(
+                                name = "State aid",
+                                viewPermissions = setOf(UserRolePermission.ProjectContractingPartnerStateAidView),
+                                editPermissions = setOf(UserRolePermission.ProjectContractingPartnerStateAidEdit),
+                                type = UserRolePermissionNodeType.HIDDEN_VIEW_EDIT,
+                            )
+                        )
                     )
             )),
             UserRolePermissionNode(
@@ -234,18 +242,18 @@ val DEFAULT_TOP_NAVIGATION_PERMISSIONS =
                 type = UserRolePermissionNodeType.SECTION_HEADER,
                 children = listOf(
                     UserRolePermissionNode(
-                        name = "Notifications",
-                        viewPermissions = setOf(UserRolePermission.NotificationsRetrieve),
-                        type = UserRolePermissionNodeType.HIDDEN_VIEW,
-                    ),
-                    UserRolePermissionNode(
                         name = "My applications",
                         viewPermissions = setOf(UserRolePermission.ProjectsWithOwnershipRetrieve),
                         type = UserRolePermissionNodeType.HIDDEN_VIEW,
                     ),
                     UserRolePermissionNode(
-                        name = "Open calls",
+                        name = "Call list",
                         viewPermissions = setOf(UserRolePermission.CallPublishedRetrieve),
+                        type = UserRolePermissionNodeType.HIDDEN_VIEW,
+                    ),
+                    UserRolePermissionNode(
+                        name = "Notifications",
+                        viewPermissions = setOf(UserRolePermission.NotificationsRetrieve),
                         type = UserRolePermissionNodeType.HIDDEN_VIEW,
                     ),
                 )
@@ -282,9 +290,20 @@ val DEFAULT_TOP_NAVIGATION_PERMISSIONS =
             ),
             UserRolePermissionNode(
                 name = "Programme",
-                viewPermissions = setOf(UserRolePermission.ProgrammeSetupRetrieve),
-                editPermissions = setOf(UserRolePermission.ProgrammeSetupUpdate),
-                type = UserRolePermissionNodeType.HIDDEN_VIEW_EDIT,
+                type = UserRolePermissionNodeType.SECTION_HEADER,
+                children = listOf(
+                    UserRolePermissionNode(
+                        name = "Programme setup",
+                        viewPermissions = setOf(UserRolePermission.ProgrammeSetupRetrieve),
+                        editPermissions = setOf(UserRolePermission.ProgrammeSetupUpdate),
+                        type = UserRolePermissionNodeType.HIDDEN_VIEW_EDIT,
+                    ),
+                    UserRolePermissionNode(
+                        name = "Data export",
+                        viewPermissions = setOf(UserRolePermission.ProgrammeDataExportRetrieve),
+                        type = UserRolePermissionNodeType.HIDDEN_VIEW,
+                    )
+                )
             ),
             UserRolePermissionNode(
                 name = "Controller",
