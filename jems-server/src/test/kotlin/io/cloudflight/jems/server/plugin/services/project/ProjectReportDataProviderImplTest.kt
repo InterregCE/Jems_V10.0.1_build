@@ -222,7 +222,10 @@ class ProjectReportDataProviderImplTest : UnitTest() {
             leadPartnerNameInEnglish = "Lead Partner EN",
             createdAt = createdAt,
             firstSubmission = firstSubmission,
-            verificationDate = verificationDate
+            verificationDate = verificationDate,
+            totalEligibleAfterVerification = BigDecimal.ZERO,
+            amountRequested = BigDecimal.ZERO,
+            verificationEndDate = verificationDate
         )
 
         private val expectedReportData = ProjectReportData(

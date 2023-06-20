@@ -118,4 +118,11 @@ class ProjectReportPersistenceProvider(
     override fun exists(projectId: Long, reportId: Long): Boolean =
         projectReportRepository.existsByProjectIdAndId(projectId, reportId)
 
+    @Transactional
+    override fun startVerificationOnReportById(projectId: Long, reportId: Long) =
+        projectReportRepository.getByIdAndProjectId(id = reportId, projectId = projectId)
+            .apply {
+                status = ProjectReportStatus.InVerification
+            }.toSubmissionSummary()
+
 }

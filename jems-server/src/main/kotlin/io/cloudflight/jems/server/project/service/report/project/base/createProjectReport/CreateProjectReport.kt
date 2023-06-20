@@ -170,6 +170,9 @@ class CreateProjectReport(
         createdAt = ZonedDateTime.now(),
         firstSubmission = null,
         verificationDate = null,
+        verificationEndDate = null,
+        amountRequested = BigDecimal.ZERO,
+        totalEligibleAfterVerification = BigDecimal.ZERO
     )
 
     private fun List<ProjectResult>.toCreateModel(

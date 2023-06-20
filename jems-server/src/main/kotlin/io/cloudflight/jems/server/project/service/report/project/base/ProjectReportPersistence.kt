@@ -47,4 +47,6 @@ interface ProjectReportPersistence {
     fun decreaseNewerReportNumbersIfAllOpen(projectId: Long, number: Int)
 
     fun exists(projectId: Long, reportId: Long): Boolean
+
+    fun startVerificationOnReportById(projectId: Long, reportId: Long): ProjectReportSubmissionSummary
 }

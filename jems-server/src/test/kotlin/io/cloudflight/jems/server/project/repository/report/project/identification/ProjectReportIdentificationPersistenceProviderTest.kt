@@ -71,6 +71,9 @@ internal class ProjectReportIdentificationPersistenceProviderTest: UnitTest() {
             createdAt = ZonedDateTime.now().minusWeeks(1),
             firstSubmission = ZonedDateTime.now().minusYears(1),
             verificationDate = null,
+            verificationEndDate = null,
+            amountRequested = BigDecimal.ZERO,
+            totalEligibleAfterVerification = BigDecimal.ZERO
         )
 
         private val identificationUpdate = ProjectReportIdentificationUpdate(

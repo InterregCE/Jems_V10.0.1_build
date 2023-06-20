@@ -3,15 +3,14 @@ package io.cloudflight.jems.server.project.service.report.model.project
 enum class ProjectReportStatus {
     Draft,
     Submitted,
-    Verified,
-    Paid;
+    InVerification;
 
     fun isClosed() = SUBMITTED_STATUSES.contains(this)
 
     fun isOpen() = !isClosed()
 
     companion object {
-        val SUBMITTED_STATUSES = setOf(Submitted, Verified, Paid)
+        val SUBMITTED_STATUSES = setOf(Submitted, InVerification)
     }
 
 }

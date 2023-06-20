@@ -12,8 +12,7 @@ export class ProjectReportStatusComponent {
   statusesOrdered = [
     ProjectReportSummaryDTO.StatusEnum.Draft,
     ProjectReportSummaryDTO.StatusEnum.Submitted,
-    ProjectReportSummaryDTO.StatusEnum.Verified,
-    ProjectReportSummaryDTO.StatusEnum.Paid,
+    ProjectReportSummaryDTO.StatusEnum.InVerification,
   ];
 
   @Input()
@@ -28,10 +27,8 @@ export class ProjectReportStatusComponent {
         return 'donut_large';
       case 'Submitted':
         return 'send';
-      case 'Verified':
+      case 'InVerification':
         return 'checklist';
-      case 'Paid':
-        return 'workspace_premium';
       default:
         return 'help';
     }

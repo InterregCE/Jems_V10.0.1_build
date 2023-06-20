@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.authorization
 import io.cloudflight.jems.server.authentication.authorization.Authorization
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import org.springframework.security.access.prepost.PreAuthorize
@@ -19,6 +20,10 @@ annotation class CanEditProjectReportNotSpecific
 @Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("@projectReportAuthorization.canViewReport(#projectId)")
 annotation class CanRetrieveProjectReport
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@projectReportAuthorization.canStartReportVerification(#projectId, #reportId)")
+annotation class CanStartProjectReportVerification
 
 @Component
 class ProjectReportAuthorization(
@@ -48,6 +53,12 @@ class ProjectReportAuthorization(
         val canCreatorView = isActiveUserIdEqualToOneOf(project.getUserIdsWithViewLevel())
 
         return canMonitorView || canCreatorView
+    }
+
+    fun canStartReportVerification(projectId: Long, reportId: Long): Boolean {
+        val report = reportPersistence.getReportById(projectId = projectId, reportId = reportId)
+        return report.status === ProjectReportStatus.Submitted
+                && hasPermission(UserRolePermission.ProjectReportingVerificationProjectEdit, projectId)
     }
 
 }

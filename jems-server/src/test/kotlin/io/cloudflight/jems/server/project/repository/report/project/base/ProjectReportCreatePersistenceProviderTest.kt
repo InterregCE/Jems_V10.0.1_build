@@ -118,6 +118,9 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
             createdAt = LAST_WEEK,
             firstSubmission = LAST_YEAR,
             verificationDate = null,
+            verificationEndDate = null,
+            amountRequested = BigDecimal.ZERO,
+            totalEligibleAfterVerification = BigDecimal.ZERO
         )
 
         private fun workPackages() = listOf(
