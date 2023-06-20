@@ -1,9 +1,11 @@
-package io.cloudflight.jems.server.payments.repository
+package io.cloudflight.jems.server.payments.repository.advance
 
+import com.querydsl.core.types.dsl.BooleanOperation
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.createTestCallEntity
+import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.common.file.repository.JemsFileMetadataRepository
@@ -12,9 +14,8 @@ import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.payments.entity.AdvancePaymentEntity
 import io.cloudflight.jems.server.payments.model.advance.AdvancePayment
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
+import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSearchRequest
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentUpdate
-import io.cloudflight.jems.server.payments.repository.advance.AdvancePaymentRepository
-import io.cloudflight.jems.server.payments.repository.advance.PaymentAdvancePersistenceProvider
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
@@ -44,6 +45,7 @@ import io.cloudflight.jems.server.user.repository.user.UserRepository
 import io.cloudflight.jems.server.user.repository.user.toUserSummary
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.toOutputUser
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -52,17 +54,19 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
+import java.time.LocalDate
 import java.time.ZonedDateTime
 
-class AdvancePaymentPersistenceProviderTest: UnitTest() {
+class PaymentAdvancePersistenceProviderTest: UnitTest() {
 
-    @RelaxedMockK
-    lateinit var advancePaymentRepository: AdvancePaymentRepository
+    @MockK
+    private lateinit var advancePaymentRepository: AdvancePaymentRepository
     @RelaxedMockK
     lateinit var projectVersion: ProjectVersionPersistenceProvider
     @RelaxedMockK
@@ -84,10 +88,10 @@ class AdvancePaymentPersistenceProviderTest: UnitTest() {
     lateinit var fileRepository: JemsProjectFileService
 
     @InjectMockKs
-    lateinit var advancePaymentPersistenceProvider: PaymentAdvancePersistenceProvider
+    private lateinit var advancePaymentPersistenceProvider: PaymentAdvancePersistenceProvider
 
     companion object {
-        private val currentDate = ZonedDateTime.now().toLocalDate()
+        private val currentDate = LocalDate.of(2023, 6, 19)
         private const val projectId = 1L
         private const val version = "2.0"
         private const val paymentId = 2L
@@ -157,7 +161,7 @@ class AdvancePaymentPersistenceProviderTest: UnitTest() {
             legalStatusId = 3L
         )
 
-        private val advancePaymentEntity = AdvancePaymentEntity(
+        private fun advancePaymentEntity() = AdvancePaymentEntity(
             id = paymentId,
             projectId = projectId,
             projectVersion = version,
@@ -276,42 +280,70 @@ class AdvancePaymentPersistenceProviderTest: UnitTest() {
         )
     }
 
+    @BeforeEach
+    fun resetMocks() {
+        clearMocks(advancePaymentRepository)
+    }
+
     @Test
     fun list() {
-        every {
-            advancePaymentRepository.findAll(Pageable.unpaged())
-        } returns PageImpl(mutableListOf(advancePaymentEntity))
-        every { projectPersistence.getProject(projectId, version) } returns project
-        every {
-            partnerPersistence.getById(partnerId, version)
-        } returns partnerDetail
-        every {
-            partnerCoFinancingPersistence.getCoFinancingAndContributions(partnerId, version)
-        } returns coFinancingContribution
-        every {
-            partnerCoFinancingPersistence.getSpfCoFinancingAndContributions(partnerId, version)
-        } returns coFinancingContributionSpf
+        val filters = AdvancePaymentSearchRequest(
+            paymentId = 855L,
+            projectIdentifiers = setOf("472", "INT00473", ""),
+            projectAcronym = "acr-filter",
+            fundIds = setOf(511L, 512L),
+            amountFrom = BigDecimal.ONE,
+            amountTo = BigDecimal.TEN,
+            dateFrom = currentDate.minusDays(1),
+            dateTo = currentDate.plusDays(1),
+            authorized = true,
+            confirmed = false,
+        )
+        val slotPredicate = slot<BooleanOperation>()
+        every { advancePaymentRepository.findAll(capture(slotPredicate), Pageable.unpaged()) } returns
+                PageImpl(mutableListOf(advancePaymentEntity()))
 
-        assertThat(advancePaymentPersistenceProvider.list(Pageable.unpaged()).content)
+        assertThat(advancePaymentPersistenceProvider.list(Pageable.unpaged(), filters))
             .containsAll(listOf(advancePayment))
+        assertThat(slotPredicate.captured.toString()).isEqualTo(
+            "advancePaymentEntity.id = 855 && " +
+                    "(advancePaymentEntity.projectId = 472 || advancePaymentEntity.projectCustomIdentifier in [472, INT00473]) && " +
+                    "containsIc(advancePaymentEntity.projectAcronym,acr-filter) && " +
+                    "advancePaymentEntity.programmeFund.id in [511, 512] && " +
+                    "advancePaymentEntity.amountPaid >= 1 && " +
+                    "advancePaymentEntity.amountPaid <= 10 && " +
+                    "advancePaymentEntity.paymentDate >= 2023-06-18 && " +
+                    "advancePaymentEntity.paymentDate <= 2023-06-20 && " +
+                    "advancePaymentEntity.isPaymentAuthorizedInfo = true && " +
+                    "advancePaymentEntity.isPaymentConfirmed = false"
+        )
+    }
+
+    @Test
+    fun existsById() {
+        every { advancePaymentRepository.existsById(7L) } returns true
+        every { advancePaymentRepository.existsById(-1L) } returns false
+        assertThat(advancePaymentPersistenceProvider.existsById(7L)).isTrue()
+        assertThat(advancePaymentPersistenceProvider.existsById(-1L)).isFalse()
+    }
+
+    @Test
+    fun getPaymentsByProjectId() {
+        every { advancePaymentRepository.findAllByProjectId(86L) } returns listOf(advancePaymentEntity())
+        assertThat(advancePaymentPersistenceProvider.getPaymentsByProjectId(86L)).containsExactly(advancePayment)
+    }
+
+    @Test
+    fun deleteByPaymentId() {
+        every { advancePaymentRepository.deleteById(25L) } answers { }
+        advancePaymentPersistenceProvider.deleteByPaymentId(25L)
+        verify(exactly = 1) { advancePaymentRepository.deleteById(25L) }
     }
 
     @Test
     fun getPaymentDetail() {
-        every { advancePaymentRepository.getById(paymentId) } returns advancePaymentEntity
-        every { projectPersistence.getProject(projectId, version) } returns project
-        every {
-            partnerPersistence.getById(partnerId, version)
-        } returns partnerDetail
-        every {
-            partnerCoFinancingPersistence.getCoFinancingAndContributions(partnerId, version)
-        } returns coFinancingContribution
-        every {
-            partnerCoFinancingPersistence.getSpfCoFinancingAndContributions(partnerId, version)
-        } returns coFinancingContributionSpf
-
-        assertThat(advancePaymentPersistenceProvider.getPaymentDetail(paymentId))
-            .isEqualTo(advancePaymentDetail)
+        every { advancePaymentRepository.getById(paymentId) } returns advancePaymentEntity()
+        assertThat(advancePaymentPersistenceProvider.getPaymentDetail(paymentId)).isEqualTo(advancePaymentDetail)
     }
 
     @Test
@@ -323,7 +355,7 @@ class AdvancePaymentPersistenceProviderTest: UnitTest() {
         every { programmeFundRepository.getById(fund.id) } returns ProgrammeFundEntity(fund.id, true)
         every { userRepository.getById(userEntity.id) } returns userEntity
         every { userRepository.getById(userEntity2.id) } returns userEntity2
-        every { advancePaymentRepository.save( any() ) } returns advancePaymentEntity
+        every { advancePaymentRepository.save(any()) } returnsArgument 0
 
         assertThat(advancePaymentPersistenceProvider.updatePaymentDetail(
             AdvancePaymentUpdate(
@@ -341,7 +373,7 @@ class AdvancePaymentPersistenceProviderTest: UnitTest() {
             paymentConfirmedUserId = paymentConfirmedUser.id,
             paymentConfirmedDate = currentDate.minusDays(2)
         )
-        )).isEqualTo(advancePaymentDetail)
+        )).isEqualTo(advancePaymentDetail.copy(id = 0L))
     }
 
     @Test
@@ -352,7 +384,8 @@ class AdvancePaymentPersistenceProviderTest: UnitTest() {
         every { programmeFundRepository.getById(fund.id) } returns ProgrammeFundEntity(fund.id, true)
         every { userRepository.getById(userEntity.id) } returns userEntity
         every { userRepository.getById(userEntity2.id) } returns userEntity2
-        every { advancePaymentRepository.getById(paymentId) } returns advancePaymentEntity
+        every { advancePaymentRepository.getById(paymentId) } returns advancePaymentEntity()
+        every { advancePaymentRepository.save(any()) } returnsArgument 0
 
         assertThat(advancePaymentPersistenceProvider.updatePaymentDetail(advancePaymentToPersist(2L)))
             .isEqualTo(advancePaymentDetail)
@@ -368,17 +401,17 @@ class AdvancePaymentPersistenceProviderTest: UnitTest() {
         } returns coFinancingContribution
         every { userRepository.getById(userEntity.id) } returns userEntity
         every { userRepository.getById(userEntity2.id) } returns userEntity2
-        every { advancePaymentRepository.getById(paymentId) } returns advancePaymentEntity
+        every { advancePaymentRepository.getById(paymentId) } returns advancePaymentEntity()
 
         val toBeSavedSlot = slot<AdvancePaymentEntity>()
-        every { advancePaymentRepository.save(capture(toBeSavedSlot)) } returns advancePaymentEntity
+        every { advancePaymentRepository.save(capture(toBeSavedSlot)) } returnsArgument 0
 
         assertThat(advancePaymentPersistenceProvider.updatePaymentDetail(
             advancePaymentToPersist(2L).copy(
                 programmeFundId = null,
                 partnerContributionId = contribSourceId
             )
-        )).isEqualTo(advancePaymentDetail)
+        )).isEqualTo(advancePaymentDetail.copy(programmeFund = null, partnerContribution = IdNamePair(5L, "contribution")))
         assertThat(toBeSavedSlot.captured.programmeFund).isNull()
         assertThat(toBeSavedSlot.captured.partnerContributionId).isEqualTo(contribSourceId)
         assertThat(toBeSavedSlot.captured.partnerContributionName).isEqualTo("contribution")
@@ -392,10 +425,10 @@ class AdvancePaymentPersistenceProviderTest: UnitTest() {
         every { partnerCoFinancingPersistence.getSpfCoFinancingAndContributions(partnerId, "2.0") } returns coFinancingContributionSpf
         every { userRepository.getById(userEntity.id) } returns userEntity
         every { userRepository.getById(userEntity2.id) } returns userEntity2
-        every { advancePaymentRepository.getById(paymentId) } returns advancePaymentEntity
+        every { advancePaymentRepository.getById(paymentId) } returns advancePaymentEntity()
 
         val toBeSavedSlot = slot<AdvancePaymentEntity>()
-        every { advancePaymentRepository.save(capture(toBeSavedSlot)) } returns advancePaymentEntity
+        every { advancePaymentRepository.save(capture(toBeSavedSlot)) } returnsArgument 0
 
         assertThat(advancePaymentPersistenceProvider.updatePaymentDetail(
             advancePaymentToPersist(2L).copy(
@@ -403,7 +436,7 @@ class AdvancePaymentPersistenceProviderTest: UnitTest() {
                 partnerContributionId = null,
                 partnerContributionSpfId = contribSourceId
             )
-        )).isEqualTo(advancePaymentDetail)
+        )).isEqualTo(advancePaymentDetail.copy(programmeFund = null, partnerContributionSpf = IdNamePair(5L, "name")))
         assertThat(toBeSavedSlot.captured.programmeFund).isNull()
         assertThat(toBeSavedSlot.captured.partnerContributionId).isNull()
         assertThat(toBeSavedSlot.captured.partnerContributionName).isNull()

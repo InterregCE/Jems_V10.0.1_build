@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.payments.service
 import io.cloudflight.jems.api.common.dto.IdNamePairDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentDetailDTO
+import io.cloudflight.jems.api.payments.dto.AdvancePaymentSearchRequestDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentUpdateDTO
 import io.cloudflight.jems.api.payments.dto.PaymentDetailDTO
 import io.cloudflight.jems.api.payments.dto.PaymentPartnerDTO
@@ -13,6 +14,7 @@ import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.payments.model.advance.AdvancePayment
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
+import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSearchRequest
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentUpdate
 import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
 import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
@@ -20,6 +22,8 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallme
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallmentUpdate
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
 import io.cloudflight.jems.server.programme.controller.fund.toDto
+import org.mapstruct.Mapper
+import org.mapstruct.factory.Mappers
 
 fun PaymentToProject.toDTO() = PaymentToProjectDTO(
     id = id,
@@ -150,3 +154,12 @@ fun AdvancePayment.toDTO() = AdvancePaymentDTO(
     paymentDate = paymentDate,
     amountSettled = amountSettled
 )
+
+private val mapper = Mappers.getMapper(PaymentMapper::class.java)
+
+fun AdvancePaymentSearchRequestDTO.toModel(): AdvancePaymentSearchRequest = mapper.map(this)
+
+@Mapper
+interface PaymentMapper {
+    fun map(dto: AdvancePaymentSearchRequestDTO): AdvancePaymentSearchRequest
+}

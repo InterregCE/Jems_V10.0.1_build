@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.payments.controller
 
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentDetailDTO
+import io.cloudflight.jems.api.payments.dto.AdvancePaymentSearchRequestDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentUpdateDTO
 import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
@@ -9,6 +10,7 @@ import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.payments.model.advance.AdvancePayment
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
+import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSearchRequest
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentUpdate
 import io.cloudflight.jems.server.payments.service.advance.deleteAdvancePayment.DeleteAdvancePaymentInteractor
 import io.cloudflight.jems.server.payments.service.advance.getAdvancePaymentDetail.GetAdvancePaymentDetailInteractor
@@ -19,18 +21,20 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRo
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
+import java.time.LocalDate
 import java.time.ZonedDateTime
 
 class PaymentAdvanceControllerTest : UnitTest() {
 
     companion object {
-        private val currentDate = ZonedDateTime.now().toLocalDate()
+        private val currentDate = LocalDate.now()
         private const val paymentId = 1L
         private const val projectId = 2L
         private const val partnerId = 3L
@@ -133,10 +137,49 @@ class PaymentAdvanceControllerTest : UnitTest() {
 
     @Test
     fun getAdvancePayments() {
-        every { getAdvancePayments.list(any()) } returns PageImpl(listOf(advancePayment))
+        val slotFilter = slot<AdvancePaymentSearchRequest>()
+        every { getAdvancePayments.list(any(), capture(slotFilter)) } returns PageImpl(listOf(advancePayment))
 
-        assertThat(controller.getAdvancePayments(Pageable.unpaged())).containsExactly(
-            advancePaymentDTO
+        val filter = AdvancePaymentSearchRequestDTO(
+            paymentId = 855L,
+            projectIdentifiers = setOf("472", "INT00473"),
+            projectAcronym = "acr-filter",
+            fundIds = setOf(511L, 512L),
+            amountFrom = BigDecimal.ONE,
+            amountTo = BigDecimal.TEN,
+            dateFrom = currentDate.minusDays(1),
+            dateTo = currentDate.plusDays(1),
+            authorized = true,
+            confirmed = false,
+        )
+
+        assertThat(controller.getAdvancePayments(Pageable.unpaged(), filter)).containsExactly(advancePaymentDTO)
+        assertThat(slotFilter.captured).isEqualTo(
+            AdvancePaymentSearchRequest(
+                paymentId = 855L,
+                projectIdentifiers = setOf("472", "INT00473"),
+                projectAcronym = "acr-filter",
+                fundIds = setOf(511L, 512L),
+                amountFrom = BigDecimal.ONE,
+                amountTo = BigDecimal.TEN,
+                dateFrom = currentDate.minusDays(1),
+                dateTo = currentDate.plusDays(1),
+                authorized = true,
+                confirmed = false,
+            )
+        )
+    }
+
+    @Test
+    fun `getAdvancePayments - empty filter`() {
+        val slotFilter = slot<AdvancePaymentSearchRequest>()
+        every { getAdvancePayments.list(any(), capture(slotFilter)) } returns PageImpl(emptyList())
+
+        assertThat(controller.getAdvancePayments(Pageable.unpaged(), AdvancePaymentSearchRequestDTO())).isEmpty()
+        assertThat(slotFilter.captured).isEqualTo(
+            AdvancePaymentSearchRequest(paymentId = null, projectIdentifiers = emptySet(), projectAcronym = null,
+                fundIds = emptySet(), amountFrom = null, amountTo = null, dateFrom = null, dateTo = null,
+                authorized = null, confirmed = null)
         )
     }
 
