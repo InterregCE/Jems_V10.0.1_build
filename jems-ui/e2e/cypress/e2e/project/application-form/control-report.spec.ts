@@ -96,6 +96,7 @@ context('Control report tests', () => {
           cy.contains('Start control').should('be.enabled').click();
           cy.contains('Confirm').should('be.visible').click();
 
+          cy.contains('Control Identification').should('be.visible').click(); // TODO remove after bug MP2-3689 is fixed
           cy.contains('Project acronym').next().should('contain', application.identification.acronym);
           cy.contains('Name of partner organisation in English language').next().should('contain', 'Name in English to be changed');
           cy.contains('Name of partner organisation in original language').next().should('contain', 'Original name to be changed');
@@ -115,6 +116,7 @@ context('Control report tests', () => {
             cy.loginByRequest(testData.controllerUserEdit.email);
             cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId1}/reports/${this.reportId}/controlReport/identificationTab`, {failOnStatusCode: false});
 
+            cy.contains('Control Identification').should('be.visible').click(); // TODO remove after bug MP2-3689 is fixed
             cy.contains('Project acronym').next().should('contain', application.identification.acronym);
             cy.contains('Application Form version').next().should('contain', '1.0');
             cy.contains('Name of partner organisation in English language').next().should('contain', 'Name in English to be changed');
@@ -137,6 +139,7 @@ context('Control report tests', () => {
             cy.contains('Start control').should('be.enabled').click();
             cy.contains('Confirm').should('be.visible').click();
 
+            cy.contains('Control Identification').should('be.visible').click(); // TODO remove after bug MP2-3689 is fixed
             cy.contains('Project acronym').next().should('contain', application.identification.acronym);
             cy.contains('Application Form version').next().should('contain', '2.0');
             cy.contains('Name of partner organisation in English language').next().should('contain', 'Updated name in english');
