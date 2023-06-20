@@ -146,7 +146,7 @@ it('TB-1054 Application with all data maxed out can be created and exported', ()
                 {percentage: 10, fundType: 'PartnerContribution'}
               ],
               partnerContributions: [
-                {name: partner.details.abbreviation, status: 'Public', amount: 149100000, partner: true},
+                {name: partner.details.abbreviation, status: 'Public', amount: 249100999.97, partner: true},
                 {name: randomString.substring(0, 255), status: 'Public', amount: 100000, partner: false},
                 {name: randomString.substring(0, 255), status: 'Public', amount: 100000, partner: false},
                 {name: randomString.substring(0, 255), status: 'Public', amount: 100000, partner: false},

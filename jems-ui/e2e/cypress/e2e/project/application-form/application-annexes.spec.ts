@@ -25,7 +25,7 @@ context('Application annexes tests', () => {
           cy.loginByRequest(user.admin.email);
           cy.visit(`/app/project/detail/${applicationId}/privileges`, {failOnStatusCode: false});
           cy.get('mat-expansion-panel#collaborators-panel').within(() => {
-            cy.contains('button', '+').click();
+            cy.contains('button', 'add').click();
             cy.get('div.mat-form-field-flex').last().type(testData.applicationCollaborator.email);
           })
           cy.contains('button', 'Save changes').click();
