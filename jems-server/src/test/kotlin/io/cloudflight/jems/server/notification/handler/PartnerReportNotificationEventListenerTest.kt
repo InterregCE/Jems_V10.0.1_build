@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.notification.handler
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationVariable
 import io.cloudflight.jems.server.notification.inApp.service.project.GlobalProjectNotificationServiceInteractor
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -18,9 +19,11 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.EnumSource
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 import java.time.ZonedDateTime
 import java.util.Map.entry
+import java.util.stream.Stream
 
 class PartnerReportNotificationEventListenerTest : UnitTest() {
 
@@ -55,6 +58,21 @@ class PartnerReportNotificationEventListenerTest : UnitTest() {
             partnerRole = ProjectPartnerRole.LEAD_PARTNER,
             partnerId = PARTNER_ID,
         )
+
+        @JvmStatic
+        fun parameterizedTestValues(): Stream<Arguments> = Stream.of(
+            Arguments.of(ReportStatus.Submitted, ReportStatus.Draft, NotificationType.PartnerReportSubmitted),
+            Arguments.of(ReportStatus.ReOpenSubmittedLast, ReportStatus.Submitted, NotificationType.PartnerReportReOpen),
+            Arguments.of(ReportStatus.Submitted, ReportStatus.ReOpenSubmittedLimited, NotificationType.PartnerReportSubmitted),
+            Arguments.of(ReportStatus.InControl, ReportStatus.Submitted, NotificationType.PartnerReportControlOngoing),
+            Arguments.of(ReportStatus.ReOpenInControlLast, ReportStatus.InControl, NotificationType.PartnerReportReOpen),
+            Arguments.of(ReportStatus.InControl, ReportStatus.ReOpenInControlLast, NotificationType.PartnerReportSubmitted),
+            Arguments.of(ReportStatus.Certified, ReportStatus.InControl, NotificationType.PartnerReportCertified),
+            Arguments.of(ReportStatus.ReOpenCertified, ReportStatus.Certified, NotificationType.PartnerReportReOpenCertified),
+            Arguments.of(ReportStatus.ReOpenInControlLast, ReportStatus.ReOpenCertified, NotificationType.PartnerReportReOpen),
+            Arguments.of(ReportStatus.ReOpenCertified, ReportStatus.ReOpenInControlLast, NotificationType.PartnerReportSubmitted),
+            Arguments.of(ReportStatus.Certified, ReportStatus.ReOpenCertified, NotificationType.PartnerReportCertified),
+        )!!
     }
 
     @MockK
@@ -68,18 +86,24 @@ class PartnerReportNotificationEventListenerTest : UnitTest() {
         clearAllMocks()
     }
 
-    @ParameterizedTest(name = "send PartnerReport - {0} notification")
-    @EnumSource(value = ReportStatus::class, names = ["Draft"], mode = EnumSource.Mode.EXCLUDE)
-    fun sendPartnerReportNotification(partnerReportStatus: ReportStatus) {
+    @ParameterizedTest
+    @MethodSource("parameterizedTestValues")
+    fun testPartnerReportNotification(
+        currentStatus: ReportStatus,
+        previousStatus: ReportStatus,
+        expectedNotificationType: NotificationType
+    ) {
         val slotVariable = slot<Map<NotificationVariable, Any>>()
         every { notificationProjectService.sendNotifications(any(), capture(slotVariable)) } answers { }
 
-        val partnerReportSummary = partnerReportSummary(partnerReportStatus)
+        val partnerReportSummary = partnerReportSummary(currentStatus)
         listener.sendNotifications(
-            PartnerReportStatusChanged(mockk(), projectSummary(), partnerReportSummary)
+            PartnerReportStatusChanged(mockk(), projectSummary(), partnerReportSummary, previousStatus)
         )
+        val notificationType = currentStatus.toNotificationType(previousStatus)!!
+        verify(exactly = 1) { notificationProjectService.sendNotifications(notificationType, any()) }
 
-        verify(exactly = 1) { notificationProjectService.sendNotifications(partnerReportStatus.toNotificationType()!!, any()) }
+        assertThat(notificationType).isEqualTo(expectedNotificationType)
         assertThat(slotVariable.captured).containsExactly(
             entry(NotificationVariable.ProjectId, PROJECT_ID),
             entry(NotificationVariable.ProjectIdentifier, "01"),
@@ -92,4 +116,5 @@ class PartnerReportNotificationEventListenerTest : UnitTest() {
             entry(NotificationVariable.PartnerReportNumber, 1),
         )
     }
+
 }

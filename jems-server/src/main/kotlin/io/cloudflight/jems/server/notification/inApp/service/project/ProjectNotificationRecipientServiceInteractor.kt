@@ -5,12 +5,23 @@ import io.cloudflight.jems.server.user.service.model.UserEmailNotification
 
 interface ProjectNotificationRecipientServiceInteractor {
 
-    fun getEmailsForProjectNotification(
+    fun getEmailsForProjectManagersAndAssignedUsers(
         notificationConfig: ProjectNotificationConfiguration,
         projectId: Long,
     ): Map<String, UserEmailNotification>
 
-    fun getEmailsForPartnerNotification(
+    fun getEmailsForPartners(
+        notificationConfig: ProjectNotificationConfiguration,
+        projectId: Long,
+    ): Map<String, UserEmailNotification>
+
+    fun getEmailsForSpecificPartner(
+        notificationConfig: ProjectNotificationConfiguration,
+        projectId: Long,
+        partnerId: Long,
+    ): Map<String, UserEmailNotification>
+
+    fun getEmailsForPartnerControllers(
         notificationConfig: ProjectNotificationConfiguration,
         partnerId: Long,
     ): Map<String, UserEmailNotification>

@@ -95,7 +95,7 @@ class SubmitProjectPartnerReport(
             val projectId = partnerPersistence.getProjectIdForPartnerId(id = partnerId, partnerReportSummary.version)
             val projectSummary = projectPersistence.getProjectSummary(projectId)
 
-            auditPublisher.publishEvent(PartnerReportStatusChanged(this, projectSummary, partnerReportSummary))
+            auditPublisher.publishEvent(PartnerReportStatusChanged(this, projectSummary, partnerReportSummary, report.status))
             auditPublisher.publishEvent(
                 partnerReportSubmitted(
                     context = this,

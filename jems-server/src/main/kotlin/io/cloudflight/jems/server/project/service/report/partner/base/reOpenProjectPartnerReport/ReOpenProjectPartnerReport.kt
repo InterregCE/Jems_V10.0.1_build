@@ -43,7 +43,7 @@ class ReOpenProjectPartnerReport(
             val projectId = partnerPersistence.getProjectIdForPartnerId(id = partnerId, it.version)
             val projectSummary = projectPersistence.getProjectSummary(projectId)
 
-            auditPublisher.publishEvent(PartnerReportStatusChanged(this, projectSummary, it))
+            auditPublisher.publishEvent(PartnerReportStatusChanged(this, projectSummary, it, reportToBeReOpen.status))
             auditPublisher.publishEvent(partnerReportReOpened(this, projectId, it))
         }.status
     }

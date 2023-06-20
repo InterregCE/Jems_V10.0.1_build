@@ -4,13 +4,15 @@ import io.cloudflight.jems.server.notification.inApp.service.model.NotificationV
 import io.cloudflight.jems.server.notification.inApp.service.project.GlobalProjectNotificationServiceInteractor
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 
 data class PartnerReportStatusChanged(
     val context: Any,
     val projectSummary: ProjectSummary,
-    val partnerReportSummary: ProjectPartnerReportSubmissionSummary
+    val partnerReportSummary: ProjectPartnerReportSubmissionSummary,
+    val previousReportStatus: ReportStatus
 )
 
 @Service
@@ -28,7 +30,7 @@ data class PartnerReportNotificationEventListener(
             )
     }
 
-    private fun PartnerReportStatusChanged.type() = partnerReportSummary.status.toNotificationType()
+    private fun PartnerReportStatusChanged.type() = partnerReportSummary.status.toNotificationType(previousReportStatus)
 
     private fun PartnerReportStatusChanged.partnerReportVariables() = mapOf(
         NotificationVariable.ProjectId to projectSummary.id,

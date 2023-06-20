@@ -37,7 +37,7 @@ class ReOpenControlPartnerReport(
             partnerId, reportId, ReportStatus.ReOpenCertified, lastControlReopening = ZonedDateTime.now()
         ).also {
             val projectSummary = projectPersistence.getProjectSummary(projectId)
-            auditPublisher.publishEvent(PartnerReportStatusChanged(this, projectSummary, it))
+            auditPublisher.publishEvent(PartnerReportStatusChanged(this, projectSummary, it, reportControlToReOpen.status))
             auditPublisher.publishEvent(partnerReportControlReOpened(this, projectId, it))
         }.status
     }

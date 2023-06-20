@@ -20,7 +20,7 @@ import java.time.ZonedDateTime
 
 @Service
 class GlobalProjectNotificationService(
-    private val projectNotificationRecipientServiceInteractor: ProjectNotificationRecipientServiceInteractor,
+    private val recipientsService: ProjectNotificationRecipientServiceInteractor,
     private val projectPersistence: ProjectPersistence,
     private val callPersistence: CallPersistence,
     private val callNotificationConfigPersistence: CallNotificationConfigurationsPersistence,
@@ -31,9 +31,8 @@ class GlobalProjectNotificationService(
 
     @Transactional
     override fun sendNotifications(type: NotificationType, variables: Map<NotificationVariable, Any>) = when {
-        type.isProjectNotification() -> sendProjectNotification(type, variables)
+        type.isProjectNotification() || type.isProjectReportNotification() -> sendProjectNotification(type, variables)
         type.isPartnerReportNotification() -> sendPartnerReportNotification(type, variables)
-        type.isProjectReportNotification() -> sendProjectReportNotification(type, variables)
         else -> Unit
     }
 
@@ -43,7 +42,8 @@ class GlobalProjectNotificationService(
         val projectId = variables[NotificationVariable.ProjectId] as Long
         val notificationConfig = getNotificationConfiguration(type, projectId) ?: return
 
-        val emailsToNotify = projectNotificationRecipientServiceInteractor.getEmailsForProjectNotification(notificationConfig, projectId)
+        val emailsToNotify = recipientsService.getEmailsForProjectManagersAndAssignedUsers(notificationConfig, projectId)
+            .plus(recipientsService.getEmailsForPartners(notificationConfig, projectId))
 
         sendInAppAndEmails(notificationConfig, emailsToNotify, variables)
     }
@@ -55,19 +55,9 @@ class GlobalProjectNotificationService(
         val notificationConfig = getNotificationConfiguration(type, projectId) ?: return
 
         val partnerId = variables[NotificationVariable.PartnerId] as Long
-        val emailsToNotify = projectNotificationRecipientServiceInteractor.getEmailsForProjectNotification(notificationConfig, projectId)
-            .plus(projectNotificationRecipientServiceInteractor.getEmailsForPartnerNotification(notificationConfig, partnerId))
-
-        sendInAppAndEmails(notificationConfig, emailsToNotify, variables)
-    }
-
-    fun sendProjectReportNotification(type: NotificationType, variables: Map<NotificationVariable, Any>) {
-        validateVariables(variables, NotificationVariable.projectNotificationVariables)
-
-        val projectId = variables[NotificationVariable.ProjectId] as Long
-        val notificationConfig = getNotificationConfiguration(type, projectId) ?: return
-
-        val emailsToNotify = projectNotificationRecipientServiceInteractor.getEmailsForProjectNotification(notificationConfig, projectId)
+        val emailsToNotify = recipientsService.getEmailsForProjectManagersAndAssignedUsers(notificationConfig, projectId)
+            .plus(recipientsService.getEmailsForSpecificPartner(notificationConfig, projectId, partnerId))
+            .plus(recipientsService.getEmailsForPartnerControllers(notificationConfig, partnerId))
 
         sendInAppAndEmails(notificationConfig, emailsToNotify, variables)
     }
