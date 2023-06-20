@@ -121,8 +121,7 @@ import org.springframework.data.domain.PageRequest
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
-import java.util.UUID
-import java.util.stream.Stream
+import java.util.*
 
 internal class ReportPartnerDataProviderImplTest : UnitTest() {
 
@@ -424,6 +423,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
             totalReportedSoFar = BigDecimal.valueOf(5),
             totalReportedSoFarPercentage = BigDecimal.valueOf(6),
             remainingBudget = BigDecimal.valueOf(7),
+            previouslyValidated = BigDecimal.valueOf(92L, 1)
         )
 
         private val expectedCoFinancing = ExpenditureCoFinancingBreakdownData(
@@ -472,6 +472,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
             totalReportedSoFar = BigDecimal.valueOf(4),
             totalReportedSoFarPercentage = BigDecimal.valueOf(5),
             remainingBudget = BigDecimal.valueOf(6),
+            previouslyValidated = BigDecimal.valueOf(5)
         )
 
         private val expectedCostCategory = ExpenditureCostCategoryBreakdownData(
@@ -525,7 +526,8 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
             totalReportedSoFar = BigDecimal.valueOf(4),
             totalReportedSoFarPercentage = BigDecimal.valueOf(5),
             remainingBudget = BigDecimal.valueOf(6),
-            deactivated = false
+            deactivated = false,
+            previouslyValidated = BigDecimal.valueOf(6)
         )
 
         private val expectedInvestment = ExpenditureInvestmentBreakdownData(
@@ -570,6 +572,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
             totalReportedSoFar = BigDecimal.valueOf(5),
             totalReportedSoFarPercentage = BigDecimal.valueOf(6),
             remainingBudget = BigDecimal.valueOf(7),
+            previouslyValidated = BigDecimal.valueOf(7)
         )
 
         private val expectedLumpSum = ExpenditureLumpSumBreakdownData(
@@ -610,6 +613,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
             totalReportedSoFar = BigDecimal.valueOf(4),
             totalReportedSoFarPercentage = BigDecimal.valueOf(5),
             remainingBudget = BigDecimal.valueOf(6),
+            previouslyValidated = BigDecimal.valueOf(8)
         )
 
         private val expectedUnitCost = ExpenditureUnitCostBreakdownData(
