@@ -54,7 +54,8 @@ class ProjectPartnerReportUnitCostPersistenceProviderTest : UnitTest() {
             previouslyReported = BigDecimal.valueOf(30),
             currentParked = BigDecimal.ZERO,
             currentReIncluded = BigDecimal.ZERO,
-            previouslyReportedParked = BigDecimal.valueOf(50)
+            previouslyReportedParked = BigDecimal.valueOf(50),
+            previouslyValidated = BigDecimal.valueOf(5)
         )
 
         private fun expectedUnitCost(id: Long) = ExpenditureUnitCostBreakdownLine(
@@ -69,7 +70,8 @@ class ProjectPartnerReportUnitCostPersistenceProviderTest : UnitTest() {
             totalReportedSoFarPercentage = BigDecimal.ZERO,
             remainingBudget = BigDecimal.ZERO,
             currentReportReIncluded = BigDecimal.ZERO,
-            previouslyReportedParked = BigDecimal.valueOf(50)
+            previouslyReportedParked = BigDecimal.valueOf(50),
+            previouslyValidated = BigDecimal.valueOf(5)
         )
     }
 

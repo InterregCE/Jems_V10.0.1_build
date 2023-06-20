@@ -52,6 +52,7 @@ class ProjectPartnerReportFinancialOverviewControllerTest : UnitTest() {
             totalReportedSoFar = BigDecimal.ONE,
             totalReportedSoFarPercentage = BigDecimal.TEN,
             remainingBudget = BigDecimal.ZERO,
+            previouslyValidated = BigDecimal.valueOf(5)
         )
 
         private val dummyLineCoFin = ExpenditureCoFinancingBreakdownLine(
@@ -84,6 +85,7 @@ class ProjectPartnerReportFinancialOverviewControllerTest : UnitTest() {
             totalReportedSoFar = BigDecimal.ONE,
             totalReportedSoFarPercentage = BigDecimal.TEN,
             remainingBudget = BigDecimal.ZERO,
+            previouslyValidated = BigDecimal.valueOf(6)
         )
 
         private val dummyInvestmentLine = ExpenditureInvestmentBreakdownLine(
@@ -102,6 +104,7 @@ class ProjectPartnerReportFinancialOverviewControllerTest : UnitTest() {
             totalReportedSoFarPercentage = BigDecimal.TEN,
             remainingBudget = BigDecimal.ZERO,
             deactivated = false,
+            previouslyValidated = BigDecimal.valueOf(7)
         )
 
         private val dummyLineUnitCost = ExpenditureUnitCostBreakdownLine(
@@ -116,7 +119,8 @@ class ProjectPartnerReportFinancialOverviewControllerTest : UnitTest() {
             totalReportedSoFarPercentage = BigDecimal.TEN,
             remainingBudget = BigDecimal.ZERO,
             previouslyReportedParked = BigDecimal.ZERO,
-            currentReportReIncluded = BigDecimal.ZERO
+            currentReportReIncluded = BigDecimal.ZERO,
+            previouslyValidated = BigDecimal.valueOf(8)
         )
 
         private val dummyExpenditureCostCategory = ExpenditureCostCategoryBreakdown(
@@ -176,6 +180,7 @@ class ProjectPartnerReportFinancialOverviewControllerTest : UnitTest() {
             totalReportedSoFar = BigDecimal.ONE,
             totalReportedSoFarPercentage = BigDecimal.TEN,
             remainingBudget = BigDecimal.ZERO,
+            previouslyValidated = BigDecimal.valueOf(5)
         )
 
         private val expectedDummyLineCoFin = ExpenditureCoFinancingBreakdownLineDTO(
@@ -207,7 +212,9 @@ class ProjectPartnerReportFinancialOverviewControllerTest : UnitTest() {
             totalReportedSoFarPercentage = BigDecimal.TEN,
             remainingBudget = BigDecimal.ZERO,
             previouslyReportedParked = BigDecimal.valueOf(1000),
-            currentReportReIncluded = BigDecimal.valueOf(100)
+            currentReportReIncluded = BigDecimal.valueOf(100),
+            previouslyValidated = BigDecimal.valueOf(6)
+
         )
 
         private val expectedDummyInvestmentLine = ExpenditureInvestmentBreakdownLineDTO(
@@ -226,6 +233,7 @@ class ProjectPartnerReportFinancialOverviewControllerTest : UnitTest() {
             previouslyReportedParked = BigDecimal.valueOf(100),
             currentReportReIncluded = BigDecimal.ZERO,
             deactivated = false,
+            previouslyValidated = BigDecimal.valueOf(7)
         )
 
         private val expectedDummyLineUnitCost = ExpenditureUnitCostBreakdownLineDTO(
@@ -241,6 +249,7 @@ class ProjectPartnerReportFinancialOverviewControllerTest : UnitTest() {
             remainingBudget = BigDecimal.ZERO,
             previouslyReportedParked = BigDecimal.ZERO,
             currentReportReIncluded = BigDecimal.ZERO,
+            previouslyValidated = BigDecimal.valueOf(8)
         )
 
         private val expectedDummyExpenditureCostCategory = ExpenditureCostCategoryBreakdownDTO(

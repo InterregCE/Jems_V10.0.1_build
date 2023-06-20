@@ -37,6 +37,24 @@ interface ReportProjectPartnerExpenditureCostCategoryRepository :
 
     @Query("""
         SELECT new io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull(
+            COALESCE(SUM(report.staffTotalEligibleAfterControl), 0),
+            COALESCE(SUM(report.officeTotalEligibleAfterControl), 0),
+            COALESCE(SUM(report.travelTotalEligibleAfterControl), 0),
+            COALESCE(SUM(report.externalTotalEligibleAfterControl), 0),
+            COALESCE(SUM(report.equipmentTotalEligibleAfterControl), 0),
+            COALESCE(SUM(report.infrastructureTotalEligibleAfterControl), 0),
+            COALESCE(SUM(report.otherTotalEligibleAfterControl), 0),
+            COALESCE(SUM(report.lumpSumTotalEligibleAfterControl), 0),
+            COALESCE(SUM(report.unitCostTotalEligibleAfterControl), 0),
+            COALESCE(SUM(report.sumTotalEligibleAfterControl), 0)
+        )
+        FROM #{#entityName} report
+        WHERE report.reportEntity.id IN :reportIds
+    """)
+    fun findCumulativeTotalsForReportIds(reportIds: Set<Long>): BudgetCostsCalculationResultFull
+
+    @Query("""
+        SELECT new io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull(
             COALESCE(SUM(report.staffCurrentParked), 0),
             COALESCE(SUM(report.officeCurrentParked), 0),
             COALESCE(SUM(report.travelCurrentParked), 0),

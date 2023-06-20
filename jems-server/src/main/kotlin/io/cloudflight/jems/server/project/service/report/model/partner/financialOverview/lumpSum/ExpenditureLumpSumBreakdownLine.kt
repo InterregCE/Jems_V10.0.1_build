@@ -20,4 +20,5 @@ data class ExpenditureLumpSumBreakdownLine(
     override var totalReportedSoFar: BigDecimal = BigDecimal.ZERO,
     override var totalReportedSoFarPercentage: BigDecimal = BigDecimal.ZERO,
     override var remainingBudget: BigDecimal = BigDecimal.ZERO,
+    var previouslyValidated: BigDecimal,
 ) : BreakdownLine

@@ -114,6 +114,17 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProviderTest : UnitT
             lumpSumCurrentReIncluded = BigDecimal.valueOf(77),
             unitCostCurrentReIncluded = BigDecimal.valueOf(78),
             sumCurrentReIncluded = BigDecimal.valueOf(79),
+
+            staffPreviouslyValidated = BigDecimal.valueOf(80),
+            officePreviouslyValidated = BigDecimal.valueOf(81),
+            travelPreviouslyValidated = BigDecimal.valueOf(82),
+            externalPreviouslyValidated = BigDecimal.valueOf(83),
+            equipmentPreviouslyValidated = BigDecimal.valueOf(84),
+            infrastructurePreviouslyValidated = BigDecimal.valueOf(85),
+            otherPreviouslyValidated = BigDecimal.valueOf(86),
+            lumpSumPreviouslyValidated = BigDecimal.valueOf(87),
+            unitCostPreviouslyValidated = BigDecimal.valueOf(88),
+            sumPreviouslyValidated = BigDecimal.valueOf(89),
         )
 
         private val expenditure = ReportExpenditureCostCategory(
@@ -197,6 +208,18 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProviderTest : UnitT
                 unitCost = BigDecimal.valueOf(38),
                 sum = BigDecimal.valueOf(39),
             ),
+            previouslyValidated = BudgetCostsCalculationResultFull(
+                staff = BigDecimal.valueOf(80),
+                office = BigDecimal.valueOf(81),
+                travel = BigDecimal.valueOf(82),
+                external = BigDecimal.valueOf(83),
+                equipment = BigDecimal.valueOf(84),
+                infrastructure = BigDecimal.valueOf(85),
+                other = BigDecimal.valueOf(86),
+                lumpSum = BigDecimal.valueOf(87),
+                unitCost = BigDecimal.valueOf(88),
+                sum = BigDecimal.valueOf(89),
+            ),
             previouslyReportedParked = BudgetCostsCalculationResultFull(
                 staff = BigDecimal.valueOf(50),
                 office = BigDecimal.valueOf(51),
@@ -239,7 +262,7 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProviderTest : UnitT
         )
 
         private val expenditurePreviouslyReportedWithParked = ExpenditureCostCategoryPreviouslyReportedWithParked(
-            BudgetCostsCalculationResultFull(
+            previouslyReported = BudgetCostsCalculationResultFull(
                 staff = BigDecimal.valueOf(100),
                 office = BigDecimal.valueOf(101),
                 travel = BigDecimal.valueOf(102),
@@ -251,7 +274,7 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProviderTest : UnitT
                 unitCost = BigDecimal.valueOf(108),
                 sum = BigDecimal.valueOf(109),
             ),
-            BudgetCostsCalculationResultFull(
+            previouslyReportedParked = BudgetCostsCalculationResultFull(
                 staff = BigDecimal.valueOf(110),
                 office = BigDecimal.valueOf(111),
                 travel = BigDecimal.valueOf(112),
@@ -262,6 +285,18 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProviderTest : UnitT
                 lumpSum = BigDecimal.valueOf(117),
                 unitCost = BigDecimal.valueOf(118),
                 sum = BigDecimal.valueOf(119),
+            ),
+            previouslyValidated = BudgetCostsCalculationResultFull(
+                staff = BigDecimal.valueOf(120),
+                office = BigDecimal.valueOf(121),
+                travel = BigDecimal.valueOf(122),
+                external = BigDecimal.valueOf(123),
+                equipment = BigDecimal.valueOf(124),
+                infrastructure = BigDecimal.valueOf(125),
+                other = BigDecimal.valueOf(126),
+                lumpSum = BigDecimal.valueOf(127),
+                unitCost = BigDecimal.valueOf(128),
+                sum = BigDecimal.valueOf(129),
             )
         )
 
@@ -315,7 +350,8 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProviderTest : UnitT
     fun getCostCategoriesCumulative() {
         every { repository.findCumulativeForReportIds(setOf(42L, 43L)) } returns expenditurePreviouslyReportedWithParked.previouslyReported
         every { repository.findParkedCumulativeForReportIds(setOf(42L, 43L)) } returns expenditurePreviouslyReportedWithParked.previouslyReportedParked
-        assertThat(persistence.getCostCategoriesCumulative(setOf(42L, 43L))).isEqualTo(expenditurePreviouslyReportedWithParked)
+        every { repository.findCumulativeTotalsForReportIds(setOf(42L)) } returns expenditurePreviouslyReportedWithParked.previouslyValidated
+        assertThat(persistence.getCostCategoriesCumulative(setOf(42L, 43L), setOf(42L))).isEqualTo(expenditurePreviouslyReportedWithParked)
     }
 
     @Test

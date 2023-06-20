@@ -178,6 +178,7 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
             currentReport = BigDecimal.valueOf(1000),
             currentReportReIncluded = BigDecimal.valueOf(1000),
             totalEligibleAfterControl = BigDecimal.valueOf(950),
+            previouslyValidated = BigDecimal.valueOf(5)
         )
 
         private fun contrib(
@@ -779,6 +780,7 @@ internal class GetReportExpenditureCoFinancingBreakdownCalculatorTest : UnitTest
             totalReportedSoFar = BigDecimal.valueOf(1_000_000_000_000_000_01L, 2),
             totalReportedSoFarPercentage = BigDecimal.valueOf(14_285_714_29L, 2),
             remainingBudget = BigDecimal.valueOf(-999_993_000_000_000_01L, 2),
+            previouslyValidated = BigDecimal.valueOf(5)
         )
         every { reportExpenditureCostCategoryCalculatorService.getSubmittedOrCalculateCurrent(PARTNER_ID, reportId = reportId) } returns currentCalculation
 

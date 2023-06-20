@@ -26,7 +26,8 @@ private fun emptyLine() = ExpenditureLumpSumBreakdownLine(
     currentReport = BigDecimal.ZERO,
     previouslyReportedParked = BigDecimal.ZERO,
     totalEligibleAfterControl = BigDecimal.ZERO,
-    currentReportReIncluded = BigDecimal.ZERO
+    currentReportReIncluded = BigDecimal.ZERO,
+    previouslyValidated = BigDecimal.ZERO,
 )
 
 fun List<ExpenditureLumpSumBreakdownLine>.sumUp() =
@@ -38,6 +39,7 @@ fun List<ExpenditureLumpSumBreakdownLine>.sumUp() =
         resultingTotalLine.totalEligibleAfterControl += lumpSum.totalEligibleAfterControl
         resultingTotalLine.previouslyReportedParked += lumpSum.previouslyReportedParked
         resultingTotalLine.currentReportReIncluded += lumpSum.currentReportReIncluded
+        resultingTotalLine.previouslyValidated += lumpSum.previouslyValidated
         return@fold resultingTotalLine
     }
 

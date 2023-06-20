@@ -86,6 +86,18 @@ fun ReportProjectPartnerExpenditureCostCategoryEntity.toModel() = ReportExpendit
         unitCost = unitCostPreviouslyReported,
         sum = sumPreviouslyReported,
     ),
+    previouslyValidated = BudgetCostsCalculationResultFull(
+        staff = staffPreviouslyValidated,
+        office = officePreviouslyValidated,
+        travel = travelPreviouslyValidated,
+        external = externalPreviouslyValidated,
+        equipment = equipmentPreviouslyValidated,
+        infrastructure = infrastructurePreviouslyValidated,
+        other = otherPreviouslyValidated,
+        lumpSum = lumpSumPreviouslyValidated,
+        unitCost = unitCostPreviouslyValidated,
+        sum = sumPreviouslyValidated,
+    ),
     previouslyReportedParked = BudgetCostsCalculationResultFull(
         staff = staffPreviouslyReportedParked,
         office = officePreviouslyReportedParked,

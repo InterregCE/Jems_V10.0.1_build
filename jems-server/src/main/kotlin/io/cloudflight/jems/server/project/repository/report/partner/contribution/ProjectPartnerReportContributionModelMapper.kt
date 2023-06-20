@@ -50,10 +50,11 @@ fun PartnerReportLumpSum.toEntity(
     current = BigDecimal.ZERO,
     totalEligibleAfterControl = BigDecimal.ZERO,
     previouslyReported = previouslyReported,
+    previouslyValidated = previouslyValidated,
     previouslyPaid = previouslyPaid,
     currentParked = BigDecimal.ZERO,
     currentReIncluded = BigDecimal.ZERO,
-    previouslyReportedParked = previouslyReportedParked,
+    previouslyReportedParked = previouslyReportedParked
 )
 
 fun PartnerReportUnitCostBase.toEntity(
@@ -70,6 +71,7 @@ fun PartnerReportUnitCostBase.toEntity(
     currentParked = BigDecimal.ZERO,
     currentReIncluded = BigDecimal.ZERO,
     previouslyReportedParked = previouslyReportedParked,
+    previouslyValidated = previouslyValidated,
 )
 
 fun PartnerReportInvestment.toEntity(
@@ -87,7 +89,8 @@ fun PartnerReportInvestment.toEntity(
     previouslyReported = previouslyReported,
     currentParked = BigDecimal.ZERO,
     currentReIncluded = BigDecimal.ZERO,
-    previouslyReportedParked = previouslyReportedParked
+    previouslyReportedParked = previouslyReportedParked,
+    previouslyValidated = previouslyValidated,
 ).apply {
     translatedValues.addAll(
         combineInvestmentTranslatedValues(this, title)

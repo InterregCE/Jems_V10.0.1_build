@@ -46,7 +46,8 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
             currentReport = BigDecimal.valueOf(39, 1),
             totalEligibleAfterControl = BigDecimal.ZERO,
             previouslyReportedParked = BigDecimal.ZERO,
-            currentReportReIncluded = BigDecimal.ZERO
+            currentReportReIncluded = BigDecimal.ZERO,
+            previouslyValidated = BigDecimal.valueOf(5)
         )
 
         private val lumpSum_2 = ExpenditureLumpSumBreakdownLine(
@@ -60,7 +61,8 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
             currentReport = BigDecimal.valueOf(11, 1),
             totalEligibleAfterControl = BigDecimal.ZERO,
             previouslyReportedParked = BigDecimal.ZERO,
-            currentReportReIncluded = BigDecimal.ZERO
+            currentReportReIncluded = BigDecimal.ZERO,
+            previouslyValidated = BigDecimal.valueOf(5)
         )
 
         private val lumpSum_ft = ExpenditureLumpSumBreakdownLine(
@@ -74,7 +76,8 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
             currentReport = BigDecimal.ZERO,
             totalEligibleAfterControl = BigDecimal.ZERO,
             previouslyReportedParked = BigDecimal.ZERO,
-            currentReportReIncluded = BigDecimal.ZERO
+            currentReportReIncluded = BigDecimal.ZERO,
+            previouslyValidated = BigDecimal.valueOf(5)
         )
 
         private val expenditureWithLumpSum = ProjectPartnerReportExpenditureCost(
@@ -118,7 +121,8 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
                     totalReportedSoFarPercentage = BigDecimal.valueOf(8654, 2),
                     remainingBudget = BigDecimal.valueOf(7),
                     previouslyReportedParked = BigDecimal.ZERO,
-                    currentReportReIncluded = BigDecimal.valueOf(11)
+                    currentReportReIncluded = BigDecimal.valueOf(11),
+                    previouslyValidated = BigDecimal.valueOf(5)
                 ),
                 ExpenditureLumpSumBreakdownLine(
                     reportLumpSumId = 2L,
@@ -134,7 +138,8 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
                     totalReportedSoFarPercentage = BigDecimal.valueOf(3889, 2),
                     remainingBudget = BigDecimal.valueOf(11),
                     previouslyReportedParked = BigDecimal.valueOf(100),
-                    currentReportReIncluded = BigDecimal.ZERO
+                    currentReportReIncluded = BigDecimal.ZERO,
+                    previouslyValidated = BigDecimal.valueOf(5)
                 ),
                 ExpenditureLumpSumBreakdownLine(
                     reportLumpSumId = 3L,
@@ -150,7 +155,8 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
                     totalReportedSoFarPercentage = BigDecimal.valueOf(0, 2),
                     remainingBudget = BigDecimal.valueOf(15),
                     previouslyReportedParked = BigDecimal.ZERO,
-                    currentReportReIncluded = BigDecimal.ZERO
+                    currentReportReIncluded = BigDecimal.ZERO,
+                    previouslyValidated = BigDecimal.valueOf(5)
                 ),
             ),
             total = ExpenditureLumpSumBreakdownLine(
@@ -167,7 +173,8 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
                 totalReportedSoFarPercentage = BigDecimal.valueOf(6118, 2),
                 remainingBudget = BigDecimal.valueOf(33),
                 previouslyReportedParked = BigDecimal.valueOf(100),
-                currentReportReIncluded = BigDecimal.valueOf(11)
+                currentReportReIncluded = BigDecimal.valueOf(11),
+                previouslyValidated = BigDecimal.valueOf(15)
             ),
         )
 
@@ -187,7 +194,8 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
                     totalReportedSoFarPercentage = BigDecimal.valueOf(5173, 2),
                     remainingBudget = BigDecimal.valueOf(251, 1),
                     previouslyReportedParked = BigDecimal.ZERO,
-                    currentReportReIncluded = BigDecimal.ZERO
+                    currentReportReIncluded = BigDecimal.ZERO,
+                    previouslyValidated = BigDecimal.valueOf(5)
                 ),
                 ExpenditureLumpSumBreakdownLine(
                     reportLumpSumId = 2L,
@@ -203,7 +211,8 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
                     totalReportedSoFarPercentage = BigDecimal.valueOf(4500, 2),
                     remainingBudget = BigDecimal.valueOf(99, 1),
                     previouslyReportedParked = BigDecimal.valueOf(50),
-                    currentReportReIncluded = BigDecimal.ZERO
+                    currentReportReIncluded = BigDecimal.ZERO,
+                    previouslyValidated = BigDecimal.valueOf(5)
                 ),
                 ExpenditureLumpSumBreakdownLine(
                     reportLumpSumId = 3L,
@@ -219,7 +228,9 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
                     totalReportedSoFarPercentage = BigDecimal.valueOf(0, 2),
                     remainingBudget = BigDecimal.valueOf(15),
                     previouslyReportedParked = BigDecimal.valueOf(100),
-                    currentReportReIncluded = BigDecimal.ZERO
+                    currentReportReIncluded = BigDecimal.ZERO,
+                    previouslyValidated = BigDecimal.valueOf(5)
+
                 ),
             ),
             total = ExpenditureLumpSumBreakdownLine(
@@ -236,7 +247,8 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
                 totalReportedSoFarPercentage = BigDecimal.valueOf(4118, 2),
                 remainingBudget = BigDecimal.valueOf(500, 1),
                 previouslyReportedParked = BigDecimal.valueOf(150),
-                currentReportReIncluded = BigDecimal.ZERO
+                currentReportReIncluded = BigDecimal.ZERO,
+                previouslyValidated = BigDecimal.valueOf(15)
             ),
         )
 

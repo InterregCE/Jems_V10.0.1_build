@@ -8,4 +8,5 @@ data class PartnerReportUnitCostBase (
     var totalCost: BigDecimal,
     var previouslyReported: BigDecimal,
     var previouslyReportedParked: BigDecimal,
+    val previouslyValidated: BigDecimal,
 )

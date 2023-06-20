@@ -398,6 +398,17 @@ fun ReportExpenditureCostCategory.toCreateEntity(report: ProjectPartnerReportEnt
         unitCostPreviouslyReported = previouslyReported.unitCost,
         sumPreviouslyReported = previouslyReported.sum,
 
+        staffPreviouslyValidated = previouslyValidated.staff,
+        officePreviouslyValidated = previouslyValidated.office,
+        travelPreviouslyValidated = previouslyValidated.travel,
+        externalPreviouslyValidated = previouslyValidated.external,
+        equipmentPreviouslyValidated = previouslyValidated.equipment,
+        infrastructurePreviouslyValidated = previouslyValidated.infrastructure,
+        otherPreviouslyValidated = previouslyValidated.other,
+        lumpSumPreviouslyValidated = previouslyValidated.lumpSum,
+        unitCostPreviouslyValidated = previouslyValidated.unitCost,
+        sumPreviouslyValidated = previouslyValidated.sum,
+
         // Parking
 
         staffCurrentParked = ZERO,

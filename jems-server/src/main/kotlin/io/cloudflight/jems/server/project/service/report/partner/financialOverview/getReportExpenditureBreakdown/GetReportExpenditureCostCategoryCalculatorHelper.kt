@@ -33,6 +33,7 @@ fun ReportExpenditureCostCategory.toLinesModel() = ExpenditureCostCategoryBreakd
         totalEligibleAfterControl = totalEligibleAfterControl.staff,
         currentReportReIncluded = currentlyReportedReIncluded.staff,
         previouslyReportedParked = previouslyReportedParked.staff,
+        previouslyValidated = previouslyValidated.staff,
     ),
     office = ExpenditureCostCategoryBreakdownLine(
         flatRate = options.officeAndAdministrationOnStaffCostsFlatRate ?: options.officeAndAdministrationOnDirectCostsFlatRate,
@@ -42,6 +43,7 @@ fun ReportExpenditureCostCategory.toLinesModel() = ExpenditureCostCategoryBreakd
         totalEligibleAfterControl = totalEligibleAfterControl.office,
         currentReportReIncluded = currentlyReportedReIncluded.office,
         previouslyReportedParked = previouslyReportedParked.office,
+        previouslyValidated = previouslyValidated.office,
     ),
     travel = ExpenditureCostCategoryBreakdownLine(
         flatRate = options.travelAndAccommodationOnStaffCostsFlatRate,
@@ -51,6 +53,7 @@ fun ReportExpenditureCostCategory.toLinesModel() = ExpenditureCostCategoryBreakd
         totalEligibleAfterControl = totalEligibleAfterControl.travel,
         currentReportReIncluded = currentlyReportedReIncluded.travel,
         previouslyReportedParked = previouslyReportedParked.travel,
+        previouslyValidated = previouslyValidated.travel,
     ),
     external = ExpenditureCostCategoryBreakdownLine(
         flatRate = null,
@@ -60,6 +63,7 @@ fun ReportExpenditureCostCategory.toLinesModel() = ExpenditureCostCategoryBreakd
         totalEligibleAfterControl = totalEligibleAfterControl.external,
         currentReportReIncluded = currentlyReportedReIncluded.external,
         previouslyReportedParked = previouslyReportedParked.external,
+        previouslyValidated = previouslyValidated.external,
     ),
     equipment = ExpenditureCostCategoryBreakdownLine(
         flatRate = null,
@@ -69,6 +73,7 @@ fun ReportExpenditureCostCategory.toLinesModel() = ExpenditureCostCategoryBreakd
         totalEligibleAfterControl = totalEligibleAfterControl.equipment,
         currentReportReIncluded = currentlyReportedReIncluded.equipment,
         previouslyReportedParked = previouslyReportedParked.equipment,
+        previouslyValidated = previouslyValidated.equipment,
     ),
     infrastructure = ExpenditureCostCategoryBreakdownLine(
         flatRate = null,
@@ -78,6 +83,7 @@ fun ReportExpenditureCostCategory.toLinesModel() = ExpenditureCostCategoryBreakd
         totalEligibleAfterControl = totalEligibleAfterControl.infrastructure,
         currentReportReIncluded = currentlyReportedReIncluded.infrastructure,
         previouslyReportedParked = previouslyReportedParked.infrastructure,
+        previouslyValidated = previouslyValidated.infrastructure,
     ),
     other = ExpenditureCostCategoryBreakdownLine(
         flatRate = options.otherCostsOnStaffCostsFlatRate,
@@ -87,6 +93,7 @@ fun ReportExpenditureCostCategory.toLinesModel() = ExpenditureCostCategoryBreakd
         totalEligibleAfterControl = totalEligibleAfterControl.other,
         currentReportReIncluded = currentlyReportedReIncluded.other,
         previouslyReportedParked = previouslyReportedParked.other,
+        previouslyValidated = previouslyValidated.other,
     ),
     lumpSum = ExpenditureCostCategoryBreakdownLine(
         flatRate = null,
@@ -96,6 +103,7 @@ fun ReportExpenditureCostCategory.toLinesModel() = ExpenditureCostCategoryBreakd
         totalEligibleAfterControl = totalEligibleAfterControl.lumpSum,
         currentReportReIncluded = currentlyReportedReIncluded.lumpSum,
         previouslyReportedParked = previouslyReportedParked.lumpSum,
+        previouslyValidated = previouslyValidated.lumpSum,
     ),
     unitCost = ExpenditureCostCategoryBreakdownLine(
         flatRate = null,
@@ -105,6 +113,7 @@ fun ReportExpenditureCostCategory.toLinesModel() = ExpenditureCostCategoryBreakd
         totalEligibleAfterControl = totalEligibleAfterControl.unitCost,
         currentReportReIncluded = currentlyReportedReIncluded.unitCost,
         previouslyReportedParked = previouslyReportedParked.unitCost,
+        previouslyValidated = previouslyValidated.unitCost,
     ),
     total = ExpenditureCostCategoryBreakdownLine(
         flatRate = null,
@@ -114,6 +123,7 @@ fun ReportExpenditureCostCategory.toLinesModel() = ExpenditureCostCategoryBreakd
         totalEligibleAfterControl = totalEligibleAfterControl.sum,
         currentReportReIncluded = currentlyReportedReIncluded.sum,
         previouslyReportedParked = previouslyReportedParked.sum,
+        previouslyValidated = previouslyValidated.sum,
     ),
 )
 

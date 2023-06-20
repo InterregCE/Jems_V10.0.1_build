@@ -52,6 +52,7 @@ class GetReportExpenditureInvestmentsBreakdownCalculatorTest : UnitTest() {
             previouslyReportedParked = BigDecimal.ZERO,
             currentReportReIncluded = BigDecimal.ZERO,
             deactivated = false,
+            previouslyValidated = BigDecimal.valueOf(5)
         )
 
         private val investment_2 = ExpenditureInvestmentBreakdownLine(
@@ -67,6 +68,7 @@ class GetReportExpenditureInvestmentsBreakdownCalculatorTest : UnitTest() {
             previouslyReportedParked = BigDecimal.ZERO,
             currentReportReIncluded = BigDecimal.ZERO,
             deactivated = true,
+            previouslyValidated = BigDecimal.valueOf(6)
         )
 
         private val expenditureWithInvestment = ProjectPartnerReportExpenditureCost(
@@ -110,6 +112,7 @@ class GetReportExpenditureInvestmentsBreakdownCalculatorTest : UnitTest() {
                     previouslyReportedParked = BigDecimal.ZERO,
                     currentReportReIncluded = BigDecimal.valueOf(154.29),
                     deactivated = false,
+                    previouslyValidated = BigDecimal.valueOf(5)
                 ),
                 ExpenditureInvestmentBreakdownLine(
                     reportInvestmentId = 2L,
@@ -127,6 +130,7 @@ class GetReportExpenditureInvestmentsBreakdownCalculatorTest : UnitTest() {
                     previouslyReportedParked = BigDecimal.valueOf(123),
                     currentReportReIncluded = BigDecimal.ZERO,
                     deactivated = true,
+                    previouslyValidated = BigDecimal.valueOf(6)
                 ),
             ),
             total = ExpenditureInvestmentBreakdownLine(
@@ -145,6 +149,7 @@ class GetReportExpenditureInvestmentsBreakdownCalculatorTest : UnitTest() {
                 previouslyReportedParked = BigDecimal.valueOf(123),
                 currentReportReIncluded = BigDecimal.valueOf(154.29),
                 deactivated = false,
+                previouslyValidated = BigDecimal.valueOf(11)
             )
         )
 
@@ -166,6 +171,7 @@ class GetReportExpenditureInvestmentsBreakdownCalculatorTest : UnitTest() {
                     previouslyReportedParked = BigDecimal.ZERO,
                     currentReportReIncluded = BigDecimal.ZERO,
                     deactivated = false,
+                    previouslyValidated = BigDecimal.valueOf(5)
                 ),
                 ExpenditureInvestmentBreakdownLine(
                     reportInvestmentId = 2L,
@@ -183,6 +189,7 @@ class GetReportExpenditureInvestmentsBreakdownCalculatorTest : UnitTest() {
                     previouslyReportedParked = BigDecimal.valueOf(120),
                     currentReportReIncluded = BigDecimal.ZERO,
                     deactivated = true,
+                    previouslyValidated = BigDecimal.valueOf(6)
                 ),
             ),
             total = ExpenditureInvestmentBreakdownLine(
@@ -201,6 +208,7 @@ class GetReportExpenditureInvestmentsBreakdownCalculatorTest : UnitTest() {
                 previouslyReportedParked = BigDecimal.valueOf(120),
                 currentReportReIncluded = BigDecimal.ZERO,
                 deactivated = false,
+                previouslyValidated = BigDecimal.valueOf(11)
             ),
         )
 

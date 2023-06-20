@@ -56,7 +56,8 @@ class ProjectPartnerReportLumpSumPersistenceProviderTest : UnitTest() {
             previouslyPaid = BigDecimal.valueOf(40),
             previouslyReportedParked = BigDecimal.valueOf(1000),
             currentReIncluded = BigDecimal.valueOf(100),
-            currentParked = BigDecimal.valueOf(100)
+            currentParked = BigDecimal.valueOf(100),
+            previouslyValidated = BigDecimal.valueOf(5)
         )
 
         private fun expectedLumpSum(id: Long) = ExpenditureLumpSumBreakdownLine(
@@ -74,6 +75,7 @@ class ProjectPartnerReportLumpSumPersistenceProviderTest : UnitTest() {
             remainingBudget = BigDecimal.ZERO,
             previouslyReportedParked = BigDecimal.valueOf(1000),
             currentReportReIncluded = BigDecimal.valueOf(100),
+            previouslyValidated = BigDecimal.valueOf(5)
         )
     }
 

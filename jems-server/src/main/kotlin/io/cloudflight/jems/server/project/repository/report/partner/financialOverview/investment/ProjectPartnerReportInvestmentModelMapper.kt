@@ -16,5 +16,6 @@ fun PartnerReportInvestmentEntity.toModel() = ExpenditureInvestmentBreakdownLine
     previouslyReportedParked = previouslyReportedParked,
     currentReport = current,
     currentReportReIncluded = currentReIncluded,
-    totalEligibleAfterControl = totalEligibleAfterControl
+    totalEligibleAfterControl = totalEligibleAfterControl,
+    previouslyValidated = previouslyValidated,
 )

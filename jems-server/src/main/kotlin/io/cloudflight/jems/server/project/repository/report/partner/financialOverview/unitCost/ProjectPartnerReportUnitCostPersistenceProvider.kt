@@ -24,6 +24,10 @@ class ProjectPartnerReportUnitCostPersistenceProvider(
         reportUnitCostRepository.findCumulativeForReportIds(reportIds)
             .associate { Pair(it.first, ExpenditureUnitCostCurrent(current = it.second, currentParked = it.third)) }
 
+    @Transactional
+    override fun getValidatedUnitCostCumulative(reportIds: Set<Long>): Map<Long, BigDecimal> =
+        reportUnitCostRepository.findCumulativeForReportIdsAfterControl(reportIds)
+            .associate { Pair(it.first, it.second) }
 
     @Transactional
     override fun updateCurrentlyReportedValues(

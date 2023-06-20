@@ -53,6 +53,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceSpecialTest : Un
                 totalReportedSoFar = valueOf(70000, 2),
                 totalReportedSoFarPercentage = valueOf(70000, 2),
                 remainingBudget = valueOf(-60000, 2),
+                previouslyValidated = valueOf(500)
             ),
             office = ExpenditureCostCategoryBreakdownLine(
                 flatRate = 25,
@@ -65,6 +66,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceSpecialTest : Un
                 totalReportedSoFar = valueOf(57062, 2),
                 totalReportedSoFarPercentage = valueOf(51875, 2),
                 remainingBudget = valueOf(-46062, 2),
+                previouslyValidated = valueOf(510)
             ),
             travel = ExpenditureCostCategoryBreakdownLine(
                 flatRate = 15,
@@ -77,6 +79,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceSpecialTest : Un
                 totalReportedSoFar = valueOf(38000, 2),
                 totalReportedSoFarPercentage = valueOf(31667, 2),
                 remainingBudget = valueOf(-26000, 2),
+                previouslyValidated = valueOf(520)
             ),
             external = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
@@ -89,6 +92,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceSpecialTest : Un
                 totalReportedSoFar = valueOf(56000, 2),
                 totalReportedSoFarPercentage = valueOf(43077, 2),
                 remainingBudget = valueOf(-43000, 2),
+                previouslyValidated = valueOf(530)
             ),
             equipment = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
@@ -101,6 +105,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceSpecialTest : Un
                 totalReportedSoFar = valueOf(57000, 2),
                 totalReportedSoFarPercentage = valueOf(40714, 2),
                 remainingBudget = valueOf(-43000, 2),
+                previouslyValidated = valueOf(540)
             ),
             infrastructure = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
@@ -113,6 +118,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceSpecialTest : Un
                 totalReportedSoFar = valueOf(47250, 2),
                 totalReportedSoFarPercentage = valueOf(31500, 2),
                 remainingBudget = valueOf(-32250, 2),
+                previouslyValidated = valueOf(550)
             ),
             other = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
@@ -125,6 +131,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceSpecialTest : Un
                 totalReportedSoFar = ZERO,
                 totalReportedSoFarPercentage = ZERO,
                 remainingBudget = ZERO,
+                previouslyValidated = valueOf(560)
             ),
             lumpSum = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
@@ -137,6 +144,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceSpecialTest : Un
                 totalReportedSoFar = valueOf(39431, 2),
                 totalReportedSoFarPercentage = valueOf(23195, 2),
                 remainingBudget = valueOf(-22431, 2),
+                previouslyValidated = valueOf(570)
             ),
             unitCost = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
@@ -149,6 +157,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceSpecialTest : Un
                 totalReportedSoFar = valueOf(52319, 2),
                 totalReportedSoFarPercentage = valueOf(29066, 2),
                 remainingBudget = valueOf(-34319, 2),
+                previouslyValidated = valueOf(580)
             ),
             total = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
@@ -161,6 +170,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceSpecialTest : Un
                 totalReportedSoFar = valueOf(453062, 2),
                 totalReportedSoFarPercentage = valueOf(35957, 2),
                 remainingBudget = valueOf(-327062, 2),
+                previouslyValidated = valueOf(590)
             ),
         )
 

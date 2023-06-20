@@ -99,6 +99,15 @@
         <mat-footer-cell *matFooterCellDef class="text-right">{{ breakdown.total.remainingBudget | asMoney }}</mat-footer-cell>
     </ng-container>
 
+    <ng-container matColumnDef="previouslyValidated">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{ 'project.application.partner.report.financial.previouslyValidated' | translate }}</span>
+            <jems-context-info infoPosition="right" infoText="{{ 'project.application.partner.report.financial.previouslyValidated.tooltip' | translate}}"></jems-context-info>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let line" class="text-right">{{ line.previouslyValidated | asMoney }}</mat-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right">{{ breakdown.total.previouslyValidated | asMoney }}</mat-footer-cell>
+    </ng-container>
+
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
     <mat-row [class.grayed-out]="row.deactivated" *matRowDef="let row; columns: displayedColumns"></mat-row>
     <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>

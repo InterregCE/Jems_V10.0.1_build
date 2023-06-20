@@ -446,6 +446,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
             totalReportedSoFar = BigDecimal.valueOf(4),
             totalReportedSoFarPercentage = BigDecimal.valueOf(5),
             remainingBudget = BigDecimal.valueOf(6),
+            previouslyValidated = BigDecimal.valueOf(5)
         )
 
         private val costCategory = ExpenditureCostCategoryBreakdown(
@@ -502,6 +503,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
             totalReportedSoFarPercentage = BigDecimal.valueOf(5),
             remainingBudget = BigDecimal.valueOf(6),
             deactivated = false,
+            previouslyValidated = BigDecimal.valueOf(6)
         )
 
         private val investment = ExpenditureInvestmentBreakdown(
@@ -546,6 +548,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
             totalReportedSoFar = BigDecimal.valueOf(5),
             totalReportedSoFarPercentage = BigDecimal.valueOf(6),
             remainingBudget = BigDecimal.valueOf(7),
+            previouslyValidated = BigDecimal.valueOf(7)
         )
 
         private val lumpSum = ExpenditureLumpSumBreakdown(
@@ -587,6 +590,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
             totalReportedSoFar = BigDecimal.valueOf(4),
             totalReportedSoFarPercentage = BigDecimal.valueOf(5),
             remainingBudget = BigDecimal.valueOf(6),
+            previouslyValidated = BigDecimal.valueOf(8)
         )
 
         private val unitCost = ExpenditureUnitCostBreakdown(
