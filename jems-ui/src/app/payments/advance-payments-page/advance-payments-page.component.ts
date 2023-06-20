@@ -28,6 +28,9 @@ export class AdvancePaymentsPageComponent implements OnInit, AfterViewInit {
   @ViewChild('remainingToBeSettledCell', {static: true})
   remainingToBeSettledCell: TemplateRef<any>;
 
+  @ViewChild('remainingToBeSettledCell', {static: true})
+  advanceAmountPaidCell: TemplateRef<any>;
+
   @ViewChild('deleteButtonCell', {static: true})
   deleteButtonCell: TemplateRef<any>;
 
@@ -79,7 +82,7 @@ export class AdvancePaymentsPageComponent implements OnInit, AfterViewInit {
           displayedColumn: 'payments.payment.to.project.table.column.project.acronym',
           elementProperty: 'projectAcronym',
           sortProperty: 'projectAcronym',
-          columnWidth: ColumnWidth.ChipColumn,
+          columnWidth: ColumnWidth.WideColumn,
         },
         {
           displayedColumn: 'payments.advance.payment.table.header.partner.number',
@@ -91,18 +94,20 @@ export class AdvancePaymentsPageComponent implements OnInit, AfterViewInit {
           displayedColumn: 'payments.advance.payment.table.header.partner.name',
           elementProperty: 'partnerAbbreviation',
           sortProperty: 'partnerAbbreviation',
-          columnWidth: ColumnWidth.ChipColumn,
+          columnWidth: ColumnWidth.WideColumn,
         },
         {
           displayedColumn: 'payments.advance.payment.table.header.source.advance.granted',
-          columnWidth: ColumnWidth.SmallColumn,
+          columnWidth: ColumnWidth.MediumColumn,
           customCellTemplate: this.sourceForAdvanceCell,
         },
         {
           displayedColumn: 'payments.advance.payment.table.header.advance.amount',
-          columnWidth: ColumnWidth.MediumColumn,
+          columnType: ColumnType.CustomComponent,
+          columnWidth: ColumnWidth.ChipColumn,
           elementProperty: 'amountPaid',
           sortProperty: 'amountPaid',
+          customCellTemplate: this.advanceAmountPaidCell,
         },
         {
           displayedColumn: 'payments.advance.payment.table.header.date.advance.payment',
@@ -131,7 +136,7 @@ export class AdvancePaymentsPageComponent implements OnInit, AfterViewInit {
             this.tableConfiguration.columns.push({
               displayedColumn: 'payments.advance.payment.table.header.actions.delete',
               columnType: ColumnType.CustomComponent,
-              columnWidth: ColumnWidth.SmallColumn,
+              columnWidth: ColumnWidth.DeletionColumn,
               customCellTemplate: this.deleteButtonCell
             });
           }

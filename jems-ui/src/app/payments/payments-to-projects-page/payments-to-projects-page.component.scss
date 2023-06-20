@@ -50,10 +50,8 @@
       left: 0 !important;
       z-index: 1000 !important;
       border-right: 1px solid var(--table-border-color);
-      background-color: var(--table-backaground-color);
-
       &:nth-child(even) {
-        background-color: var(--table-highlight-color);
+        background: var(--table-backaground-color);
       }
     }
 
@@ -64,12 +62,12 @@
 
     .small-column-width {
       min-width: 4rem !important;
-      max-width: 4rem !important;
+      max-width: 6rem !important;
     }
 
     .date-column-width {
       min-width: 6.5rem !important;
-      max-width: 6.5rem !important;
+      max-width: 8rem !important;
     }
 
     .wide-column-width {
