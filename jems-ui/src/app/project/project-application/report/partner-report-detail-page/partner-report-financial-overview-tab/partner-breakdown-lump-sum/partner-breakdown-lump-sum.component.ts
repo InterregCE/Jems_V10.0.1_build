@@ -17,8 +17,18 @@ export class PartnerBreakdownLumpSumComponent implements OnChanges {
   Alert = Alert;
 
   certifiedColumns = ['totalEligibleAfterControl'];
-  columnsAvailable = ['name', 'totalEligibleBudget', 'previouslyReported', 'currentReport', 'totalEligibleAfterControl',
-    'totalReportedSoFar', 'totalReportedSoFarPercentage', 'remainingBudget', 'previouslyValidated', 'previouslyPaid'];
+  columnsAvailable = [
+    'name',
+    'totalEligibleBudget',
+    'previouslyReported',
+    'currentReport',
+    'totalReportedSoFar',
+    'totalReportedSoFarPercentage',
+    'remainingBudget',
+    'previouslyValidated',
+    'totalEligibleAfterControl',
+    'previouslyPaid',
+  ];
   displayedColumns = this.columnsAvailable;
 
   readonly PERIOD_PREPARATION: number = 0;

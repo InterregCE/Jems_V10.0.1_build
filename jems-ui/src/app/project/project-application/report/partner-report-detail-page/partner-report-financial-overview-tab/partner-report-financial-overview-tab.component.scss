@@ -10,24 +10,25 @@
 
 .mat-column-totalEligibleBudget,
 .mat-column-previouslyReported,
-.mat-column-previouslyPaid,
 .mat-column-currentReport,
 .mat-column-totalEligibleAfterControl,
 .mat-column-totalReportedSoFar,
 .mat-column-totalReportedSoFarPercentage,
 .mat-column-remainingBudget,
-.mat-column-previouslyValidated {
+.mat-column-previouslyValidated,
+.mat-column-totalEligibleAfterControl,
+.mat-column-previouslyPaid {
   padding-left: .5rem;
 }
 
 .mat-column-totalEligibleBudget,
 .mat-column-previouslyReported,
-.mat-column-previouslyPaid,
 .mat-column-currentReport,
-.mat-column-totalEligibleAfterControl,
 .mat-column-totalReportedSoFar,
 .mat-column-remainingBudget,
-.mat-column-previouslyValidated {
+.mat-column-previouslyValidated,
+.mat-column-totalEligibleAfterControl,
+.mat-column-previouslyPaid {
   min-width: 8rem;
 }
 

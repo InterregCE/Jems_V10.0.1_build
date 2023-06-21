@@ -26,8 +26,17 @@ export class PartnerBreakdownInvestmentComponent implements OnChanges {
 
   dataSource: MatTableDataSource<ExpenditureInvestmentBreakdownLineDTO> = new MatTableDataSource([]);
   certifiedColumns = ['totalEligibleAfterControl'];
-  columnsAvailable = ['investmentNr', 'totalEligibleBudget', 'previouslyReported', 'currentReport', 'totalEligibleAfterControl', 'totalReportedSoFar',
-    'totalReportedSoFarPercentage', 'remainingBudget', 'previouslyValidated'];
+  columnsAvailable = [
+    'investmentNr',
+    'totalEligibleBudget',
+    'previouslyReported',
+    'currentReport',
+    'totalReportedSoFar',
+    'totalReportedSoFarPercentage',
+    'remainingBudget',
+    'previouslyValidated',
+    'totalEligibleAfterControl',
+  ];
   displayedColumns = this.columnsAvailable;
 
   ngOnChanges(changes: SimpleChanges): void {
