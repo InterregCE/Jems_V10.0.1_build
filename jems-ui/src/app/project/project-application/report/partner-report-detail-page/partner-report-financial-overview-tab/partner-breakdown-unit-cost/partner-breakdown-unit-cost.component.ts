@@ -17,8 +17,17 @@ export class PartnerBreakdownUnitCostComponent implements OnChanges {
   Alert = Alert;
 
   certifiedColumns = ['totalEligibleAfterControl'];
-  columnsAvailable = ['name', 'totalEligibleBudget', 'previouslyReported', 'currentReport', 'totalEligibleAfterControl', 'totalReportedSoFar',
-    'totalReportedSoFarPercentage', 'remainingBudget', 'previouslyValidated'];
+  columnsAvailable = [
+    'name',
+    'totalEligibleBudget',
+    'previouslyReported',
+    'currentReport',
+    'totalReportedSoFar',
+    'totalReportedSoFarPercentage',
+    'remainingBudget',
+    'previouslyValidated',
+    'totalEligibleAfterControl',
+  ];
   displayedColumns = this.columnsAvailable;
 
   readonly PERIOD_PREPARATION: number = 0;
