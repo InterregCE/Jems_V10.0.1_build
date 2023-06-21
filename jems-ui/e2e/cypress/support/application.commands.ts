@@ -77,6 +77,8 @@ declare global {
       getContractMonitoring(applicationId: number);
 
       updateContractMonitoring(applicationId: number, contractMonitoring: {});
+
+      createReportingDeadlines(applicationId: number, reportingDeadlines: any[]);
     }
   }
 }
@@ -336,6 +338,10 @@ Cypress.Commands.add('updateContractMonitoring', (applicationId: number, contrac
   updateContractMonitoring(applicationId, contractMonitoring);
 });
 
+Cypress.Commands.add('createReportingDeadlines', (applicationId: number, reportingDeadlines: any[]) => {
+  createReportingDeadlines(applicationId, reportingDeadlines);
+});
+
 function createApplication(applicationDetails) {
   applicationDetails.acronym = `${faker.hacker.adjective()} ${faker.hacker.noun()}`.substr(0, 25);
   return cy.request({
@@ -592,6 +598,14 @@ function updateContractMonitoring(applicationId, contractMonitoring) {
     method: 'PUT',
     url: `api/project/${applicationId}/contracting/monitoring`,
     body: contractMonitoring
+  });
+}
+
+function createReportingDeadlines(applicationId, reportingDeadlines) {
+  cy.request({
+    method: 'PUT',
+    url: `api/project/${applicationId}/contracting/reporting`,
+    body: reportingDeadlines
   });
 }
 

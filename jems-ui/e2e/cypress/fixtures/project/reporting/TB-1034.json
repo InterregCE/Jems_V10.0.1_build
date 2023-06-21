@@ -1,0 +1,24 @@
+{
+  "deadlines": [
+    {
+      "date":"updated",
+      "type":"Content",
+      "periodNumber":1,
+      "comment":"",
+      "id":0,
+      "number":0,
+      "linkedSubmittedProjectReportNumbers":[],
+      "linkedDraftProjectReportNumbers":[]
+    },
+    {
+      "date":"updated",
+      "type":"Finance",
+      "periodNumber":1,
+      "comment":"",
+      "id":0,
+      "number":0,
+      "linkedSubmittedProjectReportNumbers":[],
+      "linkedDraftProjectReportNumbers":[]
+    }
+  ]
+}
