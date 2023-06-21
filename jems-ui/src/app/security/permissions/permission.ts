@@ -261,11 +261,14 @@ export class Permission {
         },
         {
           name: 'project.application.contract.partner.section.title',
-          mode: PermissionMode.HIDDEN_VIEW_EDIT,
-          viewPermissions: [PermissionsEnum.ProjectContractingPartnerView],
-          editPermissions: [PermissionsEnum.ProjectContractingPartnerEdit],
-          editTooltip: 'permission.inspect.contracting.partner.section',
           children: [
+              {
+                name: 'project.application.contract.partner.section.title',
+                mode: PermissionMode.HIDDEN_VIEW_EDIT,
+                viewPermissions: [PermissionsEnum.ProjectContractingPartnerView],
+                editPermissions: [PermissionsEnum.ProjectContractingPartnerEdit],
+                editTooltip: 'permission.inspect.contracting.partner.section',
+              },
               {
                   name: 'project.application.contract.partner.state.aid.section.title',
                   mode: PermissionMode.HIDDEN_VIEW_EDIT,
