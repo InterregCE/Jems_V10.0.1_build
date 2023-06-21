@@ -45,7 +45,6 @@ interface ChecklistInstanceMapper {
     fun map(dto: ChecklistInstanceDTO): ChecklistInstance
     fun mapToDetail(model: ChecklistInstanceDetail): ChecklistInstanceDetailDTO
     @Mappings(
-        Mapping(target = "relatedToId", ignore = true),
         Mapping(target = "type", ignore = true),
         Mapping(target = "programmeChecklistId", ignore = true),
         Mapping(target = "visible", ignore = true),

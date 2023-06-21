@@ -11,6 +11,7 @@ open class ChecklistInstanceDetailDTO(
     val name: String?,
     val creatorEmail: String?,
     val consolidated: Boolean?,
+    val relatedToId: Long?,
     val createdAt: ZonedDateTime?,
     val minScore: BigDecimal?,
     val maxScore: BigDecimal?,

@@ -127,6 +127,7 @@ internal class ControlChecklistInstanceControllerTest: UnitTest() {
         maxScore = BigDecimal(10),
         allowsDecimalScore = false,
         consolidated = false,
+        relatedToId = 20L,
         components = mutableListOf(
             ChecklistComponentInstanceDTO(
                 2L,

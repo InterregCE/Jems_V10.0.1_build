@@ -91,7 +91,7 @@ context('Controller tests', () => {
         cy.visit('/');
         cy.contains('Controllers').click();
         cy.contains('Assignment').click();
-        cy.get('table mat-row').then(row => {
+        cy.get('table mat-row').then(_ => {
           cy.contains('mat-header-cell', 'ProjectID').click().click();
           cy.get(`mat-row:contains(${this.applicationId})`).filter(':contains("Project Partner")').contains('Select Institution').click();
           cy.contains('mat-option', testData.institution.name).click();
@@ -110,6 +110,7 @@ context('Controller tests', () => {
           cy.loginByRequest(controllerCreatorUser.email);
           cy.visit(`/app/controller/${institutionId}`, {failOnStatusCode: false});
           cy.get('input').eq(0).clear().type('Updated institution name');
+          cy.contains('NUTS explorer').should('be.visible');
           cy.contains('Save changes').click();
           cy.contains('Controller institution was updated successfully').should('be.visible');
 
