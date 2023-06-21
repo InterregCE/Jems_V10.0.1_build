@@ -107,6 +107,7 @@ internal class ContractingChecklistInstanceControllerTest: UnitTest()  {
         maxScore = BigDecimal(10),
         allowsDecimalScore = false,
         consolidated = false,
+        relatedToId = 1L,
         components = mutableListOf(
             ChecklistComponentInstanceDTO(
                 2L,
