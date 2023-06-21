@@ -37,25 +37,11 @@ import java.math.BigDecimal
 import java.time.ZoneOffset.UTC
 import java.time.ZonedDateTime
 
-fun Page<PaymentEntity>.toListModel(
-    getLumpSum: (Long, Int) -> ProjectLumpSumEntity,
-    getProject: (Long, String?) -> ProjectFull,
-    getConfirm: (Long) -> PaymentConfirmedInfo
-) = map {
-    val lumpSum = getLumpSum.invoke(it.project.id, it.orderNr)
-    it.toDetailModel(
-        lumpSum,
-        getProject.invoke(it.project.id, lumpSum.lastApprovedVersionBeforeReadyForPayment),
-        getConfirm.invoke(it.id)
-    )
-}
-
 fun List<PaymentEntity>.toListModel(
-    getLumpSum: (Long, Int) -> ProjectLumpSumEntity,
     getProject: (Long, String?) -> ProjectFull,
     getConfirm: (Long) -> PaymentConfirmedInfo
 ) = map {
-    val lumpSum = getLumpSum.invoke(it.project.id, it.orderNr)
+    val lumpSum = it.projectLumpSum
     it.toDetailModel(
         lumpSum,
         getProject.invoke(it.project.id, lumpSum.lastApprovedVersionBeforeReadyForPayment),
@@ -73,18 +59,16 @@ fun PaymentEntity.toDetailModel(
     projectCustomIdentifier = projectFull.customIdentifier,
     projectAcronym = projectFull.acronym,
     paymentClaimNo = 0,
-    paymentClaimSubmissionDate = projectFull.contractedDecision?.updated,
+    paymentClaimSubmissionDate = project.contractedDecision?.updated,
     lumpSumId = lumpSum.programmeLumpSum.id,
-    orderNr = orderNr,
+    orderNr = lumpSum.id.orderNr,
     paymentApprovalDate = lumpSum.paymentEnabledDate,
     totalEligibleAmount = lumpSum.programmeLumpSum.cost,
     fundId = fund.id,
     fundName = fund.type.name,
     amountApprovedPerFund = amountApprovedPerFund!!,
     amountPaidPerFund = paymentConfirmedInfo.amountPaidPerFund,
-    dateOfLastPayment = if (paymentConfirmedInfo.dateOfLastPayment != null) {
-        ZonedDateTime.ofInstant(paymentConfirmedInfo.dateOfLastPayment.toInstant(), UTC)
-    } else { null } ,
+    dateOfLastPayment = paymentConfirmedInfo.dateOfLastPayment,
     lastApprovedVersionBeforeReadyForPayment = lumpSum.lastApprovedVersionBeforeReadyForPayment
 )
 
@@ -96,15 +80,16 @@ fun PaymentRow.toDetailModel() = PaymentPerPartner(
 fun PaymentToCreate.toEntity(
     projectEntity: ProjectEntity,
     paymentType: PaymentType,
-    orderNr: Int,
+    lumpSum: ProjectLumpSumEntity,
     fundEntity: ProgrammeFundEntity
 ) = PaymentEntity(
     type = paymentType,
     project = projectEntity,
-    orderNr = orderNr,
-    programmeLumpSumId = programmeLumpSumId,
+    projectCustomIdentifier = projectCustomIdentifier,
+    projectAcronym = projectAcronym,
+    projectLumpSum = lumpSum,
     fund = fundEntity,
-    amountApprovedPerFund = amountApprovedPerFund
+    amountApprovedPerFund = amountApprovedPerFund,
 )
 
 fun PaymentPartnerToCreate.toEntity(paymentEntity: PaymentEntity) = PaymentPartnerEntity (
@@ -135,8 +120,8 @@ fun PaymentPartnerEntity.toDetailModel(
 ) = PartnerPayment(
     id = id,
     projectId = payment.project.id,
-    orderNr = payment.orderNr,
-    programmeLumpSumId = payment.programmeLumpSumId,
+    orderNr = payment.projectLumpSum.id.orderNr,
+    programmeLumpSumId = payment.projectLumpSum.programmeLumpSum.id,
     programmeFundId = payment.fund.id,
     partnerId = partnerId,
     partnerRole = partnerDetail.role,
@@ -152,8 +137,8 @@ fun List<PaymentPartnerInstallmentEntity>.toModelList() = map { it.toDetailModel
 fun PaymentPartnerInstallmentEntity.toDetailModel() = PaymentPartnerInstallment(
     id = id,
     fundId = paymentPartner.payment.fund.id,
-    lumpSumId = paymentPartner.payment.programmeLumpSumId,
-    orderNr = paymentPartner.payment.orderNr,
+    lumpSumId = paymentPartner.payment.projectLumpSum.programmeLumpSum.id,
+    orderNr = paymentPartner.payment.projectLumpSum.id.orderNr,
     amountPaid = amountPaid,
     paymentDate = paymentDate,
     comment = comment,

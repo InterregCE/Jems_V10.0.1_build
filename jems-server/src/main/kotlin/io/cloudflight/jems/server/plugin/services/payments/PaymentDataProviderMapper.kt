@@ -1,4 +1,5 @@
 package io.cloudflight.jems.server.plugin.services.payments
+
 import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.plugin.contract.models.common.UserSummaryData
 import io.cloudflight.jems.plugin.contract.models.payments.regular.PaymentDetailData
@@ -12,7 +13,7 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
-
+import java.time.ZoneId
 
 fun PaymentDetail.toDataModel() = PaymentDetailData(
     id = id,
@@ -41,7 +42,7 @@ fun PaymentToProject.toDataModel() = PaymentToProjectData(
     fundName = fundName,
     amountApprovedPerFund = amountApprovedPerFund,
     amountPaidPerFund = amountPaidPerFund,
-    dateOfLastPayment = dateOfLastPayment,
+    dateOfLastPayment = dateOfLastPayment?.atStartOfDay(ZoneId.systemDefault()),
     lastApprovedVersionBeforeReadyForPayment = lastApprovedVersionBeforeReadyForPayment
 )
 fun List<PaymentToProject>.toDataModelList() = map { it.toDataModel() }

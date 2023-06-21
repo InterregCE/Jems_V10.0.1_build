@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallmentUpdate
 import io.cloudflight.jems.server.payments.model.regular.PaymentPerPartner
+import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequest
 import io.cloudflight.jems.server.payments.model.regular.PaymentToCreate
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
 import io.cloudflight.jems.server.payments.model.regular.contributionMeta.ContributionMeta
@@ -20,7 +21,7 @@ interface PaymentRegularPersistence {
 
     fun existsById(id: Long): Boolean
 
-    fun getAllPaymentToProject(pageable: Pageable): Page<PaymentToProject>
+    fun getAllPaymentToProject(pageable: Pageable, filters: PaymentSearchRequest): Page<PaymentToProject>
 
     fun getConfirmedInfosForPayment(paymentId: Long): PaymentConfirmedInfo
 

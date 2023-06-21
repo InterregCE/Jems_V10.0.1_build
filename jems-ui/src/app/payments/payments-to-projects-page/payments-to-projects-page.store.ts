@@ -1,5 +1,11 @@
 import {Injectable} from '@angular/core';
-import {PagePaymentToProjectDTO, PaymentDetailDTO, PaymentsAPIService, UserRoleCreateDTO,} from '@cat/api';
+import {
+  PagePaymentToProjectDTO,
+  PaymentDetailDTO,
+  PaymentsAPIService,
+  PaymentSearchRequestDTO,
+  UserRoleCreateDTO,
+} from '@cat/api';
 import {PermissionService} from '../../security/permissions/permission.service';
 import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
 import {catchError, map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
@@ -8,6 +14,7 @@ import {Log} from '@common/utils/log';
 import {MatSort} from '@angular/material/sort';
 import {RoutingService} from '@common/services/routing.service';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -21,6 +28,7 @@ export class PaymentsToProjectPageStore {
   userCanEdit$: Observable<boolean>;
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
+  filter$ = new BehaviorSubject<PaymentSearchRequestDTO>(null as any);
   newSort$ = new Subject<Partial<MatSort>>();
   paymentToProjectDTO$: Observable<PagePaymentToProjectDTO>;
   payment$: Observable<PaymentDetailDTO>;
@@ -40,6 +48,7 @@ export class PaymentsToProjectPageStore {
     return combineLatest([
       this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
       this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
+      this.filter$,
       this.newSort$.pipe(
         startWith(Tables.DEFAULT_INITIAL_SORT),
         map(sort => (sort?.direction && this.isSortCapable(sort?.active)) ? sort : Tables.DEFAULT_INITIAL_SORT),
@@ -47,8 +56,8 @@ export class PaymentsToProjectPageStore {
       )
     ])
       .pipe(
-        switchMap(([pageIndex, pageSize, sort]) =>
-          this.paymentApiService.getPaymentsToProjects(pageIndex, pageSize, sort)),
+        switchMap(([pageIndex, pageSize, filter, sort]) =>
+          this.paymentApiService.getPaymentsToProjects(filter, pageIndex, pageSize, sort)),
         tap(page => Log.info('Fetched the payments to projects:', this, page.content)),
       );
   }
