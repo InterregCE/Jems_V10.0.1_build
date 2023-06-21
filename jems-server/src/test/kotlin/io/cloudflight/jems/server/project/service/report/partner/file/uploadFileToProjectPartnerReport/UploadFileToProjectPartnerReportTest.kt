@@ -2,13 +2,14 @@ package io.cloudflight.jems.server.project.service.report.partner.file.uploadFil
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
+import io.cloudflight.jems.server.common.file.service.model.JemsFileCreate
+import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.file.ProjectPartnerReportFilePersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -31,13 +32,16 @@ class UploadFileToProjectPartnerReportTest : UnitTest() {
     }
 
     @MockK
-    lateinit var reportPersistence: ProjectReportPersistence
+    lateinit var reportPersistence: ProjectPartnerReportPersistence
 
     @MockK
     lateinit var partnerPersistence: PartnerPersistence
 
     @MockK
-    lateinit var reportFilePersistence: ProjectReportFilePersistence
+    lateinit var reportFilePersistence: ProjectPartnerReportFilePersistence
+
+    @MockK
+    lateinit var filePersistence: JemsFilePersistence
 
     @MockK
     lateinit var securityService: SecurityService
@@ -49,7 +53,7 @@ class UploadFileToProjectPartnerReportTest : UnitTest() {
     fun uploadToReport() {
         every { reportPersistence.exists(45L, 900L) } returns true
         every { partnerPersistence.getProjectIdForPartnerId(45L) } returns PROJECT_ID
-        every { reportFilePersistence.existsFile(expectedPath, "test.xlsx") } returns false
+        every { filePersistence.existsFile(expectedPath, "test.xlsx") } returns false
         val fileToAdd = slot<JemsFileCreate>()
         val mockResult = mockk<JemsFileMetadata>()
         every { securityService.getUserIdOrThrow() } returns USER_ID
@@ -100,7 +104,7 @@ class UploadFileToProjectPartnerReportTest : UnitTest() {
     fun `uploadToReport - file already exists`() {
         every { reportPersistence.exists(45L, 902L) } returns true
         every { partnerPersistence.getProjectIdForPartnerId(45L) } returns PROJECT_ID
-        every { reportFilePersistence.existsFile(
+        every { filePersistence.existsFile(
             exactPath = "Project/000642/Report/Partner/000045/PartnerReport/000902/",
             fileName = "duplicate-file.docx"
         ) } returns true
@@ -112,5 +116,4 @@ class UploadFileToProjectPartnerReportTest : UnitTest() {
             interactor.uploadToReport(45L, 902L, file)
         }
     }
-
 }

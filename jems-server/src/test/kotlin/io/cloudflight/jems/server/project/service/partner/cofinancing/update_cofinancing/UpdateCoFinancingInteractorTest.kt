@@ -126,8 +126,12 @@ internal class UpdateCoFinancingInteractorTest {
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,
             firstStepPreSubmissionCheckPluginKey = null,
+            reportPartnerCheckPluginKey = null,
+            reportProjectCheckPluginKey = null,
             projectDefinedUnitCostAllowed = false,
             projectDefinedLumpSumAllowed = true,
+            controlReportPartnerCheckPluginKey = null,
+            controlReportSamplingCheckPluginKey = null
         )
 
         private val callDetailsMaxFunds = CallDetail(
@@ -178,8 +182,12 @@ internal class UpdateCoFinancingInteractorTest {
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,
             firstStepPreSubmissionCheckPluginKey = null,
+            reportPartnerCheckPluginKey = null,
+            reportProjectCheckPluginKey = null,
             projectDefinedUnitCostAllowed = false,
             projectDefinedLumpSumAllowed = true,
+            controlReportPartnerCheckPluginKey = null,
+            controlReportSamplingCheckPluginKey = null
         )
 
         private val callDetailsOneFund = CallDetail(
@@ -226,8 +234,12 @@ internal class UpdateCoFinancingInteractorTest {
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,
             firstStepPreSubmissionCheckPluginKey = null,
+            reportPartnerCheckPluginKey = null,
+            reportProjectCheckPluginKey = null,
             projectDefinedUnitCostAllowed = false,
             projectDefinedLumpSumAllowed = true,
+            controlReportPartnerCheckPluginKey = null,
+            controlReportSamplingCheckPluginKey = null
         )
 
     }

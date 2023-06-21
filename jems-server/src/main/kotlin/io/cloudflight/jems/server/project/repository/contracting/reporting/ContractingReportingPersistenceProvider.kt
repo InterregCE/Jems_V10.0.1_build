@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.repository.contracting.reporting
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.contracting.reporting.ProjectContractingReportingEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
+import io.cloudflight.jems.server.project.repository.report.project.base.ProjectReportRepository
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ProjectContractingReportingSchedule
 import io.cloudflight.jems.server.project.service.contracting.reporting.ContractingReportingPersistence
 import org.springframework.stereotype.Repository
@@ -14,16 +15,28 @@ import kotlin.collections.HashSet
 class ContractingReportingPersistenceProvider(
     private val projectContractingReportingRepository: ProjectContractingReportingRepository,
     private val projectRepository: ProjectRepository,
+    private val projectReportRepository: ProjectReportRepository
 ): ContractingReportingPersistence {
 
     @Transactional(readOnly = true)
-    override fun getContractingReporting(projectId: Long): List<ProjectContractingReportingSchedule> =
-        projectContractingReportingRepository.findTop50ByProjectIdOrderByDeadline(projectId).toModel()
+    override fun getContractingReporting(projectId: Long): List<ProjectContractingReportingSchedule> {
+        val deadlineEntities = projectContractingReportingRepository.findTop50ByProjectIdOrderByDeadline(projectId)
+        val linkedReportsByDeadline = projectReportRepository.findAllByProjectIdAndDeadlineNotNull(projectId).groupBy { it.deadline?.id }
+        return deadlineEntities.map { deadline -> deadline.toModel(linkedReportsByDeadline[deadline.id]) }
+    }
+
+
+    @Transactional(readOnly = true)
+    override fun getContractingReportingDeadline(projectId: Long, deadlineId: Long): ProjectContractingReportingSchedule {
+        val linkedProjectReports = projectReportRepository.findAllByProjectIdAndDeadlineId(projectId, deadlineId)
+        return projectContractingReportingRepository.findByProjectIdAndId(projectId, id = deadlineId).toModel(linkedProjectReports)
+    }
+
 
     @Transactional
     override fun updateContractingReporting(
         projectId: Long,
-        deadlines: Collection<ProjectContractingReportingSchedule>,
+        deadlines: List<ProjectContractingReportingSchedule>,
     ): List<ProjectContractingReportingSchedule> {
         val toStayIds = deadlines.mapTo(HashSet()) { it.id }.minus(0L)
 
@@ -43,8 +56,7 @@ class ContractingReportingPersistenceProvider(
                 }
             }
         }
-
-        return projectContractingReportingRepository.findTop50ByProjectIdOrderByDeadline(projectId).toModel()
+        return getContractingReporting(projectId)
     }
 
     @Transactional
@@ -58,6 +70,10 @@ class ContractingReportingPersistenceProvider(
             projectId,
             newMaxDuration).map { s -> s.id }
     }
+
+    @Transactional(readOnly = true)
+    override fun getReportIdsByDeadlineId(projectId: Long, deadlineId: Long): List<Long> =
+        projectReportRepository.findAllByProjectIdAndDeadlineId(projectId, deadlineId).map { it.id }
 
     private fun Map<Long, ProjectContractingReportingEntity>.getById(id: Long): Optional<ProjectContractingReportingEntity> {
         val value = this[id]
@@ -81,6 +97,7 @@ class ContractingReportingPersistenceProvider(
             periodNumber = periodNumber,
             deadline = date,
             comment = comment,
+            number = number,
         )
 
 }

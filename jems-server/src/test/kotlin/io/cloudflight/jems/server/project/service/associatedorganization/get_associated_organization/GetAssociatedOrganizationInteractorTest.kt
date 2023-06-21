@@ -49,6 +49,7 @@ internal class GetAssociatedOrganizationInteractorTest : UnitTest() {
         name = "Name",
         password = "hash",
         email = "admin@admin.dev",
+        sendNotificationsToEmail = false,
         surname = "Surname",
         userRole = userRole,
         userStatus = UserStatus.ACTIVE
@@ -71,8 +72,12 @@ internal class GetAssociatedOrganizationInteractorTest : UnitTest() {
         allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD),
         preSubmissionCheckPluginKey = null,
         firstStepPreSubmissionCheckPluginKey = null,
+        reportPartnerCheckPluginKey = "check-off",
+        reportProjectCheckPluginKey = "check-off",
         projectDefinedUnitCostAllowed = true,
         projectDefinedLumpSumAllowed = false,
+        controlReportPartnerCheckPluginKey = "control-report-partner-check-off",
+        controlReportSamplingCheckPluginKey = "control-report-sampling-check-off"
     )
     private val projectStatus = ProjectStatusHistoryEntity(
         status = ApplicationStatus.APPROVED,

@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.call.service.update_call_unit_costs
 
-import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.audit.dto.AuditAction
+import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
@@ -40,8 +40,12 @@ class UpdateCallUnitCostsTest {
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,
             firstStepPreSubmissionCheckPluginKey = null,
+            reportPartnerCheckPluginKey = null,
+            controlReportPartnerCheckPluginKey = null,
+            reportProjectCheckPluginKey = null,
             projectDefinedUnitCostAllowed = false,
             projectDefinedLumpSumAllowed = true,
+            controlReportSamplingCheckPluginKey = null
         )
     }
 
@@ -76,7 +80,7 @@ class UpdateCallUnitCostsTest {
             AuditCandidate(
                 action = AuditAction.CALL_CONFIGURATION_CHANGED,
                 entityRelatedId = ID,
-                description = "Configuration of published call id=$ID name='' changed:\n" +
+                description = "Configuration of published call id=$ID name='' changed: Application form configuration was changed\n" +
                     "unitCostIds changed from [] to [4, 5]"
             )
         )

@@ -58,4 +58,13 @@ Cypress.Commands.add('clickToDownload', {prevSubject: true}, (subject, requestTo
   });
 });
 
+// https://stackoverflow.com/a/63519375/4876320
+const resizeObserverLoopErrRe = /^[^(ResizeObserver loop limit exceeded)]/
+Cypress.on('uncaught:exception', (err) => {
+  /* returning false here prevents Cypress from failing the test */
+  if (resizeObserverLoopErrRe.test(err.message)) {
+    return false
+  }
+})
+
 export {}

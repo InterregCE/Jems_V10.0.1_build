@@ -29,6 +29,18 @@ data class ProgrammePriority(
         if (policies != otherPolicies)
             changes["specificObjectives"] = Pair(policies, otherPolicies)
 
+        val programmeObjectivePolicyCode = specificObjectives.map { it.code }
+        val otherProgrammeObjectivePolicyCode = other.specificObjectives.map { it.code }
+
+        if (programmeObjectivePolicyCode != otherProgrammeObjectivePolicyCode)
+            changes["programmeObjectivePolicyCodes"] = Pair(programmeObjectivePolicyCode, otherProgrammeObjectivePolicyCode)
+
+        val dimensionCodes = specificObjectives.mapTo(mutableSetOf()) { it.dimensionCodes }
+        val otherDimensionCodes = other.specificObjectives.mapTo(mutableSetOf()) { it.dimensionCodes }
+
+        if (dimensionCodes != otherDimensionCodes)
+            changes["dimensions"] = Pair(dimensionCodes, otherDimensionCodes)
+
         return changes
     }
 

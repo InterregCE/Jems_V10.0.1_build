@@ -9,6 +9,7 @@ import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaborato
 import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.UserRolePersistence
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectCreate
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.assignment.PartnerCollaborator
 import io.cloudflight.jems.server.utils.partner.projectPartnerEntity
 import io.cloudflight.jems.server.utils.partner.projectPartnerSummary
@@ -66,9 +67,16 @@ internal class AssignUserCollaboratorToPartnerTest : UnitTest() {
 
     @Test
     fun `update partner collaborators`() {
-        val userData = slot<Map<Long, PartnerCollaboratorLevel>>()
+        val userData = slot<Map<Long, Pair<PartnerCollaboratorLevel, Boolean>>>()
         val expectedResult = setOf(
-            PartnerCollaborator(userId = USER_ID, partnerId = PARTNER_ID, userEmail = user.email, PartnerCollaboratorLevel.EDIT),
+            PartnerCollaborator(
+                userId = USER_ID,
+                partnerId = PARTNER_ID,
+                userEmail = user.email,
+                sendNotificationsToEmail = false,
+                userStatus = UserStatus.ACTIVE,
+                PartnerCollaboratorLevel.EDIT,
+                gdpr = false),
         )
         val allEmails = slot<Collection<String>>()
 
@@ -79,13 +87,49 @@ internal class AssignUserCollaboratorToPartnerTest : UnitTest() {
         every { collaboratorPersistence.changeUsersAssignedToPartner(PROJECT_ID, PARTNER_ID, capture(userData)) } returns expectedResult
 
         val result = assignUser.updateUserAssignmentsOnPartner(
-            PROJECT_ID, PARTNER_ID, setOf(Pair(user.email, PartnerCollaboratorLevel.EDIT))
+            PROJECT_ID, PARTNER_ID, mapOf(user.email to Pair(PartnerCollaboratorLevel.EDIT, false))
         )
 
         assertThat(result).containsExactlyElementsOf(expectedResult)
         assertThat(allEmails.captured).containsExactlyInAnyOrder(user.email)
-        assertThat(userData.captured).containsExactlyEntriesOf(mapOf(USER_ID to PartnerCollaboratorLevel.EDIT))
-        verify(exactly = 1) { eventPublisher.publishEvent(AssignCollaboratorToPartnerEvent(
+        assertThat(userData.captured).containsExactlyEntriesOf(mapOf(USER_ID to Pair(PartnerCollaboratorLevel.EDIT, false)))
+        verify(exactly = 1) { eventPublisher.publishEvent(AssignUserCollaboratorToPartnerEvent(
+            project = projectSummary(),
+            partner = projectPartnerSummary(),
+            collaborators = expectedResult,
+        )) }
+    }
+
+    @Test
+    fun `update partner collaborators with GDPR`() {
+        val userData = slot<Map<Long, Pair<PartnerCollaboratorLevel, Boolean>>>()
+        val expectedResult = setOf(
+            PartnerCollaborator(
+                userId = USER_ID,
+                partnerId = PARTNER_ID,
+                userEmail = user.email,
+                sendNotificationsToEmail = false,
+                userStatus = UserStatus.ACTIVE,
+                PartnerCollaboratorLevel.EDIT,
+                gdpr = true
+            ),
+        )
+        val allEmails = slot<Collection<String>>()
+
+        every { userRolePersistence.findRoleIdsHavingAndNotHavingPermissions(setOf(ProjectCreate), emptySet()) } returns setOf(USER_ROLE_ID)
+        every { userPersistence.findAllByEmails(capture(allEmails)) } returns listOf(user)
+        every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary()
+        every { partnerRepository.getById(PARTNER_ID) } returns projectPartnerEntity()
+        every { collaboratorPersistence.changeUsersAssignedToPartner(PROJECT_ID, PARTNER_ID, capture(userData)) } returns expectedResult
+
+        val result = assignUser.updateUserAssignmentsOnPartner(
+            PROJECT_ID, PARTNER_ID, mapOf(user.email to Pair(PartnerCollaboratorLevel.EDIT, true))
+        )
+
+        assertThat(result).containsExactlyElementsOf(expectedResult)
+        assertThat(allEmails.captured).containsExactlyInAnyOrder(user.email)
+        assertThat(userData.captured).containsExactlyEntriesOf(mapOf(USER_ID to Pair(PartnerCollaboratorLevel.EDIT, true)))
+        verify(exactly = 1) { eventPublisher.publishEvent(AssignUserCollaboratorToPartnerEvent(
             project = projectSummary(),
             partner = projectPartnerSummary(),
             collaborators = expectedResult,
@@ -100,7 +144,7 @@ internal class AssignUserCollaboratorToPartnerTest : UnitTest() {
         every { userPersistence.findAllByEmails(capture(allEmails)) } returns emptyList()
 
         assertThrows<UsersAreNotValid> {
-            assignUser.updateUserAssignmentsOnPartner(PROJECT_ID, PARTNER_ID, setOf(Pair(user.email, PartnerCollaboratorLevel.EDIT)))
+            assignUser.updateUserAssignmentsOnPartner(PROJECT_ID, PARTNER_ID, mapOf(user.email to  Pair(PartnerCollaboratorLevel.EDIT, false)))
         }
     }
 }

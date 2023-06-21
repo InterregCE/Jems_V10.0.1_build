@@ -10,14 +10,24 @@ enum class UserRolePermissionDTO(val key: String) {
 
     ProjectCreatorContractingReportingView("ProjectCreatorContractingReportingView"),
     ProjectCreatorContractingReportingEdit("ProjectCreatorContractingReportingEdit"),
+
+    ProjectCreatorSharedFolderView("ProjectCreatorSharedFolderView"),
+    ProjectCreatorSharedFolderEdit("ProjectCreatorSharedFolderEdit"),
     // endregion Creator
 
     // region Monitor
     ProjectReportingView("ProjectReportingView"),
     ProjectReportingEdit("ProjectReportingEdit"),
+    ProjectReportingReOpen("ProjectReportingReOpen"),
+    ProjectPartnerControlReportingReOpen("ProjectPartnerControlReportingReOpen"),
+    ProjectReportingProjectView("ProjectReportingProjectView"),
+    ProjectReportingProjectEdit("ProjectReportingProjectEdit"),
+    ProjectReportingChecklistAfterControl("ProjectReportingChecklistAfterControl"),
 
     ProjectContractingPartnerView("ProjectContractingPartnerView"),
     ProjectContractingPartnerEdit("ProjectContractingPartnerEdit"),
+    ProjectContractingPartnerStateAidView("ProjectContractingPartnerStateAidView"),
+    ProjectContractingPartnerStateAidEdit("ProjectContractingPartnerStateAidEdit"),
 
     ProjectContractingView("ProjectContractingView"),
     ProjectSetToContracted("ProjectSetToContracted"),
@@ -70,11 +80,15 @@ enum class UserRolePermissionDTO(val key: String) {
 
     ProjectMonitorCollaboratorsRetrieve("ProjectMonitorCollaboratorsRetrieve"),
     ProjectMonitorCollaboratorsUpdate("ProjectMonitorCollaboratorsUpdate"),
+
+    ProjectMonitorSharedFolderView("ProjectMonitorSharedFolderView"),
+    ProjectMonitorSharedFolderEdit("ProjectMonitorSharedFolderEdit"),
     // endregion Monitor
 
     // region top navigation
     ProjectsWithOwnershipRetrieve("ProjectsWithOwnershipRetrieve"),
     CallPublishedRetrieve("CallPublishedRetrieve"),
+    NotificationsRetrieve("NotificationsRetrieve"),
 
     ProjectRetrieve("ProjectRetrieve"),
     ProjectRetrieveEditUserAssignments("ProjectRetrieveEditUserAssignments"),
@@ -88,6 +102,7 @@ enum class UserRolePermissionDTO(val key: String) {
     InstitutionsRetrieve("InstitutionsRetrieve"),
     InstitutionsUpdate("InstitutionsUpdate"),
     InstitutionsUnlimited("InstitutionsUnlimited"),
+    AssignmentsUnlimited("AssignmentsUnlimited"),
 
     InstitutionsAssignmentRetrieve("InstitutionsAssignmentRetrieve"),
     InstitutionsAssignmentUpdate("InstitutionsAssignmentUpdate"),
@@ -110,5 +125,4 @@ enum class UserRolePermissionDTO(val key: String) {
 
     AuditRetrieve("AuditRetrieve"),
     // endregion top navigation
-
 }

@@ -8,7 +8,7 @@ dependencies {
     // load from nexus
     implementation('io.cloudflight.jems.plugin.contract:jems-plugin-contract')
     // load for local development (if projects are cloned in same root as jems)
-    // implementation files("../../jems-plugin-contract/build/libs/jems-plugin-contract-$jemsPluginContractVersion-SNAPSHOT.jar")
+    // implementation files("../../jems-plugin-interface/build/libs/jems-plugin-contract-$jemsPluginContractVersion-SNAPSHOT.jar")
     // implementation files("../../jems-default-plugin/build/libs/jems-standard-plugin-$jemsStandardPluginVersion-SNAPSHOT.jar")
 
     toDownload('io.cloudflight.jems.plugin.standard:jems-standard-plugin')
@@ -37,12 +37,15 @@ dependencies {
 
     implementation('com.fasterxml.jackson.datatype:jackson-datatype-jsr310')
     implementation('org.mariadb.jdbc:mariadb-java-client')
-    implementation('org.elasticsearch.client:elasticsearch-rest-high-level-client')
+
+    // Elasticsearch Java API Client
+    implementation('co.elastic.clients:elasticsearch-java')
+
     implementation('commons-io:commons-io')
     implementation('io.minio:minio')
     implementation('com.github.doyaaaaaken:kotlin-csv-jvm')
     implementation('com.vladmihalcea:hibernate-types-55')
-    implementation ('com.google.code.gson:gson')
+    implementation('com.google.code.gson:gson')
     implementation('org.hibernate:hibernate-core')
     implementation('io.springfox:springfox-swagger-ui')
     implementation('io.springfox:springfox-swagger2')
@@ -62,10 +65,10 @@ dependencies {
         implementation('commons-io:commons-io:2.8.0')
         implementation("com.vladmihalcea:hibernate-types-55:2.14.0")
         implementation('io.minio:minio:8.3.0')
-        implementation('org.mariadb.jdbc:mariadb-java-client:2.7.2')
+        implementation('org.mariadb.jdbc:mariadb-java-client:3.1.2')
         implementation('io.springfox:springfox-swagger-ui:2.9.2')
         implementation('io.springfox:springfox-swagger2:2.9.2')
-        implementation('org.elasticsearch.client:elasticsearch-rest-high-level-client:7.16.3')
+        implementation('co.elastic.clients:elasticsearch-java:8.6.2')
         implementation('io.imunity.simplecaptcha:simplecaptcha:1.3.0')
         implementation("io.cloudflight.jems.plugin.contract:jems-plugin-contract:$jemsPluginContractVersion")
         toDownload("io.cloudflight.jems.plugin.standard:jems-standard-plugin:$jemsStandardPluginVersion")

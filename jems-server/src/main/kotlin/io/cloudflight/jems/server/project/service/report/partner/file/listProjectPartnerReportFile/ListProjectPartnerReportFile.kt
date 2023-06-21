@@ -1,21 +1,18 @@
 package io.cloudflight.jems.server.project.service.report.partner.file.listProjectPartnerReportFile
 
+import io.cloudflight.jems.server.common.SENSITIVE_FILE_NAME_MAKS
+import io.cloudflight.jems.server.common.SENSITIVE_TRANSLATION_MAKS
+import io.cloudflight.jems.server.common.anonymize
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
+import io.cloudflight.jems.server.common.file.service.model.JemsFile
+import io.cloudflight.jems.server.common.file.service.model.JemsFileSearchRequest
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType.*
 import io.cloudflight.jems.server.project.authorization.CanViewPartnerReport
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.PartnerReport
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.WorkPlan
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.Activity
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.Deliverable
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.Output
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.Expenditure
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.Procurement
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.Contribution
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.ProcurementAttachment
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileSearchRequest
+import io.cloudflight.jems.server.project.service.report.partner.SensitiveDataAuthorizationService
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -24,7 +21,9 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class ListProjectPartnerReportFile(
     private val partnerPersistence: PartnerPersistence,
-    private val reportFilePersistence: ProjectReportFilePersistence,
+    private val filePersistence: JemsFilePersistence,
+    private val reportExpenditurePersistence: ProjectPartnerReportExpenditurePersistence,
+    private val sensitiveDataAuthorization: SensitiveDataAuthorizationService
 ) : ListProjectPartnerReportFileInteractor {
 
     companion object {
@@ -56,12 +55,17 @@ class ListProjectPartnerReportFile(
             reportId = searchRequest.reportId,
         )
 
-        return reportFilePersistence.listAttachments(
+        return filePersistence.listAttachments(
             pageable = pageable,
             indexPrefix = filePathPrefix,
             filterSubtypes = searchRequest.filterSubtypes,
             filterUserIds = emptySet(),
-        )
+        ).also {
+            if (!sensitiveDataAuthorization.canViewPartnerSensitiveData(partnerId)) {
+                it.anonymizeSensitiveFileMetadata(partnerId, searchRequest.reportId)
+            }
+
+        }
     }
 
     private fun generateSearchString(
@@ -90,4 +94,29 @@ class ListProjectPartnerReportFile(
         )
     }
 
+    fun Page<JemsFile>.anonymizeSensitiveFileMetadata(partnerId: Long, reportId: Long) {
+        val fileTypeToFiles =  this.content.groupBy { it.type }
+        for ((fileType, files) in fileTypeToFiles) {
+            when(fileType) {
+                Expenditure -> anonymizeExpenditureFileNames(files, partnerId, reportId)
+                ProcurementGdprAttachment -> anonymizeProcurementGdprFileNames(files)
+                else -> {}
+            }
+        }
+
+    }
+
+    private fun anonymizeExpenditureFileNames(files: List<JemsFile>, partnerId: Long, reportId: Long) {
+       val gdprProtectedExpendituresFileIds = reportExpenditurePersistence.getPartnerReportExpenditureCosts(partnerId = partnerId, reportId = reportId)
+            .filter { it.gdpr }.map { it.attachment?.id }
+        files.forEach {
+            it.takeIf { it.id in gdprProtectedExpendituresFileIds }?.apply {
+                this.name = SENSITIVE_FILE_NAME_MAKS
+                this.description = SENSITIVE_TRANSLATION_MAKS
+            }
+        }
+    }
+
+    private fun anonymizeProcurementGdprFileNames(files: List<JemsFile>) =
+        files.onEach { it.anonymize() }
 }

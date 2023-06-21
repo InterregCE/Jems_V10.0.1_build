@@ -7,15 +7,19 @@ import {FormArray, FormBuilder} from '@angular/forms';
 import {catchError, map, take,tap} from 'rxjs/operators';
 import {
   InputTranslation,
-  OutputProgrammePriorityPolicySimpleDTO,
+  OutputProgrammePriorityPolicySimpleDTO, ProjectDetailFormDTO,
   ProjectPeriodDTO,
-  ProjectResultDTO,
+  ProjectResultDTO, ProjectStatusDTO,
   ResultIndicatorSummaryDTO,
 } from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {MatSelectChange} from '@angular/material/select/select';
 import {Alert} from '@common/components/forms/alert';
+import {
+  ProjectStore
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectUtil} from '@project/common/project-util';
 
 @Component({
   selector: 'jems-project-results-page',
@@ -40,12 +44,14 @@ export class ProjectResultsPageComponent implements OnInit {
     projectId: number;
     projectTitle: string;
     specificObjective: OutputProgrammePriorityPolicySimpleDTO;
+    isAlreadyContracted: boolean;
   }>;
   Alert = Alert;
 
   constructor(public formService: FormService,
               private formBuilder: FormBuilder,
               private projectResultsPageStore: ProjectResultsPageStore,
+              private projectStore: ProjectStore,
               private activatedRoute: ActivatedRoute) {
     this.formService.init(this.form, this.projectResultsPageStore.isProjectEditable$);
   }
@@ -59,10 +65,11 @@ export class ProjectResultsPageComponent implements OnInit {
       this.projectResultsPageStore.projectId$,
       this.projectResultsPageStore.projectTitle$,
       this.projectResultsPageStore.projectForm$,
+      this.projectStore.currentVersionOfProjectStatus$
     ])
       .pipe(
-        map(([results, resultIndicators, periods, projectId, projectTitle, projectForm$]) => (
-          {results, resultIndicators, periods, projectId, projectTitle, specificObjective: projectForm$.specificObjective})
+        map(([results, resultIndicators, periods, projectId, projectTitle, projectForm$, projectStatus]: [ProjectResultDTO[], ResultIndicatorSummaryDTO[], ProjectPeriodDTO[], number, string, ProjectDetailFormDTO, ProjectStatusDTO]) => (
+          {results, resultIndicators, periods, projectId, projectTitle, specificObjective: projectForm$.specificObjective, isAlreadyContracted: ProjectUtil.isContractedOrAnyStatusAfterContracted(projectStatus)})
         ),
         tap(data => this.resetForm(data.results, data.resultIndicators))
       );
@@ -87,6 +94,11 @@ export class ProjectResultsPageComponent implements OnInit {
     this.results.controls.forEach(
       (result, i) => result.get(this.constants.RESULT_NUMBER.name)?.setValue(i)
     );
+    this.formService.setDirty(true);
+  }
+
+  deactivateResult(index: number): void {
+    this.results.at(index).get('deactivated')?.setValue(true);
     this.formService.setDirty(true);
   }
 
@@ -122,12 +134,13 @@ export class ProjectResultsPageComponent implements OnInit {
     this.results.push(this.formBuilder.group(
       {
         programmeResultIndicatorId: this.formBuilder.control(existing?.programmeResultIndicatorId),
-        resultNumber: this.formBuilder.control(existing?.resultNumber || this.results.length),
+        resultNumber: this.formBuilder.control(existing?.resultNumber || 0),
         targetValue: this.formBuilder.control(existing?.targetValue || 1),
         baseline: this.formBuilder.control(existing?.baseline || 0),
         baselineMaxValue: this.formBuilder.control(baselineMaxValue),
         periodNumber: this.formBuilder.control(existing?.periodNumber || ''),
         description: this.formBuilder.control(existing?.description || []),
+        deactivated: this.formBuilder.control(existing?.deactivated || false),
       })
     );
   }

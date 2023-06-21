@@ -9,14 +9,12 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class GetContractingPartnerDocumentsLocation(
-    private val documentsLocationPersistence: ContractingPartnerDocumentsLocationPersistence,
+    private val getContractingPartnerDocumentsLocationService: GetContractingPartnerDocumentsLocationService,
 ): GetContractingPartnerDocumentsLocationInteractor {
 
     @CanRetrieveProjectContractingPartner
-    @Transactional(readOnly = true)
     @ExceptionWrapper(GetContractingPartnerDocumentsLocationException::class)
-    override fun getDocumentsLocation(partnerId: Long): ContractingPartnerDocumentsLocation {
-        return documentsLocationPersistence.getDocumentsLocation(partnerId)
-    }
+    override fun getDocumentsLocation(partnerId: Long): ContractingPartnerDocumentsLocation =
+        getContractingPartnerDocumentsLocationService.getDocumentsLocation(partnerId)
 
 }

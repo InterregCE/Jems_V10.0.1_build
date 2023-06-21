@@ -1,11 +1,7 @@
 package io.cloudflight.jems.server.project.service.application.refuse_application
 
-import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentQualityResult
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
-import io.cloudflight.jems.server.audit.model.AuditProject
-import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
@@ -15,6 +11,7 @@ import io.cloudflight.jems.server.project.service.application.ApplicationStatus.
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus.STEP1_ELIGIBLE
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus.STEP1_NOT_APPROVED
 import io.cloudflight.jems.server.project.service.application.projectWithId
+import io.cloudflight.jems.server.notification.handler.ProjectStatusChangeEvent
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
 import io.cloudflight.jems.server.project.service.application.workflow.states.EligibleApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.first_step.FirstStepEligibleApplicationState
@@ -41,6 +38,7 @@ class RefuseApplicationInteractorTest : UnitTest() {
         private fun summary(status: ApplicationStatus) = ProjectSummary(
             id = PROJECT_ID,
             customIdentifier = "01",
+            callId = 1L,
             callName = "",
             acronym = "project acronym",
             status = status,
@@ -89,13 +87,13 @@ class RefuseApplicationInteractorTest : UnitTest() {
 
         assertThat(refuseApplication.refuse(PROJECT_ID, actionInfo)).isEqualTo(NOT_APPROVED)
 
-        val slotAudit = slot<AuditCandidateEvent>()
+        val slotAudit = slot<ProjectStatusChangeEvent>()
         verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }
-        assertThat(slotAudit.captured.auditCandidate).isEqualTo(
-            AuditCandidate(
-                action = AuditAction.APPLICATION_STATUS_CHANGED,
-                project = AuditProject(id = PROJECT_ID.toString(), customIdentifier = "01", name = "project acronym"),
-                description = "Project application status changed from ELIGIBLE to NOT_APPROVED"
+        assertThat(slotAudit.captured).isEqualTo(
+            ProjectStatusChangeEvent(
+                context = refuseApplication,
+                projectSummary = summary(ELIGIBLE),
+                newStatus = NOT_APPROVED
             )
         )
     }
@@ -108,13 +106,13 @@ class RefuseApplicationInteractorTest : UnitTest() {
 
         assertThat(refuseApplication.refuse(PROJECT_ID, actionInfo)).isEqualTo(STEP1_NOT_APPROVED)
 
-        val slotAudit = slot<AuditCandidateEvent>()
+        val slotAudit = slot<ProjectStatusChangeEvent>()
         verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }
-        assertThat(slotAudit.captured.auditCandidate).isEqualTo(
-            AuditCandidate(
-                action = AuditAction.APPLICATION_STATUS_CHANGED,
-                project = AuditProject(id = PROJECT_ID.toString(), customIdentifier = "01", name = "project acronym"),
-                description = "Project application status changed from STEP1_ELIGIBLE to STEP1_NOT_APPROVED"
+        assertThat(slotAudit.captured).isEqualTo(
+            ProjectStatusChangeEvent(
+                context = refuseApplication,
+                projectSummary = summary(STEP1_ELIGIBLE),
+                newStatus = STEP1_NOT_APPROVED
             )
         )
     }

@@ -9,7 +9,6 @@ import io.cloudflight.jems.server.common.validator.GeneralValidatorDefaultImpl
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.priority.getStringOfLength
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
-import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ExpenditureCostCategoryBreakdown
@@ -20,20 +19,21 @@ import io.cloudflight.jems.server.project.service.report.model.partner.identific
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportSpendingProfile
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportFileFormat
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportType
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.GetReportExpenditureCostCategoryCalculatorService
-import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectReportIdentificationPersistence
+import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportIdentificationPersistence
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import java.math.BigDecimal
+import java.time.LocalDate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.math.BigDecimal
-import java.time.LocalDate
 
 internal class UpdateProjectPartnerReportIdentificationTest : UnitTest() {
 
@@ -67,14 +67,14 @@ internal class UpdateProjectPartnerReportIdentificationTest : UnitTest() {
             startDate = TOMORROW,
             endDate = YESTERDAY,
             period = 2,
-            summary = setOf(InputTranslation(EN, getStringOfLength(2001))),
-            problemsAndDeviations = setOf(InputTranslation(EN, getStringOfLength(2001))),
+            summary = setOf(InputTranslation(EN, getStringOfLength(5001))),
+            problemsAndDeviations = setOf(InputTranslation(EN, getStringOfLength(5001))),
             targetGroups = listOf(
                 emptySet(),
                 setOf(InputTranslation(EN, getStringOfLength(2001))),
             ),
             nextReportForecast = BigDecimal.valueOf(999_999_999_9901, 4),
-            spendingDeviations = setOf(InputTranslation(EN, getStringOfLength(2001))),
+            spendingDeviations = setOf(InputTranslation(EN, getStringOfLength(5001))),
         )
 
         private fun saveResult(
@@ -107,23 +107,27 @@ internal class UpdateProjectPartnerReportIdentificationTest : UnitTest() {
             flatRate = null,
             totalEligibleBudget = BigDecimal.valueOf(1969, 2) /* not important */,
             previouslyReported = BigDecimal.valueOf(30),
+            previouslyReportedParked = BigDecimal.valueOf(20),
             currentReport = BigDecimal.ONE,
+            currentReportReIncluded = BigDecimal.ONE,
+            totalEligibleAfterControl = BigDecimal.valueOf(4235, 2) /* not important */,
+            previouslyValidated = BigDecimal.valueOf(5)
         )
 
     }
 
     @MockK
-    lateinit var reportPersistence: ProjectReportPersistence
+    lateinit var reportPersistence: ProjectPartnerReportPersistence
 
     @MockK
-    lateinit var reportIdentificationPersistence: ProjectReportIdentificationPersistence
+    lateinit var reportIdentificationPersistence: ProjectPartnerReportIdentificationPersistence
 
     @MockK
     lateinit var reportExpenditureCostCategoryCalculatorService: GetReportExpenditureCostCategoryCalculatorService
 
     lateinit var generalValidator: GeneralValidatorService
 
-    lateinit var updateIdentification: UpdateProjectPartnerReportIdentification
+    private lateinit var updateIdentification: UpdateProjectPartnerReportIdentification
 
     @BeforeEach
     fun setup() {
@@ -141,7 +145,7 @@ internal class UpdateProjectPartnerReportIdentificationTest : UnitTest() {
     fun updateIdentification() {
         val reportId = 66L
         every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = reportId) } returns
-            ProjectPartnerReportStatusAndVersion(ReportStatus.Draft, "17.0.1")
+            ProjectPartnerReportStatusAndVersion(reportId, ReportStatus.Draft, "17.0.1")
         every { reportIdentificationPersistence.getAvailablePeriods(PARTNER_ID, reportId = reportId) } returns periods
         val slotData = slot<io.cloudflight.jems.server.project.service.report.model.partner.identification.UpdateProjectPartnerReportIdentification>()
         every { reportIdentificationPersistence.updatePartnerReportIdentification(PARTNER_ID, reportId = reportId, capture(slotData)) } returns saveResult()
@@ -161,14 +165,14 @@ internal class UpdateProjectPartnerReportIdentificationTest : UnitTest() {
     @Test
     fun `updateIdentification - report closed`() {
         every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = 5L) } returns
-            ProjectPartnerReportStatusAndVersion(ReportStatus.Submitted, "1")
+            ProjectPartnerReportStatusAndVersion(5L, ReportStatus.Submitted, "1")
         assertThrows<ReportAlreadyClosed> { updateIdentification.updateIdentification(PARTNER_ID, reportId = 5L, mockk()) }
     }
 
     @Test
     fun `updateIdentification - wrong inputs`() {
         every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = 8L) } returns
-            ProjectPartnerReportStatusAndVersion(ReportStatus.Draft, "4.0.0")
+            ProjectPartnerReportStatusAndVersion(8L, ReportStatus.Draft, "4.0.0")
 
         val ex = assertThrows<AppInputValidationException> {
             updateIdentification.updateIdentification(PARTNER_ID, reportId = 8L, updateDataInvalid)
@@ -176,10 +180,10 @@ internal class UpdateProjectPartnerReportIdentificationTest : UnitTest() {
 
         assertThat(ex.formErrors).hasSize(7)
         assertThat(ex.formErrors["summary.language.en"]).isEqualTo(I18nMessage(
-            "common.error.field.max.length", mapOf("actualLength" to "2001", "requiredLength" to "2000")
+            "common.error.field.max.length", mapOf("actualLength" to "5001", "requiredLength" to "5000")
         ))
         assertThat(ex.formErrors["problemsAndDeviations.language.en"]).isEqualTo(I18nMessage(
-            "common.error.field.max.length", mapOf("actualLength" to "2001", "requiredLength" to "2000")
+            "common.error.field.max.length", mapOf("actualLength" to "5001", "requiredLength" to "5000")
         ))
         assertThat(ex.formErrors["descriptionOfTheTargetGroup[1].language.en"]).isEqualTo(I18nMessage(
             "common.error.field.max.length", mapOf("actualLength" to "2001", "requiredLength" to "2000")
@@ -190,7 +194,7 @@ internal class UpdateProjectPartnerReportIdentificationTest : UnitTest() {
             "common.error.field.number.out.of.range", mapOf("number" to "999999999.9901", "min" to "0", "max" to "999999999.99")
         ))
         assertThat(ex.formErrors["spendingDeviations.language.en"]).isEqualTo(I18nMessage(
-            "common.error.field.max.length", mapOf("actualLength" to "2001", "requiredLength" to "2000")
+            "common.error.field.max.length", mapOf("actualLength" to "5001", "requiredLength" to "5000")
         ))
     }
 
@@ -198,7 +202,7 @@ internal class UpdateProjectPartnerReportIdentificationTest : UnitTest() {
     fun `updateIdentification - wrong period`() {
         val reportId = 75L
         every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = reportId) } returns
-            ProjectPartnerReportStatusAndVersion(ReportStatus.Draft, "8.0")
+            ProjectPartnerReportStatusAndVersion(reportId, ReportStatus.Draft, "8.0")
 
         every { reportIdentificationPersistence.getAvailablePeriods(PARTNER_ID, reportId = reportId) } returns periods
 

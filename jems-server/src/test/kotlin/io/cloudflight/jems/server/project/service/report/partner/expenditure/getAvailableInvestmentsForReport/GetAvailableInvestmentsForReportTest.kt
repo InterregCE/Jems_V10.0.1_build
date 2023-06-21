@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.service.report.partner.expenditure.ge
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportInvestment
-import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test
 class GetAvailableInvestmentsForReportTest : UnitTest() {
 
     @MockK
-    lateinit var reportExpenditurePersistence: ProjectReportExpenditurePersistence
+    lateinit var reportExpenditurePersistence: ProjectPartnerReportExpenditurePersistence
 
     @InjectMockKs
     lateinit var interactor: GetAvailableInvestmentsForReport

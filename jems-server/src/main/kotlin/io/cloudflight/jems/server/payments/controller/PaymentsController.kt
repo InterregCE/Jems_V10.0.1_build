@@ -1,14 +1,12 @@
 package io.cloudflight.jems.server.payments.controller
 
-import io.cloudflight.jems.api.payments.dto.PaymentDetailDTO
-import io.cloudflight.jems.api.payments.dto.PaymentPartnerInstallmentDTO
-import io.cloudflight.jems.api.payments.dto.PaymentToProjectDTO
 import io.cloudflight.jems.api.payments.PaymentsApi
+import io.cloudflight.jems.api.payments.dto.PaymentDetailDTO
+import io.cloudflight.jems.api.payments.dto.PaymentToProjectDTO
 import io.cloudflight.jems.server.payments.service.regular.getPaymentDetail.GetPaymentDetailInteractor
 import io.cloudflight.jems.server.payments.service.regular.getPayments.GetPaymentsInteractor
-import io.cloudflight.jems.server.payments.service.toDTO
-import io.cloudflight.jems.server.payments.service.toModelList
 import io.cloudflight.jems.server.payments.service.regular.updatePaymentInstallments.UpdatePaymentInstallmentsInteractor
+import io.cloudflight.jems.server.payments.service.toDTO
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.web.bind.annotation.RestController
@@ -28,16 +26,14 @@ class PaymentsController(
         return getPaymentDetail.getPaymentDetail(paymentId).toDTO()
     }
 
-    override fun updatePaymentPartnerInstallments(
+    override fun updatePaymentInstallments(
         paymentId: Long,
-        partnerId: Long,
-        installments: List<PaymentPartnerInstallmentDTO>
-    ): List<PaymentPartnerInstallmentDTO> {
+        paymentDetail: PaymentDetailDTO
+    ): PaymentDetailDTO {
         return updatePaymentInstallments
-            .updatePaymentPartnerInstallments(
+            .updatePaymentInstallments(
                 paymentId = paymentId,
-                partnerId = partnerId,
-                installments = installments.toModelList()
-            ).map { it.toDTO() }
+                paymentDetail = paymentDetail
+            ).toDTO()
     }
 }

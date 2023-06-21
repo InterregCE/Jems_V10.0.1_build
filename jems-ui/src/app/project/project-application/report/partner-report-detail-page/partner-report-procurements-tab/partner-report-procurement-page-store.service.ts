@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {
   ProjectPartnerReportProcurementService,
   ProjectPartnerReportService,
-  PageProjectPartnerReportProcurementSummaryDTO, IdNamePairDTO,
+  PageProjectPartnerReportProcurementDTO, IdNamePairDTO, ProjectPartnerReportDTO,
 } from '@cat/api';
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {map, startWith, switchMap, tap} from 'rxjs/operators';
@@ -22,7 +22,8 @@ import {MatSort} from '@angular/material/sort';
 export class PartnerReportProcurementsPageStore {
 
   partnerId$: Observable<string | number | null>;
-  page$: Observable<PageProjectPartnerReportProcurementSummaryDTO>;
+  page$: Observable<PageProjectPartnerReportProcurementDTO>;
+  currentReport$: Observable<ProjectPartnerReportDTO>;
 
   newPageSize$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_SIZE);
   newPageIndex$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_INDEX);
@@ -34,16 +35,18 @@ export class PartnerReportProcurementsPageStore {
               private partnerReportPageStore: PartnerReportPageStore,
               private projectPartnerReportService: ProjectPartnerReportService,
               private projectStore: ProjectStore,
-              private projectPartnerProcurementService: ProjectPartnerReportProcurementService) {
+              private projectPartnerProcurementService: ProjectPartnerReportProcurementService,
+              private partnerReportDetailPageStore: PartnerReportDetailPageStore,) {
     this.partnerId$ = this.partnerId();
     this.page$ = this.getProcurements();
+    this.currentReport$ = this.partnerReportDetailPageStore.partnerReport$;
   }
 
   private partnerId(): Observable<number | string | null> {
     return this.routingService.routeParameterChanges(PartnerReportPageStore.PARTNER_REPORT_DETAIL_PATH, 'partnerId');
   }
 
-  public getProcurements(): Observable<PageProjectPartnerReportProcurementSummaryDTO> {
+  public getProcurements(): Observable<PageProjectPartnerReportProcurementDTO> {
     return combineLatest([
       this.partnerId$.pipe(map(id => Number(id))),
       this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')

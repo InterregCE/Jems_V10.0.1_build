@@ -12,6 +12,7 @@ data class AdvancePaymentDetail (
     val projectId: Long,
     val projectCustomIdentifier: String,
     val projectAcronym: String,
+    val projectVersion: String,
 
     val partnerId: Long,
     val partnerType: ProjectPartnerRole,
@@ -22,8 +23,8 @@ data class AdvancePaymentDetail (
     val partnerContribution: IdNamePair? = null,
     val partnerContributionSpf: IdNamePair? = null,
 
-    val amountAdvance: BigDecimal?,
-    val dateOfPayment: LocalDate? = null,
+    val amountPaid: BigDecimal?,
+    val paymentDate: LocalDate? = null,
     val comment: String?,
 
     val paymentAuthorized: Boolean? = null,

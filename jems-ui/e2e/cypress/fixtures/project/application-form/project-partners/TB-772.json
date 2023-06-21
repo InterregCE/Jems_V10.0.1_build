@@ -1,0 +1,26 @@
+{
+  "firstPartner": {
+    "details": {
+      "abbreviation": "LP1",
+      "role": "LEAD_PARTNER",
+      "legalStatusId": 1
+    }
+  },
+  "secondPartner": {
+    "details": {
+      "abbreviation": "PP2",
+      "role": "PARTNER",
+      "legalStatusId": 1
+    }
+  },
+  "thirdPartner": {
+    "abbreviation": "PP3",
+    "role": "PARTNER",
+    "legalStatusId": 1
+  },
+  "fourthPartner": {
+    "abbreviation": "LP4",
+    "role": "Lead partner",
+    "legalStatus": "Public"
+  }
+}

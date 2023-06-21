@@ -31,9 +31,9 @@ class GetProjectResultIndicatorsOverview(
             programmeResultIndicatorsById = listResultIndicatorsPersistence.getTop50ResultIndicators()
                 .associateBy { it.id },
             projectResultsByIndicatorId = projectResultPersistence.getResultsForProject(projectId, version)
-            .filter { it.programmeResultIndicatorId != null }
-            .groupBy { it.programmeResultIndicatorId }
-            .toMutableMap()
+                .filter { it.programmeResultIndicatorId != null }
+                .groupBy { it.programmeResultIndicatorId }
+                .toMutableMap()
         )
     }
 }

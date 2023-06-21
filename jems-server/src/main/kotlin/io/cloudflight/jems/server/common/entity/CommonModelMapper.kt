@@ -59,3 +59,23 @@ fun Int?.toYear(): ZonedDateTime? {
         return null
     return ZonedDateTime.of(this, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC").normalized())
 }
+
+fun Set<InputTranslation>.inLang(language: SystemLanguage) =
+    firstOrNull { it.language == language }?.translation ?: ""
+
+fun <T : TranslationEntity> MutableSet<T>.updateWith(
+    entitySupplier: (SystemLanguage) -> T,
+    allTranslations: List<Set<InputTranslation>>,
+    vararg updateFunctions: (T) -> Unit
+) {
+    val notUsedLanguages = allTranslations.map { it.map { it.language } }.flatten().toSet()
+        .minus(mapTo(HashSet()) { it.language() })
+
+    addAll(notUsedLanguages.map { entitySupplier.invoke(it) })
+
+    forEach { translEntity ->
+        updateFunctions.forEach { updateFunction ->
+            updateFunction.invoke(translEntity)
+        }
+    }
+}

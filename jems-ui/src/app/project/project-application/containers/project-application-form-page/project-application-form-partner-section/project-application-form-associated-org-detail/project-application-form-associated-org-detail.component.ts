@@ -1,12 +1,12 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {combineLatest} from 'rxjs';
-import {map, take, tap} from 'rxjs/operators';
+import {catchError, map, take, tap} from 'rxjs/operators';
 import {ActivatedRoute} from '@angular/router';
 import {
   InputProjectAssociatedOrganizationAddress,
-  ProjectContactDTO,
   InputTranslation,
-  OutputProjectAssociatedOrganizationDetail
+  OutputProjectAssociatedOrganizationDetail,
+  ProjectContactDTO
 } from '@cat/api';
 import {ProjectAssociatedOrganizationStore} from '../../services/project-associated-organization-store.service';
 import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
@@ -51,8 +51,8 @@ export class ProjectApplicationFormAssociatedOrgDetailComponent implements OnIni
 
   associatedOrganizationForm: FormGroup = this.formBuilder.group({
     id: [],
-    nameInOriginalLanguage: ['', [Validators.maxLength(100), Validators.required, Validators.pattern(/(?!^\s+$)^.*$/m)]],
-    nameInEnglish: [[], [Validators.maxLength(100), Validators.required]],
+    nameInOriginalLanguage: ['', [Validators.maxLength(250), Validators.required, Validators.pattern(/(?!^\s+$)^.*$/m)]],
+    nameInEnglish: [[], [Validators.maxLength(250), Validators.required]],
     partnerId: [null, Validators.required],
     country: [''],
     countryCode: [''],
@@ -122,13 +122,15 @@ export class ProjectApplicationFormAssociatedOrgDetailComponent implements OnIni
     if (!this.controls?.id?.value) {
       this.associatedOrganizationStore.createAssociatedOrganization({id: 0, ...toSave})
         .pipe(
-          take(1)
+          take(1),
+          catchError(err => this.formService.setError(err))
         ).subscribe();
     } else {
       this.associatedOrganizationStore.updateAssociatedOrganization({id: this.controls.id.value, ...toSave})
         .pipe(
           take(1),
-          tap(() => this.formService.setSuccess('project.partner.save.success'))
+          tap(() => this.formService.setSuccess('project.partner.save.success')),
+          catchError(err => this.formService.setError(err))
         ).subscribe();
     }
   }

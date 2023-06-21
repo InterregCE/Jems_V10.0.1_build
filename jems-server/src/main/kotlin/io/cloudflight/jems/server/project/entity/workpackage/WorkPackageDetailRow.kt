@@ -8,6 +8,7 @@ interface WorkPackageDetailRow : TranslationView {
     //from workpackage
     val id: Long
     val number: Int
+    val deactivated: Boolean?
     val name: String?
     //workpackage translation
     val specificObjective: String?
@@ -18,6 +19,7 @@ interface WorkPackageDetailRow : TranslationView {
     val startPeriod: Int?
     val endPeriod: Int?
     val partnerId: Long?
+    val activityDeactivated: Boolean?
     //activity translation
     val activityTitle: String?
     val activityLanguage: SystemLanguage?
@@ -26,6 +28,7 @@ interface WorkPackageDetailRow : TranslationView {
     val deliverableId: Long?
     val deliverableNumber: Int?
     val deliverableStartPeriod: Int?
+    val deliverableDeactivated: Boolean?
     //deliverable translation
     val deliverableDescription: String?
     val deliverableTitle: String?
@@ -39,6 +42,7 @@ interface WorkPackageDetailRow : TranslationView {
     val programmeOutputIndicatorMeasurementUnit: String?
     val targetValue: BigDecimal?
     val outputPeriodNumber: Int?
+    val outputDeactivated: Boolean?
     //output translation
     val outputTitle: String?
     val outputDescription: String?
@@ -57,6 +61,7 @@ interface WorkPackageDetailRow : TranslationView {
     val investmentPostalCode: String?
     val investmentCity: String?
     val investmentExpectedDeliveryPeriod: Int?
+    val investmentDeactivated: Boolean?
     //investment translation
     val investmentTitle: String?
     val justificationExplanation: String?

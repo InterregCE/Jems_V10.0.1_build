@@ -8,17 +8,27 @@ import io.cloudflight.jems.server.common.exception.ApplicationUnprocessableExcep
 private const val CONTROL_REPORT_FILE_AUTH_SERVICE_ERROR_CODE_PREFIX = "S-CRFAS"
 private const val CONTROL_REPORT_FILE_AUTH_SERVICE_ERROR_KEY_PREFIX = "control.report.file.auth.service"
 
-class ReportNotInControl : ApplicationUnprocessableException(
+class ReportControlNotOpen : ApplicationUnprocessableException(
     code = "$CONTROL_REPORT_FILE_AUTH_SERVICE_ERROR_CODE_PREFIX-001",
     i18nMessage = I18nMessage("$CONTROL_REPORT_FILE_AUTH_SERVICE_ERROR_KEY_PREFIX.report.not.in.control"),
 )
 
-class FileNotFound : ApplicationNotFoundException(
+class ReportControlNotStartedYet : ApplicationUnprocessableException(
     code = "$CONTROL_REPORT_FILE_AUTH_SERVICE_ERROR_CODE_PREFIX-002",
+    i18nMessage = I18nMessage("$CONTROL_REPORT_FILE_AUTH_SERVICE_ERROR_KEY_PREFIX.report.not.in.control"),
+)
+
+class FileNotFound : ApplicationNotFoundException(
+    code = "$CONTROL_REPORT_FILE_AUTH_SERVICE_ERROR_CODE_PREFIX-003",
     i18nMessage = I18nMessage("$CONTROL_REPORT_FILE_AUTH_SERVICE_ERROR_KEY_PREFIX.not.found"),
 )
 
 class UserIsNotOwnerOfFile : ApplicationAuthenticationException(
-    code = "$CONTROL_REPORT_FILE_AUTH_SERVICE_ERROR_CODE_PREFIX-003",
+    code = "$CONTROL_REPORT_FILE_AUTH_SERVICE_ERROR_CODE_PREFIX-004",
     i18nMessage = I18nMessage("$CONTROL_REPORT_FILE_AUTH_SERVICE_ERROR_KEY_PREFIX.user.is.not.owner"),
+)
+
+class ReportControlFileInControlReOpened : ApplicationUnprocessableException(
+    code = "$CONTROL_REPORT_FILE_AUTH_SERVICE_ERROR_CODE_PREFIX-005",
+    i18nMessage = I18nMessage("$CONTROL_REPORT_FILE_AUTH_SERVICE_ERROR_KEY_PREFIX.report.in.control.reopened"),
 )

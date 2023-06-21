@@ -125,4 +125,15 @@ class ProjectDescriptionPersistenceProvider(
                 projectRelevanceRepository.findBenefitsByProjectIdAsOfTimestamp(projectId, timestamp).toRelevanceBenefits()
             }
         )
+
+    @Transactional(readOnly = true)
+    override fun getProjectManagement(projectId: Long, version: String?): ProjectManagement? =
+        projectVersionUtils.fetch(version, projectId,
+            currentVersionFetcher = {
+                projectManagementRepository.findFirstByProjectId(projectId)?.toProjectManagement()
+            },
+            previousVersionFetcher = { timestamp ->
+                projectManagementRepository.findByProjectIdAsOfTimestamp(projectId, timestamp).toProjectManagement()
+            }
+        )
 }

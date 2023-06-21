@@ -6,6 +6,7 @@ import {PluginInfoDTO, ProgrammeDataExportMetadataDTO} from '@cat/api';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {map, tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {Alert} from '@common/components/forms/alert';
 
 const REFRESH_INTERVAL_IN_MILLISECOND = 5000;
 
@@ -20,6 +21,7 @@ const REFRESH_INTERVAL_IN_MILLISECOND = 5000;
 })
 export class ProgrammeDataExportComponent implements OnDestroy {
 
+  Alert = Alert;
   refreshInterval;
   exportForm: FormGroup;
   data$: Observable<{
@@ -29,6 +31,7 @@ export class ProgrammeDataExportComponent implements OnDestroy {
     programmeDataExportMetadata: ProgrammeDataExportMetadataDTO[];
     isExportDisabled: boolean;
   }>;
+  pluginOptionsDescription = '';
 
   constructor(private programmePageSidenavService: ProgrammePageSidenavService, private pageStore: ProgrammeDataExportStore, private formBuilder: FormBuilder) {
 
@@ -62,15 +65,17 @@ export class ProgrammeDataExportComponent implements OnDestroy {
       inputLanguage: [this.pageStore.fallBackLanguage],
       exportLanguage: [this.pageStore.fallBackLanguage],
       pluginKey: [plugins.length > 0 ? plugins[0].key : undefined],
+      pluginOptions: [''],
     });
+     this.setPluginOptionsDescription(plugins[0].key, plugins);
   }
 
   downloadData(pluginKey: string): void {
     this.pageStore.download(pluginKey).pipe(untilDestroyed(this)).subscribe();
   }
 
-  exportData(pluginKey: string, exportLanguage: string, inputLanguage: string): void {
-    this.pageStore.exportData(pluginKey, exportLanguage, inputLanguage).pipe(untilDestroyed(this)).subscribe();
+  exportData(pluginKey: string, exportLanguage: string, inputLanguage: string, pluginOptions: string): void {
+    this.pageStore.exportData(pluginKey, exportLanguage, inputLanguage, pluginOptions).pipe(untilDestroyed(this)).subscribe();
   }
 
   isExportDisabled(programmeDataExportMetadata: ProgrammeDataExportMetadataDTO[]): boolean {
@@ -86,6 +91,11 @@ export class ProgrammeDataExportComponent implements OnDestroy {
   getPluginName(plugins: PluginInfoDTO[],pluginKey: string): string {
     return plugins.find(it => it.key === pluginKey)?.name || pluginKey;
   }
+  setPluginOptionsDescription(pluginKey: string, plugins: PluginInfoDTO[]) {
+    const plugin = plugins.find(pluginInfo => pluginInfo.key === pluginKey);
+    this.pluginOptionsDescription = plugin ? this.getPluginOptionsDescription(plugin.description): '';
+  }
+
   get inputLanguage(): string {
     return this.exportForm.get('inputLanguage')?.value || this.pageStore.fallBackLanguage;
   }
@@ -98,7 +108,18 @@ export class ProgrammeDataExportComponent implements OnDestroy {
     return this.exportForm.get('pluginKey')?.value;
   }
 
+  get pluginOptions(): string {
+    return this.exportForm.get('pluginOptions')?.value;
+  }
+
   ngOnDestroy(): void {
     clearInterval(this.refreshInterval);
+  }
+
+   private getPluginOptionsDescription(pluginDescription: string): string {
+    if(pluginDescription.includes('\n')) {
+      return pluginDescription.slice(pluginDescription.indexOf('\n'));
+    }
+    return '';
   }
 }

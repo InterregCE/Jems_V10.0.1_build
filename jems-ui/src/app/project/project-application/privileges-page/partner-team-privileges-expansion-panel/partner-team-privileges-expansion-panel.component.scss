@@ -1,6 +1,6 @@
 @import "../../../../theme/custom-styles/custom-buttons-styles";
 
-#partner-collaborators-panel {
+.partner-collaborators-panel {
   ::ng-deep {
     .small-toggle-group {
       overflow: visible;
@@ -30,4 +30,8 @@
     }
 
   }
+}
+
+.gdpr-toggle {
+  margin-left: -0.5rem;
 }

@@ -2,10 +2,10 @@ package io.cloudflight.jems.server.controllerInstitution.service.getControllerIn
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.authorization.CanRetrieveControllerInstitutions
 import io.cloudflight.jems.server.controllerInstitution.authorization.CanViewControllerInstitutionDetails
 import io.cloudflight.jems.server.controllerInstitution.authorization.ControllerInstitutionAuthorization
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitution
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionList
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional
 class GetController(
     private val controllerInstitutionPersistence: ControllerInstitutionPersistence,
     private val controllerInstitutionAuthorization: ControllerInstitutionAuthorization,
-    private val securityService: SecurityService,
+    private val securityService: SecurityService
 ): GetControllerInteractor {
 
     @CanRetrieveControllerInstitutions
@@ -38,5 +38,4 @@ class GetController(
     override fun getControllerInstitutionById(institutionId: Long): ControllerInstitution  {
         return controllerInstitutionPersistence.getControllerInstitutionById(institutionId)
     }
-
 }

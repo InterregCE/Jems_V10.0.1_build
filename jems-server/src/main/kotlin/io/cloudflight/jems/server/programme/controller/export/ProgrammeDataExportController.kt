@@ -18,8 +18,8 @@ class ProgrammeDataExportController(
     private val downloadProgrammeDataExportFile: DownloadProgrammeDataExportFileInteractor
 ) : ProgrammeDataExportApi {
 
-    override fun export(pluginKey: String?, exportLanguage: SystemLanguage, inputLanguage: SystemLanguage) =
-        exportProgrammeData.export(pluginKey, exportLanguage, inputLanguage)
+    override fun export(pluginKey: String?, exportLanguage: SystemLanguage, inputLanguage: SystemLanguage, pluginOptions: String) =
+        exportProgrammeData.export(pluginKey, exportLanguage, inputLanguage, pluginOptions)
 
     override fun list(): List<ProgrammeDataExportMetadataDTO> =
         listProgrammeDataExports.list().toDTO()

@@ -41,15 +41,22 @@ class UpdateProjectPartner(
             persistence.update(projectPartner, shouldResortPartnersByRole(projectPartner.id))
         }
 
-
     @CanUpdateProjectPartner
     @Transactional
     @ExceptionWrapper(UpdateProjectPartnerAddressesException::class)
     override fun updatePartnerAddresses(partnerId: Long, addresses: Set<ProjectPartnerAddress>): ProjectPartnerDetail =
-        addresses.any { !nutsService.validateAddress(it.country, it.nutsRegion2, it.nutsRegion3)}.let { isAnyAddressInvalid ->
+        addresses.any {
+            !nutsService.validateAddress(it.country, it.nutsRegion2, it.nutsRegion3) || missingCodes(it)
+        }.let { isAnyAddressInvalid ->
             if(isAnyAddressInvalid) throw InvalidProjectPartnerAddressesException()
             persistence.updatePartnerAddresses(partnerId, addresses)
         }
+
+    private fun missingCodes(address: ProjectPartnerAddress): Boolean {
+        return (!address.nutsRegion3.isNullOrBlank() && address.nutsRegion3Code.isNullOrBlank()) ||
+                (!address.nutsRegion2.isNullOrBlank() && address.nutsRegion2Code.isNullOrBlank()) ||
+                (!address.country.isNullOrBlank() && address.countryCode.isNullOrBlank())
+    }
 
     @CanUpdateProjectPartner
     @Transactional
@@ -63,7 +70,6 @@ class UpdateProjectPartner(
     override fun updatePartnerMotivation(partnerId: Long, motivation: ProjectPartnerMotivation): ProjectPartnerDetail =
         persistence.updatePartnerMotivation(partnerId, motivation)
 
-
     private fun ifProjectPartnerIsValid(partner: ProjectPartner) =
         generalValidator.throwIfAnyIsInvalid(
             generalValidator.notEqualTo(partner.partnerType.toString(), ProjectTargetGroupDTO.GeneralPublic.toString(), "partnerType"),
@@ -71,8 +77,8 @@ class UpdateProjectPartner(
             generalValidator.notNull(partner.role, "role"),
             generalValidator.notBlank(partner.abbreviation, "abbreviation"),
             generalValidator.maxLength(partner.abbreviation, 15, "abbreviation"),
-            generalValidator.maxLength(partner.nameInOriginalLanguage, 100, "nameInOriginalLanguage"),
-            generalValidator.maxLength(partner.nameInEnglish, 100, "nameInEnglish"),
+            generalValidator.maxLength(partner.nameInOriginalLanguage, 250, "nameInOriginalLanguage"),
+            generalValidator.maxLength(partner.nameInEnglish, 250, "nameInEnglish"),
             generalValidator.notNull(partner.legalStatusId, "legalStatusId"),
             generalValidator.maxLength(partner.otherIdentifierNumber, 50, "otherIdentifierNumber"),
             generalValidator.maxLength(partner.otherIdentifierDescription, 100, "otherIdentifierDescription"),
@@ -82,7 +88,5 @@ class UpdateProjectPartner(
         )
 
     private fun shouldResortPartnersByRole(partnerId: Long) =
-        projectPersistence.getProjectSummary(persistence.getProjectIdForPartnerId(partnerId)).let { projectSummary ->
-            projectSummary.status.isModifiableStatusBeforeApproved()
-        }
+        projectPersistence.getProjectSummary(persistence.getProjectIdForPartnerId(partnerId)).status.isModifiableStatusBeforeApproved()
 }

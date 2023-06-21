@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistCom
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.ZonedDateTime
 
 class ChecklistInstanceDetail(
     val id: Long,
@@ -12,6 +13,7 @@ class ChecklistInstanceDetail(
     val name: String?,
     val creatorEmail: String?,
     val creatorId: Long?,
+    val createdAt: ZonedDateTime?,
     val status: ChecklistInstanceStatus,
     val finishedDate: LocalDate?,
     var relatedToId: Long?,

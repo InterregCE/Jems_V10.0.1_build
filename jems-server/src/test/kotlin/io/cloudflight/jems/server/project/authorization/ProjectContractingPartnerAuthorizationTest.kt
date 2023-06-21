@@ -14,6 +14,7 @@ import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaboratorPersistence
 import io.cloudflight.jems.server.project.service.projectuser.UserProjectCollaboratorPersistence
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.assignment.CollaboratorAssignedToProject
 import io.cloudflight.jems.server.user.service.model.assignment.PartnerCollaborator
 import io.mockk.clearMocks
@@ -23,6 +24,8 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -57,12 +60,17 @@ internal class ProjectContractingPartnerAuthorizationTest: UnitTest() {
             userId = 1L,
             partnerId = 99L,
             userEmail = "collaborator@test.com",
-            level = PartnerCollaboratorLevel.VIEW
+            sendNotificationsToEmail = false,
+            userStatus = UserStatus.ACTIVE,
+            level = PartnerCollaboratorLevel.VIEW,
+            gdpr = false
         )
 
         private val collaboratorAssignedToProject = CollaboratorAssignedToProject(
             userId = 1L,
             userEmail = "collaborator@test.com",
+            sendNotificationsToEmail = false,
+            userStatus = UserStatus.ACTIVE,
             level = ProjectCollaboratorLevel.VIEW
         )
     }
@@ -83,7 +91,7 @@ internal class ProjectContractingPartnerAuthorizationTest: UnitTest() {
     lateinit var projectCollaboratorPersistence: UserProjectCollaboratorPersistence
 
     @MockK
-    lateinit var projectReportAuthorization: ProjectReportAuthorization
+    lateinit var projectPartnerReportAuthorization: ProjectPartnerReportAuthorization
 
     @MockK
     lateinit var projectAuthorization: ProjectAuthorization
@@ -104,7 +112,7 @@ internal class ProjectContractingPartnerAuthorizationTest: UnitTest() {
             currentUser,
             securityService,
             partnerCollaboratorPersistence,
-            projectReportAuthorization,
+            projectPartnerReportAuthorization,
             projectCollaboratorPersistence,
             institutionPersistence
         )
@@ -163,11 +171,11 @@ internal class ProjectContractingPartnerAuthorizationTest: UnitTest() {
         every { partnerPersistence.getProjectIdForPartnerId(10L) } returns PROJECT_ID
         every { projectAuthorization.hasPermission(UserRolePermission.ProjectContractingPartnerView, any()) } returns false
 
-        every { projectReportAuthorization.getLevelForUserCollaborator(10L) } returns Optional.of(level)
-        every { projectReportAuthorization.getLevelForUserController(10L) } returns Optional.empty()
+        every { projectPartnerReportAuthorization.getLevelForUserCollaborator(10L) } returns Optional.of(level)
+        every { projectPartnerReportAuthorization.getLevelForUserController(10L) } returns Optional.empty()
         every { projectCollaboratorPersistence.getLevelForProjectAndUser(PROJECT_ID, userId) } returns null
 
-        assertThat(authorization.hasViewPermission(10L)).isTrue()
+        assertTrue(authorization.hasViewPermission(10L))
     }
 
     @ParameterizedTest(name = "hasView from controller {0}")
@@ -179,11 +187,11 @@ internal class ProjectContractingPartnerAuthorizationTest: UnitTest() {
         every { partnerPersistence.getProjectIdForPartnerId(11L) } returns PROJECT_ID
         every { projectAuthorization.hasPermission(UserRolePermission.ProjectContractingPartnerView, any()) } returns false
 
-        every { projectReportAuthorization.getLevelForUserCollaborator(11L) } returns Optional.empty()
-        every { projectReportAuthorization.getLevelForUserController(11L) } returns Optional.of(level)
+        every { projectPartnerReportAuthorization.getLevelForUserCollaborator(11L) } returns Optional.empty()
+        every { projectPartnerReportAuthorization.getLevelForUserController(11L) } returns Optional.of(level)
         every { projectCollaboratorPersistence.getLevelForProjectAndUser(PROJECT_ID, userId) } returns null
 
-        assertThat(authorization.hasViewPermission(11L)).isTrue()
+        assertTrue(authorization.hasViewPermission(11L))
     }
 
     @ParameterizedTest(name = "hasView from projectCollaborator {0}")
@@ -195,11 +203,11 @@ internal class ProjectContractingPartnerAuthorizationTest: UnitTest() {
         every { partnerPersistence.getProjectIdForPartnerId(12L) } returns PROJECT_ID
         every { projectAuthorization.hasPermission(UserRolePermission.ProjectContractingPartnerView, any()) } returns false
 
-        every { projectReportAuthorization.getLevelForUserCollaborator(12L) } returns Optional.empty()
-        every { projectReportAuthorization.getLevelForUserController(12L) } returns Optional.empty()
+        every { projectPartnerReportAuthorization.getLevelForUserCollaborator(12L) } returns Optional.empty()
+        every { projectPartnerReportAuthorization.getLevelForUserController(12L) } returns Optional.empty()
         every { projectCollaboratorPersistence.getLevelForProjectAndUser(PROJECT_ID, userId) } returns level
 
-        assertThat(authorization.hasViewPermission(12L)).isTrue()
+        assertTrue(authorization.hasViewPermission(12L))
     }
 
     @Test
@@ -210,14 +218,14 @@ internal class ProjectContractingPartnerAuthorizationTest: UnitTest() {
         every { partnerPersistence.getProjectIdForPartnerId(13L) } returns PROJECT_ID
         every { projectAuthorization.hasPermission(UserRolePermission.ProjectContractingPartnerView, any()) } returns true
 
-        assertThat(authorization.hasViewPermission(13L)).isTrue()
+        assertTrue(authorization.hasViewPermission(13L))
 
-        verify(exactly = 0) { projectReportAuthorization.getLevelForUserCollaborator(any()) }
-        verify(exactly = 0) { projectReportAuthorization.getLevelForUserController(any()) }
+        verify(exactly = 0) { projectPartnerReportAuthorization.getLevelForUserCollaborator(any()) }
+        verify(exactly = 0) { projectPartnerReportAuthorization.getLevelForUserController(any()) }
         verify(exactly = 0) { projectCollaboratorPersistence.getLevelForProjectAndUser(any(), any()) }
     }
 
-    @Test()
+    @Test
     fun `hasView not`() {
         val userId = 104L
         every { securityService.getUserIdOrThrow() } returns userId
@@ -225,11 +233,11 @@ internal class ProjectContractingPartnerAuthorizationTest: UnitTest() {
         every { partnerPersistence.getProjectIdForPartnerId(14L) } returns PROJECT_ID
         every { projectAuthorization.hasPermission(UserRolePermission.ProjectContractingPartnerView, any()) } returns false
 
-        every { projectReportAuthorization.getLevelForUserCollaborator(14L) } returns Optional.empty()
-        every { projectReportAuthorization.getLevelForUserController(14L) } returns Optional.empty()
+        every { projectPartnerReportAuthorization.getLevelForUserCollaborator(14L) } returns Optional.empty()
+        every { projectPartnerReportAuthorization.getLevelForUserController(14L) } returns Optional.empty()
         every { projectCollaboratorPersistence.getLevelForProjectAndUser(PROJECT_ID, userId) } returns null
 
-        assertThat(authorization.hasViewPermission(14L)).isFalse()
+        assertFalse(authorization.hasViewPermission(14L))
     }
 
     @Test

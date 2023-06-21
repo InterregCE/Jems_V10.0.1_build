@@ -1,14 +1,17 @@
 package io.cloudflight.jems.server.payments.service.regular.updatePaymentInstallments
 
+import io.cloudflight.jems.api.payments.dto.PaymentDetailDTO
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.payments.service.regular.PaymentRegularPersistence
 import io.cloudflight.jems.server.payments.authorization.CanUpdatePayments
+import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallmentUpdate
 import io.cloudflight.jems.server.payments.service.paymentInstallmentConfirmed
 import io.cloudflight.jems.server.payments.service.paymentInstallmentCreated
 import io.cloudflight.jems.server.payments.service.paymentInstallmentDeleted
+import io.cloudflight.jems.server.payments.service.regular.PaymentRegularPersistence
+import io.cloudflight.jems.server.payments.service.toModelList
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -25,60 +28,66 @@ class UpdatePaymentInstallments(
     @CanUpdatePayments
     @Transactional
     @ExceptionWrapper(UpdatePaymentInstallmentsException::class)
-    override fun updatePaymentPartnerInstallments(
+    override fun updatePaymentInstallments(
         paymentId: Long,
-        partnerId: Long,
-        installments: List<PaymentPartnerInstallmentUpdate>
-    ): List<PaymentPartnerInstallment> {
-        val paymentPartnerId = paymentPersistence.getPaymentPartnerId(paymentId, partnerId)
-        val savedInstallments = paymentPersistence.findPaymentPartnerInstallments(paymentPartnerId)
-        // find Installments for deletion
-        val deleteInstallments = savedInstallments.filter { saved -> saved.id !in installments.map { it.id } }
+        paymentDetail: PaymentDetailDTO
+    ): PaymentDetail {
+        for ((index, partnerPayment) in paymentDetail.partnerPayments.withIndex()) {
+            val installments = partnerPayment.installments.toModelList()
+            val partnerId = partnerPayment.partnerId
 
-        // prevent deletion if isSavePaymentInfo, validate data
-        validator.validateInstallments(installments, savedInstallments, deleteInstallments)
+            val paymentPartnerId = paymentPersistence.getPaymentPartnerId(paymentId, partnerId)
+            val savedInstallments = paymentPersistence.findPaymentPartnerInstallments(paymentPartnerId)
+            // find Installments for deletion
+            val deleteInstallments = savedInstallments.filter { saved -> saved.id !in installments.map { it.id } }
 
-        // calculate
-        // - savePaymentInfoUserId, savePaymentDate by isSavePaymentInfo
-        // - paymentConfirmedUserId, paymentConfirmedDate by isPaymentConfirmed
-        val currentUserId = securityService.getUserIdOrThrow()
-        val today = LocalDate.now()
-        installments.forEach { toUpdate ->
-            calculateCheckboxValues(
-                currentUserId = currentUserId,
-                currentDate = today,
-                old = savedInstallments.find { toUpdate.id == it.id },
-                update = toUpdate
-            )
+            // prevent deletion if isSavePaymentInfo, validate data
+            validator.validateInstallments(installments, savedInstallments, deleteInstallments, index)
+
+            // calculate
+            // - savePaymentInfoUserId, savePaymentDate by isSavePaymentInfo
+            // - paymentConfirmedUserId, paymentConfirmedDate by isPaymentConfirmed
+            val currentUserId = securityService.getUserIdOrThrow()
+            val today = LocalDate.now()
+            installments.forEach { toUpdate ->
+                calculateCheckboxValues(
+                    currentUserId = currentUserId,
+                    currentDate = today,
+                    old = savedInstallments.find { toUpdate.id == it.id },
+                    update = toUpdate
+                )
+            }
+
+            // load project, partner for audit
+            val payment = paymentPersistence.getPaymentDetails(paymentId)
+            val partner = payment.partnerPayments.find { it.partnerId == partnerId }
+
+            paymentPersistence.updatePaymentPartnerInstallments(
+                paymentPartnerId = paymentPartnerId,
+                toDeleteInstallmentIds = deleteInstallments.mapNotNull { it.id }.toHashSet(),
+                paymentPartnerInstallments = installments
+            ).also {
+                deleteInstallments.forEach { installment ->
+                    val instNr = savedInstallments.indexOfFirst { it.id == installment.id }
+                    auditPublisher.publishEvent(paymentInstallmentDeleted(this, payment, partner!!, instNr +1))
+                }
+                installments.forEachIndexed { instNr, installment ->
+                    val oldInstallment = savedInstallments.find { installment.id == it.id }
+                    // get all that were saved
+                    if (installment.isSavePaymentInfo == true &&
+                        (oldInstallment == null || oldInstallment.isSavePaymentInfo != true)) {
+                        auditPublisher.publishEvent(paymentInstallmentCreated(this, payment, partner!!, instNr +1))
+                    }
+                    // get all that were confirmed
+                    if (installment.isPaymentConfirmed == true &&
+                        (oldInstallment == null || oldInstallment.isPaymentConfirmed != true)) {
+                        auditPublisher.publishEvent(paymentInstallmentConfirmed(this, payment, partner!!, instNr +1))
+                    }
+                }
+            }
         }
 
-        // load project, partner for audit
-        val payment = paymentPersistence.getPaymentDetails(paymentId)
-        val partner = payment.partnerPayments.find { it.partnerId == partnerId }
-
-        return paymentPersistence.updatePaymentPartnerInstallments(
-            paymentPartnerId = paymentPartnerId,
-            toDeleteInstallmentIds = deleteInstallments.mapNotNull { it.id }.toHashSet(),
-            paymentPartnerInstallments = installments
-        ).also {
-            deleteInstallments.forEach { installment ->
-                val instNr = savedInstallments.indexOfFirst { it.id == installment.id }
-                auditPublisher.publishEvent(paymentInstallmentDeleted(this, payment, partner!!, instNr +1))
-            }
-            installments.forEachIndexed { instNr, installment ->
-                val oldInstallment = savedInstallments.find { installment.id == it.id }
-                // get all that were saved
-                if (installment.isSavePaymentInfo == true &&
-                    (oldInstallment == null || oldInstallment.isSavePaymentInfo != true)) {
-                    auditPublisher.publishEvent(paymentInstallmentCreated(this, payment, partner!!, instNr +1))
-                }
-                // get all that were confirmed
-                if (installment.isPaymentConfirmed == true &&
-                    (oldInstallment == null || oldInstallment.isPaymentConfirmed != true)) {
-                    auditPublisher.publishEvent(paymentInstallmentConfirmed(this, payment, partner!!, instNr +1))
-                }
-            }
-        }
+        return paymentPersistence.getPaymentDetails(paymentId)
     }
 
     private fun calculateCheckboxValues(

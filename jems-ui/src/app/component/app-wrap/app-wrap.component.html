@@ -12,7 +12,10 @@
         <jems-side-nav
                 [headlines]="headlines">
         </jems-side-nav>
-        <button class="side-nav-toggle-button mat-elevation-z3" mat-mini-fab color="basic" (click)="sidenav.toggle()">
+        <div class="shadows"></div>
+        <button class="side-nav-toggle-button mat-elevation-z3" mat-mini-fab color="basic"
+                (click)="sidenav.toggle()"
+                aria-label="sidebar navigation toggle button" [attr.aria-expanded]=sidenav.opened>
             <mat-icon>chevron_right</mat-icon>
         </button>
     </mat-sidenav>

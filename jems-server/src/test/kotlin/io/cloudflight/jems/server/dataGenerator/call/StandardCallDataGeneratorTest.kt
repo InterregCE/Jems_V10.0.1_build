@@ -22,7 +22,12 @@ import io.cloudflight.jems.server.dataGenerator.SELECTED_PROGRAMME_FUNDS
 import io.cloudflight.jems.server.dataGenerator.STANDARD_CALL_DETAIL
 import io.cloudflight.jems.server.dataGenerator.STANDARD_CALL_LENGTH_OF_PERIOD
 import io.cloudflight.jems.server.dataGenerator.inputTranslation
+import io.cloudflight.jems.server.plugin.PartnerControlReportCheckPluginKey
+import io.cloudflight.jems.server.plugin.pre_submission_check.ControlReportPartnerCheckOff
+import io.cloudflight.jems.server.plugin.pre_submission_check.ControlReportSamplingCheckOff
 import io.cloudflight.jems.server.plugin.pre_submission_check.PreSubmissionCheckOff
+import io.cloudflight.jems.server.plugin.pre_submission_check.ReportPartnerCheckOff
+import io.cloudflight.jems.server.plugin.pre_submission_check.ReportProjectCheckOff
 import io.cloudflight.platform.test.openfeign.FeignTestClientFactory
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Order
@@ -48,7 +53,7 @@ class StandardCallDataGeneratorTest(@LocalServerPort private val port: Int) : Da
     @Test
     @Order(1)
     @ExpectSelect(156)
-    @ExpectInsert(148)
+    @ExpectInsert(147)
     @ExpectUpdate(0)
     @ExpectDelete(1)
     fun `should create standard call`() {
@@ -74,7 +79,7 @@ class StandardCallDataGeneratorTest(@LocalServerPort private val port: Int) : Da
 
     @Test
     @Order(2)
-    @ExpectSelect(29)
+    @ExpectSelect(30)
     @ExpectInsert(0)
     @ExpectUpdate(2)
     @ExpectDelete(2)
@@ -109,16 +114,19 @@ class StandardCallDataGeneratorTest(@LocalServerPort private val port: Int) : Da
     @ExpectUpdate(1)
     @ExpectDelete(1)
     fun `should set no-check pre-submission add-on for the call`() {
-        assertThat(
-            callApi.updatePreSubmissionCheckSettings(
-                callId,
-                PreSubmissionPluginsDTO(
-                    firstStepPluginKey = PreSubmissionCheckOff.KEY,
-                    pluginKey = PreSubmissionCheckOff.KEY
-                )
+        val checks = callApi.updatePreSubmissionCheckSettings(
+            callId,
+            PreSubmissionPluginsDTO(
+                firstStepPluginKey = PreSubmissionCheckOff.KEY,
+                pluginKey = PreSubmissionCheckOff.KEY,
+                reportPartnerCheckPluginKey = ReportPartnerCheckOff.KEY,
+                reportProjectCheckPluginKey = ReportProjectCheckOff.KEY,
+                controlReportPartnerCheckPluginKey = ControlReportPartnerCheckOff.KEY,
+                controlReportSamplingCheckPluginKey = ControlReportSamplingCheckOff.KEY
             )
-                .preSubmissionCheckPluginKey
-        ).isEqualTo(PreSubmissionCheckOff.KEY)
+        )
+        assertThat(checks.preSubmissionCheckPluginKey).isEqualTo(PreSubmissionCheckOff.KEY)
+        assertThat(checks.reportPartnerCheckPluginKey).isEqualTo(ReportPartnerCheckOff.KEY)
     }
 
     @Test

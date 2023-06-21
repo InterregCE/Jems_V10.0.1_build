@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.payments.model.advance
 
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import java.math.BigDecimal
 import java.time.LocalDate
 
@@ -11,7 +11,7 @@ data class AdvancePayment (
     val projectCustomIdentifier: String,
     val projectAcronym: String,
 
-    val partnerType: ProjectPartnerRoleDTO,
+    val partnerType: ProjectPartnerRole,
     val partnerNumber: Int?,
     val partnerAbbreviation: String,
 
@@ -20,7 +20,7 @@ data class AdvancePayment (
     val partnerContributionSpf: IdNamePair? = null,
 
     val paymentAuthorized: Boolean? = null,
-    val amountAdvance: BigDecimal?,
-    val dateOfPayment: LocalDate? = null,
+    val amountPaid: BigDecimal?,
+    val paymentDate: LocalDate? = null,
     val amountSettled: BigDecimal?
 )

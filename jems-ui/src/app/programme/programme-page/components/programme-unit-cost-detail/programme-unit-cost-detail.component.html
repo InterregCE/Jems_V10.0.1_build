@@ -141,13 +141,12 @@
                 (click)="onCancel()">
             {{'unit.cost.new.button.cancel' | translate}}
         </button>
-        <button mat-raised-button
-                color="primary"
-                type="button"
+        <jems-pending-button
+                [pending]="loading"
                 [disabled]="unitCostForm.invalid || submitted || !validNumberOfSelections"
-                (click)="onSubmit()">
+                (clicked)="onSubmit()">
             {{'unit.cost.new.button.save' | translate}}
-        </button>
+        </jems-pending-button>
     </div>
     <jems-alert
             [show]="!submitted && (showSuccessMessage$ | async)"

@@ -158,7 +158,7 @@ class ProjectPartnerControllerTest {
                 )
             )
         )
-        every { getProjectPartnerInteractor.findAllByProjectIdWithContributionsForDropdown(1) } returns listOf(projectPartnerPaymentSummary)
+        every { getProjectPartnerInteractor.findAllByProjectIdWithContributionsForDropdown(1, null) } returns listOf(projectPartnerPaymentSummary)
         assertThat(controller.getProjectPartnersAndContributions(1)).containsExactly(projectPartnerPaymentSummaryDto)
     }
 }

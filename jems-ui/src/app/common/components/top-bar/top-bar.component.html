@@ -1,4 +1,5 @@
-<nav class="navbar navbar-expand-lg" [ngClass]="{'no-user' : !currentUser || !isAuthenticated}">
+<nav class="navbar navbar-expand-lg"
+     [ngClass]="{'no-user' : !currentUser || !isAuthenticated, 'collapsed': isNavBarCollapsed}">
         <div class="navbar-logos" *ngIf="isAuthenticated">
             <div class="programme-logo-container show-pointer"
                  (click)="router.navigate(['app'])">
@@ -6,9 +7,7 @@
                     <ng-template #defaultLogo>
                         <img class="logo fill" src="assets/logos/InterregProgrammeLogo_96.png" alt="Logo interreg programme">
                     </ng-template>
-                <div class="vertical-splitter"></div>
             </div>
-            <img class="logo half-size" src="assets/logos/JemsLogo_96.png" alt="Logo Jems">
         </div>
     <!--Hamburger Menu-->
     <button jemsText mat-stroked-button class="navbar-toggler" [ngClass]="{'collapsed': isNavBarCollapsed}" type="button"
@@ -21,67 +20,75 @@
     </button>
 
     <!-- Content -->
-    <div class="navbar-collapse collapse" [ngClass]="{'show': !isNavBarCollapsed}" id="navbarSupportedContent">
-        <ul class="navbar-nav left-side-menu" *ngIf="currentUser && isAuthenticated">
-            <ng-container>
-                <li class="nav-item show-pointer" *ngFor="let item of menuItems$ | async"
-                    (click)="isNavBarCollapsed = true; router.navigate([item.route], {queryParams: {version: null}, queryParamsHandling: 'merge'})"
-                    [ngClass]="{
-                         'active-not-collapsed': router.url.startsWith(item.route) && !isNavBarCollapsed,
-                         'active-collapsed': router.url.startsWith(item.route) && isNavBarCollapsed
-                       }">
-                    <a class="nav-link">
-                        <mat-icon  *ngIf="item.icon">{{item.icon}}</mat-icon>
-                        <span class="nav-text" jemsText maxLines="2">{{item.name | translate}}</span>
-                    </a>
-                </li>
-            </ng-container>
-        </ul>
+    <div class="navbar-right">
+        <div class="navbar-collapse collapse" [ngClass]="{'show': !isNavBarCollapsed}" id="navbarSupportedContent">
+            <ul class="navbar-navigation-items main-navigation-items" *ngIf="currentUser && isAuthenticated">
+                <ng-container>
+                    <li class="nav-item show-pointer" *ngFor="let item of menuItems$ | async"
+                        [ngClass]="{
+                             'active-not-collapsed': router.url.startsWith(item.route) && !isNavBarCollapsed,
+                             'active-collapsed': router.url.startsWith(item.route) && isNavBarCollapsed
+                           }">
+                        <button class="nav-link"
+                            (click)="isNavBarCollapsed = true; router.navigate([item.route], {queryParams: {version: null}, queryParamsHandling: 'merge'})">
+                            <mat-icon  *ngIf="item.icon">{{item.icon}}</mat-icon>
+                            <span class="nav-text" jemsText maxLines="2">{{item.name | translate}}</span>
+                        </button>
+                    </li>
+                </ng-container>
+            </ul>
 
-        <ul class="navbar-nav" [ngClass]="{'divide': !isNavBarCollapsed}">
-            <!-- Current user -->
-            <li class="nav-item show-pointer" *ngIf="isAuthenticated && (editUserItem$ | async) as item"
-                (click)="isNavBarCollapsed = true; router.navigate([item.route], {queryParams: {version: null}, queryParamsHandling: 'merge'})"
-                [ngClass]="{
-                         'active-not-collapsed': router.url.startsWith(item.route) && !isNavBarCollapsed,
-                         'active-collapsed': router.url.startsWith(item.route) && isNavBarCollapsed
-                       }">
-                <a class="nav-link">
-                    <mat-icon  *ngIf="item.icon">{{item.icon}}</mat-icon>
-                    <span class="nav-text" jemsText maxLines="2">{{item.name | translate}}</span>
-                </a>
-            </li>
-            <!-- Logout -->
-            <li class="nav-item" *ngIf="currentUser && isAuthenticated">
-                <button jemsText mat-flat-button class="logout-button" color="primary"
-                        (click)="logout()" [ngClass]="{'not-collapsed': !isNavBarCollapsed}">
-                    {{'topbar.main.button.logout' | translate}}
-                </button>
-            </li>
-            <!-- Language selection -->
-            <li class="nav-item language-list ml-2" *ngIf="languageSettings$ | async as languageSettings">
-                <mat-select #langSelect
-                            class="language-select"
-                            aria-label="{{'topbar.help.language.select' | translate}}"
-                            [value]="translate.currentLang"
-                            (selectionChange)="changeLanguage(langSelect.value)">
-                    <mat-option
-                            *ngIf="!languageSettings.isDefaultAvailable && translate.currentLang === languageSettings.fallbackLanguage"
-                            [value]="languageSettings.fallbackLanguage"
-                            role="option">
-                        <mat-label>{{'language.' + languageSettings.fallbackLanguage.toLowerCase() | translate}}</mat-label>
-                    </mat-option>
-                    <mat-option *ngFor="let lang of languageSettings.languages" [value]="lang"
+            <ul class="navbar-navigation-items secondary-navigation-items" [ngClass]="{'divide': !isNavBarCollapsed}">
+                <!-- Language selection -->
+                <li class="nav-item language-list ml-2" *ngIf="languageSettings$ | async as languageSettings">
+                    <mat-select #langSelect
+                                class="language-select"
+                                aria-label="{{'topbar.help.language.select' | translate}}"
+                                [value]="translate.currentLang"
+                                (selectionChange)="changeLanguage(langSelect.value)">
+                        <mat-option
+                                *ngIf="!languageSettings.isDefaultAvailable && translate.currentLang === languageSettings.fallbackLanguage"
+                                [value]="languageSettings.fallbackLanguage"
                                 role="option">
-                        <mat-label>{{'language.' + lang.toLowerCase() | translate}}</mat-label>
-                    </mat-option>
-                </mat-select>
-            </li>
-            <!-- Help -->
-            <li class="nav-item" [ngClass]="{'mt-2': !isNavBarCollapsed}">
-                <jems-help-menu></jems-help-menu>
-            </li>
+                            <mat-label>{{'language.' + languageSettings.fallbackLanguage.toLowerCase() | translate}}</mat-label>
+                        </mat-option>
+                        <mat-option *ngFor="let lang of languageSettings.languages" [value]="lang"
+                                    role="option">
+                            <mat-label>{{'language.' + lang.toLowerCase() | translate}}</mat-label>
+                        </mat-option>
+                    </mat-select>
+                </li>
 
-        </ul>
+                <!-- Help -->
+                <li class="nav-item" [ngClass]="{'mt-2': !isNavBarCollapsed}">
+                    <jems-help-menu></jems-help-menu>
+                </li>
+
+                <!-- Current user -->
+                <li class="nav-item"
+                    *ngIf="isAuthenticated && (editUserItem$ | async) as item"
+                    [ngClass]="{'mt-2': !isNavBarCollapsed}">
+                    <button mat-icon-button class="matmenu-trigger" aria-label="user button" [matMenuTriggerFor]="menu" aria-label="menu">
+                        <mat-icon  *ngIf="item.icon">{{item.icon}}</mat-icon>
+                    </button>
+                    <mat-menu #menu="matMenu" >
+                        <label class="matmenu-headline">{{'common.user' | translate}}</label>
+                        <ng-container>
+                            <a mat-menu-item (click)="router.navigate([item.route], {queryParams: {version: null}, queryParamsHandling: 'merge'})">
+                                {{item.name | translate}}
+                            </a>
+                        </ng-container>
+                        <ng-container>
+                            <a mat-menu-item class="matmenu-heavy-link" (click)="logout()">
+                                <span>
+                                    {{'topbar.main.button.logout' | translate}}&nbsp;
+                                    <mat-icon>logout</mat-icon>
+                                </span>
+                            </a>
+                        </ng-container>
+                    </mat-menu>
+                </li>
+            </ul>
+        </div>
     </div>
 </nav>

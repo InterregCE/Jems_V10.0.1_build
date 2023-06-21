@@ -6,8 +6,8 @@
 @import "app/common/directives/multi-column-row/multi-column-row";
 @import "src/app/common/directives/table-config/table-config";
 
-$roboto-font-path: "~roboto-fontface/fonts" !default;
-@import "~roboto-fontface/css/roboto/sass/roboto-fontface";
+$opensans-font-path: "~npm-font-open-sans/fonts" !default;
+@import "~npm-font-open-sans/open-sans.scss";
 $material-icons-font-path: '~material-icons/iconfont/';
 @import '~material-icons/iconfont/material-icons.scss';
 
@@ -19,11 +19,12 @@ html {
 html, body {
   height: 100%;
   font-size: 16px;
+  line-height: 1.1em;
 }
 
 body {
-  font-family: Roboto, "Helvetica Neue", sans-serif;
-  -webkit-font-smoothing: antialiased;
+  font-family: "Open Sans", "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: subpixel-antialiased;
   -moz-osx-font-smoothing: grayscale;
   margin: 0;
   image-rendering: auto;
@@ -34,4 +35,135 @@ body {
 // If those are left empty now in the translations, they no longer will take space in the layout.
 ul li:empty {
   display: none;
+}
+
+// Used inside multiple table components - so placed here in the global styles
+.date-time-cell {
+  vertical-align: middle;
+  .time {
+    margin-top: -0.33rem;
+    font-size: 0.8em;
+    color: var(--font-color-secondary);
+  }
+}
+
+mat-card {
+  a, a:visited {
+    &:not(.mat-button-base)
+    {
+      text-decoration: none;
+      color: inherit;
+      box-shadow: inset 0 -0.125em #87b7db;
+      transition: box-shadow 100ms ease-out;
+      &:hover {
+        box-shadow: inset 0 -1.25em #87b7db;
+      }
+    }
+  }
+  a.unstyled-link, .section-link, .support-links a {
+    cursor: pointer;
+    color: var(--primary-color) !important;
+    box-shadow: none;
+    &:hover {
+      box-shadow: none;
+      text-decoration: underline !important;
+    }
+  }
+}
+
+.grayed-out {
+  color: var(--font-color-secondary) !important;
+  font-weight: 200;
+}
+
+.mat-tab-link {
+  font-weight: var(--font-weight-strong);
+  opacity: 0.8 !important;
+  &:hover {
+   opacity: 1 !important;
+  }
+}
+
+.matmenu-trigger {
+  opacity: 0.65;
+  &:hover {
+    opacity: 1;
+    color: var(--primary-color);
+  }
+}
+.matmenu-headline {
+  font-size: 0.65rem;
+  color: var(--font-color-secondary);
+  padding-left: 1rem;
+}
+.matmenu-heavy-link {
+  font-weight: 600;
+  color: var(--error-color) !important;
+  mat-icon {
+    color: inherit !important;
+  }
+}
+
+// outside of component, because we also use alert-styling cues in other parts,
+// e.g. for errors and our saving-feedback footer
+.jems-alert {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: .5rem .75rem;
+  border: 1px solid transparent;
+  border-radius: .25rem;
+  color: var(--font-color-primary);
+
+  mat-icon {
+    margin-right: 0.75rem;
+  }
+
+  p {
+    margin: 0.5rem 0 !important;
+  }
+
+  &.jems-alert-info {
+    background-color: var(--info-color-lighter);
+    box-shadow: inset 0 0 2px var(--info-color);
+    mat-icon {
+      color: var(--info-color);
+      &::before {
+        content: 'info_outline';
+      }
+    }
+  }
+
+  &.jems-alert-success {
+    background: var(--success-color-lighter);
+    box-shadow: inset 0 0 2px var(--success-color);
+    mat-icon {
+      color: var(--success-color);
+      &::before {
+        content: 'check_circle_outline';
+      }
+    }
+  }
+
+  &.jems-alert-danger {
+    background-color: var(--error-color-lighter);
+    box-shadow: inset 0 0 2px var(--error-color);
+    mat-icon {
+      color: var(--error-color);
+      &::before {
+        content: 'error_outline';
+      }
+    }
+  }
+
+  &.jems-alert-warning {
+    background-color: var(--warn-color-lighter);
+    box-shadow: inset 0 0 2px var(--warn-color);
+    mat-icon {
+      color: var(--warn-color);
+      &::before {
+        content: 'warning_amber';
+      }
+    }
+  }
 }

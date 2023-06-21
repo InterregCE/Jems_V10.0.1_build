@@ -33,7 +33,8 @@
                                [options]="{min: constants.MIN_FLAT_RATE_VALUE, max: data.callFlatRateSettings.staffCostFlatRateSetup.rate, align: 'right'}"
                                [formControl]="staffCostsFlatRate"
                                (paste)="Tools.checkDigitsOnPaste($event)"
-                               (keypress)="Tools.checkDigitsOnInput($event)">
+                               (keypress)="Tools.checkDigitsOnInput($event)"
+                               aria-label="percentage value">
                         <mat-hint>{{constants.MIN_FLAT_RATE_VALUE}}–{{data.callFlatRateSettings.staffCostFlatRateSetup.rate}}%</mat-hint>
                         <span matSuffix class="pl-1">{{'project.partner.budget.options.staff.costs.on.direct.cost.flat.rate.percent' | translate}}</span>
                         <mat-error>
@@ -74,7 +75,8 @@
                                [options]="{min: constants.MIN_FLAT_RATE_VALUE, max: data.callFlatRateSettings.officeAndAdministrationOnStaffCostsFlatRateSetup.rate, align: 'right'}"
                                [formControl]="officeOnStaffCostsFlatRate"
                                (paste)="Tools.checkDigitsOnPaste($event)"
-                               (keypress)="Tools.checkDigitsOnInput($event)">
+                               (keypress)="Tools.checkDigitsOnInput($event)"
+                               aria-label="percentage value">
                         <mat-hint>{{constants.MIN_FLAT_RATE_VALUE}}–{{data.callFlatRateSettings.officeAndAdministrationOnStaffCostsFlatRateSetup.rate}}%</mat-hint>
                         <span matSuffix class="pl-1">{{'project.partner.budget.options.office.on.staff.cost.flat.rate.percent' | translate}}</span>
                         <jems-context-info matSuffix
@@ -116,7 +118,8 @@
                                [options]="{min: constants.MIN_FLAT_RATE_VALUE, max: data.callFlatRateSettings.officeAndAdministrationOnDirectCostsFlatRateSetup.rate, align: 'right'}"
                                [formControl]="officeOnDirectCostsFlatRate"
                                (paste)="Tools.checkDigitsOnPaste($event)"
-                               (keypress)="Tools.checkDigitsOnInput($event)">
+                               (keypress)="Tools.checkDigitsOnInput($event)"
+                               aria-label="percentage value">
                         <mat-hint>{{constants.MIN_FLAT_RATE_VALUE}}–{{data.callFlatRateSettings.officeAndAdministrationOnDirectCostsFlatRateSetup.rate}}%</mat-hint>
                         <span matSuffix class="pl-1">{{'project.partner.budget.options.office.on.direct.cost.flat.rate.percent' | translate}}</span>
                         <jems-context-info matSuffix
@@ -156,7 +159,8 @@
                                [options]="{min: constants.MIN_FLAT_RATE_VALUE, max: data.callFlatRateSettings.travelAndAccommodationOnStaffCostsFlatRateSetup.rate, align: 'right'}"
                                [formControl]="travelOnStaffCostsFlatRate"
                                (paste)="Tools.checkDigitsOnPaste($event)"
-                               (keypress)="Tools.checkDigitsOnInput($event)">
+                               (keypress)="Tools.checkDigitsOnInput($event)"
+                               aria-label="percentage value">
                         <mat-hint>{{constants.MIN_FLAT_RATE_VALUE}}–{{data.callFlatRateSettings.travelAndAccommodationOnStaffCostsFlatRateSetup.rate}}%</mat-hint>
                         <span matSuffix
                               class="pl-1">{{'project.partner.budget.options.travel.based.on.staff.cost.flat.rate.percent' | translate}}
@@ -199,7 +203,8 @@
                                [options]="{min: constants.MIN_FLAT_RATE_VALUE, max: data.callFlatRateSettings.otherCostsOnStaffCostsFlatRateSetup.rate, align: 'right'}"
                                [formControl]="otherCostsOnStaffCostsFlatRate"
                                (paste)="Tools.checkDigitsOnPaste($event)"
-                               (keypress)="Tools.checkDigitsOnInput($event)">
+                               (keypress)="Tools.checkDigitsOnInput($event)"
+                               aria-label="percentage value">
                         <mat-hint>{{constants.MIN_FLAT_RATE_VALUE}}–{{data.callFlatRateSettings.otherCostsOnStaffCostsFlatRateSetup.rate}}%</mat-hint>
                         <span matSuffix class="pl-1">{{'project.partner.budget.options.other.costs.on.staff.costs.flat.rate.percent' | translate}}</span>
                         <jems-context-info matSuffix

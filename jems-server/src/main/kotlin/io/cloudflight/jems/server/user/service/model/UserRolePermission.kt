@@ -10,11 +10,21 @@ enum class UserRolePermission(val key: String, val projectRelated: Boolean = fal
 
     ProjectCreatorContractingReportingView("ProjectCreatorContractingReportingView"),
     ProjectCreatorContractingReportingEdit("ProjectCreatorContractingReportingEdit"),
+    ProjectContractingPartnerStateAidView("ProjectContractingPartnerStateAidView"),
+    ProjectContractingPartnerStateAidEdit("ProjectContractingPartnerStateAidEdit"),
+
+    ProjectCreatorSharedFolderView("ProjectCreatorSharedFolderView"),
+    ProjectCreatorSharedFolderEdit("ProjectCreatorSharedFolderEdit"),
     // endregion Creator
 
     // region Monitor
     ProjectReportingView("ProjectReportingView", true),
     ProjectReportingEdit("ProjectReportingEdit", true),
+    ProjectReportingReOpen("ProjectReportingReOpen", true),
+    ProjectPartnerControlReportingReOpen("ProjectPartnerControlReportingReOpen", true),
+    ProjectReportingProjectView("ProjectReportingProjectView", true),
+    ProjectReportingProjectEdit("ProjectReportingProjectEdit", true),
+    ProjectReportingChecklistAfterControl("ProjectReportingChecklistAfterControl", true),
 
     ProjectContractingPartnerView("ProjectContractingPartnerView", true),
     ProjectContractingPartnerEdit("ProjectContractingPartnerEdit", true),
@@ -70,11 +80,15 @@ enum class UserRolePermission(val key: String, val projectRelated: Boolean = fal
 
     ProjectMonitorCollaboratorsRetrieve("ProjectMonitorCollaboratorsRetrieve", true),
     ProjectMonitorCollaboratorsUpdate("ProjectMonitorCollaboratorsUpdate", true),
+
+    ProjectMonitorSharedFolderView("ProjectMonitorSharedFolderView", true),
+    ProjectMonitorSharedFolderEdit("ProjectMonitorSharedFolderEdit", true),
     // endregion Monitor
 
     // region top navigation
     ProjectsWithOwnershipRetrieve("ProjectsWithOwnershipRetrieve"),
     CallPublishedRetrieve("CallPublishedRetrieve"),
+    NotificationsRetrieve("NotificationsRetrieve"),
 
     ProjectRetrieve("ProjectRetrieve"),
     ProjectRetrieveEditUserAssignments("ProjectRetrieveEditUserAssignments"),
@@ -88,6 +102,7 @@ enum class UserRolePermission(val key: String, val projectRelated: Boolean = fal
     InstitutionsRetrieve("InstitutionsRetrieve"),
     InstitutionsUpdate("InstitutionsUpdate"),
     InstitutionsUnlimited("InstitutionsUnlimited"),
+    AssignmentsUnlimited("AssignmentsUnlimited"),
 
     InstitutionsAssignmentRetrieve("InstitutionsAssignmentRetrieve"),
     InstitutionsAssignmentUpdate("InstitutionsAssignmentUpdate"),

@@ -1,76 +1,10 @@
 {
-  "paymentsRole": {
-    "name": "paymentsRole",
-    "permissions": [
-      "ProjectSetToContracted", "ProjectContractingView", "ProjectFormRetrieve", "PaymentsUpdate", "PaymentsRetrieve",
-      "AdvancePaymentsUpdate", "AdvancePaymentsRetrieve", "ProjectRetrieve"
-    ]
-  },
-  "paymentsUser": {
-    "email": "randomize",
-    "name": "Payments",
-    "surname": "User",
-    "userRoleId": null,
-    "userStatus": "ACTIVE"
-  },
-  "programmeFund": {
-    "id": null,
-    "selected": true,
-    "type": "OTHER",
-    "abbreviation": [
-      {
-        "translation": "randomize DE",
-        "language": "DE"
-      }, {
-        "translation": "randomize EN",
-        "language": "EN"
-      }
-    ],
-    "description": [
-      {
-        "translation": "API generated programme fund DE",
-        "language": "DE"
-      }, {
-        "translation": "API generated programme fund EN",
-        "language": "EN"
-      }
-    ]
-  },
   "callFund": {
     "programmeFund": {
       "id": null
     },
     "rate": 80,
     "adjustable": true
-  },
-  "partnerCofinancing": {
-    "finances": [
-      {
-        "fundId": 1,
-        "fundType": "MainFund",
-        "percentage": 15
-      }, {
-        "fundId": 3,
-        "fundType": "MainFund",
-        "percentage": 30
-      }, {
-        "percentage": 55,
-        "fundType": "PartnerContribution"
-      }
-    ],
-    "partnerContributions": [
-      {
-        "name": "Project Partner",
-        "status": "Private",
-        "amount": 700,
-        "partner": true
-      }, {
-        "name": "Additional source",
-        "status": "Public",
-        "amount": 763.11,
-        "partner": false
-      }
-    ]
   },
   "partnerCofinancingAfterModification": {
     "finances": [
@@ -100,7 +34,7 @@
       }, {
         "name": "Additional source",
         "status": "Public",
-        "amount": 630.11,
+        "amount": 5021.40,
         "partner": false
       }
     ]
@@ -109,15 +43,17 @@
     {
       "programmeLumpSumId": 2,
       "period": 0,
+      "fastTrack": false,
       "lumpSumContributions": [
         {
           "partnerAbbreviation": "Lead Partner",
-          "amount": 55555.56
+          "amount": 5555.56
         }
       ]
     }, {
       "programmeLumpSumId": null,
       "period": 2,
+      "fastTrack": true,
       "lumpSumContributions": [
         {
           "partnerAbbreviation": "Lead Partner",
@@ -127,6 +63,7 @@
     }, {
       "programmeLumpSumId": null,
       "period": 255,
+      "fastTrack": true,
       "lumpSumContributions": [
         {
           "partnerAbbreviation": "Lead Partner",
@@ -139,6 +76,7 @@
     }, {
       "programmeLumpSumId": null,
       "period": 7,
+      "fastTrack": true,
       "lumpSumContributions": [
         {
           "partnerAbbreviation": "Project Partner",

@@ -1,5 +1,6 @@
 ##### Description
-
+- [ ] Thoroughly read the related story and the test steps before reviewing
+- [ ] **MR creator: Please add pointers for the reviewer! Anything they should look out for in this merge?**
 ##### Backend checklist
 - [ ] Required annotations are added to each use-case
 - `@Transactional`, `@ExceptionWrapper`, access control related annotation
@@ -15,8 +16,9 @@
 - [ ] Custom styles are not added (as much as possible)
 ##### Common checklist
 - [ ] Code is fulfilling the requirements in the story
+- [ ] Solution was checked **with story owner** in a call before merging
 - [ ] No obvious performance issue exists
 - [ ] Has not introduced new solution for an already solved problem
 - [ ] Translations are added for new translation keys
 - [ ] Code is clean, readable and self-documenting
--  no code duplication, no comments (as mush as possible), good function names and etc
+- [ ] No code duplication, no comments (as mush as possible), good function names and etc

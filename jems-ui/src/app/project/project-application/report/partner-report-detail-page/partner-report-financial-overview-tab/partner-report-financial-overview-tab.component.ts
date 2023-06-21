@@ -9,13 +9,16 @@ import {
   ExpenditureLumpSumBreakdownDTO,
   ExpenditureUnitCostBreakdownDTO,
   ExpenditureInvestmentBreakdownDTO,
-  ProjectPartnerReportUnitCostDTO
+  ProjectPartnerReportUnitCostDTO, ProjectPartnerReportSummaryDTO
 } from '@cat/api';
 import {map} from 'rxjs/operators';
 import {
   PartnerReportFinancialOverviewStoreService
 } from '@project/project-application/report/partner-report-detail-page/partner-report-financial-overview-tab/partner-report-financial-overview-store.service';
 import CategoryEnum = ProjectPartnerReportUnitCostDTO.CategoryEnum;
+import {
+  PartnerReportDetailPageStore
+} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 
 @UntilDestroy()
 @Component({
@@ -35,10 +38,12 @@ export class PartnerReportFinancialOverviewTabComponent {
     perUnitCost: ExpenditureUnitCostBreakdownDTO;
     funds: CallFundRateDTO[];
     allowedCostCategories: Map<CategoryEnum | 'LumpSum' | 'UnitCost', boolean>;
+    isCertified: boolean;
   }>;
 
   constructor(
     private financialOverviewStore: PartnerReportFinancialOverviewStoreService,
+    private partnerReportDetailPageStore: PartnerReportDetailPageStore,
   ) {
     this.data$ = combineLatest([
       financialOverviewStore.perCoFinancing$,
@@ -48,15 +53,17 @@ export class PartnerReportFinancialOverviewTabComponent {
       financialOverviewStore.perUnitCost$,
       financialOverviewStore.callFunds$,
       financialOverviewStore.allowedCostCategories$,
+      partnerReportDetailPageStore.reportStatus$,
     ]).pipe(
-      map(([perCoFinancing, perCostCategory, perLumpSum, perInvestment, perUnitCost, funds, allowedCostCategories]: any) => ({
+      map(([perCoFinancing, perCostCategory, perLumpSum, perInvestment, perUnitCost, funds, allowedCostCategories, reportStatus]: any) => ({
         perCoFinancing,
         perCostCategory,
         perLumpSum,
         perInvestment,
         perUnitCost,
         funds,
-        allowedCostCategories
+        allowedCostCategories,
+        isCertified: reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Certified,
       })),
     );
   }

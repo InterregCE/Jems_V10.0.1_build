@@ -16,9 +16,9 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.event.TransactionPhase
 import org.springframework.transaction.event.TransactionalEventListener
 
-data class AssignCollaboratorToPartnerEvent(val project: ProjectSummary,
-                                            val partner: ProjectPartnerSummary,
-                                            val collaborators: Set<PartnerCollaborator>)
+data class AssignUserCollaboratorToPartnerEvent(val project: ProjectSummary,
+                                                val partner: ProjectPartnerSummary,
+                                                val collaborators: Set<PartnerCollaborator>)
 
 @Service
 data class AssignUserCollaboratorToPartnerEventListeners(
@@ -35,12 +35,12 @@ data class AssignUserCollaboratorToPartnerEventListeners(
     }
 
     @TransactionalEventListener
-    fun publishJemsAuditEvent(event: AssignCollaboratorToPartnerEvent) =
+    fun publishJemsAuditEvent(event: AssignUserCollaboratorToPartnerEvent) =
         eventPublisher.publishEvent(
             JemsAuditEvent(
                 auditCandidate = AuditBuilder(AuditAction.PROJECT_USER_ASSIGNMENT_APPLICANTS)
                     .project(event.project)
-                    .description("[${partner(event.partner)}] List of users: ${collaboratorsWithLevels(event.collaborators)}")
+                    .description("[${partner(event.partner)}] List of users: [${collaboratorsWithLevels(event.collaborators)}]")
                     .build()
             )
         )
@@ -52,5 +52,5 @@ data class AssignUserCollaboratorToPartnerEventListeners(
         }
 
     private fun collaboratorsWithLevels(collaborators: Set<PartnerCollaborator>): String =
-        collaborators.joinToString(", ") { "${it.userEmail}: ${it.level}" }
+        collaborators.joinToString(", ") { "${it.userEmail}: ${it.level} " + if (it.gdpr) "GDPR" else "" }
 }

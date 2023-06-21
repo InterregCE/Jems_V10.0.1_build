@@ -1,27 +1,31 @@
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {combineLatest, merge, Observable, Subject} from 'rxjs';
 import {
-  PartnerUserCollaboratorDTO, ProjectPartnerSummaryDTO, ProjectPartnerUserCollaboratorService, ProjectStatusDTO,
+  PartnerUserCollaboratorDTO,
+  ProjectPartnerSummaryDTO,
+  ProjectPartnerUserCollaboratorService,
+  ProjectStatusDTO,
   ProjectUserCollaboratorDTO,
-  ProjectUserCollaboratorService, UserRoleDTO
+  ProjectUserCollaboratorService,
+  UserRoleDTO
 } from '@cat/api';
 import {filter, map, startWith, switchMap, take, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 
 import {Injectable} from '@angular/core';
 import {PermissionService} from '../../../security/permissions/permission.service';
+import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
+import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
-import { ProjectVersionStore } from '@project/common/services/project-version-store.service';
-import {
-  ProjectPartnerStore
-} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
 import StatusEnum = ProjectStatusDTO.StatusEnum;
 
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class PrivilegesPageStore {
 
   projectCollaborators$: Observable<ProjectUserCollaboratorDTO[]>;
   partnerCollaborators$: Observable<Map<ProjectPartnerSummaryDTO, PartnerUserCollaboratorDTO[]>>;
+  partnerCollaboratorsList$: Observable<PartnerUserCollaboratorDTO[]>;
+  currentUserPartnerCollaborations$: Observable<PartnerUserCollaboratorDTO[]>;
   projectTitle$: Observable<string>;
   projectCollaboratorsEditable$: Observable<boolean>;
   partnerTeamsVisible$: Observable<boolean>;
@@ -43,6 +47,7 @@ export class PrivilegesPageStore {
     this.projectTitle$ = this.projectStore.projectTitle$;
     this.projectCollaboratorsEditable$ = this.projectCollaboratorsEditable();
     this.partnerTeamsVisible$ = this.partnerTeamsVisible();
+    this.currentUserPartnerCollaborations$ = this.currentUserPartnerCollaborations();
   }
 
   saveProjectCollaborators(collaborators: ProjectUserCollaboratorDTO[]): Observable<ProjectUserCollaboratorDTO[]> {
@@ -82,7 +87,7 @@ export class PrivilegesPageStore {
   }
 
   private partnerCollaborators(): Observable<Map<ProjectPartnerSummaryDTO, PartnerUserCollaboratorDTO[]>> {
-    const allPartnerCollaborators$ = this.projectStore.projectId$
+    this.partnerCollaboratorsList$ = this.projectStore.projectId$
       .pipe(
         switchMap(projectId => this.partnerUserCollaboratorService.listAllPartnerCollaborators(projectId)),
         tap(collaborators => Log.info('Fetched project partner collaborators', this, collaborators))
@@ -90,7 +95,7 @@ export class PrivilegesPageStore {
 
     return combineLatest([
       this.partnerSummariesOfLastApprovedVersion$,
-      allPartnerCollaborators$,
+      this.partnerCollaboratorsList$,
       this.savedPartnerProjectCollaborators$.pipe(startWith([])),
       this.projectStore.collaboratorLevel$,
       this.permissionService.permissionsChanged()
@@ -107,14 +112,14 @@ export class PrivilegesPageStore {
                           savedCollaborators: [number, PartnerUserCollaboratorDTO[]] | any,
                           level: ProjectUserCollaboratorDTO.LevelEnum,
                           permissions: string[]
-                          ): Map<ProjectPartnerSummaryDTO, PartnerUserCollaboratorDTO[]> {
+  ): Map<ProjectPartnerSummaryDTO, PartnerUserCollaboratorDTO[]> {
     const teams = new Map<ProjectPartnerSummaryDTO, PartnerUserCollaboratorDTO[]>();
     partners.forEach(partner => {
       const collaborators = savedCollaborators.length && savedCollaborators[0] === partner.id
         ? savedCollaborators[1]
         : allCollaborators.filter(partnerCollaborator => partnerCollaborator.partnerId === partner.id);
       teams.set(partner, (collaborators.length || level === ProjectUserCollaboratorDTO.LevelEnum.MANAGE || permissions.includes(PermissionsEnum.ProjectMonitorCollaboratorsUpdate)
-      || permissions.includes(PermissionsEnum.ProjectMonitorCollaboratorsRetrieve))
+        || permissions.includes(PermissionsEnum.ProjectMonitorCollaboratorsRetrieve))
         ? collaborators : null as any);
     });
     return teams;
@@ -154,5 +159,12 @@ export class PrivilegesPageStore {
           StatusEnum.CONTRACTED
         ].includes(status.status)),
       );
+  }
+
+  private currentUserPartnerCollaborations(): Observable<PartnerUserCollaboratorDTO[]> {
+    return this.projectStore.projectId$.pipe(
+      take(1),
+      switchMap(projectId => this.partnerUserCollaboratorService.listCurrentUserPartnerCollaborations(projectId)),
+    );
   }
 }

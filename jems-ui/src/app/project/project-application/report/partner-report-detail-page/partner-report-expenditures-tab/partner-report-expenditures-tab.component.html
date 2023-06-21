@@ -3,6 +3,7 @@
                (discard)="refreshListOfExpenditures()">
         <h3>{{'project.application.partner.report.expenditures.title' | translate}}</h3>
         <p>{{'project.application.partner.report.expenditures.currencies.info.message' | translate}}</p>
+
         <form jemsFormLayout [formGroup]="reportExpendituresForm">
             <div id="table-container" jemsNoWidthLimit *ngIf="tableData.length > 0">
                 <jems-multi-language-container>
@@ -18,11 +19,31 @@
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.cost.ID' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <ng-container>
-                                    <div class="text-overflow-ellipsis">
-                                        {{'R' + currentReport.reportNumber + '.' + (i + 1)}}
-                                    </div>
-                                </ng-container>
+                                <div class="text-overflow-ellipsis" *ngIf="!control.get(constants.FORM_CONTROL_NAMES.reportOfOriginNumber).value">
+                                    {{'R' + currentReport.reportNumber + '.' + (control.get('id').value ? control.get(constants.FORM_CONTROL_NAMES.number).value : '?')}}
+                                </div>
+                                <div class="text-overflow-ellipsis" *ngIf="control.get(constants.FORM_CONTROL_NAMES.reportOfOriginNumber).value">
+                                    {{'R' + control.get(constants.FORM_CONTROL_NAMES.reportOfOriginNumber).value + '.' + control.get(constants.FORM_CONTROL_NAMES.originalExpenditureNumber).value}}
+                                </div>
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="costGDPR" sticky>
+                            <mat-header-cell *matHeaderCellDef>
+                                        <div class ="custom-icon gdpr">
+                                            <mat-icon matTooltip="{{'project.application.partner.report.expenditures.tab.cost.checkbox.sensitive.info' | translate}}">
+                                                privacy_tip
+                                            </mat-icon>
+                                        </div>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                                <mat-checkbox
+                                        [disabled]="!data.isGDPRCompliant || !data.isReportEditable"
+                                        (click)="$event.stopPropagation()"
+                                        (change)="toggleGDPR(i, control, !control.get(constants.FORM_CONTROL_NAMES.costGDPR).value)"
+                                        [checked]="control.get(constants.FORM_CONTROL_NAMES.costGDPR).value === true">
+                                </mat-checkbox>
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
@@ -58,18 +79,20 @@
                                                 [value]="null">{{'common.not.applicable.option' | translate}}</mat-option>
                                         <mat-optgroup *ngIf="data.lumpSums.length" [label]="'lump.sums.table.title' | translate">
                                             <mat-option *ngFor="let lumpSum of data.lumpSums"
-                                                        [value]="lumpSum">
-                                                <span>{{ (lumpSum.name | translateBySystemLanguage | async) }}</span>
+                                                        [value]="lumpSum"
+                                                        [matTooltip]="getCostOptionsDefinition(lumpSum) | async">
+                                                <span>{{ (lumpSum.name | translateByInputLanguage | async) }}</span>
                                                 <span *ngIf="lumpSum.period !== null && lumpSum.period !== undefined">
                                                     - {{ lumpSum.period === PERIOD_PREPARATION ? ('project.application.form.section.part.e.period.preparation' | translate) :
                                                     (lumpSum.period === PERIOD_CLOSURE ? ('project.application.form.section.part.e.period.closure' | translate) :
                                                         ('project.partner.budget.table.period' | translate) + ' ' + lumpSum.period) }}
-                                            </span>
+                                                </span>
                                             </mat-option>
                                         </mat-optgroup>
                                         <mat-optgroup *ngIf="data.unitCosts.length" [label]="'unit.cost.table.title' | translate">
                                             <mat-option *ngFor="let unitCost of data.unitCosts"
-                                                        [value]="unitCost">
+                                                        [value]="unitCost"
+                                                        [matTooltip]="(unitCost.name | translateByInputLanguage | async)">
                                                 {{ (unitCost.projectDefined ? 'E.2.1_' : '') + (unitCost.name| translateByInputLanguage | async) }}
                                             </mat-option>
                                         </mat-optgroup>
@@ -125,10 +148,12 @@
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <div *ngIf="expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.investmentId).errors"
                                      (click)="selectRow(i, 'investmentId')" class="custom-wrapper pointer"
-                                     [matTooltip]="control.get(constants.FORM_CONTROL_NAMES.investmentId).value" [matTooltipClass]="'tooltip'"
+                                     [matTooltip]="getInvestmentIdValue(control.get(constants.FORM_CONTROL_NAMES.investmentId).value)"
+                                     [matTooltipClass]="'tooltip'"
                                      [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.investmentId)">
                                     <div class="custom-dropdown-text">
                                         <span *ngIf="control.get(constants.FORM_CONTROL_NAMES.investmentId).value">
+                                            <mat-icon *ngIf="getInvestmentInactive(control.get(constants.FORM_CONTROL_NAMES.investmentId).value)" class="inactive-icon-dropdown mt-1">hide_source</mat-icon>
                                             {{getInvestmentIdValue(control.get(constants.FORM_CONTROL_NAMES.investmentId).value)}}
                                         </span>
                                         <span *ngIf="!control.get(constants.FORM_CONTROL_NAMES.investmentId).value">
@@ -145,12 +170,19 @@
                                         #investmentNumber
                                         (selectionChange)="onInvestmentNumberChange($event, control)"
                                         [formControlName]="constants.FORM_CONTROL_NAMES.investmentId"
-                                        [matTooltip]="investmentNumber.triggerValue"
+                                        [matTooltip]="getInvestmentIdValue(control.get(constants.FORM_CONTROL_NAMES.investmentId).value)"
                                         [placeholder]="'common.not.applicable.option' | translate">
+                                        <mat-select-trigger>
+                                            <span>
+                                                <mat-icon class="inactive-icon" *ngIf="getInvestmentInactive(control.get(constants.FORM_CONTROL_NAMES.investmentId).value)">hide_source</mat-icon>
+                                                {{getInvestmentIdValue(control.get(constants.FORM_CONTROL_NAMES.investmentId).value)}}
+                                            </span>
+                                        </mat-select-trigger>
                                         <mat-option
                                                 [value]="null">{{'common.not.applicable.option' | translate}}</mat-option>
                                         <mat-option *ngFor="let investment of data.investmentsSummary"
                                                     [value]="investment.id">
+                                            <mat-icon *ngIf="investment.deactivated" class="inactive-icon mr-0">hide_source</mat-icon>
                                             {{investment.toString()}}
                                         </mat-option>
                                     </mat-select>
@@ -165,15 +197,18 @@
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.contract.ID' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <div *ngIf="expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.contractId).errors"
+                                <div *ngIf="!ReportUtil.isPartnerReportSubmittable(this.currentReport.status) && expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.contractId).errors"
                                       (click)="selectRow(i, 'contractId')" class="custom-wrapper pointer"
                                       [matTooltip]="getContractIdValue(control.get(constants.FORM_CONTROL_NAMES.contractId).value) ?? ('common.not.applicable.option' | translate)"
                                       [matTooltipClass]="'tooltip'"
                                       [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.contractId)">
                                     <div class="custom-dropdown-text">
-                                        <span *ngIf="control.get(constants.FORM_CONTROL_NAMES.contractId).value">
-                                            {{getContractIdValue(control.get(constants.FORM_CONTROL_NAMES.contractId).value)}}
-                                        </span>
+                                        <a *ngIf="control.get(constants.FORM_CONTROL_NAMES.contractId).value"
+                                           [routerLink]="'/app/project/detail/' + data.projectId + '/reporting/' + data.partnerId + '/reports/' + data.partnerReportId + '/procurements/' + control.get(constants.FORM_CONTROL_NAMES.contractId).value">
+                                           <span>
+                                                {{getContractIdValue(control.get(constants.FORM_CONTROL_NAMES.contractId).value)}}
+                                           </span>
+                                        </a>
                                         <span *ngIf="!control.get(constants.FORM_CONTROL_NAMES.contractId).value">
                                             {{'common.not.applicable.option' | translate}}
                                         </span>
@@ -183,7 +218,7 @@
                                     </div>
                                 </div>
 
-                                <mat-form-field *ngIf="expenditureFormIndex === i || control.get(constants.FORM_CONTROL_NAMES.contractId).errors" jemsFormFieldWidth="full">
+                                <mat-form-field *ngIf="ReportUtil.isPartnerReportSubmittable(this.currentReport.status) || (expenditureFormIndex === i || control.get(constants.FORM_CONTROL_NAMES.contractId).errors)" jemsFormFieldWidth="full">
                                     <mat-select
                                         #contractId
                                         [formControlName]="constants.FORM_CONTROL_NAMES.contractId"
@@ -343,8 +378,14 @@
 
                         <ng-container matColumnDef="description">
                             <mat-header-cell *matHeaderCellDef>
-                                        <span jemsText
-                                              maxLines="2">{{'project.application.partner.report.expenditures.tab.description' | translate}}</span>
+                                <span jemsText
+                                      maxLines="2">{{'project.application.partner.report.expenditures.tab.description' | translate}}</span>
+                                <span>
+                                    <mat-icon
+                                            matTooltip="{{'project.application.partner.report.expenditures.tab.cost.field.sensitive.info' | translate}}">
+                                        privacy_tip
+                                    </mat-icon>
+                                </span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <div *ngIf="expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.description).errors"
@@ -374,8 +415,14 @@
 
                         <ng-container matColumnDef="comment">
                             <mat-header-cell *matHeaderCellDef>
-                                        <span jemsText
-                                              maxLines="2">{{'project.application.partner.report.expenditures.tab.comment' | translate}}</span>
+                                <span jemsText
+                                      maxLines="2">{{'project.application.partner.report.expenditures.tab.comment' | translate}}</span>
+                                <span>
+                                    <mat-icon
+                                            matTooltip="{{'project.application.partner.report.expenditures.tab.cost.field.sensitive.info' | translate}}">
+                                        privacy_tip
+                                    </mat-icon>
+                                </span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <div *ngIf="expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.comment).errors"
@@ -413,7 +460,7 @@
                                      (click)="selectRow(i, 'totalValueInvoice')" class="custom-wrapper align-right"
                                      [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.totalValueInvoice)">
                                     <div class="custom-text-area">
-                                        {{control.get(constants.FORM_CONTROL_NAMES.totalValueInvoice).value?? 0 | number : '1.2-2' : 'de-DE'}}
+                                        {{(control.get(constants.FORM_CONTROL_NAMES.totalValueInvoice).value || 0) | asMoney}}
                                     </div>
                                 </div>
 
@@ -437,7 +484,7 @@
                                      (click)="selectRow(i, 'vat')" class="custom-wrapper align-right"
                                      [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.vat)">
                                     <div class="custom-text-area">
-                                        {{control.get(constants.FORM_CONTROL_NAMES.vat).value?? 0  | number : '1.2-2' : 'de-DE'}}
+                                        {{(control.get(constants.FORM_CONTROL_NAMES.vat).value || 0)  | asMoney}}
                                     </div>
                                 </div>
 
@@ -454,19 +501,20 @@
                         <ng-container matColumnDef="numberOfUnits">
                             <mat-header-cell class="end-flex-header-table" *matHeaderCellDef>
                                         <span jemsText
-                                              maxLines="2">{{'project.application.partner.report.expenditures.tab.number.of.units' | translate}}</span>
+                                              maxLines="2" class="align-right">{{'project.application.partner.report.expenditures.tab.number.of.units' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <div *ngIf="control.get(constants.FORM_CONTROL_NAMES.costOptions).value && (expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.numberOfUnits).errors)"
                                      (click)="selectRow(i, 'numberOfUnits')" class="custom-wrapper"
                                      [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.numberOfUnits)">
                                     <div class="custom-text-area" >
-                                        {{control.get(constants.FORM_CONTROL_NAMES.numberOfUnits).value | number : '1.2-2' : 'de-DE'}}
+                                        {{control.get(constants.FORM_CONTROL_NAMES.numberOfUnits).value | asMoney}}
                                     </div>
                                 </div>
 
                                 <mat-form-field jemsFormFieldWidth="full" *ngIf="control.get(constants.FORM_CONTROL_NAMES.costOptions).value && (expenditureFormIndex === i || control.get(constants.FORM_CONTROL_NAMES.numberOfUnits).errors)" (keyup)="onUpdateNumberOfUnits(i)">
                                     <input [formControlName]="constants.FORM_CONTROL_NAMES.numberOfUnits"
+                                           [options]="{align:'right'}"
                                            matInput
                                            currencyMask
                                            type="decimal" #numberOfUnitsInput>
@@ -485,7 +533,7 @@
                                      (click)="selectRow(i, 'pricePerUnit')" class="custom-wrapper align-right"
                                      [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.pricePerUnit)">
                                     <div class="custom-text-area" >
-                                        {{control.get(constants.FORM_CONTROL_NAMES.pricePerUnit).value | number : '1.2-2' : 'de-DE'}}
+                                        {{control.get(constants.FORM_CONTROL_NAMES.pricePerUnit).value | asMoney}}
                                     </div>
                                 </div>
 
@@ -508,7 +556,7 @@
                                      (click)="selectRow(i, 'declaredAmount')" class="custom-wrapper align-right"
                                      [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.declaredAmount)">
                                     <div class="custom-text-area" >
-                                        {{control.get(constants.FORM_CONTROL_NAMES.declaredAmount).value | number : '1.2-2' : 'de-DE'}}
+                                        {{control.get(constants.FORM_CONTROL_NAMES.declaredAmount).value | asMoney}}
                                     </div>
                                 </div>
 
@@ -585,7 +633,7 @@
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <div *ngIf="expenditureFormIndex !== i" class="custom-wrapper align-right border-with-dotted">
                                     <div class="custom-text-area" >
-                                        {{control.get(constants.FORM_CONTROL_NAMES.declaredAmountInEur).value | number : '1.2-2' : 'de-DE'}}
+                                        {{control.get(constants.FORM_CONTROL_NAMES.declaredAmountInEur).value | asMoney}}
                                     </div>
                                 </div>
 
@@ -602,12 +650,20 @@
                         </ng-container>
 
                         <ng-container matColumnDef="uploadFunction">
-                            <mat-header-cell *matHeaderCellDef>{{'project.application.partner.report.attachments' | translate}}</mat-header-cell>
+                            <mat-header-cell *matHeaderCellDef>{{'project.application.partner.report.attachments' | translate}}
+                                <span>
+                                    <mat-icon
+                                            matTooltip="{{'project.application.partner.report.expenditures.tab.cost.field.sensitive.info' | translate}}">
+                                        privacy_tip
+                                    </mat-icon>
+                                </span>
+                            </mat-header-cell>
                             <mat-cell class="justify-start" *matCellDef="let control;let expenditureIndex=index" [formGroupName]="expenditureIndex" >
                                 <jems-partner-actions-cell
                                         *ngIf="control.get('id').value"
                                         [formControlName]="constants.FORM_CONTROL_NAMES.attachment"
-                                        [isReportEditable]="isReportEditable$ | async"
+                                        [isReportEditable]="editAllowed(control.get(constants.FORM_CONTROL_NAMES.costGDPR).value, data.isGDPRCompliant, data.canEdit, data.isMonitorUser) && data.isReportEditable"
+                                        [isUploadDone]="isUploadDone"
                                         (upload)="onUploadFileToExpenditure($event, control.get('id').value, expenditureIndex)"
                                         (download)="onDownloadFile($event)"
                                         (delete)="onDeleteFile($event, expenditureIndex)">
@@ -620,13 +676,18 @@
                             <mat-header-cell *matHeaderCellDef></mat-header-cell>
                             <mat-cell *matCellDef="let control;let index=index" class="justify-end">
                                 <button mat-icon-button *ngIf="reportExpendituresForm.enabled"
-                                        [disabled]="!!control.get(constants.FORM_CONTROL_NAMES.attachment).value"
+                                        [disabled]="!!control.get('attachment').value ||
+                                        !data.isReportEditable ||
+                                        data.isReopenedLast ||
+                                        data.isReopenedLimited ||
+                                        !deleteAllowed(control.get(constants.FORM_CONTROL_NAMES.costGDPR).value, data.isGDPRCompliant, data.canEdit)"
                                         (click)="removeItem(index)"
                                         class="delete-button"
                                         color="accent"
                                         tabindex="-1"
-                                        type="button">
-                                    <mat-icon
+                                        type="button"
+                                        aria-label="delete">
+                                    <mat-icon *ngIf="editAllowed(control.get(constants.FORM_CONTROL_NAMES.costGDPR).value, data.isGDPRCompliant, data.canEdit, data.isMonitorUser)"
                                             matTooltip="{{ (attachment(index).value ? 'project.application.partner.report.attachment.delete.file.first' : null) | translate }}">
                                         {{ attachment(index).value ? 'delete_forever' : 'delete'}}
                                     </mat-icon>
@@ -642,14 +703,22 @@
                     </mat-table>
                 </jems-multi-language-container>
             </div>
-            <button *ngIf="isReportEditable$ | async"
+            <button *ngIf="data.isReportEditable && !data.isReopenedLast && !data.isReopenedLimited"
                     mat-stroked-button type="button" class="mt-2"
                     [disabled]="items.length >= constants.MAX_NUMBER_OF_ITEMS"
-                    (click)="addNewItem()">
+                    (click)="addNewItem()"
+                    aria-label="add">
                 <mat-icon>add</mat-icon>
                 <span>&nbsp;{{'project.application.partner.report.expenditures.tab.button.add' | translate}}</span>
             </button>
         </form>
+
+        <jems-partner-report-expenditures-parked
+                *ngIf="data.parkedExpenditures.length && data.isReportEditable && !data.isReopenedLimited"
+                [listDirty$]="formService.dirty$"
+                [expenditures]="data.parkedExpenditures"
+                [columns]="data.columnsToDisplay">
+        </jems-partner-report-expenditures-parked>
+
     </jems-form>
 </div>
-

@@ -786,13 +786,6 @@
         "stepSelectionLocked": false
       },
       {
-        "id": "application.config.project.project.or.initiative",
-        "visible": true,
-        "availableInStep": "STEP_TWO_ONLY",
-        "visibilityLocked": true,
-        "stepSelectionLocked": false
-      },
-      {
         "id": "application.config.project.partner.other.identifier.number.and.description",
         "visible": false,
         "availableInStep": "NONE",
@@ -1016,8 +1009,11 @@
           {
             "type": "Organization",
             "country": "Åland Islands (AX)",
+            "countryCode": "AX",
             "nutsRegion2": "Åland Islands (AX00)",
+            "nutsRegion2Code": "AX00",
             "nutsRegion3": "Åland Islands (AX000)",
+            "nutsRegion3Code": "AX000",
             "street": "Street",
             "houseNumber": "99",
             "postalCode": "9090",
@@ -1027,8 +1023,11 @@
           {
             "type": "Department",
             "country": "Åland Islands (AX)",
+            "countryCode": "AX",
             "nutsRegion2": "Åland Islands (AX00)",
+            "nutsRegion2Code": "AX00",
             "nutsRegion3": "Åland Islands (AX000)",
+            "nutsRegion3Code": "AX000",
             "street": "Secondstreet",
             "houseNumber": "88",
             "postalCode": "8080",
@@ -1062,20 +1061,10 @@
           },
           "staff": [
             {
-              "unitType": [
-                {
-                  "language": "DE",
-                  "translation": "SC type 2 DE"
-                },
-                {
-                  "language": "EN",
-                  "translation": "SC type 2 EN"
-                }
-              ],
-              "unitCostId": 2,
+              "unitCostId": 1,
               "numberOfUnits": 1,
-              "pricePerUnit": 555.56,
-              "rowSum": 555.56
+              "pricePerUnit": 55.56,
+              "rowSum": 55.56
             }
           ]
         },
@@ -1094,7 +1083,7 @@
           "partnerContributions": [
             {
               "status": "Public",
-              "amount": 255.56,
+              "amount": 25.56,
               "partner": true
             }
           ]

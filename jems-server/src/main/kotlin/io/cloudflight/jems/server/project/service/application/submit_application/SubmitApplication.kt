@@ -7,9 +7,9 @@ import io.cloudflight.jems.server.plugin.repository.PluginStatusRepository
 import io.cloudflight.jems.server.project.authorization.CanSubmitApplication
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.notification.handler.ProjectStatusChangeEvent
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
-import io.cloudflight.jems.server.project.service.projectStatusChanged
 import io.cloudflight.jems.server.project.service.unsuccessfulProjectSubmission
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
@@ -20,7 +20,7 @@ class SubmitApplication(
     private val projectPersistence: ProjectPersistence,
     private val applicationStateFactory: ApplicationStateFactory,
     private val jemsPluginRegistry: JemsPluginRegistry,
-    private val auditPublisher: ApplicationEventPublisher,
+    private val eventPublisher: ApplicationEventPublisher,
     //TODO should be replaced with persistence after MP2-1510
     private val pluginStatusRepository: PluginStatusRepository
 ) : SubmitApplicationInteractor {
@@ -34,6 +34,7 @@ class SubmitApplication(
                 when {
                     callSettings.endDateStep1 == null || projectSummary.status.isInStep2() ->
                         preCheckAndSubmit(projectSummary, callSettings.preSubmissionCheckPluginKey)
+
                     else -> submitApplication(projectSummary)
                 }
             }
@@ -45,7 +46,7 @@ class SubmitApplication(
                 when {
                     it.isSubmissionAllowed -> this.submitApplication(projectSummary)
                     else -> {
-                        auditPublisher.publishEvent(unsuccessfulProjectSubmission(this, projectSummary))
+                        eventPublisher.publishEvent(unsuccessfulProjectSubmission(this, projectSummary))
                         throw SubmitApplicationPreConditionCheckFailedException()
                     }
                 }
@@ -54,7 +55,7 @@ class SubmitApplication(
 
     private fun submitApplication(projectSummary: ProjectSummary): ApplicationStatus {
         return applicationStateFactory.getInstance(projectSummary).submit().also {
-            auditPublisher.publishEvent(projectStatusChanged(this, projectSummary, newStatus = it))
+            eventPublisher.publishEvent(ProjectStatusChangeEvent(this, projectSummary, it))
         }
     }
 

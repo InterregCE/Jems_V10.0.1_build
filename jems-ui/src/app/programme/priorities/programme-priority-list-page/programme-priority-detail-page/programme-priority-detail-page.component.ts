@@ -3,7 +3,7 @@ import {ProgrammePriorityDetailPageStore} from './programme-priority-detail-page
 import {ProgrammePageSidenavService} from '../../../programme-page/services/programme-page-sidenav.service';
 import {ActivatedRoute} from '@angular/router';
 import {combineLatest, Observable, of} from 'rxjs';
-import {ProgrammePriorityDTO, ProgrammeSpecificObjectiveDTO} from '@cat/api';
+import {ContractingDimensionCodeDTO, ProgrammePriorityDTO, ProgrammeSpecificObjectiveDTO} from '@cat/api';
 import {catchError, filter, map, take, tap} from 'rxjs/operators';
 import {AbstractControl, FormArray, FormBuilder, FormGroup} from '@angular/forms';
 import {ProgrammePriorityDetailPageConstants} from './programme-priority-detail-page.constants';
@@ -71,6 +71,12 @@ export class ProgrammePriorityDetailPageComponent {
   // TODO: remove when new edit mode is introduced
   saveSuccess: string;
   saveError: APIError;
+  dimensionsEnum = Object.keys(ContractingDimensionCodeDTO.ProgrammeObjectiveDimensionEnum)
+    .filter(dimension => this.dimensions.includes(dimension))
+    .map((dimension: string, index: number) => ({
+      name: dimension,
+      orderNr: this.getOrderNrForDimension(dimension, index)
+  }));
 
   constructor(private programmePageSidenavService: ProgrammePageSidenavService,
               private activatedRoute: ActivatedRoute,
@@ -110,6 +116,7 @@ export class ProgrammePriorityDetailPageComponent {
 
   save(): void {
     this.form.enable();
+    this.specificObjectives.controls.forEach(control => control.get('selected')?.disable());
 
     const priority: ProgrammePriorityDTO = this.form.value;
     priority.objective = this.form.get(this.constants.OBJECTIVE.name)?.value;
@@ -117,7 +124,6 @@ export class ProgrammePriorityDetailPageComponent {
       .filter(control => !!control.get(this.constants.POLICY_SELECTED.name)?.value)
       .map(control => this.transformSpecificObjectiveValues(control));
 
-    this.form.disable();
     if (!this.priorityId) {
       this.pageStore.createPriority(priority)
         .pipe(
@@ -235,7 +241,7 @@ export class ProgrammePriorityDetailPageComponent {
     });
 
     if (this.objectivePoliciesAlreadyInUse.find(used => used === objective.programmeObjectivePolicy) || (this.isProgrammeSetupLocked && selected)) {
-      group.disable();
+      group.controls.selected.disable();
       this.form.get(this.constants.OBJECTIVE.name)?.disable();
     }
     group.addControl(this.constants.DIMENSION_CODES.name,
@@ -251,7 +257,7 @@ export class ProgrammePriorityDetailPageComponent {
       ...a,
       [v]: this.formBuilder.control(
         selected && [...(
-          objective?.dimensionCodes?.[v]?.map((it) => ({value: it, canBeDeleted: false} as PartiallyLockableOption))
+          objective?.dimensionCodes?.[v]?.map((it) => ({value: it, canBeDeleted: !this.isProgrammeSetupLocked} as PartiallyLockableOption))
           || [])] || [],
         this.constants.dimensionCodesSize(group)
       )}), {});
@@ -289,5 +295,13 @@ export class ProgrammePriorityDetailPageComponent {
       return objectives;
     }
     return [currentObjective, ...objectives];
+  }
+
+  private getOrderNrForDimension(dimension: string, index: number): number {
+    switch(dimension) {
+      case 'GenderEquality': return 7;
+      case 'RegionalAndSeaBasinStrategy': return 8;
+      default: return index + 1;
+    }
   }
 }

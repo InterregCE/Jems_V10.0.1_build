@@ -16,20 +16,10 @@
     min-width: 12rem;
     background-clip: padding-box;
     text-align: right;
-    font-weight: 500;
+    font-weight: var(--font-weight-strong);
   }
 
   .expiration {
     color: var(--warn-color);
-  }
-
-  a {
-    color: var(--primary-color);
-    text-decoration: none;
-    cursor: pointer;
-  }
-
-  a:hover {
-    text-decoration: underline;
   }
 }

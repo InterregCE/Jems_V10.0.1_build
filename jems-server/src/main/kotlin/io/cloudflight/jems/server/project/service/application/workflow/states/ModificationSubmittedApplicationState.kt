@@ -11,6 +11,7 @@ import io.cloudflight.jems.server.project.service.application.workflow.Applicati
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.transaction.annotation.Transactional
 
 class ModificationSubmittedApplicationState(
     override val projectSummary: ProjectSummary,
@@ -30,6 +31,7 @@ class ModificationSubmittedApplicationState(
         else
             throw  HandBackToApplicantAccessDeniedException()
 
+    @Transactional
     override fun rejectModification(actionInfo: ApplicationActionInfo): ApplicationStatus =
         updateModificationDecision(ApplicationStatus.MODIFICATION_REJECTED, actionInfo).also {
             projectWorkflowPersistence.restoreProjectToLastVersionByStatus(

@@ -19,7 +19,10 @@ interface UserPartnerCollaboratorRepository : JpaRepository<UserPartnerCollabora
             upc.id.userId,
             upc.id.partnerId,
             a.email,
-            upc.level)
+            a.sendNotificationsToEmail,
+            a.userStatus,
+            upc.level,
+            upc.gdpr)
         FROM #{#entityName} AS upc
         LEFT JOIN project_partner pp on pp.id = upc.id.partnerId
         LEFT JOIN account a on a.id = upc.id.userId
@@ -33,7 +36,10 @@ interface UserPartnerCollaboratorRepository : JpaRepository<UserPartnerCollabora
             upc.id.userId,
             upc.id.partnerId,
             a.email,
-            upc.level)
+            a.sendNotificationsToEmail,
+            a.userStatus,
+            upc.level,
+            upc.gdpr)
         FROM #{#entityName} AS upc
         LEFT JOIN project_partner pp on pp.id = upc.id.partnerId
         LEFT JOIN account a on a.id = upc.id.userId
@@ -47,7 +53,10 @@ interface UserPartnerCollaboratorRepository : JpaRepository<UserPartnerCollabora
             upc.id.userId,
             upc.id.partnerId,
             a.email,
-            upc.level)
+            a.sendNotificationsToEmail,
+            a.userStatus,
+            upc.level,
+            upc.gdpr)
         FROM #{#entityName} AS upc
         LEFT JOIN project_partner pp on pp.id = upc.id.partnerId
         LEFT JOIN account a on a.id = upc.id.userId
@@ -61,7 +70,10 @@ interface UserPartnerCollaboratorRepository : JpaRepository<UserPartnerCollabora
             upc.id.userId,
             upc.id.partnerId,
             a.email,
-            upc.level)
+            a.sendNotificationsToEmail,
+            a.userStatus,
+            upc.level,
+            upc.gdpr)
         FROM #{#entityName} AS upc
         LEFT JOIN account a on a.id = upc.id.userId
         WHERE upc.id.partnerId = :partnerId
@@ -72,4 +84,6 @@ interface UserPartnerCollaboratorRepository : JpaRepository<UserPartnerCollabora
     fun deleteAllByIdIn(id: Collection<UserPartnerId>)
 
     fun deleteAllByProjectId(projectId: Long)
+
+    fun existsByIdAndGdprTrue(id: UserPartnerId): Boolean
 }

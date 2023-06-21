@@ -34,12 +34,14 @@
 
         <ng-container *ngFor="let budget of budgetColumns; let index = index;">
             <div *ngIf="index < budgetColumns.length - 1">
-                <a [routerLink]="'/app/project/detail/'+ projectId +'/applicationFormPartner/' + budget.partnerId + '/budget'">
+
                     <span>
-                        <mat-icon *ngIf="!budget.isPartnerActive">person_off</mat-icon>
-                        {{ 'common.label.project.partner.role.shortcut.' + budget.partnerRole | adaptTranslationKeyByCallType | async | translate : {partner: budget.partnerSortNumber} }}
+                        <a [routerLink]="'/app/project/detail/'+ projectId +'/applicationFormPartner/' + budget.partnerId + '/budget'">
+                            <mat-icon *ngIf="!budget.isPartnerActive">person_off</mat-icon>
+                            {{ 'common.label.project.partner.role.shortcut.' + budget.partnerRole | adaptTranslationKeyByCallType | async | translate : {partner: budget.partnerSortNumber} }}
+                        </a>
                     </span>
-                </a>
+
                 <span>{{ budget.partnerAbbreviation }}</span>
                 <span>{{ budget.partnerCountry }}</span>
                 <span *ngIf="isCallTypeSpf$ | async">{{ 'project.partner.spf.cost.type.' + budget.costType.toLowerCase() | translate }}</span>
@@ -47,7 +49,7 @@
                     <div class="justify-end" [ngClass]="getBudgetPercentageByFund(fund, budget.budgets) > 0 ? 'percentage-of-total-container' : ''">
                         <div>{{ getBudgetAmountForFund(fund, budget.budgets) | asMoney }}</div>
                         <div *ngIf="getBudgetPercentageByFund(fund, budget.budgets) > 0" class="font-color-grey mat-small">
-                            {{getBudgetPercentageByFund(fund, budget.budgets)}} % of total
+                            {{getBudgetPercentageByFund(fund, budget.budgets)}} {{'project.partner.fund.percentage.of.total' | translate}}
                         </div>
                     </div>
                     <span class="justify-end"> {{getPercentageAmountForFund(fund, budget.budgets) | asMoney}}

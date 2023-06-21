@@ -18,6 +18,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
+import io.mockk.mockkObject
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -45,6 +46,7 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
         private val projectSummary = ProjectSummary(
             id = projectId,
             customIdentifier = "TSTCM",
+            callId = 1L,
             callName = "Test contracting monitoring",
             acronym = "TCM",
             status = ApplicationStatus.APPROVED,
@@ -113,8 +115,9 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
 
     @Test
     fun `get project monitoring for approved application`() {
+        mockkObject(ContractingValidator.Companion)
         every { projectPersistence.getProjectSummary(projectId) } returns projectSummary
-        every { validator.validateProjectStatusForModification(projectSummary) } returns Unit
+        every { ContractingValidator.validateProjectStatusForModification(projectSummary) } returns Unit
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
         every { projectPersistence.getProject(projectId, version) } returns project
         every { contractingMonitoringPersistence.getContractingMonitoring(projectId) } returns monitoring
@@ -164,6 +167,7 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
 
     @Test
     fun `get project monitoring for approved application including startDate`() {
+        mockkObject(ContractingValidator.Companion)
         validDates.forEach {
             `test get project monitoring startDate calc`(it.first, it.second, it.third)
         }
@@ -171,7 +175,6 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
 
     private fun `test get project monitoring startDate calc`(startDate: LocalDate, duration: Int, expectedEndDate: LocalDate) {
         every { projectPersistence.getProjectSummary(projectId) } returns projectSummary
-        every { validator.validateProjectStatusForModification(projectSummary) } returns Unit
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
         every { projectPersistence.getProject(projectId, version) } returns project.copy(duration = duration)
         every {
@@ -214,9 +217,10 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
 
     @Test
     fun `get project monitoring for NOT approved application throws exception`() {
+        mockkObject(ContractingValidator.Companion)
         every { projectPersistence.getProjectSummary(projectId) } returns projectSummary
         every {
-            validator.validateProjectStatusForModification(projectSummary)
+            ContractingValidator.validateProjectStatusForModification(projectSummary)
         } throws ContractingModificationDeniedException()
 
         assertThrows<ContractingModificationDeniedException> {

@@ -25,7 +25,7 @@ $color-blue-light: #81D4FA;
     text-align: center;
     font-size: .875rem;
     line-height: 2.5rem;
-    font-weight: 500;
+    font-weight: var(--font-weight-strong);
     overflow: hidden;
     text-overflow: ellipsis;
   }
@@ -163,10 +163,21 @@ $color-blue-light: #81D4FA;
     }
 
     .vis-item-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       width: 100%;
       text-align: center;
       padding: 0;
       line-height: $size-of-box;
+      i {
+        display: inline;
+        font-style: normal;
+        font-family: 'Material Icons' !important;
+        font-size: 1em;
+        font-weight: 600;
+        margin-right: 0.25em;
+      }
     }
   }
 
@@ -223,6 +234,16 @@ $color-blue-light: #81D4FA;
   }
 
   .vis-inner {
+    display: inline-flex !important;
+    align-items: center;
+    i {
+      display: inline;
+      font-style: normal;
+      font-family: 'Material Icons' !important;
+      font-size: 1em;
+      font-weight: 600;
+      margin-right: 0.5em;
+    }
     span {
       line-height: 1.25rem;
       overflow: hidden;
@@ -238,12 +259,12 @@ $color-blue-light: #81D4FA;
 
   .vis-custom-time {
     pointer-events: none;
-    background-color: var(--status-approved-with-conditions);
+    background-color: var(--report-type-both);
     &.finance {
-      background-color: var(--status-contracted);
+      background-color: var(--report-type-finance);
     }
     &.content {
-      background-color: var(--status-submitted);
+      background-color: var(--report-type-content);
     }
   }
 
@@ -257,12 +278,14 @@ $color-blue-light: #81D4FA;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: var(--status-approved-with-conditions) !important;
+    background-color: var(--report-type-both) !important;
+    color: var(--font-color-primary) !important;
+
     &.content {
-      background-color: var(--status-submitted) !important;
+      background-color: var(--report-type-content) !important;
     }
     &.finance {
-      background-color: var(--status-contracted) !important;
+      background-color: var(--report-type-finance) !important;
     }
     span.material-icons {
       margin-left: -0.1em;

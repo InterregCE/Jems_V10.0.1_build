@@ -9,11 +9,13 @@ import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.common.audit.fromOldToNewChanges
+import io.cloudflight.jems.server.common.event.JemsAuditEvent
 import io.cloudflight.jems.server.project.entity.contracting.partner.ProjectContractingPartnerBeneficialOwnerEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
+import io.cloudflight.jems.server.project.repository.partner.toProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
+import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingSection
 import io.cloudflight.jems.server.project.service.contracting.partner.bankingDetails.ContractingPartnerBankingDetails
 import io.cloudflight.jems.server.project.service.contracting.partner.beneficialOwner.ContractingPartnerBeneficialOwner
 import io.cloudflight.jems.server.project.service.contracting.partner.documentsLocation.ContractingPartnerDocumentsLocation
@@ -24,8 +26,8 @@ import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectDetail
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.ProjectVersionSummary
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
 import java.time.LocalDate
-import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
@@ -41,11 +43,9 @@ fun projectApplicationCreated(
             .build()
     )
 
-fun projectStatusChanged(
-    context: Any, projectSummary: ProjectSummary, newStatus: ApplicationStatus
-): AuditCandidateEvent =
-    AuditCandidateEvent(
-        context = context,
+fun projectStatusChanged(projectSummary: ProjectSummary, newStatus: ApplicationStatus
+): JemsAuditEvent =
+    JemsAuditEvent(
         auditCandidate = AuditBuilder(AuditAction.APPLICATION_STATUS_CHANGED)
             .project(projectSummary)
             .description("Project application status changed from ${projectSummary.status} to $newStatus")
@@ -69,10 +69,10 @@ fun projectVersionSnapshotCreated(
 ): AuditCandidateEvent =
     AuditCandidateEvent(
         context = context,
-        auditCandidate = AuditBuilder(AuditAction.APPLICATION_VERSION_SNAPSHOT_CREATED)
+        auditCandidate = AuditBuilder(AuditAction.APPLICATION_SNAPSHOT_CREATED)
             .project(projectSummary)
             .description(
-                "New project version \"V.${projectVersion.version}\" is created by user: ${projectVersion.user.email} on " +
+                "Project application snapshot \"V.${projectVersion.version}\" has been created by ${projectVersion.user.email} " +
                         projectVersion.createdAt.toLocalDateTime().withNano(0)
                             .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
             ).build()
@@ -90,7 +90,7 @@ fun projectVersionRecorded(
             .project(projectSummary)
             .description(
                 "New project version \"V.$version\" is recorded by user: $userEmail on " +
-                        ZonedDateTime.now(ZoneOffset.UTC).withNano(0).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                        ZonedDateTime.now().withNano(0).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
             ).build()
     )
 
@@ -218,7 +218,7 @@ fun projectContractingMonitoringChanged(
         context = context,
         auditCandidate = AuditCandidate(
             action = AuditAction.PROJECT_CONTRACT_MONITORING_CHANGED,
-            project = AuditProject(id = project.id.toString()),
+            project = AuditProject(id = project.id.toString(), customIdentifier = project.customIdentifier, name = project.acronym),
             description = "Fields changed:\n$changes"
         )
     )
@@ -237,6 +237,62 @@ fun projectContractInfoChanged(
             action = AuditAction.PROJECT_CONTRACT_INFO_CHANGED,
             project = AuditProject(id = project.id.toString()),
             description = "Partnership agreement date changed from:\n $oldValue to $newPartnershipAgreementDate"
+        )
+    )
+}
+
+fun projectContractingSectionLocked(
+    context: Any,
+    contractingSection: ProjectContractingSection,
+    projectId: Long
+): AuditCandidateEvent {
+    return AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditCandidate(
+            action = AuditAction.PROJECT_CONTRACTING_SECTION_LOCKED,
+            project = AuditProject(id = projectId.toString()),
+            description = "Project contracting section ${contractingSection.name} was set to Locked"
+        )
+    )
+}
+
+fun projectContractingSectionUnlocked(
+    context: Any,
+    contractingSection: ProjectContractingSection,
+    projectId: Long
+): AuditCandidateEvent {
+    return AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditCandidate(
+            action = AuditAction.PROJECT_CONTRACTING_SECTION_UNLOCKED,
+            project = AuditProject(id = projectId.toString()),
+            description = "Project contracting section ${contractingSection.name} was set to Unlocked"
+        )
+    )
+}
+
+fun projectContractingPartnerLocked(context: Any, partner: ProjectPartnerDetail, projectId: Long): AuditCandidateEvent {
+    return AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditCandidate(
+            action = AuditAction.PROJECT_CONTRACTING_SECTION_LOCKED,
+            project = AuditProject(id = projectId.toString()),
+            description = "Project contracting partner ${getPartnerName(partner)} was set to Locked"
+        )
+    )
+}
+
+fun projectContractingPartnerUnlocked(
+    context: Any,
+    partner: ProjectPartnerDetail,
+    projectId: Long
+): AuditCandidateEvent {
+    return AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditCandidate(
+            action = AuditAction.PROJECT_CONTRACTING_SECTION_UNLOCKED,
+            project = AuditProject(id = projectId.toString()),
+            description = "Project contracting partner ${getPartnerName(partner)} was set to Unlocked"
         )
     )
 }
@@ -337,7 +393,9 @@ fun projectContractingPartnerDocumentsLocationChanged(
     )
 }
 
-private fun getPartnerName(partner: ProjectPartnerEntity): String =
+private fun getPartnerName(partner: ProjectPartnerDetail): String =
     partner.role.isLead.let {
         if (it) "LP${partner.sortNumber}" else "PP${partner.sortNumber}"
     }
+private fun getPartnerName(partnerEntity: ProjectPartnerEntity): String =
+    getPartnerName(partnerEntity.toProjectPartnerDetail())

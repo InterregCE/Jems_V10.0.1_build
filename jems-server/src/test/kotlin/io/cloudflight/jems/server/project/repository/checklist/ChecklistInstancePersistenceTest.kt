@@ -8,11 +8,19 @@ import io.cloudflight.jems.server.programme.repository.checklist.ProgrammeCheckl
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistComponentInstance
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
-import io.cloudflight.jems.server.programme.service.checklist.model.metadata.*
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineInstanceMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleInstanceMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.TextInputMetadata
 import io.cloudflight.jems.server.project.entity.checklist.ChecklistComponentInstanceEntity
 import io.cloudflight.jems.server.project.entity.checklist.ChecklistComponentInstanceId
 import io.cloudflight.jems.server.project.entity.checklist.ChecklistInstanceEntity
-import io.cloudflight.jems.server.project.service.checklist.model.*
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstance
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceSearchRequest
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
+import io.cloudflight.jems.server.project.service.checklist.model.CreateChecklistInstanceModel
 import io.cloudflight.jems.server.project.service.checklist.model.metadata.TextInputInstanceMetadata
 import io.cloudflight.jems.server.project.service.checklist.update.UpdateChecklistInstanceStatusNotFinishedException
 import io.cloudflight.jems.server.user.entity.UserEntity
@@ -23,6 +31,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.mockkStatic
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
@@ -32,7 +41,7 @@ import java.io.File
 import java.math.BigDecimal
 import java.time.ZoneId
 import java.time.ZonedDateTime
-import java.util.*
+import java.util.Optional
 
 @Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class ChecklistInstancePersistenceTest : UnitTest() {
@@ -41,6 +50,7 @@ class ChecklistInstancePersistenceTest : UnitTest() {
     private val RELATED_TO_ID = 2L
     private val CREATOR_ID = 3L
     private val PROGRAMME_CHECKLIST_ID = 4L
+    private val TODAY = ZonedDateTime.now()
 
     private val checkLisDetail = ChecklistInstanceDetail(
         id = ID,
@@ -51,6 +61,7 @@ class ChecklistInstancePersistenceTest : UnitTest() {
         relatedToId = RELATED_TO_ID,
         creatorEmail = "test@email.com",
         creatorId = CREATOR_ID,
+        createdAt = TODAY,
         finishedDate = null,
         consolidated = false,
         visible = false,
@@ -90,6 +101,7 @@ class ChecklistInstancePersistenceTest : UnitTest() {
         name = "name",
         creatorEmail = "test@email.com",
         creatorId = CREATOR_ID,
+        createdAt = TODAY,
         relatedToId = RELATED_TO_ID,
         finishedDate = null,
         consolidated = false,
@@ -163,6 +175,7 @@ class ChecklistInstancePersistenceTest : UnitTest() {
     private val user = UserEntity(
         id = CREATOR_ID,
         email = "test@email.com",
+        sendNotificationsToEmail = false,
         name = "name",
         surname = "surname",
         userRole = UserRoleEntity(2L, "name"),
@@ -173,8 +186,10 @@ class ChecklistInstancePersistenceTest : UnitTest() {
     private fun checkListEntity(status: ChecklistInstanceStatus = ChecklistInstanceStatus.DRAFT) = ChecklistInstanceEntity(
         id = ID,
         status = status,
+        description = "test",
         finishedDate = null,
         relatedToId = RELATED_TO_ID,
+        createdAt = TODAY,
         programmeChecklist = programmeChecklist,
         creator = user,
         components = mutableSetOf(
@@ -214,6 +229,19 @@ class ChecklistInstancePersistenceTest : UnitTest() {
         )
     )
 
+    private val checklist = ChecklistInstance(
+        id = 1L,
+        status = ChecklistInstanceStatus.DRAFT,
+        type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
+        name = "name",
+        creatorEmail = "test@email.com",
+        createdAt = TODAY,
+        relatedToId = RELATED_TO_ID,
+        programmeChecklistId = PROGRAMME_CHECKLIST_ID,
+        visible = false,
+        description = "test"
+    )
+
 
     @RelaxedMockK
     lateinit var repository: ChecklistInstanceRepository
@@ -231,19 +259,21 @@ class ChecklistInstancePersistenceTest : UnitTest() {
     fun `find checklists`() {
 
         val predicate = slot<Predicate>()
-        persistence.findChecklistInstances(ChecklistInstanceSearchRequest(
-            relatedToId = 1,
-            type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
-            status = ChecklistInstanceStatus.FINISHED,
-            visible = true,
-        ))
+        persistence.findChecklistInstances(
+            ChecklistInstanceSearchRequest(
+                relatedToId = 1,
+                type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
+                status = ChecklistInstanceStatus.FINISHED,
+                visible = true,
+            )
+        )
 
         verify { repository.findAll(capture(predicate)) }
         assertThat(predicate.captured.toString()).isEqualTo(
             "checklistInstanceEntity.relatedToId = 1 " +
-                "&& checklistInstanceEntity.programmeChecklist.type = APPLICATION_FORM_ASSESSMENT " +
-                "&& checklistInstanceEntity.status = FINISHED " +
-                "&& checklistInstanceEntity.visible = true"
+                    "&& checklistInstanceEntity.programmeChecklist.type = APPLICATION_FORM_ASSESSMENT " +
+                    "&& checklistInstanceEntity.status = FINISHED " +
+                    "&& checklistInstanceEntity.visible = true"
         )
     }
 
@@ -283,9 +313,9 @@ class ChecklistInstancePersistenceTest : UnitTest() {
 
     @Test
     fun getChecklistDetail() {
-        val optionalCheckList = Optional.of(checkListEntity())
-        every { repository.findById(ID) } returns optionalCheckList
-        assertThat(persistence.getChecklistDetail(ID))
+        every { repository.findByIdAndProgrammeChecklistTypeAndRelatedToId(ID, ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT, 3L) } returns
+                checkListEntity()
+        assertThat(persistence.getChecklistDetail(ID, ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT, 3L))
             .usingRecursiveComparison()
             .isEqualTo(checkLisDetail)
     }
@@ -296,6 +326,8 @@ class ChecklistInstancePersistenceTest : UnitTest() {
         every { repository.save(capture(checklistSlot)) } returnsArgument 0
         every { programmeChecklistRepository.getById(PROGRAMME_CHECKLIST_ID) } returns programmeChecklist
         every { userRepo.getById(CREATOR_ID) } returns user
+        mockkStatic(ZonedDateTime::class)
+        every { ZonedDateTime.now() } returns TODAY
         assertThat(persistence.create(createChecklist, CREATOR_ID))
             .usingRecursiveComparison()
             .isEqualTo(createdCheckLisDetail)
@@ -327,6 +359,13 @@ class ChecklistInstancePersistenceTest : UnitTest() {
         assertThrows<UpdateChecklistInstanceStatusNotFinishedException> {
             persistence.updateSelection(mapOf(ID to true))
         }
+    }
+
+    @Test
+    fun `update description`() {
+        every { repository.findById(ID) } returns Optional.of(checkListEntity())
+        assertThat(persistence.updateDescription(1L, "test"))
+            .isEqualTo(checklist)
     }
 
 }

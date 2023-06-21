@@ -25,13 +25,17 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
+import java.time.ZonedDateTime
 
 internal class GetChecklistInstanceDetailTest : UnitTest() {
 
-    private val CHECKLIST_ID = 100L
-    private val RELATED_TO_ID = 2L
-    private val PROGRAMME_CHECKLIST_ID = 4L
-    private val CREATOR_ID = 1L
+    companion object {
+        private const val CHECKLIST_ID = 100L
+        private const val RELATED_TO_ID = 2L
+        private const val PROGRAMME_CHECKLIST_ID = 4L
+        private const val CREATOR_ID = 1L
+        private val TODAY = ZonedDateTime.now()
+    }
 
     private val checkLisDetail = ChecklistInstanceDetail(
         id = CHECKLIST_ID,
@@ -41,6 +45,7 @@ internal class GetChecklistInstanceDetailTest : UnitTest() {
         name = "name",
         creatorEmail = "a@a",
         creatorId = CREATOR_ID,
+        createdAt = TODAY,
         relatedToId = RELATED_TO_ID,
         finishedDate = null,
         consolidated = false,
@@ -88,10 +93,10 @@ internal class GetChecklistInstanceDetailTest : UnitTest() {
 
     @Test
     fun getChecklistDetail() {
-        every { persistence.getChecklistDetail(CHECKLIST_ID) } returns checkLisDetail
-        every { checklistAuthorization.hasPermission(UserRolePermission.ProjectAssessmentChecklistUpdate, RELATED_TO_ID)} returns true
-        every { checklistAuthorization.hasPermission(UserRolePermission.ProjectAssessmentChecklistConsolidate, RELATED_TO_ID)} returns true
-        every { securityService.getUserIdOrThrow()} returns RELATED_TO_ID
+        every { persistence.getChecklistDetail(CHECKLIST_ID, ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT, RELATED_TO_ID) } returns checkLisDetail
+        every { checklistAuthorization.hasPermission(UserRolePermission.ProjectAssessmentChecklistUpdate, RELATED_TO_ID) } returns true
+        every { checklistAuthorization.hasPermission(UserRolePermission.ProjectAssessmentChecklistConsolidate, RELATED_TO_ID) } returns true
+        every { securityService.getUserIdOrThrow() } returns RELATED_TO_ID
         assertThat(getChecklistInstance.getChecklistInstanceDetail(CHECKLIST_ID, RELATED_TO_ID))
             .usingRecursiveComparison()
             .isEqualTo(checkLisDetail)
@@ -99,12 +104,12 @@ internal class GetChecklistInstanceDetailTest : UnitTest() {
 
     @Test
     fun `get checklist detail error without permission`() {
-        every { persistence.getChecklistDetail(CHECKLIST_ID) } returns checkLisDetail
-        every { checklistAuthorization.hasPermission(UserRolePermission.ProjectAssessmentChecklistUpdate, RELATED_TO_ID)} returns false
-        every { checklistAuthorization.hasPermission(UserRolePermission.ProjectAssessmentChecklistConsolidate, RELATED_TO_ID)} returns false
-        every { checklistAuthorization.hasPermission(UserRolePermission.ProjectAssessmentChecklistSelectedUpdate)} returns false
-        every { checklistAuthorization.hasPermission(UserRolePermission.ProjectAssessmentChecklistSelectedRetrieve, RELATED_TO_ID)} returns false
-        every { securityService.getUserIdOrThrow()} returns RELATED_TO_ID
+        every { persistence.getChecklistDetail(CHECKLIST_ID, ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT, RELATED_TO_ID) } returns checkLisDetail
+        every { checklistAuthorization.hasPermission(UserRolePermission.ProjectAssessmentChecklistUpdate, RELATED_TO_ID) } returns false
+        every { checklistAuthorization.hasPermission(UserRolePermission.ProjectAssessmentChecklistConsolidate, RELATED_TO_ID) } returns false
+        every { checklistAuthorization.hasPermission(UserRolePermission.ProjectAssessmentChecklistSelectedUpdate) } returns false
+        every { checklistAuthorization.hasPermissionOrAsController(UserRolePermission.ProjectAssessmentChecklistSelectedRetrieve, RELATED_TO_ID) } returns false
+        every { securityService.getUserIdOrThrow() } returns RELATED_TO_ID
         assertThrows<GetChecklistDetailNotAllowedException> {
             getChecklistInstance.getChecklistInstanceDetail(CHECKLIST_ID, RELATED_TO_ID)
         }
@@ -112,12 +117,12 @@ internal class GetChecklistInstanceDetailTest : UnitTest() {
 
     @Test
     fun `get checklist detail with selected permission`() {
-        every { persistence.getChecklistDetail(CHECKLIST_ID) } returns checkLisDetail
-        every { checklistAuthorization.hasPermission(UserRolePermission.ProjectAssessmentChecklistUpdate, RELATED_TO_ID)} returns false
-        every { checklistAuthorization.hasPermission(UserRolePermission.ProjectAssessmentChecklistConsolidate, RELATED_TO_ID)} returns false
-        every { checklistAuthorization.hasPermission(UserRolePermission.ProjectAssessmentChecklistSelectedUpdate)} returns false
-        every { checklistAuthorization.hasPermission(UserRolePermission.ProjectAssessmentChecklistSelectedRetrieve, RELATED_TO_ID)} returns true
-        every { securityService.getUserIdOrThrow()} returns RELATED_TO_ID
+        every { persistence.getChecklistDetail(CHECKLIST_ID, ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT, RELATED_TO_ID) } returns checkLisDetail
+        every { checklistAuthorization.hasPermission(UserRolePermission.ProjectAssessmentChecklistUpdate, RELATED_TO_ID) } returns false
+        every { checklistAuthorization.hasPermission(UserRolePermission.ProjectAssessmentChecklistConsolidate, RELATED_TO_ID) } returns false
+        every { checklistAuthorization.hasPermission(UserRolePermission.ProjectAssessmentChecklistSelectedUpdate) } returns false
+        every { checklistAuthorization.hasPermissionOrAsController(UserRolePermission.ProjectAssessmentChecklistSelectedRetrieve, RELATED_TO_ID) } returns true
+        every { securityService.getUserIdOrThrow() } returns RELATED_TO_ID
         assertThat(getChecklistInstance.getChecklistInstanceDetail(CHECKLIST_ID, RELATED_TO_ID))
             .usingRecursiveComparison()
             .isEqualTo(checkLisDetail)

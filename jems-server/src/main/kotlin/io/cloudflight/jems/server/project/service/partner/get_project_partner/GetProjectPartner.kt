@@ -79,7 +79,8 @@ class GetProjectPartner(
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetProjectPartnerByProjectIdForPaymentsException::class)
     override fun findAllByProjectIdWithContributionsForDropdown(
-        projectId: Long
+        projectId: Long,
+        version: String?
     ): List<ProjectPartnerPaymentSummary> =
-        persistence.findAllByProjectIdWithContributionsForDropdown(projectId)
+        persistence.findAllByProjectIdWithContributionsForDropdown(projectId, version)
 }

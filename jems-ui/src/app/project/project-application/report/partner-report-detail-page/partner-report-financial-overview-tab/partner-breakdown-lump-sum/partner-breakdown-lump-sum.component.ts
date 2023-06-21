@@ -16,8 +16,20 @@ import {Alert} from '@common/components/forms/alert';
 export class PartnerBreakdownLumpSumComponent implements OnChanges {
   Alert = Alert;
 
-  displayedColumns = ['name', 'totalEligibleBudget', 'previouslyReported', 'currentReport', 'totalReportedSoFar',
-    'totalReportedSoFarPercentage', 'remainingBudget', 'previouslyPaid'];
+  certifiedColumns = ['totalEligibleAfterControl'];
+  columnsAvailable = [
+    'name',
+    'totalEligibleBudget',
+    'previouslyReported',
+    'currentReport',
+    'totalReportedSoFar',
+    'totalReportedSoFarPercentage',
+    'remainingBudget',
+    'previouslyValidated',
+    'totalEligibleAfterControl',
+    'previouslyPaid',
+  ];
+  displayedColumns = this.columnsAvailable;
 
   readonly PERIOD_PREPARATION: number = 0;
   readonly PERIOD_CLOSURE: number = 255;
@@ -25,10 +37,15 @@ export class PartnerBreakdownLumpSumComponent implements OnChanges {
   @Input()
   breakdown: ExpenditureLumpSumBreakdownDTO;
 
+  @Input()
+  isCertified = false;
+
   dataSource: MatTableDataSource<ExpenditureLumpSumBreakdownLineDTO> = new MatTableDataSource([]);
 
   ngOnChanges(changes: SimpleChanges): void {
     this.dataSource.data = this.breakdown.lumpSums;
+    this.displayedColumns = [...this.columnsAvailable]
+      .filter(column => this.isCertified || !this.certifiedColumns.includes(column));
   }
 
 }

@@ -11,5 +11,6 @@ data class ProjectFileMetadataDTO(
     val sizeString: String,
     val uploadedAt: ZonedDateTime,
     val uploadedBy: OutputUser,
-    val description: String?
+    val description: String?,
+    val category: ProjectFileCategoryTypeDTO?,
 )

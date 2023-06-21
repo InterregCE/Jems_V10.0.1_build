@@ -59,11 +59,26 @@ fun projectWithId(id: Long, status: ApplicationStatus = ApplicationStatus.SUBMIT
     customIdentifier = "01",
     callSettings = callSettings,
     acronym = "project acronym",
-    applicant = UserSummary(3L, "email", "name", "surname", UserRoleSummary(4L, "role"), UserStatus.ACTIVE),
+    applicant = UserSummary(3L, "email", sendNotificationsToEmail = false, "name", "surname", UserRoleSummary(4L, "role"), UserStatus.ACTIVE),
     projectStatus = ProjectStatus(
         id = null,
         status = status,
-        user = UserSummary(0, "", "", "", UserRoleSummary(name = ""), UserStatus.ACTIVE),
+        user = UserSummary(0, "", false, "", "", UserRoleSummary(name = ""), UserStatus.ACTIVE),
+        updated = ZonedDateTime.now(),
+    ),
+    duration = 10,
+)
+
+fun projectWithIdAndInModificationStatus(id: Long) = ProjectFull(
+    id = id,
+    customIdentifier = "01",
+    callSettings = callSettings,
+    acronym = "project acronym",
+    applicant = UserSummary(3L, "email", false, "name", "surname", UserRoleSummary(4L, "role"), UserStatus.ACTIVE),
+    projectStatus = ProjectStatus(
+        id = null,
+        status = ApplicationStatus.IN_MODIFICATION,
+        user = UserSummary(0, "", false, "", "", UserRoleSummary(name = ""), UserStatus.ACTIVE),
         updated = ZonedDateTime.now(),
     ),
     duration = 10,
@@ -101,7 +116,7 @@ fun listOfApplicationStates() =
         ),
         Pair(
             ApplicationStatus.APPROVED,
-            ApprovedApplicationState(mockk(relaxed = true), mockk(), mockk(), mockk(), mockk(), mockk())
+            ApprovedApplicationState(mockk(relaxed = true), mockk(), mockk(), mockk(), mockk(), mockk(), mockk())
         ),
         Pair(
             ApplicationStatus.APPROVED_WITH_CONDITIONS,

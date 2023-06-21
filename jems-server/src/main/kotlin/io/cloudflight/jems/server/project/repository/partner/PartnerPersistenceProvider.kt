@@ -1,12 +1,15 @@
 package io.cloudflight.jems.server.project.repository.partner
 
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.controllerInstitution.service.model.ProjectPartnerAssignmentMetadata
 import io.cloudflight.jems.server.programme.repository.legalstatus.ProgrammeLegalStatusRepository
 import io.cloudflight.jems.server.programme.repository.stateaid.ProgrammeStateAidRepository
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartnerStateAidEntity
 import io.cloudflight.jems.server.project.repository.ApplicationVersionNotFoundException
 import io.cloudflight.jems.server.project.repository.ProjectRepository
+import io.cloudflight.jems.server.project.repository.ProjectVersionPersistenceProvider
+import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityRepository
 import io.cloudflight.jems.server.project.repository.workpackage.activity.toActivityHistoricalData
@@ -18,18 +21,18 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAd
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerContact
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerMotivation
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerPaymentSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerStateAid
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerPaymentSummary
+import java.sql.Timestamp
+import java.util.stream.Collectors
+import java.util.stream.StreamSupport
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
-import java.sql.Timestamp
-import java.util.stream.Collectors
-import java.util.stream.StreamSupport
 
 @Repository
 class PartnerPersistenceProvider(
@@ -40,7 +43,9 @@ class PartnerPersistenceProvider(
     private val projectPartnerStateAidRepository: ProjectPartnerStateAidRepository,
     private val projectAssociatedOrganizationService: ProjectAssociatedOrganizationService,
     private val workPackageActivityRepository: WorkPackageActivityRepository,
-    private val programmeStateAidRepository: ProgrammeStateAidRepository
+    private val programmeStateAidRepository: ProgrammeStateAidRepository,
+    private val projectVersionPersistenceProvider: ProjectVersionPersistenceProvider,
+    private val projectVersionRepository: ProjectVersionRepository
 ) : PartnerPersistence {
 
     @Transactional(readOnly = true)
@@ -87,20 +92,25 @@ class PartnerPersistenceProvider(
         return projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {
                 StreamSupport.stream(
-                    projectPartnerRepository.findTop30ByProjectId(projectId, sort).spliterator(),
+                    projectPartnerRepository.findTop50ByProjectId(projectId, sort).spliterator(),
                     false
                 ).map { it.toModel() }.collect(Collectors.toList())
             },
             previousVersionFetcher = { timestamp ->
-                projectPartnerRepository.findTop30ByProjectIdSortBySortNumberAsOfTimestamp(projectId, timestamp)
+                projectPartnerRepository.findTop50ByProjectIdSortBySortNumberAsOfTimestamp(projectId, timestamp)
                     .map { it.toProjectPartnerDTOHistoricalData() }
             }
         ) ?: emptyList()
     }
 
     @Transactional(readOnly = true)
-    override fun findAllByProjectIdWithContributionsForDropdown(projectId: Long): List<ProjectPartnerPaymentSummary> =
-        projectPartnerRepository.findAllByProjectIdWithContributionsForDropdown(projectId).toProjectPartnerPaymentSummaryList()
+    override fun findAllByProjectIdWithContributionsForDropdown(projectId: Long, version: String?): List<ProjectPartnerPaymentSummary> {
+        val lastVersion = projectVersionPersistenceProvider.getLatestVersionOrNull(projectId)
+        val timestamp =  projectVersionRepository.findTimestampByVersion(projectId, (version ?: lastVersion)!!)
+
+        return projectPartnerRepository.findAllByProjectIdWithContributionsForDropdownAsOfTimestamp(projectId, timestamp!!)
+            .toProjectPartnerPaymentSummaryList()
+    }
 
     // used for authorization
     @Transactional(readOnly = true)
@@ -112,10 +122,10 @@ class PartnerPersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun findTop30ByProjectId(projectId: Long, version: String?): Iterable<ProjectPartnerDetail> {
+    override fun findTop50ByProjectId(projectId: Long, version: String?): Iterable<ProjectPartnerDetail> {
         return projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {
-                projectPartnerRepository.findTop30ByProjectId(projectId).map { it.toProjectPartnerDetail() }.toSet()
+                projectPartnerRepository.findTop50ByProjectId(projectId).map { it.toProjectPartnerDetail() }.toSet()
             },
             previousVersionFetcher = { timestamp ->
                 projectPartnerRepository.findByProjectIdAsOfTimestamp(projectId, timestamp).toModel()
@@ -241,6 +251,9 @@ class PartnerPersistenceProvider(
     override fun getPartnerProjectIdByPartnerIdAndProjectStatusIn(partnerIds: Set<Long>, projectStatuses: Set<ApplicationStatus>): List<Pair<Long, Long>> =
         projectPartnerRepository.getPartnerProjectIdByPartnerIdAndProjectStatusIn(partnerIds, projectStatuses).toList()
 
+    @Transactional(readOnly = true)
+    override fun getCurrentPartnerAssignmentMetadata(projectId: Long): List<ProjectPartnerAssignmentMetadata> =
+        projectPartnerRepository.findTop50ByProjectId(projectId).onlyAssignmentMetadata()
 
     /**
      * sets or updates the sort number for all partners for the specified project.
@@ -253,7 +266,7 @@ class PartnerPersistenceProvider(
             )
         )
 
-        projectPartnerRepository.findTop30ByProjectId(projectId, sort)
+        projectPartnerRepository.findTop50ByProjectId(projectId, sort)
             .forEachIndexed { index, old -> old.sortNumber = index.plus(1) }
     }
 
@@ -298,5 +311,4 @@ class PartnerPersistenceProvider(
         return projectPartnerRepository.getProjectIdByPartnerIdInFullHistory(partnerId)
             ?: throw ResourceNotFoundException("projectPartner")
     }
-
 }

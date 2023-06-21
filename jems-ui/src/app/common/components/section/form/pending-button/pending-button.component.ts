@@ -22,6 +22,16 @@ export class PendingButtonComponent {
   confirm: ConfirmDialogData;
   @Input()
   type: 'primary' | 'secondary' = 'primary';
+  @Input()
+  isIconButton = false;
+  @Input()
+  buttonOptions: {
+    class: string;
+    fontSet: string;
+  } = {
+    class: '',
+    fontSet: ''
+  };
 
   @Output()
   clicked = new EventEmitter<void>();

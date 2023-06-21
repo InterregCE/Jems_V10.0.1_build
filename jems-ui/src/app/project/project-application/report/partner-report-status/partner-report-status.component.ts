@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
 import {ProjectPartnerReportSummaryDTO} from '@cat/api';
 
 @Component({
@@ -7,14 +7,9 @@ import {ProjectPartnerReportSummaryDTO} from '@cat/api';
   styleUrls: ['./partner-report-status.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PartnerReportStatusComponent {
+export class PartnerReportStatusComponent implements OnChanges {
 
-  statusesOrdered = [
-    ProjectPartnerReportSummaryDTO.StatusEnum.Draft,
-    ProjectPartnerReportSummaryDTO.StatusEnum.Submitted,
-    ProjectPartnerReportSummaryDTO.StatusEnum.InControl,
-    ProjectPartnerReportSummaryDTO.StatusEnum.Certified,
-  ];
+  statuses: StatusChip[] = [];
 
   @Input()
   status: ProjectPartnerReportSummaryDTO.StatusEnum;
@@ -22,10 +17,25 @@ export class PartnerReportStatusComponent {
   @Input()
   longVersion = false;
 
-  getIconFromStatus(currentChip: ProjectPartnerReportSummaryDTO.StatusEnum): string {
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.status) {
+      this.statuses = PartnerReportStatusComponent.getStatusesOrdered(this.status);
+      if (!this.longVersion) {
+        this.statuses = this.statuses.filter(x => x.enabled).slice(-1);
+      }
+    }
+  }
+
+  private static getIconFromStatus(currentChip: ProjectPartnerReportSummaryDTO.StatusEnum): string {
     switch (currentChip) {
       case 'Draft':
         return 'donut_large';
+      case 'ReOpenSubmittedLast':
+      case 'ReOpenSubmittedLimited':
+      case 'ReOpenInControlLast':
+      case 'ReOpenInControlLimited':
+      case 'ReOpenCertified':
+        return 'undo';
       case 'Submitted':
         return 'send';
       case 'InControl':
@@ -37,8 +47,75 @@ export class PartnerReportStatusComponent {
     }
   }
 
-  isEnabled(currentChip: ProjectPartnerReportSummaryDTO.StatusEnum): boolean {
-    return this.statusesOrdered.indexOf(currentChip) <= this.statusesOrdered.indexOf(this.status);
+  private static getStatusesOrdered(currentStatus: ProjectPartnerReportSummaryDTO.StatusEnum): StatusChip[] {
+    const isSubmissionReopened = [
+      ProjectPartnerReportSummaryDTO.StatusEnum.ReOpenSubmittedLast,
+      ProjectPartnerReportSummaryDTO.StatusEnum.ReOpenSubmittedLimited,
+    ].includes(currentStatus);
+
+    const isControlReopened = [
+      ProjectPartnerReportSummaryDTO.StatusEnum.ReOpenInControlLast,
+      ProjectPartnerReportSummaryDTO.StatusEnum.ReOpenInControlLimited,
+    ].includes(currentStatus);
+
+    const isCertifiedReopened = [
+      ProjectPartnerReportSummaryDTO.StatusEnum.ReOpenCertified
+    ].includes(currentStatus);
+
+    return [
+      {
+        status: isSubmissionReopened ? currentStatus : ProjectPartnerReportSummaryDTO.StatusEnum.Draft,
+        joiningIcon: '',
+        enabled: this.isEnabled(currentStatus, 0),
+        icon: this.getIconFromStatus(isSubmissionReopened ? currentStatus : ProjectPartnerReportSummaryDTO.StatusEnum.Draft),
+      },
+      {
+        status: isControlReopened ? currentStatus : ProjectPartnerReportSummaryDTO.StatusEnum.Submitted,
+        joiningIcon: isSubmissionReopened ? 'sync_alt' : 'trending_flat',
+        enabled: this.isEnabled(currentStatus, 1),
+        icon: this.getIconFromStatus(isControlReopened ? currentStatus : ProjectPartnerReportSummaryDTO.StatusEnum.Submitted),
+      },
+      {
+        status: isCertifiedReopened ? currentStatus : ProjectPartnerReportSummaryDTO.StatusEnum.InControl,
+        joiningIcon: isControlReopened ? 'sync_alt' : 'trending_flat',
+        enabled: this.isEnabled(currentStatus, 2),
+        icon: this.getIconFromStatus(isCertifiedReopened ? currentStatus : ProjectPartnerReportSummaryDTO.StatusEnum.InControl),
+      },
+      {
+        status: ProjectPartnerReportSummaryDTO.StatusEnum.Certified,
+        joiningIcon: isCertifiedReopened ? 'sync_alt' : 'trending_flat',
+        enabled: this.isEnabled(currentStatus, 3),
+        icon: this.getIconFromStatus(ProjectPartnerReportSummaryDTO.StatusEnum.Certified),
+      },
+    ];
   }
 
+  private static isEnabled(
+    currentChip: ProjectPartnerReportSummaryDTO.StatusEnum,
+    chipIndex: number,
+  ): boolean {
+    switch (chipIndex) {
+      case 0: return true;
+      case 1: return ![
+        ProjectPartnerReportSummaryDTO.StatusEnum.Draft,
+        ProjectPartnerReportSummaryDTO.StatusEnum.ReOpenSubmittedLast,
+        ProjectPartnerReportSummaryDTO.StatusEnum.ReOpenSubmittedLimited,
+      ].includes(currentChip);
+      case 2: return [
+        ProjectPartnerReportSummaryDTO.StatusEnum.InControl,
+        ProjectPartnerReportSummaryDTO.StatusEnum.Certified,
+        ProjectPartnerReportSummaryDTO.StatusEnum.ReOpenCertified
+      ].includes(currentChip);
+      case 3: return currentChip === ProjectPartnerReportSummaryDTO.StatusEnum.Certified;
+      default: return false;
+    }
+  }
+
+}
+
+export interface StatusChip {
+  status: ProjectPartnerReportSummaryDTO.StatusEnum;
+  joiningIcon: string;
+  icon: string;
+  enabled: boolean;
 }

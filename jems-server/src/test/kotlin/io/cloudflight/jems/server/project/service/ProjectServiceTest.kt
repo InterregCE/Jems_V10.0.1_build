@@ -65,6 +65,7 @@ class ProjectServiceTest : UnitTest() {
     private val account = UserEntity(
         id = 1,
         email = "admin@admin.dev",
+        sendNotificationsToEmail = false,
         name = "Name",
         surname = "Surname",
         userRole = UserRoleEntity(id = 1, name = "ADMIN"),
@@ -103,12 +104,16 @@ class ProjectServiceTest : UnitTest() {
         allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD),
         preSubmissionCheckPluginKey = null,
         firstStepPreSubmissionCheckPluginKey = null,
+        reportPartnerCheckPluginKey = "check-off",
+        reportProjectCheckPluginKey = "check-off",
         projectDefinedUnitCostAllowed = true,
         projectDefinedLumpSumAllowed = false,
+        controlReportPartnerCheckPluginKey = "control-report-partner-check-off",
+        controlReportSamplingCheckPluginKey = "control-report-sampling-check-off"
     )
 
     private fun wpWithActivity(id: Long, project: ProjectEntity, activityStartPeriod: Int, activityEndPeriod: Int, deliverablePeriod: Int) =
-        WorkPackageEntity(id = id, project = project)
+        WorkPackageEntity(id = id, project = project, deactivated = false)
             .apply {
                 activities.add(
                     WorkPackageActivityEntity(
@@ -116,11 +121,13 @@ class ProjectServiceTest : UnitTest() {
                         activityNumber = 1,
                         startPeriod = activityStartPeriod,
                         endPeriod = activityEndPeriod,
+                        deactivated = false,
                     ).apply {
                         deliverables.add(
                             WorkPackageActivityDeliverableEntity(
                                 deliverableNumber = 1,
                                 startPeriod = deliverablePeriod,
+                                deactivated = false,
                                 workPackageActivity = this
                             )
                         )
@@ -145,8 +152,12 @@ class ProjectServiceTest : UnitTest() {
         allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD),
         preSubmissionCheckPluginKey = null,
         firstStepPreSubmissionCheckPluginKey = null,
+        reportPartnerCheckPluginKey = "check-off",
+        reportProjectCheckPluginKey = "check-off",
         projectDefinedUnitCostAllowed = true,
         projectDefinedLumpSumAllowed = false,
+        controlReportPartnerCheckPluginKey = "control-report-partner-check-off",
+        controlReportSamplingCheckPluginKey = "control-report-sampling-check-off"
     )
 
     private fun project(call: CallEntity, status: ProjectStatusHistoryEntity, acronym: String, resultPeriodNumber: Int) = ProjectEntity(
@@ -156,8 +167,8 @@ class ProjectServiceTest : UnitTest() {
         applicant = account,
         currentStatus = status,
         results = setOf(
-            ProjectResultEntity(ProjectResultId(10, 1), periodNumber = resultPeriodNumber),
-            ProjectResultEntity(ProjectResultId(10, 2), periodNumber = 255),
+            ProjectResultEntity(ProjectResultId(10, 1), periodNumber = resultPeriodNumber, deactivated = false),
+            ProjectResultEntity(ProjectResultId(10, 2), periodNumber = 255, deactivated = false),
         ),
     )
 

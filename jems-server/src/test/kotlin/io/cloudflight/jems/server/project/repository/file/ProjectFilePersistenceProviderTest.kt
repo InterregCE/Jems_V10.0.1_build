@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.repository.file
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.common.minio.MinioStorage
+import io.cloudflight.jems.server.common.file.minio.MinioStorage
 import io.cloudflight.jems.server.project.entity.file.ProjectFileCategoryEntity
 import io.cloudflight.jems.server.project.entity.file.ProjectFileEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
@@ -198,6 +198,25 @@ internal class ProjectFilePersistenceProviderTest : UnitTest() {
         assertThat(projectFilePersistenceProvider.getFileCategoryTypeSet(FILE_ID)).containsAll(
             listOf(ProjectFileCategoryType.APPLICATION, ProjectFileCategoryType.PARTNER)
         )
+    }
+
+    @Test
+    fun getCategoriesMap() {
+        val projectFileEntity = projectFileEntity()
+        every { projectFileCategoryRepository.findAllByCategoryIdFileIdIn(setOf(FILE_ID)) } returns listOf(
+            projectFileCategoryEntity(
+                FILE_ID, categoryTypeString = ProjectFileCategoryType.APPLICATION.name, projectFileEntity
+            ),
+            projectFileCategoryEntity(
+                FILE_ID, categoryTypeString = ProjectFileCategoryType.PARTNER.name, projectFileEntity
+            ),
+        )
+        assertThat(projectFilePersistenceProvider.getCategoriesMap(setOf(FILE_ID)))
+            .containsExactlyEntriesOf(mapOf(FILE_ID to setOf(
+                ProjectFileCategoryType.APPLICATION,
+                ProjectFileCategoryType.PARTNER,
+                ProjectFileCategoryType.ALL,
+            )))
     }
 
     @Nested

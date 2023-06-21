@@ -1,10 +1,10 @@
 package io.cloudflight.jems.server.project.service.report.partner.procurement.deleteProjectPartnerReportProcurement
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
-import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
+import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectPartnerReportProcurementPersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -22,10 +22,10 @@ internal class DeleteProjectPartnerReportProcurementTest : UnitTest() {
     }
 
     @MockK
-    lateinit var reportPersistence: ProjectReportPersistence
+    lateinit var reportPersistence: ProjectPartnerReportPersistence
 
     @MockK
-    lateinit var reportProcurementPersistence: ProjectReportProcurementPersistence
+    lateinit var reportProcurementPersistence: ProjectPartnerReportProcurementPersistence
 
     @InjectMockKs
     lateinit var interactor: DeleteProjectPartnerReportProcurement
@@ -36,10 +36,10 @@ internal class DeleteProjectPartnerReportProcurementTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "delete (status {0})")
-    @EnumSource(value = ReportStatus::class, names = ["Draft"])
+    @EnumSource(value = ReportStatus::class, names = ["Draft", "ReOpenSubmittedLast", "ReOpenInControlLast"])
     fun delete(status: ReportStatus) {
         every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = 3L) } returns
-            ProjectPartnerReportStatusAndVersion(status, "4.5.8")
+            ProjectPartnerReportStatusAndVersion(reportId = 3L, status, "4.5.8")
         every { reportProcurementPersistence.deletePartnerReportProcurement(PARTNER_ID, reportId = 3L, 587L) } answers { }
 
         interactor.delete(PARTNER_ID, reportId = 3L, procurementId = 587L)
@@ -49,10 +49,10 @@ internal class DeleteProjectPartnerReportProcurementTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "delete - not draft (status {0})")
-    @EnumSource(value = ReportStatus::class, names = ["Draft"], mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = ReportStatus::class, names = ["Draft", "ReOpenSubmittedLast", "ReOpenInControlLast"], mode = EnumSource.Mode.EXCLUDE)
     fun `delete - not draft`(status: ReportStatus) {
         every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = 3L) } returns
-            ProjectPartnerReportStatusAndVersion(status, "4.5.8")
+            ProjectPartnerReportStatusAndVersion(3L, status, "4.5.8")
 
         assertThrows<ReportAlreadyClosed> { interactor.delete(PARTNER_ID, reportId = 3L, procurementId = 587L) }
     }

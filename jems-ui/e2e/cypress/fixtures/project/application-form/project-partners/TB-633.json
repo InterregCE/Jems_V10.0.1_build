@@ -3,7 +3,7 @@
     "fund": "Neighbourhood CBC",
     "rate": 45,
     "partnerContribution": {
-      "amount": "22.114,27",
+      "amount": "26.984,48",
       "rate": "55,00"
     },
     "originsOfPartnerContribution": [
@@ -19,9 +19,9 @@
       {
         "source": "Random auto public contribution",
         "legalStatus": "Automatic Public",
-        "amount": 1613.28
+        "amount": 6483.49
       }
     ],
-    "originOfPartnerContributionDifference": "22.114,27"
+    "originOfPartnerContributionDifference": "26.984,48"
   }
 }

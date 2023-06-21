@@ -30,7 +30,7 @@ interface ProjectFileApi {
     @ApiOperation("Upload file to project")
     @PostMapping("$ENDPOINT_API_PROJECT_FILE/upload", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     @ApiImplicitParams(
-        ApiImplicitParam(paramType = "query", name = "type", dataType = "string"),
+        ApiImplicitParam(paramType = "query", name = "type", dataType = "string", required = true),
         ApiImplicitParam(paramType = "query", name = "id", dataType = "number"),
     )
     fun uploadFile(
@@ -48,7 +48,7 @@ interface ProjectFileApi {
 
     @ApiOperation("list project files")
     @ApiImplicitParams(
-        ApiImplicitParam(paramType = "query", name = "type", dataType = "string"),
+        ApiImplicitParam(paramType = "query", name = "type", dataType = "string", required = true),
         ApiImplicitParam(paramType = "query", name = "id", dataType = "number"),
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string"),
         ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),

@@ -1,132 +1,98 @@
 
 
-table {
-  width: 100%;
-}
-.full-payment-row {
-  border-top: 1px solid var(--light-blue-gray);
-}
-.table-row {
-  padding: 0.5rem 0;
-
-  > :first-child {
-    padding-left: 1rem
+#advance-payment-table {
+  table {
+    width: 100%;
   }
-  > * {
-    padding: 0.25rem;
+  .full-payment-row {
+    border-top: 1px solid var(--light-blue-gray);
   }
-}
-.jems-multi-column-row {
-  column-gap: 0;
-  > * {
-    margin-right: 0 !important;
+  .table-row {
+    padding: 0.5rem 0;
+
+    > :first-child {
+      padding-left: 1rem
+    }
+    > * {
+      padding: 0.25rem;
+    }
   }
+  .jems-multi-column-row {
+    column-gap: 0;
+    > * {
+      flex: 1 1 0 !important;
+      margin-right: 0 !important;
+    }
+  }
+  .colored-row {
+    background: var(--table-highlight-color);
+  }
+  .normal-row {
+    background: white !important;
+  }
+  .normal-row:hover {
+    background: var(--table-hover-color) !important;
+  }
+
+  // payment columns
+  .column-partner-id {
+    font-weight: var(--body-strong-font-weight);
+    min-width: 3rem !important;
+    max-width: 3rem !important;
+  }
+  .column-amount-approved {
+    min-width: 9rem !important;
+    max-width: 9rem !important;
+  }
+  .column-project-id {
+    min-width: 12rem !important;
+    max-width: 12rem !important;
+  }
+  .column-project-acronym {
+    min-width: 8rem !important;
+    max-width: 14rem !important;
+    width: auto;
+  }
+  .column-partner-name {
+    min-width: 8rem !important;
+    max-width: 14rem !important;
+    width: auto;
+  }
+  .column-partner-role {
+    min-width: 4rem !important;
+    max-width: 4rem !important;
+  }
+  .column-advance-source {
+    min-width: 8rem !important;
+    max-width: 12rem !important;
+    width: auto;
+  }
+  .column-advance-amount {
+    min-width: 6rem !important;
+    max-width: 6rem !important;
+  }
+  .column-checkbox {
+    min-width: 12rem !important;
+    max-width: 12rem !important;
+
+    .column-checkbox-text-content {
+      margin-left: 0.75rem !important;
+      align-items: center;
+      font-size: 0.75rem;
+      line-height: 1.2em;
+    }
+  }
+  .column-comment {
+    min-width: 12rem !important;
+    width: auto;
+  }
+  .column-date {
+    min-width: 9rem !important;
+    max-width: 9rem !important;
+  }
+
 }
 
-// payment columns
-.column-partner-id {
-  font-weight: var(--body-strong-font-weight);
-  min-width: 4rem !important;
-  max-width: 4rem !important;
-}
-
-.column-amount-approved {
-  min-width: 9rem !important;
-  max-width: 9rem !important;
-}
-
-.column-project-id {
-  min-width: 12rem !important;
-  max-width: 12rem !important;
-}
-
-.column-project-acronym {
-  min-width: 8rem !important;
-  max-width: 8rem !important;
-}
-
-.column-partner-name {
-  min-width: 8rem !important;
-  max-width: 8rem !important;
-}
-
-.column-partner-role {
-  min-width: 4rem !important;
-  max-width: 4rem !important;
-}
-
-.column-advance-source {
-  min-width: 8rem !important;
-  max-width: 8rem !important;
-}
-
-.column-advance-amount {
-  min-width: 6rem !important;
-  max-width: 6rem !important;
-}
-
-.column-checkbox {
-  min-width: 5rem !important;
-  max-width: 5rem !important;
-}
-
-.column-comment {
-  min-width: 12rem !important;
-  max-width: 12rem !important;
-}
-
-.column-user-saving {
-  min-width: 9rem !important;
-  max-width: 9rem;
-  font-weight: var(--body-strong-font-weight);
-}
-
-.column-date {
-  min-width: 9rem !important;
-  max-width: 9rem !important;
-}
-
-.column-saving-date {
-  min-width: 6rem !important;
-  max-width: 6rem !important;
-  font-weight: var(--body-strong-font-weight);
-}
-.marked-as-required::after{
-  content: "*";
-  color: var(--error-color);
-
-  position: absolute;
-  left: 0;
-  top: -0.2em;
-
-  font-size: 1.25em;
-  font-weight: 500;
-}
-
-.colored-row {
-  background: var(--table-highlight-color);
-}
-.normal-row {
-  background: white !important;
-}
-.normal-row:hover {
-  background: var(--table-hover-color) !important;
-}
-.mat-form-field {
-  max-height: 4.75rem !important; // fixes the 1px vertical height shift on disabling/enabling inputs
-}
-.mat-datepicker-input.placeholder-required::placeholder {
-  color: var(--error-color) !important;
-}
-
-.icon-back {
-  font-size: 2rem;
-  margin-top: -.25rem;
-}
-.put-icon-to-header-line {
-  display: inline-block;
-  margin-top: 1.3rem !important;
-}
 .advance-payment-container {
   border: 1px solid var(--light-blue-gray);
   overflow: auto !important;
@@ -137,8 +103,8 @@ table {
     font-size: var(--body-strong-font-size);
     font-weight: var(--body-strong-font-weight);
     background-color: var(--light-blue-gray);
+    word-break: break-word;
     min-width: fit-content;
-    width: available;
   }
 }
 .header {
@@ -147,7 +113,46 @@ table {
 .settlements-table-container {
   padding: 0 1rem 0.5rem 12rem;
 }
+.marked-as-required::after{
+  content: "*";
+  color: var(--error-color);
+
+  position: absolute;
+  left: 0;
+  top: -0.2em;
+
+  font-size: 1.25em;
+  font-weight: var(--font-weight-strong);
+}
+
+.mat-form-field {
+  max-height: 4.75rem !important; // fixes the 1px vertical height shift on disabling/enabling inputs
+}
+.mat-datepicker-input.placeholder-required::placeholder {
+  color: var(--error-color) !important;
+}
+.icon-back {
+  font-size: 2rem;
+  margin-top: -.25rem;
+}
+.put-icon-to-header-line {
+  display: inline-block;
+  margin-top: 1.3rem !important;
+}
+
 .footer-with-button {
   background: none !important;
   padding: 0.5rem 0;
+}
+
+jems-advance-payments-attachments {
+  width: 100%;
+  display: inline-block;
+  padding-top: 1rem;
+}
+
+.display-row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
 }

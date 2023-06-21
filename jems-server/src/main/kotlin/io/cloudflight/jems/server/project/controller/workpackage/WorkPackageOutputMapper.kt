@@ -25,7 +25,8 @@ fun WorkPackageInvestment.toWorkPackageInvestmentDTO() = WorkPackageInvestmentDT
     documentationExpectedImpacts = documentationExpectedImpacts,
     ownershipSiteLocation = ownershipSiteLocation,
     ownershipRetain = ownershipRetain,
-    ownershipMaintenance = ownershipMaintenance
+    ownershipMaintenance = ownershipMaintenance,
+    deactivated = deactivated,
 )
 
 fun List<InvestmentSummary>.toInvestmentSummaryDTOs() =
@@ -34,7 +35,8 @@ fun List<InvestmentSummary>.toInvestmentSummaryDTOs() =
 fun InvestmentSummary.toInvestmentSummaryDTO() = InvestmentSummaryDTO(
     id = id,
     investmentNumber = investmentNumber,
-    workPackageNumber = workPackageNumber
+    workPackageNumber = workPackageNumber,
+    deactivated = deactivated,
 )
 
 fun WorkPackageInvestmentDTO.toWorkPackageInvestment() = WorkPackageInvestment(
@@ -52,19 +54,22 @@ fun WorkPackageInvestmentDTO.toWorkPackageInvestment() = WorkPackageInvestment(
     documentationExpectedImpacts = documentationExpectedImpacts,
     ownershipSiteLocation = ownershipSiteLocation,
     ownershipRetain = ownershipRetain,
-    ownershipMaintenance = ownershipMaintenance
+    ownershipMaintenance = ownershipMaintenance,
+    deactivated = deactivated ?: false,
 )
 
-fun WorkPackageOutputDTO.toModel() = WorkPackageOutput(
+fun WorkPackageOutputDTO.toModel(workPackageId: Long) = WorkPackageOutput(
     workPackageId = workPackageId,
+    outputNumber = outputNumber ?: 0,
     title = title,
     description = description,
     periodNumber = periodNumber,
     programmeOutputIndicatorId = programmeOutputIndicatorId,
-    targetValue = targetValue
+    targetValue = targetValue,
+    deactivated = deactivated,
 )
 
-fun List<WorkPackageOutputDTO>.toModel() = map { it.toModel() }.toList()
+fun List<WorkPackageOutputDTO>.toModel(workPackageId: Long) = map { it.toModel(workPackageId) }.toList()
 
 fun List<WorkPackageOutput>.toDto() = map {
     WorkPackageOutputDTO(
@@ -75,7 +80,8 @@ fun List<WorkPackageOutput>.toDto() = map {
         title = it.title ,
         targetValue = it.targetValue,
         periodNumber = it.periodNumber,
-        description = it.description
+        description = it.description,
+        deactivated = it.deactivated,
     )
 }
 

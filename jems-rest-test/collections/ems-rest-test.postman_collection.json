@@ -1,10 +1,10 @@
 {
 	"info": {
-		"_postman_id": "76d4452b-ed37-49ec-8e6d-0d173990d14a",
+		"_postman_id": "0c24edb5-8dc3-4b32-9351-fbdc0818f6f4",
 		"name": "ems-rest-test",
 		"description": "Check JEMS application for common use-cases",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "24164102"
+		"_exporter_id": "1630872"
 	},
 	"item": [
 		{
@@ -203,6 +203,63 @@
 							"response": []
 						},
 						{
+							"name": "update default programme ROLE (with Call Edit)",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"var uuid = require('uuid');\r",
+											"const randomIdentifier = uuid.v4().substring(24, 32);\r",
+											"pm.variables.set('programme_user_email', randomIdentifier + \"@Programme-user.eu\");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('programme user ROLE updated/reset', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test('programme user ROLE also has CallUpdate', function() {\r",
+											"    pm.expect(pm.response.json().permissions).to.include('CallUpdate');\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 2,\r\n    \"name\": \"Programme user\",\r\n    \"defaultForRegisteredUser\": false,\r\n    \"permissions\": [\r\n        \"ProjectReportingView\",\r\n        \"ProjectContractingPartnerView\",\r\n        \"ProjectContractingView\",\r\n        \"ProjectSetToContracted\",\r\n        \"ProjectContractingManagementView\",\r\n        \"ProjectContractingReportingView\",\r\n        \"ProjectContractsView\",\r\n        \"ProjectFormRetrieve\",\r\n        \"ProjectFileApplicationRetrieve\",\r\n        \"ProjectCheckApplicationForm\",\r\n        \"ProjectAssessmentView\",\r\n        \"ProjectAssessmentQualityEnter\",\r\n        \"ProjectAssessmentEligibilityEnter\",\r\n        \"ProjectStatusDecideEligible\",\r\n        \"ProjectStatusDecideIneligible\",\r\n        \"ProjectStatusDecideApproved\",\r\n        \"ProjectStatusDecideApprovedWithConditions\",\r\n        \"ProjectStatusDecideNotApproved\",\r\n        \"ProjectStatusReturnToApplicant\",\r\n        \"ProjectStartStepTwo\",\r\n        \"ProjectFileAssessmentRetrieve\",\r\n        \"ProjectFileAssessmentUpdate\",\r\n        \"ProjectAssessmentChecklistUpdate\",\r\n        \"ProjectAssessmentChecklistSelectedRetrieve\",\r\n        \"ProjectModificationView\",\r\n        \"ProjectStatusDecideModificationApproved\",\r\n        \"ProjectStatusDecideModificationNotApproved\",\r\n        \"ProjectOpenModification\",\r\n        \"ProjectModificationFileAssessmentRetrieve\",\r\n        \"ProjectModificationFileAssessmentUpdate\",\r\n        \"ProjectMonitorCollaboratorsRetrieve\",\r\n        \"ProjectMonitorCollaboratorsUpdate\",\r\n        \"ProjectsWithOwnershipRetrieve\",\r\n        \"CallPublishedRetrieve\",\r\n        \"ProjectRetrieve\",\r\n        \"CallRetrieve\",\r\n        \"CallUpdate\",\r\n        \"ProgrammeSetupRetrieve\",\r\n        \"InstitutionsRetrieve\",\r\n        \"InstitutionsAssignmentRetrieve\",\r\n        \"PaymentsRetrieve\",\r\n        \"AdvancePaymentsRetrieve\",\r\n        \"ProgrammeDataExportRetrieve\",\r\n        \"AuditRetrieve\"\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/role",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"role"
+									]
+								}
+							},
+							"response": []
+						},
+						{
 							"name": "create programme user",
 							"event": [
 								{
@@ -323,6 +380,356 @@
 										"api",
 										"user",
 										"changeMyPassword"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "retrieve user role 4 if exists",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('we have controller user role or not (?)', function() {\r",
+											"    console.log(pm.response.status);\r",
+											"    console.log(pm.response.code);\r",
+											"    if (pm.response.status == 'OK') {\r",
+											"        console.log('There is role id=4, we just update it now');\r",
+											"        pm.environment.set('toCreateRole', 'Very long name so then the call for creation will fail and we can continue. Very long name so then the call for creation will fail and we can continue.');\r",
+											"        pm.environment.set('controllerRoleId', 4);\r",
+											"    } else {\r",
+											"        console.log('There is no role id=4, we will create 1 right now');\r",
+											"        pm.environment.set('toCreateRole', 'controller (API)');\r",
+											"    }\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/role/byId/4",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"role",
+										"byId",
+										"4"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "[IF] not exists, then create controller user role",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('user role has been created if it was needed', function() {\r",
+											"    if (pm.environment.get('toCreateRole').length > 100) {\r",
+											"        console.log('We did not create new user role, that is why this call should have failed.');\r",
+											"        pm.response.to.have.status(422);\r",
+											"        pm.environment.set('controllerRoleId', 4);\r",
+											"    } else {\r",
+											"        console.log('We created new controller user role, so this call should be successful.');\r",
+											"        pm.response.to.have.status(200);\r",
+											"        pm.environment.set('controllerRoleId', pm.response.json().id);\r",
+											"    }\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"{{toCreateRole}}\",\r\n    \"defaultForRegisteredUser\": false,\r\n    \"permissions\": []\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/role",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"role"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update default controller user role",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('controller user ROLE updated/reset', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": {{controllerRoleId}},\r\n    \"name\": \"controller (API)\",\r\n    \"defaultForRegisteredUser\": false,\r\n    \"permissions\": [\r\n        \"ProjectReportingView\",\r\n        \"ProjectReportingProjectView\",\r\n        \"ProjectContractingPartnerView\",\r\n        \"ProjectContractingView\",\r\n        \"ProjectContractingManagementView\",\r\n        \"ProjectContractingReportingView\",\r\n        \"ProjectContractsView\",\r\n        \"ProjectFormRetrieve\",\r\n        \"ProjectFileApplicationRetrieve\",\r\n        \"ProjectCheckApplicationForm\",\r\n        \"ProjectMonitorCollaboratorsRetrieve\",\r\n        \"ProjectsWithOwnershipRetrieve\",\r\n        \"CallRetrieve\",\r\n        \"InstitutionsRetrieve\",\r\n        \"InstitutionsUpdate\",\r\n        \"InstitutionsAssignmentRetrieve\",\r\n        \"InstitutionsAssignmentUpdate\",\r\n        \"PaymentsRetrieve\",\r\n        \"AdvancePaymentsRetrieve\"\r\n    ]\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/role",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"role"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create controller",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('controller can be created', function() {",
+											"    pm.response.to.have.status(200);",
+											"    pm.environment.set('controller_email', pm.response.json().email);",
+											"    pm.environment.set('controller_password', pm.environment.get('default_password_prefix') + pm.response.json().email);",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"var uuid = require('uuid');",
+											"const randomIdentifier = uuid.v4().substring(24, 32);",
+											"pm.variables.set('controller_email', randomIdentifier + \"@Controller.eu\");",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disabledSystemHeaders": {}
+							},
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"email\": \"{{controller_email}}\",\n    \"name\": \"{{$randomFirstName}}\",\n    \"surname\": \"{{$randomLastName}}\",\n    \"userRoleId\": {{controllerRoleId}},\n    \"userStatus\": \"ACTIVE\"\n}\n"
+								},
+								"url": {
+									"raw": "{{url}}/api/user",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"user"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "change controller password to his email",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('controller user password has been changed', function() {",
+											"    pm.response.to.have.status(200);",
+											"    pm.environment.set('controller_password', pm.environment.get('controller_email'));",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disabledSystemHeaders": {}
+							},
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{controller_password}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{controller_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"password\": \"{{controller_email}}\",\n    \"oldPassword\": \"{{controller_password}}\"\n}\n"
+								},
+								"url": {
+									"raw": "{{url}}/api/user/changeMyPassword",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"user",
+										"changeMyPassword"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "make institution for controller user",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('controller institution created', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    pm.environment.set('controllerInstitutionId', pm.response.json().id);\r",
+											"});\r",
+											"\r",
+											"pm.test('controller institution user is assigned', function() {\r",
+											"    const institution = pm.response.json();\r",
+											"    pm.expect(institution.institutionUsers.length).to.equal(1);\r",
+											"    pm.expect(institution.institutionUsers[0].userEmail).to.equal(pm.variables.get('controller_email'));\r",
+											"    pm.expect(institution.institutionUsers[0].accessLevel).to.equal('Edit');\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": null,\r\n    \"name\": \"{{$randomCompanyName}}\",\r\n    \"description\": \"{{$randomCatchPhrase}}\",\r\n    \"institutionNuts\": [\r\n        \"HN\",\r\n        \"HN0\",\r\n        \"HN00\",\r\n        \"HN000\",\r\n        \"SO\",\r\n        \"SO0\",\r\n        \"SO00\",\r\n        \"SO000\"\r\n    ],\r\n    \"institutionUsers\": [\r\n        {\r\n            \"userId\": null,\r\n            \"institutionId\": null,\r\n            \"userEmail\": \"{{controller_email}}\",\r\n            \"accessLevel\": \"Edit\"\r\n        }\r\n    ],\r\n    \"createdAt\": null\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/controller/institution/create",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"controller",
+										"institution",
+										"create"
 									]
 								}
 							},
@@ -1588,7 +1995,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"pluginKey\": \"jems-pre-condition-check-off\"\r\n}\r\n",
+							"raw": "{\r\n    \"pluginKey\": \"jems-pre-condition-check-off\",\r\n    \"reportPartnerCheckPluginKey\": \"report-partner-check-off\",\r\n    \"controlReportSamplingCheckPluginKey\": \"control-report-sampling-check-off\",\r\n    \"reportProjectCheckPluginKey\": \"report-project-check-off\",\r\n    \"controlReportPartnerCheckPluginKey\": \"control-report-partner-check-off\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1938,7 +2345,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": \"{{programmeUnitCostId}}\",\r\n    \"name\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"this should never be seen (ERR in API tests)\"\r\n        }\r\n    ],\r\n    \"costPerUnit\": 97851.32,\r\n    \"oneCostCategory\": false,\r\n    \"categories\": [\r\n        \"OfficeAndAdministrationCosts\",\r\n        \"InfrastructureCosts\"\r\n    ]\r\n}\r\n",
+							"raw": "{\r\n    \"id\": \"{{programmeUnitCostId}}\",\r\n    \"name\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"this should never be seen (ERR in API tests)\"\r\n        }\r\n    ],\r\n    \"costPerUnit\": 5,\r\n    \"oneCostCategory\": false,\r\n    \"categories\": [\r\n        \"OfficeAndAdministrationCosts\",\r\n        \"InfrastructureCosts\"\r\n    ]\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3430,73 +3837,6 @@
 								"file",
 								"download",
 								"{{file_id}}"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Disable standard-pre-condition-check-plugin",
-			"item": [
-				{
-					"name": "Disable standard-pre-condition-check-plugin",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"pm.variables.set(\r",
-									"    'pluginKey',\r",
-									"    'standard-pre-condition-check-plugin'\r",
-									");\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('standard-pre-condition-check-plugin should be disabled', function() {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "{{admin_password}}",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "{{admin_email}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/api/plugin/{{pluginKey}}/disable",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"api",
-								"plugin",
-								"{{pluginKey}}",
-								"disable"
 							]
 						}
 					},
@@ -10913,7 +11253,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "[\r\n    {\r\n        \"type\": \"Organization\",\r\n        \"country\":\"Burundi (BI)\",\r\n        \"nutsRegion2\":\"Burundi (BI00)\",\r\n        \"nutsRegion3\":\"Burundi (BI000)\",\r\n        \"street\": \"Pennsylvania Avenue\",\r\n        \"houseNumber\": \"1600\",\r\n        \"postalCode\": \"20500\",\r\n        \"city\": \"Washington, DC\",\r\n        \"homepage\": \"https://www.whitehouse.gov/\"\r\n    }\r\n]\r\n",
+									"raw": "[\r\n    {\r\n        \"type\": \"Organization\",\r\n        \"country\":\"Burundi (BI)\",\r\n        \"countryCode\":\"BI\",\r\n        \"nutsRegion2\":\"Burundi (BI00)\",\r\n        \"nutsRegion2Code\":\"BI00\",\r\n        \"nutsRegion3\":\"Burundi (BI000)\",\r\n        \"nutsRegion3Code\":\"BI000\",\r\n        \"street\": \"Pennsylvania Avenue\",\r\n        \"houseNumber\": \"1600\",\r\n        \"postalCode\": \"20500\",\r\n        \"city\": \"Washington, DC\",\r\n        \"homepage\": \"https://www.whitehouse.gov/\"\r\n    }\r\n]\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -11325,7 +11665,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "[\r\n    {\r\n        \"type\": \"Organization\",\r\n        \"country\":\"Honduras (HN)\",\r\n        \"nutsRegion2\":\"Honduras (HN00)\",\r\n        \"nutsRegion3\":\"Honduras (HN000)\",\r\n        \"street\": \"Pennsylvania Avenue\",\r\n        \"houseNumber\": \"1600\",\r\n        \"postalCode\": \"20500\",\r\n        \"city\": \"Washington, DC\",\r\n        \"homepage\": \"https://www.whitehouse.gov/\"\r\n    }\r\n]\r\n",
+									"raw": "[\r\n    {\r\n        \"type\": \"Organization\",\r\n        \"country\":\"Honduras (HN)\",\r\n        \"countryCode\":\"HN\",\r\n        \"nutsRegion2\":\"Honduras (HN00)\",\r\n        \"nutsRegion2Code\":\"HN00\",\r\n        \"nutsRegion3\":\"Honduras (HN000)\",\r\n        \"nutsRegion3Code\":\"HN000\",\r\n        \"street\": \"Pennsylvania Avenue\",\r\n        \"houseNumber\": \"1600\",\r\n        \"postalCode\": \"20500\",\r\n        \"city\": \"Washington, DC\",\r\n        \"homepage\": \"https://www.whitehouse.gov/\"\r\n    }\r\n]\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -12230,7 +12570,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "[\r\n    {\r\n        \"type\": \"Organization\",\r\n        \"country\":\"Somalia (SO)\",\r\n        \"nutsRegion2\":\"Somalia (SO00)\",\r\n        \"nutsRegion3\":\"Somalia (SO000)\",\r\n        \"street\": \"Pennsylvania Avenue\",\r\n        \"houseNumber\": \"1600\",\r\n        \"postalCode\": \"20500\",\r\n        \"city\": \"Washington, DC\",\r\n        \"homepage\": \"https://www.whitehouse.gov/\"\r\n    }\r\n]\r\n",
+									"raw": "[\r\n    {\r\n        \"type\": \"Organization\",\r\n        \"country\":\"Somalia (SO)\",\r\n        \"countryCode\":\"SO\",\r\n        \"nutsRegion2\":\"Somalia (SO00)\",\r\n        \"nutsRegion2Code\":\"SO00\",\r\n        \"nutsRegion3\":\"Somalia (SO000)\",\r\n        \"nutsRegion3Code\":\"SO000\",\r\n        \"street\": \"Pennsylvania Avenue\",\r\n        \"houseNumber\": \"1600\",\r\n        \"postalCode\": \"20500\",\r\n        \"city\": \"Washington, DC\",\r\n        \"homepage\": \"https://www.whitehouse.gov/\"\r\n    }\r\n]\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -14005,7 +14345,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "[\r\n    {\r\n        \"type\": \"Organization\",\r\n        \"country\":\"Honduras (HN)\",\r\n        \"nutsRegion2\":\"Honduras (HN00)\",\r\n        \"nutsRegion3\":\"Honduras (HN000)\",\r\n        \"street\": \"Pennsylvania Avenue\",\r\n        \"houseNumber\": \"1600\",\r\n        \"postalCode\": \"20500\",\r\n        \"city\": \"Washington, DC\",\r\n        \"homepage\": \"https://www.whitehouse.gov/\"\r\n    }\r\n]\r\n",
+									"raw": "[\r\n    {\r\n        \"type\": \"Organization\",\r\n        \"country\":\"Honduras (HN)\",\r\n        \"countryCode\":\"HN\",\r\n        \"nutsRegion2\":\"Honduras (HN00)\",\r\n        \"nutsRegion2Code\":\"HN00\",\r\n        \"nutsRegion3\":\"Honduras (HN000)\",\r\n        \"nutsRegion3Code\":\"HN000\",\r\n        \"street\": \"Pennsylvania Avenue\",\r\n        \"houseNumber\": \"1600\",\r\n        \"postalCode\": \"20500\",\r\n        \"city\": \"Washington, DC\",\r\n        \"homepage\": \"https://www.whitehouse.gov/\"\r\n    }\r\n]\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -14568,7 +14908,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "[\r\n    {\r\n        \"type\": \"Organization\",\r\n        \"country\":\"Somalia (SO)\",\r\n        \"nutsRegion2\":\"Somalia (SO00)\",\r\n        \"nutsRegion3\":\"Somalia (SO000)\",\r\n        \"street\": \"Pennsylvania Avenue\",\r\n        \"houseNumber\": \"1600\",\r\n        \"postalCode\": \"20500\",\r\n        \"city\": \"Washington, DC\",\r\n        \"homepage\": \"https://www.whitehouse.gov/\"\r\n    }\r\n]\r\n",
+									"raw": "[\r\n    {\r\n        \"type\": \"Organization\",\r\n        \"country\":\"Somalia (SO)\",\r\n        \"countryCode\":\"SO\",\r\n        \"nutsRegion2\":\"Somalia (SO00)\",\r\n        \"nutsRegion2Code\":\"SO00\",\r\n        \"nutsRegion3\":\"Somalia (SO000)\",\r\n        \"nutsRegion3Code\":\"SO000\",\r\n        \"street\": \"Pennsylvania Avenue\",\r\n        \"houseNumber\": \"1600\",\r\n        \"postalCode\": \"20500\",\r\n        \"city\": \"Washington, DC\",\r\n        \"homepage\": \"https://www.whitehouse.gov/\"\r\n    }\r\n]\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -15481,6 +15821,81 @@
 					]
 				},
 				{
+					"name": "make user partner collaborator",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('successful', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('applicant is now collaborator for LP', function() {\r",
+									"    const data = pm.response.json();\r",
+									"    pm.expect(data[0].userEmail).to.eql(pm.environment.get('applicant_email'));\r",
+									"    pm.expect(data[0].level).to.eql('EDIT');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"userEmail\": \"{{applicant_email}}\",\r\n        \"level\": \"EDIT\",\r\n        \"gdpr\": true\r\n    }\r\n]\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/projectPartnerCollaborators/forProject/{{application_id}}/forPartner/{{partner_id_lead}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"projectPartnerCollaborators",
+								"forProject",
+								"{{application_id}}",
+								"forPartner",
+								"{{partner_id_lead}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "create report for partner #1",
 					"event": [
 						{
@@ -15522,12 +15937,12 @@
 							"basic": [
 								{
 									"key": "password",
-									"value": "{{programme_user_password}}",
+									"value": "{{applicant_email}}",
 									"type": "string"
 								},
 								{
 									"key": "username",
-									"value": "{{programme_user_email}}",
+									"value": "{{applicant_email}}",
 									"type": "string"
 								}
 							]
@@ -15590,12 +16005,12 @@
 							"basic": [
 								{
 									"key": "password",
-									"value": "{{programme_user_password}}",
+									"value": "{{applicant_email}}",
 									"type": "string"
 								},
 								{
 									"key": "username",
-									"value": "{{programme_user_email}}",
+									"value": "{{applicant_email}}",
 									"type": "string"
 								}
 							]
@@ -15668,12 +16083,12 @@
 							"basic": [
 								{
 									"key": "password",
-									"value": "{{programme_user_password}}",
+									"value": "{{applicant_email}}",
 									"type": "string"
 								},
 								{
 									"key": "username",
-									"value": "{{programme_user_email}}",
+									"value": "{{applicant_email}}",
 									"type": "string"
 								}
 							]
@@ -15744,12 +16159,12 @@
 							"basic": [
 								{
 									"key": "password",
-									"value": "{{programme_user_password}}",
+									"value": "{{applicant_email}}",
 									"type": "string"
 								},
 								{
 									"key": "username",
-									"value": "{{programme_user_email}}",
+									"value": "{{applicant_email}}",
 									"type": "string"
 								}
 							]
@@ -15833,12 +16248,12 @@
 							"basic": [
 								{
 									"key": "password",
-									"value": "{{programme_user_password}}",
+									"value": "{{applicant_email}}",
 									"type": "string"
 								},
 								{
 									"key": "username",
-									"value": "{{programme_user_email}}",
+									"value": "{{applicant_email}}",
 									"type": "string"
 								}
 							]
@@ -15901,12 +16316,12 @@
 							"basic": [
 								{
 									"key": "password",
-									"value": "{{programme_user_password}}",
+									"value": "{{applicant_email}}",
 									"type": "string"
 								},
 								{
 									"key": "username",
-									"value": "{{programme_user_email}}",
+									"value": "{{applicant_email}}",
 									"type": "string"
 								}
 							]
@@ -15932,6 +16347,377 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "submit report",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('report submitted', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(pm.response.json()).to.eql(\"Submitted\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/project/report/partner/submit/{{partner_id_lead}}/{{report_id_1}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"report",
+								"partner",
+								"submit",
+								"{{partner_id_lead}}",
+								"{{report_id_1}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "assign controller institution to partner",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('controller institution assignment finished successfully', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"assignmentsToAdd\": [\r\n        {\r\n            \"partnerId\": {{partner_id_lead}},\r\n            \"institutionId\": {{controllerInstitutionId}}\r\n        }\r\n    ],\r\n    \"assignmentsToRemove\": []\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/controller/institution/assign",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"controller",
+								"institution",
+								"assign"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "start control on report",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('report control started', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(pm.response.json()).to.eql(\"InControl\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{controller_password}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{controller_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/project/report/partner/startControl/{{partner_id_lead}}/{{report_id_1}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"report",
+								"partner",
+								"startControl",
+								"{{partner_id_lead}}",
+								"{{report_id_1}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get expenditure",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('expenditure retrieved', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(pm.response.json().length).to.eql(1);\r",
+									"    pm.variables.set('expenditureId', pm.response.json()[0].id);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{controller_password}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{controller_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/project/report/partner/control/expenditure/byPartnerId/{{partner_id_lead}}/byReportId/{{report_id_1}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"report",
+								"partner",
+								"control",
+								"expenditure",
+								"byPartnerId",
+								"{{partner_id_lead}}",
+								"byReportId",
+								"{{report_id_1}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "park expenditure",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('expenditure parked', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(pm.response.json()[0].parked).to.eql(true);\r",
+									"});\r",
+									"\r",
+									"pm.test('certified amount correct', function() {\r",
+									"    pm.expect(pm.response.json()[0].certifiedAmount).to.eql(0);\r",
+									"});\r",
+									"\r",
+									"pm.test('part of sample automatically ticked, when parked', function() {\r",
+									"    pm.expect(pm.response.json()[0].partOfSample).to.eql(true);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{controller_password}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{controller_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"id\": {{expenditureId}},\r\n        \"partOfSample\": false,\r\n        \"certifiedAmount\": 0,\r\n        \"typologyOfErrorId\": null,\r\n        \"parked\": true,\r\n        \"verificationComment\": null\r\n    }\r\n]\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/report/partner/control/expenditure/byPartnerId/{{partner_id_lead}}/byReportId/{{report_id_1}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"report",
+								"partner",
+								"control",
+								"expenditure",
+								"byPartnerId",
+								"{{partner_id_lead}}",
+								"byReportId",
+								"{{report_id_1}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "finalize report (certification)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('report control finalized (certified)', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(pm.response.json()).to.eql(\"Certified\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{controller_password}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{controller_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/project/report/partner/finalizeControl/{{partner_id_lead}}/{{report_id_1}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"report",
+								"partner",
+								"finalizeControl",
+								"{{partner_id_lead}}",
+								"{{report_id_1}}"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"event": [
@@ -15952,73 +16738,6 @@
 							""
 						]
 					}
-				}
-			]
-		},
-		{
-			"name": "Enable standard-pre-condition-check-plugin",
-			"item": [
-				{
-					"name": "Enable standard-pre-condition-check-plugin",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"pm.variables.set(\r",
-									"    'pluginKey',\r",
-									"    'standard-pre-condition-check-plugin'\r",
-									");\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('standard-pre-condition-check-plugin should be enabled', function() {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "{{admin_password}}",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "{{admin_email}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/api/plugin/{{pluginKey}}/enable",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"api",
-								"plugin",
-								"{{pluginKey}}",
-								"enable"
-							]
-						}
-					},
-					"response": []
 				}
 			]
 		}

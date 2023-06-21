@@ -5,6 +5,7 @@ import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackageSimple
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.indicator.OutputIndicatorEntity
 import io.cloudflight.jems.server.programme.repository.indicator.OutputIndicatorRepository
+import io.cloudflight.jems.server.project.entity.ProjectPeriodRow
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.entity.workpackage.investment.WorkPackageInvestmentEntity
 import io.cloudflight.jems.server.project.repository.ApplicationVersionNotFoundException
@@ -26,7 +27,6 @@ import io.cloudflight.jems.server.project.repository.workpackage.output.toModel
 import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
 import io.cloudflight.jems.server.project.service.result.model.OutputRow
 import io.cloudflight.jems.server.project.service.toApplicantAndStatus
-import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivitySummary
 import io.cloudflight.jems.server.project.service.workpackage.model.InvestmentSummary
@@ -34,7 +34,13 @@ import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkP
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackageFull
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
-import io.cloudflight.jems.server.project.service.workpackage.toModel
+import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel.EDIT
+import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel.MANAGE
+import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel.VIEW
+import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageRow
+import io.cloudflight.jems.server.project.repository.partneruser.UserPartnerCollaboratorRepository
+import io.cloudflight.jems.server.project.repository.projectuser.UserProjectCollaboratorRepository
+import io.cloudflight.jems.server.project.repository.workpackage.output.toEntity
 import io.cloudflight.jems.server.project.service.workpackage.toOutputWorkPackage
 import io.cloudflight.jems.server.project.service.workpackage.toOutputWorkPackageHistoricalData
 import io.cloudflight.jems.server.project.service.workpackage.toOutputWorkPackageSimple
@@ -42,11 +48,9 @@ import io.cloudflight.jems.server.project.service.workpackage.toOutputWorkPackag
 import io.cloudflight.jems.server.project.service.workpackage.toTimePlanWorkPackageHistoricalData
 import io.cloudflight.jems.server.project.service.workpackage.toTimePlanWorkPackageOutputHistoricalData
 import io.cloudflight.jems.server.project.service.workpackage.toWorkPackageOutputsHistoricalData
-import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel.EDIT
-import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel.MANAGE
-import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel.VIEW
-import io.cloudflight.jems.server.project.repository.partneruser.UserPartnerCollaboratorRepository
-import io.cloudflight.jems.server.project.repository.projectuser.UserProjectCollaboratorRepository
+import io.cloudflight.jems.server.project.service.workpackage.toWorkPackageHistorical
+import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
+
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -112,12 +116,13 @@ class WorkPackagePersistenceProvider(
                 }
             } ,
             previousVersionFetcher = { timestamp ->
-                workPackageRepository.findWorkPackagesByProjectIdAsOfTimestamp(projectId, timestamp).toModel(
-                    periods = projectRepository.findPeriodsByProjectIdAsOfTimestamp(projectId, timestamp)
-                )
+                val workPackageBases = workPackageRepository.findWorkPackagesBaseByProjectIdAsOfTimestamp(projectId, timestamp)
+                val periods = projectRepository.findPeriodsByProjectIdAsOfTimestamp(projectId, timestamp)
+                return@fetch workPackageBases
+                    .groupBy { it.id }
+                    .map { (wpId, rows) -> toWorkPackage(wpId, rows, periods, timestamp) }
             }
         ) ?: emptyList()
-
 
     @Transactional(readOnly = true)
     override fun getWorkPackagesByProjectId(projectId: Long, version: String?): List<OutputWorkPackageSimple> {
@@ -164,6 +169,32 @@ class WorkPackagePersistenceProvider(
         })
 
         return workPackageOutputRepository.saveAll(outputsToBeSaved).toModel()
+    }
+
+    @Transactional
+    override fun updateWorkPackageOutputsAfterContracted(
+        workPackageId: Long,
+        workPackageOutputs: List<WorkPackageOutput>
+    ): List<WorkPackageOutput> {
+        val newByNumber = workPackageOutputs.associateBy { it.outputNumber }
+        val currentOutputs = workPackageOutputRepository.findAllByOutputIdWorkPackageIdOrderByOutputIdOutputNumber(workPackageId)
+
+        currentOutputs.forEach { entity ->
+            val newData = newByNumber[entity.outputId.outputNumber]!!
+            entity.periodNumber = newData.periodNumber
+            entity.translatedValues.updateWith(entity, newData.title, newData.description)
+            entity.programmeOutputIndicatorEntity = getIndicatorOrThrow(newData.programmeOutputIndicatorId)
+            entity.targetValue = newData.targetValue
+            entity.deactivated = newData.deactivated
+        }
+
+        val toSave = newByNumber.minus(currentOutputs.mapTo(HashSet()) { it.outputId.outputNumber }).values
+            .toEntity(
+                workPackageId = workPackageId,
+                resolveProgrammeIndicatorEntity = { getIndicatorOrThrow(it) },
+            )
+
+        return currentOutputs.plus(workPackageOutputRepository.saveAll(toSave)).toModel()
     }
 
     @Transactional(readOnly = true)
@@ -267,6 +298,13 @@ class WorkPackagePersistenceProvider(
     override fun deleteWorkPackageInvestment(workPackageId: Long, workPackageInvestmentId: Long) {
         workPackageInvestmentRepository.deleteById(workPackageInvestmentId)
         updateSortOnNumber(workPackageId)
+    }
+
+    @Transactional
+    override fun deactivateWorkPackageInvestment(workPackageId: Long, workPackageInvestmentId: Long) {
+        val investment = workPackageInvestmentRepository.findById(workPackageInvestmentId)
+        if (investment.isPresent)
+            investment.get().deactivated = true
     }
 
     @Transactional(readOnly = true)
@@ -468,4 +506,38 @@ class WorkPackagePersistenceProvider(
         }
         return workPackages
     }
+
+    private fun toWorkPackage(
+        workPackageId: Long,
+        workPackageRows: List<WorkPackageRow>,
+        periods: List<ProjectPeriodRow>,
+        timestamp: Timestamp,
+    ): ProjectWorkPackageFull {
+        val workPackageActivities = workPackageActivityRepository.findAllActivitiesByWorkPackageIdAsOfTimestamp(
+            workPackageId, timestamp
+        ).toActivityHistoricalData()
+
+        workPackageActivities.forEach { activity ->
+            activity.deliverables = workPackageActivityRepository.findAllDeliverablesByActivityIdAsOfTimestamp(
+                activity.id, timestamp
+            ).toDeliverableHistoricalData()
+        }
+
+        val workPackageOutputs = workPackageOutputRepository.findAllByOutputIdWorkPackageIdAsOfTimestamp(
+            setOf(workPackageId), timestamp
+        ).toWorkPackageOutputsHistoricalData(periods)
+
+        val workPackageInvestments = workPackageInvestmentRepository.findAllByWorkPackageIdAsOfTimestamp(
+            workPackageId, timestamp
+        ).toWorkPackageInvestmentHistoricalList()
+
+        return toWorkPackageHistorical(
+            workPackageId,
+            workPackageRows,
+            workPackageActivities,
+            workPackageOutputs,
+            workPackageInvestments
+        )
+    }
+
 }

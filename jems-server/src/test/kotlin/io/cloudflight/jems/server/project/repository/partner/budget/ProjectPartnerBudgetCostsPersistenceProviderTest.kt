@@ -1,6 +1,11 @@
 package io.cloudflight.jems.server.project.repository.partner.budget
 
 import io.cloudflight.jems.server.project.entity.partner.budget.unit_cost.ProjectPartnerBudgetUnitCostRow
+import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostEntry
+import io.cloudflight.jems.server.project.service.partner.model.BudgetTravelAndAccommodationCostEntry
+import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
+import io.cloudflight.jems.server.project.service.partner.model.BudgetUnitCostEntry
+import io.cloudflight.jems.server.project.service.partner.model.BudgetSpfCostEntry
 import io.mockk.every
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
@@ -20,8 +25,8 @@ class ProjectPartnerBudgetCostsPersistenceProviderTest : ProjectPartnerBudgetCos
             DynamicTest.dynamicTest(
                 "should return current version of budget ${it.name}"
             ) {
-                every { it.repository.findAllByBasePropertiesPartnerIdOrderByIdAsc(partnerId) } returns listOf(it.entity)
-                assertThat(it.callback.invoke(partnerId, null)).containsExactly(it.expectedResult)
+                every { it.repository.findAllByBasePropertiesPartnerIdInOrderByIdAsc(setOf(partnerId)) } returns listOf(it.entity)
+                assertThat(it.callback.invoke(setOf(partnerId), null)).containsExactly(it.expectedResult)
             }
         }
 
@@ -34,14 +39,14 @@ class ProjectPartnerBudgetCostsPersistenceProviderTest : ProjectPartnerBudgetCos
                 if (it.isForGettingUnitCosts) {
                     every {
                         (it.repository as ProjectPartnerBudgetUnitCostRepository)
-                            .findAllByPartnerIdAsOfTimestamp(partnerId, timestamp)
+                            .findAllByPartnerIdAsOfTimestamp(setOf(partnerId), timestamp)
                     } returns listOf(it.row as ProjectPartnerBudgetUnitCostRow)
                 } else {
                     every {
-                        it.repository.findAllByPartnerIdAsOfTimestamp(partnerId, timestamp, it.projectClass.java)
+                        it.repository.findAllByPartnerIdAsOfTimestamp(setOf(partnerId), timestamp, it.projectClass.java)
                     } returns listOf(it.row)
                 }
-                assertThat(it.callback.invoke(partnerId, version)).containsExactly(it.expectedResult)
+                assertThat(it.callback.invoke(setOf(partnerId), version)).containsExactly(it.expectedResult)
             }
         }
 
@@ -123,5 +128,40 @@ class ProjectPartnerBudgetCostsPersistenceProviderTest : ProjectPartnerBudgetCos
         every { budgetPartnerLumpSumRepository.sumTotalForPartnerAsOfTimestamp(partnerId, timestamp) } returns null
         assertThat(persistence.getBudgetLumpSumsCostTotal(partnerId, version)).isEqualTo(BigDecimal.ZERO)
         verify { budgetPartnerLumpSumRepository.sumTotalForPartnerAsOfTimestamp(partnerId, timestamp) }
+    }
+
+    @Test
+    fun `should return empty list of budget staff costs when partner set is empty`() {
+        assertThat(persistence.getBudgetStaffCosts(setOf())).isEqualTo(listOf<BudgetStaffCostEntry>())
+    }
+
+    @Test
+    fun `should return empty list of travel and accommodation costs when partner set is empty`() {
+        assertThat(persistence.getBudgetTravelAndAccommodationCosts(setOf())).isEqualTo(listOf<BudgetTravelAndAccommodationCostEntry>())
+    }
+
+    @Test
+    fun `should return empty list of budget general costs when partner set is empty - infrastructure & works costs`() {
+        assertThat(persistence.getBudgetInfrastructureAndWorksCosts(setOf())).isEqualTo(listOf<BudgetGeneralCostEntry>())
+    }
+
+    @Test
+    fun `should return empty list of budget unit costs when partner set is empty`() {
+        assertThat(persistence.getBudgetUnitCosts(setOf())).isEqualTo(listOf<BudgetUnitCostEntry>())
+    }
+
+    @Test
+    fun `should return empty list of budget general cost when partner set is empty - external expertise & services costs`() {
+        assertThat(persistence.getBudgetExternalExpertiseAndServicesCosts(setOf())).isEqualTo(listOf<BudgetGeneralCostEntry>())
+    }
+
+    @Test
+    fun `should return empty list of budget general cost when partner set is empty - equipment costs`() {
+        assertThat(persistence.getBudgetEquipmentCosts(setOf())).isEqualTo(listOf<BudgetGeneralCostEntry>())
+    }
+
+    @Test
+    fun `should return empty list of spf cost when partner set is empty`() {
+        assertThat(persistence.getBudgetSpfCosts(setOf())).isEqualTo(listOf<BudgetSpfCostEntry>())
     }
 }

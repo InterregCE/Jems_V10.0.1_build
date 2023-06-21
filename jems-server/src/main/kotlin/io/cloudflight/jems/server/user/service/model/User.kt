@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.user.service.model
 data class User(
     val id: Long = 0,
     val email: String,
+    val userSettings: UserSettings,
     val name: String,
     val surname: String,
     val userRole: UserRole,
@@ -14,6 +15,9 @@ data class User(
 
         if (old == null || email != old.email)
             changes["email"] = Pair(old?.email, email)
+
+        if (old == null || userSettings.sendNotificationsToEmail != old.userSettings.sendNotificationsToEmail)
+            changes["userSettings"] = Pair(old?.userSettings?.sendNotificationsToEmail, userSettings.sendNotificationsToEmail)
 
         if (old == null || name != old.name)
             changes["name"] = Pair(old?.name, name)

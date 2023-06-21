@@ -12,7 +12,9 @@ fun List<ProjectResultUpdateRequestDTO>.toModel() = map {
         baseline = it.baseline,
         targetValue = it.targetValue,
         periodNumber = it.periodNumber,
-        description = it.description
+        description = it.description,
+        deactivated = it.deactivated,
+        resultNumber = it.resultNumber
     )
 }
 
@@ -24,7 +26,8 @@ fun List<ProjectResult>.toDto() = map {
         baseline = it.baseline,
         targetValue = it.targetValue,
         periodNumber = it.periodNumber,
-        description = it.description
+        description = it.description,
+        deactivated = it.deactivated
     )
 }
 

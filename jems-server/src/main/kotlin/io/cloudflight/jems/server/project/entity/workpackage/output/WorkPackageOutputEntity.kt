@@ -12,6 +12,7 @@ import javax.persistence.NamedAttributeNode
 import javax.persistence.NamedEntityGraph
 import javax.persistence.NamedEntityGraphs
 import javax.persistence.OneToMany
+import javax.validation.constraints.NotNull
 
 @Entity(name = "project_work_package_output")
 @NamedEntityGraphs(
@@ -28,7 +29,7 @@ class WorkPackageOutputEntity(
     val outputId: WorkPackageOutputId,
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
-    val translatedValues: MutableSet<WorkPackageOutputTransl> = mutableSetOf(),
+    val translatedValues: MutableSet<WorkPackageOutputTranslEntity> = mutableSetOf(),
 
     var periodNumber: Int? = null,
 
@@ -37,6 +38,9 @@ class WorkPackageOutputEntity(
     var programmeOutputIndicatorEntity: OutputIndicatorEntity? = null,
 
     @Column
-    val targetValue: BigDecimal? = null,
+    var targetValue: BigDecimal? = null,
+
+    @field:NotNull
+    var deactivated: Boolean = false,
 
 )

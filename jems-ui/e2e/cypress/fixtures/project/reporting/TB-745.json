@@ -1,0 +1,823 @@
+{
+  "partner": {
+    "details": {
+      "abbreviation": "Lead Partner",
+      "role": "LEAD_PARTNER",
+      "nameInOriginalLanguage": "Lead Partner in original language",
+      "nameInEnglish": "Lead Partner in english",
+      "department": [
+        {
+          "translation": "API generated department / unit / division DE",
+          "language": "DE"
+        },
+        {
+          "translation": "API generated department / unit / division EN",
+          "language": "EN"
+        }
+      ],
+      "partnerType": "LocalPublicAuthority",
+      "partnerSubType": "MICRO_ENTERPRISE",
+      "nace": "A_03_22",
+      "otherIdentifierNumber": "654321",
+      "otherIdentifierDescription": [
+        {
+          "translation": "API generated other identifier description DE",
+          "language": "DE"
+        },
+        {
+          "translation": "API generated other identifier description EN",
+          "language": "EN"
+        }
+      ],
+      "pic": "123456789",
+      "legalStatusId": 1,
+      "vat": "123456",
+      "vatRecovery": "Yes"
+    },
+    "address": [
+      {
+        "type": "Organization",
+        "country": "Österreich (AT)",
+        "countryCode": "AT",
+        "nutsRegion2": "Wien (AT13)",
+        "nutsRegion2Code": "AT13",
+        "nutsRegion3": "Wien (AT130)",
+        "nutsRegion3Code": "AT130",
+        "street": "Partnerstreet",
+        "houseNumber": "2",
+        "postalCode": "1020",
+        "city": "Partner city",
+        "homepage": "partner@test.com"
+      },
+      {
+        "type": "Department",
+        "country": "Österreich (AT)",
+        "countryCode": "AT",
+        "nutsRegion2": "Oberösterreich (AT31)",
+        "nutsRegion2Code": "AT31",
+        "nutsRegion3": "Linz-Wels (AT312)",
+        "nutsRegion3Code": "AT312",
+        "street": "Departmentstreet",
+        "houseNumber": "5",
+        "postalCode": "4020",
+        "city": "Department city",
+        "homepage": ""
+      }
+    ],
+    "contact": [
+      {
+        "type": "LegalRepresentative",
+        "title": "Mr",
+        "firstName": "Legal",
+        "lastName": "Representative",
+        "email": "",
+        "telephone": ""
+      },
+      {
+        "type": "ContactPerson",
+        "title": "Ms",
+        "firstName": "Contact",
+        "lastName": "Person",
+        "email": "contact@person.com",
+        "telephone": "+1234567890"
+      }
+    ],
+    "motivation": {
+      "organizationRelevance": [
+        {
+          "translation": "API generated partner motivation DE",
+          "language": "DE"
+        },
+        {
+          "translation": "API generated partner motivation EN",
+          "language": "EN"
+        }
+      ],
+      "organizationRole": [
+        {
+          "translation": "API generated partner role DE",
+          "language": "DE"
+        },
+        {
+          "translation": "API generated partner role EN",
+          "language": "EN"
+        }
+      ],
+      "organizationExperience": [
+        {
+          "translation": "API generated partner experience DE",
+          "language": "DE"
+        },
+        {
+          "translation": "API generated partner experience EN",
+          "language": "EN"
+        }
+      ]
+    },
+    "budget": {
+      "options": {
+        "officeAndAdministrationOnStaffCostsFlatRate": 10,
+        "officeAndAdministrationOnDirectCostsFlatRate": null,
+        "staffCostsFlatRate": 20,
+        "travelAndAccommodationOnStaffCostsFlatRate": null,
+        "otherCostsOnStaffCostsFlatRate": null
+      },
+      "travel": [
+        {
+          "description": [
+            {
+              "language": "EN",
+              "translation": "API generated travel and accommodation cost description EN"
+            }, {
+              "language": "DE",
+              "translation": "API generated travel and accommodation cost description DE"
+            }
+          ],
+          "comments": [
+            {
+              "language": "DE",
+              "translation": "API generated travel and accommodation cost comments DE"
+            }, {
+              "language": "EN",
+              "translation": "API generated travel and accommodation cost comments EN"
+            }
+          ],
+          "unitType": [
+            {
+              "language": "EN",
+              "translation": "API generated travel and accommodation cost unit type EN"
+            }, {
+              "language": "DE",
+              "translation": "API generated travel and accommodation cost unit type DE"
+            }
+          ],
+          "numberOfUnits": 1,
+          "pricePerUnit": 999.99,
+          "rowSum": 999.99,
+          "budgetPeriods": [
+            {
+              "amount": 500,
+              "number": 1
+            }, {
+              "amount": 499.99,
+              "number": 8
+            }
+          ]
+        }, {
+          "comments": [
+            {
+              "translation": "API generated travel and accommodation cost comments DE",
+              "language": "DE"
+            }, {
+              "translation": "API generated travel and accommodation cost comments EN",
+              "language": "EN"
+            }
+          ],
+          "unitCostId": 2,
+          "numberOfUnits": 2,
+          "pricePerUnit": 555.56,
+          "rowSum": 1111.12,
+          "budgetPeriods": [
+            {
+              "amount": 1111.12,
+              "number": 7
+            }
+          ]
+        },
+        {
+          "cypressReferenceUnit": "projectProposedTravel",
+          "comments": [
+            {
+              "translation": "API generated travel and accommodation cost comments DE",
+              "language": "DE"
+            },
+            {
+              "translation": "API generated travel and accommodation cost comments EN",
+              "language": "EN"
+            }
+          ],
+          "numberOfUnits": 1,
+          "pricePerUnit": 4321.99,
+          "rowSum": 4321.99,
+          "budgetPeriods": [
+            {
+              "amount": 1000,
+              "number": 1
+            },
+            {
+              "amount": 1000,
+              "number": 2
+            },
+            {
+              "amount": 1000,
+              "number": 3
+            },
+            {
+              "amount": 0,
+              "number": 4
+            },
+            {
+              "amount": 0,
+              "number": 5
+            },
+            {
+              "amount": 0,
+              "number": 6
+            },
+            {
+              "amount": 0,
+              "number": 7
+            },
+            {
+              "amount": 1321.99,
+              "number": 8
+            }
+          ]
+        }
+      ],
+      "external": [
+        {
+          "cypressReferenceInvestment": "investment3",
+          "description": [
+            {
+              "language": "DE",
+              "translation": "API generated external cost description DE"
+            }, {
+              "language": "EN",
+              "translation": "API generated external cost description EN"
+            }
+          ],
+          "comments": [
+            {
+              "language": "DE",
+              "translation": "API generated external cost comments DE"
+            }, {
+              "language": "EN",
+              "translation": "API generated external cost comments EN"
+            }
+          ],
+          "unitType": [
+            {
+              "language": "DE",
+              "translation": "API generated external cost unit type DE"
+            }, {
+              "language": "EN",
+              "translation": "API generated external cost unit type EN"
+            }
+          ],
+          "awardProcedures": [
+            {
+              "language": "EN",
+              "translation": "API generated external cost award procedures EN"
+            }, {
+              "language": "DE",
+              "translation": "API generated external cost award procedures DE"
+            }
+          ],
+          "numberOfUnits": 1,
+          "pricePerUnit": 100.99,
+          "rowSum": 100.99,
+          "budgetPeriods": [
+            {
+              "amount": 50.59,
+              "number": 1
+            }, {
+              "amount": 50.40,
+              "number": 8
+            }
+          ]
+        }, {
+          "cypressReferenceInvestment": "investment2",
+          "comments": [
+            {
+              "translation": "API generated external cost comments DE",
+              "language": "DE"
+            }, {
+              "translation": "API generated external cost comments EN",
+              "language": "EN"
+            }
+          ],
+          "unitCostId": 3,
+          "awardProcedures": [
+            {
+              "translation": "API generated external cost award procedures DE",
+              "language": "DE"
+            }, {
+              "translation": "API generated external cost award procedures EN",
+              "language": "EN"
+            }
+          ],
+          "numberOfUnits": 3,
+          "pricePerUnit": 899.99,
+          "rowSum": 2699.97,
+          "budgetPeriods": [
+            {
+              "amount": 1000,
+              "number": 2
+            }, {
+              "amount": 1000,
+              "number": 3
+            }, {
+              "amount": 699.97,
+              "number": 4
+            }
+          ]
+        },
+        {
+          "cypressReferenceInvestment": "investment1",
+          "cypressReferenceUnit": "projectProposedExternal",
+          "comments": [
+            {
+              "translation": "API generated external cost comments DE",
+              "language": "DE"
+            },
+            {
+              "translation": "API generated external cost comments EN",
+              "language": "EN"
+            }
+          ],
+          "awardProcedures": [
+            {
+              "translation": "API generated external cost award procedures DE",
+              "language": "DE"
+            },
+            {
+              "translation": "API generated external cost award procedures EN",
+              "language": "EN"
+            }
+          ],
+          "numberOfUnits": 1,
+          "pricePerUnit": 999.99,
+          "rowSum": 999.99,
+          "budgetPeriods": [
+            {
+              "amount": 100,
+              "number": 5
+            },
+            {
+              "amount": 100,
+              "number": 6
+            },
+            {
+              "amount": 799.99,
+              "number": 7
+            }
+          ]
+        }
+      ],
+      "equipment": [
+        {
+          "cypressReferenceInvestment": "investment2",
+          "description": [
+            {
+              "language": "EN",
+              "translation": "API generated equipment cost description EN"
+            }, {
+              "language": "DE",
+              "translation": "API generated equipment cost description DE"
+            }
+          ],
+          "comments": [
+            {
+              "language": "DE",
+              "translation": "API generated equipment cost comments DE"
+            }, {
+              "language": "EN",
+              "translation": "API generated equipment cost comments EN"
+            }
+          ],
+          "unitType": [
+            {
+              "language": "DE",
+              "translation": "API generated equipment cost unit type DE"
+            }, {
+              "language": "EN",
+              "translation": "API generated equipment cost unit type EN"
+            }
+          ],
+          "awardProcedures": [
+            {
+              "language": "DE",
+              "translation": "API generated equipment cost award procedures DE"
+            }, {
+              "language": "EN",
+              "translation": "API generated equipment cost award procedures EN"
+            }
+          ],
+          "numberOfUnits": 5,
+          "pricePerUnit": 150.66,
+          "rowSum": 753.3,
+          "budgetPeriods": [
+            {
+              "amount": 10.3,
+              "number": 1
+            }, {
+              "amount": 50,
+              "number": 2
+            }, {
+              "amount": 400,
+              "number": 3
+            }, {
+              "amount": 100,
+              "number": 4
+            }, {
+              "amount": 193,
+              "number": 8
+            }
+          ]
+        }, {
+          "cypressReferenceInvestment": "investment1",
+          "comments": [
+            {
+              "translation": "API generated equipment cost comments DE",
+              "language": "DE"
+            }, {
+              "translation": "API generated equipment cost comments EN",
+              "language": "EN"
+            }
+          ],
+          "unitCostId": 4,
+          "awardProcedures": [
+            {
+              "translation": "API generated equipment cost award procedures DE",
+              "language": "DE"
+            }, {
+              "translation": "API generated equipment cost award procedures EN",
+              "language": "EN"
+            }
+          ],
+          "numberOfUnits": 1,
+          "pricePerUnit": 1234.56,
+          "rowSum": 1234.56,
+          "budgetPeriods": [
+            {
+              "amount": 1234.56,
+              "number": 6
+            }
+          ]
+        },
+        {
+          "cypressReferenceInvestment": "investment3",
+          "cypressReferenceUnit": "projectProposedEquipment",
+          "comments": [
+            {
+              "translation": "API generated equipment cost comments DE",
+              "language": "DE"
+            },
+            {
+              "translation": "API generated equipment cost comments EN",
+              "language": "EN"
+            }
+          ],
+          "awardProcedures": [
+            {
+              "translation": "API generated equipment cost award procedures DE",
+              "language": "DE"
+            },
+            {
+              "translation": "API generated equipment cost award procedures EN",
+              "language": "EN"
+            }
+          ],
+          "numberOfUnits": 3,
+          "pricePerUnit": 50.5,
+          "rowSum": 151.5,
+          "budgetPeriods": [
+            {
+              "amount": 50.5,
+              "number": 5
+            },
+            {
+              "amount": 50.5,
+              "number": 7
+            },
+            {
+              "amount": 50.5,
+              "number": 8
+            }
+          ]
+        }
+      ],
+      "infrastructure": [
+        {
+          "cypressReferenceInvestment": "investment1",
+          "description": [
+            {
+              "language": "DE",
+              "translation": "API generated infrastructure and works cost description DE"
+            }, {
+              "language": "EN",
+              "translation": "API generated infrastructure and works cost description EN"
+            }
+          ],
+          "comments": [
+            {
+              "language": "DE",
+              "translation": "API generated infrastructure and works cost comments DE"
+            }, {
+              "language": "EN",
+              "translation": "API generated infrastructure and works cost comments EN"
+            }
+          ],
+          "unitType": [
+            {
+              "language": "EN",
+              "translation": "API generated infrastructure and works cost unit type EN"
+            }, {
+              "language": "DE",
+              "translation": "API generated infrastructure and works cost unit type DE"
+            }
+          ],
+          "awardProcedures": [
+            {
+              "language": "DE",
+              "translation": "API generated infrastructure and works cost award procedures DE"
+            }, {
+              "language": "EN",
+              "translation": "API generated infrastructure and works cost award procedures EN"
+            }
+          ],
+          "numberOfUnits": 5.5,
+          "pricePerUnit": 1000.33,
+          "rowSum": 5501.81,
+          "budgetPeriods": [
+            {
+              "amount": 5501.81,
+              "number": 8
+            }
+          ]
+        }, {
+          "cypressReferenceInvestment": "investment3",
+          "comments": [
+            {
+              "translation": "API generated infrastructure and works cost comments DE",
+              "language": "DE"
+            }, {
+              "translation": "API generated infrastructure and works cost comments EN",
+              "language": "EN"
+            }
+          ],
+          "unitCostId": 5,
+          "awardProcedures": [
+            {
+              "translation": "API generated infrastructure and works cost award procedures DE",
+              "language": "DE"
+            }, {
+              "translation": "API generated infrastructure and works cost award procedures EN",
+              "language": "EN"
+            }
+          ],
+          "numberOfUnits": 8,
+          "pricePerUnit": 2519.77,
+          "rowSum": 20158.16,
+          "budgetPeriods": [
+            {
+              "amount": 2519.77,
+              "number": 1
+            }, {
+              "amount": 2519.77,
+              "number": 2
+            }, {
+              "amount": 2519.77,
+              "number": 3
+            }, {
+              "amount": 2519.77,
+              "number": 4
+            }, {
+              "amount": 2519.77,
+              "number": 5
+            }, {
+              "amount": 2519.77,
+              "number": 6
+            }, {
+              "amount": 2519.77,
+              "number": 7
+            }, {
+              "amount": 2519.77,
+              "number": 8
+            }
+          ]
+        },
+        {
+          "cypressReferenceInvestment": "investment2",
+          "cypressReferenceUnit": "projectProposedInfrastructure",
+          "unitCostId": null,
+          "comments": [
+            {
+              "translation": "API generated infrastructure and works cost comments DE",
+              "language": "DE"
+            },
+            {
+              "translation": "API generated infrastructure and works cost comments EN",
+              "language": "EN"
+            }
+          ],
+          "awardProcedures": [
+            {
+              "translation": "API generated infrastructure and works cost award procedures DE",
+              "language": "DE"
+            },
+            {
+              "translation": "API generated infrastructure and works cost award procedures EN",
+              "language": "EN"
+            }
+          ],
+          "numberOfUnits": 1,
+          "pricePerUnit": 66.13,
+          "rowSum": 66.13,
+          "budgetPeriods": [
+            {
+              "amount": 66.13,
+              "number": 8
+            }
+          ]
+        }
+      ],
+      "unit": [
+        {
+          "unitCostId": 6,
+          "numberOfUnits": 2,
+          "rowSum": 310.44,
+          "budgetPeriods": [
+            {
+              "amount": 310.44,
+              "number": 7
+            }
+          ]
+        }, {
+          "unitCostId": 7,
+          "numberOfUnits": 3,
+          "rowSum": 5999.97,
+          "budgetPeriods": [
+            {
+              "amount": 1000,
+              "number": 1
+            }, {
+              "amount": 1000,
+              "number": 2
+            }, {
+              "amount": 1000,
+              "number": 3
+            }, {
+              "amount": 1000,
+              "number": 4
+            }, {
+              "amount": 1000,
+              "number": 5
+            }, {
+              "amount": 999.97,
+              "number": 8
+            }
+          ]
+        },
+        {
+          "cypressReferenceUnit": "projectProposedMulti",
+          "unitCostId": null,
+          "numberOfUnits": 7,
+          "rowSum": 4666.62,
+          "budgetPeriods": [
+            {
+              "amount": 666.66,
+              "number": 1
+            },
+            {
+              "amount": 666.66,
+              "number": 2
+            },
+            {
+              "amount": 2666,
+              "number": 3
+            },
+            {
+              "amount": 667.3,
+              "number": 8
+            }
+          ]
+        }
+      ]
+    },
+    "cofinancing": {
+      "finances": [
+        {
+          "fundId": 1,
+          "fundType": "MainFund",
+          "percentage": 60
+        }, {
+          "fundId": 8,
+          "fundType": "MainFund",
+          "percentage": 14.66
+        }, {
+          "percentage": 25.34,
+          "fundType": "PartnerContribution"
+        }
+      ],
+      "partnerContributions": [
+        {
+          "name": "Lead Partner",
+          "status": "Public",
+          "amount": 5698.97,
+          "partner": true
+        }, {
+          "name": "Lead contribution 1",
+          "status": "Private",
+          "amount": 3261.01,
+          "partner": false
+        }, {
+          "name": "Lead contribution 2",
+          "status": "AutomaticPublic",
+          "amount": 5600.00,
+          "partner": false
+        }
+      ]
+    },
+    "stateAid": {
+      "answer1": true,
+      "justification1": [
+        {
+          "translation": "API generated partner state aid criterium 1 justification 1 DE",
+          "language": "DE"
+        },
+        {
+          "translation": "API generated partner state aid criterium 1 justification 1 EN",
+          "language": "EN"
+        }
+      ],
+      "answer2": false,
+      "justification2": [
+        {
+          "translation": "API generated partner state aid criterium 1 justification 2 DE",
+          "language": "DE"
+        },
+        {
+          "translation": "API generated partner state aid criterium 1 justification 2 EN",
+          "language": "EN"
+        }
+      ],
+      "answer3": false,
+      "justification3": [
+        {
+          "translation": "API generated partner state aid criterium 2 justification 1 DE",
+          "language": "DE"
+        },
+        {
+          "translation": "API generated partner state aid criterium 2 justification 1 EN",
+          "language": "EN"
+        }
+      ],
+      "answer4": true,
+      "justification4": [
+        {
+          "translation": "API generated partner state aid criterium 2 justification 2 DE",
+          "language": "DE"
+        },
+        {
+          "translation": "API generated partner state aid criterium 2 justification 2 EN",
+          "language": "EN"
+        }
+      ],
+      "activities": [
+        {
+          "cypressReferenceStateAid": "Lead Partner Activity",
+          "activityId": null
+        }
+      ],
+      "stateAidScheme": {
+        "id": 1,
+        "measure": "GENERAL_DE_MINIMIS",
+        "name": [
+          {
+            "language": "DE",
+            "translation": "General de minimis DE"
+          },
+          {
+            "language": "EN",
+            "translation": "General de minimis"
+          }
+        ],
+        "abbreviatedName": [
+          {
+            "language": "DE",
+            "translation": "General de minimis DE"
+          },
+          {
+            "language": "EN",
+            "translation": "General de minimis"
+          }
+        ],
+        "schemeNumber": "",
+        "maxIntensity": null,
+        "threshold": 200000,
+        "comments": [
+          {
+            "language": "DE",
+            "translation": "Per MS DE"
+          },
+          {
+            "language": "EN",
+            "translation": "per MS"
+          }
+        ]
+      }
+    }
+  }
+}

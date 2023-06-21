@@ -51,6 +51,9 @@ class WorkPackageActivityEntity(
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
     val translatedValues: MutableSet<WorkPackageActivityTranslationEntity> = mutableSetOf(),
 
+    @field:NotNull
+    var deactivated: Boolean,
+
     var startPeriod: Int? = null,
 
     var endPeriod: Int? = null,
@@ -69,6 +72,7 @@ class WorkPackageActivityEntity(
             currentDeliverable.startPeriod = newDeliverable.startPeriod
             currentDeliverable.updateTranslations(newDeliverable.translatedValues)
             currentDeliverable.workPackageActivity = this
+            currentDeliverable.deactivated = newDeliverable.deactivated
         }
         this.deliverables.addAll(newDeliverables.filter { it.id == 0L })
     }

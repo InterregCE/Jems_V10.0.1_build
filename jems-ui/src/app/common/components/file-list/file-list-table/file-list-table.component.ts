@@ -23,6 +23,7 @@ import {catchError, filter, finalize, take, tap} from 'rxjs/operators';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {SecurityService} from '../../../../security/security.service';
 import {v4 as uuid} from 'uuid';
+import {FileListTableConstants} from './file-list-table-constants';
 
 @UntilDestroy()
 @Component({
@@ -33,6 +34,7 @@ import {v4 as uuid} from 'uuid';
 })
 export class FileListTableComponent implements OnChanges, AfterViewInit {
   Alert = Alert;
+  SENSITIVE_FILE_NAME_MASK = FileListTableConstants.SENSITIVE_FILE_NAME_MASK;
 
   displayedColumns: string[] = ['name', 'location', 'uploadDate', 'user', 'size', 'description', 'action'];
   dataSource = new MatTableDataSource<FileListItem>();
@@ -45,6 +47,8 @@ export class FileListTableComponent implements OnChanges, AfterViewInit {
   fileList: FileListItem[];
   @Input()
   sortingEnabled = false;
+  @Input()
+  overrideUploadTranslation = 'file.table.column.name.timestamp';
 
   @Input()
   setDescriptionCallback: (data: FileDescriptionChange) => Observable<any>;
@@ -166,7 +170,7 @@ export class FileListTableComponent implements OnChanges, AfterViewInit {
     this.alerts$.next(alerts);
   }
 
-  private static successAlert(msg: string, i18nArgs: any = {}): AlertMessage {
+  static successAlert(msg: string, i18nArgs: any = {}): AlertMessage {
     return {
       id: uuid(),
       type: Alert.SUCCESS,
@@ -175,7 +179,7 @@ export class FileListTableComponent implements OnChanges, AfterViewInit {
     };
   }
 
-  private static errorAlert(msg: string, i18nArgs: any = {}): AlertMessage {
+  static errorAlert(msg: string, i18nArgs: any = {}): AlertMessage {
     return {
       id: uuid(),
       type: Alert.ERROR,

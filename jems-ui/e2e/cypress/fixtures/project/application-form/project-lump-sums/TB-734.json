@@ -1,15 +1,15 @@
 {
   "firstLumpSum": {
     "name": "Closure Lump sum DE",
-    "firstPartnerSplitAmount": "2000",
-    "secondPartnerAmount": "3555,56",
-    "firstPartnerTooFewAmount": "5550",
-    "firstPartnerCorrectAmount": "5555,56"
+    "firstPartnerSplitAmount": "500",
+    "secondPartnerAmount": "400,16",
+    "firstPartnerTooFewAmount": "900",
+    "firstPartnerCorrectAmount": "900,16"
   },
   "secondLumpSum": {
     "name": "Preparation Lump sum DE",
-    "firstPartnerAmount": "20000",
-    "secondPartnerAmount": "35555,56"
+    "firstPartnerAmount": "1000",
+    "secondPartnerAmount": "999,99"
   },
   "partners": [
     {
@@ -51,8 +51,11 @@
         {
           "type": "Organization",
           "country": "Österreich (AT)",
+          "countryCode": "AT",
           "nutsRegion2": "Wien (AT13)",
+          "nutsRegion2Code": "AT13",
           "nutsRegion3": "Wien (AT130)",
+          "nutsRegion3Code": "AT130",
           "street": "Partnerstreet",
           "houseNumber": "2",
           "postalCode": "1020",
@@ -62,8 +65,11 @@
         {
           "type": "Department",
           "country": "Österreich (AT)",
+          "countryCode": "AT",
           "nutsRegion2": "Oberösterreich (AT31)",
+          "nutsRegion2Code": "AT31",
           "nutsRegion3": "Linz-Wels (AT312)",
+          "nutsRegion3Code": "AT312",
           "street": "Departmentstreet",
           "houseNumber": "5",
           "postalCode": "4020",
@@ -607,8 +613,11 @@
         {
           "type": "Organization",
           "country": "Österreich (AT)",
+          "countryCode": "AT",
           "nutsRegion2": "Wien (AT13)",
+          "nutsRegion2Code": "AT13",
           "nutsRegion3": "Wien (AT130)",
+          "nutsRegion3Code": "AT130",
           "street": "Partnerstreet",
           "houseNumber": "2",
           "postalCode": "1020",
@@ -618,8 +627,11 @@
         {
           "type": "Department",
           "country": "Österreich (AT)",
+          "countryCode": "AT",
           "nutsRegion2": "Oberösterreich (AT31)",
+          "nutsRegion2Code": "AT31",
           "nutsRegion3": "Linz-Wels (AT312)",
+          "nutsRegion3Code": "AT312",
           "street": "Departmentstreet",
           "houseNumber": "5",
           "postalCode": "4020",

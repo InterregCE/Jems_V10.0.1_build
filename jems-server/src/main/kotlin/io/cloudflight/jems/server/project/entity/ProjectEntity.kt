@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumEntity
 import io.cloudflight.jems.server.project.entity.projectuser.UserProjectEntity
 import io.cloudflight.jems.server.project.entity.result.ProjectResultEntity
 import io.cloudflight.jems.server.user.entity.UserEntity
+import java.time.LocalDate
 import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Embedded
@@ -90,6 +91,8 @@ data class ProjectEntity(
     @ManyToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "contracted_decision_id")
     var contractedDecision: ProjectStatusHistoryEntity? = null,
+
+    var contractedOnDate: LocalDate? = null,
 
     @Embedded
     val projectData: ProjectData? = null,

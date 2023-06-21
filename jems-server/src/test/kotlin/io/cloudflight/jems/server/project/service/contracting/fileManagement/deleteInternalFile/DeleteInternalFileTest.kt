@@ -1,10 +1,10 @@
 package io.cloudflight.jems.server.project.service.contracting.fileManagement.deleteInternalFile
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.FileNotFound
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.ProjectContractingFilePersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -24,7 +24,7 @@ internal class DeleteInternalFileTest : UnitTest() {
     lateinit var contractingFilePersistence: ProjectContractingFilePersistence
 
     @MockK
-    lateinit var reportFilePersistence: ProjectReportFilePersistence
+    lateinit var filePersistence: JemsFilePersistence
 
     @InjectMockKs
     lateinit var interactor: DeleteInternalFile
@@ -32,14 +32,14 @@ internal class DeleteInternalFileTest : UnitTest() {
     @BeforeEach
     fun setup() {
         clearMocks(contractingFilePersistence)
-        clearMocks(reportFilePersistence)
+        clearMocks(filePersistence)
 
     }
 
 
     @Test
     fun `delete internal file`() {
-        every { reportFilePersistence.getFileType(18L, PROJECT_ID) } returns JemsFileType.ContractInternal
+        every { filePersistence.getFileType(18L, PROJECT_ID) } returns JemsFileType.ContractInternal
         every { contractingFilePersistence.deleteFile(PROJECT_ID, fileId = 18L) } answers { }
         interactor.delete(PROJECT_ID, fileId = 18L)
         verify(exactly =  1) { contractingFilePersistence.deleteFile(PROJECT_ID, fileId = 18L) }
@@ -47,7 +47,7 @@ internal class DeleteInternalFileTest : UnitTest() {
 
     @Test
     fun `delete - not found`() {
-        every { reportFilePersistence.getFileType(-1L, PROJECT_ID) } returns null
+        every { filePersistence.getFileType(-1L, PROJECT_ID) } returns null
         assertThrows<FileNotFound> { interactor.delete(PROJECT_ID, fileId = -1L) }
     }
 

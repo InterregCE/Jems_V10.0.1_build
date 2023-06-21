@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.user.service.model.UserChange
 import io.cloudflight.jems.server.user.service.model.UserRole
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
+import io.cloudflight.jems.server.user.service.model.UserSettings
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.cloudflight.jems.server.user.service.model.UserWithPassword
 import org.mapstruct.Mapper
@@ -18,10 +19,10 @@ import org.springframework.data.domain.Page
 private val mapper = Mappers.getMapper(UserModelMapper::class.java)
 
 fun UserEntity.toModel(permissions: Set<UserRolePermission>) =
-    mapper.mapToUser(this, userRole.toModel(permissions), emptySet())
+    mapper.mapToUser(this, userRole.toModel(permissions), emptySet(), UserSettings(this.sendNotificationsToEmail))
 
 fun UserEntity.toModelWithPassword(permissions: Set<UserRolePermission>) =
-    mapper.mapToUserWithPassword(this, userRole.toModel(permissions), emptySet())
+    mapper.mapToUserWithPassword(this, userRole.toModel(permissions), emptySet(), UserSettings(this.sendNotificationsToEmail))
 
 fun UserRoleEntity.toModel(permissions: Set<UserRolePermission>) =
     mapper.map(this, permissions)
@@ -53,14 +54,14 @@ interface UserModelMapper {
         Mapping(target = "userRole", source = "userRole" ),
         Mapping(target = "assignedProjects", source = "assignedProjects" )
     )
-    fun mapToUserWithPassword(userEntity: UserEntity, userRole: UserRole, assignedProjects: Set<Long>): UserWithPassword
+    fun mapToUserWithPassword(userEntity: UserEntity, userRole: UserRole, assignedProjects: Set<Long>, userSettings: UserSettings): UserWithPassword
     @Mappings(
         Mapping(target = "id", source = "userEntity.id" ),
         Mapping(target = "name", source = "userEntity.name" ),
         Mapping(target = "userRole", source = "userRole" ),
         Mapping(target = "assignedProjects", source = "assignedProjects" )
     )
-    fun mapToUser(userEntity: UserEntity, userRole: UserRole, assignedProjects: Set<Long>): User
+    fun mapToUser(userEntity: UserEntity, userRole: UserRole, assignedProjects: Set<Long>, userSettings: UserSettings): User
     @Mappings(
         Mapping(target = "id", source = "userChange.id" ),
         Mapping(target = "name", source = "userChange.name" )

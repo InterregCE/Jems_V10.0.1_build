@@ -5,8 +5,8 @@ import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaborator
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
-import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.project.service.projectuser.UserProjectCollaboratorPersistence
+import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.UserRolePersistence
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectCreate
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
@@ -40,6 +40,7 @@ internal class AssignUserCollaboratorToProjectTest : UnitTest() {
         private fun user(id: Long, email: String, roleId: Long) = UserSummary(
             id = id,
             email = email,
+            sendNotificationsToEmail = false,
             name = "",
             surname = "",
             userRole = UserRoleSummary(roleId, "", false),
@@ -49,6 +50,7 @@ internal class AssignUserCollaboratorToProjectTest : UnitTest() {
         private val projectSummary = ProjectSummary(
             id = PROJECT_ID,
             customIdentifier = "01",
+            callId = 1L,
             callName = "",
             acronym = "project acronym",
             status = ApplicationStatus.DRAFT,
@@ -93,8 +95,20 @@ internal class AssignUserCollaboratorToProjectTest : UnitTest() {
 
         val userData = slot<Map<Long, ProjectCollaboratorLevel>>()
         val expectedResult = listOf(
-            CollaboratorAssignedToProject(userId = USER_ADMIN_ID, userEmail = "admin1", ProjectCollaboratorLevel.EDIT),
-            CollaboratorAssignedToProject(userId = USER_APPLICANT_ID, userEmail = "applicant1", ProjectCollaboratorLevel.MANAGE),
+            CollaboratorAssignedToProject(
+                userId = USER_ADMIN_ID,
+                userEmail = "admin1",
+                sendNotificationsToEmail = false,
+                userStatus = UserStatus.ACTIVE,
+                ProjectCollaboratorLevel.EDIT
+            ),
+            CollaboratorAssignedToProject(
+                userId = USER_APPLICANT_ID,
+                userEmail = "applicant1",
+                sendNotificationsToEmail = false,
+                userStatus = UserStatus.ACTIVE,
+                ProjectCollaboratorLevel.MANAGE
+            ),
         )
         every { collaboratorPersistence.changeUsersAssignedToProject(PROJECT_ID, capture(userData)) } returns expectedResult
 
@@ -110,7 +124,7 @@ internal class AssignUserCollaboratorToProjectTest : UnitTest() {
             USER_APPLICANT_ID to ProjectCollaboratorLevel.MANAGE,
         ))
 
-        verify(exactly = 1) { eventPublisher.publishEvent(AssignUserCollaboratorEvent(
+        verify(exactly = 1) { eventPublisher.publishEvent(AssignUserCollaboratorToProjectEvent(
             project = projectSummary,
             collaborators = expectedResult,
         )) }

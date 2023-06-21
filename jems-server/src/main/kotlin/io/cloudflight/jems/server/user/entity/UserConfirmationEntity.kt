@@ -2,7 +2,6 @@ package io.cloudflight.jems.server.user.entity
 
 import java.time.ZonedDateTime
 import java.util.UUID
-import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
 import javax.validation.constraints.NotNull

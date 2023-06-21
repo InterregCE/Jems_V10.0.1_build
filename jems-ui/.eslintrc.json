@@ -5,6 +5,7 @@
     "build/**",
     "dist/**",
     "*.spec.ts",
+    "cypress.config.ts",
     "*.js",
     "*.d.ts"
   ],

@@ -7,6 +7,7 @@ data class PaymentDetailDTO(
     val id: Long,
     val paymentType: PaymentTypeDTO,
     val fundName: String,
+    val projectId: Long,
     val projectCustomIdentifier: String,
     val projectAcronym: String,
 

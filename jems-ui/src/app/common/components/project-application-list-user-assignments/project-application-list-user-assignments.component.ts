@@ -113,14 +113,13 @@ export class ProjectApplicationListUserAssignmentsComponent implements OnInit {
       this.userService.getMonitorUsers(),
       this.userService.getUsersWithProjectRetrievePermissions(),
     ]).pipe(
-      map(([page, availableUsers, defaultUsers]) => {
+      map(([page, monitorUsers, projectRetrieveUsers]) => {
         return {
           rows: page.content.map((project, index) => ({
             ...project,
-            assignedUserIds: project.users.map(it => it.id),
             index,
-            defaultUsers,
-            availableUsers
+            assignedUserIds: project.users.map(it => it.id),
+            availableUsers: monitorUsers.concat(projectRetrieveUsers),
           })),
           totalElements: page.totalElements
         };
@@ -141,7 +140,7 @@ export class ProjectApplicationListUserAssignmentsComponent implements OnInit {
       columns: [
         {
           columnWidth: ColumnWidth.IdColumn,
-          displayedColumn: 'project.table.column.name.id',
+          displayedColumn: 'project.table.column.name.project.id',
           elementProperty: 'customIdentifier',
           sortProperty: 'customIdentifier',
           tooltip: {

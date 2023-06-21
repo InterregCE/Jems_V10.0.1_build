@@ -34,7 +34,8 @@ abstract class UnitTestWorkPackageInvestmentBase : UnitTest() {
             emptySet(),
             emptySet(),
             emptySet(),
-            emptySet()
+            emptySet(),
+            deactivated = false,
         )
 
 }

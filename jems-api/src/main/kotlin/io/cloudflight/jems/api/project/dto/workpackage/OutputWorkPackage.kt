@@ -7,5 +7,6 @@ data class OutputWorkPackage (
     val number: Int?,
     val name: Set<InputTranslation> = emptySet(),
     val specificObjective: Set<InputTranslation> = emptySet(),
-    val objectiveAndAudience: Set<InputTranslation> = emptySet()
+    val objectiveAndAudience: Set<InputTranslation> = emptySet(),
+    val deactivated: Boolean
 )

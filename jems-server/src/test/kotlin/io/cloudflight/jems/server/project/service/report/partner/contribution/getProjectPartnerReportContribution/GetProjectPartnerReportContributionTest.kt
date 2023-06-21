@@ -1,14 +1,14 @@
 package io.cloudflight.jems.server.project.service.report.partner.contribution.getProjectPartnerReportContribution
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.ProjectPartnerReportContribution
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.ProjectPartnerReportContributionData
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.ProjectPartnerReportContributionOverview
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.ProjectPartnerReportContributionRow
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
-import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectReportContributionPersistence
+import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectPartnerReportContributionPersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -158,7 +158,7 @@ internal class GetProjectPartnerReportContributionTest : UnitTest() {
     }
 
     @MockK
-    lateinit var reportContributionPersistence: ProjectReportContributionPersistence
+    lateinit var reportContributionPersistence: ProjectPartnerReportContributionPersistence
 
     @InjectMockKs
     lateinit var getReportContribution: GetProjectPartnerReportContribution

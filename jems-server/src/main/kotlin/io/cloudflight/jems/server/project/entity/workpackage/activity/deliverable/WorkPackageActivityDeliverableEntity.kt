@@ -21,6 +21,9 @@ class WorkPackageActivityDeliverableEntity(
 
     var startPeriod: Int? = null,
 
+    @field:NotNull
+    var deactivated: Boolean,
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="activity_id")
     @field:NotNull

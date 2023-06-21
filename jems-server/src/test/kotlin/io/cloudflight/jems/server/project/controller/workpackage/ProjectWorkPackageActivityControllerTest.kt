@@ -36,11 +36,13 @@ class ProjectWorkPackageActivityControllerTest : UnitTest() {
             ),
             startPeriod = 1,
             endPeriod = 3,
+            deactivated = false,
             deliverables = listOf(
                 WorkPackageActivityDeliverable(
                     id = deliverableId,
                     deliverableNumber = 1,
                     period = 1,
+                    deactivated = false,
                     description = setOf(
                         InputTranslation(language = EN, translation = "en_deliv_desc")
                     )
@@ -56,6 +58,7 @@ class ProjectWorkPackageActivityControllerTest : UnitTest() {
             description = emptySet(),
             startPeriod = 4,
             endPeriod = 6,
+            deactivated = false,
             deliverables = emptyList(),
         )
     }
@@ -90,9 +93,11 @@ class ProjectWorkPackageActivityControllerTest : UnitTest() {
                         activityId = activityId,
                         deliverableNumber = 1,
                         period = 1,
+                        deactivated = false,
                         description = setOf(InputTranslation(EN, "en_deliv_desc"))
                     )
                 ),
+                deactivated = false,
                 partnerIds = setOf(2)
             ),
             WorkPackageActivityDTO(
@@ -101,6 +106,7 @@ class ProjectWorkPackageActivityControllerTest : UnitTest() {
                 activityNumber = 2,
                 title = emptySet(),
                 startPeriod = 4,
+                deactivated = false,
                 endPeriod = 6,
                 description = emptySet(),
                 deliverables = emptyList(),
@@ -135,14 +141,17 @@ class ProjectWorkPackageActivityControllerTest : UnitTest() {
                     activityId = activityId,
                     deliverableId = deliverableId,
                     period = 1,
+                    deactivated = false,
                     description = setOf(InputTranslation(EN, "en_deliv_desc"))
                 ),
                 WorkPackageActivityDeliverableDTO(
                     activityId = activityId,
                     deliverableId = 3,
+                    deactivated = false,
                     period = 2
                 )
             ),
+            deactivated = false,
             partnerIds = setOf(2, 3)
         )
         val activityDto2 = WorkPackageActivityDTO(
@@ -152,6 +161,7 @@ class ProjectWorkPackageActivityControllerTest : UnitTest() {
             startPeriod = 3,
             endPeriod = 4,
             description = emptySet(),
+            deactivated = false,
             deliverables = emptyList()
         )
 
@@ -177,14 +187,17 @@ class ProjectWorkPackageActivityControllerTest : UnitTest() {
                         period = 1,
                         description = setOf(
                             InputTranslation(language = EN, translation = "en_deliv_desc"),
-                        )
+                        ),
+                        deactivated = false
                     ),
                     WorkPackageActivityDeliverable(
                         id = 3,
                         deliverableNumber = 2,
-                        period = 2
+                        period = 2,
+                        deactivated = false
                     )
                 ),
+                deactivated = false,
                 partnerIds = setOf(2, 3)
             ),
             WorkPackageActivity(
@@ -195,6 +208,7 @@ class ProjectWorkPackageActivityControllerTest : UnitTest() {
                 startPeriod = 3,
                 endPeriod = 4,
                 deliverables = emptyList(),
+                deactivated = false,
                 partnerIds = emptySet()
             )
         )

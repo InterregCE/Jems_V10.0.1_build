@@ -1,6 +1,6 @@
 <div id="status" class="mb-3">
     {{'project.detail.table.status' | translate}}:
-    <mat-chip-list class="mr-1 ml-1">
+    <mat-chip-list class="mr-1 ml-1" aria-label="status">
         <mat-chip selected="true"
                   [class.draft]="hasDraftStatusColor()"
                   [class.submitted]="hasSubmittedStatusColor()"
@@ -42,10 +42,15 @@
     <div class="project-row">
         <span class="header p-1 pt-3 pr-3">{{'project.detail.table.call.name' | translate}}</span>
         <span class="p-1 pt-3">
-            <a *jemsHasPermission="[PermissionsEnum.CallRetrieve, PermissionsEnum.ProjectCreate]"
-               [routerLink]="[CALL_PATH, project?.callSettings?.callId]">
-                {{project?.callSettings?.callName}}
-            </a>
+            <ng-container>
+                <a *ngIf="(canUserAccessCall$ | async); else callNoLink" [routerLink]="[CALL_PATH, project?.callSettings?.callId]">
+                    {{project?.callSettings?.callName}}
+                </a>
+                <ng-template #callNoLink>
+                        <span>{{project?.callSettings?.callName}}</span>
+                </ng-template>
+            </ng-container>
+
             <span [class.expiration]="ProjectUtil.isDraft(project) || ProjectUtil.isStep1Draft(project)">
                 {{'project.detail.overview.call.expiration' | translate : getCallInfo()}}
             </span>
@@ -60,7 +65,7 @@
     <div *ngIf="project?.firstStepDecision?.finalFundingDecision" class="project-row">
         <span class="header p-1 pr-3">{{'project.detail.table.step.one.funding' | translate}}</span>
         <span class="p-1">
-            {{ project?.firstStepDecision?.finalFundingDecision?.updated | localeDate }}
+            {{ project?.firstStepDecision?.finalFundingDecision?.decisionDate | localeDate }}
         </span>
     </div>
     <div *ngIf="project?.firstSubmission" class="project-row">
@@ -78,13 +83,13 @@
     <div *ngIf="project?.secondStepDecision?.finalFundingDecision" class="project-row">
         <span class="header p-1 pr-3">{{'project.detail.table.funding' | translate}}</span>
         <span class="p-1">
-            {{ project?.secondStepDecision?.finalFundingDecision?.updated | localeDate }}
+            {{ project?.secondStepDecision?.finalFundingDecision?.decisionDate | localeDate }}
         </span>
     </div>
     <div *ngIf="project?.contractedDecision" class="project-row">
         <span class="header p-1 pr-3">{{'project.table.column.name.contracted' | translate}}</span>
         <span class="p-1">
-            {{ project?.contractedDecision?.updated | localeDate }}
+            {{ project?.contractedOnDate | localeDate }}
         </span>
     </div>
 </div>

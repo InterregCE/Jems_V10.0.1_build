@@ -16,6 +16,6 @@
     "ProjectMonitorCollaboratorsUpdate", "ProjectMonitorCollaboratorsRetrieve", "ProjectsWithOwnershipRetrieve",
     "CallPublishedRetrieve", "PaymentsRetrieve", "AdvancePaymentsRetrieve", "ProjectRetrieve", "CallUpdate",
     "CallRetrieve", "ProgrammeSetupRetrieve", "ProgrammeDataExportRetrieve", "InstitutionsRetrieve",
-    "InstitutionsAssignmentRetrieve", "AuditRetrieve"
+    "InstitutionsAssignmentRetrieve", "AuditRetrieve", "ProjectContractingReportingView", "ProjectContractingReportingEdit"
   ]
 }

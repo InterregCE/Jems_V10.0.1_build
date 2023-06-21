@@ -5,9 +5,10 @@ import org.intellij.lang.annotations.Language
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.sql.Timestamp
+import java.util.stream.Collectors
+import java.util.stream.Stream
 import javax.persistence.EntityManager
 import javax.sql.DataSource
-import kotlin.streams.toList
 
 @Component
 class RestoreProjectUtils(private val entityManager: EntityManager, private val datasource: DataSource) {
@@ -60,9 +61,9 @@ class RestoreProjectUtils(private val entityManager: EntityManager, private val 
         // we need to decrease one second, so we could be sure that we will get list of all changed tables
         // after the timestamp considering the fact that the precision of 'UPDATE_TIME' column in the 'information_schema.tables' is in seconds
         val timestampMinusOneSecond = Timestamp.valueOf(timestamp?.toLocalDateTime()?.minusSeconds(1))
-        return entityManager.createNativeQuery(changedTablesQuery)
+        return (entityManager.createNativeQuery(changedTablesQuery)
             .setParameter("timestamp", timestampMinusOneSecond)
-            .resultStream.toList().map { it as String }
+            .resultStream as Stream<Any>).collect(Collectors.toList()).map { it as String }
     }
 
     private fun getVersionedTablesRelations(): List<TableRelation> {
@@ -81,7 +82,7 @@ class RestoreProjectUtils(private val entityManager: EntityManager, private val 
                           ON fks.constraint_schema = kcu.table_schema
                               AND fks.table_name = kcu.table_name
                               AND fks.constraint_name = kcu.constraint_name
-            WHERE fks.constraint_schema = '${datasource.connection.catalog}'
+            WHERE fks.constraint_schema = '${getDatabaseCatalog()}'
             GROUP BY fks.constraint_schema,
                      fks.table_name,
                      fks.unique_constraint_schema,
@@ -91,8 +92,8 @@ class RestoreProjectUtils(private val entityManager: EntityManager, private val 
                      fks.table_name;
             """
 
-        return entityManager.createNativeQuery(tableRelationsQuery, "tableRelationMapping")
-            .resultStream.toList().map { it as TableRelation }
+        return (entityManager.createNativeQuery(tableRelationsQuery, "tableRelationMapping")
+            .resultStream as Stream<Any>).map { it as TableRelation }.collect(Collectors.toList())
     }
 
     private fun generateDeleteQueryForCurrentData(tableName: String, tableRelations: List<TableRelation>): String? =
@@ -154,4 +155,10 @@ class RestoreProjectUtils(private val entityManager: EntityManager, private val 
                     } else pathRelations
                 }
         }.firstOrNull { it.isNotEmpty() } ?: emptyList()
+
+    private fun getDatabaseCatalog(): String? {
+        datasource.connection.use { connection ->
+            return connection.catalog
+        }
+    }
 }

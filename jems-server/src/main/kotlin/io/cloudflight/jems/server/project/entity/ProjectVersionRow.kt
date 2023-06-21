@@ -11,13 +11,6 @@ interface ProjectVersionRow {
     val createdAt: Timestamp
     val status: ApplicationStatus
 
-    //// user
-    val userId: Long
-    var email: String
-    var name: String
-    var surname: String
-    var userStatus: UserStatus
-
     //// role
     val roleId: Long
     var roleName: String

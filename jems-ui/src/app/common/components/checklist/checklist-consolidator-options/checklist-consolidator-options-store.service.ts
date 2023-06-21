@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {ChecklistConsolidatorOptionsDTO, ChecklistInstanceService} from '@cat/api';
 import {tap} from 'rxjs/operators';

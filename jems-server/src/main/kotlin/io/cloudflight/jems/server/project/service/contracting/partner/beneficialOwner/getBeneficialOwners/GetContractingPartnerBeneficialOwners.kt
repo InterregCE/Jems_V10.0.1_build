@@ -9,13 +9,11 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class GetContractingPartnerBeneficialOwners(
-    private val beneficialOwnersPersistence: ContractingPartnerBeneficialOwnersPersistence
+    private val getContractingPartnerBeneficialOwnersService: GetContractingPartnerBeneficialOwnersService
 ): GetContractingPartnerBeneficialOwnersInteractor {
 
     @CanRetrieveProjectContractingPartner
-    @Transactional(readOnly = true)
     @ExceptionWrapper(GetContractingPartnerBeneficialOwnersException::class)
-    override fun getBeneficialOwners(partnerId: Long): List<ContractingPartnerBeneficialOwner> {
-        return beneficialOwnersPersistence.getBeneficialOwners(partnerId)
-    }
+    override fun getBeneficialOwners(partnerId: Long): List<ContractingPartnerBeneficialOwner> =
+        getContractingPartnerBeneficialOwnersService.getBeneficialOwners(partnerId)
 }

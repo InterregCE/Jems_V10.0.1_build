@@ -35,6 +35,7 @@ class ProjectUserControllerTest : UnitTest() {
         private fun dummyUser(id: Long) = UserSummary(
             id = id,
             email = "$id-email",
+            sendNotificationsToEmail = false,
             name = "$id-name",
             surname = "$id-surname",
             userRole = UserRoleSummary(

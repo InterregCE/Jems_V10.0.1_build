@@ -19,10 +19,12 @@ interface UserPartnerCollaboratorPersistence {
     fun changeUsersAssignedToPartner(
         projectId: Long,
         partnerId: Long,
-        usersToPersist: Map<Long, PartnerCollaboratorLevel>,
+        usersToPersist: Map<Long, Pair<PartnerCollaboratorLevel, Boolean>>,
     ): Set<PartnerCollaborator>
 
     fun findUserIdsByProjectId(projectId: Long): Set<Long>
 
     fun deleteByProjectId(projectId: Long)
+
+    fun canUserSeePartnerSensitiveData(userId: Long, partnerId: Long): Boolean
 }

@@ -5,7 +5,7 @@
         <div alignItems="start" jemsMultiColumnRow display="block">
             <jems-filter-text-input
                     formControlName="id"
-                    label="project.table.column.name.id">
+                    label="project.table.column.name.project.id">
             </jems-filter-text-input>
 
             <jems-filter-text-input
@@ -21,7 +21,7 @@
             </jems-filter-autocomplete-input>
 
             <jems-filter-autocomplete-input
-                    [isDisabled] = "filterData.calls.size === 0"
+                    [isDisabled]="filterData.calls.size === 0"
                     [options]="filterData.calls"
                     [hasPartialLockingOfValues]="false"
                     formControlName="calls"
@@ -42,14 +42,14 @@
     <jems-form (discard)="resetForm(data.rows)" (save)="saveForm()">
         <p *ngIf="!data.rows.length">{{'project.list.empty' | translate}}</p>
         <jems-table *ngIf="data.rows.length"
-                   [configuration]="tableConfiguration"
-                   [rows]="data.rows"
-                   [totalElements]="data.totalElements"
-                   [pageIndex]="projectUserStore.newPageIndex$ | async"
-                   [confirmPageChange]="formService.dirty$ | async"
-                   (newPageIndex)="projectUserStore.newPageIndex$.next($event)"
-                   (newPageSize)="projectUserStore.newPageSize$.next($event)"
-                   (sortRows)="projectUserStore.newSort$.next($event)">
+                    [configuration]="tableConfiguration"
+                    [rows]="data.rows"
+                    [totalElements]="data.totalElements"
+                    [pageIndex]="projectUserStore.newPageIndex$ | async"
+                    [confirmPageChange]="formService.dirty$ | async"
+                    (newPageIndex)="projectUserStore.newPageIndex$.next($event)"
+                    (newPageSize)="projectUserStore.newPageSize$.next($event)"
+                    (sortRows)="projectUserStore.newSort$.next($event)">
         </jems-table>
     </jems-form>
 </ng-container>
@@ -58,37 +58,30 @@
     <mat-form-field appearance="fill" class="w-100 pt-2">
         <mat-label>{{ 'project.table.column.name.users' | translate }}</mat-label>
 
-        <mat-chip-list #chipList [disabled]="false" class="mt-2 mb-2">
-            <mat-chip
-                    *ngFor="let user of project.defaultUsers"
-                    [selectable]="false"
-                    matTooltip="{{ 'project.table.column.users.privileged.tooltip' | translate }}">
-                {{ user.email }}
-            </mat-chip>
-
+        <mat-chip-list #chipList [disabled]="false" class="mt-2 mb-2" aria-label="assigned users">
             <ng-container *ngFor="let userId of users(project.index).value;let userIndex = index">
-                <ng-container *ngIf="getUserByIdFromAvailable(userId, project.availableUsers, project.users) as user">
-                    <mat-chip
-                            color="primary" selected class="mat-chip-selected-user"
-                            [selectable]="false"
-                            [removable]="true"
-                            matTooltip="{{ user.name }} {{ user.surname }} ({{ user.userRole.name }})"
-                            (removed)="removeUser(project.index, userId)">
-                        {{ user?.email }}
-                        <mat-icon matChipRemove>cancel</mat-icon>
-                    </mat-chip>
-                </ng-container>
+                <mat-chip *ngIf="getUserByIdFromAvailable(userId, project.availableUsers, project.users) as user"
+                          color="primary" selected class="mat-chip-selected-user"
+                          [selectable]="false"
+                          [removable]="true"
+                          matTooltip="{{ user.name }} {{ user.surname }} ({{ user.userRole.name }})"
+                          (removed)="removeUser(project.index, userId)">
+                    {{ user?.email }}
+                    <mat-icon matChipRemove>cancel</mat-icon>
+                </mat-chip>
             </ng-container>
-            <input
-                #filterUsers
-                [matAutocomplete]="auto"
-                [matChipInputFor]="chipList"
-                [matChipInputSeparatorKeyCodes]="separatorKeysCodes">
+
+            <input #filterUsers
+                   [matAutocomplete]="auto"
+                   [matChipInputFor]="chipList"
+                   [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                   aria-label="user to assign">
             <mat-autocomplete #auto="matAutocomplete"
                               (optionSelected)="addUser(project.index, $event.option.value); filterUsers.value = ''; filterUsers.blur()">
                 <mat-option class="mat-option-list-entry"
-                        *ngFor="let user of getAvailableUsersWithoutSelected(project.index, project.availableUsers) | filterUsers: filterUsers.value" [value]="user">
-                    {{ user.name }} {{ user.surname }}<br />
+                            *ngFor="let user of getAvailableUsersWithoutSelected(project.index, project.availableUsers) | filterUsers: filterUsers.value"
+                            [value]="user">
+                    {{ user.name }} {{ user.surname }}<br/>
                     <small>{{ user.email }}</small>
                 </mat-option>
             </mat-autocomplete>
@@ -101,7 +94,8 @@
 <ng-template #callActionsCell let-project>
     <button mat-icon-button color="primary"
             matTooltip="{{'project.table.column.action.clear.tooltip' | translate}}"
-            (click)="clearUserProjectAssignments(project.index)">
+            (click)="clearUserProjectAssignments(project.index)"
+            aria-label="clear">
         <mat-icon>highlight_off</mat-icon>
     </button>
 </ng-template>

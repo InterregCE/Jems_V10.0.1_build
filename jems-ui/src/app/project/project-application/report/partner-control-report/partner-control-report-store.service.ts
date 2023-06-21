@@ -1,14 +1,21 @@
 import {Injectable} from '@angular/core';
 import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
 import {
+  ControllerInstitutionsApiService,
+  ControlOverviewDTO,
   PartnerUserCollaboratorDTO,
   ProjectPartnerControlReportChangeDTO,
   ProjectPartnerControlReportDTO,
   ProjectPartnerDetailDTO,
+  ProjectPartnerReportControlOverviewService,
+  ProjectPartnerReportDTO,
   ProjectPartnerReportIdentificationService,
+  ProjectPartnerReportService,
   ProjectPartnerReportSummaryDTO,
   ProjectPartnerService,
   ProjectPartnerUserCollaboratorService,
+  UserRoleDTO,
+  UserSimpleDTO,
 } from '@cat/api';
 import {RoutingService} from '@common/services/routing.service';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
@@ -21,16 +28,27 @@ import {Log} from '@common/utils/log';
 import {
   PartnerReportDetailPageStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
+import {PermissionService} from '../../../../security/permissions/permission.service';
+import {ReportUtil} from '@project/common/report-util';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Injectable({providedIn: 'root'})
 export class PartnerControlReportStore {
 
   partnerControlReport$: Observable<ProjectPartnerControlReportDTO>;
   controlReportEditable$: Observable<boolean>;
+  controlReportCertifiedReOpened$: Observable<boolean>;
+  checklistInControlReportEditable$: Observable<boolean>;
+  controlReportFinalized$: Observable<boolean>;
   partner$: Observable<ProjectPartnerDetailDTO>;
+  controlInstitutionUsers$: Observable<UserSimpleDTO[]>;
+  partnerControlReportOverview$: Observable<ControlOverviewDTO>;
+  updatedReportStatus$ = new Subject<ProjectPartnerReportSummaryDTO.StatusEnum>();
+
+  partnerId$: Observable<number>;
+  reportId$: Observable<number>;
+
   private updatedControlReport$ = new Subject<ProjectPartnerControlReportDTO>();
-  private partnerId: number;
-  private projectId: number;
 
   readonly fullControlReportView$ = combineLatest([
     this.partnerReportDetailPageStore.partnerReportPageStore.userCanViewReport$,
@@ -43,14 +61,14 @@ export class PartnerControlReportStore {
     )
   );
 
-  readonly limitedControlReportView$ = combineLatest([
+  readonly fullControlReportViewAfterFinalized$ = combineLatest([
     this.partnerReportDetailPageStore.partnerReportPageStore.userCanViewReport$,
     this.partnerReportDetailPageStore.partnerReportPageStore.userCanEditReport$,
     this.partnerReportDetailPageStore.partnerReportPageStore.institutionUserCanViewControlReports$,
     this.partnerReportDetailPageStore.partnerReportPageStore.institutionUserCanEditControlReports$
   ]).pipe(
     map(([viewRightsForReport, editRightsForReport, viewRightsFromInstitution, editRightsFromInstitution]) =>
-      (viewRightsForReport || editRightsForReport) && !viewRightsFromInstitution && !editRightsFromInstitution
+      editRightsForReport || viewRightsForReport || viewRightsFromInstitution || editRightsFromInstitution
     )
   );
 
@@ -65,17 +83,28 @@ export class PartnerControlReportStore {
   );
 
   constructor(
+    public reportPageStore: PartnerReportPageStore,
+    public partnerReportDetailPageStore: PartnerReportDetailPageStore,
     private routingService: RoutingService,
-    private partnerReportDetailPageStore: PartnerReportDetailPageStore,
-    private reportPageStore: PartnerReportPageStore,
     private projectStore: ProjectStore,
     private reportIdentificationService: ProjectPartnerReportIdentificationService,
     private partnerService: ProjectPartnerService,
     private partnerUserCollaboratorService: ProjectPartnerUserCollaboratorService,
+    private controllerInstitutionsService: ControllerInstitutionsApiService,
+    private projectPartnerReportControlOverviewService: ProjectPartnerReportControlOverviewService,
+    private permissionService: PermissionService,
+    private projectPartnerReportService: ProjectPartnerReportService
   ) {
     this.partnerControlReport$ = this.partnerControlReport();
     this.controlReportEditable$ = this.controlReportEditable();
+    this.controlReportCertifiedReOpened$ = this.controlReportCertifiedReOpened();
+    this.checklistInControlReportEditable$ = this.checklistInControlReportEditable();
+    this.controlReportFinalized$ = this.controlReportFinalized();
     this.partner$ = this.partner();
+    this.partnerId$ = this.partnerId();
+    this.reportId$ = this.reportId();
+    this.partnerControlReportOverview$ = this.partnerControlReportOverview();
+    this.controlInstitutionUsers$ = this.controlInstitutionUsers();
   }
 
   private controlReportEditable(): Observable<boolean> {
@@ -84,8 +113,34 @@ export class PartnerControlReportStore {
       this.partnerReportDetailPageStore.reportStatus$
     ])
       .pipe(
-        map(([canEdit, status]) => canEdit && status === ProjectPartnerReportSummaryDTO.StatusEnum.InControl)
+        map(([canEdit, status]) => canEdit && (ReportUtil.isControlReportOpen(status) || ReportUtil.isControlCertifiedReOpened(status)))
       );
+  }
+
+    private checklistInControlReportEditable(): Observable<boolean> {
+        return combineLatest([
+            this.reportPageStore.institutionUserCanViewControlReports$,
+            this.partnerReportDetailPageStore.reportStatus$,
+            this.permissionService.hasPermission(PermissionsEnum.ProjectReportingChecklistAfterControl)
+        ])
+            .pipe(
+                map(([canView, status, canEditChecklistsAfterControl]) =>
+                    canView
+                    && status === ProjectPartnerReportSummaryDTO.StatusEnum.Certified
+                    && canEditChecklistsAfterControl)
+            );
+    }
+
+  private controlReportFinalized(): Observable<boolean> {
+    return this.partnerReportDetailPageStore.reportStatus$.pipe(
+            map(status => status === ProjectPartnerReportSummaryDTO.StatusEnum.Certified)
+        );
+  }
+
+  private controlReportCertifiedReOpened(): Observable<boolean> {
+    return this.partnerReportDetailPageStore.reportStatus$.pipe(
+        map(status => status === ProjectPartnerReportSummaryDTO.StatusEnum.ReOpenCertified)
+    );
   }
 
   private partnerReportLevel(): Observable<PartnerUserCollaboratorDTO.LevelEnum | undefined> {
@@ -110,17 +165,23 @@ export class PartnerControlReportStore {
       this.partnerReportDetailPageStore.partnerReportId$,
       this.projectStore.projectId$,
       this.partnerReportDetailPageStore.reportStatus$,
-      this.fullControlReportView$
+      this.fullControlReportView$,
+      this.fullControlReportViewAfterFinalized$
     ]).pipe(
-      switchMap(([partnerId, reportId, projectId, status, isAllowed]) => !!partnerId && !!projectId && !!reportId && status !== 'Draft' && status !== 'Submitted' && isAllowed
-        ? this.reportIdentificationService.getControlIdentification(Number(partnerId), Number(reportId))
-          .pipe(
-            catchError(() => {
-              this.routingService.navigate([ProjectPaths.PROJECT_DETAIL_PATH, projectId, 'reporting']);
-              return of({} as ProjectPartnerControlReportDTO);
-            })
-          )
-        : of({} as ProjectPartnerControlReportDTO)
+      switchMap(([partnerId, reportId, projectId, status, isAllowed, isAllowedAfterFinalized]) =>
+        !!partnerId &&
+        !!projectId &&
+        !!reportId &&
+        ReportUtil.isControlReportExists(status as ProjectPartnerReportDTO.StatusEnum) &&
+        (isAllowed || (status === 'Certified' && isAllowedAfterFinalized))
+          ? this.reportIdentificationService.getControlIdentification(Number(partnerId), Number(reportId))
+            .pipe(
+              catchError(() => {
+                this.routingService.navigate([ProjectPaths.PROJECT_DETAIL_PATH, projectId, 'reporting']);
+                return of({} as ProjectPartnerControlReportDTO);
+              })
+            )
+          : of({} as ProjectPartnerControlReportDTO)
       ),
       tap(report => Log.info('Fetched the partner control report:', this, report)),
     );
@@ -129,6 +190,26 @@ export class PartnerControlReportStore {
       .pipe(
         shareReplay(1)
       );
+  }
+
+  private controlInstitutionUsers(): Observable<UserSimpleDTO[]> {
+    return combineLatest([
+      this.partnerReportDetailPageStore.partnerId$,
+      this.partnerControlReport(),
+      this.projectStore.projectId$,
+    ]).pipe(
+      switchMap(([partnerId, control, projectId]) => !!partnerId && !!control.designatedController?.controlInstitutionId && !!projectId
+        ? this.controllerInstitutionsService.getUsersByControllerInstitutionId(Number(control.designatedController?.controlInstitutionId), Number(partnerId))
+          .pipe(
+            catchError(() => {
+              this.routingService.navigate([ProjectPaths.PROJECT_DETAIL_PATH, projectId, 'reporting']);
+              return of([{}] as UserSimpleDTO[]);
+            })
+          )
+        : of([{}] as UserSimpleDTO[])
+      ),
+      tap(controlUsers => Log.info('Fetched the control institution users:', this, controlUsers)),
+    );
   }
 
   public saveIdentification(identification: ProjectPartnerControlReportChangeDTO): Observable<ProjectPartnerControlReportDTO> {
@@ -149,10 +230,6 @@ export class PartnerControlReportStore {
       this.projectStore.projectId$,
       this.partnerControlReport$
     ]).pipe(
-      tap(([partnerId, projectId, controlReport]) => {
-        this.partnerId = Number(partnerId);
-        this.projectId = projectId;
-      }),
       switchMap(([partnerId, projectId, controlReport]) => partnerId && projectId
         ? this.partnerService.getProjectPartnerById(Number(partnerId), controlReport.linkedFormVersion)
           .pipe(
@@ -166,5 +243,34 @@ export class PartnerControlReportStore {
       tap(partner => Log.info('Fetched the programme partner:', this, partner)),
       shareReplay(1)
     );
+  }
+
+  private partnerId(): Observable<number> {
+    return this.routingService.routeParameterChanges(PartnerReportPageStore.PARTNER_REPORT_DETAIL_PATH, 'partnerId')
+        .pipe(map(id => Number(id)));
+  }
+
+  private reportId(): Observable<number> {
+    return this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')
+        .pipe(map(id => Number(id)));
+  }
+
+  private partnerControlReportOverview(): Observable<ControlOverviewDTO> {
+    return combineLatest([
+      this.partnerId$,
+      this.reportId$
+    ]).pipe(
+      switchMap(([partnerId, reportId]) => this.projectPartnerReportControlOverviewService.getControlOverview(partnerId, reportId)
+      )
+    );
+  }
+
+  reopenControlReport(partnerId: number, reportId: number): Observable<ProjectPartnerReportSummaryDTO.StatusEnum> {
+    return this.projectPartnerReportService.reOpenControlPartnerReport(partnerId, reportId)
+        .pipe(
+            map(status => status as ProjectPartnerReportSummaryDTO.StatusEnum),
+            tap(status => this.updatedReportStatus$.next(status)),
+            tap(status => Log.info('Changed status for control report', reportId, status))
+        );
   }
 }

@@ -14,7 +14,8 @@
                             (keydown.enter)="$event.preventDefault()"
                             [matTooltip]="condensed ? input.value + ' (' + getTranslationLength(formGroup) + '/' + maxLength + ')' : ''"
                             [required]="isRequired"
-                            matInput>
+                            matInput
+                            aria-label="text input">
                     <jems-context-info *ngIf="contextInfoText"
                                       [infoText]="contextInfoText">
                     </jems-context-info>

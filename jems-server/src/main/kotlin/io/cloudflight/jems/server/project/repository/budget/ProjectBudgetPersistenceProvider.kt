@@ -18,8 +18,8 @@ import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistenc
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerBudget
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerCost
 import io.cloudflight.jems.server.project.service.budget.model.ProjectSpfBudgetPerPeriod
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.partner.model.PartnerTotalBudgetPerCostCategory
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.unitcost.model.ProjectUnitCost
 import java.math.BigDecimal
 import org.springframework.data.domain.Sort
@@ -133,14 +133,14 @@ class ProjectBudgetPersistenceProvider(
     override fun getPartnersForProjectId(projectId: Long, version: String?): List<ProjectPartnerSummary> =
         projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {
-                projectPartnerRepository.findTop30ByProjectId(
+                projectPartnerRepository.findTop50ByProjectId(
                     projectId, Sort.by(
                         Sort.Order(Sort.Direction.ASC, "sortNumber"),
                     )
                 ).toProjectPartner()
             },
             previousVersionFetcher = { timestamp ->
-                projectPartnerRepository.findTop30ByProjectIdSortBySortNumberAsOfTimestamp(projectId, timestamp)
+                projectPartnerRepository.findTop50ByProjectIdSortBySortNumberAsOfTimestamp(projectId, timestamp)
                     .map { it.toProjectPartnerHistoricalData() }
             }) ?: emptyList()
 
@@ -181,12 +181,12 @@ class ProjectBudgetPersistenceProvider(
         projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {
                 budgetUnitCostRepository.findProjectUnitCosts(
-                    projectPartnerRepository.findTop30ByProjectId(projectId).map { it.id }.toSet()
+                    projectPartnerRepository.findTop50ByProjectId(projectId).map { it.id }.toSet()
                 ).toProjectUnitCosts().toProjectUnitCostsGrouped()
             },
             previousVersionFetcher = { timestamp ->
                 budgetUnitCostRepository.findProjectUnitCostsAsOfTimestamp(
-                    projectPartnerRepository.findTop30ByProjectIdSortBySortNumberAsOfTimestamp(
+                    projectPartnerRepository.findTop50ByProjectIdSortBySortNumberAsOfTimestamp(
                         projectId,
                         timestamp
                     ).map { it.id }.toSet(), timestamp

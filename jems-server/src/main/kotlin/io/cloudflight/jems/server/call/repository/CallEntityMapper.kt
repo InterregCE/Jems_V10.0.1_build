@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.plugin.contract.pre_condition_check.ControlReportPartnerCheckPlugin
 import io.cloudflight.jems.server.call.entity.AllowedRealCostsEntity
 import io.cloudflight.jems.server.call.entity.ApplicationFormFieldConfigurationEntity
 import io.cloudflight.jems.server.call.entity.ApplicationFormFieldConfigurationId
@@ -13,6 +14,8 @@ import io.cloudflight.jems.server.call.entity.CallTranslEntity
 import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
 import io.cloudflight.jems.server.call.entity.ProjectCallStateAidEntity
+import io.cloudflight.jems.server.call.entity.notificationConfiguration.ProjectNotificationConfigurationEntity
+import io.cloudflight.jems.server.call.entity.notificationConfiguration.ProjectNotificationConfigurationId
 import io.cloudflight.jems.server.call.entity.StateAidSetupId
 import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
@@ -22,8 +25,13 @@ import io.cloudflight.jems.server.call.service.model.CallFundRate
 import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
+import io.cloudflight.jems.server.call.service.model.notificationConfigurations.ProjectNotificationConfiguration
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.entity.extractField
+import io.cloudflight.jems.server.plugin.pre_submission_check.ControlReportPartnerCheckOff
+import io.cloudflight.jems.server.plugin.pre_submission_check.ControlReportSamplingCheckOff
+import io.cloudflight.jems.server.plugin.pre_submission_check.ReportPartnerCheckOff
+import io.cloudflight.jems.server.plugin.pre_submission_check.ReportProjectCheckOff
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeStrategyEntity
 import io.cloudflight.jems.server.programme.entity.stateaid.ProgrammeStateAidEntity
@@ -75,9 +83,41 @@ fun CallEntity.toDetailModel(
     applicationFormFieldConfigurations = applicationFormFieldConfigurationEntities.toModel(),
     preSubmissionCheckPluginKey = preSubmissionCheckPluginKey,
     firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey,
+    reportPartnerCheckPluginKey = reportPartnerCheckPluginKey,
+    reportProjectCheckPluginKey = reportProjectCheckPluginKey,
     projectDefinedUnitCostAllowed = projectDefinedUnitCostAllowed,
     projectDefinedLumpSumAllowed = projectDefinedLumpSumAllowed,
+    controlReportPartnerCheckPluginKey = controlReportPartnerCheckPluginKey,
+    controlReportSamplingCheckPluginKey = controlReportSamplingCheckPluginKey
 )
+
+fun ProjectNotificationConfiguration.toEntity(
+    call: CallEntity,
+): ProjectNotificationConfigurationEntity =
+    ProjectNotificationConfigurationEntity(
+        id = ProjectNotificationConfigurationId(id, call),
+        active = active,
+        sendToManager = sendToManager,
+        sendToLeadPartner = sendToLeadPartner,
+        sendToProjectPartners = sendToProjectPartners,
+        sendToProjectAssigned = sendToProjectAssigned,
+        sendToControllers = sendToControllers,
+        emailSubject = emailSubject,
+        emailBody = emailBody,
+    )
+
+fun ProjectNotificationConfigurationEntity.toModel(): ProjectNotificationConfiguration =
+    ProjectNotificationConfiguration(
+        id = id.id,
+        active = active,
+        sendToManager = sendToManager,
+        sendToLeadPartner = sendToLeadPartner,
+        sendToProjectPartners = sendToProjectPartners,
+        sendToProjectAssigned = sendToProjectAssigned,
+        sendToControllers = sendToControllers,
+        emailSubject = emailSubject,
+        emailBody = emailBody,
+    )
 
 private fun Set<ProgrammeSpecificObjectiveEntity>.groupSpecificObjectives() =
     groupBy { it.programmePriority!!.id }.values.map {
@@ -121,8 +161,12 @@ fun Call.toEntity(
     allowedRealCosts = existingEntity?.allowedRealCosts ?: getDefaultAllowedRealCosts(type),
     preSubmissionCheckPluginKey = existingEntity?.preSubmissionCheckPluginKey,
     firstStepPreSubmissionCheckPluginKey = existingEntity?.firstStepPreSubmissionCheckPluginKey,
+    reportPartnerCheckPluginKey = existingEntity?.reportPartnerCheckPluginKey ?: ReportPartnerCheckOff.KEY,
+    reportProjectCheckPluginKey = existingEntity?.reportProjectCheckPluginKey ?: ReportProjectCheckOff.KEY,
     projectDefinedUnitCostAllowed = existingEntity?.projectDefinedUnitCostAllowed ?: false,
     projectDefinedLumpSumAllowed = existingEntity?.projectDefinedLumpSumAllowed ?: false,
+    controlReportPartnerCheckPluginKey = existingEntity?.controlReportPartnerCheckPluginKey ?: ControlReportPartnerCheckOff.KEY,
+    controlReportSamplingCheckPluginKey = existingEntity?.controlReportSamplingCheckPluginKey ?: ControlReportSamplingCheckOff.KEY
 ).apply {
     translatedValues.addAll(description.combineDescriptionsToTranslations(this))
 }
@@ -176,8 +220,14 @@ fun CallFundRateEntity.toModel() = CallFundRate(
 fun MutableSet<ApplicationFormFieldConfigurationEntity>.toModel() =
     callEntityMapper.map(this)
 
+fun List<ProjectNotificationConfigurationEntity>.toNotificationModel() =
+    map {it.toModel()}
+
 fun MutableSet<ApplicationFormFieldConfiguration>.toEntities(call: CallEntity) =
     map { callEntityMapper.map(call, it) }.toMutableSet()
+
+fun List<ProjectNotificationConfiguration>.toNotificationEntity(call: CallEntity) =
+    map { it.toEntity(call) }.toMutableSet()
 
 fun Collection<ProgrammeStateAidEntity>.toEntities(call: CallEntity) =
     map { ProjectCallStateAidEntity(StateAidSetupId(call, it)) }
@@ -215,5 +265,4 @@ abstract class CallEntityMapper {
             ApplicationFormFieldConfigurationId(fieldConfiguration.id, call),
             fieldConfiguration.visibilityStatus
         )
-
 }

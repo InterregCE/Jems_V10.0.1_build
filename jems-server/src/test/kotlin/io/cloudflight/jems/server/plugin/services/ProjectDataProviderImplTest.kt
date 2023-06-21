@@ -26,6 +26,7 @@ import io.cloudflight.jems.plugin.contract.models.programme.lumpsum.ProgrammeLum
 import io.cloudflight.jems.plugin.contract.models.programme.strategy.ProgrammeStrategyData
 import io.cloudflight.jems.plugin.contract.models.programme.unitcost.BudgetCategoryData
 import io.cloudflight.jems.plugin.contract.models.programme.unitcost.ProgrammeUnitCostListData
+import io.cloudflight.jems.plugin.contract.models.project.ProjectIdentificationData
 import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ApplicationStatusData
 import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectAssessmentEligibilityData
 import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectAssessmentEligibilityResultData
@@ -123,6 +124,7 @@ import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalcul
 import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
 import io.cloudflight.jems.server.project.service.common.PartnerBudgetPerFundCalculatorService
 import io.cloudflight.jems.server.project.service.contracting.model.ContractingDimensionCode
+import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
 import io.cloudflight.jems.server.project.service.contracting.monitoring.ContractingMonitoringPersistence
 import io.cloudflight.jems.server.project.service.customCostOptions.ProjectUnitCostPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
@@ -196,6 +198,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
+import java.time.LocalDate
 import java.time.ZonedDateTime
 import java.util.Optional
 
@@ -280,10 +283,11 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         private val endDate = ZonedDateTime.now().plusDays(5)
 
         private val userEntity =
-            UserEntity(3L, "email", "name", "surname", UserRoleEntity(4L, "role"), "password", UserStatus.ACTIVE)
+            UserEntity(3L, "email", false, "name", "surname", UserRoleEntity(4L, "role"), "password", UserStatus.ACTIVE)
         private val user = UserSummary(
             userEntity.id,
             userEntity.email,
+            userEntity.sendNotificationsToEmail,
             userEntity.name,
             userEntity.surname,
             UserRoleSummary(4L, "role"),
@@ -364,7 +368,6 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 "1.0",
                 project.id!!,
                 ZonedDateTime.now(),
-                userEntity,
                 ApplicationStatus.SUBMITTED,
                 true
             )
@@ -574,7 +577,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             documentation = setOf(InputTranslation(SystemLanguage.EN, "documentation")),
             ownershipSiteLocation = setOf(InputTranslation(SystemLanguage.EN, "ownershipSiteLocation")),
             ownershipRetain = setOf(InputTranslation(SystemLanguage.EN, "ownershipRetain")),
-            ownershipMaintenance = setOf(InputTranslation(SystemLanguage.EN, "ownershipMaintenance"))
+            ownershipMaintenance = setOf(InputTranslation(SystemLanguage.EN, "ownershipMaintenance")),
+            deactivated = false,
         )
         private val activity = WorkPackageActivity(
             workPackageId = 1L,
@@ -583,7 +587,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             description = setOf(InputTranslation(SystemLanguage.EN, "description")),
             startPeriod = 3,
             endPeriod = 4,
-            deliverables = listOf(WorkPackageActivityDeliverable()),
+            deliverables = listOf(WorkPackageActivityDeliverable(deactivated = false)),
+            deactivated = false,
             partnerIds = setOf(5, 6)
         )
         private val workPackageOutput = WorkPackageOutput(
@@ -603,7 +608,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 )
             ),
             periodStartMonth = 1,
-            periodEndMonth = 2
+            periodEndMonth = 2,
+            deactivated = false,
         )
         private val projectResult = ProjectResult(
             resultNumber = 1,
@@ -621,7 +627,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             periodNumber = 2,
             periodStartMonth = 4,
             periodEndMonth = 6,
-            description = setOf(InputTranslation(language = SystemLanguage.EN, translation = "description"))
+            description = setOf(InputTranslation(language = SystemLanguage.EN, translation = "description")),
+            deactivated = false
         )
         private val workPackage = ProjectWorkPackageFull(
             id = 1L,
@@ -637,7 +644,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             ),
             activities = listOf(activity),
             outputs = listOf(workPackageOutput),
-            investments = listOf(investment)
+            investments = listOf(investment),
+            deactivated = false
         )
         private val projectLumpSum = ProjectLumpSum(
             orderNr = 1,
@@ -742,6 +750,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 targetValue = BigDecimal.TEN,
                 periodNumber = 1,
                 description = setOf(InputTranslation(SystemLanguage.EN, "description")),
+                deactivated = false
             ), ProjectResult(
                 resultNumber = 5,
                 programmeResultIndicatorId = 3,
@@ -750,6 +759,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 targetValue = BigDecimal.TEN,
                 periodNumber = 1,
                 description = setOf(InputTranslation(SystemLanguage.EN, "description2")),
+                deactivated = false
             )
         )
 
@@ -819,7 +829,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         every { projectPersistence.getProject(id) } returns project
         every { projectVersionPersistence.getAllVersionsByProjectId(id) } returns projectVersions
         every { projectDescriptionPersistence.getProjectDescription(id) } returns projectDescription
-        every { partnerPersistence.findTop30ByProjectId(id) } returns listOf(projectPartner)
+        every { partnerPersistence.findTop50ByProjectId(id) } returns listOf(projectPartner)
         every {
             budgetOptionsPersistence.getBudgetOptions(
                 setOf(projectPartner.id),
@@ -828,7 +838,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         } returns listOf(partnerBudgetOptions)
         every { coFinancingPersistence.getCoFinancingAndContributions(projectPartner.id) } returns partnerCoFinancing
         every { programmeLegalStatusPersistence.getMax20Statuses() } returns legalStatuse
-        every { getBudgetCostsPersistence.getBudgetStaffCosts(projectPartner.id) } returns listOf(
+        every { getBudgetCostsPersistence.getBudgetStaffCosts(setOf(projectPartner.id)) } returns listOf(
             BudgetStaffCostEntry(
                 id = 3L,
                 numberOfUnits = BigDecimal.ONE,
@@ -841,11 +851,11 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 unitCostId = 4L
             )
         )
-        every { getBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(projectPartner.id) } returns emptyList()
-        every { getBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(projectPartner.id) } returns emptyList()
-        every { getBudgetCostsPersistence.getBudgetEquipmentCosts(projectPartner.id) } returns emptyList()
-        every { getBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(projectPartner.id) } returns emptyList()
-        every { getBudgetCostsPersistence.getBudgetUnitCosts(projectPartner.id) } returns emptyList()
+        every { getBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(setOf(projectPartner.id)) } returns emptyList()
+        every { getBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(setOf(projectPartner.id)) } returns emptyList()
+        every { getBudgetCostsPersistence.getBudgetEquipmentCosts(setOf(projectPartner.id)) } returns emptyList()
+        every { getBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(setOf(projectPartner.id)) } returns emptyList()
+        every { getBudgetCostsPersistence.getBudgetUnitCosts(setOf(projectPartner.id)) } returns emptyList()
         every {
             budgetCostsCalculator.calculateCosts(
                 any(),
@@ -1222,6 +1232,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 projectWorkPackages = listOf(
                     ProjectWorkPackageData(
                         id = workPackage.id,
+                        deactivated = false,
                         workPackageNumber = workPackage.workPackageNumber,
                         name = setOf(InputTranslationData(SystemLanguageData.EN, "name")),
                         specificObjective = setOf(InputTranslationData(SystemLanguageData.EN, "objective")),
@@ -1236,10 +1247,12 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                                 deliverables = listOf(
                                     WorkPackageActivityDeliverableData(
                                         deliverableNumber = 0,
-                                        period = null
+                                        period = null,
+                                        deactivated = false
                                     )
                                 ),
-                                partnerIds = activity.partnerIds
+                                partnerIds = activity.partnerIds,
+                                deactivated = false
                             )
                         ),
                         outputs = listOf(
@@ -1254,7 +1267,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                                 periodStartMonth = workPackageOutput.periodStartMonth,
                                 periodEndMonth = workPackageOutput.periodEndMonth,
                                 programmeOutputIndicatorName = workPackageOutput.programmeOutputIndicatorName.toDataModel(),
-                                programmeOutputIndicatorMeasurementUnit = workPackageOutput.programmeOutputIndicatorMeasurementUnit.toDataModel()
+                                programmeOutputIndicatorMeasurementUnit = workPackageOutput.programmeOutputIndicatorMeasurementUnit.toDataModel(),
+                                deactivated = workPackageOutput.deactivated
                             )
                         ),
                         investments = listOf(
@@ -1263,6 +1277,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                                 investmentNumber = investment.investmentNumber,
                                 title = setOf(InputTranslationData(SystemLanguageData.EN, "title")),
                                 expectedDeliveryPeriod = investment.expectedDeliveryPeriod,
+                                deactivated = false,
                                 justificationExplanation = setOf(
                                     InputTranslationData(
                                         SystemLanguageData.EN,
@@ -1327,7 +1342,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                         periodNumber = projectResult.periodNumber,
                         periodStartMonth = projectResult.periodStartMonth,
                         periodEndMonth = projectResult.periodEndMonth,
-                        description = projectResult.description.toDataModel()
+                        description = projectResult.description.toDataModel(),
+                        deactivated = false
                     )
                 ),
                 projectManagement = ProjectManagementData(
@@ -1440,7 +1456,16 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             ProjectBudgetOverviewPerPartnerPerPeriodData(
                 partnersBudgetPerPeriod = listOf(
                     ProjectPartnerBudgetPerPeriodData(
-                        partner = ProjectPartnerSummaryData(projectPartner.id, projectPartner.active, projectPartner.abbreviation,ProjectPartnerRoleData.valueOf(projectPartner.role.name), projectPartner.sortNumber, projectPartner.addresses.first { it.type == ProjectPartnerAddressType.Organization }.country, projectPartner.addresses.first { it.type == ProjectPartnerAddressType.Organization }.nutsRegion2),
+                        partner = ProjectPartnerSummaryData(
+                            projectPartner.id,
+                            projectPartner.active,
+                            projectPartner.abbreviation,
+                            ProjectPartnerRoleData.valueOf(projectPartner.role.name),
+                            projectPartner.sortNumber,
+                            projectPartner.addresses.first { it.type == ProjectPartnerAddressType.Organization }.country,
+                            projectPartner.addresses.first { it.type == ProjectPartnerAddressType.Organization }.nutsRegion2,
+                            otherIdentifierDescription = null
+                        ),
                         periodBudgets = mutableListOf(
                             ProjectPeriodBudgetData(0, 0, 0, BigDecimal.ZERO, allZeroCostDetailData, false),
                             ProjectPeriodBudgetData(255, 0, 0, BigDecimal.ZERO, allZeroCostDetailData, true)
@@ -1563,7 +1588,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 projectTransferability = emptySet()
             )
         )
-        every { partnerPersistence.findTop30ByProjectId(id) } returns emptyList()
+        every { partnerPersistence.findTop50ByProjectId(id) } returns emptyList()
         every { associatedOrganizationPersistence.findAllByProjectId(id) } returns emptyList()
         every { resultPersistence.getResultsForProject(id, null) } returns emptyList()
         every { workPackagePersistence.getWorkPackagesWithAllDataByProjectId(id) } returns emptyList()
@@ -1684,20 +1709,9 @@ internal class ProjectDataProviderImplTest : UnitTest() {
 
     @Test
     fun `should return list of project versions`() {
-        val account = UserEntity(
-            id = 1,
-            email = "admin@admin.dev",
-            name = "Name",
-            surname = "Surname",
-            userRole = UserRoleEntity(id = 1, name = "ADMIN"),
-            password = "hash_pass",
-            userStatus = UserStatus.ACTIVE
-        )
-
         val createdAt = ZonedDateTime.now()
-
         val versions = listOf(
-            ProjectVersion("1.0", 1L, createdAt, account, ApplicationStatus.DRAFT, true)
+            ProjectVersion("1.0", 1L, createdAt, ApplicationStatus.DRAFT, true)
         )
         val versionsData = listOf(
             ProjectVersionData("1.0", 1L, createdAt, ApplicationStatusData.DRAFT)
@@ -1705,6 +1719,77 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         every { projectVersionPersistence.getAllVersions() } returns versions
 
         assertThat(projectDataProvider.getAllProjectVersions()).isEqualTo(versionsData)
+    }
+
+
+    @Test
+    fun getProjectIdentificationData() {
+        val projectId = 1L
+        val projectStartDate = LocalDate.of(2023, 1, 19)
+        val contractMonitoring = ProjectContractingMonitoring(
+            projectId = projectId,
+            startDate = projectStartDate,
+            endDate = null,
+            typologyProv94 = null,
+            typologyProv94Comment = null,
+            typologyProv95= null,
+            typologyProv95Comment= null,
+            typologyStrategic= null,
+            typologyStrategicComment= null,
+            typologyPartnership= null,
+            typologyPartnershipComment= null,
+            addDates= emptyList(),
+            dimensionCodes = emptyList(),
+            fastTrackLumpSums = emptyList()
+        )
+
+        every { projectVersionPersistence.getLatestApprovedOrCurrent(projectId)} returns "1.0"
+        every { projectPersistence.getProject(projectId,"1.0") } returns ProjectFull(
+            id = 1L,
+            customIdentifier = "identifier",
+            callSettings = callSettings,
+            acronym = "acronym",
+            applicant = user,
+            duration = 12,
+            programmePriority = null,
+            specificObjective = null,
+            projectStatus = projectStatus,
+            periods = emptyList(),
+            assessmentStep1 = null,
+            title = emptySet()
+        )
+
+        every { contractingMonitoringPersistence.getContractingMonitoring(1L) } returns contractMonitoring
+        val programmeData = mockk<ProgrammeDataEntity>()
+        every { programmeData.title } returns "programme title"
+        every { programmeDataRepository.findById(1L) } returns Optional.of(programmeData)
+
+
+        assertThat(projectDataProvider.getProjectIdentificationData(projectId)).isEqualTo(
+            ProjectIdentificationData(
+                id = projectId,
+                customIdentifier = "identifier",
+                acronym = "acronym",
+                status = ApplicationStatusData.APPROVED,
+                title = emptySet(),
+                intro = emptySet(),
+                durationInMonths = 12,
+                projectStartDate = projectStartDate,
+                projectEndDate = LocalDate.of(2024, 1, 18),
+                programmeTitle = "programme title",
+                programmePriorityCode = null,
+                lifecycleData = ProjectLifecycleData(
+                    status = project.projectStatus.status.toDataModel(),
+                    submissionDateStepOne = null,
+                    firstSubmissionDate = null,
+                    lastResubmissionDate = null,
+                    contractedDate = null,
+                    assessmentStep1 = null,
+                    assessmentStep2 = null
+                )
+            )
+        )
+
     }
 
     private fun ProjectStatus.toData() =

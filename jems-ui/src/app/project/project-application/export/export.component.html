@@ -6,6 +6,8 @@
     <div id="export-container">
         <div id="export-config">
             <form jemsFormLayout [formGroup]="exportForm">
+                <h3>{{'project.application.form.section.export' | translate}}</h3>
+                <p>{{'project.application.form.section.export.intro' | translate}}</p>
                 <mat-form-field jemsFormFieldWidth="xx-large">
                     <mat-label>{{'export.label.plugin' | translate}}</mat-label>
                     <mat-select formControlName="plugin" required>
@@ -51,7 +53,7 @@
             </form>
             <jems-pending-button jemsText
                                 [disabled]="!exportForm.valid || !exportLanguage || !inputLanguage || !data.projectId"
-                                (click)="exportData(exportLanguage, inputLanguage, data.projectId, getVersion(data.versions))"
+                                (clicked)="exportData(exportLanguage, inputLanguage, data.projectId, getVersion(data.versions))"
                                 [pending]="isExportingInProgress$ | async">
                 {{'export.label.export.button' | translate}}
             </jems-pending-button>

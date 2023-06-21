@@ -83,3 +83,9 @@ tr.detail-row {
   display: inline-block;
   margin-top: 0 !important;
 }
+
+:host::ng-deep {
+  .filter-text {
+    max-width: 100% !important;
+  }
+}

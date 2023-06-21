@@ -40,7 +40,8 @@
                     <button mat-icon-button
                             type="button"
                             [disabled]="typologyErrorsForm.controls.length >= 50"
-                            (click)="addNewTypologyError()">
+                            (click)="addNewTypologyError()"
+                            aria-label="add">
                         <mat-icon>add</mat-icon>
                     </button>
                 </div>

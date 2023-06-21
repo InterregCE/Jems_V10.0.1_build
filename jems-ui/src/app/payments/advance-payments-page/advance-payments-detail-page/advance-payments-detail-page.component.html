@@ -5,7 +5,8 @@
         <div jemsMultiColumnRow>
             <a color="primary" class="mr-1" mat-icon-button
                routerLink="../../"
-               matTooltip="{{ 'payments.payment.to.project.detail.back.tooltip.button' | translate }}">
+               matTooltip="{{ 'payments.payment.to.project.detail.back.tooltip.button' | translate }}"
+               aria-label="back">
                 <mat-icon class="icon-back" fontSet="material-icons-outlined">arrow_circle_left</mat-icon>
             </a>
             <h3 class="mb-4 put-icon-to-header-line">{{'payments.advance.payments.detail.back.button' | translate}}</h3>
@@ -24,65 +25,20 @@
         <ng-container>
                 <div jemsNoWidthLimit id="advance-payment-table" class="mb-3 advance-payment-container">
 
-                    <div class="advance-payment-header table-row" jemsMultiColumnRow justifyContent="start">
-                        <div class="column-project-id justify-start">
-                            {{ 'payments.advance.payment.table.header.project.id' | translate }}
-                        </div>
-
-                        <div class="column-project-acronym justify-start">
-                            {{ 'payments.payment.to.project.table.column.project.acronym' | translate }}
-                        </div>
-
-                        <div class="column-partner-name justify-start" jemsNoWidthLimit jemsMultiColumnRow>
-                            {{ 'payments.advance.payment.table.header.partner.name' | translate }}
-                        </div>
-
-                        <div class="column-partner-role justify-start" jemsNoWidthLimit jemsMultiColumnRow>
-                            {{ 'payments.advance.payment.table.header.partner.role' | translate }}
-                        </div>
-
-                        <div class="column-advance-source justify-start" jemsNoWidthLimit jemsMultiColumnRow>
-                            {{ 'payments.advance.payment.table.header.source.advance.granted' | translate }}
-                        </div>
-
-                        <div class="column-advance-amount justify-start" jemsNoWidthLimit jemsMultiColumnRow>
-                            {{ 'payments.advance.payment.table.header.advance.amount' | translate }}
-                        </div>
-
-                        <div class="column-date justify-start" jemsNoWidthLimit jemsMultiColumnRow>
-                            {{ 'payments.advance.payment.table.header.date.advance.payment' | translate }}
-                        </div>
-
-                        <div class="column-comment justify-start" jemsNoWidthLimit jemsMultiColumnRow>
-                            {{ 'payments.detail.table.header.installment.comment' | translate }}
-                        </div>
-
-                        <div class="column-checkbox justify-start" jemsNoWidthLimit jemsMultiColumnRow>
-                            {{ 'payments.detail.table.header.installment.save.payment.info' | translate }}
-                        </div>
-
-                        <div class="column-user-saving justify-start" jemsNoWidthLimit jemsMultiColumnRow>
-                            {{ 'payments.detail.table.header.installment.user.saving.payment.info' | translate }}
-                        </div>
-
-                        <div class="column-saving-date justify-start" jemsNoWidthLimit jemsMultiColumnRow>
-                            {{ 'payments.detail.table.header.installment.save.payment.date' | translate }}
-                        </div>
-
-                        <div class="column-checkbox justify-start" jemsNoWidthLimit jemsMultiColumnRow>
-                            {{ 'payments.detail.table.header.installment.confirm.payment' | translate }}
-                        </div>
-
-                        <div class="column-user-saving justify-start" jemsNoWidthLimit jemsMultiColumnRow>
-                            {{ 'payments.detail.table.header.installment.user.confirming.payment' | translate }}
-                        </div>
-
-                        <div class="column-saving-date justify-start" jemsNoWidthLimit jemsMultiColumnRow>
-                            {{ 'payments.detail.table.header.installment.payment.confirmation.date' | translate }}
-                        </div>
+                    <div jemsNoWidthLimit jemsMultiColumnRow class="advance-payment-header table-row" justifyContent="start">
+                        <div class="column-project-id justify-start">{{ 'payments.advance.payment.table.header.project.id' | translate }}</div>
+                        <div class="column-project-acronym justify-start">{{ 'payments.payment.to.project.table.column.project.acronym' | translate }}</div>
+                        <div class="column-partner-name justify-start">{{ 'payments.advance.payment.table.header.partner.name' | translate }}</div>
+                        <div class="column-partner-role justify-start">{{ 'payments.advance.payment.table.header.partner.number' | translate }}</div>
+                        <div class="column-advance-source justify-start">{{ 'payments.advance.payment.table.header.source.advance.granted' | translate }}</div>
+                        <div class="column-advance-amount justify-start">{{ 'payments.advance.payment.table.header.advance.amount' | translate }}</div>
+                        <div class="column-date justify-start">{{ 'payments.advance.payment.table.header.date.advance.payment' | translate }}</div>
+                        <div class="column-comment justify-start">{{ 'payments.detail.table.header.installment.comment' | translate }}</div>
+                        <div class="column-checkbox justify-start">{{ 'payments.detail.table.header.installment.save.payment.info' | translate }}</div>
+                        <div class="column-checkbox justify-start">{{ 'payments.detail.table.header.installment.confirm.payment' | translate }}</div>
                     </div>
                     <ng-container>
-                        <div  jemsMultiColumnRow class="table-row full-payment-row">
+                        <div  jemsNoWidthLimit jemsMultiColumnRow class="table-row full-payment-row">
                             <div class="column-project-id">
                                 <mat-form-field class="w-100">
                                     <mat-select class="placeholder-required"
@@ -102,16 +58,18 @@
                                 </mat-form-field>
                             </div>
 
-                            <div class="column-project-acronym">
+                            <div class="column-project-acronym" #projectAcronym
+                                 [matTooltip]="advancePayment.get(constants.FORM_CONTROL_NAMES.projectAcronym)?.value">
                                 {{advancePayment.get(constants.FORM_CONTROL_NAMES.projectAcronym)?.value}}
                             </div>
 
                             <div class="column-partner-name">
                                 <mat-form-field class="w-100">
-                                    <mat-select class="placeholder-required"
+                                    <mat-select class="placeholder-required" #partnerSelect
                                                 [formControlName]="constants.FORM_CONTROL_NAMES.partnerAbbreviation"
                                                 (selectionChange)="setFundsAndContributionData($event.value)"
                                                 [compareWith]="getPartnerToDisplay"
+                                                [matTooltip]="partnerSelect.triggerValue"
                                                 placeholder="{{'payments.advance.payments.detail.partner.dropdown.placeholder' | translate}}" >
                                         <mat-option *ngFor="let partner of partnerData$ | async" [value]="partner">
                                             {{partner.partnerSummary.abbreviation}}
@@ -126,10 +84,11 @@
 
                             <div class="column-advance-source">
                                 <mat-form-field  class="w-100">
-                                    <mat-select
+                                    <mat-select #advanceSourceSelect
                                             class="placeholder-required"
                                             [formControlName]="constants.FORM_CONTROL_NAMES.sourceOrFundName"
                                             [compareWith]="getSourceToDisplay"
+                                            [matTooltip]="advanceSourceSelect.triggerValue"
                                             placeholder="{{'payments.advance.payments.detail.source.dropdown.placeholder' | translate}}">
 
                                             <mat-optgroup *ngIf="fundsAndContributions?.partnerCoFinancing?.length > 0"
@@ -161,22 +120,22 @@
                                     <span [ngClass]="{'marked-as-required' : !isPaymentValueValid(inputAdvanceAmount.value)}">
                                         <input #inputAdvanceAmount matInput type="decimal" currencyMask required
                                                [options]="{max: constants.MAX_VALUE, align:'right'}"
-                                               [formControlName]="constants.FORM_CONTROL_NAMES.amountAdvance">
+                                               [formControlName]="constants.FORM_CONTROL_NAMES.amountPaid">
                                     </span>
                                     <mat-error>
-                                        <jems-form-field-errors [errors]="advancePayment.get(constants.FORM_CONTROL_NAMES.amountAdvance)?.errors" [messages]="constants.inputErrorMessages"></jems-form-field-errors>
+                                        <jems-form-field-errors [errors]="advancePayment.get(constants.FORM_CONTROL_NAMES.amountPaid)?.errors" [messages]="constants.inputErrorMessages"></jems-form-field-errors>
                                     </mat-error>
                                 </mat-form-field>
                             </div>
 
                             <div class="column-date">
                                 <mat-form-field class="w-100">
-                                    <input name="dateOfPayment"
+                                    <input name="paymentDate"
                                            class="placeholder-required"
-                                           [formControlName]="constants.FORM_CONTROL_NAMES.dateOfPayment" matInput
+                                           [formControlName]="constants.FORM_CONTROL_NAMES.paymentDate" matInput
                                            [matDatepicker]="paymentDatePicker">
                                     <mat-error>
-                                        <jems-form-field-errors [errors]="advancePayment.get(constants.FORM_CONTROL_NAMES.dateOfPayment)?.errors"
+                                        <jems-form-field-errors [errors]="advancePayment.get(constants.FORM_CONTROL_NAMES.paymentDate)?.errors"
                                         [messages]="constants.inputErrorMessages"
                                         [args] = "{}"></jems-form-field-errors>
                                     </mat-error>
@@ -200,29 +159,37 @@
                                 </mat-form-field>
                             </div>
 
-                            <div class="column-checkbox justify-center">
-                                <mat-checkbox
-                                        [disabled]="isPaymentAuthorisationDisabled()"
-                                        (change)="setPaymentAuthorised($event.checked)"
-                                        [formControlName]="constants.FORM_CONTROL_NAMES.paymentAuthorized">
-                                </mat-checkbox>
+                            <div class="column-checkbox justify-start">
+                                <div class="display-row">
+                                    <mat-checkbox
+                                            [disabled]="isPaymentAuthorisationDisabled()"
+                                            (change)="setPaymentAuthorised($event.checked)"
+                                            [formControlName]="constants.FORM_CONTROL_NAMES.paymentAuthorized">
+                                    </mat-checkbox>
+                                    <div class="column-checkbox-text-content">
+                                        <span>{{getFormattedDate(advancePayment.get(constants.FORM_CONTROL_NAMES.paymentAuthorizedDate)?.value)}}</span>
+                                        <span  jemsText class="text-overflow-ellipsis">{{advancePayment.get(constants.FORM_CONTROL_NAMES.paymentAuthorizedUser)?.value?.email}}</span>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="column-user-saving"><span  jemsText class="text-overflow-ellipsis">{{advancePayment.get(constants.FORM_CONTROL_NAMES.paymentAuthorizedUser)?.value?.email}}</span></div>
-
-                            <div class="column-saving-date">{{getFormattedDate(advancePayment.get(constants.FORM_CONTROL_NAMES.paymentAuthorizedDate)?.value)}}</div>
-
-                            <div  class="column-checkbox justify-center">
-                                <mat-checkbox
-                                        (change)="setConfirmPaymentDate($event.checked)"
-                                        [formControlName]="constants.FORM_CONTROL_NAMES.paymentConfirmed">
-                                </mat-checkbox>
+                            <div class="column-checkbox justify-start">
+                                <div class="display-row">
+                                    <mat-checkbox (change)="setConfirmPaymentDate($event.checked)"
+                                                  [formControlName]="constants.FORM_CONTROL_NAMES.paymentConfirmed">
+                                    </mat-checkbox>
+                                    <div class="column-checkbox-text-content">
+                                        <span>{{getFormattedDate(advancePayment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedDate)?.value)}}</span>
+                                        <span jemsText class="text-overflow-ellipsis">{{advancePayment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedUser)?.value?.email}}</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="column-user-saving"><span jemsText class="text-overflow-ellipsis">{{advancePayment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedUser)?.value?.email}}</span></div>
-                            <div class="column-saving-date">{{getFormattedDate(advancePayment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedDate)?.value)}}</div>
                         </div>
                     </ng-container>
                 </div>
         </ng-container>
     </jems-form>
+
+    <jems-advance-payments-attachments *ngIf="data.paymentDetail.id > 0"
+                                          [paymentId]="data.paymentDetail.id"></jems-advance-payments-attachments>
 </jems-main-page-template>

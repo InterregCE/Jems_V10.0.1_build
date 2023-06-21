@@ -8,6 +8,17 @@ import {CallDetailPageComponent} from './call-detail-page/call-detail-page.compo
 import {UserRoleDTO} from '@cat/api';
 import {ApplicationFormConfigurationPageComponent} from './application-form-configuration-page/application-form-configuration-page.component';
 import {PreSubmissionCheckSettingsPageComponent} from './pre-submission-check-settings-page/pre-submission-check-settings-page.component';
+import {NotificationsSettingsComponent} from './notifications-settings/notifications-settings.component';
+import {
+  ProjectNotificationsSettingsTabComponent
+} from './notifications-settings/project-notifications-settings-tab/project-notifications-settings-tab.component';
+import {
+  PartnerReportNotificationsSettingsTabComponent
+} from './notifications-settings/partner-report-notifications-settings-tab/partner-report-notifications-settings-tab.component';
+import {CallTranslationsConfigurationComponent} from './translations/call-translations-configuration.component';
+import {
+  ProjectReportNotificationsSettingsTabComponent
+} from './notifications-settings/project-report-notifications-settings-tab/project-report-notifications-settings-tab.component';
 
 export const routes: Routes = [
   {
@@ -76,6 +87,44 @@ export const routes: Routes = [
             },
             canActivate: [PermissionGuard],
             component: PreSubmissionCheckSettingsPageComponent,
+          },
+          {
+            path: 'notificationSettings',
+            component: NotificationsSettingsComponent,
+            data: {
+              breadcrumb: 'call.detail.notifications.config.title',
+              permissionsOnly: [UserRoleDTO.PermissionsEnum.CallRetrieve],
+            },
+            children: [
+              {
+                path: '',
+                redirectTo: 'project',
+              },
+              {
+                path: 'project',
+                component: ProjectNotificationsSettingsTabComponent,
+                data: {breadcrumb: 'call.detail.notifications.config.tab.project'}
+              },
+              {
+                path: 'projectReport',
+                component: ProjectReportNotificationsSettingsTabComponent,
+                data: {breadcrumb: 'call.detail.notifications.config.tab.project.report'}
+              },
+              {
+                path: 'partnerReport',
+                component: PartnerReportNotificationsSettingsTabComponent,
+                data: {breadcrumb: 'call.detail.notifications.config.tab.partner.report'}
+              }
+            ]
+          },
+          {
+            path: 'translationSettings',
+            data: {
+              breadcrumb: 'call.detail.translations.title',
+              permissionsOnly: [UserRoleDTO.PermissionsEnum.CallRetrieve],
+            },
+            canActivate: [PermissionGuard],
+            component: CallTranslationsConfigurationComponent,
           },
         ],
       },

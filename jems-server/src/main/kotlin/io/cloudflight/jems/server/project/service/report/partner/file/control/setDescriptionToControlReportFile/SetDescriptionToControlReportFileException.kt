@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.partner.file.control.setDescriptionToControlReportFile
 
 import io.cloudflight.jems.api.common.dto.I18nMessage
+import io.cloudflight.jems.server.common.exception.ApplicationAccessDeniedException
 import io.cloudflight.jems.server.common.exception.ApplicationException
 
 private const val SET_DESCRIPTION_TO_CONTROL_REPORT_FILE_ERROR_CODE_PREFIX = "S-SDTPPCRF"
@@ -10,4 +11,10 @@ class SetDescriptionToControlReportFileException(cause: Throwable) : Application
     code = SET_DESCRIPTION_TO_CONTROL_REPORT_FILE_ERROR_CODE_PREFIX,
     i18nMessage = I18nMessage("$SET_DESCRIPTION_TO_CONTROL_REPORT_FILE_ERROR_KEY_PREFIX.failed"),
     cause = cause
+)
+
+class SensitiveFileException: ApplicationAccessDeniedException(
+    code = "$SET_DESCRIPTION_TO_CONTROL_REPORT_FILE_ERROR_CODE_PREFIX-001",
+    i18nMessage = I18nMessage("$SET_DESCRIPTION_TO_CONTROL_REPORT_FILE_ERROR_KEY_PREFIX.sensitive.failed"),
+
 )

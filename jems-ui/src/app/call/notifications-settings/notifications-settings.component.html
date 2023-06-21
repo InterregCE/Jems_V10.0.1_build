@@ -1,0 +1,29 @@
+<jems-main-page-template
+        titleKey="{{ 'call.detail.notifications.config.title' | translate }}"
+        subTitleKey="call.detail.notifications.config.subtitle">
+
+    <nav mat-tab-nav-bar>
+        <a [active]="activeTab('project')" mat-tab-link
+           (click)="routeTo('project')">
+            <span jemsText maxWidth="230">
+                {{'call.detail.notifications.config.tab.project' | translate}}
+            </span>
+        </a>
+
+        <a [active]="activeTab('partnerReport')" mat-tab-link
+           (click)="routeTo('partnerReport')">
+            <span jemsText maxWidth="230">
+                {{'call.detail.notifications.config.tab.partner.report' | translate}}
+            </span>
+        </a>
+
+        <a [active]="activeTab('projectReport')" mat-tab-link
+           (click)="routeTo('projectReport')">
+            <span jemsText maxWidth="230">
+                {{'call.detail.notifications.config.tab.project.report' | translate}}
+            </span>
+        </a>
+
+    </nav>
+    <router-outlet></router-outlet>
+</jems-main-page-template>

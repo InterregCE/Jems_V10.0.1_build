@@ -1,0 +1,169 @@
+<jems-form *ngIf="reportIdentification$ | async as reportIdentification"
+           (discard)="resetForm(reportIdentification)"
+           (save)="saveIdentificationExtension()">
+    <form [formGroup]="form" jemsFormLayout>
+        <h3>{{'project.application.project.report.highlights.of.main.achievements.title' | translate}}</h3>
+        <p>{{'project.application.project.report.highlights.of.main.achievements.explanation' | translate}}</p>
+
+        <jems-multi-language-container *ngIf="!languageStore.isInputLanguageExist(this.LANGUAGE.EN)"
+                                       [staticLanguages]="[LANGUAGE.EN]">
+            <jems-multi-language-form-field
+                    formControlName="highlightsEn"
+                    label="project.application.form.field.project.summary.in.english"
+                    [maxLength]="5000"
+                    type="textarea">
+            </jems-multi-language-form-field>
+        </jems-multi-language-container>
+
+        <jems-multi-language-container>
+            <jems-multi-language-form-field
+                    [maxLength]="5000"
+                    formControlName="highlights"
+                    type="textarea">
+            </jems-multi-language-form-field>
+        </jems-multi-language-container>
+
+        <h3 [innerText]="'project.application.project.report.overview.project.output.results' | translate"></h3>
+        <jems-project-report-identification-extension-result-output jemsNoWidthLimit></jems-project-report-identification-extension-result-output>
+
+        <h3>{{'project.application.project.report.partner.problems.and.deviations.title' | translate}}</h3>
+        <p>{{'project.application.project.report.partner.problems.explanation' | translate}}</p>
+
+        <jems-multi-language-container>
+            <jems-multi-language-form-field
+                    [maxLength]="5000"
+                    formControlName="partnerProblems"
+                    type="textarea">
+            </jems-multi-language-form-field>
+        </jems-multi-language-container>
+
+        <p>{{'project.application.project.report.deviations.explanation' | translate}}</p>
+        <jems-multi-language-container>
+            <jems-multi-language-form-field
+                    [maxLength]="5000"
+                    formControlName="deviations"
+                    type="textarea">
+            </jems-multi-language-form-field>
+        </jems-multi-language-container>
+
+        <ng-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS">
+            <div jemsNoWidthLimit *ngIf="reportType !== TYPE_ENUM.Content && tableData.length > 0">
+                <div jemsFormLayout>
+                    <h3>{{'project.application.project.report.partner.spending.profile.title' | translate }}</h3>
+                    <p>{{'project.application.project.report.partner.spending.profile.explanation' | translate}}</p>
+                </div>
+
+                <mat-table formArrayName="spendingProfiles" [dataSource]="tableData" [jemsTableConfig]="[{maxInRem: 2},{}, {}, {}, {}, {}]"
+                           class="table-padding mt-3">
+                    <ng-container matColumnDef="partnerNumber">
+                        <th *matHeaderCellDef mat-header-cell scope="col" class="text-left">
+                            {{ 'project.application.form.partner.table.number' | translate }}
+                        </th>
+                        <td *matCellDef="let control; let i = index" [formGroupName]="i" mat-cell class="text-left">
+                            {{ 'common.label.project.partner.role.shortcut.' + control.get('partnerRole').value | adaptTranslationKeyByCallType | async | translate : {partner: control.get('partnerNumber').value} }}
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="periodBudget">
+                        <th *matHeaderCellDef mat-header-cell scope="col" class="text-right">
+                            {{ 'project.report.partner.spending.periodBudget' | translate }}
+                        </th>
+                        <td *matCellDef="let control; let i = index" [formGroupName]="i" mat-cell class="text-right">
+                            {{ control.get('periodBudget')?.value | asMoney }}
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="currentReport">
+                        <th *matHeaderCellDef mat-header-cell scope="col" class="text-right">
+                            {{ 'project.report.partner.spending.currentReport' | translate }}
+                        </th>
+                        <td *matCellDef="let control; let i = index" [formGroupName]="i" mat-cell class="text-right">
+                            {{ control.get('currentReport').value | asMoney }}
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="periodBudgetCumulative">
+                        <th *matHeaderCellDef mat-header-cell scope="col" class="text-right">
+                            {{ 'project.report.partner.spending.periodBudgetCumulative' | translate }}
+                        </th>
+                        <td *matCellDef="let control; let i = index" [formGroupName]="i" mat-cell class="text-right">
+                            {{ control.get('periodBudgetCumulative')?.value | asMoney }}
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="totalReportedSoFar">
+                        <th *matHeaderCellDef mat-header-cell scope="col" class="text-right">
+                            {{ 'project.report.partner.spending.totalReportedSoFar' | translate }}
+                            <jems-context-info infoPosition="right"
+                                               infoText="{{ 'project.report.partner.spending.totalReportedSoFar.context.info' | translate }}">
+                            </jems-context-info>
+                        </th>
+                        <td *matCellDef="let control; let i = index" [formGroupName]="i" mat-cell class="text-right">
+                            {{ (control.get('previouslyReported').value + control.get('currentReport').value) | asMoney }}
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="differenceFromPlan">
+                        <th *matHeaderCellDef mat-header-cell scope="col" class="text-right respect-line-break">
+                            {{ 'project.report.partner.spending.differenceFromPlan' | translate }}
+                        </th>
+                        <td *matCellDef="let control; let i = index" [formGroupName]="i" mat-cell class="text-right">
+                            {{ control.get('differenceFromPlan').value | asMoney }}
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="differenceFromPlanPercentage">
+                        <th *matHeaderCellDef mat-header-cell scope="col" class="text-right respect-line-break">
+                            {{ 'project.report.partner.spending.differenceFromPlanPercentage' | translate }}
+                        </th>
+                        <td *matCellDef="let control; let i = index" [formGroupName]="i" mat-cell class="text-right">
+                            {{ control.get('differenceFromPlanPercentage').value | asMoney }}%
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="nextReportForecast">
+                        <th *matHeaderCellDef mat-header-cell scope="col" class="text-right">
+                            {{ 'project.report.partner.spending.nextReportForecast' | translate }}
+                        </th>
+                        <td *matCellDef="let control; let i = index" [formGroupName]="i" mat-cell class="text-right">
+                            {{ control.get('nextReportForecast')?.value | asMoney }}
+                        </td>
+                    </ng-container>
+
+                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+                </mat-table>
+            </div>
+        </ng-container>
+
+        <ng-container *ngIf="reportIdentification.targetGroups?.length > 0">
+            <h3>{{'project.application.project.report.target.groups.title' | translate}}</h3>
+            <p>{{'project.application.project.report.target.groups.explanation' | translate}}</p>
+
+            <jems-multi-language-container>
+                <div formArrayName="targetGroups" [jemsTableConfig]="[{maxInRem: 20},{}]">
+                    <div>
+                        <span class="mat-body-strong">{{ 'project.application.form.relevance.target.group' | translate }}</span>
+                        <span class="mat-body-strong">{{ 'project.application.partner.report.target.group.description' | translate }}</span>
+                    </div>
+                    <div *ngFor="let targetGroup of reportIdentification.targetGroups;let i=index">
+                        <ng-container>
+                            <ng-container [formGroupName]="i">
+                                <span>{{'project.application.form.relevance.target.group.' + targetGroup.type | translate}}</span>
+                                <div>
+                                    <jems-multi-language-form-field
+                                            label="common.textarea.enter.text"
+                                            type="textarea"
+                                            formControlName="description"
+                                            maxLength="2000"
+                                            minRows="1">
+                                    </jems-multi-language-form-field>
+                                </div>
+                            </ng-container>
+                        </ng-container>
+                    </div>
+                </div>
+            </jems-multi-language-container>
+        </ng-container>
+    </form>
+</jems-form>

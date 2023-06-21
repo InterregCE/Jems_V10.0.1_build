@@ -1,22 +1,23 @@
 import {Injectable} from '@angular/core';
 import {
   CurrencyDTO,
+  JemsFileMetadataDTO,
   ProjectPartnerReportProcurementAttachmentService,
   ProjectPartnerReportProcurementBeneficialChangeDTO,
   ProjectPartnerReportProcurementBeneficialDTO,
   ProjectPartnerReportProcurementBeneficialOwnerService,
   ProjectPartnerReportProcurementChangeDTO,
   ProjectPartnerReportProcurementDTO,
+  ProjectPartnerReportProcurementGDPRAttachmentService,
   ProjectPartnerReportProcurementService,
   ProjectPartnerReportProcurementSubcontractChangeDTO,
   ProjectPartnerReportProcurementSubcontractDTO,
   ProjectPartnerReportProcurementSubcontractorService,
   ProjectPartnerReportService,
-  ProjectReportFileMetadataDTO,
   ProjectReportProcurementFileDTO,
 } from '@cat/api';
 import {BehaviorSubject, combineLatest, merge, Observable, of, Subject} from 'rxjs';
-import {catchError, map, startWith, switchMap, take, tap} from 'rxjs/operators';
+import {catchError, filter, map, startWith, switchMap, take, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {Log} from '@common/utils/log';
 import {
@@ -28,11 +29,8 @@ import {
 } from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 import {CurrencyStore} from '@common/services/currency.store';
 import {v4 as uuid} from 'uuid';
-import {FileListItem} from '@common/components/file-list/file-list-item';
-import {
-  ReportFileManagementStore
-} from '@project/project-application/report/partner-report-detail-page/partner-report-annexes-tab/report-file-management-store';
 import {APIError} from '@common/models/APIError';
+import {DownloadService} from '@common/services/download.service';
 
 @Injectable({providedIn: 'root'})
 export class PartnerReportProcurementStore {
@@ -42,6 +40,7 @@ export class PartnerReportProcurementStore {
   beneficials$: Observable<ProjectPartnerReportProcurementBeneficialDTO[]>;
   subcontracts$: Observable<ProjectPartnerReportProcurementSubcontractDTO[]>;
   attachments$: Observable<ProjectReportProcurementFileDTO[]>;
+  gdprAttachments$: Observable<ProjectReportProcurementFileDTO[]>;
 
   partnerId$: Observable<string | number | null>;
   reportId$: Observable<string | number | null>;
@@ -52,6 +51,7 @@ export class PartnerReportProcurementStore {
   savedSubcontracts$ = new Subject<ProjectPartnerReportProcurementSubcontractDTO[]>();
   filesChanged$ = new Subject<void>();
   error$ = new Subject<APIError | null>();
+  gdprError$ = new Subject<APIError | null>();
 
   constructor(
     private routingService: RoutingService,
@@ -62,7 +62,8 @@ export class PartnerReportProcurementStore {
     private projectPartnerProcurementBeneficialService: ProjectPartnerReportProcurementBeneficialOwnerService,
     private projectPartnerProcurementSubcontractorService: ProjectPartnerReportProcurementSubcontractorService,
     private projectPartnerProcurementAttachmentService: ProjectPartnerReportProcurementAttachmentService,
-    private fileManagementStore: ReportFileManagementStore,
+    private projectPartnerProcurementGdprAttachmentService: ProjectPartnerReportProcurementGDPRAttachmentService,
+    private downloadService: DownloadService,
   ) {
     this.partnerId$ = this.partnerId();
     this.reportId$ = this.reportId();
@@ -70,6 +71,7 @@ export class PartnerReportProcurementStore {
     this.beneficials$ = this.getBeneficials();
     this.subcontracts$ = this.getSubcontracts();
     this.attachments$ = this.getAttachments();
+    this.gdprAttachments$ = this.getGdprAttachments();
     this.currencies$ = this.currencyStore.currencies$;
   }
 
@@ -230,7 +232,27 @@ export class PartnerReportProcurementStore {
     );
   }
 
-  uploadProcurementFile(file: File): Observable<ProjectReportFileMetadataDTO> {
+  public getGdprAttachments(): Observable<ProjectReportProcurementFileDTO[]> {
+    return combineLatest([
+      this.partnerId$.pipe(map(id => Number(id))),
+      this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')
+        .pipe(map(id => Number(id))),
+      this.procurementId$,
+      this.filesChanged$.pipe(startWith(null)),
+    ]).pipe(
+      switchMap(([partnerId, reportId, procurementId]) => {
+          if (procurementId) {
+            return this.projectPartnerProcurementGdprAttachmentService.getAttachments(partnerId, procurementId, reportId);
+          } else {
+            return of([]);
+          }
+        }
+      ),
+      tap(data => Log.info('Fetched project procurement GDPR attachments by id', this, data))
+    );
+  }
+
+  uploadProcurementFile(file: File): Observable<JemsFileMetadataDTO> {
     const serviceId = uuid();
     this.routingService.confirmLeaveMap.set(serviceId, true);
     return combineLatest([
@@ -248,14 +270,48 @@ export class PartnerReportProcurementStore {
       tap(() => this.routingService.confirmLeaveMap.delete(serviceId)),
       catchError(error => {
         this.error$.next(error.error);
-        return of({} as ProjectReportFileMetadataDTO);
+        return of({} as JemsFileMetadataDTO);
       }),
     );
   }
 
-  deleteProcurementFile(file: FileListItem): Observable<void> {
-    return this.fileManagementStore.deleteFile(file.id)
-      .pipe(tap(() => this.filesChanged$.next()));
+  uploadProcurementGdprFile(file: File): Observable<JemsFileMetadataDTO> {
+    const serviceId = uuid();
+    this.routingService.confirmLeaveMap.set(serviceId, true);
+    return combineLatest([
+      this.partnerId$.pipe(map(id => Number(id))),
+      this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')
+        .pipe(map(id => Number(id))),
+      this.procurementId$,
+    ]).pipe(
+      take(1),
+      switchMap(([partnerId, reportId, procurementId]) =>
+        this.projectPartnerProcurementGdprAttachmentService.uploadAttachmentForm(file, Number(partnerId), procurementId, reportId)
+      ),
+      tap(() => this.filesChanged$.next()),
+      tap(() => this.gdprError$.next(null)),
+      tap(() => this.routingService.confirmLeaveMap.delete(serviceId)),
+      catchError(error => {
+        this.gdprError$.next(error.error);
+        return of({} as JemsFileMetadataDTO);
+      }),
+    );
+  }
+
+  downloadGdprFile(fileId: number): Observable<any> {
+    return this.partnerId$
+      .pipe(
+        take(1),
+        filter(partnerId => !!partnerId),
+        tap(() => this.gdprError$.next(null)),
+        switchMap((partnerId) => {
+          return this.downloadService.download(`/api/project/report/partner/procurement/gdprAttachment/byPartnerId/${partnerId}/byFileId/${fileId}/download`, 'partner-report');
+        }),
+        catchError(error => {
+          this.gdprError$.next(error.error);
+          return of({} as JemsFileMetadataDTO);
+        })
+      );
   }
 
 }

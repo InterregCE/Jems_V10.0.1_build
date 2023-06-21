@@ -4,12 +4,15 @@ import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
+import io.cloudflight.jems.server.project.service.contracting.ContractingModificationDeniedException
+import io.cloudflight.jems.server.project.service.contracting.ContractingValidator
 import io.cloudflight.jems.server.project.service.contracting.partner.documentsLocation.ContractingPartnerDocumentsLocation
 import io.cloudflight.jems.server.project.service.contracting.partner.documentsLocation.ContractingPartnerDocumentsLocationPersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -75,6 +78,9 @@ internal class UpdateContractingPartnerDocumentsLocationTest : UnitTest() {
     @MockK
     lateinit var generalValidator: GeneralValidatorService
 
+    @RelaxedMockK
+    lateinit var validator: ContractingValidator
+
     @BeforeEach
     fun setup() {
         clearMocks(documentsLocationPersistence)
@@ -92,6 +98,7 @@ internal class UpdateContractingPartnerDocumentsLocationTest : UnitTest() {
             documentsLocationPersistence
                 .updateDocumentsLocation(projectId, partnerId, documentsLocation)
         } returns documentsLocation
+        every { validator.validatePartnerLock(partnerId) } returns Unit
 
         Assertions.assertThat(interactor.updateDocumentsLocation(projectId, partnerId, documentsLocation))
             .isEqualTo(documentsLocation)
@@ -101,15 +108,27 @@ internal class UpdateContractingPartnerDocumentsLocationTest : UnitTest() {
     fun `update - test input validations`() {
         every { generalValidator.throwIfAnyIsInvalid(any()) } throws
                 AppInputValidationException(emptyMap())
-        every { generalValidator.matches(any<String>(), any(), any(), any()) } answers {
+        every { generalValidator.matches(any(), any(), any(), any()) } answers {
             mapOf(thirdArg<String>() to I18nMessage(i18nKey = "${firstArg<String>()}---maxLength-${secondArg<String>()}"))
         }
+        every { validator.validatePartnerLock(partnerId) } returns Unit
+
         assertThrows<AppInputValidationException> {
             interactor.updateDocumentsLocation(
                 projectId,
                 partnerId,
                 invalidDocumentsLocation
             )
+        }
+    }
+
+    @Test
+    fun `update - section locked`() {
+        val exception = ContractingModificationDeniedException()
+        every { validator.validatePartnerLock(partnerId) } throws exception
+
+        assertThrows<ContractingModificationDeniedException> {
+            interactor.updateDocumentsLocation(projectId, partnerId, documentsLocation)
         }
     }
 }

@@ -30,21 +30,21 @@
         </mat-form-field>
 
         <div>
-            {{'user.terms.login.firstText' | translate}} <span class="terms-link"><a
-                [href]="termsAndPrivacyPolicyUrl$ | async"> {{'user.terms.linkText' | translate}} </a></span>
+            {{'user.terms.login.firstText' | translate}} <span>
+            <a target="_blank" [href]="termsAndPrivacyPolicyUrl$ | async"> {{'user.terms.linkText' | translate}} </a></span>
         </div>
 
         <button jemsText mat-raised-button
-                class="button-full-width"
+                class="button-full-width mt-3"
                 color="primary"
                 type="submit"
                 name="login"
                 [disabled]="!loginForm.valid || submitted">
             {{'user.login.button' | translate}}
         </button>
-        <div class="space-between">
-            <a [routerLink]="registerLink"><strong>{{'user.login.button.create' | translate}}</strong></a>
-            <a [routerLink]="forgotPasswordLink"><strong>{{'user.login.button.forgot' | translate}}</strong></a>
+        <div class="space-between support-links">
+            <a [routerLink]="registerLink">{{'user.login.button.create' | translate}}</a>
+            <a [routerLink]="forgotPasswordLink">{{'user.login.button.forgot' | translate}}</a>
         </div>
         <div role="alert">
             <jems-alert *ngIf="error$ | async as error"
@@ -57,18 +57,21 @@
     <div class="accessibility-statement">
         <span>
             {{'user.login.accessibility.statement.part.1' | translate}}
-            <a [href]="accessibilityStatementUrl$ | async">{{'user.login.accessibility.statement.part.2' | translate}}</a>
+            <a target="_blank" [href]="accessibilityStatementUrl$ | async">{{'user.login.accessibility.statement.part.2' | translate}}</a>
         </span>
     </div>
+
     <p class="interact-info">
         <span>{{'user.login.interact.project' | translate}}</span>
-        <a href="https://www.interact-eu.net"><img class="logo" src="assets/logos/InteractLogo_96.png" alt="Logo Interact EU"></a>
+        <a target="_blank" href="https://www.interact.eu">
+            <img class="logo" src="assets/logos/InteractLogo_96.png" alt="Logo Interact EU">
+        </a>
     </p>
     <div class="developer-info">
                     <span>{{'user.login.interact.developer' | translate}}&nbsp;
-                        <a href="https://www.cloudflight.io"><img class="logo-inline"
-                                                                  src="assets/logos/CloudflightLogoWhite_128.png"
-                                                                  alt="Logo Cloudflight"></a>
+                        <a target="_blank" href="https://www.cloudflight.io">
+                            <img class="logo-inline" src="assets/logos/CloudflightLogoWhite_128.png" alt="Logo Cloudflight">
+                        </a>
                     </span>
     </div>
 </jems-public-page-template>

@@ -1,11 +1,11 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {
-  PageProjectReportFileDTO,
+  PageJemsFileDTO,
   ProjectPartnerReportDTO,
   ProjectPartnerReportService,
   ProjectPartnerReportSummaryDTO,
-  ProjectReportFileMetadataDTO,
+  JemsFileMetadataDTO,
   ProjectReportFileSearchRequestDTO,
   SettingsService
 } from '@cat/api';
@@ -25,7 +25,6 @@ import {MatSort} from '@angular/material/sort';
 import {Tables} from '@common/utils/tables';
 import {CategoryInfo, CategoryNode} from '@project/common/components/category-tree/categoryModels';
 import {APIError} from '@common/models/APIError';
-import {I18nMessage} from '@common/models/I18nMessage';
 import {DownloadService} from '@common/services/download.service';
 import {
   PartnerReportDetailPageStore
@@ -37,16 +36,16 @@ import {FileManagementStore} from '@project/common/components/file-management/fi
 import {RoutingService} from '@common/services/routing.service';
 import {v4 as uuid} from 'uuid';
 import {FileListTableConstants} from '@common/components/file-list/file-list-table/file-list-table-constants';
+import {ReportUtil} from '@project/common/report-util';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ReportFileManagementStore {
 
-  reportFileList$: Observable<PageProjectReportFileDTO>;
+  reportFileList$: Observable<PageJemsFileDTO>;
   fileCategories$: Observable<CategoryNode>;
   selectedCategory$ = new ReplaySubject<CategoryInfo | undefined>(1);
-  selectedCategoryPath$: Observable<I18nMessage[]>;
 
   reportStatus$: Observable<ProjectPartnerReportSummaryDTO.StatusEnum>;
 
@@ -56,8 +55,8 @@ export class ReportFileManagementStore {
   deleteSuccess$ = new Subject<boolean>();
   error$ = new Subject<APIError | null>();
 
-  newPageSize$ = new Subject<number>();
-  newPageIndex$ = new Subject<number>();
+  newPageSize$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_SIZE);
+  newPageIndex$ = new BehaviorSubject<number>(0);
   newSort$ = new BehaviorSubject<Partial<MatSort>>(FileListTableConstants.DEFAULT_SORT);
   reportFilesChanged$ = new Subject<void>();
 
@@ -71,16 +70,20 @@ export class ReportFileManagementStore {
   ) {
     this.reportStatus$ = this.partnerReportDetailPageStore.reportStatus$;
     this.canUpload$ = this.canUpload();
-    this.selectedCategoryPath$ = this.selectedCategoryPath();
     this.reportFileList$ = this.reportFileList();
   }
 
-  setSection(section: CategoryInfo): void {
+  setSectionInit(section: CategoryInfo): void {
     this.selectedCategory$.next(section);
     this.fileCategories$ = this.fileCategories(section);
   }
 
-  uploadFile(file: File): Observable<ProjectReportFileMetadataDTO> {
+  changeFilter(section: CategoryInfo): void {
+    this.selectedCategory$.next(section);
+    this.newPageIndex$.next(0);
+  }
+
+  uploadFile(file: File): Observable<JemsFileMetadataDTO> {
     const serviceId = uuid();
     this.routingService.confirmLeaveMap.set(serviceId, true);
     return this.selectedCategory$
@@ -93,7 +96,7 @@ export class ReportFileManagementStore {
         tap(() => this.error$.next(null)),
         catchError(error => {
           this.error$.next(error.error);
-          return of({} as ProjectReportFileMetadataDTO);
+          return of({} as JemsFileMetadataDTO);
         }),
         finalize(() => this.routingService.confirmLeaveMap.delete(serviceId))
       );
@@ -115,7 +118,7 @@ export class ReportFileManagementStore {
         tap(() => setTimeout(() => this.deleteSuccess$.next(false), 3000)),
         catchError(error => {
           this.error$.next(error.error);
-          return of({} as ProjectReportFileMetadataDTO);
+          return of({} as JemsFileMetadataDTO);
         })
       );
   }
@@ -145,18 +148,18 @@ export class ReportFileManagementStore {
       this.reportStatus$,
     ]).pipe(
       map(([selectedCategory, reportStatus]) => {
-        return selectedCategory?.type === ReportFileCategoryTypeEnum.REPORT && reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Draft;
+        return selectedCategory?.type === ReportFileCategoryTypeEnum.REPORT && ReportUtil.isPartnerReportSubmittable(reportStatus);
       })
     );
   }
 
-  private reportFileList(): Observable<PageProjectReportFileDTO> {
+  private reportFileList(): Observable<PageJemsFileDTO> {
     return combineLatest([
       this.selectedCategory$,
       this.partnerReportDetailPageStore.partnerId$,
       this.partnerReportDetailPageStore.partnerReportId$,
-      this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
-      this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
+      this.newPageIndex$,
+      this.newPageSize$,
       this.newSort$.pipe(
         map(sort => sort?.direction ? sort : FileListTableConstants.DEFAULT_SORT),
         map(sort => `${sort.active},${sort.direction}`),
@@ -179,9 +182,14 @@ export class ReportFileManagementStore {
             sort
           )
         ),
+        tap(page => {
+          if (page.totalPages > 0 && page.number >= page.totalPages) {
+            this.newPageIndex$.next(page.totalPages - 1);
+          }
+        }),
         catchError(error => {
           this.error$.next(error.error);
-          return of({} as PageProjectReportFileDTO);
+          return of({} as PageJemsFileDTO);
         })
       );
   }
@@ -228,15 +236,6 @@ export class ReportFileManagementStore {
     );
 
     return this.fileManagementStore.findRootForSection(reportFiles, section) || {};
-  }
-
-  private selectedCategoryPath(): Observable<I18nMessage[]> {
-    return combineLatest([this.selectedCategory$, this.fileCategories$])
-      .pipe(
-        map(([selectedCategory, fileCategories]) =>
-          ([{i18nKey: 'file.tree.type.all'}, ...this.fileManagementStore.getPath(selectedCategory as any, fileCategories)])
-        )
-      );
   }
 
   getMaximumAllowedFileSize(): Observable<number> {

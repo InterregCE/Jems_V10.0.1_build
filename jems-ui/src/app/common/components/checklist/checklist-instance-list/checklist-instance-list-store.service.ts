@@ -3,7 +3,7 @@ import {
   ChecklistInstanceDTO,
   ChecklistInstanceSelectionDTO,
   ChecklistInstanceService,
-  IdNamePairDTO,
+  IdNamePairDTO, PluginInfoDTO, PluginService,
   ProgrammeChecklistDetailDTO,
   ProgrammeChecklistService,
   UserRoleDTO
@@ -14,6 +14,8 @@ import {Log} from '@common/utils/log';
 import {PermissionService} from '../../../../security/permissions/permission.service';
 import {SecurityService} from '../../../../security/security.service';
 import {MatSort} from '@angular/material/sort';
+import {ExportCategoryTypeEnum} from '@project/project-application/export/export-category-type';
+import {PluginType} from '@project/project-application/export/export-plugin-type';
 
 @Injectable()
 export class ChecklistInstanceListStore {
@@ -22,8 +24,9 @@ export class ChecklistInstanceListStore {
 
   currentUserEmail$: Observable<string>;
   userCanChangeSelection$: Observable<boolean>;
+  userCanConsolidate$: Observable<boolean>;
+  availablePlugins$: Observable<PluginInfoDTO[]>;
 
-  private userCanConsolidate$: Observable<boolean>;
   private listChanged$ = new Subject();
 
   private instancesSort$ = new BehaviorSubject<Partial<MatSort>>(this.defaultSort);
@@ -38,10 +41,16 @@ export class ChecklistInstanceListStore {
   constructor(private checklistInstanceService: ChecklistInstanceService,
               private programmeChecklistService: ProgrammeChecklistService,
               private permissionService: PermissionService,
-              private securityService: SecurityService) {
+              private securityService: SecurityService,
+              private pluginService: PluginService) {
     this.userCanConsolidate$ = this.permissionService.hasPermission(UserRoleDTO.PermissionsEnum.ProjectAssessmentChecklistConsolidate);
     this.currentUserEmail$ = this.currentUserEmail();
     this.userCanChangeSelection$ = this.permissionService.hasPermission(UserRoleDTO.PermissionsEnum.ProjectAssessmentChecklistSelectedUpdate);
+    this.availablePlugins$ = this.availablePlugins();
+  }
+
+  private availablePlugins(): Observable<PluginInfoDTO[]> {
+    return this.pluginService.getAvailablePluginList(PluginInfoDTO.TypeEnum.CHECKLISTEXPORT);
   }
 
   setInstancesSort(sort: Partial<MatSort>) {
@@ -78,8 +87,8 @@ export class ChecklistInstanceListStore {
       );
   }
 
-  deleteChecklistInstance(id: number): Observable<void> {
-    return this.checklistInstanceService.deleteChecklistInstance(id)
+  deleteChecklistInstance(id: number, projectId: number): Observable<void> {
+    return this.checklistInstanceService.deleteChecklistInstance(id, projectId)
       .pipe(
         take(1),
         tap(() => this.listChanged$.next()),
@@ -102,6 +111,14 @@ export class ChecklistInstanceListStore {
       .pipe(
         take(1),
         tap(() => Log.info('Updated the checklist instance selection', this, instances))
+      );
+  }
+
+  setDescription(id: number, description: string): Observable<ChecklistInstanceDTO>{
+    return this.checklistInstanceService.updateChecklistDescription(id, description)
+      .pipe(
+        take(1),
+        tap(() => Log.info('Updated the checklist description'))
       );
   }
 

@@ -129,6 +129,7 @@ class ProjectControllerTest {
         private val projectSummary = ProjectSummary(
             id = 8L,
             customIdentifier = "01",
+            callId = 2L,
             callName = "call name",
             acronym = "ACR",
             status = ApplicationStatus.SUBMITTED,
@@ -141,6 +142,7 @@ class ProjectControllerTest {
         private val contractedProjectSummary = ProjectSummary(
             id = 8L,
             customIdentifier = "01",
+            callId = 2L,
             callName = "call name",
             acronym = "ACR",
             status = ApplicationStatus.CONTRACTED,
@@ -431,7 +433,7 @@ class ProjectControllerTest {
     fun `get Project by Id`() {
         val pId = 1L
         val user =
-            UserSummary(3L, "email", "name", "surname", UserRoleSummary(4L, "role"), userStatus = UserStatus.ACTIVE)
+            UserSummary(3L, "email", sendNotificationsToEmail = false, "name", "surname", UserRoleSummary(4L, "role"), userStatus = UserStatus.ACTIVE)
         val projectStatus = ProjectStatus(5L, ApplicationStatus.APPROVED, user, updated = startDate)
         val project = ProjectDetail(
             id = pId,

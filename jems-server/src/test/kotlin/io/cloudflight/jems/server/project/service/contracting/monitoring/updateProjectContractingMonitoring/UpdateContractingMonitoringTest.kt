@@ -1,15 +1,24 @@
 package io.cloudflight.jems.server.project.service.contracting.monitoring.updateProjectContractingMonitoring
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
+import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerToCreate
 import io.cloudflight.jems.server.payments.service.regular.PaymentRegularPersistence
 import io.cloudflight.jems.server.payments.model.regular.PaymentPerPartner
+import io.cloudflight.jems.server.payments.model.regular.PaymentToCreate
+import io.cloudflight.jems.server.payments.model.regular.contributionMeta.ContributionMeta
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.budget.get_project_budget.GetProjectBudget
+import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
 import io.cloudflight.jems.server.project.service.contracting.ContractingModificationDeniedException
 import io.cloudflight.jems.server.project.service.contracting.ContractingValidator
 import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringExtendedOption
@@ -19,16 +28,17 @@ import io.cloudflight.jems.server.project.service.contracting.model.ProjectContr
 import io.cloudflight.jems.server.project.service.contracting.monitoring.ContractingMonitoringPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
+import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
 import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
-import io.mockk.clearMocks
-import io.mockk.every
+import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
+import io.mockk.*
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
-import io.mockk.mockk
-import io.mockk.slot
-import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -46,6 +56,8 @@ class UpdateContractingMonitoringTest : UnitTest() {
         private const val lumpSumId = 2L
         private const val orderNr = 1
 
+        private val TIME = ZonedDateTime.now()
+
         private val project = ProjectFull(
             id = projectId,
             customIdentifier = "identifier",
@@ -58,6 +70,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
         private val projectSummary = ProjectSummary(
             id = projectId,
             customIdentifier = "TSTCM",
+            callId = 1L,
             callName = "Test contracting monitoring",
             acronym = "TCM",
             status = ApplicationStatus.APPROVED,
@@ -71,11 +84,16 @@ class UpdateContractingMonitoringTest : UnitTest() {
                 orderNr = orderNr,
                 programmeLumpSumId = lumpSumId,
                 period = 1,
-                lumpSumContributions = listOf(),
+                lumpSumContributions = listOf(
+                    ProjectPartnerLumpSum(
+                        partnerId = 52L,
+                        amount = BigDecimal.valueOf(10041L, 2),
+                    )
+                ),
                 fastTrack = true,
                 readyForPayment = true,
                 comment = null,
-                paymentEnabledDate = ZonedDateTime.now(),
+                paymentEnabledDate = TIME,
                 lastApprovedVersionBeforeReadyForPayment = "v1.0"
             )
         )
@@ -89,7 +107,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
                 fastTrack = true,
                 readyForPayment = true,
                 comment = "Test",
-                paymentEnabledDate = ZonedDateTime.now(),
+                paymentEnabledDate = TIME,
                 lastApprovedVersionBeforeReadyForPayment = "v1.0"
             )
         )
@@ -124,6 +142,30 @@ class UpdateContractingMonitoringTest : UnitTest() {
             programmeFundId = 1,
             amountApprovedPerPartner = BigDecimal.ONE
         )
+
+        private fun partnerBudget(partnerId: Long, total: BigDecimal): PartnerBudget {
+            val mock = mockk<PartnerBudget>()
+            every { mock.partner.id } returns partnerId
+            every { mock.totalCosts } returns total
+            return mock
+        }
+
+        val fund = mockk<ProgrammeFund>().also {
+            every { it.id } returns 4452L
+        }
+
+        private val partner_52_coFin = ProjectPartnerCoFinancingAndContribution(
+            finances = listOf(
+                ProjectPartnerCoFinancing(ProjectPartnerCoFinancingFundTypeDTO.MainFund, fund, BigDecimal.valueOf(15)),
+                ProjectPartnerCoFinancing(ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution, null, BigDecimal.valueOf(85)),
+            ),
+            partnerContributions = listOf(
+                ProjectPartnerContribution(null, null, ProjectPartnerContributionStatusDTO.Public, BigDecimal.valueOf(3750L, 2), true),
+                ProjectPartnerContribution(null, null, ProjectPartnerContributionStatusDTO.AutomaticPublic, BigDecimal.valueOf(4250L, 2), false),
+                ProjectPartnerContribution(null, null, ProjectPartnerContributionStatusDTO.Private, BigDecimal.valueOf(4750L, 2), false),
+            ),
+            partnerAbbreviation = "",
+        )
     }
 
     @MockK
@@ -137,6 +179,12 @@ class UpdateContractingMonitoringTest : UnitTest() {
 
     @MockK
     lateinit var projectLumpSumPersistence: ProjectLumpSumPersistence
+
+    @MockK
+    lateinit var partnerCoFinancingPersistence: ProjectPartnerCoFinancingPersistence
+
+    @MockK
+    lateinit var getProjectBudget: GetProjectBudget
 
     @RelaxedMockK
     lateinit var validator: ContractingValidator
@@ -152,13 +200,12 @@ class UpdateContractingMonitoringTest : UnitTest() {
 
     @BeforeEach
     fun setup() {
-        clearMocks(auditPublisher, validator)
+        clearMocks(auditPublisher, validator, getProjectBudget, partnerCoFinancingPersistence)
     }
 
     @Test
     fun `add project management to approved application`() {
         every { projectPersistence.getProjectSummary(projectId) } returns projectSummary
-        every { validator.validateProjectStatusForModification(projectSummary) } returns Unit
         every { contractingMonitoringPersistence.getContractingMonitoring(projectId) } returns monitoring.copy(
             fastTrackLumpSums = lumpSums
         )
@@ -166,6 +213,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
         every { contractingMonitoringPersistence.updateContractingMonitoring(monitoring) } returns monitoring
         every { projectLumpSumPersistence.getLumpSums(projectId, version)} returns lumpSums
         every { projectLumpSumPersistence.updateLumpSums(projectId, lumpSumsUpdated)} returns lumpSumsUpdated
+        every { getProjectBudget.getBudget(projectId, version) } returns emptyList()
 
         assertThat(updateContractingMonitoring.updateContractingMonitoring(projectId, monitoring)).isEqualTo(monitoring)
         verify(exactly = 0) { auditPublisher.publishEvent(any()) }
@@ -176,7 +224,6 @@ class UpdateContractingMonitoringTest : UnitTest() {
         every {
             projectPersistence.getProjectSummary(projectId)
         } returns projectSummary.copy(status = ApplicationStatus.CONTRACTED)
-        every { validator.validateProjectStatusForModification(projectSummary) } returns Unit
         val monitoringOther = monitoring.copy(
             fastTrackLumpSums = lumpSumsUpdated
         )
@@ -185,6 +232,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
         every { contractingMonitoringPersistence.updateContractingMonitoring(monitoringOther) } returns monitoringOther
         every { projectLumpSumPersistence.getLumpSums(projectId, version) } returns lumpSumsUpdated
         every { projectLumpSumPersistence.updateLumpSums(projectId, lumpSumsUpdated)} returns lumpSumsUpdated
+        every { getProjectBudget.getBudget(projectId, version) } returns emptyList()
 
         assertThat(updateContractingMonitoring.updateContractingMonitoring(projectId, monitoringOther))
             .isEqualTo(monitoringOther)
@@ -194,11 +242,13 @@ class UpdateContractingMonitoringTest : UnitTest() {
 
     @Test
     fun `add project management to contracted application and fields changed`() {
+        mockkObject(ContractingValidator.Companion)
         every {
             projectPersistence.getProjectSummary(projectId)
         } returns projectSummary.copy(status = ApplicationStatus.CONTRACTED)
-        every { validator.validateProjectStatusForModification(projectSummary) } returns Unit
+        every { ContractingValidator.validateProjectStatusForModification(projectSummary) } returns Unit
         val oldDate = ZonedDateTime.parse("2022-06-02T10:00:00+02:00").toLocalDate()
+        val lumpSumsNotReady = listOf(lumpSums.first().copy(readyForPayment = false))
         every {
             contractingMonitoringPersistence.getContractingMonitoring(projectId)
         } returns monitoring.copy(
@@ -211,20 +261,34 @@ class UpdateContractingMonitoringTest : UnitTest() {
                 ProjectContractingMonitoringAddDate(projectId, 1, oldDate, "comment1"),
                 ProjectContractingMonitoringAddDate(projectId, 2, oldDate, "comment2")
             ),
-            fastTrackLumpSums = lumpSums
+            fastTrackLumpSums = lumpSumsNotReady
         )
         val monitoringNew = monitoring.copy(
-            startDate = ZonedDateTime.parse("2022-07-01T10:00:00+02:00").toLocalDate()
+            startDate = ZonedDateTime.parse("2022-07-01T10:00:00+02:00").toLocalDate(),
+            fastTrackLumpSums = listOf(lumpSumsUpdated.first()
+                .copy(lumpSumContributions = lumpSumsNotReady.first().lumpSumContributions))
         )
+        every { contractingMonitoringPersistence.existsSavedInstallment(projectId, lumpSumId, orderNr) } returns false
         every { contractingMonitoringPersistence.updateContractingMonitoring(monitoringNew) } returns monitoringNew
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
         every { projectPersistence.getProject(projectId, version) } returns project
-        every { projectLumpSumPersistence.getLumpSums(projectId, version)} returns lumpSums
+        every { projectPersistence.updateProjectContractedOnDates(projectId, monitoring.addDates.get(0).entryIntoForceDate) } answers {}
+        every { projectLumpSumPersistence.getLumpSums(projectId, version)} returns lumpSumsNotReady
         every { projectLumpSumPersistence.updateLumpSums(projectId, any())} returns lumpSumsUpdated
         every { paymentPersistence.getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(1, Sets.newSet(1))} returns
             listOf(paymentPerPartner)
+        val payments = slot<Map<PaymentGroupingId, PaymentToCreate>>()
+        every { paymentPersistence.savePaymentToProjects(projectId, capture(payments)) } answers { }
+        every { getProjectBudget.getBudget(projectId, version) } returns listOf(
+            partnerBudget(partnerId = 52L, BigDecimal.valueOf(150L)),
+            partnerBudget(partnerId = 53L, BigDecimal.valueOf(2112L, 2)),
+        )
+        every { partnerCoFinancingPersistence.getCoFinancingAndContributions(52L, version) } returns partner_52_coFin
+        val payContribs = slot<Collection<ContributionMeta>>()
+        every { paymentPersistence.storePartnerContributionsWhenReadyForPayment(capture(payContribs)) } answers { }
 
-        assertThat(updateContractingMonitoring.updateContractingMonitoring(projectId, monitoringNew))
+        val result = updateContractingMonitoring.updateContractingMonitoring(projectId, monitoringNew)
+        assertThat(result)
             .isEqualTo(
                 ProjectContractingMonitoring(
                     projectId = projectId,
@@ -244,16 +308,38 @@ class UpdateContractingMonitoringTest : UnitTest() {
                         entryIntoForceDate = ZonedDateTime.parse("2022-07-22T10:00:00+02:00").toLocalDate(),
                         comment = "comment"
                     )),
-                    fastTrackLumpSums = lumpSumsUpdated,
-                    dimensionCodes = emptyList()
+                    fastTrackLumpSums = listOf(
+                        ProjectLumpSum(
+                            orderNr = orderNr,
+                            programmeLumpSumId = lumpSumId,
+                            period = 1,
+                            lumpSumContributions = listOf(ProjectPartnerLumpSum(
+                                partnerId = 52L,
+                                amount = BigDecimal.valueOf(10041L, 2),
+                            )),
+                            fastTrack = true,
+                            readyForPayment = true,
+                            comment = "Test",
+                            paymentEnabledDate = result.fastTrackLumpSums!!.first().paymentEnabledDate,
+                            lastApprovedVersionBeforeReadyForPayment = "2.0",
+                        ),
+                    ),
+                    dimensionCodes = emptyList(),
                 )
             )
-        val event = slot<AuditCandidateEvent>()
-        verify(exactly = 1) { auditPublisher.publishEvent(capture(event)) }
-        assertThat(event.captured.auditCandidate).isEqualTo(
+        val events = mutableListOf<AuditCandidateEvent>()
+        verify(exactly = 2) { auditPublisher.publishEvent(capture(events)) }
+        assertThat(events.first().auditCandidate).isEqualTo(
+            AuditCandidate(
+                action = AuditAction.FTLS_READY_FOR_PAYMENT_CHANGE,
+                project = AuditProject(id = "1", customIdentifier = "TSTCM", name = "TCM"),
+                description = "Fast track lump sum 1 for project TSTCM set as YES for Ready for payment",
+            )
+        )
+        assertThat(events.last().auditCandidate).isEqualTo(
             AuditCandidate(
                 action = AuditAction.PROJECT_CONTRACT_MONITORING_CHANGED,
-                project = AuditProject(id = projectId.toString()),
+                project = AuditProject(id = "1", customIdentifier = "TSTCM", name = "TCM"),
                 description = "Fields changed:\n" +
                     "startDate changed from 2022-06-02 to 2022-07-01,\n" +
                     "typologyProv94 changed from No to Partly,\n" +
@@ -268,13 +354,35 @@ class UpdateContractingMonitoringTest : UnitTest() {
                     "]"
             )
         )
+        assertThat(payments.captured).containsExactlyEntriesOf(
+            mapOf(PaymentGroupingId(programmeFundId = 1L, orderNr = 1) to
+                    PaymentToCreate(2L, listOf(PaymentPartnerToCreate(1L, BigDecimal.ONE)), BigDecimal.ONE))
+        )
+        assertThat(payContribs.captured).containsExactly(
+            ContributionMeta(
+                projectId = projectId,
+                partnerId = 52L,
+                programmeLumpSumId = 2L,
+                orderNr = 1,
+                partnerContribution = BigDecimal.valueOf(8534L, 2),
+                publicContribution = BigDecimal.valueOf(2510L, 2),
+                automaticPublicContribution = BigDecimal.valueOf(2844L, 2),
+                privateContribution = BigDecimal.valueOf(3179L, 2),
+            )
+        )
+        // there can be rounding differences in "ofWhich" part
+        with(payContribs.captured.first()) {
+            assertThat(partnerContribution.minus(publicContribution).minus(automaticPublicContribution).minus(privateContribution).abs())
+                .isLessThanOrEqualTo(BigDecimal.valueOf(3L, 2))
+        }
     }
 
     @Test
     fun `add project management to NOT approved application`() {
+        mockkObject(ContractingValidator.Companion)
         every { projectPersistence.getProjectSummary(projectId) } returns projectSummary
         every {
-            validator.validateProjectStatusForModification(projectSummary)
+            ContractingValidator.validateProjectStatusForModification(projectSummary)
         } throws ContractingModificationDeniedException()
 
         assertThrows<ContractingModificationDeniedException> {
@@ -285,11 +393,9 @@ class UpdateContractingMonitoringTest : UnitTest() {
     @Test
     fun `add project management with too many additional dates`() {
         every { projectPersistence.getProjectSummary(projectId) } returns projectSummary
-        every { validator.validateProjectStatusForModification(projectSummary) } returns Unit
         every {
             validator.validateMonitoringInput(monitoring)
         } throws ContractingModificationDeniedException()
-
         assertThrows<ContractingModificationDeniedException> {
             updateContractingMonitoring.updateContractingMonitoring(projectId, monitoring)
         }
@@ -300,7 +406,6 @@ class UpdateContractingMonitoringTest : UnitTest() {
         every {
             projectPersistence.getProjectSummary(projectId)
         } returns projectSummary.copy(status = ApplicationStatus.CONTRACTED)
-        every { validator.validateProjectStatusForModification(projectSummary) } returns Unit
         val oldDate = ZonedDateTime.parse("2022-06-02T10:00:00+02:00").toLocalDate()
         every {
             contractingMonitoringPersistence.getContractingMonitoring(projectId)
@@ -318,7 +423,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
                     fastTrack = true,
                     readyForPayment = false,
                     comment = null,
-                    paymentEnabledDate = ZonedDateTime.now(),
+                    paymentEnabledDate = TIME,
                     lastApprovedVersionBeforeReadyForPayment = "v1.0"
                 )
             )
@@ -333,6 +438,9 @@ class UpdateContractingMonitoringTest : UnitTest() {
         every { paymentPersistence.getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(projectId, Sets.newSet(1))} returns
             listOf(paymentPerPartner)
         every { paymentPersistence.deleteAllByProjectIdAndOrderNrIn(projectId, Sets.newSet(1))} returns Unit
+        every { getProjectBudget.getBudget(projectId, version) } returns emptyList()
+        val slotDeleted = slot<Set<Int>>()
+        every { paymentPersistence.deleteContributionsWhenReadyForPaymentReverted(projectId, capture(slotDeleted)) } answers { }
 
         val updatedMonitoring = updateContractingMonitoring.updateContractingMonitoring(projectId, monitoringNew)
 
@@ -340,6 +448,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
             .isEqualTo(
                     monitoringNew.fastTrackLumpSums
             )
+        assertThat(slotDeleted.captured).containsExactly(1)
     }
 
     @Test

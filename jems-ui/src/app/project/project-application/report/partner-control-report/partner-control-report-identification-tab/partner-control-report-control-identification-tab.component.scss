@@ -1,4 +1,4 @@
-#control-report-info, #control-report-format-of-supporting-documents, #control-report-partner {
+#control-report-info, #control-report-partner {
   border: 1px solid;
   border-color: var(--table-border-color);
 
@@ -11,7 +11,7 @@
     min-width: 24rem;
     background-clip: padding-box;
     text-align: right;
-    font-weight: 500;
+    font-weight: var(--font-weight-strong);
   }
 
   .expiration {
@@ -41,4 +41,42 @@
       padding-left:  0.5em;
     }
   }
+}
+
+::ng-deep {
+  .control-institution-container {
+    display: flex;
+    align-items: center;
+  }
+
+  .small-toggle-group {
+    overflow: visible;
+
+    span.mat-button-toggle-label-content {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 1.25rem;
+    }
+
+    mat-icon {
+      vertical-align: middle;
+      font-size: 1.375em;
+      height: 1.25rem;
+    }
+  }
+}
+
+.date-wrapper{
+  :first-child {
+    margin-right: 1rem;
+  }
+}
+.location-checkboxes {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.autocomplete-text-size {
+  font-size: inherit;
 }

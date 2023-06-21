@@ -11,6 +11,7 @@ import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerContactEn
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerContactId
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
+import io.cloudflight.jems.server.project.repository.ProjectVersionPersistenceProvider
 import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityRepository
@@ -38,11 +39,11 @@ import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.slot
 import io.mockk.verify
+import java.util.Optional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.util.Optional
 
 class PartnerPersistenceProviderUpdateTest {
 
@@ -70,6 +71,9 @@ class PartnerPersistenceProviderUpdateTest {
     lateinit var programmeStateAidRepository: ProgrammeStateAidRepository
 
     @MockK
+    lateinit var projectVersionPersistenceProvider: ProjectVersionPersistenceProvider
+
+    @MockK
     lateinit var projectVersionRepo: ProjectVersionRepository
 
     @MockK
@@ -89,10 +93,11 @@ class PartnerPersistenceProviderUpdateTest {
             projectPartnerStateAidRepository,
             projectAssociatedOrganizationService,
             workPackageActivityRepository,
-            programmeStateAidRepository
+            programmeStateAidRepository,
+            projectVersionPersistenceProvider,
+            projectVersionRepo
         )
     }
-
 
     @Test
     fun updateProjectPartner() {
@@ -103,7 +108,7 @@ class PartnerPersistenceProviderUpdateTest {
         val projectPartners = listOf(projectPartnerEntity(), projectPartnerWithOrganizationEntity())
         every { projectPartnerRepository.findById(PARTNER_ID) } returns Optional.of(projectPartnerEntity())
         every { projectPartnerRepository.save(any()) } returns updatedProjectPartnerEntity
-        every { projectPartnerRepository.findTop30ByProjectId(PROJECT_ID, any()) } returns projectPartners
+        every { projectPartnerRepository.findTop50ByProjectId(PROJECT_ID, any()) } returns projectPartners
         every { projectPartnerRepository.saveAll(any<Iterable<ProjectPartnerEntity>>()) } returnsArgument 0
         every { legalStatusRepo.getById(1) } returns legalStatusEntity
 
@@ -127,7 +132,7 @@ class PartnerPersistenceProviderUpdateTest {
         every { legalStatusRepo.getById(1) } returns legalStatusEntity
 
         persistence.update(projectPartnerUpdate, false)
-        verify (atLeast = 0, atMost = 0) {projectPartnerRepository.findTop30ByProjectId(PROJECT_ID)}
+        verify (atLeast = 0, atMost = 0) {projectPartnerRepository.findTop50ByProjectId(PROJECT_ID)}
     }
 
     @Test
@@ -138,7 +143,7 @@ class PartnerPersistenceProviderUpdateTest {
         every { legalStatusRepo.getById(1) } returns legalStatusEntity
         every { projectPartnerRepository.save(any()) } returns projectPartnerEntity(3, abbreviation = "updated")
         every {
-            projectPartnerRepository.findTop30ByProjectId(PROJECT_ID, any())
+            projectPartnerRepository.findTop50ByProjectId(PROJECT_ID, any())
         } returns listOf(projectPartnerEntity(id = 3), projectPartnerEntity(id = 2, role = ProjectPartnerRole.PARTNER))
 
         assertThat(persistence.update(projectPartner(3, "updated"), true).role)
@@ -199,7 +204,7 @@ class PartnerPersistenceProviderUpdateTest {
         assertThat(slotEntity.captured.partnerSubType).isEqualTo(updatedProjectPartner.partnerSubType)
         assertThat(slotEntity.captured.contacts).isEqualTo(setOf(projectPartnerContactUpdate))
     }
-    
+
     @Test
     fun `updatePartner changing partnerType to empty`() {
         val projectPartner = ProjectPartnerEntity(
@@ -241,7 +246,6 @@ class PartnerPersistenceProviderUpdateTest {
         assertThat(slotEntity.captured.id).isEqualTo(projectPartner.id)
         assertThat(slotEntity.captured.partnerType).isNull()
     }
-
 
     @Test
     fun `updatePartner changing partnerSubType to empty`() {
@@ -430,7 +434,7 @@ class PartnerPersistenceProviderUpdateTest {
         every { projectPartnerRepository.findById(PARTNER_ID) } returns Optional.of(projectPartnerEntity())
         every { legalStatusRepo.getById(legalStatusEntity.id) } returns legalStatusEntity
         every { projectRepository.getById(PROJECT_ID) } returns project
-        every { projectPartnerRepository.findTop30ByProjectId(PROJECT_ID, any()) } returns projectPartners
+        every { projectPartnerRepository.findTop50ByProjectId(PROJECT_ID, any()) } returns projectPartners
         every { projectPartnerRepository.save(any()) } returnsArgument 0
         assertThat(persistence.update(projectPartnerUpdate, true))
             .isEqualTo(

@@ -5,6 +5,8 @@ import io.cloudflight.jems.api.user.dto.PasswordDTO
 import io.cloudflight.jems.api.user.dto.UserChangeDTO
 import io.cloudflight.jems.api.user.dto.UserDTO
 import io.cloudflight.jems.api.user.dto.UserSearchRequestDTO
+import io.cloudflight.jems.api.user.dto.UserSettingsChangeDTO
+import io.cloudflight.jems.api.user.dto.UserSettingsDTO
 import io.cloudflight.jems.api.user.dto.UserSummaryDTO
 import io.cloudflight.jems.server.user.service.user.create_user.CreateUserInteractor
 import io.cloudflight.jems.server.user.service.user.get_user.GetUserInteractor
@@ -30,6 +32,9 @@ class UserController(
 
     override fun updateUser(user: UserChangeDTO): UserDTO =
         updateUserInteractor.updateUser(user.toModel()).toDto()
+
+    override fun updateUserSetting(user: UserSettingsChangeDTO): UserSettingsDTO =
+        updateUserInteractor.updateUserSetting(user.toModel()).toDto()
 
     override fun getById(id: Long): UserDTO =
         getUserInteractor.getUserById(id).toDto()

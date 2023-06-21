@@ -21,7 +21,7 @@
           "translation": "Preparation Lump sum DE"
         }
       ],
-      "cost": "55555,56",
+      "cost": "1999,99",
       "splittingAllowed": "Yes",
       "fastTrack": "Yes",
       "phase": "Preparation",
@@ -55,7 +55,7 @@
           "translation": "Implementation Lump sum DE"
         }
       ],
-      "cost": "55555,56",
+      "cost": "5555,56",
       "splittingAllowed": "Yes",
       "fastTrack": "No",
       "phase": "Implementation",
@@ -89,17 +89,13 @@
           "translation": "Closure Lump sum DE"
         }
       ],
-      "cost": "5555,56",
+      "cost": "900,16",
       "splittingAllowed": "No",
       "fastTrack": "Yes",
       "phase": "Closure",
       "categories": [
         "Staff Costs",
-        "Office and administrative costs",
-        "Travel and accommodation",
-        "External expertise and services",
-        "Equipment",
-        "Infrastructure and works"
+        "Office and administrative costs"
       ]
     }
   ]

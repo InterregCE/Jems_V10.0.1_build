@@ -7,10 +7,8 @@ import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaboratorPersistence
-import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFormRetrieve
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFormUpdate
-import io.cloudflight.jems.server.user.service.model.assignment.PartnerCollaborator
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
 
@@ -25,7 +23,11 @@ annotation class CanRetrieveProjectPartner
 @Retention(AnnotationRetention.RUNTIME)
 // ProjectFileApplicationRetrieve is temporary hack because of broken File Upload screen,
 // where people needs to see partners even when they cannot see project
-@PreAuthorize("@projectAuthorization.hasPermission('ProjectFormRetrieve', #projectId) || @projectAuthorization.hasPermission('ProjectFileApplicationRetrieve', #projectId) || @projectAuthorization.isUserViewCollaboratorForProjectOrThrow(#projectId)")
+// ProjectContractingPartnerView added for PartnerNutsRegionCodes usage in monitoring page when AF not accessible
+@PreAuthorize("@projectAuthorization.hasPermission('ProjectFormRetrieve', #projectId) || " +
+    "@projectAuthorization.hasPermission('ProjectContractingPartnerView', #projectId) || " +
+    "@projectAuthorization.hasPermission('ProjectFileApplicationRetrieve', #projectId) || " +
+    "@projectAuthorization.isUserViewCollaboratorForProjectOrThrow(#projectId)")
 annotation class CanRetrieveProjectPartnerSummaries
 
 

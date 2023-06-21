@@ -10,5 +10,7 @@ data class InputWorkPackageUpdate(
 
     val specificObjective: Set<InputTranslation> = emptySet(),
 
-    val objectiveAndAudience: Set<InputTranslation> = emptySet()
+    val objectiveAndAudience: Set<InputTranslation> = emptySet(),
+
+    val deactivated: Boolean
 )

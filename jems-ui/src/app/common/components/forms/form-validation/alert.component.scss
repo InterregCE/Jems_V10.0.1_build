@@ -1,9 +1,3 @@
-.jems-alert {
-  position: relative;
-  padding: .75rem 1.25rem;
-  border: 1px solid transparent;
-  border-radius: .25rem;
-}
 
 .jems-alert-margins {
   margin-bottom: 1rem;
@@ -11,7 +5,7 @@
 }
 
 .jems-alert-dismissible {
-  padding-right: (1rem * 1.5) + (1.25rem * 2);
+  padding-right: 2rem;
 
   .close-btn {
     position: absolute;
@@ -19,16 +13,18 @@
     top: 0;
     right: 0;
     z-index: 2;
-    padding: .75rem 1.25rem;
+    padding: .25rem .75rem;
     background-color: transparent;
-    border: 0;
+    border: none;
     float: right;
     font-size: 1.5rem;
-    font-weight: 700;
-    line-height: 1;
+    font-weight: 600;
     color: inherit;
     text-shadow: 0 1px 0 #fff;
     opacity: 0.5;
+    &:hover {
+      opacity: 1;
+    }
   }
 }
 
@@ -37,5 +33,13 @@
 
   &:not(.show) {
     opacity: 0;
+  }
+}
+
+:host.condensed {
+  font-size: 0.75rem;
+  .jems-alert {
+    padding: 0 0.5rem;
+    margin: 0.25rem 0;
   }
 }

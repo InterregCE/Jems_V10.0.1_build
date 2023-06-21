@@ -23,20 +23,13 @@ export class ProgrammeEditableStateStore {
     private permissionService: PermissionService,
   ) {
     this.isProgrammeEditableDependingOnCall$ = this.isProgrammeEditable();
-    this.isFastTrackEditableDependingOnReports$ = this.isAnyReportCreated();
     this.hasOnlyViewPermission$ = this.hasUserOnlyViewPermission();
     this.hasEditPermission$ = this.hasUserEditPermission();
     this.hasContractedProjects$ = this.programmeHasContractedProjects();
   }
 
-  private isAnyReportCreated(): Observable<boolean> {
-    return this.firstReportCreated$
-      .pipe(
-        startWith(null),
-        switchMap(() => this.programmeDataService.isAnyReportCreated()),
-        tap(flag => Log.info('Lump Sum fast track is locked because of reporting:', flag)),
-        shareReplay(1),
-      );
+  isFastTrackEditableDependingOnReports(): Observable<boolean> {
+    return this.programmeDataService.isAnyReportCreated();
   }
 
   isFastTrackLumpSumReadyForPayment(programmeLumpSumId: number | null | undefined): Observable<boolean> {

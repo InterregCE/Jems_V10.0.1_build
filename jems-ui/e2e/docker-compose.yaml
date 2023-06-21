@@ -9,7 +9,7 @@ services:
   director:
     image: agoldis/sorry-cypress-director:2.4.2
     environment:
-      DASHBOARD_URL: http://localhost:8484
+      DASHBOARD_URL: 'http://localhost:8484'
       EXECUTION_DRIVER: '../execution/mongo/driver'
       MONGODB_URI: 'mongodb://mongo:27017'
       MONGODB_DATABASE: 'sorry-cypress'
@@ -18,15 +18,16 @@ services:
       GITLAB_JOB_RETRIES: 'false'
       MINIO_ACCESS_KEY: '<change-me>'
       MINIO_SECRET_KEY: '<change-me>'
-      MINIO_ENDPOINT: 'localhost'
-      MINIO_URL: 'http://localhost'
+      MINIO_ENDPOINT: '93.189.31.97'
+      MINIO_URL: 'http://93.189.31.97'
       MINIO_PORT: '9111'
       MINIO_USESSL: 'false'
-      MINIO_BUCKET: sorry-cypress
-      PROBE_LOGGER: "false"
+      MINIO_BUCKET: 'sorry-cypress'
+      PROBE_LOGGER: 'false'
     ports:
       - 1212:1234
       - 9111:9000
+      - 9112:9090
     depends_on:
       - mongo
 
@@ -44,7 +45,7 @@ services:
   dashboard:
     image: agoldis/sorry-cypress-dashboard:2.4.2
     environment:
-      GRAPHQL_SCHEMA_URL: "https://bucharest.interact-eu.net"
+      GRAPHQL_SCHEMA_URL: 'http://93.189.31.97:4040'
       GRAPHQL_CLIENT_CREDENTIALS: ''
       PORT: 8080
       CI_URL: ''
@@ -62,20 +63,20 @@ services:
       MINIO_ROOT_PASSWORD: '<change-me>'
     volumes:
       - ./data/data-minio-cypress:/data
-    command: server /data
+    command: minio server --console-address ":9090" /data
 
-  createbuckets:
-    image: minio/mc
-    network_mode: service:director
-    depends_on:
-      - storage
-    entrypoint: >
-      /bin/sh -c "
-      sleep 3;
-      /usr/bin/mc config host add myminio http://localhost:9111 <change-me> <change-me>;
-      /usr/bin/mc rm -r --dangerous --force myminio/sorry-cypress;
-      /usr/bin/mc mb myminio/sorry-cypress;
-      /usr/bin/mc policy set download myminio/sorry-cypress;
-      /usr/bin/mc policy set public myminio/sorry-cypress;
-      exit 0;
-      "
+#  createbuckets:
+#    image: minio/mc
+#    network_mode: service:director
+#    depends_on:
+#      - storage
+#    entrypoint: >
+#      /bin/sh -c "
+#      sleep 3;
+#      /usr/bin/mc config host add myminio http://localhost:9111 <change-me> <change-me>;
+#      /usr/bin/mc rm -r --dangerous --force myminio/sorry-cypress;
+#      /usr/bin/mc mb myminio/sorry-cypress;
+#      /usr/bin/mc policy set download myminio/sorry-cypress;
+#      /usr/bin/mc policy set public myminio/sorry-cypress;
+#      exit 0;
+#      "

@@ -2,15 +2,14 @@ import {AfterViewInit, ChangeDetectionStrategy, Component, Input, TemplateRef, V
 import {ProjectApplicationFormSidenavService} from '../project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {Alert} from '@common/components/forms/alert';
 import {combineLatest, Observable} from 'rxjs';
-import {ProjectUserDTO, ProjectVersionDTO, UserRoleDTO} from '@cat/api';
+import {ProjectStatusDTO, ProjectUserDTO, ProjectVersionDTO, UserRoleDTO} from '@cat/api';
 import {map} from 'rxjs/operators';
 import {ProjectPageTemplateStore} from './project-page-template-store.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import ProjectStatusEnum = ProjectUserDTO.ProjectStatusEnum;
-import {
-  ProjectApplicationFormVisibilityService
-} from '@project/project-application/containers/project-application-form-page/services/project-application-form-visibility.service';
+import {LocaleDatePipe} from '@common/pipe/locale-date.pipe';
+import {CustomTranslatePipe} from '@common/pipe/custom-translate-pipe';
 
 @UntilDestroy()
 @Component({
@@ -39,13 +38,6 @@ export class ProjectPageTemplateComponent implements AfterViewInit {
   @Input() descriptionText: string;
   @Input() descriptionKey: string;
 
-  versionWarnData$: Observable<{
-    selected: ProjectVersionDTO | undefined;
-    current: ProjectVersionDTO | undefined;
-    selectedIsCurrent: boolean;
-    versions: ProjectVersionDTO[];
-  }>;
-
   versionSelectData$: Observable<{
     versions: {
       currentVersion: ProjectVersionDTO;
@@ -53,25 +45,42 @@ export class ProjectPageTemplateComponent implements AfterViewInit {
       pastVersions: ProjectVersionDTO[];
     };
     selectedVersion: ProjectVersionDTO | undefined;
+    versionWarnData: {
+      selected: ProjectVersionDTO | undefined;
+      current: ProjectVersionDTO | undefined;
+      selectedIsCurrent: boolean;
+      versions: ProjectVersionDTO[];
+    };
+    isSelectedSameAsLastApproved: boolean;
+    stringForSelectedVersion: string;
   }>;
 
-  constructor(public projectSidenavService: ProjectApplicationFormSidenavService,
-              public pageStore: ProjectPageTemplateStore,
-              private projectApplicationFormVisibilityService: ProjectApplicationFormVisibilityService) {
-    this.versionWarnData$ = combineLatest([
+  constructor(
+    public projectSidenavService: ProjectApplicationFormSidenavService,
+    public pageStore: ProjectPageTemplateStore,
+    private localelDatePipe: LocaleDatePipe,
+    private customTranslatePipe: CustomTranslatePipe,
+  ) {
+    this.versionSelectData$ = combineLatest([
       this.pageStore.selectedVersion$,
       this.pageStore.currentVersion$,
       this.pageStore.isSelectedVersionCurrent$,
-      this.pageStore.versions$
-    ]).pipe(
-      map(([selectedVersion, currentVersion, selectedIsCurrent, versions]) => ({selected: selectedVersion, current: currentVersion, selectedIsCurrent, versions}))
-    );
-
-    this.versionSelectData$ = combineLatest([
+      this.pageStore.versions$,
       this.versions(),
-      this.pageStore.selectedVersion$
+      this.pageStore.projectStatus$,
     ]).pipe(
-      map(([versions, selectedVersion]) => ({versions, selectedVersion})),
+      map(([selectedVersion, currentVersion, selectedIsCurrent, versions, versions2, projectStatus]) => ({
+        versions: versions2,
+        selectedVersion,
+        versionWarnData: {
+          selected: selectedVersion,
+          current: currentVersion,
+          selectedIsCurrent,
+          versions,
+        },
+        isSelectedSameAsLastApproved: this.isSelectedSameAsLastApproved(selectedVersion),
+        stringForSelectedVersion: selectedVersion ? this.getStatusStringForSelectedVersion(projectStatus, selectedVersion) : '',
+      })),
     );
   }
 
@@ -95,10 +104,65 @@ export class ProjectPageTemplateComponent implements AfterViewInit {
   }
 
   isStatusApprovedOrContracted(currentVersion: ProjectVersionDTO): boolean {
-    return currentVersion.status === 'APPROVED' || currentVersion.status === 'CONTRACTED';
+    return currentVersion.status === ProjectStatusDTO.StatusEnum.APPROVED || currentVersion.status === ProjectStatusDTO.StatusEnum.CONTRACTED;
+  }
+
+  private isSelectedSameAsLastApproved(selectedVersion: ProjectVersionDTO | undefined): boolean {
+    let isLastApproved = false;
+    this.versions().subscribe( versions => {
+      isLastApproved = versions.lastApprovedVersion === selectedVersion;
+    });
+    return isLastApproved;
   }
 
   noDecisionTaken(currentVersion: ProjectVersionDTO): boolean {
     return currentVersion.status !== ProjectStatusEnum.MODIFICATIONREJECTED && currentVersion.status !== ProjectStatusEnum.APPROVED && currentVersion.status !== ProjectStatusEnum.CONTRACTED;
   }
+
+  getIconForProjectStatus(status: ProjectStatusEnum): String {
+    switch (status) {
+      case ProjectStatusEnum.MODIFICATIONREJECTED:
+      case ProjectStatusEnum.INELIGIBLE:
+      case ProjectStatusEnum.STEP1INELIGIBLE:
+      case ProjectStatusEnum.NOTAPPROVED:
+      case ProjectStatusEnum.STEP1NOTAPPROVED:
+        return 'close';
+      case ProjectStatusEnum.DRAFT:
+      case ProjectStatusEnum.STEP1DRAFT:
+      case ProjectStatusEnum.INMODIFICATION:
+      case ProjectStatusEnum.MODIFICATIONSUBMITTED:
+      case ProjectStatusEnum.MODIFICATIONPRECONTRACTING:
+      case ProjectStatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED:
+      case ProjectStatusEnum.RETURNEDTOAPPLICANT:
+      case ProjectStatusEnum.RETURNEDTOAPPLICANTFORCONDITIONS:
+      case ProjectStatusEnum.SUBMITTED:
+      case ProjectStatusEnum.STEP1SUBMITTED:
+      case ProjectStatusEnum.CONDITIONSSUBMITTED:
+        return 'edit';
+      default:
+        return 'done';
+    }
+  }
+
+  isInModification(): boolean {
+    let currentlyInModification = false;
+    this.versionSelectData$.subscribe( version => {
+      switch (version.selectedVersion?.status) {
+        case ProjectStatusEnum.INMODIFICATION:
+        case ProjectStatusEnum.MODIFICATIONSUBMITTED:
+        case ProjectStatusEnum.MODIFICATIONPRECONTRACTING:
+        case ProjectStatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED:
+          currentlyInModification = true;
+          break;
+        default:
+          break;
+      }
+    });
+    return currentlyInModification;
+  }
+
+  private getStatusStringForSelectedVersion(projectStatus: ProjectStatusDTO, selectedVersion: ProjectVersionDTO): string {
+    return this.customTranslatePipe.transform('common.label.projectapplicationstatus.'+selectedVersion.status);
+  }
+
 }

@@ -8,4 +8,5 @@ import {APIError} from '../../../models/APIError';
 })
 export class ApiErrorContentComponent {
   @Input() error: APIError;
+  @Input() showId = false;
 }

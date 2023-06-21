@@ -1,0 +1,163 @@
+<jems-form *ngIf="data$ | async as data" (save)="saveForm()" (discard)="resetForm(data.resultsAndPrinciples, data.reportEditable)">
+
+    <form jemsFormLayout [formGroup]="form">
+        <h3 class="mb-3">{{'project.application.project.report.tab.results.and.principles.header.1' | translate }}</h3>
+
+        <div *ngFor="let result of results.controls; let i = index" class="project-results">
+            <ng-container formArrayName="results">
+                <ng-container [formGroupName]="i">
+                    <h4>
+                        <mat-icon *ngIf="result.get('deactivated').value" class="vertical-middle"
+                                  [matTooltip]="'project.application.form.partner.table.status.inactive' | translate">
+                            do_not_disturb
+                        </mat-icon>
+                        {{'project.application.project.report.tab.results.and.principles.result' | translate }} {{result.get('resultNumber').value}}
+                    </h4>
+
+                    <mat-form-field jemsFormFieldWidth="full">
+                        <mat-label>{{'project.application.project.report.tab.results.and.principles.result.indicator' | translate }}</mat-label>
+                        <input matInput disabled
+                               [value]="result.get('indicatorId')?.value && (result.get('indicator')?.value | translate) + ': ' + (result.get('indicatorName')?.value | translateBySystemLanguage | async)">
+                    </mat-form-field>
+
+                    <div class="input-field-row">
+                        <mat-form-field class="input-field">
+                            <mat-label>{{'project.application.project.report.tab.results.and.principles.result.measurement.unit' | translate }}</mat-label>
+                            <input matInput disabled [value]="result.get('measurementUnit')?.value | translateBySystemLanguage | async">
+                        </mat-form-field>
+
+                        <mat-form-field class="input-field ml-3">
+                            <mat-label>{{'project.application.project.report.tab.results.and.principles.result.baseline' | translate }}</mat-label>
+                            <input currencyMask matInput
+                                   type="decimal"
+                                   formControlName="baseline"
+                                   [options]="{align: 'right', min: MIN_VALUE, max: MAX_VALUE}">
+                        </mat-form-field>
+
+                        <mat-form-field *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.DELIVERY_PERIOD" class="input-field ml-3">
+                            <mat-label>{{'project.application.project.report.tab.results.and.principles.result.delivery.period' | translate }}</mat-label>
+                            <input matInput disabled
+                                   [value]="result.get('periodDetail').value && 'project.application.form.work.package.output.delivery.period.entry' | translate : getPeriodArguments(result.get('periodDetail').value)">
+                        </mat-form-field>
+                    </div>
+                    <div class="input-field-row">
+                        <mat-form-field class="input-field">
+                            <mat-label>{{'project.application.project.report.tab.results.and.principles.result.target.value' | translate }}</mat-label>
+                            <input currencyMask matInput
+                                   type="decimal"
+                                   formControlName="targetValue"
+                                   [options]="{align: 'right', min: MIN_VALUE, max: MAX_VALUE}">
+                        </mat-form-field>
+
+                        <mat-form-field class="input-field ml-3">
+                            <mat-label>{{'project.application.project.report.tab.results.and.principles.result.achieved' | translate }}</mat-label>
+                            <input currencyMask matInput
+                                   type="decimal"
+                                   formControlName="achievedInReportingPeriod"
+                                   [options]="{align: 'right', min: MIN_VALUE, max: MAX_VALUE, allowNegative: true}"
+                                   (ngModelChange)="totalChanged(i)">
+                        </mat-form-field>
+
+                        <mat-form-field class="input-field ml-3">
+                            <mat-label>{{'project.application.project.report.tab.results.and.principles.result.cumulative' | translate }}</mat-label>
+                            <input currencyMask matInput
+                                   type="decimal"
+                                   formControlName="cumulativeValue"
+                                   [options]="{align: 'right', min: MIN_VALUE, max: MAX_VALUE, allowNegative: true}">
+                        </mat-form-field>
+                    </div>
+                    <div jemsNoWidthLimit>
+                        <jems-multi-language-container>
+                            <jems-multi-language-form-field
+                                    formControlName="description"
+                                    maxLength="2000"
+                                    minRows="2"
+                                    maxRows="4"
+                                    type="textarea"
+                                    label="project.application.project.report.tab.results.and.principles.result.description"
+                                    [disabled]="!data.reportEditable">
+                            </jems-multi-language-form-field>
+                        </jems-multi-language-container>
+                    </div>
+                    <div jemsFormFieldWidth="full" class="attachment-row">
+                        <span class="attachment-text">{{'project.application.project.report.tab.results.and.principles.result.attachment' | translate }}</span>
+                        <jems-partner-actions-cell class="attachments-element" [formControlName]="'attachment'"
+                                                   [isReportEditable]="data.reportEditable"
+                                                   [isUploadDone]="isUploadDone"
+                                                   (upload)="onUpload($event, result.get('resultNumber').value, i)"
+                                                   (download)="onDownload(result.get('resultNumber').value)"
+                                                   (delete)="onDelete(result.get('resultNumber').value, i)">
+                        </jems-partner-actions-cell>
+                    </div>
+                </ng-container>
+            </ng-container>
+        </div>
+
+
+        <ng-container
+                *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_MANAGEMENT.HORIZONTAL_PRINCIPLES" formGroupName="principles">
+
+            <h3 class="mb-3">{{'project.application.project.report.tab.results.and.principles.header.2' | translate }}</h3>
+            <p>{{'project.application.project.report.tab.results.and.principles.horizontal.principles.description' | translate }}</p>
+
+            <jems-multi-language-container jemsNoWidthLimit>
+                <div [jemsTableConfig]="[{minInRem:12, maxInRem:17},{minInRem:20, maxInRem:20},{}]">
+                    <div>
+                        <span>{{'project.application.project.report.tab.results.and.principles.horizontal.principles.cooperation.criteria' | translate}}</span>
+                        <span>{{'project.application.project.report.tab.results.and.principles.horizontal.principles.type.of.contribution' | translate}}</span>
+                        <span>{{'project.application.project.report.tab.results.and.principles.horizontal.principles.description.of.contribution' | translate}}</span>
+                    </div>
+                    <div>
+                        <span>{{'project.application.form.management.principles.table.row.1' | translate}}</span>
+                        <jems-contribution-toggle-column
+                                [disabled]="true"
+                                (selected)="selectedContributionPrincipleDevelopment = $event;"
+                                [previousSelection]="selectedContributionPrincipleDevelopment">
+                        </jems-contribution-toggle-column>
+                        <jems-multi-language-form-field
+                                type="textarea"
+                                minRows="1"
+                                [label]="'common.textarea.enter.text'"
+                                [formControlName]="'principlesSustainable'"
+                                [disabled]="!data.reportEditable"
+                                [maxLength]="2000">
+                        </jems-multi-language-form-field>
+                    </div>
+                    <div>
+                        <span>{{'project.application.form.management.principles.table.row.2' | translate}}</span>
+                        <jems-contribution-toggle-column
+                                [disabled]="true"
+                                (selected)="selectedContributionPrincipleOpportunities = $event;"
+                                [previousSelection]="selectedContributionPrincipleOpportunities">
+                        </jems-contribution-toggle-column>
+                        <jems-multi-language-form-field
+                                type="textarea"
+                                minRows="1"
+                                [label]="'common.textarea.enter.text'"
+                                [formControlName]="'principlesOpportunities'"
+                                [disabled]="!data.reportEditable"
+                                [maxLength]="2000">
+                        </jems-multi-language-form-field>
+                    </div>
+                    <div>
+                        <span>{{'project.application.form.management.principles.table.row.3' | translate}}</span>
+                        <jems-contribution-toggle-column
+                                [disabled]="true"
+                                (selected)="selectedContributionPrincipleEquality = $event;"
+                                [previousSelection]="selectedContributionPrincipleEquality">
+                        </jems-contribution-toggle-column>
+                        <jems-multi-language-form-field
+                                type="textarea"
+                                minRows="1"
+                                [label]="'common.textarea.enter.text'"
+                                [formControlName]="'principlesEquality'"
+                                [disabled]="!data.reportEditable"
+                                [maxLength]="2000">
+                        </jems-multi-language-form-field>
+                    </div>
+                </div>
+            </jems-multi-language-container>
+        </ng-container>
+
+    </form>
+</jems-form>

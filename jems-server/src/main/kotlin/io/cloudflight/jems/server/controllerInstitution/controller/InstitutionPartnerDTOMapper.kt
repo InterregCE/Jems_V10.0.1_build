@@ -12,10 +12,8 @@ import io.cloudflight.jems.server.controllerInstitution.service.model.Institutio
 import io.cloudflight.jems.server.controllerInstitution.service.model.UserInstitutionAccessLevel
 import io.cloudflight.jems.server.project.service.partner.getPartnerAddressOrEmptyString
 import org.mapstruct.Mapper
-import org.mapstruct.Mapping
 import org.mapstruct.factory.Mappers
 import org.springframework.data.domain.Page
-
 
 private val mapper = Mappers.getMapper(InstitutionPartnerDTOMapper::class.java)
 
@@ -52,11 +50,8 @@ interface InstitutionPartnerDTOMapper {
 
     fun map(dto: ControllerInstitutionAssignmentDTO): ControllerInstitutionAssignment
     fun map(dto: ControllerInstitutionAssignment): ControllerInstitutionAssignmentDTO
-    @Mapping(target = "partnerProjectId", ignore = true)
     fun map(dto: InstitutionPartnerAssignmentDTO): InstitutionPartnerAssignment
-
     fun map(model: InstitutionPartnerAssignment): InstitutionPartnerAssignmentDTO
-
     fun map(model: InstitutionPartnerDetails): InstitutionPartnerDetailsDTO
     fun map(model: UserInstitutionAccessLevel?): UserInstitutionAccessLevelDTO
 }

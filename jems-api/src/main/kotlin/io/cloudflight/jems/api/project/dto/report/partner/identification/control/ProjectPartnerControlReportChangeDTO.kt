@@ -3,4 +3,6 @@ package io.cloudflight.jems.api.project.dto.report.partner.identification.contro
 data class ProjectPartnerControlReportChangeDTO(
     val controllerFormats: Set<ReportFileFormatDTO>,
     val type: ReportTypeDTO,
+    val designatedController: ReportDesignatedControllerDTO,
+    val reportVerification: ReportVerificationDTO
 )

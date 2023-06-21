@@ -2,8 +2,8 @@ package io.cloudflight.jems.server.project.controller.contracting.fileManagement
 
 import io.cloudflight.jems.api.project.contracting.ContractingFileApi
 import io.cloudflight.jems.api.project.dto.contracting.file.ProjectContractingFileSearchRequestDTO
-import io.cloudflight.jems.server.project.controller.report.toDto
-import io.cloudflight.jems.server.project.controller.report.toProjectFile
+import io.cloudflight.jems.server.project.controller.report.partner.toDto
+import io.cloudflight.jems.server.project.controller.report.partner.toProjectFile
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.deleteContractFile.DeleteContractFileInteractor
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.deleteInternalFile.DeleteInternalFileInteractor
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.deletePartnerFile.DeletePartnerFileInteractor
@@ -96,10 +96,9 @@ class ContractingFileController(
 
     override fun downloadPartnerFile(
         projectId: Long,
-        partnerId: Long,
         fileId: Long
     ): ResponseEntity<ByteArrayResource> {
-        return with(downloadPartnerFile.downloadPartnerFile(partnerId = partnerId, fileId = fileId)) {
+        return with(downloadPartnerFile.downloadPartnerFile(projectId = projectId, fileId = fileId)) {
             ResponseEntity.ok()
                 .contentLength(this.second.size.toLong())
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)

@@ -65,8 +65,12 @@ internal class CallAuthorizationTest {
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,
             firstStepPreSubmissionCheckPluginKey = null,
+            reportPartnerCheckPluginKey = null,
+            reportProjectCheckPluginKey = null,
             projectDefinedUnitCostAllowed = false,
             projectDefinedLumpSumAllowed = true,
+            controlReportPartnerCheckPluginKey = null,
+            controlReportSamplingCheckPluginKey = null,
         )
 
         assertTrue(

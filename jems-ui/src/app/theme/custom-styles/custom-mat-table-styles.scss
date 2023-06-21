@@ -10,7 +10,6 @@
     border: 1px solid var(--table-border-color);
     background-color: var(--table-backaground-color);
 
-
     .mat-header-row {
       .mat-header-cell {
         color: var(--table-header-text-color);
@@ -38,12 +37,24 @@
     }
 
     mat-footer-row.mat-footer-row {
-      font-weight: 500;
+      font-weight: 600;
       border-bottom: 0;
       min-height: 3rem;
       border-top: 1px solid var(--table-border-color);
       background-color: var(--table-backaground-color);
     }
   }
+
+  .additional-info-text {
+    color: var(--table-header-text-color);
+  }
+
+  .mat-sort-header-content {
+    text-align: left;
+  }
+}
+
+mat-cell.mat-table-sticky {
+  z-index: 2;
 }
 

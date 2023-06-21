@@ -7,4 +7,5 @@ data class PartnerReportInvestmentSummary(
     val investmentNumber: Int,
     val workPackageNumber: Int,
     val title: Set<InputTranslation>,
+    val deactivated: Boolean,
 )

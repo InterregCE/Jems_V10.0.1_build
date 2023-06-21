@@ -20,11 +20,13 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.ZonedDateTime
 
 internal class ProjectChecklistDataProviderImplTest : UnitTest() {
 
     companion object {
         private val TODAY = LocalDate.now()
+        private val TODAY_ZONED = ZonedDateTime.now()
 
         private val detail = ChecklistInstanceDetail(
             id = 14L,
@@ -34,6 +36,7 @@ internal class ProjectChecklistDataProviderImplTest : UnitTest() {
             name = "name",
             creatorEmail = "creator@email",
             creatorId = 32L,
+            createdAt = TODAY_ZONED,
             finishedDate = TODAY,
             relatedToId = 18L,
             consolidated = true,
@@ -59,6 +62,7 @@ internal class ProjectChecklistDataProviderImplTest : UnitTest() {
             name = "name",
             creatorEmail = "creator@email",
             creatorId = 32L,
+            createdAt = TODAY_ZONED,
             finishedDate = TODAY,
             relatedToId = 18L,
             consolidated = true,
@@ -74,8 +78,8 @@ internal class ProjectChecklistDataProviderImplTest : UnitTest() {
                     question = "is it?",
                     weight = BigDecimal.ONE,
                     score = BigDecimal.ONE,
-                    questionMetadataJson = "{\"score\":1,\"justification\":\"not provided\"}",
-                    answerMetadataJson = "{\"question\":\"is it?\",\"weight\":1}",
+                    answerMetadataJson = "{\"score\":1,\"justification\":\"not provided\"}",
+                    questionMetadataJson = "{\"question\":\"is it?\",\"weight\":1}",
                 ),
             ),
         )
@@ -91,12 +95,39 @@ internal class ProjectChecklistDataProviderImplTest : UnitTest() {
             relatedToId = 18L,
             consolidated = true,
             visible = false,
+            description = "test"
         )
 
         private val expectedSummary = ChecklistSummaryData(
             id = 16L,
             status = ChecklistStatusData.DRAFT,
             type = ChecklistTypeData.APPLICATION_FORM_ASSESSMENT,
+            name = "name",
+            creatorEmail = "creator@email",
+            finishedDate = TODAY,
+            relatedToId = 18L,
+            consolidated = true,
+            visible = false,
+        )
+
+        private val controlChecklistSummary = ChecklistInstance(
+            id = 16L,
+            programmeChecklistId = 55L,
+            status = ChecklistInstanceStatus.DRAFT,
+            type = ProgrammeChecklistType.CONTROL,
+            name = "name",
+            creatorEmail = "creator@email",
+            finishedDate = TODAY,
+            relatedToId = 18L,
+            consolidated = true,
+            visible = false,
+            description = "test"
+        )
+
+        private val expectedControlChecklistSummary = ChecklistSummaryData(
+            id = 16L,
+            status = ChecklistStatusData.DRAFT,
+            type = ChecklistTypeData.CONTROL,
             name = "name",
             creatorEmail = "creator@email",
             finishedDate = TODAY,
@@ -130,6 +161,21 @@ internal class ProjectChecklistDataProviderImplTest : UnitTest() {
             ChecklistInstanceSearchRequest(
                 relatedToId = 18L,
                 type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
+            )
+        )
+    }
+
+    @Test
+    fun getChecklistsForReport() {
+        val slotSearch = slot<ChecklistInstanceSearchRequest>()
+        every { persistence.findChecklistInstances(capture(slotSearch)) } returns listOf(controlChecklistSummary)
+        assertThat(dataProvider.getChecklistsForReport(18L))
+            .containsExactly(expectedControlChecklistSummary)
+
+        assertThat(slotSearch.captured).isEqualTo(
+            ChecklistInstanceSearchRequest(
+                relatedToId = 18L,
+                type = ProgrammeChecklistType.CONTROL,
             )
         )
     }

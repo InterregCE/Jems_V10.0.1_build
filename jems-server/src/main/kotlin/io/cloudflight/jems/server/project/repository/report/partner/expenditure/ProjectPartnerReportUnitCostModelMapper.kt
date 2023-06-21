@@ -1,0 +1,23 @@
+package io.cloudflight.jems.server.project.repository.report.partner.expenditure
+
+import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportUnitCostEntity
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportUnitCost
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
+
+
+fun List<PartnerReportUnitCostEntity>.toModel() = map {
+    ProjectPartnerReportUnitCost(
+        id = it.id,
+        unitCostProgrammeId = it.programmeUnitCost.id,
+        projectDefined = it.programmeUnitCost.projectId != null,
+        costPerUnit = it.programmeUnitCost.costPerUnit,
+        name = it.programmeUnitCost.translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.name) },
+        total = it.total,
+        numberOfUnits = it.numberOfUnits,
+        costPerUnitForeignCurrency = it.programmeUnitCost.costPerUnitForeignCurrency,
+        foreignCurrencyCode = it.programmeUnitCost.foreignCurrencyCode,
+        category = if (it.programmeUnitCost.isOneCostCategory) ReportBudgetCategory.valueOf(it.programmeUnitCost.categories.first().category.name)
+        else ReportBudgetCategory.Multiple
+    )
+}

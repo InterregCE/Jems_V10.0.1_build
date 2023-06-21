@@ -1,0 +1,36 @@
+<form jemsFormLayout [formGroup]="settingsForm"
+      (keydown.enter)="$event.preventDefault()">
+
+    <mat-checkbox class="mt-n3 ml-1" formControlName="sendNotificationsToEmail" name="sendNotificationsToEmail">
+        {{'user.detail.field.notifications.checkbox' | translate}}
+    </mat-checkbox>
+
+    <div jemsMultiColumnRow *ngIf="!settingsForm.pristine && !submitted">
+        <button jemsText mat-stroked-button
+                [disabled]="disabled"
+                (click)="resetForm()">
+            {{'common.cancel.label' | translate}}
+        </button>
+        <button jemsText mat-raised-button
+                color="primary"
+                [disabled]="disabled || settingsForm.invalid || submitted"
+                (click)="onSubmit()">
+            {{'common.save.label' | translate}}
+        </button>
+    </div>
+    <jems-alert *ngIf="error$ | async as error"
+                [show]="!submitted && !!error.i18nMessage?.i18nKey"
+                [type]="Alert.ERROR">
+        <jems-api-error-content [error]="error"></jems-api-error-content>
+    </jems-alert>
+</form>
+<jems-alert
+        [show]="!submitted && (showSuccessMessage$ | async)"
+        [type]="Alert.SUCCESS">
+    <p>{{'user.detail.settings.save.success' | translate}}</p>
+</jems-alert>
+
+
+
+
+

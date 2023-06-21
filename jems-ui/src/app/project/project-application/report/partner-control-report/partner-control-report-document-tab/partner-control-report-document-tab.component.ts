@@ -5,11 +5,12 @@ import {FileListItem} from '@common/components/file-list/file-list-item';
 import {
   PartnerControlReportFileManagementStore
 } from '@project/project-application/report/partner-control-report/partner-control-report-document-tab/partner-control-report-file-management-store';
-import {map, switchMap, take} from 'rxjs/operators';
+import {finalize, map, switchMap, take} from 'rxjs/operators';
 import {
+  JemsFileDTO,
+  ProjectPartnerControlReportDTO,
   ProjectPartnerReportDTO,
   ProjectPartnerReportService,
-  ProjectPartnerReportSummaryDTO, ProjectReportFileDTO,
 } from '@cat/api';
 import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
 import {AcceptedFileTypesConstants} from '@project/common/components/file-management/accepted-file-types.constants';
@@ -21,13 +22,16 @@ import {TranslateService} from '@ngx-translate/core';
 import {
   PartnerControlReportStore
 } from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
+import {FormService} from '@common/components/section/form/form.service';
+import {ReportUtil} from '@project/common/report-util';
 
 @UntilDestroy()
 @Component({
   selector: 'jems-partner-control-report-document-tab',
   templateUrl: './partner-control-report-document-tab.component.html',
   styleUrls: ['./partner-control-report-document-tab.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [FormService],
 })
 export class PartnerControlReportDocumentTabComponent {
   Alert = Alert;
@@ -35,6 +39,7 @@ export class PartnerControlReportDocumentTabComponent {
   acceptedFilesTypes = AcceptedFileTypesConstants.acceptedFilesTypes;
   maximumAllowedFileSizeInMB: number;
   fileSizeOverLimitError$ = new Subject<boolean>();
+  isUploadInProgress = false;
 
   selectedCategory: CategoryInfo = { id: 2, type: 'docs' };
 
@@ -56,9 +61,10 @@ export class PartnerControlReportDocumentTabComponent {
       this.controlReportFileStore.report$,
       this.securityService.currentUser.pipe(map(user => user?.id || 0)),
       this.partnerControlReportStore.canEditControlReport$,
+      this.partnerControlReportStore.partnerControlReport$
     ]).pipe(
-      map(([fileList, report, currentUserId, canEdit]) => ({
-        attachments: fileList.map((file: ProjectReportFileDTO) => ({
+      map(([fileList, report, currentUserId, canEdit, partnerControlReport]) => ({
+        attachments: fileList.map((file: JemsFileDTO) => ({
           id: file.id,
           name: file.name,
           type: file.type,
@@ -67,7 +73,7 @@ export class PartnerControlReportDocumentTabComponent {
           sizeString: file.sizeString,
           description: file.description,
           editable: PartnerControlReportDocumentTabComponent.isEditable(report) && canEdit && file.author.id === currentUserId,
-          deletable: PartnerControlReportDocumentTabComponent.isEditable(report) && canEdit && file.author.id === currentUserId,
+          deletable: PartnerControlReportDocumentTabComponent.isDeletable(report, partnerControlReport, file) && canEdit && file.author.id === currentUserId,
           tooltipIfNotDeletable: '',
           iconIfNotDeletable: '',
         })),
@@ -91,16 +97,26 @@ export class PartnerControlReportDocumentTabComponent {
   }
 
   private static isEditable(report: ProjectPartnerReportDTO): boolean {
-    return report.status === ProjectPartnerReportSummaryDTO.StatusEnum.InControl;
+    return ReportUtil.isControlReportExists(report.status);
+  }
+
+  private static isDeletable(
+      report: ProjectPartnerReportDTO,
+      controlReport: ProjectPartnerControlReportDTO,
+      file: JemsFileDTO
+  ): boolean {
+    return ReportUtil.isControlReportOpen(report.status) ||
+        (ReportUtil.isControlCertifiedReOpened(report.status) && file.uploaded > controlReport.reportControlEnd);
   }
 
   uploadFile(target: any): void {
+    this.isUploadInProgress = true;
     FileListComponent.doFileUploadWithValidation(
       target,
       this.fileSizeOverLimitError$,
       this.controlReportFileStore.error$,
       this.maximumAllowedFileSizeInMB,
-      file => this.controlReportFileStore.uploadFile(file),
+      file => this.controlReportFileStore.uploadFile(file).pipe(finalize(() => this.isUploadInProgress = false)),
     );
   }
 
@@ -131,5 +147,4 @@ export class PartnerControlReportDocumentTabComponent {
       ),
     );
   };
-
 }

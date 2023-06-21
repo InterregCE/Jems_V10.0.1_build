@@ -8,6 +8,8 @@ import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserChange
 import io.cloudflight.jems.server.user.service.model.UserRegistration
 import io.cloudflight.jems.server.user.service.model.UserSearchRequest
+import io.cloudflight.jems.server.user.service.model.UserSettings
+import io.cloudflight.jems.server.user.service.model.UserSettingsChange
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.UserSummary
 
@@ -18,6 +20,11 @@ fun UserChangeDTO.toModel() = UserChange(
     surname = surname,
     userRoleId = userRoleId,
     userStatus = userStatus.toModel()
+)
+
+fun UserSettingsChangeDTO.toModel() = UserSettingsChange(
+    id = id ?: 0,
+    sendNotificationsToEmail = sendNotificationsToEmail,
 )
 
 fun UserSearchRequestDTO.toModel() = UserSearchRequest(
@@ -48,10 +55,15 @@ fun UserSummary.toSummaryDto() = UserSummaryDTO(
 fun User.toDto() = UserDTO(
     id = id,
     email = email,
+    userSettings = userSettings.toDto(),
     name = name,
     surname = surname,
     userRole = userRole.toDto(),
     userStatus = userStatus.toDto(),
+)
+
+fun UserSettings.toDto() = UserSettingsDTO(
+    sendNotificationsToEmail = sendNotificationsToEmail
 )
 
 fun UserSummary.toDto() = OutputUser(
@@ -77,6 +89,7 @@ fun Captcha.toDto() = CaptchaDTO(
 fun UserSummary.toEntity() = UserEntity(
     id = id,
     email = email,
+    sendNotificationsToEmail = sendNotificationsToEmail,
     userRole = userRole.toEntity(),
     name = name,
     surname = surname,

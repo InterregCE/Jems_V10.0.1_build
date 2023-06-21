@@ -9,6 +9,7 @@
     <envs>
       <env name="AUDIT_ENABLED" value="false" />
       <env name="MAIL_ENABLED" value="false" />
+      <env name="REGISTRATION_CAPTCHA_ENABLED" value="false" />
     </envs>
     <method v="2">
       <option name="Make" enabled="true" />

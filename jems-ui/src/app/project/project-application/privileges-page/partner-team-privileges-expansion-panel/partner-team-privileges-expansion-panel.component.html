@@ -1,11 +1,11 @@
-<mat-expansion-panel class="mb-3 mt-3" [expanded]="true" id="partner-collaborators-panel">
+<mat-expansion-panel class="mb-3 mt-3 partner-collaborators-panel" [expanded]="true">
     <mat-expansion-panel-header>
         <mat-panel-title class="mt-2">
             <mat-icon  *ngIf="!partner.active">person_off</mat-icon>
             {{((isCallSpf$ | async) ? 'spf.common.label.project.partner.role.shortcut.' : 'common.label.project.partner.role.shortcut.') + partner.role | translate: {partner: getPartnerTranslationString(partner)} }}
         </mat-panel-title>
         <mat-panel-description *ngIf="isAfterApproved$ | async">
-            <mat-chip-list>
+            <mat-chip-list aria-label="control institution" [selectable]="false">
                 <mat-chip *ngIf="partner.institutionName">{{ partner.institutionName }}</mat-chip>
                 <mat-chip *ngIf="!partner.institutionName" color="accent" selected>
                     <mat-icon class="mr-2">help</mat-icon>{{ 'project.application.form.section.privileges.no.institution' | translate }}</mat-chip>
@@ -16,7 +16,7 @@
     <jems-form (save)="savePartnerCollaborators(partner.id)"
                (discard)="resetPartnerForm(collaborators)">
         <form jemsFormLayout [formGroup]="partnerForm">
-            <div formArrayName="partnerCollaborators" id="partner-collaborators-table">
+            <div formArrayName="partnerCollaborators" class="partner-collaborators-table">
                 <div *ngFor="let collaborator of partnerCollaborators.controls;let i=index">
                     <div jemsMultiColumnRow justifyContent="space-between" [formGroupName]="i">
 
@@ -47,8 +47,19 @@
                             </mat-button-toggle>
                         </mat-button-toggle-group>
 
+                        <mat-slide-toggle color="primary"
+                                          [disabled]="partnerForm.disabled || (isProjectCollaboratorNonManage$ | async)"
+                                          formControlName="gdpr" class="gdpr-toggle">
+                            <span class ="custom-icon gdpr">
+                                <mat-icon  matTooltip="{{'project.application.form.section.sensitive.data.gdpr.info' | translate}}">
+                                    privacy_tip
+                                </mat-icon>
+                            </span>
+                            <span>{{'project.application.form.section.sensitive.data.gdpr' | translate}}</span>
+                        </mat-slide-toggle>
                         <button *ngIf="partnerForm.enabled" type="button" mat-icon-button color="accent"
-                                (click)="partnerCollaborators.removeAt(i); formService.setDirty(true)">
+                                (click)="partnerCollaborators.removeAt(i); formService.setDirty(true)"
+                                aria-label="delete">
                             <mat-icon>delete</mat-icon>
                         </button>
                     </div>
@@ -61,7 +72,8 @@
             </mat-error>
         </form>
         <button jemsText *ngIf="partnerForm.enabled" mat-stroked-button class="mt-2"
-                (click)="addPartnerCollaborator(); formService.setDirty(true)">
+                (click)="addPartnerCollaborator(); formService.setDirty(true)"
+                aria-label="add">
             <mat-icon>add</mat-icon>
         </button>
     </jems-form>

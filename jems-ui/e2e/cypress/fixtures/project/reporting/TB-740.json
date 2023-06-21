@@ -1,0 +1,78 @@
+{
+  "partnerCollaborator": [
+    {
+      "userEmail": "applicant.user@jems.eu",
+      "level": "EDIT"
+    }
+  ],
+  "address": [
+    {
+      "type": "Organization",
+      "country": "Afghanistan (AF)",
+      "countryCode": "AF",
+      "nutsRegion2": "Afghanistan (AF00)",
+      "nutsRegion2Code": "AF00",
+      "nutsRegion3": "Afghanistan (AF000)",
+      "nutsRegion3Code": "AF000",
+      "street": "Partnerstreet",
+      "houseNumber": "2",
+      "postalCode": "1020",
+      "city": "Partner city",
+      "homepage": "partner@test.com"
+    },
+    {
+      "type": "Department",
+      "country": "Afghanistan (AF)",
+      "countryCode": "AF",
+      "nutsRegion2": "Afghanistan (AF00)",
+      "nutsRegion2Code": "AF00",
+      "nutsRegion3": "Afghanistan (AF000)",
+      "nutsRegion3Code": "AF000",
+      "street": "Departmentstreet",
+      "houseNumber": "5",
+      "postalCode": "4020",
+      "city": "Department city",
+      "homepage": ""
+    }
+  ],
+  "beneficialOwners": [
+    {
+      "birth": "1968-04-01",
+      "createdInThisReport": true,
+      "firstName": "Haywood",
+      "id": 0,
+      "lastName": "Floyd",
+      "vatNumber": "333333"
+    },
+    {
+      "birth": "1984-06-25",
+      "createdInThisReport": true,
+      "firstName": "George",
+      "id": 0,
+      "lastName": "Orwell",
+      "vatNumber": "222222"
+    }
+  ],
+  "subcontracts": [
+    {
+      "createdInThisReport": true,
+      "contractName": "Master Chief helmet",
+      "referenceNumber": "HALO-3",
+      "contractDate": "2022-03-09",
+      "contractAmount": 100,
+      "currencyCode": "USD",
+      "supplierName": "Bungie",
+      "vatNumber": "111333"
+    },
+    {
+      "createdInThisReport": true,
+      "contractName": "Mario mustache",
+      "referenceNumber": "MAR10",
+      "contractDate": "2022-03-09",
+      "contractAmount": 150,
+      "currencyCode": "JPY",
+      "supplierName": "Nintendo",
+      "vatNumber": "222111"
+    }
+  ]
+}

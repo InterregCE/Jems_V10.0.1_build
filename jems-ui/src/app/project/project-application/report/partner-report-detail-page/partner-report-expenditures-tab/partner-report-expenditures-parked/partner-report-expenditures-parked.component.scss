@@ -1,0 +1,112 @@
+@use '../../../partner-report-detail-page/partner-report-financial-overview-tab/remove-custom-table-overrides';
+
+.border-cell-right {
+  border-right: .0625rem solid var(--table-border-color);
+}
+.border-cell-left {
+  border-left: .0625rem solid var(--table-border-color);
+}
+
+.mat-column-costItemID {
+  min-width: 2.5rem;
+  max-width: 2.5rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+.mat-column-actions {
+  min-width: 5rem;
+  max-width: 5rem;
+  padding-left: .5rem;
+  padding-right: .5rem;
+}
+
+.mat-column-costOptions {
+  padding-left: 1rem;
+}
+.mat-column-costCategory,
+.mat-column-investmentId,
+.mat-column-contractId,
+.mat-column-internalReferenceNumber,
+.mat-column-invoiceNumber,
+.mat-column-invoiceDate,
+.mat-column-dateOfPayment,
+.mat-column-description,
+.mat-column-comment,
+.mat-column-totalValueInvoice,
+.mat-column-numberOfUnits,
+.mat-column-pricePerUnit,
+.mat-column-vat,
+.mat-column-declaredAmount,
+.mat-column-currencyCode,
+.mat-column-currencyConversionRate,
+.mat-column-declaredAmountInEur,
+.mat-column-uploadFunction {
+  padding-left: .5rem;
+}
+.mat-column-uploadFunction {
+  padding-right: 1rem;
+}
+
+.mat-column-costOptions {
+  min-width: 10rem;
+}
+.mat-column-costCategory {
+  min-width: 10rem;
+}
+.mat-column-investmentId {
+  min-width: 10rem;
+}
+.mat-column-contractId {
+  min-width: 10rem;
+}
+.mat-column-internalReferenceNumber,
+.mat-column-invoiceNumber {
+  min-width: 10rem;
+}
+.mat-column-invoiceDate,
+.mat-column-dateOfPayment {
+  min-width: 6rem;
+}
+.mat-column-description,
+.mat-column-comment {
+  min-width: 16rem;
+}
+.mat-column-totalValueInvoice {
+  min-width: 10rem;
+}
+.mat-column-numberOfUnits {
+  min-width: 6rem;
+}
+.mat-column-pricePerUnit {
+  min-width: 8rem;
+}
+.mat-column-vat {
+  min-width: 6rem;
+}
+.mat-column-declaredAmount {
+  min-width: 8rem;
+}
+.mat-column-currencyCode {
+  min-width: 4rem;
+}
+.mat-column-currencyConversionRate {
+  min-width: 4.5rem;
+}
+.mat-column-declaredAmountInEur {
+  min-width: 8rem;
+}
+.mat-column-uploadFunction {
+  min-width: 8rem;
+}
+
+.mat-column-costGDPR {
+  min-width: 0.5rem;
+  padding-left: 0.5rem;
+  padding-right: 1rem;
+  border-left: 1px solid var(--table-border-color);
+  border-right: 1px solid var(--table-border-color);
+}
+
+.custom-icon.gdpr {
+  margin-left: -0.25rem;
+}

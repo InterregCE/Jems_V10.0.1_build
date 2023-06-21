@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.programme.repository.translation
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
-import io.cloudflight.jems.server.common.minio.MinioStorage
+import io.cloudflight.jems.server.common.file.minio.MinioStorage
 import io.cloudflight.jems.server.programme.entity.translation.TranslationFileEntity
 import io.cloudflight.jems.server.programme.entity.translation.TranslationFileId
 import io.cloudflight.jems.server.programme.service.translation.TranslationFilePersistence

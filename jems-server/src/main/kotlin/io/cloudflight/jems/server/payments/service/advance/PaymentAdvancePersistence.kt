@@ -12,10 +12,14 @@ interface PaymentAdvancePersistence {
 
     fun existsById(id: Long): Boolean
 
+    fun getPaymentsByProjectId(projectId: Long): List<AdvancePayment>
+
     fun getPaymentDetail(paymentId: Long): AdvancePaymentDetail
 
     fun deleteByPaymentId(paymentId: Long)
 
     fun updatePaymentDetail(paymentDetail: AdvancePaymentUpdate): AdvancePaymentDetail
+
+    fun deletePaymentAdvanceAttachment(fileId: Long)
 
 }

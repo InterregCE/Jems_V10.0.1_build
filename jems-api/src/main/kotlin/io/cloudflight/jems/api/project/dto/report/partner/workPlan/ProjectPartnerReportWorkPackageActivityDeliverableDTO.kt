@@ -1,7 +1,7 @@
 package io.cloudflight.jems.api.project.dto.report.partner.workPlan
 
+import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
 
 data class ProjectPartnerReportWorkPackageActivityDeliverableDTO(
     val id: Long,
@@ -10,5 +10,6 @@ data class ProjectPartnerReportWorkPackageActivityDeliverableDTO(
 
     val contribution: Boolean?,
     val evidence: Boolean?,
-    val attachment: ProjectReportFileMetadataDTO?,
+    val attachment: JemsFileMetadataDTO?,
+    val deactivated: Boolean
 )

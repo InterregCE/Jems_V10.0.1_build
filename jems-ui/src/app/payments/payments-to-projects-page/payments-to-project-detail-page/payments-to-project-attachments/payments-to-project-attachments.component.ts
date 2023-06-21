@@ -4,9 +4,11 @@ import {AcceptedFileTypesConstants} from '@project/common/components/file-manage
 import {combineLatest, Observable, Subject} from 'rxjs';
 import {FileListItem} from '@common/components/file-list/file-list-item';
 import {ActivatedRoute} from '@angular/router';
-import {ReportFileManagementStore} from '@project/project-application/report/partner-report-detail-page/partner-report-annexes-tab/report-file-management-store';
-import {PaymentAttachmentService, ProjectReportFileDTO, UserRoleDTO} from '@cat/api';
-import {map, take} from 'rxjs/operators';
+import {
+  ReportFileManagementStore
+} from '@project/project-application/report/partner-report-detail-page/partner-report-annexes-tab/report-file-management-store';
+import {PaymentAttachmentService, JemsFileDTO, UserRoleDTO} from '@cat/api';
+import {finalize, map, take} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {FileListComponent} from '@common/components/file-list/file-list.component';
 import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
@@ -32,6 +34,7 @@ export class PaymentsToProjectAttachmentsComponent implements OnChanges {
   acceptedFilesTypes = AcceptedFileTypesConstants.acceptedFilesTypes;
   maximumAllowedFileSizeInMB: number;
   fileSizeOverLimitError$ = new Subject<boolean>();
+  isUploadInProgress = false;
 
   data$: Observable<{
     attachments: PageFileList;
@@ -54,7 +57,7 @@ export class PaymentsToProjectAttachmentsComponent implements OnChanges {
       map(([attachments, isPaymentEditable]) => ({
         attachments: {
           ...attachments,
-          content: attachments.content?.map((file: ProjectReportFileDTO) => ({
+          content: attachments.content?.map((file: JemsFileDTO) => ({
             id: file.id,
             name: file.name,
             type: file.type,
@@ -65,7 +68,7 @@ export class PaymentsToProjectAttachmentsComponent implements OnChanges {
             editable: isPaymentEditable,
             deletable: isPaymentEditable,
             tooltipIfNotDeletable: '',
-            iconIfNotDeletable: '',
+            iconIfNotDeletable: ''
           })),
         },
         isPaymentEditable,
@@ -82,12 +85,13 @@ export class PaymentsToProjectAttachmentsComponent implements OnChanges {
   }
 
   uploadFile(target: any): void {
+    this.isUploadInProgress = true;
     FileListComponent.doFileUploadWithValidation(
       target,
       this.fileSizeOverLimitError$,
       this.paymentAttachmentsStore.error$,
       this.maximumAllowedFileSizeInMB,
-      file => this.paymentAttachmentsStore.uploadPaymentFile(file),
+      file => this.paymentAttachmentsStore.uploadPaymentFile(file).pipe(finalize(() => this.isUploadInProgress = false)),
     );
   }
 
@@ -104,5 +108,4 @@ export class PaymentsToProjectAttachmentsComponent implements OnChanges {
   deleteCallback = (file: FileListItem): Observable<void> => {
     return this.paymentAttachmentService.deleteAttachment(file.id);
   };
-
 }

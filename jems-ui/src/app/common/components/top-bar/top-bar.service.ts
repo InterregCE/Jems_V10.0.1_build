@@ -75,6 +75,7 @@ export class TopBarService {
             name: `${currentUser?.name} (${currentUser?.role.name})`,
             isInternal: true,
             route: `/app/profile`,
+            icon: `account_circle`
           }
           : null
         )

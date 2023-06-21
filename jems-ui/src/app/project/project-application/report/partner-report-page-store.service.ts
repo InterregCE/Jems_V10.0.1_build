@@ -1,24 +1,23 @@
 import {Injectable} from '@angular/core';
 import {
   ControllerInstitutionsApiService,
-  PageProjectPartnerReportSummaryDTO,
+  PageProjectPartnerReportSummaryDTO, PaymentDetailDTO,
   ProjectPartnerReportService,
   ProjectPartnerReportSummaryDTO,
   ProjectPartnerSummaryDTO,
   ProjectPartnerUserCollaboratorService,
   UserRoleCreateDTO
 } from '@cat/api';
-import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
-import {filter, map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
+import {BehaviorSubject, combineLatest, Observable, of, Subject} from 'rxjs';
+import {catchError, filter, map, shareReplay, startWith, switchMap, take, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {Log} from '@common/utils/log';
 import {Tables} from '@common/utils/tables';
 import {PermissionService} from 'src/app/security/permissions/permission.service';
+import {ProgrammeEditableStateStore} from '../../../programme/programme-page/services/programme-editable-state-store.service';
+import {PrivilegesPageStore} from '@project/project-application/privileges-page/privileges-page-store.service';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
-import {
-  ProgrammeEditableStateStore
-} from '../../../programme/programme-page/services/programme-editable-state-store.service';
 
 @Injectable({providedIn: 'root'})
 export class PartnerReportPageStore {
@@ -32,6 +31,8 @@ export class PartnerReportPageStore {
   userCanEditReport$: Observable<boolean>;
   institutionUserCanViewControlReports$: Observable<boolean>;
   institutionUserCanEditControlReports$: Observable<boolean>;
+  userCanViewGdpr$: Observable<boolean>;
+  canCreateReport$: Observable<boolean>;
 
   newPageSize$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_SIZE);
   newPageIndex$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_INDEX);
@@ -44,7 +45,8 @@ export class PartnerReportPageStore {
               private projectPartnerUserCollaboratorService: ProjectPartnerUserCollaboratorService,
               private permissionService: PermissionService,
               private programmeEditableStateStore: ProgrammeEditableStateStore,
-              private controllerInstitutionService: ControllerInstitutionsApiService) {
+              private controllerInstitutionService: ControllerInstitutionsApiService,
+              private privilegesPageStore: PrivilegesPageStore) {
     this.partnerId$ = this.partnerId();
     this.partnerReports$ = this.partnerReports();
     this.partnerSummary$ = this.partnerSummary();
@@ -53,6 +55,8 @@ export class PartnerReportPageStore {
     this.userCanEditReport$ = this.userCanEditReports();
     this.institutionUserCanViewControlReports$ = this.institutionUserCanViewControlReports();
     this.institutionUserCanEditControlReports$ = this.institutionUserCanEditControlReports();
+    this.userCanViewGdpr$ = this.userCanViewGdpr();
+    this.canCreateReport$ = this.canCreateReport();
   }
 
   createPartnerReport(): Observable<ProjectPartnerReportSummaryDTO> {
@@ -98,7 +102,7 @@ export class PartnerReportPageStore {
       filter(([partnerId]) => !!partnerId),
       map(([partnerId, partnerSummaries]) =>
         partnerSummaries.find(value => value.id === Number(partnerId)) || {} as any
-    ));
+      ));
   }
 
   private partnerReportLevel(): Observable<string> {
@@ -128,7 +132,7 @@ export class PartnerReportPageStore {
   private institutionUserCanViewControlReports(): Observable<boolean> {
     return this.institutionUserControlReportLevel()
       .pipe(
-        map((level) => level === 'View')
+        map((level) => level === 'View' || level === 'Edit')
       );
   }
 
@@ -156,8 +160,36 @@ export class PartnerReportPageStore {
       this.permissionService.hasPermission(PermissionsEnum.ProjectReportingView)
     ])
       .pipe(
-        map(([level, canEdit, canView]) => level === 'VIEW' || canEdit || canView)
+        map(([level, canEdit, canView]) => level === 'VIEW' || level === 'EDIT' || canEdit || canView)
       );
+  }
+
+  userCanViewGdpr(): Observable<boolean> {
+    return combineLatest([
+      this.privilegesPageStore.currentUserPartnerCollaborations$,
+      this.partnerId$.pipe(map(id => Number(id))),
+      this.userCanEditReport$,
+    ]).pipe(
+      take(1),
+      map(([currentUserPartnerCollaborations, partnerId, userCanEditReport]) =>
+        userCanEditReport && currentUserPartnerCollaborations.find(el => el.partnerId === partnerId)?.gdpr === true
+      ),
+    );
+  }
+
+  canCreateReport(): Observable<boolean> {
+    return combineLatest([
+      this.partnerId$,
+      this.partnerReportLevel$,
+    ]).pipe(
+      switchMap(([partnerId, partnerCollaboratorLevel]) => {
+        if (partnerCollaboratorLevel === 'EDIT') {
+          return this.projectPartnerReportService.canReportBeCreated(partnerId as number);
+        } else {
+          return of(false);
+        }
+      })
+    );
   }
 
 }

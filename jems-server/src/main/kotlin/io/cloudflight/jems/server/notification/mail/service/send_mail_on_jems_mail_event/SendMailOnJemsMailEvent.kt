@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.notification.mail.service.send_mail_on_jems_mail_event
 
 import io.cloudflight.jems.server.common.afterCommit
+import io.cloudflight.jems.server.common.event.JemsAsyncMailEvent
 import io.cloudflight.jems.server.common.event.JemsMailEvent
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.model.Variable
@@ -15,7 +16,9 @@ import io.cloudflight.jems.server.programme.service.userrole.ProgrammeDataPersis
 import org.springframework.boot.actuate.info.InfoEndpoint
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.event.EventListener
+import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 
 
@@ -33,7 +36,14 @@ class SendMailOnJemsMailEvent(
     @Transactional
     @ExceptionWrapper(SendMailException::class)
     @EventListener
-    fun enqueueMail(event: JemsMailEvent) {
+    fun enqueueMail(event: JemsMailEvent) = send(event)
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Async
+    @EventListener
+    fun enqueueMailInNewTransaction(event: JemsAsyncMailEvent) = send(event.toMail())
+
+    private fun send(event: JemsMailEvent) {
         persistence.save(
             with(event.mailNotificationInfo) {
                 MailNotification(
@@ -61,5 +71,7 @@ class SendMailOnJemsMailEvent(
             Variable("programmeName", programmeDataPersistence.getProgrammeName()),
             Variable("helpdeskLink",  infoEndpoint.info()["helpdesk-url"]?.toString() ?: "")
         )
+
+    private fun JemsAsyncMailEvent.toMail() = JemsMailEvent(emailTemplateFileName, mailNotificationInfo)
 
 }

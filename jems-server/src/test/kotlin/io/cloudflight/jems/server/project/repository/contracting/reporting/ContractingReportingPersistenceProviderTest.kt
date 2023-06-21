@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.repository.contracting.reporting
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.entity.contracting.reporting.ProjectContractingReportingEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
+import io.cloudflight.jems.server.project.repository.report.project.base.ProjectReportRepository
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ProjectContractingReportingSchedule
 import io.mockk.clearMocks
@@ -29,6 +30,7 @@ internal class ContractingReportingPersistenceProviderTest: UnitTest() {
             periodNumber = id.toInt(),
             deadline = LocalDate.of(2022, 8, 9),
             comment = "dummy comment",
+            number = 1,
         )
 
         private fun entityNew(id: Long) = ProjectContractingReportingEntity(
@@ -38,6 +40,7 @@ internal class ContractingReportingPersistenceProviderTest: UnitTest() {
             periodNumber = id.toInt() + 100,
             deadline = LocalDate.of(2023, 2, 25),
             comment = "dummy comment new",
+            number = 1
         )
 
         private val model10 = ProjectContractingReportingSchedule(
@@ -46,6 +49,9 @@ internal class ContractingReportingPersistenceProviderTest: UnitTest() {
             periodNumber = 10,
             date = LocalDate.of(2022, 8, 9),
             comment = "dummy comment",
+            number = 1,
+            linkedSubmittedProjectReportNumbers = setOf(),
+            linkedDraftProjectReportNumbers = setOf()
         )
 
         private fun modelNew(id: Long) = ProjectContractingReportingSchedule(
@@ -54,6 +60,9 @@ internal class ContractingReportingPersistenceProviderTest: UnitTest() {
             periodNumber = id.toInt() + 100,
             date = LocalDate.of(2023, 2, 25),
             comment = "dummy comment new",
+            number = 1,
+            linkedSubmittedProjectReportNumbers = setOf(),
+            linkedDraftProjectReportNumbers = setOf()
         )
     }
 
@@ -63,8 +72,12 @@ internal class ContractingReportingPersistenceProviderTest: UnitTest() {
     @MockK
     lateinit var projectRepository: ProjectRepository
 
+    @MockK
+    lateinit var projectReportRepository: ProjectReportRepository
+
     @InjectMockKs
     lateinit var persistence: ContractingReportingPersistenceProvider
+
 
     @BeforeEach
     fun reset() {
@@ -76,6 +89,14 @@ internal class ContractingReportingPersistenceProviderTest: UnitTest() {
         every { projectContractingReportingRepository.findTop50ByProjectIdOrderByDeadline(PROJECT_ID) } returns
             mutableListOf(entity(10L))
         assertThat(persistence.getContractingReporting(PROJECT_ID)).containsExactly(model10)
+    }
+
+    @Test
+    fun getContractingReportingDeadline() {
+        every { projectContractingReportingRepository.findByProjectIdAndId(PROJECT_ID, 10L) } returns entity(10L)
+        every { projectReportRepository.findAllByProjectIdAndDeadlineId(PROJECT_ID, 10L) } returns listOf()
+
+        assertThat(persistence.getContractingReportingDeadline(PROJECT_ID, 10L)).isEqualTo(model10)
     }
 
     @Test
@@ -91,6 +112,7 @@ internal class ContractingReportingPersistenceProviderTest: UnitTest() {
 
         val created = mutableListOf<ProjectContractingReportingEntity>()
         every { projectContractingReportingRepository.save(capture(created)) } returnsArgument 0
+        every { projectReportRepository.findAllByProjectIdAndDeadlineNotNull(PROJECT_ID) } returns listOf()
 
         val deadlines = listOf(
             modelNew(16L) /* to be updated */,

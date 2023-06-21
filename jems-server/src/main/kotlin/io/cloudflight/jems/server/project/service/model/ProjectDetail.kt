@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePriorityPol
 import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePrioritySimple
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.user.service.model.UserSummary
+import java.time.LocalDate
 
 data class ProjectDetail(
     val id: Long?,
@@ -20,6 +21,7 @@ data class ProjectDetail(
     val firstSubmissionStep1: ProjectStatus? = null,
     val lastResubmission: ProjectStatus? = null,
     val contractedDecision: ProjectStatus? = null,
+    val contractedOnDate: LocalDate? = null,
     var assessmentStep1: ProjectAssessment? = null,
     var assessmentStep2: ProjectAssessment? = null,
 ) {

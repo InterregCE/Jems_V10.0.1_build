@@ -21,9 +21,9 @@ export class SideNavComponent {
   @Input()
   headlines: HeadlineRoute[];
 
-  currentUrl$ = new BehaviorSubject<string>(this.router.url);
-  projectId$: number;
-  projectOverviewUrl$: string;
+  currentUrl = new BehaviorSubject<string>(this.router.url);
+  projectId: number;
+  projectOverviewUrl: string;
 
   constructor(public sideNavService: SideNavService,
               private router: Router,
@@ -31,13 +31,14 @@ export class SideNavComponent {
     this.router.events
       .pipe(
         filter(val => val instanceof ResolveEnd),
-        tap((event: ResolveEnd) => this.currentUrl$.next(event.url)),
+        tap((event: ResolveEnd) => this.currentUrl.next(event.url)),
         untilDestroyed(this)
       ).subscribe();
 
     this.projectStore.project$.pipe(
-        tap(project => this.projectId$ = project.id),
-        tap(project => this.projectOverviewUrl$ = '/app/project/detail/' + project.id)
+        tap(project => this.projectId = project.id),
+        tap(project => this.projectOverviewUrl = '/app/project/detail/' + project.id),
+        untilDestroyed(this)
     ).subscribe();
   }
 }

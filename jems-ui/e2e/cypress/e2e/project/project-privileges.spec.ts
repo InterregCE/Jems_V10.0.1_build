@@ -5,25 +5,6 @@ import application from '../../fixtures/api/application/application.json';
 
 context('Project privileges tests', () => {
 
-  it('TB-379 Automatically assign users to projects', () => {
-    cy.fixture('project/project-privileges/TB-379.json').then(testData => {
-      cy.loginByRequest(user.admin.email);
-      testData.privilegedUser.email = faker.internet.email();
-      cy.createUser(testData.privilegedUser);
-      cy.visit('app/project', {failOnStatusCode: false});
-
-      cy.contains('Assignment').click();
-      cy.get('.mat-paginator-range-label').then(paginatorRange => {
-        const numberOfPages = +paginatorRange.text().match(/\d - (\d+) of \d+/)[1];
-
-        cy.get(`mat-chip:contains('${testData.privilegedUser.email}')`).should(chipElements => {
-          expect(chipElements).to.have.length(numberOfPages);
-          expect(chipElements).not.to.have.class('mat-chip-selected-user');
-        });
-      });
-    });
-  });
-
   it('TB-363 Add/remove user privileges to/from project', () => {
     cy.fixture('project/project-privileges/TB-363.json').then(testData => {
       cy.loginByRequest(user.programmeUser.email);
@@ -39,7 +20,7 @@ context('Project privileges tests', () => {
         // Add user privileges to the project
         cy.visit(`app/project/detail/${applicationId}/privileges`, {failOnStatusCode: false});
         cy.get('jems-application-form-privileges-expansion-panel').then(applicationFormUsers => {
-          cy.wrap(applicationFormUsers).contains('+').click();
+          cy.wrap(applicationFormUsers).contains('add').click();
           cy.wrap(applicationFormUsers).find('input[formcontrolname="userEmail"]').last().type(testData.projectCollaborator.email);
           cy.wrap(applicationFormUsers).contains('Save changes').click();
 
@@ -91,7 +72,7 @@ context('Project privileges tests', () => {
 
   it('TB-374 Add user to project using project privileges', () => {
     cy.fixture('project/project-privileges/TB-374.json').then(testData => {
-      
+
       // Preparation for the tests
       cy.loginByRequest(user.admin.email);
 
@@ -118,7 +99,7 @@ context('Project privileges tests', () => {
         cy.contains('div', 'Project collaborators were saved successfully').should('be.visible');
 
         //checking whether the user can be added twice
-        cy.contains('button', '+').click();
+        cy.contains('button', 'add').click();
         cy.get('input:last').type(testData.applicantView.email);
         cy.contains('div', 'The user emails must be unique').should('be.visible');
         cy.contains('button', 'Discard changes').click();
@@ -127,10 +108,11 @@ context('Project privileges tests', () => {
         // Testing the view privileges
         cy.loginByRequest(testData.applicantView.email);
         cy.visit('/');
-        cy.get('#table:first').contains('div', applicationId).should('be.visible');
+        cy.get('jems-table:first').contains('div', applicationId).should('be.visible');
         cy.visit(`/app/project/detail/${applicationId}/applicationFormIdentification`, {failOnStatusCode: false});
         cy.get("textarea:first").should('have.attr', 'readonly');
         cy.contains('Project privileges').click();
+        cy.get('mat-button-toggle-group:last').contains('span', 'view').parent().parent().should('be.disabled');
         cy.get('mat-button-toggle-group:last').contains('span', 'view').click();
         cy.contains('button', 'Save changes').should('not.exist');
         cy.contains('Export').click();
@@ -142,8 +124,8 @@ context('Project privileges tests', () => {
         cy.contains('button', 'Save changes').should('not.exist');
         cy.contains('annexes').click();
         cy.contains('button', 'Upload').should('not.exist');
-        cy.contains('mat-icon', 'download').should('be.visible');
-        cy.contains('mat-icon', 'edit').should('not.exist');
+        cy.get('jems-file-management').contains('mat-icon', 'download').should('be.visible');
+        cy.get('jems-file-management').contains('mat-icon', 'edit').should('not.exist');
         cy.contains('Check & Submit').click();
         cy.contains('button', 'Run pre-submission check').should('be.visible');
         cy.contains('button', 'Run pre-submission check').click();
@@ -187,12 +169,12 @@ context('Project privileges tests', () => {
       cy.createApplication(application).then(applicationId => {
         cy.visit(`/app/project/detail/${applicationId}/privileges`, {failOnStatusCode: false});
       });
-      cy.contains('button', '+').click();
+      cy.contains('button', 'add').click();
       cy.get('input:last').type(faker.internet.email());
       cy.contains('button', 'Save changes').click();
       cy.contains('div', 'Input data are not valid').should('be.visible');
       cy.get('.jems-layout-row:last').contains('mat-icon', 'delete').click();
-      cy.contains('button', '+').click();
+      cy.contains('button', 'add').click();
       cy.get('input:last').type(testData.programmeUser.email);
       cy.contains('button', 'Save changes').click();
       cy.contains('div', 'Input data are not valid').should('be.visible');
@@ -242,29 +224,29 @@ context('Project privileges tests', () => {
 
           cy.contains('mat-row', firstApplicationAcronym).find('input').click();
           cy.contains('mat-option', testData.monitorUser1.email).click();
-            
+
           cy.contains('mat-row', firstApplicationAcronym).find('input').click();
           cy.contains('mat-option', testData.monitorUser2.email).click();
-            
+
           cy.contains('mat-row', secondApplicationAcronym).find('input').click();
           cy.contains('mat-option', testData.monitorUser1.email).click();
 
           cy.contains('button', 'Save changes').click();
           cy.contains('Users has been successfully assigned to project(s).').scrollIntoView().should('be.visible');
           cy.contains('Users has been successfully assigned to project(s).').should('not.exist');
-          
+
           // checking for the added users
           cy.contains('mat-row', firstApplicationAcronym).scrollIntoView().within(() => {
-            cy.contains('mat-chip[selected]', testData.monitorUser1.email).should('be.visible');
-            cy.contains('mat-chip[selected]', testData.monitorUser2.email).should('be.visible');
+            cy.contains('mat-chip[selected]', testData.monitorUser1.email).scrollIntoView().should('be.visible');
+            cy.contains('mat-chip[selected]', testData.monitorUser2.email).scrollIntoView().should('be.visible');
           })
           cy.contains('mat-row', secondApplicationAcronym).scrollIntoView().within(() => {
-            cy.contains('mat-chip[selected]', testData.monitorUser1.email).should('be.visible');
+            cy.contains('mat-chip[selected]', testData.monitorUser1.email).scrollIntoView().should('be.visible');
             cy.contains('mat-chip[selected]', testData.monitorUser2.email).should('not.exist');
           })
 
           // removing users from one of the projects
-          cy.contains('mat-row', applicationId1).within(() => {
+          cy.contains('.mat-column-project-table-column-name-project-id', applicationId1).parent().within(() => {
             cy.contains('mat-icon', 'highlight_off').click();
           })
           cy.contains('button', 'Save changes').click();
@@ -272,10 +254,10 @@ context('Project privileges tests', () => {
           cy.contains('Users has been successfully assigned to project(s).').should('not.exist');
 
           // checking for the removed users
-          cy.contains('mat-row', applicationId1).within(() => {
+          cy.contains('.mat-column-project-table-column-name-project-id', applicationId1).parent().within(() => {
             cy.get('mat-chip.mat-chip-selected-user').should('not.exist');
           })
-          cy.contains('mat-row', applicationId2).within(() => {
+          cy.contains('.mat-column-project-table-column-name-project-id', applicationId2).parent().within(() => {
             cy.contains('mat-chip.mat-chip-selected-user', testData.monitorUser1.email).should('exist');
           })
 
@@ -331,7 +313,7 @@ context('Project privileges tests', () => {
 
   function testEditPrivileges(applicationId) {
     cy.visit('/');
-    cy.get('#table:first').contains('div', applicationId).should('be.visible');
+    cy.get('jems-table:first').contains('div', applicationId).should('be.visible');
     cy.visit(`/app/project/detail/${applicationId}/applicationFormIdentification`, {failOnStatusCode: false});
     cy.get("textarea:first").should('not.have.attr', 'readonly');
     cy.visit(`/app/project/detail/${applicationId}/export`, {failOnStatusCode: false});
@@ -352,7 +334,7 @@ context('Project privileges tests', () => {
     cy.visit(`/app/project/detail/${applicationId}`, {failOnStatusCode: false});
     cy.wait(100);
     cy.contains('div', 'Project privileges').click();
-    cy.contains('button', '+').click();
+    cy.contains('button', 'add').click();
     cy.get('input:last').type(newUser.email);
     cy.get('mat-button-toggle-group:last').contains('span', privilegeLevel).click();
     cy.contains('button', 'Save changes').click();

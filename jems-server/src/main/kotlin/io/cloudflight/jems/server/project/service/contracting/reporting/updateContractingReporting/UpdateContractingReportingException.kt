@@ -4,7 +4,6 @@ import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.common.exception.ApplicationException
 import io.cloudflight.jems.server.common.exception.ApplicationNotFoundException
 import io.cloudflight.jems.server.common.exception.ApplicationUnprocessableException
-import io.cloudflight.jems.server.programme.service.checklist.create.CREATE_PROGRAMME_CHECKLIST_ERROR_CODE_PREFIX
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ProjectContractingReportingSchedule
 import java.time.LocalDate
 
@@ -69,4 +68,16 @@ class EmptyDeadlineDate : ApplicationUnprocessableException(
     code = "$UPDATE_CONTRACTING_REPORTING_ERROR_CODE_PREFIX-007",
     i18nMessage = I18nMessage("$UPDATE_CONTRACTING_REPORTING_ERROR_KEY_PREFIX.empty.date"),
     message = "Deadline date can't be empty",
+)
+
+class LinkedDeadlineDeletedException(ids: Set<Long>) : ApplicationUnprocessableException(
+    code = "$UPDATE_CONTRACTING_REPORTING_ERROR_CODE_PREFIX-008",
+    i18nMessage = I18nMessage("$UPDATE_CONTRACTING_REPORTING_ERROR_KEY_PREFIX.linked.deadline.deleted"),
+    message = "Deadlines $ids are linked to a project report already",
+)
+
+class LinkedDeadlineUpdateException : ApplicationUnprocessableException(
+    code = "$UPDATE_CONTRACTING_REPORTING_ERROR_CODE_PREFIX-009",
+    i18nMessage = I18nMessage("$UPDATE_CONTRACTING_REPORTING_ERROR_KEY_PREFIX.submitted.report.linked.deadline.deletion"),
+    message = "Deadline was linked to a submitted project report",
 )

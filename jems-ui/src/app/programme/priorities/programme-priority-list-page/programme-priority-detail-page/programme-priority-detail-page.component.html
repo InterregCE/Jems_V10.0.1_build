@@ -5,7 +5,8 @@
         <div page-sub-title jemsMultiColumnRow>
             <a color="primary" class="mr-1" mat-icon-button *ngIf="!form.enabled"
                routerLink=".."
-               matTooltip="{{ 'programme.priority.back.to.list' | translate }}">
+               matTooltip="{{ 'programme.priority.back.to.list' | translate }}"
+               aria-label="back">
                 <mat-icon class="icon-back" fontSet="material-icons-outlined">arrow_circle_left</mat-icon>
             </a>
             <h3 class="mb-0 put-icon-to-header-line">{{'programme.priority.add.title' | translate}}</h3>
@@ -207,14 +208,13 @@
             <div class=mat-body-strong>{{'programme.priority.dimensions.title' | translate}}</div>
             <div class=mat-body-strong>{{'programme.priority.dimensions.codes' | translate}}</div>
         </div>
-        <div *ngFor="let dimension of dimensions">
-            <div>{{'programme.objective.dimension.' + dimension.toLowerCase() | translate}}</div>
+        <div *ngFor="let dimension of dimensionsEnum; let index = index;">
+            <div> {{dimension.orderNr}} - {{'programme.objective.dimension.' + dimension.name.toLowerCase() | translate}}</div>
             <div class="dimensions pt-2">
                 <jems-filter-autocomplete-input
-                        [required]=objectiveControl.get(constants.POLICY_SELECTED.name)?.value
-                        [options]=getCodesByDimension(dimension)
-                        [isDisabled]="isProgrammeSetupLocked && form.disabled"
-                        [formControl]=objectiveControl.get(constants.DIMENSION_CODES.name).get(dimension)
+                        [options]=getCodesByDimension(dimension.name)
+                        [isDisabled]="form.disabled"
+                        [formControl]=objectiveControl.get(constants.DIMENSION_CODES.name).get(dimension.name)
                         [hasPartialLockingOfValues]="true"
                         formFieldWidth=full
                         label=programme.priority.dimensions.codes>
@@ -222,7 +222,7 @@
 
                 <mat-error>
                     <jems-form-field-errors
-                            [errors]=objectiveControl?.get(constants.DIMENSION_CODES.name)?.get(dimension)?.errors
+                            [errors]=objectiveControl?.get(constants.DIMENSION_CODES.name)?.get(dimension.name)?.errors
                             [messages]=constants.DIMENSION_CODES.errorMessages>
                     </jems-form-field-errors>
                 </mat-error>

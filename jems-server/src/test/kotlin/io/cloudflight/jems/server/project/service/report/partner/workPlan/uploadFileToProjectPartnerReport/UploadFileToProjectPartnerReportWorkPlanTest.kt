@@ -2,13 +2,13 @@ package io.cloudflight.jems.server.project.service.report.partner.workPlan.uploa
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.common.file.service.model.JemsFileCreate
+import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
-import io.cloudflight.jems.server.project.service.report.partner.workPlan.ProjectReportWorkPlanPersistence
+import io.cloudflight.jems.server.project.service.report.partner.file.ProjectPartnerReportFilePersistence
+import io.cloudflight.jems.server.project.service.report.partner.workPlan.ProjectPartnerReportWorkPlanPersistence
 import io.mockk.CapturingSlot
 import io.mockk.clearMocks
 import io.mockk.every
@@ -34,9 +34,9 @@ internal class UploadFileToProjectPartnerReportWorkPlanTest : UnitTest() {
     private fun getDummyFile(name: String) = ProjectFile(mockk(), name = name, size = FILE_SIZE)
 
     @MockK
-    lateinit var reportFilePersistence: ProjectReportFilePersistence
+    lateinit var reportFilePersistence: ProjectPartnerReportFilePersistence
     @MockK
-    lateinit var reportWorkPlanPersistence: ProjectReportWorkPlanPersistence
+    lateinit var reportWorkPlanPersistence: ProjectPartnerReportWorkPlanPersistence
     @MockK
     lateinit var partnerPersistence: PartnerPersistence
     @MockK

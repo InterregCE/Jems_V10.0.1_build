@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.payments.repository
 
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.common.entity.toInstant
 import io.cloudflight.jems.server.payments.entity.AdvancePaymentEntity
@@ -27,6 +26,7 @@ import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumEntity
 import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.service.toOutputUser
@@ -36,6 +36,19 @@ import java.time.ZoneOffset.UTC
 import java.time.ZonedDateTime
 
 fun Page<PaymentEntity>.toListModel(
+    getLumpSum: (Long, Int) -> ProjectLumpSumEntity,
+    getProject: (Long, String?) -> ProjectFull,
+    getConfirm: (Long) -> PaymentConfirmedInfo
+) = map {
+    val lumpSum = getLumpSum.invoke(it.project.id, it.orderNr)
+    it.toDetailModel(
+        lumpSum,
+        getProject.invoke(it.project.id, lumpSum.lastApprovedVersionBeforeReadyForPayment),
+        getConfirm.invoke(it.id)
+    )
+}
+
+fun List<PaymentEntity>.toListModel(
     getLumpSum: (Long, Int) -> ProjectLumpSumEntity,
     getProject: (Long, String?) -> ProjectFull,
     getConfirm: (Long) -> PaymentConfirmedInfo
@@ -59,8 +72,11 @@ fun PaymentEntity.toDetailModel(
     projectAcronym = projectFull.acronym,
     paymentClaimNo = 0,
     paymentClaimSubmissionDate = projectFull.contractedDecision?.updated,
+    lumpSumId = lumpSum.programmeLumpSum.id,
+    orderNr = orderNr,
     paymentApprovalDate = lumpSum.paymentEnabledDate,
     totalEligibleAmount = lumpSum.programmeLumpSum.cost,
+    fundId = fund.id,
     fundName = fund.type.name,
     amountApprovedPerFund = amountApprovedPerFund!!,
     amountPaidPerFund = paymentConfirmedInfo.amountPaidPerFund,
@@ -183,8 +199,8 @@ fun AdvancePaymentUpdate.toEntity(
     partnerRole = partner.role,
     partnerSortNumber = partner.sortNumber,
     partnerAbbreviation = partner.abbreviation,
-    amountPaid = amountAdvance,
-    paymentDate = dateOfPayment,
+    amountPaid = amountPaid,
+    paymentDate = paymentDate,
     comment = comment,
     isPaymentAuthorizedInfo = paymentAuthorized,
     paymentAuthorizedInfoUser = paymentAuthorizedUser,
@@ -199,6 +215,7 @@ fun AdvancePaymentEntity.toDetailModel() = AdvancePaymentDetail(
     projectId = projectId,
     projectCustomIdentifier = projectCustomIdentifier,
     projectAcronym = projectAcronym ?: "",
+    projectVersion = projectVersion,
     partnerId = partnerId,
     partnerType = partnerRole,
     partnerNumber = partnerSortNumber,
@@ -206,8 +223,8 @@ fun AdvancePaymentEntity.toDetailModel() = AdvancePaymentDetail(
     programmeFund = programmeFund?.toModel(),
     partnerContribution = idNamePairOrNull(partnerContributionId, partnerContributionName),
     partnerContributionSpf = idNamePairOrNull(partnerContributionSpfId, partnerContributionSpfName),
-    amountAdvance = amountPaid,
-    dateOfPayment = paymentDate,
+    amountPaid = amountPaid,
+    paymentDate = paymentDate,
     comment = comment,
     paymentAuthorized = isPaymentAuthorizedInfo,
     paymentAuthorizedUser = paymentAuthorizedInfoUser?.toOutputUser(),
@@ -230,12 +247,12 @@ fun AdvancePaymentEntity.toModel(): AdvancePayment {
         id = id,
         projectCustomIdentifier = projectCustomIdentifier,
         projectAcronym = projectAcronym ?: "",
-        partnerType = ProjectPartnerRoleDTO.valueOf(partnerRole.name),
+        partnerType = ProjectPartnerRole.valueOf(partnerRole.name),
         partnerNumber = partnerSortNumber,
         partnerAbbreviation = partnerAbbreviation ?: "",
         paymentAuthorized = isPaymentAuthorizedInfo,
-        amountAdvance = amountPaid,
-        dateOfPayment = paymentDate,
+        amountPaid = amountPaid,
+        paymentDate = paymentDate,
         amountSettled = BigDecimal.ZERO,
         programmeFund = programmeFund?.toModel(),
         partnerContribution = idNamePairOrNull(partnerContributionId, partnerContributionName),

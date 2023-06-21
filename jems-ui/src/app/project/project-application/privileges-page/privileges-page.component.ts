@@ -7,7 +7,6 @@ import {Alert} from '@common/components/forms/alert';
   selector: 'jems-privileges-page',
   templateUrl: './privileges-page.component.html',
   styleUrls: ['./privileges-page.component.scss'],
-  providers: [PrivilegesPageStore],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PrivilegesPageComponent {

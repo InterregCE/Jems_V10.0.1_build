@@ -6,39 +6,41 @@ import application2step from '../../../fixtures/api/application/2.step.applicati
 import partner from '../../../fixtures/api/application/partner/partner.json';
 import {faker} from '@faker-js/faker';
 
-const baselinePath = "/project/exports/application-form/";
+const baselinePath = '/project/exports/application-form/';
+
+const frontPageProjectIdCoordinates = {x0: 387, x1: 440, y0: 324, y1: 343};
+const frontPageProjectAcronymCoordinates = {x0: 260, x1: 580, y0: 373, y1: 404};
+const frontPageDateCoordinates = {x0: 400, x1: 560, y0: 515, y1: 535};
+const a1ProjectIdCoordinates = {x0: 400, x1: 450, y0: 207, y1: 224};
+const a1ProjectAcronymCoordinates = {x0: 400, x1: 580, y0: 370, y1: 390};
+const version1A1ProjectAcronymCoordinates = {x0: 400, x1: 580, y0: 247, y1: 267};
+const c4Output11TitleCoordinates = {x0: 420, x1: 480, y0: 681, y1: 705};
+const c4Output12TitleCoordinates = {x0: 420, x1: 480, y0: 955, y1: 980};
+const c5ResultIndicatorTitleCoordinates = {x0: 425, x1: 760, y0: 235, y1: 255};
+const c6OutputIndicatorTitleCoordinates = {x0: 94, x1: 135, y0: 270, y1: 282};
+const c6ResultIndicatorTitleCoordinates = {x0: 94, x1: 135, y0: 322, y1: 333};
 
 // mask that suit most cases
 const comparePdfMask = [
-  {pageIndex: 0, coordinates: {x0: 387, x1: 440, y0: 324, y1: 343}},
-  {pageIndex: 1, coordinates: {x0: 400, x1: 450, y0: 207, y1: 224}},
-  {pageIndex: 1, coordinates: {x0: 400, x1: 580, y0: 370, y1: 390}},
-  {pageIndex: 0, coordinates: {x0: 260, x1: 580, y0: 373, y1: 404}},
-  {pageIndex: 0, coordinates: {x0: 400, x1: 560, y0: 515, y1: 535}}
+  {pageIndex: 0, coordinates: frontPageProjectIdCoordinates},
+  {pageIndex: 0, coordinates: frontPageProjectAcronymCoordinates},
+  {pageIndex: 0, coordinates: frontPageDateCoordinates},
+  {pageIndex: 1, coordinates: a1ProjectIdCoordinates}
 ];
 
-// mask for comparing 1st step versioned PDFs
-const comparePdfMaskV1 = [
-  {pageIndex: 0, coordinates: {x0: 387, x1: 440, y0: 324, y1: 343}},
-  {pageIndex: 1, coordinates: {x0: 400, x1: 450, y0: 207, y1: 224}},
-  {pageIndex: 1, coordinates: {x0: 400, x1: 580, y0: 247, y1: 267}},
-  {pageIndex: 0, coordinates: {x0: 260, x1: 580, y0: 373, y1: 404}},
-  {pageIndex: 0, coordinates: {x0: 400, x1: 560, y0: 515, y1: 535}}
-];
 context('Application form exports', () => {
   beforeEach(() => {
     cy.loginByRequest(user.applicantUser.email);
   });
 
   it('TB-366 Export application form using two sets of input and export language', () => {
-    const currentMask = comparePdfMask;
-    currentMask.push({pageIndex: 18, coordinates: {x0: 425, x1: 760, y0: 235, y1: 255}});
-    currentMask.push({pageIndex: 15, coordinates: {x0: 425, x1: 760, y0: 681, y1: 705}});
-    currentMask.push({pageIndex: 15, coordinates: {x0: 400, x1: 760, y0: 701, y1: 725}});
-    currentMask.push({pageIndex: 15, coordinates: {x0: 425, x1: 760, y0: 955, y1: 980}});
-    currentMask.push({pageIndex: 15, coordinates: {x0: 400, x1: 760, y0: 978, y1: 1000}});
-    currentMask.push({pageIndex: 19, coordinates: {x0: 94, x1: 135, y0: 270, y1: 282}});
-    currentMask.push({pageIndex: 19, coordinates: {x0: 94, x1: 135, y0: 322, y1: 333}});
+    const currentMask = [...comparePdfMask];
+    currentMask.push({pageIndex: 1, coordinates: a1ProjectAcronymCoordinates});
+    currentMask.push({pageIndex: 17, coordinates: c4Output11TitleCoordinates});
+    currentMask.push({pageIndex: 17, coordinates: c4Output12TitleCoordinates});
+    currentMask.push({pageIndex: 23, coordinates: c5ResultIndicatorTitleCoordinates});
+    currentMask.push({pageIndex: 24, coordinates: c6OutputIndicatorTitleCoordinates});
+    currentMask.push({pageIndex: 24, coordinates: c6ResultIndicatorTitleCoordinates});
 
     cy.createCall(call, user.programmeUser.email).then(callId => {
       application.details.projectCallId = callId;
@@ -101,16 +103,8 @@ context('Application form exports', () => {
             cy.createProjectResults(applicationId, application2step.secondStep.description.results);
             cy.updateProjectManagement(applicationId, application2step.secondStep.description.management);
             cy.updateProjectLongTermPlans(applicationId, application2step.secondStep.description.longTermPlans);
-            cy.updatePartner(partnerId, updatedPartner.details);
-            cy.updatePartnerAddress(partnerId, updatedPartner.address);
-            cy.updatePartnerContact(partnerId, updatedPartner.contact);
-            cy.updatePartnerMotivation(partnerId, updatedPartner.motivation);
-            cy.then(function () {
-              cy.updatePartnerBudget(partnerId, updatedPartner.budget, this.investmentId);
-              cy.updatePartnerCofinancing(partnerId, updatedPartner.cofinancing);
-              cy.updatePartnerStateAid(partnerId, updatedPartner.stateAid, this.options);
-            });
-            cy.createAssociatedOrganization(applicationId, partnerId, updatedPartner.associatedOrganization);
+            cy.updatePartnerData(partnerId, updatedPartner);
+            cy.createAssociatedOrganisations(applicationId, application2step.secondStep.associatedOrganisations);
             cy.runPreSubmissionCheck(applicationId);
             cy.submitProjectApplication(applicationId);
 
@@ -120,7 +114,7 @@ context('Application form exports', () => {
             cy.startModification(applicationId, user.programmeUser.email);
             cy.updateProjectIdentification(applicationId, testData.approvedModificationData.identification);
             partner.details.abbreviation = testData.approvedModificationData.partnerAbbreviation;
-            cy.createPartners(applicationId, [partner]);
+            cy.createFullPartner(applicationId, partner);
             cy.runPreSubmissionCheck(applicationId);
             cy.submitProjectApplication(applicationId);
             cy.approveModification(applicationId, testData.approvalInfo, user.programmeUser.email);
@@ -133,7 +127,7 @@ context('Application form exports', () => {
             });
             const thirdPartner = JSON.parse(JSON.stringify(partner));
             thirdPartner.details.abbreviation = testData.rejectedModificationData.partnerAbbreviation;
-            cy.createPartners(applicationId, [thirdPartner]);
+            cy.createFullPartner(applicationId, thirdPartner);
             cy.runPreSubmissionCheck(applicationId);
             cy.submitProjectApplication(applicationId);
             cy.rejectModification(applicationId, testData.rejectionInfo, user.programmeUser.email);
@@ -144,29 +138,30 @@ context('Application form exports', () => {
             cy.contains('div', 'Export Plugin').find('mat-select').click();
             cy.contains('mat-option', 'Standard application form export').click();
             cy.get('div#export-config').contains('div', 'Project version').find('mat-select').click();
-            cy.contains('mat-option', 'V. 1.0').click();
+            cy.contains('mat-option', 'V.1.0').click();
 
             cy.contains('div#export-config button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?*version=1.0`, 'pdf').then(file => {
+              const currentMaskV1 = [...comparePdfMask];
+              currentMaskV1.push({pageIndex: 1, coordinates: version1A1ProjectAcronymCoordinates});
               const templateFile = 'TB-367-export-template-v1.pdf';
-              cy.comparePdf(templateFile, file, comparePdfMaskV1, baselinePath).then(result => {
+              cy.comparePdf(templateFile, file, currentMaskV1, baselinePath).then(result => {
                 expect(result.status === 'passed', 'Verify v1 export').to.be.true;
               });
             });
 
             // export step 2 version
             cy.get('div#export-config').contains('div', 'Project version').find('mat-select').click();
-            cy.contains('mat-option', 'V. 2.0').click();
+            cy.contains('mat-option', 'V.2.0').click();
 
             cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?*version=2.0`, 'pdf').then(file => {
               const templateFile = 'TB-367-export-template-v2.pdf';
-              const currentMask = comparePdfMask;
-              currentMask.push({pageIndex: 18, coordinates: {x0: 425, x1: 760, y0: 235, y1: 255}});
-              currentMask.push({pageIndex: 15, coordinates: {x0: 419, x1: 760, y0: 626, y1: 650}});
-              currentMask.push({pageIndex: 15, coordinates: {x0: 400, x1: 760, y0: 646, y1: 670}});
-              currentMask.push({pageIndex: 15, coordinates: {x0: 419, x1: 760, y0: 900, y1: 925}});
-              currentMask.push({pageIndex: 15, coordinates: {x0: 400, x1: 760, y0: 923, y1: 945}});
-              currentMask.push({pageIndex: 19, coordinates: {x0: 94, x1: 135, y0: 270, y1: 282}});
-              currentMask.push({pageIndex: 19, coordinates: {x0: 94, x1: 135, y0: 322, y1: 333}});
+              const currentMask = [...comparePdfMask];
+              currentMask.push({pageIndex: 1, coordinates: a1ProjectAcronymCoordinates});
+              currentMask.push({pageIndex: 15, coordinates: {x0: 420, x1: 480, y0: 626, y1: 650}}); // due to 2step project, c4 output 1.1 title slightly below usual
+              currentMask.push({pageIndex: 15, coordinates: {x0: 420, x1: 480, y0: 900, y1: 925}}); // c4 output 1.2 title
+              currentMask.push({pageIndex: 20, coordinates: c5ResultIndicatorTitleCoordinates});
+              currentMask.push({pageIndex: 21, coordinates: c6OutputIndicatorTitleCoordinates});
+              currentMask.push({pageIndex: 21, coordinates: c6ResultIndicatorTitleCoordinates});
               cy.comparePdf(templateFile, file, currentMask, baselinePath).then(result => {
                 expect(result.status === 'passed', 'Verify v2 export').to.be.true;
               });
@@ -174,18 +169,17 @@ context('Application form exports', () => {
 
             // export rejected version
             cy.get('div#export-config').contains('div', 'Project version').find('mat-select').click();
-            cy.contains('mat-option', 'V. 4.0').click();
+            cy.contains('mat-option', 'V.4.0').click();
 
             cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?*version=4.0`, 'pdf').then(file => {
               const templateFile = 'TB-367-export-template-v4.pdf';
-              const currentMask = comparePdfMask;
-              currentMask.push({pageIndex: 24, coordinates: {x0: 425, x1: 760, y0: 235, y1: 255}});
-              currentMask.push({pageIndex: 21, coordinates: {x0: 419, x1: 760, y0: 626, y1: 650}});
-              currentMask.push({pageIndex: 21, coordinates: {x0: 400, x1: 760, y0: 646, y1: 670}});
-              currentMask.push({pageIndex: 21, coordinates: {x0: 419, x1: 760, y0: 900, y1: 925}});
-              currentMask.push({pageIndex: 21, coordinates: {x0: 400, x1: 760, y0: 923, y1: 945}});
-              currentMask.push({pageIndex: 25, coordinates: {x0: 94, x1: 135, y0: 270, y1: 282}});
-              currentMask.push({pageIndex: 25, coordinates: {x0: 94, x1: 135, y0: 322, y1: 333}});
+              const currentMask = [...comparePdfMask];
+              currentMask.push({pageIndex: 1, coordinates: a1ProjectAcronymCoordinates});
+              currentMask.push({pageIndex: 21, coordinates: {x0: 420, x1: 480, y0: 626, y1: 650}}); // due to 2step project, c4 output 1.1 title slightly below usual
+              currentMask.push({pageIndex: 21, coordinates: {x0: 420, x1: 480, y0: 900, y1: 925}}); // c4 output 1.2 title
+              currentMask.push({pageIndex: 26, coordinates: c5ResultIndicatorTitleCoordinates});
+              currentMask.push({pageIndex: 27, coordinates: c6OutputIndicatorTitleCoordinates});
+              currentMask.push({pageIndex: 27, coordinates: c6ResultIndicatorTitleCoordinates});
               cy.comparePdf(templateFile, file, currentMask, baselinePath).then(result => {
                 expect(result.status === 'passed', 'Verify v4 export').to.be.true;
               });
@@ -224,7 +218,7 @@ context('Application form exports', () => {
             cy.createProjectResults(applicationId, testData.application.description.results);
             cy.updateProjectManagement(applicationId, application2step.secondStep.description.management);
             cy.updateProjectLongTermPlans(applicationId, application2step.secondStep.description.longTermPlans);
-            cy.updatePartner(partnerId, updatedPartner.details);
+            cy.updatePartnerIdentity(partnerId, updatedPartner.details);
             cy.updatePartnerAddress(partnerId, updatedPartner.address);
             cy.updatePartnerContact(partnerId, updatedPartner.contact);
             cy.updatePartnerBudget(partnerId, updatedPartner.budget);
@@ -240,10 +234,11 @@ context('Application form exports', () => {
             // export current step 2 (approved) version
             cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?*`, 'pdf').then(file => {
               const templateFile = 'TB-373-export-template-v2.pdf';
-              const currentMask = comparePdfMask;
-              currentMask.push({pageIndex: 11, coordinates: {x0: 430, x1: 480, y0: 855, y1: 875}});
-              currentMask.push({pageIndex: 12, coordinates: {x0: 425, x1: 480, y0: 235, y1: 252}});
-              currentMask.push({pageIndex: 13, coordinates: {x0: 96, x1: 136, y0: 244, y1: 256}});
+              const currentMask = [...comparePdfMask];
+              currentMask.push({pageIndex: 1, coordinates: a1ProjectAcronymCoordinates});
+              currentMask.push({pageIndex: 11, coordinates: {x0: 430, x1: 480, y0: 855, y1: 875}}); // due to 2step project, c4 output 1.1 title coordinates different
+              currentMask.push({pageIndex: 12, coordinates: {x0: 425, x1: 480, y0: 235, y1: 252}}); // c5 result indicator
+              currentMask.push({pageIndex: 13, coordinates: {x0: 96, x1: 136, y0: 244, y1: 256}});  // c6 output indicator
               cy.comparePdf(templateFile, file, currentMask, baselinePath).then(result => {
                 expect(result.status === 'passed', 'Verify second step export').to.be.true;
               });
@@ -251,10 +246,12 @@ context('Application form exports', () => {
 
             // export step 1 version
             cy.get('div#export-config').contains('div', 'Project version').find('mat-select').click();
-            cy.contains('mat-option', 'V. 1.0').click();
+            cy.contains('mat-option', 'V.1.0').click();
 
             cy.contains('div#export-config button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?*version=1.0`, 'pdf').then(file => {
               const templateFile = 'TB-373-export-template-v1.pdf';
+              const comparePdfMaskV1 = [...comparePdfMask];
+              comparePdfMaskV1.push({pageIndex: 1, coordinates: version1A1ProjectAcronymCoordinates});
               cy.comparePdf(templateFile, file, comparePdfMaskV1, baselinePath).then(result => {
                 expect(result.status === 'passed', 'Verify first step export').to.be.true;
               });
@@ -308,10 +305,11 @@ context('Application form exports', () => {
             // export current step 2 (approved) version
             cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?*`, 'pdf').then(file => {
               const templateFile = 'TB-545-export-template-v2.pdf';
-              const currentMask = comparePdfMask;
-              currentMask.push({pageIndex: 11, coordinates: {x0: 425, x1: 480, y0: 855, y1: 875}});
-              currentMask.push({pageIndex: 12, coordinates: {x0: 425, x1: 480, y0: 235, y1: 252}});
-              currentMask.push({pageIndex: 13, coordinates: {x0: 96, x1: 136, y0: 244, y1: 256}});
+              const currentMask = [...comparePdfMask];
+              currentMask.push({pageIndex: 1, coordinates: a1ProjectAcronymCoordinates});
+              currentMask.push({pageIndex: 11, coordinates: {x0: 425, x1: 480, y0: 855, y1: 875}}); // due to 2step project, c4 output 1.1 title coordinates different
+              currentMask.push({pageIndex: 12, coordinates: {x0: 425, x1: 480, y0: 235, y1: 252}}); // c5 result indicator
+              currentMask.push({pageIndex: 13, coordinates: {x0: 96, x1: 136, y0: 244, y1: 256}});  // c6 output indicator
               cy.comparePdf(templateFile, file, currentMask, baselinePath).then(result => {
                 expect(result.status === 'passed', 'Verify second step export').to.be.true;
               });
@@ -319,14 +317,15 @@ context('Application form exports', () => {
 
             // export step 1 version
             cy.get('div#export-config').contains('div', 'Project version').find('mat-select').click();
-            cy.contains('mat-option', 'V. 1.0').click();
+            cy.contains('mat-option', 'V.1.0').click();
 
             cy.contains('div#export-config button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?*version=1.0`, 'pdf').then(file => {
               const templateFile = 'TB-545-export-template-v1.pdf';
-              const currentMask = comparePdfMask;
-              currentMask.push({pageIndex: 9, coordinates: {x0: 426, x1: 480, y0: 855, y1: 875}});
-              currentMask.push({pageIndex: 10, coordinates: {x0: 425, x1: 480, y0: 235, y1: 255}});
-              currentMask.push({pageIndex: 11, coordinates: {x0: 96, x1: 136, y0: 244, y1: 256}});
+              const currentMask = [...comparePdfMask];
+              currentMask.push({pageIndex: 1, coordinates: a1ProjectAcronymCoordinates});
+              currentMask.push({pageIndex: 9, coordinates: {x0: 426, x1: 480, y0: 855, y1: 875}});  // due to 2step project, c4 output 1.1 title coordinates different
+              currentMask.push({pageIndex: 10, coordinates: {x0: 425, x1: 480, y0: 235, y1: 255}}); // c5 result indicator
+              currentMask.push({pageIndex: 11, coordinates: {x0: 96, x1: 136, y0: 244, y1: 256}});  // c6 output indicator
               cy.comparePdf(templateFile, file, currentMask, baselinePath).then(result => {
                 expect(result.status === 'passed', 'Verify first step export').to.be.true;
               });
@@ -371,7 +370,9 @@ context('Application form exports', () => {
 
           cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?exportLanguage=EN&inputLanguage=DE*`, 'pdf').then(actualFile => {
             const templateFile = 'TB-635-export-template.pdf';
-            cy.comparePdf(templateFile, actualFile, comparePdfMask, baselinePath).then(result => {
+            const currentMask = [...comparePdfMask];
+            currentMask.push({pageIndex: 1, coordinates: a1ProjectAcronymCoordinates});
+            cy.comparePdf(templateFile, actualFile, currentMask, baselinePath).then(result => {
               expect(result.status === 'passed', 'Verify export of special characters').to.be.true;
             });
           });
@@ -411,7 +412,9 @@ context('Application form exports', () => {
           cy.contains('mat-option', 'Standard application form export').click();
           cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?exportLanguage=EN&inputLanguage=EN*`, 'pdf').then(actualFile => {
             const templateFile = 'TB-391-export-template.pdf';
-            cy.comparePdf(templateFile, actualFile, comparePdfMask, baselinePath).then(result => {
+            const currentMask = [...comparePdfMask];
+            currentMask.push({pageIndex: 1, coordinates: a1ProjectAcronymCoordinates});
+            cy.comparePdf(templateFile, actualFile, currentMask, baselinePath).then(result => {
               expect(result.status === 'passed', 'Verify SPF specific export').to.be.true;
             });
           });

@@ -12,19 +12,15 @@ import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddressType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
-import io.cloudflight.jems.server.project.service.report.ProjectReportCreatePersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportBaseData
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportIdentificationCreate
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.ProjectPartnerReportCreate
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.PartnerReportInvestmentSummary
-import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.create.CreateProjectPartnerReportWorkPackage
-import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.create.CreateProjectPartnerReportWorkPackageActivity
-import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.create.CreateProjectPartnerReportWorkPackageActivityDeliverable
-import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.create.CreateProjectPartnerReportWorkPackageOutput
-import io.cloudflight.jems.server.project.service.report.partnerReportCreated
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportCreatePersistence
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.partnerReportCreated
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackageFull
 import org.springframework.context.ApplicationEventPublisher
@@ -39,15 +35,15 @@ class CreateProjectPartnerReport(
     private val partnerCoFinancingPersistence: ProjectPartnerCoFinancingPersistence,
     private val projectWorkPackagePersistence: WorkPackagePersistence,
     private val projectDescriptionPersistence: ProjectDescriptionPersistence,
-    private val reportPersistence: ProjectReportPersistence,
-    private val reportCreatePersistence: ProjectReportCreatePersistence,
+    private val reportPersistence: ProjectPartnerReportPersistence,
+    private val reportCreatePersistence: ProjectPartnerReportCreatePersistence,
     private val currencyPersistence: CurrencyPersistence,
     private val createProjectPartnerReportBudget: CreateProjectPartnerReportBudget,
     private val auditPublisher: ApplicationEventPublisher,
 ) : CreateProjectPartnerReportInteractor {
 
     companion object {
-        private const val MAX_REPORTS = 25
+        private const val MAX_REPORTS = 100 // Previous value = 25
     }
 
     @CanEditPartnerReportNotSpecific
@@ -60,6 +56,7 @@ class CreateProjectPartnerReport(
         val project = projectPersistence.getProject(projectId = projectId, version = version)
 
         validateMaxAmountOfReports(currentAmount = reportPersistence.countForPartner(partnerId = partnerId))
+        validateNoReOpenedReports(reportPersistence.existsByStatusIn(partnerId, ReportStatus.ARE_LAST_OPEN_STATUSES))
         validateProjectIsContracted(project)
 
         val baseData = generateReportBaseData(
@@ -123,6 +120,11 @@ class CreateProjectPartnerReport(
             throw MaxAmountOfReportsReachedException()
     }
 
+    private fun validateNoReOpenedReports(areThereLastReOpenedReports: Boolean) {
+        if (areThereLastReOpenedReports)
+            throw LastReOpenedReportException()
+    }
+
     private fun validateProjectIsContracted(project: ProjectFull) {
         if (!project.projectStatus.status.isAlreadyContracted())
             throw ReportCanBeCreatedOnlyWhenContractedException()
@@ -161,33 +163,6 @@ class CreateProjectPartnerReport(
         currency = getCurrencyCodeForCountry(countryCode, country, currencyResolver)
     }
 
-    private fun List<ProjectWorkPackageFull>.toCreateEntity() = map { wp ->
-        CreateProjectPartnerReportWorkPackage(
-            workPackageId = wp.id,
-            number = wp.workPackageNumber,
-            activities = wp.activities.map { a ->
-                CreateProjectPartnerReportWorkPackageActivity(
-                    activityId = a.id,
-                    number = a.activityNumber,
-                    title = a.title,
-                    deliverables = a.deliverables.map { d ->
-                        CreateProjectPartnerReportWorkPackageActivityDeliverable(
-                            deliverableId = d.id,
-                            number = d.deliverableNumber,
-                            title = d.title,
-                        )
-                    },
-                )
-            },
-             outputs = wp.outputs.map { o ->
-                 CreateProjectPartnerReportWorkPackageOutput(
-                     number = o.outputNumber,
-                     title = o.title,
-                 )
-             },
-        )
-    }
-
     private fun List<ProjectWorkPackageFull>.extractInvestments() = map { wp ->
         wp.investments.map {
             PartnerReportInvestmentSummary(
@@ -195,6 +170,7 @@ class CreateProjectPartnerReport(
                 investmentNumber = it.investmentNumber,
                 workPackageNumber = wp.workPackageNumber,
                 title = it.title,
+                deactivated = it.deactivated,
             )
         }
     }.flatten()

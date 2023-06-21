@@ -1,0 +1,12 @@
+{
+  "name": "controllerCreatorRole",
+  "permissions": [
+    "ProjectContractingView",
+    "InstitutionsUpdate",
+    "InstitutionsUnlimited",
+    "InstitutionsRetrieve",
+    "InstitutionsAssignmentUpdate",
+    "InstitutionsAssignmentRetrieve",
+    "AssignmentsUnlimited"
+  ]
+}

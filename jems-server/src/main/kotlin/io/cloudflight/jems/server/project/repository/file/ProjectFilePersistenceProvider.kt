@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.repository.file
 
-import io.cloudflight.jems.server.common.minio.MinioStorage
+import io.cloudflight.jems.server.common.file.minio.MinioStorage
 import io.cloudflight.jems.server.project.entity.file.ProjectFileCategoryEntity
 import io.cloudflight.jems.server.project.entity.file.ProjectFileCategoryId
 import io.cloudflight.jems.server.project.entity.file.ProjectFileEntity
@@ -66,6 +66,11 @@ class ProjectFilePersistenceProvider(
     @Transactional(readOnly = true)
     override fun getFileCategoryTypeSet(fileId: Long): Set<ProjectFileCategoryType> =
         projectFileCategoryRepository.findAllByCategoryIdFileId(fileId).toFileCategoryTypeSet()
+
+    @Transactional(readOnly = true)
+    override fun getCategoriesMap(fileIds: Set<Long>): Map<Long, Set<ProjectFileCategoryType>> =
+        projectFileCategoryRepository.findAllByCategoryIdFileIdIn(fileIds)
+            .groupBy { it.categoryId.fileId }.mapValues { it.value.toFileCategoryTypeSet() }
 
     @Transactional(readOnly = true)
     override fun listFileMetadata(

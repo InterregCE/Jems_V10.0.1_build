@@ -52,7 +52,8 @@
                                                     [formControlName]="constants.FORM_CONTROL_NAMES.lumpSum"
                                                     class="placeholder-required"
                                                     placeholder="{{'project.application.form.section.part.e.lump.sums.label' | translate}}">
-                                                <mat-option *ngFor="let lumpSum of data.lumpSums" [value]="lumpSum">
+                                                <mat-option *ngFor="let lumpSum of data.lumpSums" [value]="lumpSum"
+                                                            [matTooltip]="(lumpSum.name | translateByInputLanguage | async)">
                                                     {{ lumpSum.name | translateByInputLanguage | async }}
                                                 </mat-option>
                                             </mat-select>
@@ -150,7 +151,8 @@
                                                                 [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
                                                                 [formControlName]="constants.FORM_CONTROL_NAMES.amount"
                                                                 type="decimal"
-                                                                matInput>
+                                                                matInput
+                                                                aria-label="value">
                                                     </mat-form-field>
                                             </ng-container>
                                         </ng-container>
@@ -206,7 +208,8 @@
                                                 type="button"
                                                 tabindex="-1" mat-icon-button color="accent"
                                                 matTooltip="{{'common.delete.entry.tooltip' | translate}}"
-                                                (click)="removeItem(index)">
+                                                (click)="removeItem(index)"
+                                                aria-label="delete">
                                             <mat-icon>delete</mat-icon>
                                         </button>
                                     </mat-cell>
@@ -223,7 +226,8 @@
                     </div>
                     <button jemsText *ngIf="lumpSumsForm.enabled" mat-stroked-button type="button" class="mt-2"
                             [disabled]="items.length >= constants.MAX_NUMBER_OF_ITEMS"
-                            (click)="addNewItem(data.partners)">
+                            (click)="addNewItem(data.partners)"
+                            aria-label="add">
                         <mat-icon>add</mat-icon>
                     </button>
                     <mat-error class="pt-3">

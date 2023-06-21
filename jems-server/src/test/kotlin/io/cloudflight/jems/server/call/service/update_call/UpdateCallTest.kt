@@ -1,6 +1,8 @@
 package io.cloudflight.jems.server.call.service.update_call
 
+import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.api.call.dto.CallStatus
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective.PO1
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.AdvancedTechnologies
@@ -11,8 +13,6 @@ import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy.EUStrate
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy.MediterraneanSeaBasin
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.api.audit.dto.AuditAction
-import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.call.callFundRate
@@ -81,8 +81,12 @@ class UpdateCallTest : UnitTest() {
             ),
             preSubmissionCheckPluginKey = null,
             firstStepPreSubmissionCheckPluginKey = null,
+            reportPartnerCheckPluginKey = null,
+            reportProjectCheckPluginKey = null,
             projectDefinedUnitCostAllowed = false,
             projectDefinedLumpSumAllowed = true,
+            controlReportPartnerCheckPluginKey = null,
+            controlReportSamplingCheckPluginKey = null
         )
 
         private val callToUpdate = Call(
@@ -135,7 +139,7 @@ class UpdateCallTest : UnitTest() {
             AuditCandidate(
                 action = AuditAction.CALL_CONFIGURATION_CHANGED,
                 entityRelatedId = CALL_ID,
-                description = "Configuration of published call id=592 name='call name' changed:\n" +
+                description = "Configuration of published call id=592 name='call name' changed: Application form configuration was changed\n" +
                     "name changed from 'old name' to 'call name'"
             )
         )

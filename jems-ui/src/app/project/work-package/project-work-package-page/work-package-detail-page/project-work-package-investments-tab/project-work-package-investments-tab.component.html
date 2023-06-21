@@ -2,7 +2,7 @@
     <jems-form>
         <div jemsFormLayout>
             <h3>{{'project.application.form.workpackage.investment.form.list.title' | translate}}</h3>
-            <div>{{'project.work.package.tab.investment.intro' | translate}}</div>
+            <p>{{'project.work.package.tab.investment.intro' | translate}}</p>
 
             <button *ngIf="projectEditable$ | async"
                     jemsText mat-stroked-button
@@ -22,6 +22,7 @@
 
 <ng-template #numberingCell let-workPackageInvestment>
     <span *ngIf="workPackageInvestment.investmentNumber">
+        <mat-icon *ngIf="workPackageInvestment.deactivated" class="vertical-middle" matTooltip="{{ 'project.application.form.partner.table.status.inactive' | translate }}">do_not_disturb</mat-icon>
         I{{workPackageNumber}}.{{workPackageInvestment.investmentNumber}}</span>
     <span *ngIf="!workPackageInvestment.investmentNumber"> {{'project.application.form.partner.number.info.auto' | translate}}</span>
 </ng-template>
@@ -31,18 +32,20 @@
 </ng-template>
 
 <ng-template #deletionCell let-workPackageInvestment>
-    <ng-container *ngIf="projectEditable$ | async" >
+    <ng-container *ngIf="(projectEditable$ | async) && !workPackageInvestment.deactivated">
         <button *ngIf="(workPackageInvestment.title | translateContainerLessInputsBySystemLanguage | async) as title; else noTitle"
                 mat-icon-button color="accent"
-                (click)="$event.stopPropagation();delete(workPackageInvestment, title)"
-                matTooltip="{{'project.application.form.workpackage.investment.table.action.delete.tooltip' | translate}}">
-            <mat-icon>delete</mat-icon>
+                (click)="$event.stopPropagation();delete(workPackageInvestment, workPackageInvestment.isAlreadyContracted, title)"
+                matTooltip="{{ (workPackageInvestment.isAlreadyContracted ? 'project.application.form.workpackage.investment.table.action.deactivate.tooltip' : 'project.application.form.workpackage.investment.table.action.delete.tooltip') | translate }}"
+                [attr.aria-label]="workPackageInvestment.isAlreadyContracted ? 'deactivate' : 'delete'">
+            <mat-icon>{{ workPackageInvestment.isAlreadyContracted ? 'do_not_disturb' : 'delete' }}</mat-icon>
         </button>
         <ng-template #noTitle>
             <button mat-icon-button color="accent"
-                    (click)="$event.stopPropagation();delete(workPackageInvestment)"
-                    matTooltip="{{'project.application.form.workpackage.investment.table.action.delete.tooltip' | translate}}">
-                <mat-icon>delete</mat-icon>
+                    (click)="$event.stopPropagation();delete(workPackageInvestment, workPackageInvestment.isAlreadyContracted)"
+                    matTooltip="{{(workPackageInvestment.isAlreadyContracted ? 'project.application.form.workpackage.investment.table.action.deactivate.tooltip' : 'project.application.form.workpackage.investment.table.action.delete.tooltip') | translate }}"
+                    [attr.aria-label]="workPackageInvestment.isAlreadyContracted ? 'deactivate' : 'delete'">
+                <mat-icon>{{ workPackageInvestment.isAlreadyContracted ? 'do_not_disturb' : 'delete' }}</mat-icon>
             </button>
         </ng-template>
     </ng-container>

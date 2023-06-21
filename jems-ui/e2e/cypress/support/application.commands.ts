@@ -1,5 +1,5 @@
 import {faker} from '@faker-js/faker';
-import {createPartners} from './partner.commands';
+import {createPartners, updatePartnerData} from './partner.commands';
 import {loginByRequest} from './login.commands';
 
 declare global {
@@ -61,6 +61,22 @@ declare global {
       returnToApplicant(applicationId: number, userEmail?: string);
 
       createProjectProposedUnitCost(applicationId: number, unitCost);
+
+      createProjectProposedUnitCosts(applicationId: number, unitCosts: any[]);
+
+      createAssociatedOrganisation(applicationId: number, associatedOrganisation);
+
+      createAssociatedOrganisations(applicationId: number, associatedOrganisation: any[]);
+
+      getProgrammeUnitCostsEnabledInCall(callId: number);
+
+      getProjectUnitCosts(applicationId: number);
+
+      getProjectProposedUnitCosts(applicationId: number);
+
+      getContractMonitoring(applicationId: number);
+
+      updateContractMonitoring(applicationId: number, contractMonitoring: {});
     }
   }
 }
@@ -71,16 +87,20 @@ Cypress.Commands.add('createApplication', (application) => {
   });
 });
 
-Cypress.Commands.add('createSubmittedApplication', (application) => {
+Cypress.Commands.add('createSubmittedApplication', application => {
   createApplication(application.details).then(applicationId => {
-    submitApplication(applicationId, application);
+    updateApplicationSections(applicationId, application);
+    runPreSubmissionCheck(applicationId);
+    submitProjectApplication(applicationId);
     cy.wrap(applicationId).as('applicationId');
   });
 });
 
 Cypress.Commands.add('createApprovedApplication', (application, approvingUserEmail?: string) => {
   createApplication(application.details).then(applicationId => {
-    submitApplication(applicationId, application);
+    updateApplicationSections(applicationId, application);
+    runPreSubmissionCheck(applicationId);
+    submitProjectApplication(applicationId);
     approveApplication(applicationId, application.assessments, approvingUserEmail);
     cy.wrap(applicationId).as('applicationId');
   });
@@ -88,7 +108,9 @@ Cypress.Commands.add('createApprovedApplication', (application, approvingUserEma
 
 Cypress.Commands.add('createContractedApplication', (application, contractingUserEmail?: string) => {
   createApplication(application.details).then(applicationId => {
-    submitApplication(applicationId, application);
+    updateApplicationSections(applicationId, application);
+    runPreSubmissionCheck(applicationId);
+    submitProjectApplication(applicationId);
     if (contractingUserEmail)
       loginByRequest(contractingUserEmail);
     approveApplication(applicationId, application.assessments);
@@ -130,8 +152,7 @@ Cypress.Commands.add('updateProjectPartnership', (applicationId: number, partner
 });
 
 Cypress.Commands.add('createProjectWorkPlan', (applicationId: number, workPlan: []) => {
-  const options = createWorkPlan(applicationId, workPlan);
-  cy.wrap(options).as('options');
+  createWorkPlan(applicationId, workPlan);
 });
 
 Cypress.Commands.add('createProjectResults', (applicationId: number, projectResults: []) => {
@@ -269,13 +290,50 @@ Cypress.Commands.add('returnToApplicant', (applicationId: number, userEmail?: st
 });
 
 Cypress.Commands.add('createProjectProposedUnitCost', (applicationId: number, unitCost) => {
-  cy.request({
-    method: 'POST',
-    url: `api/project/${applicationId}/costOption/unitCost`,
-    body: unitCost
-  }).then(response => {
-    return response.body.id;
+  createProjectProposedUnitCost(applicationId, unitCost);
+});
+
+Cypress.Commands.add('createProjectProposedUnitCosts', (applicationId: number, unitCosts: []) => {
+  unitCosts.forEach(unitCost => {
+    createProjectProposedUnitCost(applicationId, unitCost);
   });
+});
+
+Cypress.Commands.add('createAssociatedOrganisation', (applicationId: number, associatedOrganisation) => {
+  createAssociatedOrganisation(applicationId, associatedOrganisation);
+});
+
+Cypress.Commands.add('createAssociatedOrganisations', (applicationId: number, associatedOrganisations: any[]) => {
+  createAssociatedOrganisations(applicationId, associatedOrganisations);
+});
+
+Cypress.Commands.add('getProgrammeUnitCostsEnabledInCall', (callId: number) => {
+  cy.request({
+    method: 'GET',
+    url: `api/call/byId/${callId}`
+  }).then(response => response.body.unitCosts);
+});
+
+Cypress.Commands.add('getProjectUnitCosts', (applicationId: number) => {
+  cy.request({
+    method: 'GET',
+    url: `api/project/${applicationId}/budget/unitCosts`
+  }).then(response => response.body);
+});
+
+Cypress.Commands.add('getProjectProposedUnitCosts', (applicationId: number) => {
+  cy.request({
+    method: 'GET',
+    url: `api/project/${applicationId}/costOption/unitCost?version=1.0`
+  }).then(response => response.body);
+});
+
+Cypress.Commands.add('getContractMonitoring', (applicationId: number) => {
+  getContractMonitoring(applicationId);
+});
+
+Cypress.Commands.add('updateContractMonitoring', (applicationId: number, contractMonitoring: {}) => {
+  updateContractMonitoring(applicationId, contractMonitoring);
 });
 
 function createApplication(applicationDetails) {
@@ -284,39 +342,39 @@ function createApplication(applicationDetails) {
     method: 'POST',
     url: 'api/project',
     body: applicationDetails
-  }).then(response => {
-    return response.body.id;
-  });
+  }).then(response => response.body.id);
 }
 
-function submitApplication(applicationId, application) {
+function updateApplicationSections(applicationId, application) {
 
+  // A
   updateIdentification(applicationId, application.identification);
 
-  // C - project description
+  // Partial B
+  createPartners(applicationId, application.partners);
+
+  // C
   updateOverallObjective(applicationId, application.description.overallObjective);
   updateRelevanceAndContext(applicationId, application.description.relevanceAndContext);
   updatePartnership(applicationId, application.description.partnership);
-  const options = createWorkPlan(applicationId, application.description.workPlan);
+  createWorkPlan(applicationId, application.description.workPlan);
   createResults(applicationId, application.description.results);
   updateManagement(applicationId, application.description.management);
   updateLongTermPlans(applicationId, application.description.longTermPlans);
 
-  // B - project partners
-  createPartners(applicationId, application.partners, options);
+  // E
+  createProjectProposedUnitCosts(applicationId, application.projectProposedUnitCosts);
 
-  // E - project lump sums
-  cy.then(function () {
-    application.lumpSums.forEach(lumpSum => {
-      lumpSum.lumpSumContributions.forEach(contributions => {
-        contributions.partnerId = this[contributions.partnerAbbreviation];
-      });
+  // B
+  application.partners.forEach(partner => {
+    cy.then(function () {
+      updatePartnerData(this[partner.details.abbreviation], partner);
     });
-    updateLumpSums(applicationId, application.lumpSums);
   });
+  createAssociatedOrganisations(applicationId, application.associatedOrganisations);
 
-  runPreSubmissionCheck(applicationId);
-  submitProjectApplication(applicationId);
+  // E
+  updateLumpSums(applicationId, application.lumpSums);
 }
 
 function updateIdentification(applicationId: number, projectIdentification) {
@@ -353,7 +411,6 @@ function updatePartnership(applicationId: number, partnership: []) {
 }
 
 function createWorkPlan(applicationId: number, workPlan: any[]) {
-  const options = {workPlanId: null, activityId: null};
   workPlan.forEach(workPackage => {
     cy.request({
       method: 'POST',
@@ -361,23 +418,32 @@ function createWorkPlan(applicationId: number, workPlan: any[]) {
       body: workPackage.details
     }).then(result => {
       cy.wrap(result.body.id).as('workPlanId');
-      options.workPlanId = result.body.id;
-      if (workPackage.investment) {
-        cy.request({
-          method: 'POST',
-          url: `api/project/${applicationId}/workPackage/${result.body.id}/investment`,
-          body: workPackage.investment
-        }).then(response => {
-          cy.wrap(response.body).as('investmentId');
+      if (workPackage.investments) {
+        workPackage.investments.forEach(investment => {
+          cy.request({
+            method: 'POST',
+            url: `api/project/${applicationId}/workPackage/${result.body.id}/investment`,
+            body: investment
+          }).then(response => {
+            if (investment.cypressReferenceInvestment) {
+              cy.wrap(response.body).as(investment.cypressReferenceInvestment);
+            }
+          });
         });
       }
+
+      // update work plan activities with partnerIds
+      matchPartnersToActivities(workPackage.activities);
       cy.request({
         method: 'PUT',
         url: `api/project/${applicationId}/workPackage/${result.body.id}/activity`,
         body: workPackage.activities
       }).then(response => {
-        cy.wrap(response.body[0].id).as('activityId');
-        options.activityId = response.body[0].id;
+        response.body.forEach((activity, index) => {
+          if (workPackage.activities[index].cypressReferenceStateAid) {
+            cy.wrap(activity.id).as(workPackage.activities[index].cypressReferenceStateAid);
+          }
+        });
       });
       cy.request({
         method: 'PUT',
@@ -386,7 +452,6 @@ function createWorkPlan(applicationId: number, workPlan: any[]) {
       });
     });
   });
-  return options;
 }
 
 function createResults(applicationId: number, results: []) {
@@ -414,10 +479,18 @@ function updateLongTermPlans(applicationId: number, longTermPlans) {
 }
 
 function updateLumpSums(applicationId: number, lumpSums: []) {
-  cy.request({
-    method: 'PUT',
-    url: `api/project/${applicationId}/lumpSum`,
-    body: lumpSums
+  // set partnerId in the lump sum based on partner abbreviation
+  cy.then(function () {
+    lumpSums?.forEach((lumpSum: any) => {
+      lumpSum.lumpSumContributions.forEach(contributions => {
+        contributions.partnerId = this[contributions.partnerAbbreviation];
+      });
+    });
+    cy.request({
+      method: 'PUT',
+      url: `api/project/${applicationId}/lumpSum`,
+      body: lumpSums
+    });
   });
 }
 
@@ -479,6 +552,69 @@ function approveApplication(applicationId: number, assessments, approvingUserEma
       loginByRequest(currentUser.name);
     });
   }
+}
+
+function createProjectProposedUnitCost(applicationId, projectProposedUnitCost) {
+  cy.request({
+    method: 'POST',
+    url: `api/project/${applicationId}/costOption/unitCost`,
+    body: projectProposedUnitCost
+  }).then(response => {
+    cy.wrap(response.body.id).as(projectProposedUnitCost.cypressReferenceUnit);
+  });
+}
+
+function createProjectProposedUnitCosts(applicationId: number, projectProposedUnitCosts: any[]) {
+  projectProposedUnitCosts.forEach((projectProposedUnitCost: any) => {
+    createProjectProposedUnitCost(applicationId, projectProposedUnitCost);
+  });
+}
+
+function matchPartnersToActivities(activities) {
+  cy.then(function () {
+    activities.forEach(activity => {
+      if (activity.cypressReferencePartner) {
+        activity.partnerIds = [this[activity.cypressReferencePartner]];
+      }
+    });
+  });
+}
+
+function getContractMonitoring(applicationId) {
+  cy.request({
+    method: 'GET',
+    url: `api/project/${applicationId}/contracting/monitoring`,
+  }).then((response) => response.body);
+}
+
+function updateContractMonitoring(applicationId, contractMonitoring) {
+  cy.request({
+    method: 'PUT',
+    url: `api/project/${applicationId}/contracting/monitoring`,
+    body: contractMonitoring
+  });
+}
+
+export function createAssociatedOrganisations(applicationId, associatedOrganisations) {
+  if (associatedOrganisations) {
+    associatedOrganisations.forEach(associatedOrganisation => {
+      createAssociatedOrganisation(applicationId, associatedOrganisation);
+    });
+  }
+}
+
+function createAssociatedOrganisation(applicationId, associatedOrganisation) {
+  // get/set partnerId based on the provided reference
+  cy.then(function () {
+    associatedOrganisation.partnerId = this[associatedOrganisation.cypressReference];
+    cy.request({
+      method: 'POST',
+      url: `api/project/${applicationId}/organization`,
+      body: associatedOrganisation
+    }).then(response => {
+      cy.wrap(response.body.id).as('associatedOrganisation');
+    });
+  });
 }
 
 export {}

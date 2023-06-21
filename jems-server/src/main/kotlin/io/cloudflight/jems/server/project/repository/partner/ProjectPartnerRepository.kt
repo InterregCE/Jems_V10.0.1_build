@@ -14,14 +14,14 @@ import io.cloudflight.jems.server.project.entity.partner.cofinancing.PartnerCont
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerTotalBudgetEntry
+import java.sql.Timestamp
+import java.util.Optional
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
-import java.sql.Timestamp
-import java.util.Optional
 
 @Repository
 interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
@@ -32,9 +32,9 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
 
     fun findAllByProjectId(projectId: Long, pageable: Pageable): Page<ProjectPartnerEntity>
 
-    fun findTop30ByProjectId(projectId: Long): Iterable<ProjectPartnerEntity>
+    fun findTop50ByProjectId(projectId: Long): Iterable<ProjectPartnerEntity>
 
-    fun findTop30ByProjectId(projectId: Long, sort: Sort): Iterable<ProjectPartnerEntity>
+    fun findTop50ByProjectId(projectId: Long, sort: Sort): Iterable<ProjectPartnerEntity>
 
     fun findFirstByProjectIdAndRole(projectId: Long, role: ProjectPartnerRole): Optional<ProjectPartnerEntity>
 
@@ -317,9 +317,9 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
                 ON entity.id = addresses.partner_id AND addresses.type = 'Organization'
         WHERE entity.project_id = :projectId
         ORDER BY entity.sort_number ASC
-        LIMIT 30
+        LIMIT 50
     """, nativeQuery = true)
-    fun findTop30ByProjectIdSortBySortNumberAsOfTimestamp(
+    fun findTop50ByProjectIdSortBySortNumberAsOfTimestamp(
         projectId: Long,
         timestamp: Timestamp
     ): List<PartnerSimpleRow>
@@ -518,7 +518,6 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
     )
     fun getAllPartnerTotalBudgetDataAsOfTimestamp(partnerIds: Set<Long>, timestamp: Timestamp): List<ProjectPartnerTotalBudgetEntry>
 
-
     @Query(
         """
         SELECT spfCosts.partner_id as partnerId, spfCostsPeriod.period_number as periodNumber,
@@ -531,7 +530,6 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
         nativeQuery = true
     )
     fun getSpfBudgetByBeneficiaryId(partnerId: Long): List<ProjectSpfBeneficiaryBudgetPerPeriodRow>
-
 
     @Query(
         """
@@ -579,13 +577,13 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
             partnerContributionSpf.status AS partnerContributionSpfStatus,
             partnerContributionSpf.amount AS partnerContributionSpfAmount
         FROM optimization_project_version AS opv
-            INNER JOIN project_partner FOR SYSTEM_TIME AS OF TIMESTAMP opv.last_approved_version AS partner
+            INNER JOIN project_partner FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS partner
                 ON partner.project_id = opv.project_id
-            INNER JOIN project_partner_contribution FOR SYSTEM_TIME AS OF TIMESTAMP opv.last_approved_version AS partnerContribution
+            INNER JOIN project_partner_contribution FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS partnerContribution
                 ON partner.id = partnerContribution.partner_id
-            LEFT OUTER JOIN project_partner_contribution_spf FOR SYSTEM_TIME AS OF TIMESTAMP opv.last_approved_version AS partnerContributionSpf
+            LEFT OUTER JOIN project_partner_contribution_spf FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS partnerContributionSpf
                 ON partner.id = partnerContributionSpf.partner_id
-            INNER JOIN project_partner_co_financing FOR SYSTEM_TIME AS OF TIMESTAMP opv.last_approved_version AS partnerCoFinancing
+            INNER JOIN project_partner_co_financing FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS partnerCoFinancing
                 ON partner.id = partnerCoFinancing.partner_id
             INNER JOIN programme_fund AS programmeFund
                 ON partnerCoFinancing.programme_fund_id = programmeFund.id
@@ -594,5 +592,5 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
         WHERE partner.project_id = :projectId
     """, nativeQuery = true
     )
-    fun findAllByProjectIdWithContributionsForDropdown(projectId: Long): List<PartnerWithContributionsRow>
+    fun findAllByProjectIdWithContributionsForDropdownAsOfTimestamp(projectId: Long, timestamp: Timestamp): List<PartnerWithContributionsRow>
 }

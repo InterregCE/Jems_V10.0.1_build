@@ -68,8 +68,12 @@ class UpdateApplicationFormFieldConfigurationsTest : UnitTest() {
         applicationFormFieldConfigurations = applicationFormFieldConfigStandard,
         preSubmissionCheckPluginKey = null,
         firstStepPreSubmissionCheckPluginKey = null,
+        reportPartnerCheckPluginKey = null,
+        reportProjectCheckPluginKey = null,
         projectDefinedUnitCostAllowed = false,
         projectDefinedLumpSumAllowed = true,
+        controlReportPartnerCheckPluginKey = null,
+        controlReportSamplingCheckPluginKey = null
     )
 
 

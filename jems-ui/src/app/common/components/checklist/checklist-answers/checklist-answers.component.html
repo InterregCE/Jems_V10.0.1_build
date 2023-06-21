@@ -55,16 +55,16 @@
     <div>
         <p jemsText jemsMultiColumnRow>{{options.question}}</p>
         <span class="box mt-2" jemsMultiColumnRow>
-            <mat-button-toggle-group [formControl]="controls?.get('answer') || {}">
+            <mat-button-toggle-group class="checklist-toggle" [formControl]="controls?.get('answer') || {}">
                 <mat-button-toggle [value]="options.firstOption">
-                    <span jemsText maxWidth="70">{{options.firstOption}}</span>
+                    <span jemsText>{{options.firstOption}}</span>
                 </mat-button-toggle>
                 <mat-button-toggle [value]="options.secondOption">
-                    <span jemsText maxWidth="70">{{options.secondOption}}</span>
+                    <span jemsText>{{options.secondOption}}</span>
                 </mat-button-toggle>
                 <mat-button-toggle *ngIf="options.thirdOption"
                                    [value]="options.thirdOption">
-                    <span jemsText maxWidth="70">{{options.thirdOption}}</span>
+                    <span jemsText>{{options.thirdOption}}</span>
                 </mat-button-toggle>
             </mat-button-toggle-group>
         </span>
@@ -115,17 +115,19 @@
                 <input *ngIf="!allowsDecimalScore" class="text-right" type="integer" currencyMask matInput
                        [formControl]="controls.get('score')"
                        [(ngModel)]="sliderValues[index]"
-                       [maxLength]="3">
+                       [maxLength]="3"
+                       aria-label="score value">
 
                 <input *ngIf="allowsDecimalScore" class="text-right" type="decimal" currencyMask  matInput
                        [formControl]="controls.get('score') || {}"
                        [(ngModel)]="sliderValues[index]"
-                       [maxlength]="5">
+                       [maxlength]="5"
+                       aria-label="score value">
                 <mat-error>
                     <jems-form-field-errors class="error"
-                            [errors]="controls.get('score')?.errors"
-                            [messages]="FORM_ERRORS.score"
-                            [args]="FORM_ERRORS_ARGS.score"></jems-form-field-errors>
+                                            [errors]="controls.get('score')?.errors"
+                                            [messages]="FORM_ERRORS.score"
+                                            [args]="FORM_ERRORS_ARGS.score"></jems-form-field-errors>
                 </mat-error>
             </mat-form-field>
             <span>/ {{maxScore | asMoney}}</span>
@@ -186,6 +188,3 @@
         </div>
     </div>
 </ng-template>
-
-
-

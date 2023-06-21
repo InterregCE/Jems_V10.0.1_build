@@ -7,6 +7,7 @@ import moment from 'moment/moment';
 import {CallListStore} from '@common/components/call-list/call-list-store.service';
 import {combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
+import {ColumnWidth} from '@common/components/table/model/column-width';
 
 @Component({
   selector: 'jems-call-list',
@@ -61,7 +62,8 @@ export class CallListComponent implements OnInit {
         {
           displayedColumn: 'call.table.column.name.id',
           elementProperty: 'id',
-          sortProperty: 'id'
+          sortProperty: 'id',
+          columnWidth: ColumnWidth.IdColumn
         },
         {
           displayedColumn: 'call.table.column.name.name',
@@ -72,25 +74,29 @@ export class CallListComponent implements OnInit {
           displayedColumn: 'call.table.column.name.status',
           elementProperty: 'status',
           elementTranslationKey: 'common.label.callstatus',
-          sortProperty: 'status'
+          sortProperty: 'status',
+          columnWidth: ColumnWidth.MediumColumn
         },
         {
           displayedColumn: 'call.table.column.name.started',
           columnType: ColumnType.DateColumn,
           elementProperty: 'startDateTime',
-          sortProperty: 'startDate'
+          sortProperty: 'startDate',
+          columnWidth: ColumnWidth.DateColumn
         },
         {
           displayedColumn: 'call.table.column.name.end',
           columnType: ColumnType.CustomComponent,
-          customCellTemplate: this.endDateCell
+          customCellTemplate: this.endDateCell,
+          columnWidth: ColumnWidth.DateColumn
         }
       ]
     });
     if (this.publishedCallsOnly && canApply) {
       config.columns.push({
         displayedColumn: 'call.table.column.name.action',
-        customCellTemplate: this.actionsCell
+        customCellTemplate: this.actionsCell,
+        columnWidth: ColumnWidth.MediumColumn
       });
     }
     return config;

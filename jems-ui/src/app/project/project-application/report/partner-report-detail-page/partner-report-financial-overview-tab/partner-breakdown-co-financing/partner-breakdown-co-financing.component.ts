@@ -19,12 +19,27 @@ import {MatTableDataSource} from '@angular/material/table';
 })
 export class PartnerBreakdownCoFinancingComponent implements OnChanges {
 
-  displayedColumns = ['type', 'totalEligibleBudget', 'previouslyReported', 'currentReport', 'totalReportedSoFar', 'totalReportedSoFarPercentage', 'remainingBudget', 'previouslyPaid'];
+  certifiedColumns = ['totalEligibleAfterControl'];
+  columnsAvailable = [
+    'type',
+    'totalEligibleBudget',
+    'previouslyReported',
+    'currentReport',
+    'totalReportedSoFar',
+    'totalReportedSoFarPercentage',
+    'remainingBudget',
+    'previouslyValidated',
+    'totalEligibleAfterControl',
+    'previouslyPaid',
+  ];
+  displayedColumns = this.columnsAvailable;
 
   @Input()
   breakdown: ExpenditureCoFinancingBreakdownDTO;
   @Input()
   funds: CallFundRateDTO[];
+  @Input()
+  isCertified = false;
 
   dataSource: MatTableDataSource<ExpenditureLine> = new MatTableDataSource([]);
 
@@ -35,6 +50,8 @@ export class PartnerBreakdownCoFinancingComponent implements OnChanges {
       { ...this.breakdown.automaticPublicContribution, translation: 'project.application.partner.report.financial.contribution.auto.public', isProgrammeLanguage: false, subcomponent: true },
       { ...this.breakdown.privateContribution, translation: 'project.application.partner.report.financial.contribution.auto.private', isProgrammeLanguage: false, subcomponent: true },
     ];
+    this.displayedColumns = [...this.columnsAvailable]
+      .filter(column => this.isCertified || !this.certifiedColumns.includes(column));
   }
 
   private static addTranslationObjects(fundsCumulative: ExpenditureCoFinancingBreakdownLineDTO[], callFunds: CallFundRateDTO[]): ExpenditureLine[] {

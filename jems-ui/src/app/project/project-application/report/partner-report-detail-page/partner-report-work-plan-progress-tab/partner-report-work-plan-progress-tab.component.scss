@@ -59,11 +59,29 @@
 }
 
 .justify-start {
-  justify-content: start;
+  justify-content: flex-start;
 }
 
 .attachments-element-deliverable {
   padding-left: 6.5vw;
 }
 
+.vertical-middle{
+  vertical-align: middle;
+  font-size: 1.25rem;
+  height: 1.25rem;
+}
 
+.inactive-icon {
+  margin-right: .25rem;
+  font-size: 1rem;
+  vertical-align: text-top;
+  width: 1rem;
+  height: 1rem;
+}
+
+.vertical-middle{
+  vertical-align: middle;
+  font-size: 1.25rem;
+  height: 1.25rem;
+}

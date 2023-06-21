@@ -1,0 +1,67 @@
+#overview-and-finalize-control-timing {
+  border: 1px solid;
+  border-color: var(--table-border-color);
+
+  .project-row {
+    display: flex;
+  }
+
+  .header {
+    background-color: var(--light-blue-gray);
+    min-width: 24rem;
+    background-clip: padding-box;
+    text-align: left;
+    font-weight: var(--font-weight-strong);
+  }
+
+  .date-picker {
+    width: 50%;
+    vertical-align: top;
+  }
+
+  .end-date {
+    margin-left: 0.25rem;
+  }
+
+  .expiration {
+    color: var(--error-color);
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  .fund-list {
+    list-style-type: none;
+    padding-inline-start: 0;
+    margin-top: 0;
+    min-width: 100%;
+  }
+}
+
+::ng-deep {
+  .mat-form-field-wrapper {
+    padding-top: 0 !important;
+  }
+}
+
+.header-flat-rate-container {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.flat-rate-percentage {
+  font-weight: bold;
+  color: black;
+  min-height: 1rem;
+}
+
+.vertical-middle {
+  vertical-align: middle;
+}

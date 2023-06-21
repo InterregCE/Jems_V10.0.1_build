@@ -8,7 +8,6 @@ context('Draft budget tests', () => {
 
       cy.loginByRequest(user.programmeUser.email);
       call.generalCallSettings.additionalFundAllowed = true;
-      call.budgetSettings.allowedCostOption.projectDefinedUnitCostAllowed = true;
       cy.createCall(call).then(callId => {
         application.details.projectCallId = callId;
         cy.publishCall(callId);
@@ -91,12 +90,11 @@ context('Draft budget tests', () => {
           });
 
           cy.contains('Unit costs covering more than one cost category').next().within(() => {
-
-            cy.contains('Add').click();
-            cy.get('mat-select').click();
+            cy.contains('button', 'add').click();
+            cy.get('mat-select').last().click();
             cy.root().closest('body').contains('mat-option', testData.unitCostItem.name).click();
-            cy.get('input').eq(0).type(testData.unitCostItem.numberOfUnits, {force: true});
-            cy.get('input').eq(1).type(testData.unitCostItem.period1Amount, {force: true});
+            cy.get('mat-row').last().find('input').eq(0).type(testData.unitCostItem.numberOfUnits, {force: true});
+            cy.get('mat-row').last().find('input').eq(1).type(testData.unitCostItem.period1Amount, {force: true});
           });
 
           cy.contains('Save changes').click();

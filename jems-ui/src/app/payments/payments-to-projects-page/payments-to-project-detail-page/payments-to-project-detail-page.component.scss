@@ -132,3 +132,27 @@ jems-payments-to-project-attachments {
   }
 }
 
+h3#project-title {
+  white-space: normal !important;
+}
+
+.display-column{
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+}
+
+.display-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.column-checkbox-text-content {
+  margin-left: 0.75rem !important;
+  align-items: center;
+  font-size: 0.75rem;
+  line-height: 1.2em;
+}
+

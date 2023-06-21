@@ -9,5 +9,6 @@ data class ProjectPartnerReportInvestment(
     val workPackageNumber: Int,
     val investmentNumber: Int,
     val title: Set<InputTranslation>,
+    val deactivated: Boolean,
     val total: BigDecimal,
 )

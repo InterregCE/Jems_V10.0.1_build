@@ -6,10 +6,12 @@ data class ContractingPartnerBankingDetails(
     val accountNumber: String?,
     val accountIBAN: String?,
     val accountSwiftBICCode: String?,
+    val internalReferenceNr: String?,
     val bankName: String?,
     val streetName: String?,
     val streetNumber: String?,
     val postalCode: String?,
+    val city: String?,
     val country: String?,
     val nutsTwoRegion: String?,
     val nutsThreeRegion: String?
@@ -25,6 +27,10 @@ data class ContractingPartnerBankingDetails(
             changes["accountIBAN"] = Pair(old?.accountIBAN, accountIBAN)
         if (old == null || accountSwiftBICCode != old.accountSwiftBICCode)
             changes["accountSwiftBICCode"] = Pair(old?.accountSwiftBICCode, accountSwiftBICCode)
+        if (old == null || internalReferenceNr != old.internalReferenceNr)
+            changes["internalReferenceNr"] = Pair(old?.internalReferenceNr, internalReferenceNr)
+        if (old == null || city != old.city)
+            changes["city"] = Pair(old?.city, city)
 
         return changes
     }

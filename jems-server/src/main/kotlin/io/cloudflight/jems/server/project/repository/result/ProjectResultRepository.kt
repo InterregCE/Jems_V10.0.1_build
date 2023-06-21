@@ -21,6 +21,7 @@ interface ProjectResultRepository : CrudRepository<ProjectResultEntity, Long> {
              programmeResultIndicatorIdentifierTransl.measurement_unit as programmeResultIndicatorMeasurementUnit,
              entity.target_value as targetValue,
              CONVERT(entity.period_number, INT) as periodNumber,
+             entity.deactivated,
              projectResultTransl.*
              FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
              LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS projectResultTransl ON entity.project_id = projectResultTransl.project_id AND entity.result_number = projectResultTransl.result_number

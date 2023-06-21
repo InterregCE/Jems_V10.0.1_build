@@ -2,13 +2,16 @@ import {Injectable} from '@angular/core';
 import {
   ProjectCallSettingsDTO,
   ProjectContactDTO,
+  ProjectContractingPartnersService,
   ProjectPartnerAddressDTO,
   ProjectPartnerDetailDTO,
   ProjectPartnerDTO,
   ProjectPartnerMotivationDTO,
+  ProjectPartnerReportService,
   ProjectPartnerService,
-  ProjectReportService,
-  ProjectPartnerSummaryDTO, ProjectStatusDTO, ProjectVersionDTO, ProjectContractingPartnersService
+  ProjectPartnerSummaryDTO,
+  ProjectStatusDTO,
+  ProjectVersionDTO
 } from '@cat/api';
 import {BehaviorSubject, combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {catchError, filter, map, shareReplay, switchMap, tap} from 'rxjs/operators';
@@ -19,8 +22,8 @@ import {ProjectPartnerRoleEnum, ProjectPartnerRoleEnumUtil} from '@project/model
 import {RoutingService} from '@common/services/routing.service';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import {ProjectPaths} from '@project/common/project-util';
-import StatusEnum = ProjectStatusDTO.StatusEnum;
 import {Tools} from '@common/utils/tools';
+import StatusEnum = ProjectStatusDTO.StatusEnum;
 import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
 
 @Injectable({
@@ -37,7 +40,6 @@ export class ProjectPartnerStore {
   leadPartner$: Observable<ProjectPartnerDetailDTO | null>;
   partnerSummaries$: Observable<ProjectPartnerSummaryDTO[]>;
   partnerSummariesOfLastApprovedProjectVersion$: Observable<ProjectPartnerSummaryDTO[]>;
-  partnerSummariesForContracting$: Observable<ProjectPartnerSummaryDTO[]>;
   partnerReportSummaries$: Observable<ProjectPartnerSummaryDTO[]>;
   latestPartnerSummaries$: Observable<ProjectPartnerSummaryDTO[]>;
   partnerSummariesOfLastApprovedVersion$: Observable<ProjectPartnerSummaryDTO[]>;
@@ -51,13 +53,11 @@ export class ProjectPartnerStore {
               private projectStore: ProjectStore,
               private routingService: RoutingService,
               private projectVersionStore: ProjectVersionStore,
-              private projectReportService: ProjectReportService,
-              private projectContractingPartnersService: ProjectContractingPartnersService) {
+              private projectPartnerReportService: ProjectPartnerReportService) {
     this.isProjectEditable$ = this.projectStore.projectEditable$;
     this.projectCallType$ = this.projectStore.projectCallType$;
     this.isProjectCallTypeSpf$ = this.projectCallType$.pipe(map(type => type === CallTypeEnum.SPF));
     this.partnerSummaries$ = this.partnerSummaries();
-    this.partnerSummariesForContracting$ = this.partnerSummariesForContracting();
     this.partnerSummariesOfLastApprovedProjectVersion$ = this.partnerSummariesOfLastApprovedVersion();
     this.latestPartnerSummaries$ = this.partnerSummariesFromVersion();
     this.partnerReportSummaries$ = this.partnerReportSummaries();
@@ -203,17 +203,6 @@ export class ProjectPartnerStore {
       );
   }
 
-  private partnerSummariesForContracting(): Observable<ProjectPartnerSummaryDTO[]> {
-    return combineLatest([
-      this.projectStore.projectId$,
-      this.projectVersionStore.lastApprovedOrContractedVersion$,
-      this.partnerUpdateEvent$
-    ])
-      .pipe(
-        switchMap(([projectId, version]) => this.projectContractingPartnersService.getProjectPartnersForContracting(projectId, ['sortNumber'], version?.version))
-      );
-  }
-
   private partnerSummariesOfLastApprovedVersion(): Observable<ProjectPartnerSummaryDTO[]> {
     return combineLatest([
       this.projectStore.projectId$,
@@ -232,7 +221,7 @@ export class ProjectPartnerStore {
         switchMap(([projectId, versions]) => {
             const contractedVersion = this.getLastContractedVersion(versions);
             this.lastContractedVersion$.next(contractedVersion);
-            return contractedVersion ? this.projectReportService.getProjectPartnersForReporting(projectId, ['sortNumber'], contractedVersion)
+            return contractedVersion ? this.projectPartnerReportService.getProjectPartnersForReporting(projectId, ['sortNumber'], contractedVersion)
               : of([]);
           }
         ),

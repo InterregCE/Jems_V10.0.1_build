@@ -1,0 +1,13 @@
+{
+  "auditRole": {
+    "name": "auditRole",
+    "permissions": ["AuditRetrieve"]
+  },
+  "auditUser": {
+    "email": "randomize",
+    "name": "Report Control",
+    "surname": "User",
+    "userRoleId": null,
+    "userStatus": "ACTIVE"
+  }
+}

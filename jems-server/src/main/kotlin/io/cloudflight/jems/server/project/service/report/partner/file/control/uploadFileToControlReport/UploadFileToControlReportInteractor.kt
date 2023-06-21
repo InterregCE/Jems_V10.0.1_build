@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.partner.file.control.uploadFileToControlReport
 
+import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 
 interface UploadFileToControlReportInteractor {
 

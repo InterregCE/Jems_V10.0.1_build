@@ -4,7 +4,7 @@ import {UntilDestroy} from '@ngneat/until-destroy';
 import {FormService} from '@common/components/section/form/form.service';
 import {combineLatest, Observable} from 'rxjs';
 import {
-  PageProjectPartnerReportProcurementSummaryDTO, ProjectPartnerReportProcurementSummaryDTO
+  PageProjectPartnerReportProcurementDTO, ProjectPartnerReportDTO, ProjectPartnerReportProcurementDTO
 } from '@cat/api';
 import {
   PartnerReportProcurementsPageStore
@@ -33,12 +33,13 @@ export class PartnerReportProcurementsTabComponent {
   private readonlyColumns = this.allColumns.filter(col => col !== 'delete');
   displayedColumns: string[] = [];
 
-  dataSource: MatTableDataSource<ProjectPartnerReportProcurementSummaryDTO> = new MatTableDataSource([]);
+  dataSource: MatTableDataSource<ProjectPartnerReportProcurementDTO> = new MatTableDataSource([]);
 
   data$: Observable<{
-    procurements: PageProjectPartnerReportProcurementSummaryDTO;
+    procurements: PageProjectPartnerReportProcurementDTO;
     limitReached: boolean;
     isReportEditable: boolean;
+    isReportReopenedLimited: boolean;
   }>;
 
   constructor(
@@ -50,13 +51,15 @@ export class PartnerReportProcurementsTabComponent {
     this.data$ = combineLatest([
       this.pageStore.page$,
       this.reportDetailPageStore.reportEditable$,
+      this.pageStore.currentReport$
     ]).pipe(
       tap(([procurements, isEditable]) => this.prepareVisibleColumns(isEditable)),
       tap(([procurements, isEditable]) => this.dataSource.data = procurements.content),
-      map(([procurements, isReportEditable]) => ({
+      map(([procurements, isReportEditable, currentReport]) => ({
         procurements,
         limitReached: procurements.totalElements >= 50,
         isReportEditable,
+        isReportReopenedLimited: currentReport.status === ProjectPartnerReportDTO.StatusEnum.ReOpenSubmittedLimited || currentReport.status === ProjectPartnerReportDTO.StatusEnum.ReOpenInControlLimited
       })),
     );
   }
@@ -68,7 +71,7 @@ export class PartnerReportProcurementsTabComponent {
     });
   }
 
-  deleteProcurement(procurement: ProjectPartnerReportProcurementSummaryDTO): void {
+  deleteProcurement(procurement: ProjectPartnerReportProcurementDTO): void {
     Forms.confirm(
       this.dialog, {
         title: procurement.contractName,

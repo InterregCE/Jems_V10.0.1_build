@@ -20,7 +20,9 @@ interface CallPersistence {
     fun listCalls(status: CallStatus?): List<IdNamePair>
     fun getPublishedAndOpenCalls(pageable: Pageable): Page<CallSummary>
     fun getCallById(callId: Long): CallDetail
+    fun getCallSummaryById(callId: Long): CallSummary
     fun getCallByProjectId(projectId: Long): CallDetail
+    fun getCallSimpleByPartnerId(partnerId: Long): CallDetail
     fun getCallIdForNameIfExists(name: String): Long?
     fun createCall(call: Call, userId: Long): CallDetail
     fun updateCall(call: Call): CallDetail
@@ -50,5 +52,5 @@ interface CallPersistence {
     fun getCallCostOptionForProject(projectId: Long): CallCostOption
     fun getCallCostOption(callId: Long): CallCostOption
     fun updateCallCostOption(callId: Long, costOption: CallCostOption): CallCostOption
-
 }
+

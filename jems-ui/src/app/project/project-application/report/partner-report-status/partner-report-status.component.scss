@@ -6,6 +6,8 @@ mat-chip {
   padding-left: .25rem;
   margin: 0 .25rem !important;
   pointer-events: none;
+  color: var(--font-color-primary);
+  font-weight: 600;
 }
 .status-Disabled {
   border: 1px solid var(--table-border-color);
@@ -22,5 +24,23 @@ mat-chip {
   background-color: var(--status-approved-with-conditions) !important;
 }
 .status-Certified {
-  background-color: var(--status-approved) !important;
+  background-color: var(--status-contracted) !important;
+}
+.status-ReOpenSubmittedLast {
+  background-color: var(--status-declined) !important;
+}
+.status-ReOpenSubmittedLimited {
+  background-color: var(--status-declined) !important;
+}
+.status-ReOpenInControlLast {
+  background-color: var(--status-declined) !important;
+}
+.status-ReOpenInControlLimited {
+  background-color: var(--status-declined) !important;
+}
+.status-ReOpenInControlLimited {
+  background-color: var(--status-declined) !important;
+}
+.status-ReOpenCertified {
+  background-color: var(--status-declined) !important;
 }

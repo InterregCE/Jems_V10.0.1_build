@@ -12,6 +12,7 @@ import java.time.ZonedDateTime
 import java.util.SortedSet
 import java.util.TreeSet
 
+
 data class CallDetail(
     val id: Long,
     val name: String,
@@ -33,8 +34,12 @@ data class CallDetail(
     val applicationFormFieldConfigurations: MutableSet<ApplicationFormFieldConfiguration>,
     val preSubmissionCheckPluginKey: String?,
     val firstStepPreSubmissionCheckPluginKey: String?,
+    val reportPartnerCheckPluginKey: String?,
+    val reportProjectCheckPluginKey: String?,
     val projectDefinedUnitCostAllowed: Boolean,
     val projectDefinedLumpSumAllowed: Boolean,
+    val controlReportPartnerCheckPluginKey: String?,
+    val controlReportSamplingCheckPluginKey: String?,
 ) {
     fun isPublished() = status == CallStatus.PUBLISHED
 

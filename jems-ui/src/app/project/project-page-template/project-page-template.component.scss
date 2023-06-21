@@ -1,3 +1,8 @@
+
+jems-main-page-template.in-modification {
+  background-color: var(--pale-yellow) !important;
+}
+
 #version-warn {
   display: flex;
 
@@ -6,10 +11,60 @@
   }
 }
 
+#versionAndStatusInfo {
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+  color: var(--font-color-secondary);
+
+  .version-info {
+    font-weight: 600;
+
+    mat-icon {
+      font-weight: 600;
+      font-size: 1.25em;
+      width: 1em;
+      vertical-align: text-top;
+
+      &.edit:before {
+        content: "edit";
+        color: var(--status-draft);
+      }
+
+      &.done:before {
+        content: "done";
+        color: var(--status-approved);
+      }
+
+      &.close:before {
+        content: "close";
+        color: var(--status-declined);
+        display: inline-block;
+        margin-bottom: -0.5em;
+      }
+    }
+  }
+}
+
+.versionSelection {
+  .mat-option {
+    padding-left: 0.5rem !important;
+  }
+  .mat-icon {
+    vertical-align: middle;
+    font-size: 1.5em;
+    margin-right: 0.25rem;
+  }
+}
+.versionDate {
+  padding-left: 0.5em;
+  font-size: 0.8em;
+  opacity: 0.5;
+}
+
 .color-green {
-  color: green;
+  color: var(--success-color);
 }
 
 .color-red {
-  color: red;
+  color: var(--error-color);
 }

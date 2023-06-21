@@ -1,0 +1,60 @@
+#report-info {
+  border: 1px solid;
+  border-color: var(--table-border-color);
+
+  .project-row {
+    display: flex;
+  }
+
+  .header {
+    background-color: var(--light-blue-gray);
+    min-width: 24rem;
+    background-clip: padding-box;
+    text-align: right;
+    font-weight: var(--font-weight-strong);
+  }
+
+  .expiration {
+    color: var(--error-color);
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  .fund-list {
+    list-style-type: none;
+    padding-inline-start: 0;
+    margin-top: 0;
+    min-width: 100%;
+  }
+}
+
+.table-padding {
+  > * {
+    > * {
+      padding-right:  0.5em;
+      padding-left:  0.5em;
+    }
+  }
+}
+
+::ng-deep {
+  .reporting-date-readonly {
+    .mat-form-field-flex {
+      background-color: white !important;
+      border-bottom-style: dotted !important;
+      border-width: thin !important;
+      border-color: rgb(220, 220, 220) !important;
+    }
+    .mat-form-field-underline {
+      display: none;
+    }
+  }
+}
+
+

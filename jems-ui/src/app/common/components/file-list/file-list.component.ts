@@ -12,7 +12,7 @@ import { FileListItem } from '@common/components/file-list/file-list-item';
 import {Observable, Subject, Subscription} from 'rxjs';
 import {APIError} from '@common/models/APIError';
 import {take} from 'rxjs/operators';
-import {ProjectReportFileMetadataDTO} from '@cat/api';
+import {JemsFileMetadataDTO} from '@cat/api';
 import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
 
 @Component({
@@ -52,7 +52,7 @@ export class FileListComponent {
     fileSizeOverLimitError$: Subject<boolean>,
     error$: Subject<APIError | null>,
     maximumAllowedFileSizeInMB: number,
-    callback: (file: File) => Observable<ProjectReportFileMetadataDTO>,
+    callback: (file: File) => Observable<JemsFileMetadataDTO>,
   ): Subscription {
     if (!target) {
       return Subscription.EMPTY;

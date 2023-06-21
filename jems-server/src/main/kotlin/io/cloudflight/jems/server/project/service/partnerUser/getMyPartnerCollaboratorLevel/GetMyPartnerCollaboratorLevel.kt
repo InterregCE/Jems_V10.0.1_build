@@ -38,10 +38,10 @@ class GetMyPartnerCollaboratorLevel(
 
     private fun CurrentUser.getHighestReportingLevelFromPermission(projectId: Long): PartnerCollaboratorLevel? =
         when (true) {
-            this.hasPermission(ProjectReportingEdit) && this.hasAccessToProject(projectId) ->
+            (this.hasPermission(ProjectReportingEdit) && this.hasAccessToProject(projectId)) ->
                 ProjectReportingEdit.getCorrespondingCollaboratorLevel()
 
-            this.hasPermission(ProjectReportingView) && this.hasAccessToProject(projectId) ->
+            (this.hasPermission(ProjectReportingView) && this.hasAccessToProject(projectId)) ->
                 ProjectReportingView.getCorrespondingCollaboratorLevel()
 
             else -> null

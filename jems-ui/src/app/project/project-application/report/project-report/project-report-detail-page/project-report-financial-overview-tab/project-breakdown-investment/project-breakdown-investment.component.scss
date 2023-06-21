@@ -1,0 +1,13 @@
+@use '../project-report-financial-overview-tab.component';
+
+.mat-column-investmentNr {
+  min-width: 10rem;
+}
+
+.inactive-icon {
+  margin-right: .25rem;
+  font-size: 1rem;
+  vertical-align: text-top;
+  width: 1rem;
+}
+

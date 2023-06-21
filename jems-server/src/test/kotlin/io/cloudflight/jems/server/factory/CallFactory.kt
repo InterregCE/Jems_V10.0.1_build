@@ -43,8 +43,12 @@ class CallFactory(
                 allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD),
                 preSubmissionCheckPluginKey = null,
                 firstStepPreSubmissionCheckPluginKey = null,
+                reportPartnerCheckPluginKey = "check-off",
+                reportProjectCheckPluginKey = "check-off",
                 projectDefinedUnitCostAllowed = true,
                 projectDefinedLumpSumAllowed = false,
+                controlReportPartnerCheckPluginKey = "control-report-partner-check-off",
+                controlReportSamplingCheckPluginKey = "control-report-sampling-check-off"
             )
         )
     }

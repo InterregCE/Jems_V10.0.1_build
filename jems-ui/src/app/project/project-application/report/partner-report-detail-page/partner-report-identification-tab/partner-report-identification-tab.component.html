@@ -57,6 +57,10 @@
             <span class="header p-1 pr-3">{{'project.application.partner.report.local.currency' | translate}}</span>
             <span class="p-1">{{ data.partnerReport.identification?.currency ? data.partnerReport.identification.currency : ('project.application.partner.report.local.currency.not.found' | translate)}}</span>
         </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.application.project.report.table.project.version' | translate}}</span>
+            <span class="p-1">{{ data.partnerReport.linkedFormVersion }}</span>
+        </div>
     </div>
 
     <form [formGroup]="form" jemsFormLayout>
@@ -115,7 +119,7 @@
         <div>
             <jems-multi-language-container>
                 <jems-multi-language-form-field
-                        [maxLength]="2000"
+                        [maxLength]="5000"
                         label="common.textarea.enter.text"
                         formControlName="summary"
                         type="textarea">
@@ -128,7 +132,7 @@
         <div>
             <jems-multi-language-container>
                 <jems-multi-language-form-field
-                        [maxLength]="2000"
+                        [maxLength]="5000"
                         label="common.textarea.enter.text"
                         formControlName="problemsAndDeviations"
                         type="textarea">
@@ -179,6 +183,9 @@
                 <ng-container matColumnDef="totalReportedSoFar">
                     <th *matHeaderCellDef mat-header-cell scope="col" class="text-right">
                         {{ 'project.report.partner.spending.totalReportedSoFar' | translate }}
+                        <jems-context-info infoPosition="right"
+                                           infoText="{{ 'project.report.partner.spending.totalReportedSoFar.context.info' | translate }}">
+                        </jems-context-info>
                     </th>
                     <td *matCellDef="let data; let i = index" mat-cell  class="text-right">
                         {{ (form.get('spendingProfile')?.value?.previouslyReported + form.get('spendingProfile')?.value?.currentReport) | asMoney }}
@@ -213,7 +220,8 @@
                                 <input formControlName="nextReportForecast"
                                        [options]="{min: 0, max: 999999999.99, align: 'right'}"
                                        currencyMask matInput
-                                       type="decimal">
+                                       type="decimal"
+                                       aria-label="value">
                             </mat-form-field>
                         </ng-container>
                     </td>
@@ -228,7 +236,7 @@
             <div>
                 <jems-multi-language-container>
                     <jems-multi-language-form-field
-                            [maxLength]="2000"
+                            [maxLength]="5000"
                             label="common.textarea.enter.text"
                             formControlName="spendingDeviations"
                             type="textarea">

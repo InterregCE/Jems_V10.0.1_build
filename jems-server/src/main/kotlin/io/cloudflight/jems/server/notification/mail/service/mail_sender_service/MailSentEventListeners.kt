@@ -5,12 +5,13 @@ import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.common.event.JemsAuditEvent
 import io.cloudflight.jems.server.notification.mail.service.model.MailNotification
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.stereotype.Service
 import org.springframework.transaction.event.TransactionalEventListener
 
 data class MailSentEvent(val notification: MailNotification)
 
-data class MailSentEventListeners(private val eventPublisher: ApplicationEventPublisher) {
-
+@Service
+class MailSentEventListeners(private val eventPublisher: ApplicationEventPublisher) {
 
     @TransactionalEventListener(fallbackExecution = true)
     fun publishJemsAuditEvent(event: MailSentEvent) =
@@ -22,5 +23,3 @@ data class MailSentEventListeners(private val eventPublisher: ApplicationEventPu
             )
         )
 }
-
-

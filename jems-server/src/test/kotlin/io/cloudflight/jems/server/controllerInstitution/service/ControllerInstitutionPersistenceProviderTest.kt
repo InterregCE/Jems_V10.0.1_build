@@ -1,16 +1,35 @@
 package io.cloudflight.jems.server.controllerInstitution.service
 
-
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.controllerInstitution.*
+import io.cloudflight.jems.server.controllerInstitution.MONITOR_USER_1_EMAIL
+import io.cloudflight.jems.server.controllerInstitution.MONITOR_USER_1_ID
+import io.cloudflight.jems.server.controllerInstitution.MONITOR_USER_2_EMAIL
+import io.cloudflight.jems.server.controllerInstitution.MONITOR_USER_2_ID
 import io.cloudflight.jems.server.controllerInstitution.entity.ControllerInstitutionPartnerEntity
 import io.cloudflight.jems.server.controllerInstitution.entity.ControllerInstitutionUserEntity
 import io.cloudflight.jems.server.controllerInstitution.entity.ControllerInstitutionUserId
-import io.cloudflight.jems.server.controllerInstitution.repository.*
-import io.cloudflight.jems.server.controllerInstitution.service.model.*
+import io.cloudflight.jems.server.controllerInstitution.institutionUsers
+import io.cloudflight.jems.server.controllerInstitution.nutsRegion3Entity
+import io.cloudflight.jems.server.controllerInstitution.repository.ControllerInstitutionNutsRepository
+import io.cloudflight.jems.server.controllerInstitution.repository.ControllerInstitutionPartnerRepository
+import io.cloudflight.jems.server.controllerInstitution.repository.ControllerInstitutionPartnerRepository.Companion.buildSearchPredicate
+import io.cloudflight.jems.server.controllerInstitution.repository.ControllerInstitutionPersistenceProvider
+import io.cloudflight.jems.server.controllerInstitution.repository.ControllerInstitutionRepository
+import io.cloudflight.jems.server.controllerInstitution.repository.ControllerInstitutionUserRepository
+import io.cloudflight.jems.server.controllerInstitution.repository.toDto
+import io.cloudflight.jems.server.controllerInstitution.repository.toEntity
+import io.cloudflight.jems.server.controllerInstitution.repository.toModel
+import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitution
+import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionUser
+import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignment
+import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerDetails
+import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerSearchRequest
+import io.cloudflight.jems.server.controllerInstitution.service.model.UpdateControllerInstitution
+import io.cloudflight.jems.server.controllerInstitution.service.model.UserInstitutionAccessLevel
 import io.cloudflight.jems.server.nuts.repository.NutsRegion3Repository
 import io.cloudflight.jems.server.project.entity.partner.ControllerInstitutionEntity
-import io.cloudflight.jems.server.project.service.partner.getPartnerAddressOrEmptyString
+import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
+import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
@@ -27,14 +46,13 @@ import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import java.time.ZonedDateTime
+import java.util.Optional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
-import java.time.ZonedDateTime
-import java.util.*
-
 
 class ControllerInstitutionPersistenceProviderTest : UnitTest() {
 
@@ -44,7 +62,7 @@ class ControllerInstitutionPersistenceProviderTest : UnitTest() {
     @MockK
     lateinit var nutsRegion3Repository: NutsRegion3Repository
 
-    @RelaxedMockK
+    @MockK
     lateinit var institutionPartnerRepository: ControllerInstitutionPartnerRepository
 
     @RelaxedMockK
@@ -55,6 +73,12 @@ class ControllerInstitutionPersistenceProviderTest : UnitTest() {
 
     @MockK
     lateinit var controllerInstitutionPersistence: ControllerInstitutionPersistence
+
+    @RelaxedMockK
+    lateinit var partnerRepository: ProjectPartnerRepository
+
+    @MockK
+    lateinit var institutionNutsRepository: ControllerInstitutionNutsRepository
 
     @InjectMockKs
     lateinit var controllerInstitutionPersistenceProvider: ControllerInstitutionPersistenceProvider
@@ -78,7 +102,6 @@ class ControllerInstitutionPersistenceProviderTest : UnitTest() {
             createdAt = ZonedDateTime.now()
         )
 
-
         private val institutionWithUsers = ControllerInstitution(
             id = INSTITUTION_ID,
             name = "INSTITUTION",
@@ -97,7 +120,6 @@ class ControllerInstitutionPersistenceProviderTest : UnitTest() {
             createdAt = createdAt
         )
 
-
         private val institutionEntity = ControllerInstitutionEntity(
             id = 1L,
             name = "INSTITUTION",
@@ -105,7 +127,62 @@ class ControllerInstitutionPersistenceProviderTest : UnitTest() {
             institutionNuts = mutableSetOf(nutsRegion3Entity),
             createdAt = ZonedDateTime.now()
         )
-        private val InstitutionPartnerDetail =  InstitutionPartnerDetails(
+
+        private fun dummyATInstitutionAssignmentEntity(): ControllerInstitutionPartnerEntity {
+            val partnerMock = mockk<ProjectPartnerEntity> {
+                every { project.id } returns 1
+                every { project.call.id } returns 1
+            }
+            val institutionMock = mockk<ControllerInstitutionEntity> { every { id } returns INSTITUTION_ID }
+            val entity = mockk<ControllerInstitutionPartnerEntity> {
+                every { partnerId } returns 1L
+                every { institution } returns institutionMock
+                every { partner } returns partnerMock
+                every { partnerAbbreviation } returns "A"
+                every { partnerActive } returns true
+                every { partnerRole } returns ProjectPartnerRole.LEAD_PARTNER
+                every { partnerNumber } returns 1
+                every { addressNuts3 } returns "Wien (AT130)"
+                every { addressNuts3Code } returns "AT130"
+                every { addressCountry } returns "Austria"
+                every { addressCountryCode } returns "AT"
+                every { addressCity } returns "Wien"
+                every { addressPostalCode } returns "299281"
+                every { projectIdentifier } returns "0001"
+                every { projectAcronym } returns "Project Test"
+            }
+
+            return entity
+        }
+
+        private fun dummyROInstitutionAssignmentEntity(): ControllerInstitutionPartnerEntity {
+            val partnerMock = mockk<ProjectPartnerEntity> {
+                every { project.id } returns 2
+                every { project.call.id } returns 1
+            }
+            val institutionMock = mockk<ControllerInstitutionEntity> { every { id } returns INSTITUTION_ID }
+            val entity = mockk<ControllerInstitutionPartnerEntity> {
+                every { partnerId } returns 2L
+                every { institution } returns institutionMock
+                every { partner } returns partnerMock
+                every { partnerAbbreviation } returns "B"
+                every { partnerActive } returns true
+                every { partnerRole } returns ProjectPartnerRole.PARTNER
+                every { partnerNumber } returns 2
+                every { addressNuts3 } returns "Gorj (RO412)"
+                every { addressNuts3Code } returns "RO412"
+                every { addressCountry } returns "România"
+                every { addressCountryCode } returns "RO"
+                every { addressCity } returns "Gorj"
+                every { addressPostalCode } returns "123456"
+                every { projectIdentifier } returns "0002"
+                every { projectAcronym } returns "Project Test #2"
+            }
+
+            return entity
+        }
+
+        private val institutionATPartnerDetail = InstitutionPartnerDetails(
             institutionId = INSTITUTION_ID,
             partnerId = 1L,
             partnerName = "A",
@@ -124,24 +201,24 @@ class ControllerInstitutionPersistenceProviderTest : UnitTest() {
             projectAcronym = "Project Test"
         )
 
-        private class InstitutionPartnerDetailsRowImpl(
-            override val institutionId: Long?,
-            override val partnerId: Long,
-            override val partnerName: String,
-            override val partnerStatus: Boolean,
-            override val partnerSortNumber: Int,
-            override val partnerRole: String,
-            override val partnerNuts3: String?,
-            override val partnerNuts3Code: String?,
-            override val country: String?,
-            override val countryCode: String?,
-            override val city: String?,
-            override val postalCode: String?,
-            override val callId: Long,
-            override val projectId: Long,
-            override val projectCustomIdentifier: String,
-            override val projectAcronym: String
-        ): InstitutionPartnerDetailsRow
+        private val institutionROPartnerDetail = InstitutionPartnerDetails(
+            institutionId = INSTITUTION_ID,
+            partnerId = 2L,
+            partnerName = "B",
+            partnerStatus = true,
+            partnerRole = ProjectPartnerRole.PARTNER,
+            partnerSortNumber = 2,
+            partnerNuts3 = "Gorj (RO412)",
+            partnerNuts3Code = "RO412",
+            country = "România",
+            countryCode = "RO",
+            city = "Gorj",
+            postalCode = "123456",
+            callId = 1L,
+            projectId = 2L,
+            projectCustomIdentifier = "0002",
+            projectAcronym = "Project Test #2"
+        )
     }
 
     @Test
@@ -153,10 +230,10 @@ class ControllerInstitutionPersistenceProviderTest : UnitTest() {
         controllerInstitutionPersistenceProvider.createControllerInstitution(updateInstitution).let {
             assertThat(it.institutionNuts).isEqualTo(setOf(nutsRegion3Entity).toDto())
         }
+
         assertThat(slotControllerUpdate.captured.id).isEqualTo(updateInstitution.id)
         assertThat(slotControllerUpdate.captured.name).isEqualTo(updateInstitution.name)
         assertThat(slotControllerUpdate.captured.description).isEqualTo(updateInstitution.description)
-
     }
 
     @Test
@@ -175,7 +252,6 @@ class ControllerInstitutionPersistenceProviderTest : UnitTest() {
             controllerRepo.findById(any())
             nutsRegion3Repository.findAllById(updateInstitution.institutionNuts)
         }
-
     }
 
     @Test
@@ -212,7 +288,6 @@ class ControllerInstitutionPersistenceProviderTest : UnitTest() {
 
     @Test
     fun getControllerInstitutionById() {
-
         val userEntities = listOf(
             ControllerInstitutionUserEntity(
                 id = ControllerInstitutionUserId(
@@ -222,6 +297,7 @@ class ControllerInstitutionPersistenceProviderTest : UnitTest() {
                         name = USER_NAME,
                         password = "hash",
                         email = MONITOR_USER_1_EMAIL,
+                        sendNotificationsToEmail = false,
                         surname = USER_SURNAME,
                         userRole = UserRoleEntity(3L, "Controller"),
                         userStatus = UserStatus.ACTIVE
@@ -237,6 +313,7 @@ class ControllerInstitutionPersistenceProviderTest : UnitTest() {
                         name = USER_NAME,
                         password = "hash",
                         email = MONITOR_USER_2_EMAIL,
+                        sendNotificationsToEmail = false,
                         surname = USER_SURNAME,
                         userRole = UserRoleEntity(3L, "Controller"),
                         userStatus = UserStatus.ACTIVE
@@ -259,7 +336,6 @@ class ControllerInstitutionPersistenceProviderTest : UnitTest() {
             )
         } returns PageImpl(listOf(institutionEntity))
 
-
         val result = institutionEntity.toModel(userEntities)
 
         controllerInstitutionPersistenceProvider.getControllerInstitutionById(INSTITUTION_ID)
@@ -271,36 +347,64 @@ class ControllerInstitutionPersistenceProviderTest : UnitTest() {
     }
 
     @Test
-    fun `get institution partner assignments`() {
-        val listInstitutionPartnerDetailsRowImpl = listOf(InstitutionPartnerDetailsRowImpl(
-            institutionId = INSTITUTION_ID,
-            partnerId = 1L,
-            partnerName = "A",
-            partnerStatus = true,
-            partnerRole = "LEAD_PARTNER",
-            partnerSortNumber = 1,
-            partnerNuts3 = "Wien (AT130)",
-            partnerNuts3Code = "AT130",
-            country = "Austria",
-            countryCode = "AT",
-            city = "Wien",
-            postalCode = "299281",
-            callId = 1L,
-            projectId = 1L,
-            projectCustomIdentifier = "0001",
-            projectAcronym = "Project Test"
-        ))
-
-        every { institutionPartnerRepository.getInstitutionPartnerAssignments(Pageable.unpaged()) } returns PageImpl(listInstitutionPartnerDetailsRowImpl)
-        assertThat(institutionPartnerRepository.getInstitutionPartnerAssignments(Pageable.unpaged()).content[0].toModel()).isEqualTo(InstitutionPartnerDetail)
-        assertThat(getPartnerAddressOrEmptyString("Austria","Vienna", "Main street","123A")).isNotEmpty
-        assertThat(institutionPartnerRepository.getInstitutionPartnerAssignments(Pageable.unpaged()).toModel()).contains(InstitutionPartnerDetail)
-        assertThat(controllerInstitutionPersistenceProvider.getInstitutionPartnerAssignments(Pageable.unpaged()).content).containsExactly(
-            InstitutionPartnerDetail
+    fun `get institution partner assignments - empty search request`() {
+        val emptyRequest = InstitutionPartnerSearchRequest(
+            callId  = null,
+            projectId = null,
+            acronym = "",
+            partnerName = "",
+            partnerNuts = emptySet(),
+            globallyRestrictedNuts = null // = not restricted
         )
+        every { institutionPartnerRepository.findAll(buildSearchPredicate(emptyRequest), Pageable.unpaged()) } returns
+                PageImpl(listOf(
+                    dummyATInstitutionAssignmentEntity(),
+                    dummyROInstitutionAssignmentEntity()
+                ))
+
+        val result = controllerInstitutionPersistenceProvider.getInstitutionPartnerAssignments(Pageable.unpaged(), emptyRequest)
+
+        assertThat(result).containsAll(listOf(institutionATPartnerDetail, institutionROPartnerDetail))
     }
 
+    @Test
+    fun `get institution partner assignments - active search request`() {
+        val searchRequest = InstitutionPartnerSearchRequest(
+            callId = 1,
+            projectId = null,
+            acronym = "",
+            partnerName = "",
+            partnerNuts = emptySet(),
+            globallyRestrictedNuts = null // = not restricted
+        )
+        every { institutionPartnerRepository.findAll(buildSearchPredicate(searchRequest), Pageable.unpaged()) } returns
+                PageImpl(listOf(
+                    dummyATInstitutionAssignmentEntity(),
+                    dummyROInstitutionAssignmentEntity()
+                ))
 
+        val result = controllerInstitutionPersistenceProvider.getInstitutionPartnerAssignments(Pageable.unpaged(), searchRequest)
+
+        assertThat(result).containsAll(listOf(institutionATPartnerDetail, institutionROPartnerDetail))
+    }
+
+    @Test
+    fun `get institution partner assignments - active search request including NUTS`() {
+        val searchRequest = InstitutionPartnerSearchRequest(
+            callId = 1,
+            projectId = "1",
+            acronym = "Project",
+            partnerName = "A",
+            partnerNuts = setOf("AT1"),
+            globallyRestrictedNuts = setOf("AT130"),
+        )
+        every { institutionPartnerRepository.findAll(buildSearchPredicate(searchRequest), Pageable.unpaged()) } returns
+                PageImpl(listOf(dummyATInstitutionAssignmentEntity()))
+
+        val result = controllerInstitutionPersistenceProvider.getInstitutionPartnerAssignments(Pageable.unpaged(), searchRequest)
+
+        assertThat(result).containsExactly(institutionATPartnerDetail)
+    }
 
     @Test
     fun `getInstitutionUserByInstitutionIdAndUserId - empty`() {
@@ -385,29 +489,17 @@ class ControllerInstitutionPersistenceProviderTest : UnitTest() {
 
     @Test
     fun getInstitutionPartnerAssignmentsByPartnerIdsIn() {
-        val institution = mockk<ControllerInstitutionEntity>()
-        every { institution.id } returns 400L
+        val controllerInstitution = mockk<ControllerInstitutionPartnerEntity>()
+        every { controllerInstitution.partnerId } returns 480L
+        every { controllerInstitution.partner.project.id } returns 80L
+        every { controllerInstitution.institution?.id } returns 400L
+        every { controllerInstitution.projectIdentifier } returns "PROJ-80"
 
-        val controllerInstitution = ControllerInstitutionPartnerEntity(
-            partnerId = 480L, institution = institution, partnerProjectId = 80L,
-        )
-        val expectedAssignment = InstitutionPartnerAssignment(
-            partnerId = 480L, institutionId = 400L, partnerProjectId = 80L,
-        )
+        val expectedAssignment = InstitutionPartnerAssignment(partnerId = 480L, institutionId = 400L, partnerProjectId = 80L)
 
         every { institutionPartnerRepository.findAllByInstitutionId(400L) } returns listOf(controllerInstitution)
         assertThat(controllerInstitutionPersistenceProvider.getInstitutionPartnerAssignmentsByInstitutionId(400L))
             .containsExactly(expectedAssignment)
-    }
-
-    @Test
-    fun getInstitutionPartnerAssignmentsWithUsersByPartnerProjectIdsIn() {
-        val assignment = mockk<InstitutionPartnerAssignmentWithUsers>()
-        every { institutionPartnerRepository.getInstitutionPartnerAssignmentsWithUsersByPartnerProjectIdsIn(setOf(569L)) } returns
-            listOf(assignment)
-        assertThat(controllerInstitutionPersistenceProvider
-            .getInstitutionPartnerAssignmentsWithUsersByPartnerProjectIdsIn(setOf(569L))
-        ).containsExactly(assignment)
     }
 
     @Test
@@ -417,5 +509,4 @@ class ControllerInstitutionPersistenceProviderTest : UnitTest() {
         assertThat(controllerInstitutionPersistenceProvider.getControllerUserAccessLevelForPartner(22L, partnerId = 17L))
             .isEqualTo(UserInstitutionAccessLevel.View)
     }
-
 }

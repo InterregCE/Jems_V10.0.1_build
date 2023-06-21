@@ -16,6 +16,7 @@ import java.util.regex.Pattern
 const val PASSWORD_REGEX = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{10,}).+\$"
 const val EMAIL_REGEX = "^(.+)@(.+)\$"
 const val ONLY_DIGITS_REGEX = "\\d+\$"
+const val TELEPHONE_REGEX = "^[0-9 +()/-]*\$"
 
 val EXTRA_VALID_CURRENCIES = setOf("SLE")
 

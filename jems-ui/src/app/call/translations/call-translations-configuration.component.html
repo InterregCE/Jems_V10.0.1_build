@@ -1,0 +1,87 @@
+<jems-main-page-template *ngIf="data$ | async as data"
+                         titleKey="call.detail.translations.title"
+                         descriptionKey="call.detail.translations.subtitle">
+
+    <div class="form-width-limit">
+
+        <jems-alert
+                [show]="true"
+                [closable]="false"
+                [type]="Alert.WARNING">
+            {{'call.detail.translations.warning' | translate}}
+        </jems-alert>
+
+        <input class="file-input" accept=".properties" type="file" #fileInput onclick="this.value=null;"
+               (change)="upload($event, data.callId)" aria-label="translation file">
+
+        <jems-alert *ngFor="let alert of alerts$ | async" [show]="true" [type]="alert.type"
+                    (closed)="dismissAlert(alert.id)" [disableMargins]="true" class="mb-2 block">
+            <p>{{ alert.i18nMessage | translate : alert.i18nArgs }}</p>
+        </jems-alert>
+
+        <mat-table [dataSource]="dataSource">
+
+            <ng-container matColumnDef="language">
+                <mat-header-cell *matHeaderCellDef>
+                    <span jemsText maxLines="2">{{ 'programme.translation.management.language' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let translation" [class.is-in-use]="translation.file">
+                    {{ translation.language }} - {{ 'language.' + translation.language.toLowerCase() | translate }}
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="fileName">
+                <mat-header-cell *matHeaderCellDef>
+                    <span jemsText maxLines="2">{{ 'programme.translation.management.file.name' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let translation">
+                    {{ translation.file?.name }}
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="uploaded">
+                <mat-header-cell *matHeaderCellDef>
+                    <span jemsText maxLines="2">{{ 'programme.translation.management.date' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let translation">
+                    {{ translation.file?.uploaded | localeDate : 'L' :'LT' }}
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="actions">
+                <mat-header-cell *matHeaderCellDef>
+                    <span jemsText maxLines="2">{{ 'common.action' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let translation">
+                    <span matTooltip="{{ 'call.detail.translations.default.tooltip' | translate }}">
+                        <button color="primary" mat-icon-button [disabled]="!translation.defaultFromProgramme"
+                                (click)="downloadFromProgramme(data.callId, translation.language)"
+                                aria-label="download">
+                        <mat-icon fontSet="material-icons-outlined">description</mat-icon>
+                        </button>
+                    </span>
+                    <button color="primary" mat-icon-button
+                            (click)="languageToUpload = translation.language; fileInput.click()"
+                            aria-label="upload">
+                        <mat-icon>upload</mat-icon>
+                    </button>
+                    <button color="primary" mat-icon-button [disabled]="!translation.file"
+                            (click)="download(data.callId, translation.file)"
+                            aria-label="download">
+                        <mat-icon>download</mat-icon>
+                    </button>
+                    <button color="accent" mat-icon-button [disabled]="!translation.file"
+                            (click)="delete(data.callId, translation)"
+                            aria-label="delete">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+
+        </mat-table>
+    </div>
+
+</jems-main-page-template>

@@ -1,10 +1,10 @@
 package io.cloudflight.jems.server.project.service.contracting.fileManagement
 
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.listContractingFiles.InvalidSearchConfiguration
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.listContractingFiles.InvalidSearchFilterConfiguration
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.listContractingFiles.InvalidSearchFilterPartnerWithoutId
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingFileSearchRequest
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.partner.file.listProjectPartnerReportFile.validateSearchConfiguration
 
 val MONITORING_ALLOWED_FILE_TYPES = mapOf(
@@ -39,7 +39,7 @@ val PARTNER_ALLOWED_FILE_TYPES = mapOf(
     JemsFileType.ContractPartnerDoc to setOf(JemsFileType.ContractPartnerDoc),
 )
 
-fun validateInternalFile(fileType:  JemsFileType?) {
+fun validateInternalFile(fileType: JemsFileType?) {
     if (fileType == null || fileType != JemsFileType.ContractInternal) {
         throw FileNotFound()
     }
@@ -51,15 +51,21 @@ fun validateContractFile(fileType:  JemsFileType?) {
     }
 }
 
+fun validatePartnerFile(fileType: JemsFileType?) {
+    if (fileType == null || fileType !in PARTNER_ALLOWED_FILE_TYPES) {
+        throw FileNotFound()
+    }
+}
+
 fun validateConfiguration(
     searchRequest: ProjectContractingFileSearchRequest,
     partnerId: Long?,
-    allowedFilers: Map<JemsFileType, Set<JemsFileType>>
+    allowedFilters: Map<JemsFileType, Set<JemsFileType>>
 ) {
     validateSearchConfiguration(
         treeNode = searchRequest.treeNode,
         filterSubtypes = searchRequest.filterSubtypes,
-        allowedFilters = allowedFilers,
+        allowedFilters = allowedFilters,
         { InvalidSearchConfiguration() },
         { invalidFilters -> InvalidSearchFilterConfiguration(invalidFilters) },
     )

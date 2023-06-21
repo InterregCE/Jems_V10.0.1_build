@@ -9,6 +9,7 @@ import io.cloudflight.jems.server.user.service.model.assignment.CollaboratorAssi
 import io.cloudflight.jems.server.project.service.projectuser.assign_user_collaborator_to_project.AssignUserCollaboratorToProjectInteractor
 import io.cloudflight.jems.server.project.service.projectuser.get_my_collaborator_level.GetMyCollaboratorLevelInteractor
 import io.cloudflight.jems.server.project.service.projectuser.get_user_collaborators_assigned_to_projects.GetUserCollaboratorsAssignedToProjectsInteractor
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -43,6 +44,8 @@ class ProjectUserCollaboratorControllerTest : UnitTest() {
             CollaboratorAssignedToProject(
                 userId = 10L,
                 userEmail = "email",
+                sendNotificationsToEmail = false,
+                userStatus = UserStatus.ACTIVE,
                 level = ProjectCollaboratorLevel.VIEW,
             )
         )

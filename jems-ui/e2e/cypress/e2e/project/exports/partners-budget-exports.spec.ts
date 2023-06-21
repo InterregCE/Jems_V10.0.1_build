@@ -25,8 +25,6 @@ context('Partners budget exports', () => {
         cy.contains('mat-option', 'Deutsch').click();
 
         cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/budget?exportLanguage=EN&inputLanguage=DE*`, 'xlsx').then(exportFile => {
-          const fileNameRegex = generateRegex(applicationId, application.identification.acronym);
-          expect(exportFile.fileName).to.match(fileNameRegex);
           cy.fixture('project/exports/partners-budget/TB-369-export-en-de.xlsx', null).parseXLSX().then(testDataFile => {
             const assertionMessage = 'Verify downloaded en-de xlsx file';
             expect(exportFile.content[0].data.slice(1), assertionMessage).to.deep.equal(testDataFile[0].data.slice(1));
@@ -40,8 +38,6 @@ context('Partners budget exports', () => {
         cy.contains('mat-option', 'English').click();
 
         cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/budget?exportLanguage=DE&inputLanguage=EN*`, 'xlsx').then(exportFile => {
-          const fileNameRegex = generateRegex(applicationId, application.identification.acronym);
-          expect(exportFile.fileName).to.match(fileNameRegex);
           cy.fixture('project/exports/partners-budget/TB-369-export-de-en.xlsx', null).parseXLSX().then(testDataFile => {
             const assertionMessage = 'Verify downloaded de-en lsx file';
             expect(exportFile.content[0].data.slice(1), assertionMessage).to.deep.equal(testDataFile[0].data.slice(1));
@@ -51,7 +47,7 @@ context('Partners budget exports', () => {
       });
     });
   });
-  
+
   it('TB-370 Export partners budget in different versions', () => {
     cy.fixture('project/exports/partners-budget/TB-370.json').then(testData => {
       call2step.budgetSettings.allowedCostOption.projectDefinedUnitCostAllowed = true;
@@ -81,19 +77,11 @@ context('Partners budget exports', () => {
             cy.createProjectResults(applicationId, application2step.secondStep.description.results);
             cy.updateProjectManagement(applicationId, application2step.secondStep.description.management);
             cy.updateProjectLongTermPlans(applicationId, application2step.secondStep.description.longTermPlans);
-            cy.updatePartner(partnerId, updatedPartner.details);
-            cy.updatePartnerAddress(partnerId, updatedPartner.address);
-            cy.updatePartnerContact(partnerId, updatedPartner.contact);
-            cy.updatePartnerMotivation(partnerId, updatedPartner.motivation);
-            cy.then(function() {
-              cy.updatePartnerBudget(partnerId, updatedPartner.budget, this.investmentId);
-              cy.updatePartnerCofinancing(partnerId, updatedPartner.cofinancing);
-              cy.updatePartnerStateAid(partnerId, updatedPartner.stateAid, this.options);
-            });
-            cy.createAssociatedOrganization(applicationId, partnerId, updatedPartner.associatedOrganization);
+            cy.updatePartnerData(partnerId, updatedPartner);
+            cy.createAssociatedOrganisation(applicationId, application2step.secondStep.associatedOrganisations[0]);
 
             partner.details.abbreviation = testData.secondStep.partnerAbbreviation;
-            cy.createPartners(applicationId, [partner]);
+            cy.createFullPartners(applicationId, [partner]);
 
             cy.runPreSubmissionCheck(applicationId);
             cy.submitProjectApplication(applicationId);
@@ -110,23 +98,18 @@ context('Partners budget exports', () => {
             });
 
             // modify budget for the lead partner
-            cy.createProjectProposedUnitCost(applicationId, draftBudgetUnitCosts[0]).then(draftUnitCostOneCategory => {
-              cy.createProjectProposedUnitCost(applicationId, draftBudgetUnitCosts[1]).then(draftUnitCostMultipleCategories => {
-                const modifiedPartner = JSON.parse(JSON.stringify(application2step.secondStep.partners[0]));
-                modifiedPartner.details.abbreviation = testData.approvedModificationData.partnerAbbreviation;
-                modifiedPartner.budget.infrastructure = [];
+            cy.createProjectProposedUnitCosts(applicationId, draftBudgetUnitCosts);
+            const modifiedPartner = JSON.parse(JSON.stringify(application2step.secondStep.partners[0]));
+            modifiedPartner.details.abbreviation = testData.approvedModificationData.partnerAbbreviation;
+            modifiedPartner.budget.infrastructure = [];
 
-                testData.approvedModificationData.modifiedUnitCosts[1].unitCostId = draftUnitCostMultipleCategories;
-                modifiedPartner.budget.unit = testData.approvedModificationData.modifiedUnitCosts;
-                
-                testData.approvedModificationData.modifiedTravelCost.unitCostId = draftUnitCostOneCategory;
-                modifiedPartner.budget.travel.push(testData.approvedModificationData.modifiedTravelCost);
-                modifiedPartner.cofinancing = testData.approvedModificationData.modifiedCofinancing;
-                cy.updatePartner(partnerId, modifiedPartner.details);
-                cy.updatePartnerBudget(partnerId, modifiedPartner.budget);
-                cy.updatePartnerCofinancing(partnerId, modifiedPartner.cofinancing);
-              });
-            });
+            modifiedPartner.budget.unit = testData.approvedModificationData.modifiedUnitCosts;
+
+            modifiedPartner.budget.travel.push(testData.approvedModificationData.modifiedTravelCost);
+            modifiedPartner.cofinancing = testData.approvedModificationData.modifiedCofinancing;
+            cy.updatePartnerIdentity(partnerId, modifiedPartner.details);
+            cy.updatePartnerBudget(partnerId, modifiedPartner.budget);
+            cy.updatePartnerCofinancing(partnerId, modifiedPartner.cofinancing);
 
             cy.runPreSubmissionCheck(applicationId);
             cy.submitProjectApplication(applicationId);
@@ -137,7 +120,7 @@ context('Partners budget exports', () => {
             cy.updateProjectIdentification(applicationId, testData.rejectedModificationData.identification);
             const thirdPartner = JSON.parse(JSON.stringify(partner));
             thirdPartner.details.abbreviation = testData.rejectedModificationData.partnerAbbreviation;
-            cy.createPartners(applicationId, [thirdPartner]);
+            cy.createFullPartners(applicationId, [thirdPartner]);
             cy.runPreSubmissionCheck(applicationId);
             cy.submitProjectApplication(applicationId);
             cy.rejectModification(applicationId, testData.rejectionInfo, user.programmeUser.email);
@@ -148,11 +131,13 @@ context('Partners budget exports', () => {
             cy.contains('div', 'Export Plugin').find('mat-select').click();
             cy.contains('mat-option', 'Standard budget export').click();
             cy.get('div#export-config').contains('div', 'Project version').find('mat-select').click();
-            cy.contains('mat-option', 'V. 1.0').click();
+            cy.contains('mat-option', 'V.1.0').click();
 
             cy.contains('div#export-config button', 'Export').clickToDownload(`api/project/${applicationId}/export/budget?*version=1.0`, 'xlsx').then(exportFile => {
+              const fileNameRegex = generateRegex(applicationId, application2step.firstStep.identification.acronym, 1);
+              expect(exportFile.fileName).to.match(fileNameRegex);
               cy.fixture('project/exports/partners-budget/TB-370-v1.xlsx', null).parseXLSX().then(testDataFile => {
-                const assertionMessage = 'Verify downloaded xlsx file for step 1 version';
+                const assertionMessage = 'Verify downloaded xlsx file for step 1 (v1) version';
                 expect(exportFile.content[0].data.slice(1), assertionMessage).to.deep.equal(testDataFile[0].data.slice(1));
                 expect(exportFile.content[1].data.slice(1), assertionMessage).to.deep.equal(testDataFile[1].data.slice(1));
               });
@@ -160,11 +145,13 @@ context('Partners budget exports', () => {
 
             // export step 2 version
             cy.get('div#export-config').contains('div', 'Project version').find('mat-select').click();
-            cy.contains('mat-option', 'V. 2.0').click();
+            cy.contains('mat-option', 'V.2.0').click();
 
             cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/budget?*version=2.0`, 'xlsx').then(exportFile => {
+              const fileNameRegex = generateRegex(applicationId, application2step.secondStep.identification.acronym, 2);
+              expect(exportFile.fileName).to.match(fileNameRegex);
               cy.fixture('project/exports/partners-budget/TB-370-v2.xlsx', null).parseXLSX().then(testDataFile => {
-                const assertionMessage = 'Verify downloaded xlsx file for step 2 version';
+                const assertionMessage = 'Verify downloaded xlsx file for step 2 (v2) version';
                 expect(exportFile.content[0].data.slice(1), assertionMessage).to.deep.equal(testDataFile[0].data.slice(1));
                 expect(exportFile.content[1].data.slice(1), assertionMessage).to.deep.equal(testDataFile[1].data.slice(1));
               });
@@ -172,11 +159,13 @@ context('Partners budget exports', () => {
 
             // export current modification approved version
             cy.get('div#export-config').contains('div', 'Project version').find('mat-select').click();
-            cy.contains('mat-option', 'V. 3.0').click();
+            cy.contains('mat-option', 'V.3.0').click();
 
             cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/budget?*version=3.0`, 'xlsx').then(exportFile => {
+              const fileNameRegex = generateRegex(applicationId, testData.approvedModificationData.identification.acronym, 3);
+              expect(exportFile.fileName).to.match(fileNameRegex);
               cy.fixture('project/exports/partners-budget/TB-370-v3.xlsx', null).parseXLSX().then(testDataFile => {
-                const assertionMessage = 'Verify downloaded xlsx file for rejected version';
+                const assertionMessage = 'Verify downloaded xlsx file for approved (v3) version';
                 expect(exportFile.content[0].data.slice(1), assertionMessage).to.deep.equal(testDataFile[0].data.slice(1));
                 expect(exportFile.content[1].data.slice(1), assertionMessage).to.deep.equal(testDataFile[1].data.slice(1));
               });
@@ -184,11 +173,13 @@ context('Partners budget exports', () => {
 
             // export modification rejected version
             cy.get('div#export-config').contains('div', 'Project version').find('mat-select').click();
-            cy.contains('mat-option', 'V. 4.0').click();
+            cy.contains('mat-option', 'V.4.0').click();
 
             cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/budget?*version=4.0`, 'xlsx').then(exportFile => {
+              const fileNameRegex = generateRegex(applicationId, testData.rejectedModificationData.identification.acronym, 4);
+              expect(exportFile.fileName).to.match(fileNameRegex);
               cy.fixture('project/exports/partners-budget/TB-370-v4.xlsx', null).parseXLSX().then(testDataFile => {
-                const assertionMessage = 'Verify downloaded xlsx file for rejected version';
+                const assertionMessage = 'Verify downloaded xlsx file for rejected (v4) version';
                 expect(exportFile.content[0].data.slice(1), assertionMessage).to.deep.equal(testDataFile[0].data.slice(1));
                 expect(exportFile.content[1].data.slice(1), assertionMessage).to.deep.equal(testDataFile[1].data.slice(1));
               });
@@ -227,7 +218,7 @@ context('Partners budget exports', () => {
             cy.createProjectResults(applicationId, testData.application.description.results);
             cy.updateProjectManagement(applicationId, application2step.secondStep.description.management);
             cy.updateProjectLongTermPlans(applicationId, application2step.secondStep.description.longTermPlans);
-            cy.updatePartner(partnerId, updatedPartner.details);
+            cy.updatePartnerIdentity(partnerId, updatedPartner.details);
             cy.updatePartnerAddress(partnerId, updatedPartner.address);
             cy.updatePartnerContact(partnerId, updatedPartner.contact);
             cy.updatePartnerBudget(partnerId, updatedPartner.budget);
@@ -251,7 +242,7 @@ context('Partners budget exports', () => {
 
             // export step 1 version
             cy.get('div#export-config').contains('div', 'Project version').find('mat-select').click();
-            cy.contains('mat-option', 'V. 1.0').click();
+            cy.contains('mat-option', 'V.1.0').click();
 
             cy.contains('div#export-config button', 'Export').clickToDownload(`api/project/${applicationId}/export/budget?*version=1.0`, 'xlsx').then(exportFile => {
               cy.fixture('project/exports/partners-budget/TB-686-v1.xlsx', null).parseXLSX().then(testDataFile => {
@@ -317,7 +308,7 @@ context('Partners budget exports', () => {
 
             // export step 1 version
             cy.get('div#export-config').contains('div', 'Project version').find('mat-select').click();
-            cy.contains('mat-option', 'V. 1.0').click();
+            cy.contains('mat-option', 'V.1.0').click();
 
             cy.contains('div#export-config button', 'Export').clickToDownload(`api/project/${applicationId}/export/budget?*version=1.0`, 'xlsx').then(exportFile => {
               cy.fixture('project/exports/partners-budget/TB-368-v1.xlsx', null).parseXLSX().then(testDataFile => {
@@ -331,11 +322,11 @@ context('Partners budget exports', () => {
       });
     });
   });
-  
-  function generateRegex(applicationId, applicationAcronym) {
+
+  function generateRegex(applicationId, applicationAcronym, version) {
     const id = String(applicationId).padStart(5, '0');
     const today = new Date();
     const formattedToday = date.format(today, 'YYMM');
-    return new RegExp(`${id}_${applicationAcronym}_Budget_${formattedToday}\\d\\d_\\d{6}.xlsx`);
+    return new RegExp(`${id}_${applicationAcronym}_Budget_V${version}.0_${formattedToday}\\d\\d_\\d{6}.xlsx`);
   }
 });

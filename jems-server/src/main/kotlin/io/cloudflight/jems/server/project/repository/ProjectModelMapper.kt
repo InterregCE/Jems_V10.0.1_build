@@ -37,8 +37,6 @@ import io.cloudflight.jems.server.project.service.model.ProjectVersion
 import io.cloudflight.jems.server.project.service.model.ProjectVersionSummary
 import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentEligibility
 import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentQuality
-import io.cloudflight.jems.server.user.entity.UserEntity
-import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.repository.user.toUserSummary
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
 import io.cloudflight.jems.server.user.service.model.UserSummary
@@ -62,15 +60,6 @@ fun List<ProjectVersionRow>.toProjectVersion() =
             groupedRows.value.first().version,
             groupedRows.value.first().projectId,
             ZonedDateTime.of(groupedRows.value.first().createdAt.toLocalDateTime(), ZoneOffset.UTC),
-            UserEntity(
-                groupedRows.value.first().userId,
-                groupedRows.value.first().email,
-                groupedRows.value.first().name,
-                groupedRows.value.first().surname,
-                UserRoleEntity(groupedRows.value.first().roleId, groupedRows.value.first().roleName),
-                "",
-                groupedRows.value.first().userStatus
-            ),
             groupedRows.value.first().status,
             current = groupedRows.value.first().rowEnd == null
         )
@@ -117,6 +106,7 @@ fun ProjectEntity.toModel(
     firstSubmissionStep1 = firstSubmissionStep1?.toProjectStatus(),
     lastResubmission = lastResubmission?.toProjectStatus(),
     contractedDecision = contractedDecision?.toProjectStatus(),
+    contractedOnDate = contractedOnDate,
     assessmentStep1 = assessmentStep1?.toModel(),
     assessmentStep2 = assessmentStep2?.toModel(),
     title = projectData?.translatedValues?.mapTo(HashSet()) {
@@ -157,6 +147,7 @@ fun ProjectEntity.toDetailModel(
 fun ProjectEntity.toSummaryModel() = ProjectSummary(
     id = id,
     customIdentifier = customIdentifier,
+    callId = call.id,
     callName = call.name,
     acronym = acronym,
     status = currentStatus.status,
@@ -199,6 +190,7 @@ fun List<ProjectRow>.toProjectEntryWithDetailData(
                 UserSummary(
                     groupedRows.value.first().userId,
                     groupedRows.value.first().email,
+                    groupedRows.value.first().sendNotificationsToEmail,
                     groupedRows.value.first().name,
                     groupedRows.value.first().surname,
                     UserRoleSummary(
@@ -216,6 +208,7 @@ fun List<ProjectRow>.toProjectEntryWithDetailData(
             firstSubmissionStep1 = project.firstSubmissionStep1?.toProjectStatus(),
             lastResubmission = project.lastResubmission?.toProjectStatus(),
             contractedDecision = project.contractedDecision?.toProjectStatus(),
+            contractedOnDate = project.contractedOnDate,
             assessmentStep1 = assessmentStep1.toModel(),
             assessmentStep2 = assessmentStep2.toModel(),
         )

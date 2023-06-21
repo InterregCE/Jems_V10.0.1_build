@@ -3,5 +3,4 @@ package io.cloudflight.jems.server.project.service.report.partner.file.downloadP
 interface DownloadProjectPartnerReportFileInteractor {
 
     fun download(partnerId: Long, fileId: Long): Pair<String, ByteArray>
-
 }

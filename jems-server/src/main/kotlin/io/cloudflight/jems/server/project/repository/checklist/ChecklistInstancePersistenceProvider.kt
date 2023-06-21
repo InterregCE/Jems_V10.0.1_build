@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.repository.checklist
 
 import io.cloudflight.jems.server.programme.repository.checklist.ProgrammeChecklistRepository
+import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
 import io.cloudflight.jems.server.project.entity.checklist.ChecklistInstanceEntity
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
 import io.cloudflight.jems.server.project.service.checklist.getInstances.GetChecklistInstanceDetailNotFoundException
@@ -14,6 +15,7 @@ import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
+import java.time.ZonedDateTime
 
 @Repository
 class ChecklistInstancePersistenceProvider(
@@ -32,11 +34,29 @@ class ChecklistInstancePersistenceProvider(
     }
 
     @Transactional(readOnly = true)
+    override fun getChecklistDetail(
+        id: Long,
+        type: ProgrammeChecklistType,
+        relatedToId: Long
+    ): ChecklistInstanceDetail {
+        return repository.findByIdAndProgrammeChecklistTypeAndRelatedToId(id = id, type, relatedToId).toDetailModel()
+    }
+
+    @Transactional(readOnly = true)
     override fun getChecklistSummary(checklistId: Long): ChecklistInstance = getChecklistOrThrow(checklistId).toModel()
+
+    @Transactional(readOnly = true)
+    override fun getChecklistSummary(
+        checklistId: Long,
+        type: ProgrammeChecklistType,
+        relatedToId: Long
+    ): ChecklistInstance {
+        return repository.findByIdAndProgrammeChecklistTypeAndRelatedToId(id = checklistId, type, relatedToId).toModel()
+    }
 
     @Transactional
     override fun create(createChecklist: CreateChecklistInstanceModel, creatorId: Long): ChecklistInstanceDetail {
-        val programmeChecklist = programmeChecklistRepository.getById(createChecklist.programmeChecklistId);
+        val programmeChecklist = programmeChecklistRepository.getById(createChecklist.programmeChecklistId)
         return repository.save(
             ChecklistInstanceEntity(
                 status = ChecklistInstanceStatus.DRAFT,
@@ -44,7 +64,9 @@ class ChecklistInstancePersistenceProvider(
                 relatedToId = createChecklist.relatedToId,
                 finishedDate = null,
                 programmeChecklist = programmeChecklist,
-                components = programmeChecklist.components?.map { it.toInstanceEntity() }?.toMutableSet()
+                components = programmeChecklist.components?.map { it.toInstanceEntity() }?.toMutableSet(),
+                description = "",
+                createdAt = ZonedDateTime.now()
             ).also {
                 it.components?.forEach { component -> component.checklistComponentId.checklist = it }
             }
@@ -68,6 +90,13 @@ class ChecklistInstancePersistenceProvider(
                 it.visible = selection[it.id]!!
             }
         return repository.saveAll(toUpdate).toModel()
+    }
+
+    @Transactional
+    override fun updateDescription(id: Long, description: String?): ChecklistInstance {
+        val checklistInstance = getChecklistOrThrow(id)
+        checklistInstance.description = description
+        return checklistInstance.toModel()
     }
 
     @Transactional
@@ -99,6 +128,10 @@ class ChecklistInstancePersistenceProvider(
         }
         return checklistInstance.toModel()
     }
+
+    @Transactional(readOnly = true)
+    override fun existsByIdAndRelatedToId(id: Long, relatedToId: Long): Boolean =
+        repository.existsByIdAndRelatedToId(id, relatedToId)
 
     private fun getChecklistOrThrow(id: Long): ChecklistInstanceEntity =
         repository.findById(id).orElseThrow { GetChecklistInstanceDetailNotFoundException() }

@@ -24,16 +24,37 @@
 
 </jems-project-page-template>
 
-<ng-template #deletionCell let-workPackage>
+<ng-template #actionCell let-workPackage>
     <input #workPackageName type="hidden"
            [value]="(workPackage.name | translateContainerLessInputsBySystemLanguage | async)"/>
-    <button *ngIf="projectEditable$ | async" mat-icon-button color="accent"
+
+    <button *ngIf="(projectEditable$ | async) && (isAlreadyContracted$ | async) === false" mat-icon-button color="accent"
             (click)="$event.stopPropagation(); delete(workPackage, workPackageName.value)"
-            matTooltip="{{'project.application.form.workpackage.table.action.delete.tooltip' | translate}}">
+            matTooltip="{{'project.application.form.workpackage.table.action.delete.tooltip' | translate}}"
+            aria-label="delete">
         <mat-icon>delete</mat-icon>
+    </button>
+
+    <button *ngIf="(projectEditable$ | async) && (isAlreadyContracted$ | async)" mat-icon-button color="accent"
+            (click)="$event.stopPropagation(); deactivate(workPackage, workPackageName.value)" [disabled]="workPackage.deactivated"
+            matTooltip="{{'project.application.form.workpackage.table.action.deactivate.tooltip' | translate}}"
+            aria-label="deactivate">
+        <mat-icon>do_not_disturb</mat-icon>
     </button>
 </ng-template>
 
 <ng-template #titleCell let-workPackage>
     {{workPackage.name | translateContainerLessInputsBySystemLanguage | async}}
+</ng-template>
+
+<ng-template #numberCell let-workPackage>
+    <span *ngIf="workPackage.deactivated">
+        <mat-icon class="vertical-middle" matTooltip="{{ 'project.application.form.partner.table.status.inactive' | translate }}">do_not_disturb</mat-icon>
+    </span>
+    <span *ngIf="workPackage.number === null">
+        {{'project.application.form.partner.number.info.auto' | translate}}
+    </span>
+    <span *ngIf="workPackage.number !== null">
+        {{workPackage.number}}
+    </span>
 </ng-template>

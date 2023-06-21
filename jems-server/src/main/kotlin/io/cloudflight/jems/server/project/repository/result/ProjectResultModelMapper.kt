@@ -25,6 +25,7 @@ fun List<ProjectResult>.toIndexedEntity(
         programmeResultIndicatorEntity = resolveProgrammeResultIndicatorEntity.invoke(projectResult.programmeResultIndicatorId),
         baseline  = projectResult.baseline,
         targetValue = projectResult.targetValue,
+        deactivated = projectResult.deactivated
     )
 }.toSet()
 
@@ -56,6 +57,7 @@ fun ProjectEntity.toResultModel() = results.sortedBy { it.resultId.resultNumber 
         periodStartMonth = periods.find { period -> period.id.number == it.periodNumber }?.start,
         periodEndMonth = periods.find { period -> period.id.number == it.periodNumber }?.end,
         description = it.translatedValues.extractField { projectResultTransl -> projectResultTransl.description },
+        deactivated = it.deactivated
     )
 }
 
@@ -80,6 +82,7 @@ fun List<ProjectResultRow>.toProjectResultHistoricalData(periods: Collection<Pro
             periodNumber = groupedRows.value.first().periodNumber,
             periodStartMonth = periods.find { period -> period.number == groupedRows.value.first().periodNumber }?.start,
             periodEndMonth = periods.find { period -> period.number == groupedRows.value.first().periodNumber }?.end,
-            description = groupedRows.value.extractField { it.description }
+            description = groupedRows.value.extractField { it.description },
+            deactivated = groupedRows.value.first().deactivated ?: false
         )
     }.sortedBy { it.resultNumber }

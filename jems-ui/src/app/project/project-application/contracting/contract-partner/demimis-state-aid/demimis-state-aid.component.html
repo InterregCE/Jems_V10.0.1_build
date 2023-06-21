@@ -1,0 +1,110 @@
+<jems-form *ngIf="data$ | async as data"
+           (save)="saveForm()"
+           (discard)="resetForm(data.canEdit, data.isPartnerLocked)">
+    <form jemsFormLayout [formGroup]="deMinimisForm">
+
+        <h4>{{'project.application.contract.partner.section.de.minimis' | translate}}</h4>
+        <mat-form-field class="date">
+            <mat-label>{{'project.application.contract.monitoring.project.de.minimis.granting.date' | translate | dateFormatInfo}}</mat-label>
+            <input formControlName="dateOfGrantingAid" matInput>
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>{{'project.application.contract.monitoring.project.de.minimis.granting.amount' | translate}}</mat-label>
+            <input currencyMask type="decimal" formControlName="amountGrantedAid" matInput>
+        </mat-form-field>
+
+        <mat-form-field class="date">
+            <mat-label>{{'project.application.contract.monitoring.project.de.minimis.submission.date' | translate | dateFormatInfo}}</mat-label>
+            <input formControlName="selfDeclarationSubmissionDate" matInput
+                   [matDatepicker]="selfDeclarationSubmissionDate">
+            <mat-datepicker-toggle matSuffix [for]="selfDeclarationSubmissionDate"></mat-datepicker-toggle>
+            <mat-datepicker #selfDeclarationSubmissionDate></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>{{'project.application.contract.monitoring.project.de.minimis.aid.grant.basis' | translate}}</mat-label>
+            <mat-select formControlName="aidGrantedOnBasis" [disabled]="data.isPartnerLocked || !data.canEdit">
+                <mat-option [value]="BaseForGrantingEnum.SUBSIDYCONTRACT">
+                    {{'project.application.contract.monitoring.project.de.minimis.aid.grant.basis.subsidy' | translate}}
+                </mat-option>
+                <mat-option [value]="BaseForGrantingEnum.ADDENDUMSUBSIDYCONTRACT">
+                    {{'project.application.contract.monitoring.project.de.minimis.aid.grant.basis.addendum' | translate}}
+                </mat-option>
+                <mat-option [value]="BaseForGrantingEnum.APPROVALOFMODIFICATIONSUBSIDYCONTRACT">
+                    {{'project.application.contract.monitoring.project.de.minimis.aid.grant.basis.approval' | translate}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <ng-container *ngIf="nuts">
+            <mat-form-field>
+                <mat-label>{{'project.application.contract.monitoring.project.de.minimis.aid.grant.country' | translate}}</mat-label>
+                <input name="country" formControlName="country" matInput [ngModel]="deMinimis?.aidGrantedByCountry"
+                       [matAutocomplete]="country"
+                       (focusin)="initializeFilters()"
+                       (focusout)="countryUnfocused($event)">
+                <mat-autocomplete #country="matAutocomplete"
+                                  (optionSelected)="countryChanged($event.option?.value)">
+                    <mat-option *ngFor="let region of filteredCountry | async" [value]="region"
+                                class="nuts-text-size">
+                        {{region}}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+        </ng-container>
+
+        <mat-table *ngIf="memberStates.length" jemsNoWidthLimit [dataSource]="tableData"
+                   formArrayName="memberStates">
+
+            <ng-container matColumnDef="selected">
+                <mat-header-cell *matHeaderCellDef>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let control; let i = index" [formGroupName]="i">
+                    <mat-checkbox
+                            formControlName="selected"
+                            (change)="setCheckedStatus(i, $event.checked)"
+                            [checked]="this.memberStates.at(i).get('selected')?.value"
+                    >
+                    </mat-checkbox>
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="memberState">
+                <mat-header-cell *matHeaderCellDef>
+                    <span jemsText
+                          maxLines="2">{{'project.application.contract.monitoring.project.de.minimis.member.state' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                    <mat-form-field>
+                        <input formControlName="memberCountry" matInput>
+                    </mat-form-field>
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="amount">
+                <mat-header-cell *matHeaderCellDef>
+                    <span jemsText
+                          maxLines="2">{{'project.application.contract.monitoring.project.de.minimis.amount' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                    <mat-form-field>
+                        <input currencyMask type="decimal" formControlName="amountInEur" matInput [options]="{min: 0, align: 'right'}">
+                    </mat-form-field>
+                </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+
+        </mat-table>
+
+        <jems-expandable-textarea [control]="deMinimisForm.controls.comment"
+                                  [errors]="deMinimisForm.controls.comment.errors"
+                                  [minRows]="1"
+                                  [characterLimit]="2000"
+                                  [label]="'project.application.contract.monitoring.project.de.minimis.comment' | translate"
+                                  class="comment">
+        </jems-expandable-textarea>
+    </form>
+</jems-form>

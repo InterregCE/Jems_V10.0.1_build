@@ -1,0 +1,21 @@
+@use '../../project/project-application/report/partner-report-detail-page/partner-report-financial-overview-tab/remove-custom-table-overrides';
+
+.is-in-use {
+  font-weight: var(--font-weight-strong);
+}
+
+.mat-column-language {
+  min-width: 12rem;
+}
+.mat-column-fileName,
+.mat-column-uploaded {
+  min-width: 10rem;
+}
+.mat-column-actions {
+  min-width: 10rem;
+  max-width: 10rem;
+}
+
+.file-input {
+  display: none;
+}

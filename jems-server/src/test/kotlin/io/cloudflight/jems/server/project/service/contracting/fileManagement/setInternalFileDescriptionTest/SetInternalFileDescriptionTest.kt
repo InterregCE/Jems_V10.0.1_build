@@ -1,11 +1,12 @@
 package io.cloudflight.jems.server.project.service.contracting.fileManagement.setInternalFileDescriptionTest
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
+import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.setInternalFileDescription.SetInternalFileDescription
-import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.partner.file.setDescriptionToFile.FileNotFound
 import io.mockk.clearMocks
 import io.mockk.every
@@ -21,7 +22,10 @@ class SetInternalFileDescriptionTest: UnitTest() {
 
 
     @MockK
-    lateinit var reportFilePersistence: ProjectReportFilePersistence
+    lateinit var filePersistence: JemsFilePersistence
+
+    @MockK
+    lateinit var fileService: JemsProjectFileService
 
     @MockK
     lateinit var generalValidator: GeneralValidatorService
@@ -32,7 +36,7 @@ class SetInternalFileDescriptionTest: UnitTest() {
 
     @BeforeEach
     fun setup() {
-        clearMocks(generalValidator, reportFilePersistence)
+        clearMocks(generalValidator, filePersistence,fileService)
         every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isEmpty() }) } returns Unit
         every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isNotEmpty() }) } throws
             AppInputValidationException(emptyMap())
@@ -44,23 +48,23 @@ class SetInternalFileDescriptionTest: UnitTest() {
     fun setDescriptionInternal() {
         val projectId = 8L
         every {
-            reportFilePersistence.existsFileByProjectIdAndFileIdAndFileTypeIn(
+            filePersistence.existsFileByProjectIdAndFileIdAndFileTypeIn(
                 projectId,
                 200L,
                 setOf(JemsFileType.ContractInternal)
             )
         } returns true
-        every { reportFilePersistence.setDescriptionToFile(200L, "new desc") } answers { }
+        every { fileService.setDescription(200L, "new desc") } answers { }
 
         setInternalFileDescription.setInternalFileDescription(projectId, 200L, "new desc")
-        verify(exactly = 1) { reportFilePersistence.setDescriptionToFile(200L, "new desc") }
+        verify(exactly = 1) { fileService.setDescription(200L, "new desc") }
     }
 
     @Test
     fun `setDescriptionInternal - not existing`() {
         val projectId = 8L
         every {
-            reportFilePersistence.existsFileByProjectIdAndFileIdAndFileTypeIn(
+            filePersistence.existsFileByProjectIdAndFileIdAndFileTypeIn(
                 projectId,
                 -1,
                 setOf(JemsFileType.ContractInternal)

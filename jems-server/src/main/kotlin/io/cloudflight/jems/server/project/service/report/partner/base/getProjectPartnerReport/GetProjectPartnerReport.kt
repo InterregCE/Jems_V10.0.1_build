@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.service.report.partner.base.getProjec
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanViewPartnerReport
-import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
 import org.springframework.data.domain.Page
@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class GetProjectPartnerReport(
-    private val reportPersistence: ProjectReportPersistence,
+    private val reportPersistence: ProjectPartnerReportPersistence,
 ) : GetProjectPartnerReportInteractor {
 
     @CanViewPartnerReport
@@ -29,9 +29,20 @@ class GetProjectPartnerReport(
 
         return reportPersistence.listPartnerReports(partnerId, pageable)
             .fillInDeletableFor(latestReportId)
+            .removeEligibleAfterControlFromNotInControlOnes()
     }
 
     private fun Page<ProjectPartnerReportSummary>.fillInDeletableFor(latestReportId: Long?) =
-        this.onEach { it.deletable = it.id == latestReportId && it.status.isOpen() }
+        this.onEach { it.deletable = it.id == latestReportId && it.status.isOpenInitially() }
+
+    private fun Page<ProjectPartnerReportSummary>.removeEligibleAfterControlFromNotInControlOnes() =
+        this.onEach {
+            if (it.status.controlNotStartedYet()) {
+                it.totalEligibleAfterControl = null
+            }
+            if (it.status.isOpenForNumbersChanges()) {
+                it.totalAfterSubmitted = null
+            }
+        }
 
 }

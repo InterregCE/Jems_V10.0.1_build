@@ -11,14 +11,11 @@ import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.common.entity.extractTranslation
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriodRow
-import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageDetailRow
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
-import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageRow
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageTransl
+import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageRow
 import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputRow
-import io.cloudflight.jems.server.project.service.model.Address
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
-import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackage
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackageFull
 import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
@@ -28,7 +25,8 @@ import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkP
 fun WorkPackageEntity.toOutputWorkPackageSimple() = OutputWorkPackageSimple(
     id = id,
     number = number,
-    name = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.name) }
+    name = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.name) },
+    deactivated = deactivated
 )
 
 fun WorkPackageEntity.toOutputWorkPackage() = OutputWorkPackage(
@@ -46,12 +44,14 @@ fun WorkPackageEntity.toOutputWorkPackage() = OutputWorkPackage(
             it.translationId.language,
             it.objectiveAndAudience
         )
-    }
+    },
+    deactivated = deactivated
 )
 
 fun InputWorkPackageCreate.toEntity(project: ProjectEntity) = WorkPackageEntity(
     translatedValues = mutableSetOf(),
-    project = project
+    project = project,
+    deactivated = false
 ).apply {
     translatedValues.addTranslationEntities(
         { language ->
@@ -87,6 +87,7 @@ fun List<WorkPackageRow>.toOutputWorkPackageHistoricalData() =
             specificObjective = groupedRows.value.extractField { it.specificObjective },
             objectiveAndAudience = groupedRows.value.extractField { it.objectiveAndAudience },
             number = groupedRows.value.first().number,
+            deactivated = groupedRows.value.first().deactivated ?: false
         )
     }.firstOrNull()
 
@@ -96,10 +97,11 @@ fun List<WorkPackageRow>.toOutputWorkPackageSimpleHistoricalData() =
             id = groupedRows.value.first().id,
             name = groupedRows.value.extractField { it.name },
             number = groupedRows.value.first().number,
+            deactivated = groupedRows.value.first().deactivated ?: false,
         )
     }
 
-fun List<WorkPackageOutputRow>.toWorkPackageOutputsHistoricalData() =
+fun List<WorkPackageOutputRow>.toWorkPackageOutputsHistoricalData(periods: List<ProjectPeriodRow>? = null) =
     this.groupBy { it.outputNumber }.map { groupedRows ->
         WorkPackageOutput(
             workPackageId = groupedRows.value.first().workPackageId,
@@ -109,7 +111,14 @@ fun List<WorkPackageOutputRow>.toWorkPackageOutputsHistoricalData() =
             targetValue = groupedRows.value.first().targetValue,
             periodNumber = groupedRows.value.first().periodNumber,
             title = groupedRows.value.extractField { it.title },
-            description = groupedRows.value.extractField { it.description }
+            description = groupedRows.value.extractField { it.description },
+            deactivated = groupedRows.value.first().deactivated,
+            programmeOutputIndicatorName = groupedRows.value
+                .extractField({ it.programmeOutputIndicatorLanguage }, { it.programmeOutputIndicatorName }),
+            programmeOutputIndicatorMeasurementUnit = groupedRows.value
+                .extractField({ it.programmeOutputIndicatorLanguage }) { it.programmeOutputIndicatorMeasurementUnit },
+            periodStartMonth = periods?.find {period -> period.periodNumber == groupedRows.value.first().periodNumber}?.periodStart,
+            periodEndMonth = periods?.find {period -> period.periodNumber == groupedRows.value.first().periodNumber}?.periodEnd,
         )
     }
 
@@ -117,6 +126,7 @@ fun List<WorkPackageRow>.toTimePlanWorkPackageHistoricalData() =
     this.groupBy { it.id }.map { groupedRows ->
         ProjectWorkPackage(
             id = groupedRows.value.first().id,
+            deactivated = groupedRows.value.first().deactivated ?: false,
             workPackageNumber = groupedRows.value.first().number!!,
             name = groupedRows.value.extractField { it.name },
             specificObjective = groupedRows.value.extractField { it.specificObjective },
@@ -134,86 +144,27 @@ fun List<WorkPackageOutputRow>.toTimePlanWorkPackageOutputHistoricalData() =
             targetValue = groupedRows.value.first().targetValue,
             periodNumber = groupedRows.value.first().periodNumber,
             title = groupedRows.value.extractField { it.title },
-            description = groupedRows.value.extractField { it.description }
+            description = groupedRows.value.extractField { it.description },
+            deactivated = groupedRows.value.first().deactivated,
         )
     }
-fun List<WorkPackageDetailRow>.toModel(periods: List<ProjectPeriodRow>)=
-    groupBy { it.id }.map { groupedRows ->
-        ProjectWorkPackageFull(
-            id = groupedRows.key,
-            workPackageNumber = groupedRows.value.first().number,
-            name = groupedRows.value.extractField { it.name },
-            specificObjective = groupedRows.value.extractField { it.specificObjective },
-            objectiveAndAudience = groupedRows.value.extractField { it.objectiveAndAudience },
-            activities = groupedRows.value.filter{it.activityId != null}.groupBy { it.activityId }.map { groupedActivityRows ->
-                WorkPackageActivity(
-                    id= groupedActivityRows.key!!,
-                    workPackageId = groupedRows.key,
-                    workPackageNumber = groupedRows.value.first().number,
-                    activityNumber = groupedActivityRows.value.first().activityNumber!!,
-                    title = groupedActivityRows.value.extractField({it.activityLanguage}) { it.activityTitle },
-                    description = groupedActivityRows.value.extractField({it.activityLanguage}) { it.activityDescription},
-                    startPeriod = groupedActivityRows.value.first().startPeriod,
-                    endPeriod= groupedActivityRows.value.first().endPeriod,
-                    deliverables = groupedActivityRows.value.filter { it.deliverableId != null }.groupBy { it.deliverableId }.map { groupedDeliverableRows ->
-                        WorkPackageActivityDeliverable(
-                            id = groupedDeliverableRows.key!!,
-                            deliverableNumber = groupedDeliverableRows.value.first().deliverableNumber!!,
-                            description = groupedDeliverableRows.value.extractField({it.deliverableLanguage}) { it.deliverableDescription },
-                            title = groupedDeliverableRows.value.extractField({it.deliverableLanguage}) { it.deliverableTitle },
-                            period = groupedDeliverableRows.value.first().deliverableStartPeriod
-                        )
-                    },
-                    partnerIds = groupedActivityRows.value.mapNotNullTo(hashSetOf()){it.partnerId}
-                )
-            },
-            outputs = groupedRows.value.filter { it.outputNumber != null }.groupBy { it.outputNumber }.map { groupedOutputRows ->
-                WorkPackageOutput(
-                    workPackageId = groupedRows.key,
-                    outputNumber = groupedOutputRows.value.first().outputNumber!!,
-                    programmeOutputIndicatorId = groupedOutputRows.value.first().programmeOutputIndicatorId,
-                    programmeOutputIndicatorIdentifier = groupedOutputRows.value.first().programmeOutputIndicatorIdentifier,
-                    programmeOutputIndicatorName = groupedOutputRows.value
-                        .extractField({ it.programmeOutputIndicatorLanguage }, { it.programmeOutputIndicatorName }),
-                    programmeOutputIndicatorMeasurementUnit = groupedOutputRows.value
-                        .extractField({ it.programmeOutputIndicatorLanguage }) { it.programmeOutputIndicatorMeasurementUnit },
-                    targetValue = groupedOutputRows.value.first().targetValue,
-                    periodNumber = groupedOutputRows.value.first().outputPeriodNumber,
-                    periodStartMonth = periods.find { period -> period.periodNumber == groupedOutputRows.value.first().outputPeriodNumber }?.periodStart,
-                    periodEndMonth = periods.find { period -> period.periodNumber == groupedOutputRows.value.first().outputPeriodNumber }?.periodEnd,
-                    title = groupedOutputRows.value.extractField ({it.outputLanguage}){ it.outputTitle },
-                    description = groupedOutputRows.value.extractField ({it.outputLanguage}){ it.outputDescription }
-                )
-            },
-            investments = groupedRows.value.filter { it.investmentId != null }.groupBy { it.investmentId }.map { groupedInvestmentRow ->
-                WorkPackageInvestment(
-                    id = groupedInvestmentRow.key,
-                    investmentNumber = groupedInvestmentRow.value.first().investmentNumber!!,
-                    title = groupedInvestmentRow.value.extractField ({it.investmentLanguage}) { it.investmentTitle },
-                    expectedDeliveryPeriod = groupedInvestmentRow.value.first().investmentExpectedDeliveryPeriod,
-                    justificationExplanation = groupedInvestmentRow.value.extractField ({it.investmentLanguage}) { it.justificationExplanation },
-                    justificationTransactionalRelevance = groupedInvestmentRow.value.extractField ({it.investmentLanguage}) { it.justificationTransactionalRelevance},
-                    justificationBenefits = groupedInvestmentRow.value.extractField ({it.investmentLanguage}) { it.justificationBenefits },
-                    justificationPilot = groupedInvestmentRow.value.extractField ({it.investmentLanguage}) { it.justificationPilot},
-                    address = Address(
-                        country = groupedInvestmentRow.value.first().investmentCountry,
-                        countryCode = groupedInvestmentRow.value.first().investmentCountryCode,
-                        nutsRegion2 = groupedInvestmentRow.value.first().investmentNutsRegion2,
-                        nutsRegion2Code = groupedInvestmentRow.value.first().investmentNutsRegion2Code,
-                        nutsRegion3 = groupedInvestmentRow.value.first().investmentNutsRegion3,
-                        nutsRegion3Code = groupedInvestmentRow.value.first().investmentNutsRegion3Code,
-                        street = groupedInvestmentRow.value.first().investmentStreet,
-                        houseNumber = groupedInvestmentRow.value.first().investmentHouseNumber,
-                        postalCode = groupedInvestmentRow.value.first().investmentPostalCode,
-                        city = groupedInvestmentRow.value.first().investmentCity,
-                    ),
-                    risk = groupedInvestmentRow.value.extractField ({it.investmentLanguage}) { it.investmentRisk },
-                    documentation = groupedInvestmentRow.value.extractField ({it.investmentLanguage}) { it.investmentDocumentation},
-                    documentationExpectedImpacts = groupedInvestmentRow.value.extractField ({it.investmentLanguage}) { it.investmentDocumentationExpectedImpacts},
-                    ownershipSiteLocation = groupedInvestmentRow.value.extractField ({it.investmentLanguage}) { it.ownershipSiteLocation },
-                    ownershipRetain = groupedInvestmentRow.value.extractField ({it.investmentLanguage}) { it.ownershipRetain},
-                    ownershipMaintenance = groupedInvestmentRow.value.extractField ({it.investmentLanguage}) { it.ownershipMaintenance},
-                )
-            }
-        )
-    }
+
+fun toWorkPackageHistorical(
+    wpId: Long,
+    workPackageRows: List<WorkPackageRow>,
+    workPackageActivities: List<WorkPackageActivity>,
+    workPackageOutputs: List<WorkPackageOutput>,
+    workPackageInvestments: List<WorkPackageInvestment>
+): ProjectWorkPackageFull {
+    return ProjectWorkPackageFull(
+        id = wpId,
+        workPackageNumber = workPackageRows.first().number!!,
+        name = workPackageRows.extractField { it.name },
+        deactivated = workPackageRows.first().deactivated ?: false,
+        specificObjective = workPackageRows.extractField { it.specificObjective },
+        objectiveAndAudience = workPackageRows.extractField { it.objectiveAndAudience },
+        activities = workPackageActivities,
+        outputs = workPackageOutputs,
+        investments = workPackageInvestments,
+    )
+}

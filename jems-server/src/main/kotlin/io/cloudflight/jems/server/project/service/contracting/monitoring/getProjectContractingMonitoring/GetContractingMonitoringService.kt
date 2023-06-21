@@ -18,13 +18,12 @@ class GetContractingMonitoringService(
     private val projectPersistence: ProjectPersistenceProvider,
     private val versionPersistence: ProjectVersionPersistence,
     private val projectLumpSumPersistence: ProjectLumpSumPersistence,
-    private val validator: ContractingValidator
 ) {
 
     @Transactional(readOnly = true)
     fun getContractingMonitoring(projectId: Long): ProjectContractingMonitoring {
         projectPersistence.getProjectSummary(projectId).let { projectSummary ->
-            validator.validateProjectStatusForModification(projectSummary)
+            ContractingValidator.validateProjectStatusForModification(projectSummary)
         }
 
         return getProjectContractingMonitoring(projectId)

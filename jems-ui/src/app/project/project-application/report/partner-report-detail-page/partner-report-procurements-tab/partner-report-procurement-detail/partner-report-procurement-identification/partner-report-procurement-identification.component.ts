@@ -29,6 +29,7 @@ export class PartnerReportProcurementIdentificationComponent {
   @Output()
   onIdChange = new EventEmitter<number>();
 
+  isReportReopenedLimited = false;
   form = this.formBuilder.group({
     id: 0,
     reportNumber: [{
@@ -66,18 +67,19 @@ export class PartnerReportProcurementIdentificationComponent {
     private partnerReportDetailPageStore: PartnerReportDetailPageStore,
     private router: Router,
   ) {
+    this.formService.init(this.form);
     this.data$ = combineLatest([
       this.procurementStore.procurement$,
       this.procurementStore.currencies$,
       this.partnerReportDetailPageStore.partnerReport$,
       this.partnerReportDetailPageStore.reportEditable$,
     ]).pipe(
-      tap(([procurement, currencies, report, editable]) =>
-        this.initializeForm(procurement, report, editable)
-      ),
+      tap(([procurement, currencies, report, editable]) => {
+          this.isReportReopenedLimited = report.status === ProjectPartnerReportDTO.StatusEnum.ReOpenSubmittedLimited || report.status === ProjectPartnerReportDTO.StatusEnum.ReOpenInControlLimited;
+          this.initializeForm(procurement, report, editable);
+      }),
       map(([procurement, currencies, report]) => ({ procurement, currencies, reportNumber: report.reportNumber })),
     );
-    this.formService.init(this.form);
   }
 
   private initializeForm(
@@ -96,6 +98,8 @@ export class PartnerReportProcurementIdentificationComponent {
     const procurementIsFromThisReport = report.id === procurement.reportId;
     this.formService.setEditable(reportEditable && (isCreate || procurementIsFromThisReport));
     this.form.controls.reportNumber.disable();
+    if (this.isReportReopenedLimited && !isCreate)
+      {this.form.controls.contractName.disable();}
     this.formService.setCreation(isCreate);
   }
 
@@ -141,7 +145,7 @@ export class PartnerReportProcurementIdentificationComponent {
   }
 
   updateProcurement() {
-    this.procurementStore.updateProcurement(this.form.value)
+    this.procurementStore.updateProcurement(this.isReportReopenedLimited ? this.form.getRawValue() : this.form.value)
       .pipe(
         take(1),
         tap(() => this.formService.setSuccess('project.application.partner.report.procurements.save.success')),
@@ -156,5 +160,4 @@ export class PartnerReportProcurementIdentificationComponent {
       this.resetForm(originalData, currentReportNumber);
     }
   }
-
 }

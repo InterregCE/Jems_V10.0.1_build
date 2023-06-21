@@ -1,11 +1,22 @@
+
 .menu {
-  padding-top: 0.5rem;
-  margin-top: 0.5rem;
-  color: var(--sidebar-color);
+  margin-left: -0.6rem;
+  color: var(--font-color-primary);
+
+  li {
+    position: relative;
+  }
+
+  ::ng-deep .mat-expansion-panel-content {
+    margin-bottom: 0.25rem !important;
+  }
 
   .level-1 {
     font-size: 1rem;
-
+    mat-expansion-panel-header {
+      padding-top: 0.75rem;
+      padding-bottom: 0.75rem;
+    }
     .link {
       &.route-active {
         padding-left: 0;
@@ -14,8 +25,10 @@
   }
 
   .level-2 {
-    padding-bottom: .25rem;
-
+    mat-expansion-panel-header {
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+    }
     .link {
       &.route-active {
         padding-left: 0;
@@ -25,23 +38,20 @@
 
   .level-3 {
     font-size: 0.9rem;
-    padding-left: 1rem !important;
-    border-left: 0.07rem solid var(--sidebar-color);
-    left: 1.8rem;
+    padding-left: 0.75rem !important;
+    border-left: 1px solid var(--font-color-primary);
+    left: 1.75rem;
     position: relative;
-    width: calc(100% - 2.9rem);
+    width: calc(100% - 2.5rem);
 
     .link {
+      padding: 0.3rem 0 0.3rem 0.75rem !important;
+      margin-left: -0.75rem !important;
+      flex-grow: 100;
       &:hover {
-        flex-grow: 100;
-        padding-left: 1rem;
-        margin-left: -1rem;
       }
-
       &.route-active {
         flex-grow: 100;
-        padding-left: 1rem;
-        margin-left: -1rem;
       }
 
       &.icon {
@@ -49,19 +59,19 @@
         margin-left: -1rem;
       }
     }
-
+    .icon-after-headline {
+      top: 0.25em;
+    }
     .icon-container-level-3 {
       display: flex;
-      justify-content: start;
+      justify-content: flex-start;
       align-items: center;
 
       mat-icon {
-        padding-left: 0.5rem;
-        color: rgba(255, 255, 255, 0.75);
-        margin-right: -1.5rem;
-        font-size: 16px;
-        width: 16px;
-        height: 16px;
+        color: inherit;
+        font-size: 1em;
+        width: 1em;
+        height: 1em;
       }
     }
   }
@@ -83,54 +93,52 @@
 
     .icon-container-level-4 {
       display: flex;
-      justify-content: start;
+      justify-content: flex-start;
       align-items: center;
 
       mat-icon {
-        font-size: 16px;
-        width: 16px;
-        height: 16px;
+        font-size: 1em;
+        width: 1em;
+        height: 1em;
       }
     }
   }
-
-  .title {
-    line-height: 1em;
-  }
-
   .link {
-    border-left: 0.4rem solid;
     border-color: transparent;
     line-height: 1.25em;
-    padding-bottom: 0.25em;
-    padding-top: 0.25em;
 
     .title, &.link {
-      color: var(--font-color-contrast);
+      color: var(--font-color-primary);
       cursor: pointer;
       display: flex;
-      align-items: center;
+      align-items: unset;
+      .mat-icon {
+        font-size: 1.25em;
+        width: 1.25em;
+        height: 1em;
+      }
     }
 
     &:hover {
-      background: rgba(0, 0, 0, 0.2) !important;
-      color: rgba(255, 255, 255, 0.75);
+      background: var(--table-hover-color) !important;
     }
 
     &.route-active {
-      background: rgba(255, 255, 255, 0.25) !important;
-      border-left: 0.4rem solid var(--sidebar-color);
-      border-radius: 0;
+      background: var(--table-hover-color) !important;
     }
   }
 
   .versioned-section {
     background-color: var(--sidebar-dark-background-color);
-    border-left: 0.5rem solid var(--sidebar-background-color);
-    border-right: 0.5rem solid var(--sidebar-background-color);
+    box-shadow: inset 0.25rem 0 0.25rem -0.25rem rgba(0, 0, 0, 0.25), inset -0.25rem 0 0.25rem -0.25rem rgba(0, 0, 0, 0.25);
 
+    &:first-of-type {
+      box-shadow: inset 0 0.3rem 0.2rem rgba(0, 0, 0, 0.25);
+    }
     mat-expansion-panel {
       background: transparent !important;
+      padding-top: 0.2rem;
+      padding-bottom: 0.2rem;
     }
   }
 
@@ -139,12 +147,9 @@
   }
 
   hr {
+    margin: 0;
     border-bottom: 0;
-    border-top: 0.125rem solid var(--font-color-contrast);
-  }
-
-  li {
-    padding-top: 0.25rem;
+    border-top: 1px solid rgba(0,0,0, 0.15);
   }
 
   ul {
@@ -153,23 +158,62 @@
   }
 
   mat-expansion-panel {
-    background: var(--sidebar-background-color) !important;
+    background: none;
   }
 
   mat-expansion-panel-header {
-    height: 2rem !important;
-
+    height: fit-content;
+    line-height: 1.25em;
+    padding-top: 0.5rem;
+    padding-bottom: 0.4rem;
+    font-weight: 400;
+    font-size: 0.95rem;
+    &.has-children {
+      font-weight: 600;
+      &.header-level-2 {
+        opacity: 0.87;
+        font-size: 0.85rem;
+      }
+      &:hover {
+        background: rgba(255, 255, 255, 0.25) !important;
+      }
+      &:focus-visible {
+        background: none;
+        outline: 2px solid white;
+        outline-offset: -2px;
+      }
+    }
     &:hover {
       background: none !important;
+      .mat-expansion-indicator {
+        background: rgba(255, 255, 255, 0.2) !important;
+      }
+    }
+    &:focus-visible {
+      .mat-expansion-indicator {
+        outline: 2px solid white;
+        outline-offset: -2px;
+      }
+    }
+    &.panel-no-bullets {
+      ::ng-deep .mat-expansion-indicator {
+        display: none !important;
+      }
+      &:focus-visible {
+        background: none;
+        outline: 2px solid white;
+        outline-offset: -2px;
+      }
     }
   }
 
-  ::ng-deep .mat-elevation-z0 .mat-expansion-panel-body {
-    padding-bottom: 0;
-    padding-left: 0;
-    padding-right: 0;
+  ::ng-deep .mat-elevation-z0 {
+    .mat-expansion-panel-body {
+      padding-bottom: 0;
+      padding-left: 0;
+      padding-right: 0;
+    }
   }
-
 
   .standard-chip-list {
     display: inline-flex;
@@ -182,4 +226,25 @@
     }
   }
 
+  .icon-after-headline {
+    pointer-events: none;
+    position: absolute;
+    top: 0.5em;
+    right: 0.75rem;
+    margin-right: 0;
+    opacity: 0.4;
+    font-size: 1.15rem;
+    color: var(--font-color-primary) !important;
+  }
+}
+
+.jems-logo-container {
+  padding: 1.5rem 4rem 1.5rem 3rem;
+  img {
+    opacity: 0.6;
+    width: 100%;
+    &:hover {
+      opacity: 1;
+    }
+  }
 }

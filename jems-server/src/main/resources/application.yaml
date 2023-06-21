@@ -9,7 +9,7 @@ spring:
   flyway:
     out-of-order: true
   messages:
-    basename: file:${app.translations-folder:resources/translations}/Application, file:${app.translations-folder:resources/translations}/System, classpath:/Application, classpath:/System, classpath:/messages, classpath:/plugin_messages
+    basename: file:${app.translations-folder:resources/translations}/Application, file:${app.translations-folder:resources/translations}/System, classpath:/Application, classpath:/System, classpath:/messages, classpath:/plugin_messages, file:${app.translations-folder:resources/translations}/Application-CallSpecific, classpath:/Application-CallSpecific
   datasource:
     url: "${SPRING_DATASOURCE_URL:jdbc:mariadb://localhost:3306/jemsdb}"
     username: root
@@ -46,6 +46,7 @@ spring:
 audit-service:
   enabled: "${AUDIT_ENABLED:true}"
   url-and-port: "${AUDIT_ELASTICSEARCH_URL_AND_PORT:localhost:9200}"
+  password: "${AUDIT_ELASTICSEARCH_PASSWORD:Elastic@2020}"
 
 minio-storage:
   endpoint: "${MINIO_URL_AND_PORT:http://localhost:9000}"
@@ -84,7 +85,7 @@ app:
   server-url: "${SERVER_URL:http://localhost:4200}"
   security:
     default-password-prefix: Jems@2020
-  translations-folder: resources/translations/
+  translations-folder: resources/translations
   notification:
     mail:
       enabled: "${MAIL_ENABLED:false}"

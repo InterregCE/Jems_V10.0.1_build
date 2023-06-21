@@ -17,6 +17,9 @@ import io.cloudflight.jems.server.project.service.checklist.ControlChecklistInst
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
 import io.cloudflight.jems.server.project.service.checklist.model.CreateChecklistInstanceModel
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.mockk.clearMocks
 import io.mockk.every
@@ -27,9 +30,13 @@ import io.mockk.slot
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import java.math.BigDecimal
+import java.time.ZonedDateTime
 
 internal class CreateControlChecklistInstanceTest : UnitTest() {
 
@@ -39,13 +46,14 @@ internal class CreateControlChecklistInstanceTest : UnitTest() {
     private val programmeChecklistId = 4L
     private val partnerId = 5L
     private val reportId = 6L
+    private val TODAY = ZonedDateTime.now()
 
     private val createControlChecklist = CreateChecklistInstanceModel(
         relatedToId,
         programmeChecklistId
     )
 
-    private val createdControlCheckLisDetail = ChecklistInstanceDetail(
+    private val createdControlChecklistDetail = ChecklistInstanceDetail(
         checklistId,
         programmeChecklistId = programmeChecklistId,
         status = ChecklistInstanceStatus.DRAFT,
@@ -54,6 +62,7 @@ internal class CreateControlChecklistInstanceTest : UnitTest() {
         relatedToId = reportId,
         creatorEmail = "a@a",
         creatorId = creatorId,
+        createdAt = TODAY,
         finishedDate = null,
         minScore = BigDecimal(0),
         maxScore = BigDecimal(10),
@@ -85,6 +94,13 @@ internal class CreateControlChecklistInstanceTest : UnitTest() {
         )
     )
 
+    private fun getProjectPartnerReportStatusAndVersion(status: ReportStatus) =
+        ProjectPartnerReportStatusAndVersion(
+            reportId = 647L,
+            status = status,
+            version = "1.0"
+        )
+
     @MockK
     lateinit var persistence: ControlChecklistInstancePersistence
 
@@ -93,6 +109,9 @@ internal class CreateControlChecklistInstanceTest : UnitTest() {
 
     @MockK
     lateinit var auditPublisher: ApplicationEventPublisher
+
+    @MockK
+    lateinit var reportPersistence: ProjectPartnerReportPersistence
 
     @RelaxedMockK
     lateinit var generalValidator: GeneralValidatorService
@@ -115,13 +134,29 @@ internal class CreateControlChecklistInstanceTest : UnitTest() {
             AuthorizationUtil.userApplicant, "hash_pass",
             listOf(SimpleGrantedAuthority(UserRolePermission.CallRetrieve.key))
         )
+        every{
+            reportPersistence.getPartnerReportStatusAndVersion(partnerId, reportId)
+        } returns getProjectPartnerReportStatusAndVersion(ReportStatus.InControl)
         every { securityService.currentUser } returns currentUser
-        every { persistence.create(createControlChecklist, creatorId, reportId) } returns createdControlCheckLisDetail
+        every { persistence.create(createControlChecklist, creatorId, reportId) } returns createdControlChecklistDetail
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
 
         Assertions.assertThat(createControlChecklistInstance.create(partnerId, reportId, createControlChecklist))
             .usingRecursiveComparison()
-            .isEqualTo(createdControlCheckLisDetail)
+            .isEqualTo(createdControlChecklistDetail)
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = ReportStatus::class, mode = EnumSource.Mode.EXCLUDE,
+        names = ["InControl", "ReOpenInControlLast", "ReOpenInControlLimited", "ReOpenCertified", "Certified"])
+    fun `create control checklist - failed - report is locked`(status: ReportStatus) {
+        every{
+            reportPersistence.getPartnerReportStatusAndVersion(partnerId, reportId)
+        } returns getProjectPartnerReportStatusAndVersion(status)
+        every { persistence.create(createControlChecklist, creatorId, reportId) } returns createdControlChecklistDetail
+        assertThrows<CreateControlChecklistInstanceStatusNotAllowedException> {
+            createControlChecklistInstance.create(partnerId, reportId, createControlChecklist)
+        }
     }
 }

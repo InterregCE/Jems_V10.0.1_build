@@ -31,7 +31,7 @@
       "reason": "helper method calls repo methods handed to it via arg - thus @Transactional or repo-call check fails here"
     },
     {
-      "hash": "46f274f2",
+      "hash": "f8f6c032",
       "reason": "queryDSL extension is inside repository wrapping other repository methods, thus it should be considered as Transactional"
     },
     {
@@ -41,6 +41,10 @@
     {
       "hash": "07ecb7ae",
       "reason": "No classes should throw generic exceptions, but this one is in mapstruct generated Java class"
+    },
+    {
+      "hash": "faca5b06",
+      "reason": "Auth service not calling transactional, but it is SecurityContextHolder.clearContext() most possibly"
     }
   ]
 }

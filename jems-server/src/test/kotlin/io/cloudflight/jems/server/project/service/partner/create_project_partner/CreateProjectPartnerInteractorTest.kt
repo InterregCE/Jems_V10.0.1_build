@@ -20,6 +20,7 @@ import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DynamicTest
@@ -27,9 +28,9 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestFactory
 import org.junit.jupiter.api.assertThrows
 import org.springframework.http.HttpStatus
-import java.time.ZonedDateTime
 
 internal class CreateProjectPartnerInteractorTest : UnitTest() {
+
     @MockK
     lateinit var persistence: PartnerPersistence
 
@@ -89,9 +90,9 @@ internal class CreateProjectPartnerInteractorTest : UnitTest() {
         verify(exactly = 1) { generalValidator.notBlank(projectPartner.abbreviation, "abbreviation") }
         verify(exactly = 1) { generalValidator.maxLength(projectPartner.abbreviation, 15, "abbreviation") }
         verify(exactly = 1) {
-            generalValidator.maxLength(projectPartner.nameInOriginalLanguage, 100, "nameInOriginalLanguage")
+            generalValidator.maxLength(projectPartner.nameInOriginalLanguage, 250, "nameInOriginalLanguage")
         }
-        verify(exactly = 1) { generalValidator.maxLength(projectPartner.nameInEnglish, 100, "nameInEnglish") }
+        verify(exactly = 1) { generalValidator.maxLength(projectPartner.nameInEnglish, 250, "nameInEnglish") }
         verify(exactly = 1) { generalValidator.notNull(projectPartner.legalStatusId, "legalStatusId") }
         verify(exactly = 1) {
             generalValidator.maxLength(projectPartner.otherIdentifierNumber, 50, "otherIdentifierNumber")
@@ -166,7 +167,7 @@ internal class CreateProjectPartnerInteractorTest : UnitTest() {
 
     @Test
     fun `should throw MaximumNumberOfPartnersReached when number of partners already reached the max allowed number of partners for a project`() {
-        every { persistence.countByProjectId(PROJECT_ID) } returns 30
+        every { persistence.countByProjectId(PROJECT_ID) } returns 50
 
         val ex = assertThrows<MaximumNumberOfPartnersReached> {
             createProjectPartner.create(PROJECT_ID, projectPartner)

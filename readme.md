@@ -64,8 +64,10 @@ Manual deployment using docker compose:
    - jems-database (relational database for Jems configuration and input data)
    - jems-minio (Object storage for files) [**WE DO NOT RECOMMEND THIS FOR PRODUCTION**, there you should use
      [MinIO operator](https://github.com/minio/operator)]
-   - audit-database (logging into elasticsearch, needed for Audit Logs) [**WE DO NOT RECOMMEND THIS FOR PRODUCTION**, there
-   you should use multi-node cluster, see [ES images in Docker in production env](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-prod-prerequisites)]
+   - audit-database (logging into elasticsearch, needed for Audit Logs) **WE DO NOT RECOMMEND THIS FOR PRODUCTION**, there
+   you should use multi-node cluster, see official guidance:
+     - [ES images in Docker in production env](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-prod-prerequisites) and
+     - [docker-compose.yml](https://www.elastic.co/guide/en/elasticsearch/reference/7.17/docker.html#docker-compose-file) for production
    - audit-analyzer (Kibana for additional Audit Log access)
    - mailhog (mail server to test sending mail notifications)
  - run the jar (jems-server `./build/libs`) as Spring Boot application
@@ -127,6 +129,7 @@ The [Generated Swagger API documentation]<sup>[7]</sup> can be found on a succes
 You can define the following startup parameters (see also [application.yaml](jems-server/src/main/resources/application.yaml)):
 - `audit-service.enabled`=[true,false] (**we recommend using the environment variable:** `AUDIT_ENABLED`). If this one is set to true, you also need to provide:
   - `audit-service.url-and-port` with the address of ElasticSearch (better use the environment variable: `AUDIT_ELASTICSEARCH_URL_AND_PORT`)
+  - `audit-service.password` password for default 'elastic' user (better use the environment variable: `AUDIT_ELASTICSEARCH_PASSWORD`)
 - `spring.datasource.url` with the address of MariaDB (or the environment variable: `SPRING_DATASOURCE_URL`)
   - [**optional**] `spring.datasource.username` (by default is set to `root`)
   - `spring.datasource.password` (or the environment variable: `SPRING_DATASOURCE_PASSWORD`)

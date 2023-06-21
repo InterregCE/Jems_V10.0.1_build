@@ -2,8 +2,8 @@ package io.cloudflight.jems.server.project.service.contracting.partner.beneficia
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.contracting.partner.beneficialOwner.ContractingPartnerBeneficialOwner
-import io.cloudflight.jems.server.project.service.contracting.partner.beneficialOwner.ContractingPartnerBeneficialOwnersPersistence
 import io.cloudflight.jems.server.project.service.contracting.partner.beneficialOwner.getBeneficialOwners.GetContractingPartnerBeneficialOwners
+import io.cloudflight.jems.server.project.service.contracting.partner.beneficialOwner.getBeneficialOwners.GetContractingPartnerBeneficialOwnersService
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -32,7 +32,7 @@ internal class GetContractingPartnerBeneficialOwnersTest: UnitTest() {
     }
 
     @MockK
-    lateinit var beneficialOwnersPersistence: ContractingPartnerBeneficialOwnersPersistence
+    lateinit var getContractingPartnerBeneficialOwnersService: GetContractingPartnerBeneficialOwnersService
 
     @InjectMockKs
     lateinit var interactor: GetContractingPartnerBeneficialOwners
@@ -40,7 +40,7 @@ internal class GetContractingPartnerBeneficialOwnersTest: UnitTest() {
     @Test
     fun `get beneficial owners`() {
         val partnerId = 20L
-        every { beneficialOwnersPersistence
+        every { getContractingPartnerBeneficialOwnersService
             .getBeneficialOwners(partnerId)
         } returns listOf(
             beneficialOwner1, beneficialOwner2

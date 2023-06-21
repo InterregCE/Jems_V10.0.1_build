@@ -1,10 +1,14 @@
 package io.cloudflight.jems.server.payments.repository
 
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.createTestCallEntity
+import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
+import io.cloudflight.jems.server.common.file.repository.JemsFileMetadataRepository
+import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.payments.entity.AdvancePaymentEntity
 import io.cloudflight.jems.server.payments.model.advance.AdvancePayment
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
@@ -42,11 +46,14 @@ import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.toOutputUser
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
+import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
 import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
@@ -71,6 +78,11 @@ class AdvancePaymentPersistenceProviderTest: UnitTest() {
     @RelaxedMockK
     lateinit var programmeFundRepository: ProgrammeFundRepository
 
+    @MockK
+    lateinit var reportFileRepository: JemsFileMetadataRepository
+    @MockK
+    lateinit var fileRepository: JemsProjectFileService
+
     @InjectMockKs
     lateinit var advancePaymentPersistenceProvider: PaymentAdvancePersistenceProvider
 
@@ -88,8 +100,8 @@ class AdvancePaymentPersistenceProviderTest: UnitTest() {
         private val fundEntity = ProgrammeFundEntity(fundId, true)
         private val fund = ProgrammeFund(fundId, true)
         private val role = UserRoleEntity(1, "role")
-        private val paymentAuthorizedUser = UserEntity(4L, "savePaymentInfo@User", "name", "surname", role, "", UserStatus.ACTIVE)
-        private val paymentConfirmedUser = UserEntity(userId, "paymentConfirmed@User", "name", "surname", role, "", UserStatus.ACTIVE)
+        private val paymentAuthorizedUser = UserEntity(4L, "savePaymentInfo@User", false, "name", "surname", role, "", UserStatus.ACTIVE)
+        private val paymentConfirmedUser = UserEntity(userId, "paymentConfirmed@User", false, "name", "surname", role, "", UserStatus.ACTIVE)
         private val project = ProjectFull(
             id = projectId,
             customIdentifier = "identifier",
@@ -109,6 +121,7 @@ class AdvancePaymentPersistenceProviderTest: UnitTest() {
             name = paymentAuthorizedUser.name,
             password = paymentAuthorizedUser.password,
             email = paymentAuthorizedUser.email,
+            sendNotificationsToEmail = false,
             surname = paymentAuthorizedUser.surname,
             userRole = paymentAuthorizedUser.userRole,
             userStatus = UserStatus.ACTIVE
@@ -118,6 +131,7 @@ class AdvancePaymentPersistenceProviderTest: UnitTest() {
             name = paymentConfirmedUser.name,
             password = paymentConfirmedUser.password,
             email = paymentConfirmedUser.email,
+            sendNotificationsToEmail = false,
             surname = paymentConfirmedUser.surname,
             userRole = paymentConfirmedUser.userRole,
             userStatus = UserStatus.ACTIVE
@@ -171,13 +185,13 @@ class AdvancePaymentPersistenceProviderTest: UnitTest() {
             id = paymentId,
             projectCustomIdentifier = project.customIdentifier,
             projectAcronym = project.acronym,
-            partnerType = ProjectPartnerRoleDTO.PARTNER,
+            partnerType = ProjectPartnerRole.PARTNER,
             partnerNumber = partnerDetail.sortNumber,
             partnerAbbreviation = partnerDetail.abbreviation,
             programmeFund = fund,
             paymentAuthorized= true,
-            amountAdvance = BigDecimal.TEN,
-            dateOfPayment = currentDate.minusDays(3),
+            amountPaid = BigDecimal.TEN,
+            paymentDate = currentDate.minusDays(3),
             // amountSettled is not yet included
             amountSettled = BigDecimal.ZERO
         )
@@ -186,13 +200,14 @@ class AdvancePaymentPersistenceProviderTest: UnitTest() {
             projectId = projectId,
             projectCustomIdentifier = project.customIdentifier,
             projectAcronym = project.acronym,
+            projectVersion = "2.0",
             partnerId = partnerId,
             partnerType = ProjectPartnerRole.PARTNER,
             partnerNumber = partnerDetail.sortNumber,
             partnerAbbreviation = partnerDetail.abbreviation,
             programmeFund = fund,
-            amountAdvance = BigDecimal.TEN,
-            dateOfPayment = currentDate.minusDays(3),
+            amountPaid = BigDecimal.TEN,
+            paymentDate = currentDate.minusDays(3),
             comment = "comment",
             paymentAuthorized = true,
             paymentAuthorizedUser = paymentAuthorizedUser.toOutputUser(),
@@ -208,8 +223,8 @@ class AdvancePaymentPersistenceProviderTest: UnitTest() {
                 projectId = projectId,
                 partnerId = partnerId,
                 programmeFundId = fund.id,
-                amountAdvance = BigDecimal.TEN,
-                dateOfPayment = currentDate.minusDays(3),
+                amountPaid = BigDecimal.TEN,
+                paymentDate = currentDate.minusDays(3),
                 comment = "comment",
                 paymentAuthorized = true,
                 paymentAuthorizedUserId = paymentAuthorizedUser.id,
@@ -316,8 +331,8 @@ class AdvancePaymentPersistenceProviderTest: UnitTest() {
             projectId = projectId,
             partnerId = partnerId,
             programmeFundId = fund.id,
-            amountAdvance = BigDecimal.TEN,
-            dateOfPayment = currentDate.minusDays(3),
+            amountPaid = BigDecimal.TEN,
+            paymentDate = currentDate.minusDays(3),
             comment = "comment",
             paymentAuthorized = true,
             paymentAuthorizedUserId = paymentAuthorizedUser.id,
@@ -394,5 +409,21 @@ class AdvancePaymentPersistenceProviderTest: UnitTest() {
         assertThat(toBeSavedSlot.captured.partnerContributionName).isNull()
         assertThat(toBeSavedSlot.captured.partnerContributionSpfId).isEqualTo(contribSourceId)
         assertThat(toBeSavedSlot.captured.partnerContributionSpfName).isEqualTo("name")
+    }
+
+    @Test
+    fun deletePaymentAdvanceAttachment() {
+        val file = mockk<JemsFileMetadataEntity>()
+        every { fileRepository.delete(file) } answers { }
+        every { reportFileRepository.findByTypeAndId(JemsFileType.PaymentAdvanceAttachment, 16L) } returns file
+        advancePaymentPersistenceProvider.deletePaymentAdvanceAttachment(16L)
+        verify(exactly = 1) { fileRepository.delete(file) }
+    }
+
+    @Test
+    fun `deletePaymentAdvanceAttachment - not existing`() {
+        every { reportFileRepository.findByTypeAndId(JemsFileType.PaymentAdvanceAttachment, -1L) } returns null
+        assertThrows<ResourceNotFoundException> { advancePaymentPersistenceProvider.deletePaymentAdvanceAttachment(-1L) }
+        verify(exactly = 0) { fileRepository.delete(any()) }
     }
 }

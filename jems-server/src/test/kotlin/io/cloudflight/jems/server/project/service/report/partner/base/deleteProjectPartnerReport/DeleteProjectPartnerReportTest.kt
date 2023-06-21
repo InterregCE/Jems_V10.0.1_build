@@ -7,10 +7,10 @@ import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
-import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.PartnerReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -24,16 +24,18 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
+import java.time.ZonedDateTime
 
 internal class DeleteProjectPartnerReportTest: UnitTest()  {
 
     companion object {
         private const val PROJECT_ID = 500L
         private const val PARTNER_ID = 420L
+        private val TODAY = ZonedDateTime.now()
     }
 
     @MockK
-    lateinit var reportPersistence: ProjectReportPersistence
+    lateinit var reportPersistence: ProjectPartnerReportPersistence
 
     @MockK
     lateinit var partnerPersistence: PartnerPersistence
@@ -76,7 +78,7 @@ internal class DeleteProjectPartnerReportTest: UnitTest()  {
     fun `delete - invalid report because it is not most recent`() {
         every { reportPersistence.getCurrentLatestReportForPartner(PARTNER_ID) } returns report(ReportStatus.Draft)
         every { reportPersistence.deletePartnerReportById(any()) } answers { }
-        assertThrows<OnlyLastOpenReportCanBeDeleted> { interactor.delete(PARTNER_ID, 99L) }
+        assertThrows<OnlyLastInitiallyOpenReportCanBeDeleted> { interactor.delete(PARTNER_ID, 99L) }
         verify(exactly = 0) { reportPersistence.deletePartnerReportById(any()) }
     }
 
@@ -85,7 +87,7 @@ internal class DeleteProjectPartnerReportTest: UnitTest()  {
     fun `delete - invalid report because status not equals to draft`(status: ReportStatus) {
         every { reportPersistence.getCurrentLatestReportForPartner(PARTNER_ID) } returns report(status)
         every { reportPersistence.deletePartnerReportById(any()) } answers { }
-        assertThrows<OnlyLastOpenReportCanBeDeleted> { interactor.delete(PARTNER_ID, 100L) }
+        assertThrows<OnlyLastInitiallyOpenReportCanBeDeleted> { interactor.delete(PARTNER_ID, 100L) }
         verify(exactly = 0) { reportPersistence.deletePartnerReportById(any()) }
     }
 
@@ -103,6 +105,11 @@ internal class DeleteProjectPartnerReportTest: UnitTest()  {
             status = status,
             version = "v1.0",
             firstSubmission = null,
+            lastResubmission = null,
+            controlEnd = TODAY,
+            lastControlReopening = null,
+            projectReportId = 80L,
+            projectReportNumber = 800,
             identification = PartnerReportIdentification(
                 projectIdentifier = "identifier",
                 projectAcronym = "acronym",

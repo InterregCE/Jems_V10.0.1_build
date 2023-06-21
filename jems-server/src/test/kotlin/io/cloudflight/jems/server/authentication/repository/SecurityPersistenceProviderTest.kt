@@ -29,6 +29,7 @@ internal class SecurityPersistenceProviderTest : UnitTest() {
         private val userEntity = UserEntity(
             id = 1L,
             email = "email",
+            sendNotificationsToEmail = false,
             name = "name",
             surname = "surname",
             userRole = UserRoleEntity(2L, "name"),

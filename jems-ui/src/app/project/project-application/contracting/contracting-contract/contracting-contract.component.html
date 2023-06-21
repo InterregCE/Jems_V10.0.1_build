@@ -1,0 +1,100 @@
+<jems-project-page-template
+        titleKey="project.application.contracting.title"
+        [subTitleText]="'project.application.contract.contracts.title' | translate"
+        [needsCard]="false"
+        [isVersionedData]="false">
+
+    <jems-alert *ngIf="error$ | async as error"
+                [show]="!!error.i18nMessage?.i18nKey"
+                [type]="Alert.ERROR">
+        <jems-api-error-content [error]="error"></jems-api-error-content>
+    </jems-alert>
+    <jems-form *ngIf="projectContractInfo$ | async as contractInfo"
+               (save)="onSubmit()"
+               (discard)="resetForm(contractInfo)">
+        <form jemsFormLayout [formGroup]="contractInfoForm">
+            <h3>{{'project.application.contract.contracts.title' | translate}}</h3>
+            <jems-section-lock
+                    [isLocked]="isLocked$ | async"
+                    (lock)="lock($event)"
+                    (unlock)="unlock($event)">
+            </jems-section-lock>
+            <p>{{'project.application.contract.contracts.intro' | translate}}</p>
+            <div jemsMultiColumnRow>
+                <mat-form-field jemsFormFieldWidth="half" *ngIf="contractInfo.projectStartDate !== null">
+                    <mat-label>{{'project.application.contract.monitoring.project.start.date' | translate  | dateFormatInfo}}</mat-label>
+                        <input [disabled]="true" matInput name="projectStartDate"
+                               [value]="contractInfo.projectStartDate" [matDatepicker]="projectStartDate">
+                        <mat-datepicker-toggle matSuffix [for]="projectStartDate"></mat-datepicker-toggle>
+                        <mat-datepicker #projectStartDate></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field jemsFormFieldWidth="half" *ngIf="contractInfo.projectStartDate === null">
+                    <mat-label>{{'project.application.contract.monitoring.project.start.date' | translate  | dateFormatInfo}}</mat-label>
+                    <input [disabled]="true" matInput name="notDefined"
+                           [value]="'project.contracting.contracts.value.not.set.info' | translate">
+                </mat-form-field>
+
+                <mat-form-field class="w-50" *ngIf="contractInfo.projectEndDate !== null">
+                    <mat-label>{{'project.application.contract.monitoring.project.end.date' | translate  | dateFormatInfo}}</mat-label>
+                    <input name="projectEndDate" [disabled]="true" matInput
+                           [value]="contractInfo.projectEndDate" [matDatepicker]="projectEndDate">
+                    <mat-datepicker-toggle matSuffix [for]="projectEndDate"></mat-datepicker-toggle>
+                    <mat-datepicker #projectEndDate></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field jemsFormFieldWidth="half" *ngIf="contractInfo.projectEndDate === null">
+                    <mat-label>{{'project.application.contract.monitoring.project.end.date' | translate  | dateFormatInfo}}</mat-label>
+                    <input [disabled]="true" matInput name="notDefined"
+                           [value]="'project.contracting.contracts.value.not.set.info' | translate">
+                </mat-form-field>
+            </div>
+
+            <div>
+                <jems-expandable-textarea jemsMultiColumnRow
+                                          [control]="contractInfoForm?.controls?.website"
+                                          [errors]="contractInfoForm?.controls?.website.errors"
+                                          [characterLimit]="250"
+                                          [minRows]="1"
+                                          [maxRows]="1"
+                                          [label]="'project.application.contract.contracts.website' | translate">
+                </jems-expandable-textarea>
+            </div>
+
+            <div jemsMultiColumnRow class="mt-4">
+                <div jemsFormFieldWidth="half">
+                    <h4>{{'project.application.contract.contracts.subsidy.contract' | translate}}</h4>
+                    <mat-form-field jemsFormFieldWidth="full" *ngIf="contractInfo.subsidyContractDate !== null">
+                        <mat-label>{{'project.application.contract.monitoring.project.additional.entry.into.force.date' | translate  | dateFormatInfo}}</mat-label>
+                        <input name="projectEndDate" [disabled]="true" matInput [value]="contractInfo.subsidyContractDate" [matDatepicker]="subsidyContractDate">
+                        <mat-datepicker-toggle matSuffix [for]="subsidyContractDate"></mat-datepicker-toggle>
+                        <mat-datepicker #subsidyContractDate></mat-datepicker>
+                    </mat-form-field>
+                    <mat-form-field jemsFormFieldWidth="full" *ngIf="contractInfo.subsidyContractDate === null">
+                        <mat-label>{{'project.application.contract.contracts.partnership.agreement.date' | translate | dateFormatInfo}}</mat-label>
+                        <input [disabled]="true" matInput name="notDefined"
+                               [value]="'project.contracting.contracts.value.not.set.info' | translate">
+                    </mat-form-field>
+                </div>
+                <div jemsFormFieldWidth="half">
+                    <h4>{{'project.application.contract.contracts.partnership.agreement' | translate}}</h4>
+                    <mat-form-field jemsFormFieldWidth="full">
+                        <mat-label>{{'project.application.contract.contracts.partnership.agreement.date' | translate | dateFormatInfo}}</mat-label>
+                        <input name="partnershipAgreementDate" [matDatepicker]="partnershipAgreementDate" matInput
+                               formControlName="partnershipAgreementDate">
+                        <mat-datepicker-toggle matSuffix [for]="partnershipAgreementDate"></mat-datepicker-toggle>
+                        <mat-datepicker #partnershipAgreementDate></mat-datepicker>
+                    </mat-form-field>
+                </div>
+            </div>
+
+        </form>
+    </jems-form>
+
+    <mat-card class="mt-2">
+        <jems-contract-files class="mt-2 mb-2"
+                             [isEditable]="canEdit$ | async"
+                             [isLocked]="isLocked$ | async">
+        </jems-contract-files>
+    </mat-card>
+</jems-project-page-template>

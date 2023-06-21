@@ -14,5 +14,6 @@ data class ProjectResult(
     val periodNumber: Int? = null,
     val periodStartMonth: Int? = null,
     val periodEndMonth: Int? = null,
-    val description: Set<InputTranslation> = emptySet()
+    val description: Set<InputTranslation> = emptySet(),
+    val deactivated: Boolean
 )

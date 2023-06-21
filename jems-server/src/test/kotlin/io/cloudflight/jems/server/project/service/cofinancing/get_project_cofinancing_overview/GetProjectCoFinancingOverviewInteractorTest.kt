@@ -6,6 +6,9 @@ import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.project.repository.partner.cofinancing.ProjectPartnerCoFinancingPersistenceProvider
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
+import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFinancingByFundOverview
+import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFinancingCategoryOverview
+import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFinancingOverview
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost.GetBudgetTotalCost
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
@@ -23,154 +26,64 @@ import java.math.BigDecimal
 
 class GetProjectCoFinancingOverviewInteractorTest : UnitTest() {
 
-    @MockK
-    lateinit var projectBudgetPersistence: ProjectBudgetPersistence
+    companion object {
+        private val projectManagementCoFinancing = ProjectCoFinancingCategoryOverview(
+            fundOverviews = listOf(
+                ProjectCoFinancingByFundOverview(20L, ProgrammeFundType.ERDF, fundAbbreviation = setOf()),
+                ProjectCoFinancingByFundOverview(25L, ProgrammeFundType.OTHER, fundAbbreviation = setOf()),
+            ),
+            totalContribution = BigDecimal(800),
+            totalFundingAmount = BigDecimal(200),
+            totalFundAndContribution = BigDecimal(400),
+            totalEuFundAndContribution = BigDecimal(400),
+            averageCoFinancingRate = BigDecimal(80),
+            averageEuFinancingRate = BigDecimal(100),
+        )
+
+        private val projectSpfCoFinancing = ProjectCoFinancingCategoryOverview(
+            fundOverviews = listOf(
+                ProjectCoFinancingByFundOverview(20L, ProgrammeFundType.ERDF, fundAbbreviation = setOf()),
+            ),
+            totalContribution = BigDecimal(190),
+            totalFundingAmount = BigDecimal(200),
+            totalFundAndContribution = BigDecimal(120),
+            totalEuFundAndContribution = BigDecimal(70),
+            averageCoFinancingRate = BigDecimal(50),
+            averageEuFinancingRate = BigDecimal(100),
+        )
+
+        private val projectCoFinancingOverview = ProjectCoFinancingOverview(
+            projectManagementCoFinancing = projectManagementCoFinancing,
+            projectSpfCoFinancing = projectSpfCoFinancing
+        )
+    }
 
     @MockK
-    lateinit var projectPartnerCoFinancingPersistence: ProjectPartnerCoFinancingPersistenceProvider
-
-    @MockK
-    lateinit var getBudgetTotalCost: GetBudgetTotalCost
+    lateinit var getProjectCoFinancingOverviewCalculatorService: GetProjectCoFinancingOverviewCalculatorService
 
     @InjectMockKs
     lateinit var getProjectCoFinancingOverview: GetProjectCoFinancingOverview
 
     @Test
-    fun getBudgetManagementCoFinancing() {
-        every { projectBudgetPersistence.getPartnersForProjectId(1) } returns
-            listOf(projectPartnerSummary(id = 1L), projectPartnerSummary(id = 2L))
-        every { projectPartnerCoFinancingPersistence.getAvailableFunds(any()) } returns
-            setOf(
-                ProgrammeFund(id = 1L, type = ProgrammeFundType.ERDF, selected = true),
-                ProgrammeFund(id = 2L, type = ProgrammeFundType.OTHER, selected = true)
-            )
+    fun getProjectCoFinancingOverview() {
+        every { getProjectCoFinancingOverviewCalculatorService.getProjectCoFinancingOverview(1, "v1.0") } returns
+            projectCoFinancingOverview
 
-        every { getBudgetTotalCost.getBudgetTotalCost(1L) } returns 100.toScaledBigDecimal()
-        every { getBudgetTotalCost.getBudgetTotalSpfCost(1L) } returns 0.toScaledBigDecimal()
-        every { getBudgetTotalCost.getBudgetTotalCost(2L) } returns 100.toScaledBigDecimal()
-        every { getBudgetTotalCost.getBudgetTotalSpfCost(2L) } returns 0.toScaledBigDecimal()
+        val overview = getProjectCoFinancingOverview.getProjectCoFinancingOverview(1, "v1.0")
+        assertThat(overview.projectManagementCoFinancing.totalContribution).isEqualTo(BigDecimal(800))
+        assertThat(overview.projectManagementCoFinancing.totalFundingAmount).isEqualTo(BigDecimal(200))
+        assertThat(overview.projectManagementCoFinancing.totalFundAndContribution).isEqualTo(BigDecimal(400))
+        assertThat(overview.projectManagementCoFinancing.totalEuFundAndContribution).isEqualTo(BigDecimal(400))
+        assertThat(overview.projectManagementCoFinancing.averageCoFinancingRate).isEqualTo(BigDecimal(80))
+        assertThat(overview.projectManagementCoFinancing.averageEuFinancingRate).isEqualTo(BigDecimal(100))
 
-        every {
-            projectPartnerCoFinancingPersistence.getCoFinancingAndContributions(any(), null)
-        } returns ProjectPartnerCoFinancingAndContribution(
-            finances = listOf(
-                ProjectPartnerCoFinancing(
-                    fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
-                    fund = ProgrammeFund(id = 1L, selected = true, type = ProgrammeFundType.ERDF),
-                    percentage = BigDecimal(50)
-                ),
-                ProjectPartnerCoFinancing(
-                    fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
-                    fund = ProgrammeFund(id = 2L, selected = true, type = ProgrammeFundType.OTHER),
-                    percentage = BigDecimal(40)
-                )
-            ),
-            partnerContributions = listOf(
-                ProjectPartnerContribution(isPartner = true, amount = BigDecimal(20))
-            ),
-            partnerAbbreviation = "test"
-        )
+        assertThat(overview.projectSpfCoFinancing.totalContribution).isEqualTo(BigDecimal(190))
+        assertThat(overview.projectSpfCoFinancing.totalFundingAmount).isEqualTo(BigDecimal(200))
+        assertThat(overview.projectSpfCoFinancing.totalFundAndContribution).isEqualTo(BigDecimal(120))
+        assertThat(overview.projectSpfCoFinancing.totalEuFundAndContribution).isEqualTo(BigDecimal(70))
+        assertThat(overview.projectSpfCoFinancing.averageCoFinancingRate).isEqualTo(BigDecimal(50))
+        assertThat(overview.projectSpfCoFinancing.averageEuFinancingRate).isEqualTo(BigDecimal(100))
 
-        val overview = getProjectCoFinancingOverview.getProjectCoFinancingOverview(1, null)
-        assertThat(overview.projectManagementCoFinancing.totalFundingAmount).isEqualTo(180.toScaledBigDecimal())
-        assertThat(overview.projectManagementCoFinancing.totalFundAndContribution).isEqualTo(200.toScaledBigDecimal())
-        assertThat(overview.projectManagementCoFinancing.totalEuFundAndContribution).isEqualTo(100.toScaledBigDecimal())
-        assertThat(overview.projectManagementCoFinancing.averageCoFinancingRate).isEqualTo(90.toScaledBigDecimal())
-        assertThat(overview.projectManagementCoFinancing.averageEuFinancingRate).isEqualTo(100.toScaledBigDecimal())
     }
 
-    @Test
-    fun getBudgetSpfCoFinancing() {
-        every { projectBudgetPersistence.getPartnersForProjectId(1) } returns
-            listOf(projectPartnerSummary(id = 1L))
-        every { projectPartnerCoFinancingPersistence.getAvailableFunds(any()) } returns
-            setOf(
-                ProgrammeFund(id = 1L, type = ProgrammeFundType.ERDF, selected = true)
-            )
-
-        every { getBudgetTotalCost.getBudgetTotalSpfCost(1L) } returns 100.toScaledBigDecimal()
-
-        every {
-            projectPartnerCoFinancingPersistence.getSpfCoFinancingAndContributions(any(), null)
-        } returns ProjectPartnerCoFinancingAndContributionSpf(
-            finances = listOf(
-                ProjectPartnerCoFinancing(
-                    fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
-                    fund = ProgrammeFund(id = 1L, selected = true, type = ProgrammeFundType.ERDF),
-                    percentage = BigDecimal(50)
-                )
-            ),
-            partnerContributions = listOf(
-                ProjectPartnerContributionSpf(amount = BigDecimal(20))
-            )
-        )
-
-        val overview = getProjectCoFinancingOverview.getProjectCoFinancingOverview(1, null)
-        assertThat(overview.projectSpfCoFinancing.totalFundingAmount).isEqualTo(50.toScaledBigDecimal())
-        assertThat(overview.projectSpfCoFinancing.totalFundAndContribution).isEqualTo(100.toScaledBigDecimal())
-        assertThat(overview.projectSpfCoFinancing.totalEuFundAndContribution).isEqualTo(50.toScaledBigDecimal())
-        assertThat(overview.projectSpfCoFinancing.averageCoFinancingRate).isEqualTo(50.toScaledBigDecimal())
-        assertThat(overview.projectSpfCoFinancing.averageEuFinancingRate).isEqualTo(100.toScaledBigDecimal())
-    }
-
-    @Test
-    fun getFullBudgetCoFinancing() {
-        every { projectBudgetPersistence.getPartnersForProjectId(1) } returns
-            listOf(projectPartnerSummary(id = 1L))
-        every { projectPartnerCoFinancingPersistence.getAvailableFunds(any()) } returns
-            setOf(
-                ProgrammeFund(id = 1L, type = ProgrammeFundType.ERDF, selected = true)
-            )
-
-        every { getBudgetTotalCost.getBudgetTotalSpfCost(1L) } returns 100.toScaledBigDecimal()
-        every { getBudgetTotalCost.getBudgetTotalCost(1L) } returns 200.toScaledBigDecimal()
-
-        every {
-            projectPartnerCoFinancingPersistence.getSpfCoFinancingAndContributions(any(), null)
-        } returns ProjectPartnerCoFinancingAndContributionSpf(
-            finances = listOf(
-                ProjectPartnerCoFinancing(
-                    fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
-                    fund = ProgrammeFund(id = 1L, selected = true, type = ProgrammeFundType.ERDF),
-                    percentage = BigDecimal(60)
-                )
-            ),
-            partnerContributions = listOf(
-                ProjectPartnerContributionSpf(amount = BigDecimal(30))
-            )
-        )
-
-        every {
-            projectPartnerCoFinancingPersistence.getCoFinancingAndContributions(any(), null)
-        } returns ProjectPartnerCoFinancingAndContribution(
-            finances = listOf(
-                ProjectPartnerCoFinancing(
-                    fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
-                    fund = ProgrammeFund(id = 1L, selected = true, type = ProgrammeFundType.ERDF),
-                    percentage = BigDecimal(60)
-                ),
-                ProjectPartnerCoFinancing(
-                    fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
-                    fund = ProgrammeFund(id = 2L, selected = true, type = ProgrammeFundType.OTHER),
-                    percentage = BigDecimal(30)
-                )
-            ),
-            partnerContributions = listOf(
-                ProjectPartnerContribution(isPartner = true, amount = BigDecimal(20))
-            ),
-            partnerAbbreviation = "test"
-        )
-
-        val overview = getProjectCoFinancingOverview.getProjectCoFinancingOverview(1, null)
-        assertThat(overview.projectManagementCoFinancing.totalFundingAmount).isEqualTo(120.toScaledBigDecimal())
-        assertThat(overview.projectManagementCoFinancing.totalFundAndContribution).isEqualTo(200.toScaledBigDecimal())
-        assertThat(overview.projectManagementCoFinancing.totalEuFundAndContribution).isEqualTo(120.toScaledBigDecimal())
-        assertThat(overview.projectManagementCoFinancing.averageCoFinancingRate).isEqualTo(60.toScaledBigDecimal())
-        assertThat(overview.projectManagementCoFinancing.averageEuFinancingRate).isEqualTo(100.toScaledBigDecimal())
-        assertThat(overview.projectSpfCoFinancing.totalFundingAmount).isEqualTo(60.toScaledBigDecimal())
-        assertThat(overview.projectSpfCoFinancing.totalFundAndContribution).isEqualTo(100.toScaledBigDecimal())
-        assertThat(overview.projectSpfCoFinancing.totalEuFundAndContribution).isEqualTo(60.toScaledBigDecimal())
-        assertThat(overview.projectSpfCoFinancing.averageCoFinancingRate).isEqualTo(60.toScaledBigDecimal())
-        assertThat(overview.projectSpfCoFinancing.averageEuFinancingRate).isEqualTo(100.toScaledBigDecimal())
-    }
 }

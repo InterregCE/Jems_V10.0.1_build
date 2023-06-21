@@ -1,13 +1,18 @@
 package io.cloudflight.jems.server.payments.repository.advance
 
-import io.cloudflight.jems.server.payments.service.advance.PaymentAdvancePersistence
+import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.common.file.repository.JemsFileMetadataRepository
+import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.payments.entity.AdvancePaymentEntity
 import io.cloudflight.jems.server.payments.model.advance.AdvancePayment
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentUpdate
 import io.cloudflight.jems.server.payments.repository.toDetailModel
 import io.cloudflight.jems.server.payments.repository.toEntity
+import io.cloudflight.jems.server.payments.repository.toModel
 import io.cloudflight.jems.server.payments.repository.toModelList
+import io.cloudflight.jems.server.payments.service.advance.PaymentAdvancePersistence
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
@@ -28,7 +33,9 @@ class PaymentAdvancePersistenceProvider(
     private val partnerPersistence: PartnerPersistence,
     private val partnerCoFinancingPersistence: ProjectPartnerCoFinancingPersistence,
     private val userRepository: UserRepository,
-    private val programmeFundRepository: ProgrammeFundRepository
+    private val programmeFundRepository: ProgrammeFundRepository,
+    private val fileRepository: JemsProjectFileService,
+    private val reportFileRepository: JemsFileMetadataRepository,
 ): PaymentAdvancePersistence {
 
     @Transactional(readOnly = true)
@@ -39,6 +46,11 @@ class PaymentAdvancePersistenceProvider(
     override fun list(pageable: Pageable): Page<AdvancePayment> {
         return advancePaymentRepository.findAll(pageable).toModelList()
     }
+
+    @Transactional(readOnly = true)
+    override fun getPaymentsByProjectId(projectId: Long): List<AdvancePayment> =
+         advancePaymentRepository.findAllByProjectId(projectId).map { it.toModel() }
+
 
     @Transactional
     override fun deleteByPaymentId(paymentId: Long) {
@@ -72,6 +84,14 @@ class PaymentAdvancePersistenceProvider(
                     )
                 }
             ).toDetailModel()
+    }
+
+    @Transactional
+    override fun deletePaymentAdvanceAttachment(fileId: Long) {
+        fileRepository.delete(
+            reportFileRepository.findByTypeAndId(JemsFileType.PaymentAdvanceAttachment, fileId)
+                ?: throw ResourceNotFoundException("file")
+        )
     }
 
     private fun setSourceOfContribution(

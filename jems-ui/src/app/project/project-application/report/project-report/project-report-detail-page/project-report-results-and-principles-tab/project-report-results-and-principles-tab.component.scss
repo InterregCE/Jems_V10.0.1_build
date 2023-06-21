@@ -1,0 +1,23 @@
+.attachment-row {
+  display: flex;
+  align-items: center;
+}
+
+.attachment-text {
+  font-weight: var(--font-weight-strong);
+  margin-bottom: 0.25rem;
+  margin-right: 0.5rem;
+}
+
+.input-field-row {
+  display: flex;
+}
+
+.input-field {
+  flex-grow: 1;
+}
+
+.vertical-middle{
+  vertical-align: middle;
+  font-size: 1.25rem;
+}

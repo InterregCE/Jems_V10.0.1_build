@@ -11,7 +11,7 @@ import java.time.Instant
 
 const val loginEmail = "some@applicant"
 val userEntityOfLogin = UserEntity(
-    1L, loginEmail, "name", "surname", UserRoleEntity(1L, "applicant"),
+    1L, loginEmail, sendNotificationsToEmail = false, "name", "surname", UserRoleEntity(1L, "applicant"),
     "", UserStatus.ACTIVE
 )
 

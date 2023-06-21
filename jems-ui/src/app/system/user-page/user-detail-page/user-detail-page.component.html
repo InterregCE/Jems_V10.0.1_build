@@ -1,113 +1,137 @@
-<jems-main-page-template *ngIf="details$ | async as details" [needsCard]="true"
+<jems-main-page-template *ngIf="details$ | async as details" [needsCard]="false"
                         subTitleText="{{'userRole.detail.short' | translate}}: {{details.user?.name}} {{details.user?.surname}}"
                         titleKey="topbar.main.user.user.management">
-    <form [formGroup]="userForm" jemsFormLayout>
-        <div jemsMultiColumnRow>
-            <h2 class="inline-block">{{'user.detail.page.title' | translate}}</h2>
-            <ng-container *jemsHasPermission="PermissionsEnum.UserUpdate">
-                <button jemsText (click)="changeFormState$.next(FormState.EDIT)"
-                        *ngIf="details.user?.id && formState === FormState.VIEW" [disabled]="passwordIsInEditMode"
-                        color="primary"
-                        mat-raised-button>
-                    {{'common.edit.label' | translate}}
-                </button>
+    <mat-card class="mt-2">
+        <mat-card-content>
+            <form [formGroup]="userForm" jemsFormLayout>
+                <div jemsMultiColumnRow>
+                    <h2 class="inline-block">{{'user.detail.page.title' | translate}}</h2>
+                    <ng-container *jemsHasPermission="PermissionsEnum.UserUpdate">
+                        <button jemsText (click)="changeFormState$.next(FormState.EDIT)"
+                                *ngIf="details.user?.id && formState === FormState.VIEW" [disabled]="passwordIsInEditMode"
+                                color="primary"
+                                mat-raised-button>
+                            {{'common.edit.label' | translate}}
+                        </button>
+                    </ng-container>
+                </div>
+                <mat-form-field *jemsHasPermission="PermissionsEnum.UserUpdateRole">
+                    <mat-label>{{'user.detail.field.status' | translate}}</mat-label>
+                    <mat-select formControlName="userStatus" required>
+                        <mat-option [value]="userStatus.ACTIVE">
+                            {{'user.status.ACTIVE' | translate}}
+                        </mat-option>
+                        <mat-option [value]="userStatus.INACTIVE">
+                            {{'user.status.INACTIVE' | translate}}
+                        </mat-option>
+                        <mat-option [value]="userStatus.UNCONFIRMED">
+                            {{'user.status.UNCONFIRMED' | translate}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field>
+                    <mat-label>{{'user.detail.field.name' | translate}}</mat-label>
+                    <input formControlName="name" matInput name="name" required>
+                    <mat-error>
+                        <jems-form-field-errors [errors]="userForm?.controls?.name?.errors"></jems-form-field-errors>
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field>
+                    <mat-label>{{'user.detail.field.surname' | translate}}</mat-label>
+                    <input formControlName="surname" matInput name="surname" required>
+                    <mat-error>
+                        <jems-form-field-errors [errors]="userForm?.controls?.surname?.errors"></jems-form-field-errors>
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field>
+                    <mat-label>{{'user.detail.field.email' | translate}}</mat-label>
+                    <input formControlName="email" matInput name="email" required>
+                    <mat-error>
+                        <jems-form-field-errors
+                                [errors]="userForm?.controls?.email?.errors"
+                                [messages]="emailErrors">
+                        </jems-form-field-errors>
+                    </mat-error>
+                </mat-form-field>
+
+                <div *jemsHasPermission="PermissionsEnum.UserUpdateRole">
+                    <mat-form-field class="w-100">
+                        <mat-label>{{'user.detail.field.role' | translate}}</mat-label>
+                        <mat-select formControlName="userRoleId" required>
+                            <mat-option *ngFor="let role of details.roles" [value]="role.id">{{role.name}}</mat-option>
+                        </mat-select>
+                        <mat-error>
+                            <jems-form-field-errors [errors]="userRoleId.errors"></jems-form-field-errors>
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+
+                <div *ngIf="formState === FormState.EDIT" jemsMultiColumnRow>
+                    <button jemsText (click)="discard(details.user)"
+                            mat-stroked-button
+                            type="button">
+                        {{'common.cancel.label' | translate}}
+                    </button>
+                    <button jemsText (click)="onSubmit(details.user)"
+                            [disabled]="userForm.invalid || submitted"
+                            color="primary"
+                            mat-raised-button
+                            type="button">
+                        {{details.user?.id && 'common.save.label' || 'common.create.label' | translate}}
+                    </button>
+                </div>
+                <div>
+                    <jems-alert
+                            [show]="!submitted && (showSuccessMessage$ | async)"
+                            [type]="Alert.SUCCESS">
+                        <p>{{'user.detail.save.success' | translate}}</p>
+                    </jems-alert>
+                    <jems-alert *ngIf="error$ | async as error"
+                                [show]="!submitted && !!error.i18nMessage?.i18nKey"
+                                [type]="Alert.ERROR">
+                        <jems-api-error-content [error]="error"></jems-api-error-content>
+                    </jems-alert>
+                </div>
+            </form>
+        </mat-card-content>
+    </mat-card>
+
+    <mat-card class="mt-2">
+        <mat-card-content>
+            <h2 class="mb-4">{{'call.detail.notifications.config.title' | translate}}</h2>
+            <div class="user-settings" *ngIf="details.user?.id">
+                <jems-user-settings class="user-settings"
+                            [disabled]="false"
+                            [userId]="details.user?.id"
+                            [userSettings]="details.user.userSettings"
+                            [error$]="userStore.userSettingsSaveError$"
+                            [ownUser]="details.currentUser?.id === details.user?.id"
+                            [success$]="userStore.userSettingsSaveSuccess$">
+                </jems-user-settings>
+            </div>
+        </mat-card-content>
+    </mat-card>
+
+    <mat-card class="mt-2">
+        <mat-card-content>
+            <ng-container
+                *ngIf="details.canUpdatePassword">
+                <h2>{{'user.detail.field.password' | translate}}</h2>
+                <jems-user-password
+                        (switchedFormState)="passwordIsInEditMode = FormState.EDIT === $event"
+                        *ngIf="details.user?.id"
+                        [disabled]="formState === FormState.EDIT"
+                        [error$]="userStore.passwordSaveError$"
+                        [ownUser]="details.currentUser?.id === details.user?.id"
+                        [success$]="userStore.passwordSaveSuccess$"
+                        [userId]="details.user?.id"
+                        class="mt-3 block">
+                </jems-user-password>
             </ng-container>
-        </div>
-
-        <mat-form-field *jemsHasPermission="PermissionsEnum.UserUpdateRole">
-            <mat-label>{{'user.detail.field.status' | translate}}</mat-label>
-            <mat-select formControlName="userStatus" required>
-                <mat-option [value]="userStatus.ACTIVE">
-                    {{'user.status.ACTIVE' | translate}}
-                </mat-option>
-                <mat-option [value]="userStatus.INACTIVE">
-                    {{'user.status.INACTIVE' | translate}}
-                </mat-option>
-                <mat-option [value]="userStatus.UNCONFIRMED">
-                    {{'user.status.UNCONFIRMED' | translate}}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-
-        <mat-form-field>
-            <mat-label>{{'user.detail.field.name' | translate}}</mat-label>
-            <input formControlName="name" matInput name="name" required>
-            <mat-error>
-                <jems-form-field-errors [errors]="userForm?.controls?.name?.errors"></jems-form-field-errors>
-            </mat-error>
-        </mat-form-field>
-
-        <mat-form-field>
-            <mat-label>{{'user.detail.field.surname' | translate}}</mat-label>
-            <input formControlName="surname" matInput name="surname" required>
-            <mat-error>
-                <jems-form-field-errors [errors]="userForm?.controls?.surname?.errors"></jems-form-field-errors>
-            </mat-error>
-        </mat-form-field>
-
-        <mat-form-field>
-            <mat-label>{{'user.detail.field.email' | translate}}</mat-label>
-            <input formControlName="email" matInput name="email" required>
-            <mat-error>
-                <jems-form-field-errors
-                        [errors]="userForm?.controls?.email?.errors"
-                        [messages]="emailErrors">
-                </jems-form-field-errors>
-            </mat-error>
-        </mat-form-field>
-
-        <div *jemsHasPermission="PermissionsEnum.UserUpdateRole">
-            <mat-form-field class="w-100">
-                <mat-label>{{'user.detail.field.role' | translate}}</mat-label>
-                <mat-select formControlName="userRoleId" required>
-                    <mat-option *ngFor="let role of details.roles" [value]="role.id">{{role.name}}</mat-option>
-                </mat-select>
-                <mat-error>
-                    <jems-form-field-errors [errors]="userRoleId.errors"></jems-form-field-errors>
-                </mat-error>
-            </mat-form-field>
-        </div>
-
-        <div *ngIf="formState === FormState.EDIT" jemsMultiColumnRow>
-            <button jemsText (click)="discard(details.user)"
-                    mat-stroked-button
-                    type="button">
-                {{'common.cancel.label' | translate}}
-            </button>
-            <button jemsText (click)="onSubmit(details.user)"
-                    [disabled]="userForm.invalid || submitted"
-                    color="primary"
-                    mat-raised-button
-                    type="button">
-                {{details.user?.id && 'common.save.label' || 'common.create.label' | translate}}
-            </button>
-        </div>
-        <div>
-            <jems-alert
-                    [show]="!submitted && (showSuccessMessage$ | async)"
-                    [type]="Alert.SUCCESS">
-                <p>{{'user.detail.save.success' | translate}}</p>
-            </jems-alert>
-            <jems-alert *ngIf="error$ | async as error"
-                       [show]="!submitted && !!error.i18nMessage?.i18nKey"
-                       [type]="Alert.ERROR">
-                <jems-api-error-content [error]="error"></jems-api-error-content>
-            </jems-alert>
-        </div>
-    </form>
-
-    <ng-container
-            *ngIf="details.canUpdatePassword">
-        <jems-user-password
-                (switchedFormState)="passwordIsInEditMode = FormState.EDIT === $event"
-                *ngIf="details.user?.id"
-                [disabled]="formState === FormState.EDIT"
-                [error$]="userStore.passwordSaveError$"
-                [ownUser]="details.currentUser?.id === details.user?.id"
-                [success$]="userStore.passwordSaveSuccess$"
-                [userId]="details.user?.id"
-                class="mt-3 block">
-        </jems-user-password>
-    </ng-container>
+        </mat-card-content>
+    </mat-card>
 </jems-main-page-template>
 

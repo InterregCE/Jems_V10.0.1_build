@@ -7,6 +7,8 @@ import io.cloudflight.jems.api.user.dto.UserRoleDTO
 import io.cloudflight.jems.api.user.dto.UserRolePermissionDTO
 import io.cloudflight.jems.api.user.dto.UserRoleSummaryDTO
 import io.cloudflight.jems.api.user.dto.UserSearchRequestDTO
+import io.cloudflight.jems.api.user.dto.UserSettingsChangeDTO
+import io.cloudflight.jems.api.user.dto.UserSettingsDTO
 import io.cloudflight.jems.api.user.dto.UserStatusDTO.ACTIVE
 import io.cloudflight.jems.api.user.dto.UserSummaryDTO
 import io.cloudflight.jems.server.UnitTest
@@ -17,6 +19,8 @@ import io.cloudflight.jems.server.user.service.model.UserRole
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
 import io.cloudflight.jems.server.user.service.model.UserSearchRequest
+import io.cloudflight.jems.server.user.service.model.UserSettings
+import io.cloudflight.jems.server.user.service.model.UserSettingsChange
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.cloudflight.jems.server.user.service.user.create_user.CreateUserInteractor
@@ -66,6 +70,7 @@ class UserControllerTest : UnitTest() {
         private val userSummary = UserSummary(
             id = USER_ID,
             email = "maintainer@interact.eu",
+            sendNotificationsToEmail = false,
             name = "Michael",
             surname = "Schumacher",
             userRole = userRoleSummary,
@@ -74,10 +79,14 @@ class UserControllerTest : UnitTest() {
         private val user = User(
             id = USER_ID,
             email = userSummary.email,
+            userSettings = UserSettings(sendNotificationsToEmail = false),
             name = userSummary.name,
             surname = userSummary.surname,
             userRole = userRole,
             userStatus = UserStatus.ACTIVE
+        )
+        private val userSettings = UserSettings(
+            sendNotificationsToEmail = true
         )
 
         private val expectedUserRoleSummary = UserRoleSummaryDTO(
@@ -102,10 +111,15 @@ class UserControllerTest : UnitTest() {
         private val expectedUser = UserDTO(
             id = USER_ID,
             email = expectedUserSummary.email,
+            userSettings = UserSettingsDTO(sendNotificationsToEmail = false),
             name = expectedUserSummary.name,
             surname = expectedUserSummary.surname,
             userRole = expectedUserRole,
             userStatus = ACTIVE
+        )
+
+        private val expectedUserSettings = UserSettingsDTO(
+            sendNotificationsToEmail = true
         )
     }
 
@@ -181,6 +195,24 @@ class UserControllerTest : UnitTest() {
                 surname = "Schumacher",
                 userRoleId = ROLE_ID,
                 userStatus = UserStatus.ACTIVE
+            )
+        )
+    }
+
+    @Test
+    fun updateUserSettings() {
+        val userSettingsUpdate = UserSettingsChangeDTO(
+            id = USER_ID,
+            sendNotificationsToEmail = true
+        )
+
+        val slotUserSettingsChange = slot<UserSettingsChange>()
+        every { updateUserInteractor.updateUserSetting(capture(slotUserSettingsChange)) } returns userSettings
+        assertThat(controller.updateUserSetting(userSettingsUpdate)).isEqualTo(expectedUserSettings)
+        assertThat(slotUserSettingsChange.captured).isEqualTo(
+            UserSettingsChange(
+                id = USER_ID,
+                sendNotificationsToEmail = true
             )
         )
     }

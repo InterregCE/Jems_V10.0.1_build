@@ -17,7 +17,8 @@ class GetWorkPackageOutputInteractorTest : UnitTest() {
         workPackageId = 1L,
         outputNumber = 1,
         title = setOf(InputTranslation(SystemLanguage.EN, "Test")),
-        description = emptySet()
+        description = emptySet(),
+        deactivated = false,
 
     )
 
@@ -25,7 +26,8 @@ class GetWorkPackageOutputInteractorTest : UnitTest() {
         workPackageId = 1L,
         outputNumber = 2,
         title = setOf(InputTranslation(SystemLanguage.EN, "Test")),
-        description = emptySet()
+        description = emptySet(),
+        deactivated = true,
     )
 
 

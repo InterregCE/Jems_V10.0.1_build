@@ -1,12 +1,9 @@
 package io.cloudflight.jems.server.project.service.application.revert_application_decision
 
-import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
-import io.cloudflight.jems.server.audit.model.AuditProject
-import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.notification.handler.ProjectStatusChangeEvent
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
 import io.cloudflight.jems.server.project.service.application.workflow.states.EligibleApplicationState
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
@@ -14,7 +11,6 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
-import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -27,6 +23,7 @@ class RevertApplicationDecisionInteractorTest : UnitTest() {
         private val summary = ProjectSummary(
             id = PROJECT_ID,
             customIdentifier = "01",
+            callId = 1L,
             callName = "",
             acronym = "project acronym",
             status = ApplicationStatus.ELIGIBLE
@@ -57,13 +54,14 @@ class RevertApplicationDecisionInteractorTest : UnitTest() {
 
         assertThat(revertApplicationDecision.revert(PROJECT_ID)).isEqualTo(ApplicationStatus.SUBMITTED)
 
-        val slotAudit = slot<AuditCandidateEvent>()
+        val slotAudit = mutableListOf<ProjectStatusChangeEvent>()
+        every { auditPublisher.publishEvent(capture(slotAudit)) }.returns(Unit)
         verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }
-        assertThat(slotAudit.captured.auditCandidate).isEqualTo(
-            AuditCandidate(
-                action = AuditAction.APPLICATION_STATUS_CHANGED,
-                project = AuditProject(id = PROJECT_ID.toString(), customIdentifier = "01", name = "project acronym"),
-                description = "Project application status changed from ELIGIBLE to SUBMITTED"
+        assertThat(slotAudit[0]).isEqualTo(
+            ProjectStatusChangeEvent(
+                context = revertApplicationDecision,
+                projectSummary = summary,
+                newStatus = ApplicationStatus.SUBMITTED
             )
         )
     }

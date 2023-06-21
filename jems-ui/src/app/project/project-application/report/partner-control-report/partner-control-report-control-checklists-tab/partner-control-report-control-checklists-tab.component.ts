@@ -25,8 +25,12 @@ export class PartnerControlReportControlChecklistsTabComponent {
     // TODO: create a component
     error$ = new BehaviorSubject<APIError | null>(null);
     actionPending = false;
+    controlReportEditable$: Observable<boolean>;
+    controlReport$: Observable<ProjectPartnerControlReportDTO>;
 
-    constructor(public store: PartnerControlReportStore) {
+  constructor(public store: PartnerControlReportStore) {
+        this.controlReportEditable$ = this.store.controlReportEditable$;
+        this.controlReport$ = this.store.partnerControlReport$;
         this.data$ = store.partnerControlReport$.pipe(
             map((partnerControlReport) => ({partnerControlReport}))
         );

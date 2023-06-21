@@ -71,7 +71,7 @@
             {{'lump.sum.is.fast.track' | translate}}
         </div>
         <mat-button-toggle-group
-                [disabled]="formState === FormState.VIEW || (isProgrammeSetupLocked && !isCreate && isFastTrackLumpSumLocked)">
+                [disabled]="formState === FormState.VIEW || (isFastTrackLumpSumLocked && !isCreate)">
             <mat-button-toggle
                     value="Yes"
                     [checked]="isFastTrack === 'Yes'"
@@ -141,13 +141,12 @@
                 (click)="onCancel()">
             {{'lump.sum.new.button.cancel' | translate}}
         </button>
-        <button mat-raised-button
-                color="primary"
-                type="button"
+        <jems-pending-button
                 [disabled]="lumpSumForm.invalid || submitted || !validNumberOfSelections"
-                (click)="onSubmit()">
+                [pending]="loading"
+                (clicked)="onSubmit()">
             {{'lump.sum.new.button.save' | translate}}
-        </button>
+        </jems-pending-button>
     </div>
     <jems-alert
             [show]="!submitted && (showSuccessMessage$ | async)"

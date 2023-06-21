@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {combineLatest, Observable, of, ReplaySubject, Subject} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {
   PageProjectFileMetadataDTO,
   ProjectCallSettingsDTO,
@@ -7,6 +7,7 @@ import {
   ProjectFileService,
   ProjectPartnerSummaryDTO,
   ProjectStatusDTO,
+  ProjectVersionDTO,
   SettingsService,
   UserRoleDTO
 } from '@cat/api';
@@ -23,7 +24,6 @@ import {
   InvestmentSummary
 } from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
 import {PermissionService} from '../../../../security/permissions/permission.service';
-import {ProjectUtil} from '@project/common/project-util';
 import {I18nMessage} from '@common/models/I18nMessage';
 import {
   ProjectPartnerStore
@@ -33,6 +33,8 @@ import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {DownloadService} from '@common/services/download.service';
 import {RoutingService} from '@common/services/routing.service';
 import {v4 as uuid} from 'uuid';
+import {ProjectUtil} from '@project/common/project-util';
+import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
 
@@ -46,10 +48,11 @@ export class FileManagementStore {
   selectedCategory$ = new ReplaySubject<CategoryInfo | undefined>(1);
   selectedCategoryPath$: Observable<I18nMessage[]>;
 
-  projectStatus$: Observable<ProjectStatusDTO>;
   userIsProjectOwnerOrEditCollaborator$: Observable<boolean>;
 
   canUpload$: Observable<boolean>;
+  currentVersion$: Observable<ProjectVersionDTO | undefined>;
+  currentProjectStatus$: Observable<ProjectStatusDTO | undefined>;
   canChangeAssessmentFile$: Observable<boolean>;
   canChangeApplicationFile$: Observable<boolean>;
   canChangeModificationFile$: Observable<boolean>;
@@ -61,8 +64,8 @@ export class FileManagementStore {
   deleteSuccess$ = new Subject<boolean>();
   error$ = new Subject<APIError | null>();
 
-  newPageSize$ = new Subject<number>();
-  newPageIndex$ = new Subject<number>();
+  newPageSize$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_SIZE);
+  newPageIndex$ = new BehaviorSubject<number>(0);
   newSort$ = new Subject<Partial<MatSort>>();
   filesChanged$ = new Subject<void>();
 
@@ -73,9 +76,11 @@ export class FileManagementStore {
               private permissionService: PermissionService,
               private visibilityStatusService: FormVisibilityStatusService,
               private downloadService: DownloadService,
-              private routingService: RoutingService
+              private routingService: RoutingService,
+              private projectVersionStore: ProjectVersionStore
   ) {
-    this.projectStatus$ = this.projectStore.projectStatus$;
+    this.currentVersion$ = this.projectVersionStore.currentVersion$;
+    this.currentProjectStatus$ = this.projectStore.projectStatus$;
     this.userIsProjectOwnerOrEditCollaborator$ = this.projectStore.userIsProjectOwnerOrEditCollaborator$;
     this.canChangeAssessmentFile$ = this.permissionService.hasPermission(PermissionsEnum.ProjectFileAssessmentUpdate);
     this.canChangeApplicationFile$ = this.permissionService.hasPermission(PermissionsEnum.ProjectFileApplicationUpdate);
@@ -101,7 +106,7 @@ export class FileManagementStore {
       .pipe(
         take(1),
         withLatestFrom(this.projectStore.projectId$),
-        switchMap(([category, projectId]) => this.projectFileService.uploadFileForm(file, projectId, (category as any)?.id, (category as any)?.type)),
+        switchMap(([category, projectId]) => this.projectFileService.uploadFileForm(file, (category as any)?.type, projectId, (category as any)?.id)),
         tap(() => this.filesChanged$.next()),
         tap(() => this.error$.next(null)),
         catchError(error => {
@@ -133,28 +138,32 @@ export class FileManagementStore {
   private canUpload(): Observable<boolean> {
     return combineLatest([
       this.selectedCategory$,
-      this.projectStatus$,
       this.canChangeAssessmentFile$,
       this.canChangeApplicationFile$,
       this.canChangeModificationFile$,
       this.userIsProjectOwnerOrEditCollaborator$,
+      this.currentVersion$
     ]).pipe(
-      map(([selectedCategory, projectStatus, canUploadAssessmentFile, canUploadApplicationFile, canUploadModificationFile, userIsProjectOwnerOrEditCollaborator]) => {
+      map(([selectedCategory, canUploadAssessmentFile, canUploadApplicationFile, canUploadModificationFile, userIsProjectOwnerOrEditCollaborator, currentVersion]) => {
         if (selectedCategory?.type === FileCategoryTypeEnum.ASSESSMENT) {
           return canUploadAssessmentFile;
         }
         if (selectedCategory?.type === FileCategoryTypeEnum.MODIFICATION) {
           return canUploadModificationFile;
         }
-        if (!ProjectUtil.isOpenForModifications(projectStatus)) {
-          return false;
-        }
-        if (selectedCategory?.type === FileCategoryTypeEnum.APPLICATION || selectedCategory?.id) {
+        if ((selectedCategory?.type === FileCategoryTypeEnum.APPLICATION || selectedCategory?.id) && this.isInModifiableStatus(currentVersion ? currentVersion.status : '')) {
           return canUploadApplicationFile || userIsProjectOwnerOrEditCollaborator;
         }
+
         return false;
       })
     );
+  }
+
+  isInModifiableStatus(status: ProjectStatusDTO | string): boolean {
+    return ProjectUtil.isOpenForModifications(status) ||
+        ProjectUtil.isInModifiableStatusBeforeApproved(status) ||
+        ProjectUtil.isInModifiableStatusAfterApproved(status);
   }
 
   private canReadFiles(): Observable<boolean> {
@@ -171,8 +180,8 @@ export class FileManagementStore {
     return combineLatest([
       this.selectedCategory$,
       this.projectStore.projectId$,
-      this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
-      this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
+      this.newPageIndex$,
+      this.newPageSize$,
       this.newSort$.pipe(
         startWith(Tables.DEFAULT_INITIAL_SORT),
         map(sort => sort?.direction ? sort : Tables.DEFAULT_INITIAL_SORT),
@@ -182,8 +191,13 @@ export class FileManagementStore {
     ])
       .pipe(
         switchMap(([category, projectId, pageIndex, pageSize, sort]) =>
-          this.projectFileService.listProjectFiles(projectId, (category as any)?.id, pageIndex, pageSize, sort, (category as any)?.type)
+          this.projectFileService.listProjectFiles(projectId, (category as any)?.type, (category as any)?.id, pageIndex, pageSize, sort)
         ),
+        tap(page => {
+          if (page.totalPages > 0 && page.number >= page.totalPages) {
+            this.newPageIndex$.next(page.totalPages - 1);
+          }
+        }),
         catchError(error => {
           this.error$.next(error.error);
           return of({} as PageProjectFileMetadataDTO);
@@ -329,6 +343,7 @@ export class FileManagementStore {
           break;
         }
       }
+
       return [node.name as any, ...potentialPath];
     }
 
@@ -341,5 +356,10 @@ export class FileManagementStore {
 
   getMaximumAllowedFileSize(): Observable<number> {
     return this.settingsService.getMaximumAllowedFileSize();
+  }
+
+  changeFilter(section: CategoryInfo): void {
+    this.selectedCategory$.next(section);
+    this.newPageIndex$.next(0);
   }
 }

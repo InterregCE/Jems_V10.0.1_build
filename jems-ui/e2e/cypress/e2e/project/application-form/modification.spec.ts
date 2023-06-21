@@ -3,6 +3,7 @@ import call from '../../../fixtures/api/call/1.step.call.json';
 import call2step from '../../../fixtures/api/call/2.step.call.json';
 import application from '../../../fixtures/api/application/application.json';
 import application2step from '../../../fixtures/api/application/2.step.application.json';
+import approvalInfo from "../../../fixtures/api/application/modification/approval.info.json";
 
 context('Application modification tests', () => {
 
@@ -28,7 +29,7 @@ context('Application modification tests', () => {
         cy.loginByRequest(user.applicantUser.email);
         cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
         cy.get('jems-project-application-information').find('div').should('contain.text', 'In modification precontracted');
-        cy.get('jems-side-nav').find('mat-select-trigger').find('span').should('contain.text', ' (current) V. 2.0');
+        cy.get('mat-select-trigger').should('contain', '(current)').should('contain', 'V.2.0');
         cy.runPreSubmissionCheck(applicationId);
         cy.submitProjectApplication(applicationId);
 
@@ -84,7 +85,7 @@ context('Application modification tests', () => {
         expect(pastModificationsSection).to.contain('Project Version 2.0');
       });
 
-      cy.contains('div', 'Project version').should('contain', '(current) V. 1.0');
+      cy.contains('div', 'Project version').should('contain', '(current)').should('contain', 'V.1.0');
     });
   });
 
@@ -103,17 +104,25 @@ context('Application modification tests', () => {
       cy.submitProjectApplication(applicationId);
 
       cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
-      cy.get('jems-project-application-information').find('div').should('contain.text', 'Modification precontracted submitted');
+      cy.get('jems-project-application-information').find('div').should('contain', 'Modification precontracted submitted');
+      cy.approveModification(applicationId, approvalInfo, user.programmeUser.email);
+
+      cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
+      cy.get('jems-project-application-information').find('div').should('contain', 'Approved');
+
+      cy.visit(`app/project/detail/${applicationId}/applicationFormIdentification`, {failOnStatusCode: false});
+      cy.get('textarea').should('have.value', 'New title');
+      
+      cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
+      
+      cy.wait(1000);
+      cy.contains('span', 'Application form').should('be.visible').click();
+      cy.get('mat-select-trigger').should('contain', '(current)').should('contain', 'V.2.0').click();
+      cy.contains('V.1.0').should('be.visible').click();
 
       cy.wait(1000);
       cy.contains('span', 'Application form').should('be.visible').click();
-      cy.contains('A - Project identification').should('be.visible').click();
       cy.contains('.link', 'A - Project identification').should('be.visible').click();
-      cy.get('textarea').should('have.value', 'New title');
-
-      cy.wait(1000);
-      cy.contains('(current) V. 2.0').click();
-      cy.contains('V. 1.0').should('be.visible').click();
       cy.contains('You are currently viewing an old version of this application').should('be.visible');
       cy.get('textarea').should('have.value', 'API generated application title DE');
     });
@@ -139,6 +148,8 @@ context('Application modification tests', () => {
           cy.startModification(applicationId, user.programmeUser.email);
           
           cy.visit(`/app/project/detail/${applicationId}`, {failOnStatusCode: false});
+          cy.contains('span', 'Application form').should('be.visible');
+          cy.wait(2000);
           cy.contains('span', 'Application form').click();
           cy.contains('B - Project partners').should('be.visible').click();
           cy.contains('Partners overview').click();
@@ -160,13 +171,12 @@ context('Application modification tests', () => {
           cy.get(`li:contains("${testData.partner2.abbreviation}") mat-icon:contains("person_off")`).should('be.visible');
           
           cy.contains('li', 'Partners overview').contains(testData.partner2.abbreviation).click();
-          cy.wait(1000);
           cy.contains('You are currently viewing a deactivated partner.').should('be.visible');
           
           cy.contains('mat-form-field', '(current)').click();
           cy.wait(1000);
-          cy.contains('V. 2.0').should('be.visible').click();
-          cy.contains('You are currently viewing an old version of this application').should('be.visible');
+          cy.contains('V.2.0').should('be.visible').click();
+          cy.contains(`Partner ${testData.partner2.abbreviation}`).should('be.visible');
           cy.contains('You are currently viewing a deactivated partner.').should('not.exist');
         });
       });

@@ -1,53 +1,74 @@
 package io.cloudflight.jems.server.audit.repository
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient
+import co.elastic.clients.elasticsearch._types.SortOrder
+import co.elastic.clients.elasticsearch.core.IndexRequest
+import co.elastic.clients.elasticsearch.core.IndexResponse
+import co.elastic.clients.elasticsearch.core.SearchRequest
+import co.elastic.clients.elasticsearch.core.SearchResponse
+import co.elastic.clients.elasticsearch.core.search.Hit
+import co.elastic.clients.elasticsearch.core.search.HitsMetadata
+import co.elastic.clients.elasticsearch.core.search.TotalHits
+import co.elastic.clients.elasticsearch.core.search.TotalHitsRelation
+import co.elastic.clients.util.ObjectBuilder
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.audit.model.Audit
+import io.cloudflight.jems.server.audit.model.AuditFilter
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.model.AuditSearchRequest
 import io.cloudflight.jems.server.audit.model.AuditUser
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
+import io.mockk.mockk
 import io.mockk.slot
-import org.apache.lucene.search.TotalHits
 import org.assertj.core.api.Assertions.assertThat
-import org.elasticsearch.action.index.IndexRequest
-import org.elasticsearch.action.index.IndexResponse
-import org.elasticsearch.action.search.SearchResponse
-import org.elasticsearch.action.search.SearchResponseSections
-import org.elasticsearch.client.RequestOptions
-import org.elasticsearch.client.RestHighLevelClient
-import org.elasticsearch.common.bytes.BytesArray
-import org.elasticsearch.xcontent.XContentFactory
-import org.elasticsearch.index.shard.ShardId
-import org.elasticsearch.search.SearchHit
-import org.elasticsearch.search.SearchHits
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.util.function.Function
 
 @ExtendWith(MockKExtension::class)
 internal class AuditPersistenceProviderTest {
 
     companion object {
-        private const val timeOfEntry = "2021-06-20T15:43:20.762Z"
-        private const val userEmail = "test@test"
-        private const val sourceEntry =
-            "{\"timestamp\":\"$timeOfEntry\",\"project\": {\"id\": \"id1\", \"name\": \"name1\"},\"user\": {\"id\": 2, \"email\": \"$userEmail\"}}"
+        private val timeOfEntry = ZonedDateTime.now()
+
+        private val sampleAudit = Audit(
+            id = null,
+            timestamp = timeOfEntry,
+            action = AuditAction.PROGRAMME_INDICATOR_ADDED,
+            user = AuditUser(id = 2, email = "userEmail"),
+            project = AuditProject(id = "id1", customIdentifier = "custom1", name = "name1"),
+            entityRelatedId = 45L,
+            description = "desc",
+        )
     }
 
     @MockK
-    private lateinit var client: RestHighLevelClient
+    private lateinit var client: ElasticsearchClient
 
     @InjectMockKs
     private lateinit var persistence: AuditPersistenceProvider
 
+    @BeforeEach
+    fun resetMocks() {
+        clearMocks(client)
+    }
+
     @Test
-    fun `save audit`() {
-        val audit = Audit(
+    fun saveAudit() {
+        val request = slot<Function<IndexRequest.Builder<Audit>, ObjectBuilder<IndexRequest<Audit>>>>()
+        val result = mockk<IndexResponse>()
+        every { result.id() } returns "custom-es-id"
+        every { client.index(capture(request)) } returns result
+
+        val toSave = Audit(
             id = "id",
             timestamp = ZonedDateTime.now(ZoneOffset.UTC),
             action = AuditAction.APPLICATION_STATUS_CHANGED,
@@ -56,69 +77,94 @@ internal class AuditPersistenceProviderTest {
             entityRelatedId = 3L,
             description = "description"
         )
-        val indexResponse = IndexResponse(ShardId("shard", "id", 1), "type", "id", 1, 1, 1, false)
-        val indexSlot = slot<IndexRequest>()
-        every { client.index(capture(indexSlot), RequestOptions.DEFAULT) } returns indexResponse
 
-        assertThat(persistence.saveAudit(audit)).isEqualTo("id")
-
-        val expectedSource = XContentFactory.jsonBuilder()
-            .startObject()
-            .timeField(FIELD_TIMESTAMP, audit.timestamp?.format(DateTimeFormatter.ISO_DATE_TIME))
-            .field(FIELD_ACTION, audit.action!!.name)
-            .field(FIELD_ENTITY_RELATED_ID, audit.entityRelatedId)
-            .field(FIELD_DESCRIPTION, audit.description)
-            .startObject(FIELD_USER)
-            .field(FIELD_USER_ID, audit.user!!.id)
-            .field(FIELD_USER_EMAIL, audit.user!!.email)
-            .endObject()
-            .startObject(FIELD_PROJECT)
-            .field(FIELD_PROJECT_ID, audit.project!!.id)
-            .field(FIELD_PROJECT_CUSTOM_IDENTIFIER, audit.project!!.customIdentifier)
-            .field(FIELD_PROJECT_NAME, audit.project!!.name)
-            .endObject()
-            .endObject()
-
-        val shouldBeResult = IndexRequest(AuditPersistenceProvider.AUDIT_INDEX).source(expectedSource)
-        assertThat(indexSlot.captured.source()).isEqualTo(shouldBeResult.source())
+        assertThat(persistence.saveAudit(toSave)).isEqualTo("custom-es-id")
+        with(request.captured.apply(IndexRequest.Builder()).build()) {
+            assertThat(index()).isEqualTo("audit-log-v3")
+            assertThat(document()).isEqualTo(toSave)
+        }
     }
 
     @Test
     fun `getCalls - without parameters`() {
         val searchRequest = AuditSearchRequest()
-        val searchHit = SearchHit(1)
-        searchHit.sourceRef(BytesArray(sourceEntry))
-        val searchResponse = SearchResponse(
-            SearchResponseSections(
-                SearchHits(arrayOf(searchHit), TotalHits(1, TotalHits.Relation.EQUAL_TO), 2f),
-                null,
-                null,
-                false,
-                false,
-                null,
-                1
-            ),
-            "scrollId",
-            1,
-            1,
-            0,
-            10,
-            null,
-            null
-        )
-        every { client.search(any(), any()) } returns searchResponse
+        val searchResponse = mockk<SearchResponse<Audit>>()
+        mockResponse(searchResponse, sampleAudit.copy())
+        val searchSlot = slot<SearchRequest>()
+        every { client.search(capture(searchSlot), Audit::class.java) } returns searchResponse
 
         val result = persistence.getAudit(searchRequest)
-        assertThat(result).containsExactly(
-            Audit(
-                id = null,
-                timestamp = ZonedDateTime.parse(timeOfEntry, DateTimeFormatter.ISO_DATE_TIME),
-                action = null,
-                user = AuditUser(id = 2, email = userEmail),
-                project = AuditProject(id = "id1", name = "name1"),
-                entityRelatedId = null,
-                description = null
-            )
-        )
+        assertThat(result).containsExactly(sampleAudit.copy(id = "very-es-custom-id"))
+
+        with(searchSlot.captured) {
+            assertThat(query()).isNull()
+            assertThat(index()).containsExactly("audit-log-v3")
+            assertThat(sort()).hasSize(1)
+            assertThat(sort().first().field().field()).isEqualTo("timestamp")
+            assertThat(sort().first().field().order()).isEqualTo(SortOrder.Desc)
+        }
     }
+
+    @Test
+    fun `getCalls - with parameters`() {
+        val searchRequest = AuditSearchRequest(
+            userId = AuditFilter(setOf(15L, 16L), isInverted = false),
+            userEmail = AuditFilter(setOf("why@me?"), isInverted = true),
+            action = AuditFilter(setOf("action 1", "action 2"), isInverted = false),
+            projectId = AuditFilter(setOf("project5"), isInverted = false),
+            timeFrom = timeOfEntry.minusDays(1),
+            timeTo = timeOfEntry.plusDays(1),
+        )
+        val searchResponse = mockk<SearchResponse<Audit>>()
+        mockResponse(searchResponse, sampleAudit.copy())
+        val searchSlot = slot<SearchRequest>()
+        every { client.search(capture(searchSlot), Audit::class.java) } returns searchResponse
+
+        val result = persistence.getAudit(searchRequest)
+        assertThat(result).containsExactly(sampleAudit.copy(id = "very-es-custom-id"))
+
+        with(searchSlot.captured) {
+            assertThat(query()!!.bool().filter()).hasSize(4)
+            assertThat(query()!!.bool().filter()[0].range().field()).isEqualTo("timestamp")
+            assertThat(query()!!.bool().filter()[0].range().from()).isEqualTo(
+                timeOfEntry.minusDays(1).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
+            assertThat(query()!!.bool().filter()[0].range().to()).isEqualTo(
+                timeOfEntry.plusDays(1).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
+
+            assertThat(query()!!.bool().filter()[1].terms().field()).isEqualTo("user.id")
+            assertThat(query()!!.bool().filter()[1].terms().terms().value().map { it.longValue() }).containsExactly(15L, 16L)
+
+            assertThat(query()!!.bool().filter()[2].terms().field()).isEqualTo("action")
+            assertThat(query()!!.bool().filter()[2].terms().terms().value().map { it.stringValue() }).containsExactly("action 1", "action 2")
+
+            assertThat(query()!!.bool().filter()[3].terms().field()).isEqualTo("project.id")
+            assertThat(query()!!.bool().filter()[3].terms().terms().value().map { it.stringValue() }).containsExactly("project5")
+
+            assertThat(query()!!.bool().mustNot()).hasSize(1)
+            assertThat(query()!!.bool().mustNot()[0].terms().field()).isEqualTo("user.email")
+            assertThat(query()!!.bool().mustNot()[0].terms().terms().value().map { it.stringValue() }).containsExactly("why@me?")
+
+            assertThat(query()!!.bool().must()).isEmpty()
+            assertThat(query()!!.bool().should()).isEmpty()
+
+            assertThat(index()).containsExactly("audit-log-v3")
+            assertThat(sort()).hasSize(1)
+            assertThat(sort().first().field().field()).isEqualTo("timestamp")
+            assertThat(sort().first().field().order()).isEqualTo(SortOrder.Desc)
+        }
+    }
+
+    private fun mockResponse(searchResponseMock: SearchResponse<Audit>, response: Audit) {
+        every { searchResponseMock.hits() } returns HitsMetadata.Builder<Audit>()
+            .hits(
+                listOf(Hit.Builder<Audit>()
+                    .id("very-es-custom-id")
+                    .index("audit-index")
+                    .source(response).build()
+                ))
+            .total(
+                TotalHits.Builder().value(457L).relation(TotalHitsRelation.Eq).build())
+            .build()
+    }
+
 }

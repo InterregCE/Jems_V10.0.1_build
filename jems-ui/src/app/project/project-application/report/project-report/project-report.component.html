@@ -1,0 +1,145 @@
+<jems-project-page-template
+        *ngIf="data$ | async as data"
+        [needsCard]="true"
+        titleKey="project.application.reporting.title"
+        subTitleKey="project.application.project.report.title"
+        [isVersionedData]="false">
+
+    <h3>{{'project.application.project.report.title' | translate}}</h3>
+    <ng-container *ngIf="pageStore.userCanEditReport$ | async">
+        <p class="mb-3">
+            <a jemsText mat-raised-button [color]="'primary'" [routerLink]="'/app/project/detail/' + projectId + '/projectReports/create'"
+               aria-label="add">
+                <mat-icon>add</mat-icon>
+                {{'project.application.project.report.add' | translate}}
+            </a>
+        </p>
+    </ng-container>
+
+    <jems-alert [show]="!data.projectReports.totalElements" [type]="Alert.INFO">
+        <p>{{'project.application.project.report.table.empty' | translate}}</p>
+    </jems-alert>
+
+    <jems-alert [show]="successfulDeletionMessage"
+                [type]="Alert.SUCCESS">
+        <p>{{'project.application.project.report.successful.deletion.message' | translate}}</p>
+    </jems-alert>
+
+    <jems-alert *ngIf="error$ | async as error"
+                [show]="!!error.i18nMessage?.i18nKey"
+                [type]="Alert.ERROR">
+        <jems-api-error-content [error]="error"></jems-api-error-content>
+    </jems-alert>
+
+    <ng-container *ngIf="data.projectReports.totalElements">
+
+        <mat-table matSort (matSortChange)="pageStore.newSort$.next($event)" [dataSource]="dataSource">
+
+            <ng-container matColumnDef="reportNumber">
+                <mat-header-cell *matHeaderCellDef mat-sort-header="id" class="id-column-width text-left">
+                    <span jemsText maxLines="2">{{ 'project.application.project.report.table.id' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let projectReport" class="id-column-width text-left">
+                    PR.{{ projectReport.reportNumber }}
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="status">
+                <mat-header-cell *matHeaderCellDef>
+                    <span jemsText maxLines="2">{{ 'project.application.project.report.table.status' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let projectReport">
+                    <jems-project-report-status [status]="projectReport.status"></jems-project-report-status>
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="linkedFormVersion">
+                <mat-header-cell *matHeaderCellDef>
+                    <span jemsText maxLines="2">{{ 'project.application.project.report.table.project.version' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let projectReport">
+                    <span jemsText maxLines="2">{{ projectReport.linkedFormVersion }}</span>
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="reportingPeriod">
+                <mat-header-cell *matHeaderCellDef mat-sort-header="periodNumber">
+                    <span jemsText maxLines="2">{{ 'project.application.project.report.table.reporting.period' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let projectReport">
+                    <span *ngIf="projectReport.periodDetail"
+                          matTooltip="{{ (projectReport.startDate | localeDate) || 'X' }} - {{ (projectReport.endDate | localeDate) || 'X' }}">
+                        {{ 'project.application.form.work.package.output.delivery.period.entry' | translate : {
+                        periodNumber: projectReport.periodDetail.number,
+                        start: projectReport.periodDetail.start,
+                        end: projectReport.periodDetail.end
+                    } }}
+                    </span>
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="type">
+                <mat-header-cell *matHeaderCellDef>
+                    <span jemsText maxLines="2">{{ 'project.application.project.report.table.type' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let projectReport">
+                    {{ projectReport.type ? (('project.application.project.report.table.type.' + projectReport.type) | translate) : '' }}
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="createdAt">
+                <mat-header-cell *matHeaderCellDef class="text-left">
+                    <span jemsText maxLines="2">{{ 'project.application.project.report.table.creation.date' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let projectReport" class="text-left">
+                    <div class="date-time-cell">
+                        <div class="date">{{ projectReport.createdAt | localeDate: 'L'}}</div>
+                        <div class="time">{{ projectReport.createdAt | localeDate: 'LT' }}</div>
+                    </div>
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="firstSubmission">
+                <mat-header-cell *matHeaderCellDef class="text-left">
+                    <span jemsText maxLines="2">{{ 'project.application.project.report.table.first.submission.date' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let projectReport" class="text-left">
+                    <div class="date-time-cell">
+                        <div class="date">{{ projectReport.firstSubmission | localeDate: 'L'}}</div>
+                        <div class="time">{{ projectReport.firstSubmission | localeDate: 'LT'}}</div>
+                    </div>
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="delete" stickyEnd>
+                <mat-header-cell *matHeaderCellDef class="id-column-width border-cell-left text-center">
+                    {{ 'common.delete.entry' | translate }}
+                </mat-header-cell>
+                <mat-cell *matCellDef="let projectReport" class="id-column-width border-cell-left text-center">
+                    <span matTooltip="{{ (projectReport.deletable ? 'common.delete.entry.tooltip' : 'project.application.project.report.deletion.not.possible.tooltip') | translate }}">
+                        <button *ngIf="projectReport.status === ProjectReportSummaryDTO.StatusEnum.Draft && data.canEditReports"
+                                mat-icon-button color="accent"
+                                [disabled]="!projectReport.deletable"
+                                (click)="delete(projectReport);$event.stopPropagation();"
+                                aria-label="delete">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </span>
+                </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns" [routerLink]="[row.id]" class="row-link"></mat-row>
+
+        </mat-table>
+
+        <jems-paginator
+                [length]="data.projectReports.totalElements"
+                [currentPageIndex]="data.projectReports.pageable.pageNumber"
+                [currentPageSize]="data.projectReports.pageable.pageSize"
+                (pageIndexChanged)="pageStore.newPageIndex$.next($event)"
+                (pageSizeChanged)="pageStore.newPageSize$.next($event)">
+        </jems-paginator>
+    </ng-container>
+
+</jems-project-page-template>

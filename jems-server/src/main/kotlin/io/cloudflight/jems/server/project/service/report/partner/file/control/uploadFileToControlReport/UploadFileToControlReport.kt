@@ -2,22 +2,23 @@ package io.cloudflight.jems.server.project.service.report.partner.file.control.u
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
+import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerControlReportFile
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.file.uploadProjectFile.isFileTypeInvalid
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.file.ProjectPartnerReportFilePersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UploadFileToControlReport(
-    private val reportFilePersistence: ProjectReportFilePersistence,
-    private val reportPersistence: ProjectReportPersistence,
+    private val reportFilePersistence: ProjectPartnerReportFilePersistence,
+    private val filePersistence: JemsFilePersistence,
+    private val reportPersistence: ProjectPartnerReportPersistence,
     private val partnerPersistence: PartnerPersistence,
     private val securityService: SecurityService,
 ) : UploadFileToControlReportInteractor {
@@ -28,7 +29,7 @@ class UploadFileToControlReport(
     override fun uploadToControlReport(partnerId: Long, reportId: Long, file: ProjectFile): JemsFileMetadata {
         val report = reportPersistence.getPartnerReportById(partnerId, reportId = reportId)
 
-        if (report.status != ReportStatus.InControl)
+        if (report.status.controlNotStartedYet())
             throw ReportNotInControl()
 
         if (isFileTypeInvalid(file))
@@ -38,7 +39,7 @@ class UploadFileToControlReport(
             val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
             val location = generatePath(projectId, partnerId, reportId)
 
-            if (reportFilePersistence.existsFile(exactPath = location, fileName = file.name))
+            if (filePersistence.existsFile(exactPath = location, fileName = file.name))
                 throw FileAlreadyExists(file.name)
 
             return reportFilePersistence.addAttachmentToPartnerReport(
@@ -46,5 +47,4 @@ class UploadFileToControlReport(
             )
         }
     }
-
 }

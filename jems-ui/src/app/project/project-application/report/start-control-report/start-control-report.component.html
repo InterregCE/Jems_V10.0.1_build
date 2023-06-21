@@ -1,0 +1,16 @@
+<ng-container *ngIf="data$ | async as data">
+    <ng-container *ngIf="reportStatus !== ProjectPartnerReportDTO.StatusEnum.Draft && data.canView">
+        <jems-pending-button *ngIf="reportStatus === ProjectPartnerReportDTO.StatusEnum.Submitted" class="ml-1"
+                             [pending]="pendingAction | async"
+                             [disabled]="!data.canEdit"
+                             (clicked)="createControlReportForPartnerReport(data.partnerId, reportId, !data.canEdit)">
+            {{'project.application.partner.reports.start.control' | translate}}
+        </jems-pending-button>
+        <button jemsText *ngIf="ReportUtil.isControlReportExists(reportStatus)"
+                mat-stroked-button type="submit" class="ml-1"
+                [disabled]="ReportUtil.isControlReportOpen(reportStatus) && !data.isController"
+                (click)="redirectToControl(reportId, data.isController)">
+            {{'project.application.partner.reports.open.control' | translate}}
+        </button>
+    </ng-container>
+</ng-container>

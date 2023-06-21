@@ -2,6 +2,6 @@ package io.cloudflight.jems.server.project.service.report.partner.file.control.d
 
 interface DownloadControlReportFileInteractor {
 
-    fun download(partnerId: Long, fileId: Long): Pair<String, ByteArray>
+    fun download(partnerId: Long, reportId: Long, fileId: Long): Pair<String, ByteArray>
 
 }

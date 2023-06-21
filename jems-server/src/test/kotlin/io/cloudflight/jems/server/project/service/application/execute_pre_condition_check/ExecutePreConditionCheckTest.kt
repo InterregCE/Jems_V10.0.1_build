@@ -143,5 +143,5 @@ internal class ExecutePreConditionCheckTest : UnitTest() {
         id: Long = 1L, callName: String = "call name",
         acronym: String = "project acronym", status: ApplicationStatus
     ) =
-        ProjectSummary(id, id.toString(), callName, acronym, status)
+        ProjectSummary(id, id.toString(), 1L, callName, acronym, status)
 }

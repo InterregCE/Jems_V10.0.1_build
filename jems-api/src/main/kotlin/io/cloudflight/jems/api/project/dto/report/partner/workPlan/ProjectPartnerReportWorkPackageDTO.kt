@@ -8,4 +8,5 @@ data class ProjectPartnerReportWorkPackageDTO(
     val description: Set<InputTranslation>,
     val activities: List<ProjectPartnerReportWorkPackageActivityDTO>,
     val outputs: List<ProjectPartnerReportWorkPackageOutputDTO>,
+    val deactivated: Boolean,
 )

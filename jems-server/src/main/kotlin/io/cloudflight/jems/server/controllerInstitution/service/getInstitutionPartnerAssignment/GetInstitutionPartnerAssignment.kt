@@ -1,12 +1,15 @@
 package io.cloudflight.jems.server.controllerInstitution.service.getInstitutionPartnerAssignment
 
+import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.common.getCountryCodeForCountry
 import io.cloudflight.jems.server.common.getNuts3CodeForNuts3Region
 import io.cloudflight.jems.server.controllerInstitution.authorization.CanViewInstitutionAssignments
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerDetails
+import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerSearchRequest
+import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -14,13 +17,14 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class GetInstitutionPartnerAssignment(
-    private val controllerInstitutionPersistence: ControllerInstitutionPersistence
+    private val controllerInstitutionPersistence: ControllerInstitutionPersistence,
+    private val securityService: SecurityService
 ) : GetInstitutionPartnerAssignmentInteractor {
 
     @CanViewInstitutionAssignments
     @ExceptionWrapper(GetInstitutionPartnerAssignmentException::class)
     @Transactional(readOnly = true)
-    override fun getInstitutionPartnerAssignments(pageable: Pageable): Page<InstitutionPartnerDetails> {
+    override fun getInstitutionPartnerAssignments(pageable: Pageable, searchRequest: InstitutionPartnerSearchRequest): Page<InstitutionPartnerDetails> {
 
         val institutionsWithNuts = controllerInstitutionPersistence.getAllControllerInstitutions()
         val institutions =
@@ -40,7 +44,9 @@ class GetInstitutionPartnerAssignment(
             }
         }.groupBy(keySelector = { it.first }, valueTransform = { it.second })
 
-        return controllerInstitutionPersistence.getInstitutionPartnerAssignments(pageable).onEach { partnerDetails ->
+        searchRequest.globallyRestrictedNuts = getUserAvailableRegionsOrEmptyForNoRestrictions()
+
+        return controllerInstitutionPersistence.getInstitutionPartnerAssignments(pageable, searchRequest).onEach { partnerDetails ->
             partnerDetails.setAvailableInstitutionsForPartner(
                 getAvailableInstitutionsForPartner(
                     partnerDetails,
@@ -50,6 +56,21 @@ class GetInstitutionPartnerAssignment(
                 )
             )
         }
+    }
+
+    private fun getUserAvailableRegionsOrEmptyForNoRestrictions(): Set<String>? {
+        if (securityService.currentUser?.hasPermission(UserRolePermission.AssignmentsUnlimited) == true)
+            return null
+
+        return controllerInstitutionPersistence
+            .getNutsAvailableForUser(userId = securityService.getUserIdOrThrow())
+            .flatMapTo(HashSet()) { country ->
+                country.areas.flatMapTo(HashSet()) { nuts1 ->
+                    nuts1.areas.flatMapTo(HashSet()) { nuts2 ->
+                        nuts2.areas.map { nuts3 -> nuts3.code }
+                    }
+                }
+            }
     }
 
     private fun getAvailableInstitutionsForPartner(
@@ -98,6 +119,4 @@ class GetInstitutionPartnerAssignment(
         } else {
             countryCode
         }
-
-
 }

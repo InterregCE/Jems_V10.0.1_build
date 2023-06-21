@@ -11,7 +11,11 @@ context('Project description tests', () => {
       cy.publishCall(callId, user.programmeUser.email);
       cy.createApplication(application).then(applicationId => {
         cy.updateProjectIdentification(applicationId, application.identification);
-        cy.createPartners(applicationId, application.partners);
+        cy.createProjectProposedUnitCosts(applicationId, application.projectProposedUnitCosts);
+        // remove references to activities
+        application.partners[0].stateAid.activities = null;
+        application.partners[1].stateAid.activities = null;
+        cy.createFullPartners(applicationId, application.partners);
       });
     });
   });
@@ -280,7 +284,8 @@ context('Project description tests', () => {
       });
 
       cy.visit(`/app/project/detail/${this.applicationId}/applicationFormPartner/${this[this.partnerAbbreviation]}/budget`, {failOnStatusCode: false});
-      cy.contains('mat-select', 'N/A').scrollIntoView().click();
+      cy.contains('h4', 'External expertise and services').next().find('mat-row').last()
+        .contains('mat-select', 'N/A').scrollIntoView().click();
       cy.contains('mat-option', 'I1.1').should('be.visible');
     });
   });
@@ -342,7 +347,7 @@ context('Project description tests', () => {
       cy.wait(500);
       cy.contains('a', 'State Aid').click();
       cy.contains('mat-form-field', 'State aid relevant activities').click();
-      cy.contains('mat-option', 'ACTIVITY 1.1').should('be.visible');
+      cy.contains('mat-option', 'Activity 1.1').should('be.visible');
     });
   });
 

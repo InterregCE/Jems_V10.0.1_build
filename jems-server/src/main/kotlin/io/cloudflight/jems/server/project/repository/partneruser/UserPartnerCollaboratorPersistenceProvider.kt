@@ -8,7 +8,6 @@ import io.cloudflight.jems.server.user.service.model.assignment.PartnerCollabora
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.Optional
-import kotlin.collections.HashSet
 
 @Service
 class UserPartnerCollaboratorPersistenceProvider(
@@ -39,11 +38,12 @@ class UserPartnerCollaboratorPersistenceProvider(
     override fun findByUserIdAndPartnerId(userId: Long, partnerId: Long): Optional<PartnerCollaboratorLevel> =
         collaboratorRepository.findById(UserPartnerId(userId = userId, partnerId = partnerId)).map { it.level }
 
+
     @Transactional
     override fun changeUsersAssignedToPartner(
         projectId: Long,
         partnerId: Long,
-        usersToPersist: Map<Long, PartnerCollaboratorLevel>
+        usersToPersist: Map<Long, Pair<PartnerCollaboratorLevel, Boolean>>
     ): Set<PartnerCollaborator> {
         val alreadyAssignedUserIds = collaboratorRepository.findByPartnerId(partnerId).mapTo(HashSet()) { it.userId }
 
@@ -57,7 +57,8 @@ class UserPartnerCollaboratorPersistenceProvider(
                 UserPartnerCollaboratorEntity(
                     UserPartnerId(userId = it.key, partnerId = partnerId),
                     projectId = projectId,
-                    level = it.value
+                    level = it.value.first,
+                    gdpr = it.value.second
                 )
             }
         )
@@ -68,4 +69,8 @@ class UserPartnerCollaboratorPersistenceProvider(
     @Transactional
     override fun deleteByProjectId(projectId: Long) =
         collaboratorRepository.deleteAllByProjectId(projectId)
+
+    @Transactional(readOnly = true)
+    override fun canUserSeePartnerSensitiveData(userId: Long, partnerId: Long): Boolean =
+        collaboratorRepository.existsByIdAndGdprTrue(UserPartnerId(userId, partnerId))
 }

@@ -23,7 +23,7 @@
 
         <div id="status" class="mb-3">
             {{'common.status' | translate}}:
-            <mat-chip-list class="mr-1 ml-1">
+            <mat-chip-list class="mr-1 ml-1" aria-label="status">
                 <mat-chip selected="true"
                           [class.draft]="data.checklist.status === Status.DRAFT"
                           [class.finished]="data.checklist.status === Status.FINISHED">
@@ -52,7 +52,7 @@
                              [confirm]="confirmDraft"
                              [disabled]="isConsolidated"
                              (clicked)="updateStatus(data.checklist.id, Status.DRAFT)">
-            {{'checklists.instance.return.to.user.button' | translate : {name: data.checklist.creatorEmail} }}
+            {{'checklists.instance.return.to.initiator.button' | translate : {name: data.checklist.creatorEmail} }}
         </jems-pending-button>
 
         <jems-alert [closable]="false" [show]="isConsolidated && data.userCanConsolidate" [type]="Alert.INFO" disableMargins="false">

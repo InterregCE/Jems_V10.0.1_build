@@ -1,32 +1,24 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of, Subject} from 'rxjs';
-import {
-  ProjectPartnerReportDTO,
-  ProjectPartnerReportService,
-  ProjectReportFileDTO,
-  ProjectReportFileMetadataDTO,
-  SettingsService
-} from '@cat/api';
-import {catchError, distinctUntilChanged, filter, map, startWith, switchMap, take, tap} from 'rxjs/operators';
+import {JemsFileDTO, JemsFileMetadataDTO, ProjectPartnerReportDTO, ProjectPartnerReportService, SettingsService} from '@cat/api';
+import {catchError, distinctUntilChanged, map, startWith, switchMap, take, tap} from 'rxjs/operators';
 import {DownloadService} from '@common/services/download.service';
-import {
-  PartnerReportDetailPageStore
-} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
+import {PartnerReportDetailPageStore} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 import {FileManagementStore} from '@project/common/components/file-management/file-management-store';
 import {RoutingService} from '@common/services/routing.service';
 import {Log} from '@common/utils/log';
-import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
 import {MatSort} from '@angular/material/sort';
 import {FileListTableConstants} from '@common/components/file-list/file-list-table/file-list-table-constants';
 import {APIError} from '@common/models/APIError';
 import {v4 as uuid} from 'uuid';
+import {PartnerControlReportStore} from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
 
 @Injectable({ providedIn: 'root' })
 export class PartnerControlReportFileManagementStore {
 
   partnerId$: Observable<number>;
   reportId$: Observable<number>;
-  fileList$: Observable<ProjectReportFileDTO[]>;
+  fileList$: Observable<JemsFileDTO[]>;
   report$: Observable<ProjectPartnerReportDTO>;
 
   filesChanged$ = new Subject<void>();
@@ -39,10 +31,11 @@ export class PartnerControlReportFileManagementStore {
     private partnerReportDetailPageStore: PartnerReportDetailPageStore,
     private projectPartnerReportService: ProjectPartnerReportService,
     private fileManagementStore: FileManagementStore,
-    private routingService: RoutingService
+    private routingService: RoutingService,
+    public controlReportFileStore: PartnerControlReportStore
   ) {
-    this.partnerId$ = this.partnerId();
-    this.reportId$ = this.reportId();
+    this.partnerId$ = controlReportFileStore.partnerId$;
+    this.reportId$ = controlReportFileStore.reportId$;
     this.fileList$ = this.fileList();
     this.report$ = this.partnerReportDetailPageStore.partnerReport$;
   }
@@ -51,7 +44,7 @@ export class PartnerControlReportFileManagementStore {
     return this.settingsService.getMaximumAllowedFileSize();
   }
 
-  private fileList(): Observable<ProjectReportFileDTO[]> {
+  private fileList(): Observable<JemsFileDTO[]> {
     return combineLatest([
       this.partnerId$.pipe(map(id => Number(id))),
       this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')
@@ -71,17 +64,7 @@ export class PartnerControlReportFileManagementStore {
     );
   }
 
-  private partnerId(): Observable<number> {
-    return this.routingService.routeParameterChanges(PartnerReportPageStore.PARTNER_REPORT_DETAIL_PATH, 'partnerId')
-      .pipe(map(id => Number(id)));
-  }
-
-  private reportId(): Observable<number> {
-    return this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')
-      .pipe(map(id => Number(id)));
-  }
-
-  uploadFile(file: File): Observable<ProjectReportFileMetadataDTO> {
+  uploadFile(file: File): Observable<JemsFileMetadataDTO> {
     const serviceId = uuid();
     this.routingService.confirmLeaveMap.set(serviceId, true);
     return combineLatest([
@@ -98,21 +81,23 @@ export class PartnerControlReportFileManagementStore {
       tap(() => this.routingService.confirmLeaveMap.delete(serviceId)),
       catchError(error => {
         this.error$.next(error.error);
-        return of({} as ProjectReportFileMetadataDTO);
+        return of({} as JemsFileMetadataDTO);
       }),
     );
   }
 
   downloadFile(fileId: number): Observable<any> {
-    return this.partnerId$
-      .pipe(
-        take(1),
-        filter(partnerId => !!partnerId),
-        switchMap(partnerId => {
-          this.downloadService.download(`/api/project/report/partner/control/byPartnerId/${partnerId}/${fileId}`, 'partner-control-report');
-          return of(null);
-        })
-      );
+    return combineLatest([
+      this.partnerId$.pipe(map(id => Number(id))),
+      this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')
+        .pipe(map(id => Number(id))),
+    ]).pipe(
+      take(1),
+      switchMap(([partnerId, reportId]) => {
+        this.downloadService.download(`/api/project/report/partner/control/byPartnerId/${partnerId}/byReportId/${reportId}/byFileId/${fileId}`, 'partner-control-report');
+        return of(null);
+      }),
+    );
   }
 
 }

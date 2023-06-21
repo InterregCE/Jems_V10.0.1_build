@@ -41,6 +41,7 @@ val userSummaries = listOf(
         id = MONITOR_USER_1_ID,
          email = MONITOR_USER_1_EMAIL,
          name = "user1",
+        sendNotificationsToEmail = false,
          surname = "",
          userRole = UserRoleSummary(4, "Controller"),
          userStatus= UserStatus.ACTIVE
@@ -48,6 +49,7 @@ val userSummaries = listOf(
     UserSummary(
         id = MONITOR_USER_2_ID,
         email = MONITOR_USER_2_EMAIL,
+        sendNotificationsToEmail = false,
         name = "user2",
         surname = "",
         userRole = UserRoleSummary(4, "Controller"),

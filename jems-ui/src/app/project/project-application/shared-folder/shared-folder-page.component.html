@@ -1,0 +1,59 @@
+<jems-project-page-template *ngIf="data$ | async as data"
+                            [needsCard]="true"
+                            [titleText]="'project.application.form.acronym' | translate : {projectTitle: pageStore.projectTitle$ | async} "
+                            [subTitleKey]="'project.application.form.section.shared.folder'"
+                            [isVersionedData]="false">
+
+    <div jemsFormLayout>
+        <h3 [innerText]="'project.application.form.section.shared.folder' | translate"></h3>
+        <span [innerText]="'shared.folder.description' | translate"></span>
+    </div>
+
+    <h3>
+        <span [innerText]="'file.tab.header' | translate"></span>
+        <jems-context-info infoPosition="right" infoText="{{'file.tab.info' | translate}}"></jems-context-info>
+    </h3>
+
+    <div id="shared-folder-files" class="overflow-auto">
+        <div id="shared-folder-files-table">
+            <jems-file-list-table [fileList]="data.fileList"
+                                  [sortingEnabled]="true"
+                                  [setDescriptionCallback]="setDescriptionCallback"
+                                  [deleteCallback]="deleteCallback"
+                                  (onSortChange)="pageStore.newSort$.next($event)"
+                                  (onDownload)="downloadFile($event)"
+                                  (refresh)="pageStore.filesChanged$.next()">
+            </jems-file-list-table>
+
+            <jems-paginator (pageIndexChanged)="pageStore.newPageIndex$.next($event)"
+                            (pageSizeChanged)="pageStore.newPageSize$.next($event)"
+                            *ngIf="data.files.content?.length"
+                            [currentPageIndex]="pageStore.newPageIndex$ | async"
+                            [currentPageSize]="pageStore.newPageSize$ | async"
+                            [length]="data.files.totalElements">
+            </jems-paginator>
+
+            <div *ngIf="data.userCanEdit">
+                <input #selectFile (change)="uploadFile($event?.target)" onclick="this.value=null;"
+                       type="file" [accept]="acceptedFilesTypes" [hidden]="true">
+                <jems-pending-button *ngIf="data.userCanEdit"
+                                     type="secondary"
+                                     icon="file_upload"
+                                     (clicked)="selectFile.click()"
+                                     [pending]="isUploadInProgress">
+                    {{ 'file.upload.add.new' | translate }}
+                </jems-pending-button>
+            </div>
+            <jems-alert *ngIf="pageStore.error$ | async as error"
+                        [show]="!!error"
+                        [type]="Alert.ERROR">
+                <jems-api-error-content [error]="error"></jems-api-error-content>
+            </jems-alert>
+            <jems-alert *ngIf="fileSizeOverLimitError$ | async as showError"
+                        [show]="showError"
+                        [type]="Alert.ERROR">
+                <p>{{'project.file.size.over.limit' | translate}} {{maximumAllowedFileSizeInMB}} MB</p>
+            </jems-alert>
+        </div>
+    </div>
+</jems-project-page-template>

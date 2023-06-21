@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
+import java.math.BigDecimal
 
 @Api("Project Contracting Monitoring")
 interface ContractingMonitoringApi {
@@ -36,5 +38,12 @@ interface ContractingMonitoringApi {
     @ApiOperation("Get Project Contracting Monitoring Start Date")
     @GetMapping("$ENDPOINT_API_CONTRACTING_MONITORING/startDate")
     fun getContractingMonitoringStartDate(@PathVariable projectId: Long): ProjectContractingMonitoringStartDateDTO
+
+    @ApiOperation("Get Contracting Monitoring Project Budget")
+    @GetMapping("$ENDPOINT_API_CONTRACTING_MONITORING/projectBudget")
+    fun getContractingMonitoringProjectBudget(
+        @PathVariable projectId: Long,
+        @RequestParam(required = false) version: String? = null
+    ): BigDecimal
 
 }

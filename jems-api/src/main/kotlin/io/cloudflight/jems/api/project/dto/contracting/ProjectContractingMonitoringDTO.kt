@@ -20,5 +20,5 @@ data class ProjectContractingMonitoringDTO(
 
     val addDates: List<ProjectContractingMonitoringAddDateDTO>,
     val dimensionCodes: List<ContractingDimensionCodeDTO>,
-    val fastTrackLumpSums: List<ProjectLumpSumDTO>? = emptyList()
+    val fastTrackLumpSums: List<ProjectLumpSumDTO>? = emptyList(),
 )

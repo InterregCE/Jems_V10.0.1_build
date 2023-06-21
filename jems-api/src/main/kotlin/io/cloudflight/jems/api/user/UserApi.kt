@@ -4,6 +4,8 @@ import io.cloudflight.jems.api.user.dto.PasswordDTO
 import io.cloudflight.jems.api.user.dto.UserChangeDTO
 import io.cloudflight.jems.api.user.dto.UserDTO
 import io.cloudflight.jems.api.user.dto.UserSearchRequestDTO
+import io.cloudflight.jems.api.user.dto.UserSettingsChangeDTO
+import io.cloudflight.jems.api.user.dto.UserSettingsDTO
 import io.cloudflight.jems.api.user.dto.UserSummaryDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
@@ -41,6 +43,11 @@ interface UserApi {
     @ApiOperation("Updates a User")
     @PutMapping(ENDPOINT_API_USER, consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateUser(@RequestBody user: UserChangeDTO): UserDTO
+
+    @ApiOperation("Updates a User's settings")
+    @PutMapping("$ENDPOINT_API_USER/setting", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun updateUserSetting(@RequestBody user: UserSettingsChangeDTO): UserSettingsDTO
+
 
     @ApiOperation("Returns a user by id")
     @GetMapping("$ENDPOINT_API_USER/byId/{id}")

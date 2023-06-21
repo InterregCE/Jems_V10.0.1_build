@@ -2,7 +2,6 @@ package io.cloudflight.jems.server.project.service.contracting.partner.documents
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.contracting.partner.documentsLocation.ContractingPartnerDocumentsLocation
-import io.cloudflight.jems.server.project.service.contracting.partner.documentsLocation.ContractingPartnerDocumentsLocationPersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -39,14 +38,14 @@ internal class GetContractingPartnerDocumentsLocationTest: UnitTest()  {
     }
 
     @MockK
-    lateinit var documentsLocationPersistence: ContractingPartnerDocumentsLocationPersistence
+    lateinit var service: GetContractingPartnerDocumentsLocationService
 
     @InjectMockKs
     lateinit var interactor: GetContractingPartnerDocumentsLocation
 
     @Test
     fun `get documents location`() {
-        every { documentsLocationPersistence
+        every { service
             .getDocumentsLocation(partnerId)
         } returns documentsLocation
         Assertions.assertThat(interactor.getDocumentsLocation(partnerId)).isEqualTo(documentsLocation)

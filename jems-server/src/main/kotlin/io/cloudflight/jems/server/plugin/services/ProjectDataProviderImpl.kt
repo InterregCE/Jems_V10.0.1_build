@@ -2,11 +2,14 @@ package io.cloudflight.jems.server.plugin.services
 
 import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.plugin.contract.models.project.ProjectData
+import io.cloudflight.jems.plugin.contract.models.project.ProjectIdentificationData
 import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectLifecycleData
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA4.ProjectResultIndicatorOverview
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.ProjectDataSectionB
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.PartnerBudgetData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerBudgetOptionsData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerSummaryData
 import io.cloudflight.jems.plugin.contract.models.project.sectionD.ProjectDataSectionD
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.ProjectDataSectionE
 import io.cloudflight.jems.plugin.contract.models.project.versions.ProjectVersionData
@@ -32,11 +35,13 @@ import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFin
 import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFinancingOverview
 import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
 import io.cloudflight.jems.server.project.service.common.PartnerBudgetPerFundCalculatorService
+import io.cloudflight.jems.server.project.service.contracting.fillEndDateWithDuration
 import io.cloudflight.jems.server.project.service.contracting.monitoring.ContractingMonitoringPersistence
 import io.cloudflight.jems.server.project.service.customCostOptions.ProjectUnitCostPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
+import io.cloudflight.jems.server.project.service.model.ProjectSearchRequest
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
@@ -51,10 +56,12 @@ import io.cloudflight.jems.server.project.service.result.ProjectResultPersistenc
 import io.cloudflight.jems.server.project.service.result.get_project_result_indicators_overview.ResultOverviewCalculator
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import org.slf4j.LoggerFactory
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal.ZERO
 import java.math.BigDecimal.valueOf
+import java.time.ZoneId
 
 @Service
 class ProjectDataProviderImpl(
@@ -99,7 +106,7 @@ class ProjectDataProviderImpl(
         val legalStatuses = programmeLegalStatusPersistence.getMax20Statuses()
         val lumpSums = projectLumpSumPersistence.getLumpSums(projectId, version)
 
-        val partners = partnerPersistence.findTop30ByProjectId(projectId, version)
+        val partners = partnerPersistence.findTop50ByProjectId(projectId, version)
         val partnersSummary = partners.toProjectPartnerSummary()
         val partnerIds = partners.mapTo(HashSet()) { it.id }
         val partnersBudgetOptions = budgetOptionsPersistence.getBudgetOptions(partnerIds, projectId, version)
@@ -127,19 +134,19 @@ class ProjectDataProviderImpl(
                 else valueOf(0, 2)
 
             val budgetCosts = BudgetCosts(
-                staffCosts = getBudgetCostsPersistence.getBudgetStaffCosts(partner.id, version),
-                travelCosts = getBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(partner.id, version),
+                staffCosts = getBudgetCostsPersistence.getBudgetStaffCosts(setOf(partner.id), version),
+                travelCosts = getBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(setOf(partner.id), version),
                 externalCosts = getBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(
-                    partner.id,
+                    setOf(partner.id),
                     version
                 ),
-                equipmentCosts = getBudgetCostsPersistence.getBudgetEquipmentCosts(partner.id, version),
+                equipmentCosts = getBudgetCostsPersistence.getBudgetEquipmentCosts(setOf(partner.id), version),
                 infrastructureCosts = getBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(
-                    partner.id,
+                    setOf(partner.id),
                     version
                 ),
-                unitCosts = getBudgetCostsPersistence.getBudgetUnitCosts(partner.id, version),
-                spfCosts = getBudgetCostsPersistence.getBudgetSpfCosts(partner.id, version)
+                unitCosts = getBudgetCostsPersistence.getBudgetUnitCosts(setOf(partner.id), version),
+                spfCosts = getBudgetCostsPersistence.getBudgetSpfCosts(setOf(partner.id), version)
             ).toDataModel()
             val budgetCalculationResult = getBudgetTotalCosts(budgetOptions, partner.id, version).toDataModel()
             val budget = PartnerBudgetData(
@@ -226,7 +233,7 @@ class ProjectDataProviderImpl(
                 submissionDateStepOne = project.firstSubmissionStep1?.updated,
                 firstSubmissionDate = project.firstSubmission?.updated,
                 lastResubmissionDate = project.lastResubmission?.updated,
-                contractedDate = project.contractedDecision?.updated,
+                contractedDate = project.contractedOnDate?.atStartOfDay(ZoneId.systemDefault()),
                 assessmentStep1 = project.assessmentStep1?.toDataModel(),
                 assessmentStep2 = project.assessmentStep2?.toDataModel()
             ),
@@ -235,6 +242,64 @@ class ProjectDataProviderImpl(
                 .orElseThrow { ResourceNotFoundException("programmeData") }.title ?: "",
             dimensionCodes = contractingMonitoringPersistence.getContractingMonitoring(projectId).dimensionCodes.toContractingDimensionCodeDataList()
         )
+    }
+
+
+    @Transactional(readOnly = true)
+    override fun getProjectIdentificationData(projectId: Long): ProjectIdentificationData {
+        val project = projectPersistence.getProject(projectId, projectVersionPersistence.getLatestApprovedOrCurrent(projectId))
+        val contractMonitoring = contractingMonitoringPersistence.getContractingMonitoring(projectId)
+            .fillEndDateWithDuration(resolveDuration = { project.duration })
+        val programmeTitle = programmeDataRepository.findById(1)
+            .orElseThrow { ResourceNotFoundException("programmeData") }.title ?: ""
+        return project.toIdentificationDataModel(
+            projectStartDate =  contractMonitoring.startDate,
+            projectEndDate = contractMonitoring.endDate,
+            programmeTitle = programmeTitle,
+            projectLifecycleData = ProjectLifecycleData(
+                status = project.projectStatus.status.toDataModel(),
+                submissionDateStepOne = project.firstSubmissionStep1?.updated,
+                firstSubmissionDate = project.firstSubmission?.updated,
+                lastResubmissionDate = project.lastResubmission?.updated,
+                contractedDate = project.contractedDecision?.updated,
+                assessmentStep1 = project.assessmentStep1?.toDataModel(),
+                assessmentStep2 = project.assessmentStep2?.toDataModel()
+            ),
+        )
+    }
+
+    @Transactional(readOnly = true)
+    override fun getProjectPartnerBudgetOptions(
+        partnerId: Long,
+        version: String?
+    ): ProjectPartnerBudgetOptionsData? = budgetOptionsPersistence.getBudgetOptions(partnerId, version)?.toDataModel()
+
+
+    @Transactional(readOnly = true)
+    override fun getProjectPartnerSummaryData(partnerId: Long): ProjectPartnerSummaryData =
+        partnerPersistence.getById(partnerId).toSummaryDataModel()
+
+
+    @Transactional(readOnly = true)
+    override fun getProjectIdsByCallIdIn(callIds: Set<Long>): List<Long> {
+        val searchRequest = ProjectSearchRequest(
+            calls = callIds,
+            id = null,
+            acronym = null,
+            firstSubmissionFrom = null,
+            firstSubmissionTo = null,
+            lastSubmissionFrom = null,
+            lastSubmissionTo = null,
+            objectives = null,
+            statuses = null,
+            users = null
+        )
+        return projectPersistence.getProjects(Pageable.unpaged(), searchRequest).content.map { it.id }
+    }
+
+    @Transactional(readOnly = true)
+    override fun getAllProjectVersionsByProjectIdIn(projectIds: Set<Long>): List<ProjectVersionData> {
+        return projectVersionPersistence.getAllVersionsByProjectIdIn(projectIds).toDataModel()
     }
 
     private fun getSpfPartnerBudgetPerPeriod(

@@ -131,7 +131,7 @@ import {
 import {PrivilegesPageComponent} from './project-application/privileges-page/privileges-page.component';
 import {
   ContractMonitoringComponent
-} from '@project/project-application/contract-monitoring/contract-monitoring.component';
+} from '@project/project-application/contracting/contract-monitoring/contract-monitoring.component';
 import {PartnerReportComponent} from '@project/project-application/report/partner-report.component';
 import {
   PartnerReportDetailPageComponent
@@ -171,14 +171,14 @@ import {
 import {
   PartnerReportAnnexesTabComponent
 } from './project-application/report/partner-report-detail-page/partner-report-annexes-tab/partner-report-annexes-tab.component';
-import {ProjectManagementComponent} from '@project/project-application/project-management/project-management.component';
+import {ProjectManagementComponent} from '@project/project-application/contracting/project-management/project-management.component';
 import {
   PartnerReportFinancialOverviewTabComponent
 } from '@project/project-application/report/partner-report-detail-page/partner-report-financial-overview-tab/partner-report-financial-overview-tab.component';
 import {
   PartnerReportProcurementDetailComponent
 } from '@project/project-application/report/partner-report-detail-page/partner-report-procurements-tab/partner-report-procurement-detail/partner-report-procurement-detail.component';
-import {ContractReportingComponent} from '@project/project-application/contract-reporting/contract-reporting.component';
+import {ContractReportingComponent} from '@project/project-application/contracting/contract-reporting/contract-reporting.component';
 import {
   PartnerControlReportComponent
 } from '@project/project-application/report/partner-control-report/partner-control-report.component';
@@ -202,16 +202,62 @@ import {
 } from '@project/project-application/report/partner-control-report/partner-control-report-control-checklists-tab/partner-control-report-control-checklist-page/partner-control-report-control-checklist-page.component';
 import {
   ContractingContractComponent
-} from '@project/project-application/contracting-contract/contracting-contract.component';
+} from '@project/project-application/contracting/contracting-contract/contracting-contract.component';
 import {
   PartnerControlReportDocumentTabComponent
 } from '@project/project-application/report/partner-control-report/partner-control-report-document-tab/partner-control-report-document-tab.component';
-import {ContractPartnerComponent} from '@project/project-application/contract-partner/contract-partner.component';
+import {ContractPartnerComponent} from '@project/project-application/contracting/contract-partner/contract-partner.component';
 import {
   PartnerControlReportControlIdentificationTabComponent
 } from '@project/project-application/report/partner-control-report/partner-control-report-identification-tab/partner-control-report-control-identification-tab.component';
-import {ControlReportGuard} from '../security/controlReport.guard';
+import {
+  PartnerControlReportExpenditureVerificationTabComponent
+} from '@project/project-application/report/partner-control-report/partner-control-expenditure-verification-tab/partner-control-report-expenditure-verification-tab.component';
+import {
+  ContractingChecklistPageComponent
+} from '@project/project-application/contracting/contract-monitoring/contract-monitoring-extension/contract-monitoring-extension-checklist-page/contract-monitoring-extension-checklist-page.component';
+import {
+  PartnerControlReportOverviewAndFinalizeTabComponent
+} from '@project/project-application/report/partner-control-report/partner-control-report-overview-and-finalize-tab/partner-control-report-overview-and-finalize-tab.component';
+import {ProjectReportComponent} from '@project/project-application/report/project-report/project-report.component';
+import {
+  ProjectReportDetailPageBreadcrumbResolver
+} from '@project/project-application/report/project-report/project-report-detail-page/project-report-detail-page-breadcrumb-resolver.service';
+import {
+  ProjectReportDetailPageComponent
+} from '@project/project-application/report/project-report/project-report-detail-page/project-report-detail-page.component';
+import {
+  ProjectReportIdentificationTabComponent
+} from '@project/project-application/report/project-report/project-report-detail-page/project-report-identification-tab/project-report-identification-tab.component';
+import {
+  ProjectReportCreateComponent
+} from '@project/project-application/report/project-report/project-report-detail-page/project-report-create/project-report-create.component';
+import {
+  ProjectReportSubmitTabComponent
+} from '@project/project-application/report/project-report/project-report-detail-page/project-report-submit-tab/project-report-submit-tab.component';
+import {
+  ProjectReportCertificateTabComponent
+} from '@project/project-application/report/project-report/project-report-detail-page/project-report-certificate-tab/project-report-certificate-tab.component';
+import {
+  PartnerReportExportTabComponent
+} from '@project/project-application/report/partner-report-detail-page/partner-report-export-tab/partner-report-export-tab.component';
+import {
+  ProjectReportFinancialOverviewTabComponent
+} from '@project/project-application/report/project-report/project-report-detail-page/project-report-financial-overview-tab/project-report-financial-overview-tab.component';
+import {
+  ProjectReportAnnexesTabComponent
+} from '@project/project-application/report/project-report/project-report-detail-page/project-report-annexes-tab/project-report-annexes-tab.component';
+import {
+  ProjectReportResultsAndPrinciplesTabComponent
+} from '@project/project-application/report/project-report/project-report-detail-page/project-report-results-and-principles-tab/project-report-results-and-principles-tab.component';
+import {
+  ProjectReportWorkPlanTabComponent
+} from '@project/project-application/report/project-report/project-report-detail-page/project-report-work-plan-tab/project-report-work-plan-tab.component';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import {SharedFolderPageComponent} from '@project/project-application/shared-folder/shared-folder-page.component';
+import {
+  ProjectReportExportsTabComponent
+} from '@project/project-application/report/project-report/project-report-detail-page/project-report-exports-tab/project-report-exports-tab.component';
 
 export const routes: Routes = [
   {
@@ -293,6 +339,10 @@ export const routes: Routes = [
                         component: PartnerReportFinancialOverviewTabComponent,
                       },
                       {
+                        path: 'export',
+                        component: PartnerReportExportTabComponent,
+                      },
+                      {
                         path: 'submission',
                         component: PartnerReportSubmitTabComponent,
                       },
@@ -310,22 +360,27 @@ export const routes: Routes = [
                           {
                             path: 'identificationTab',
                             component: PartnerControlReportControlIdentificationTabComponent,
-                            canActivate: [ControlReportGuard],
                           },
                           {
                             path: 'controlChecklistsTab',
                             component: PartnerControlReportControlChecklistsTabComponent,
-                            canActivate: [ControlReportGuard],
+                          },
+                          {
+                            path: 'expenditureVerificationTab',
+                            component: PartnerControlReportExpenditureVerificationTabComponent,
                           },
                           {
                             path: 'controlChecklistsTab/checklist/:checklistId',
                             component: PartnerControlReportControlChecklistPageComponent,
                             data: {breadcrumb: 'checklists.instance.title'},
-                            canActivate: [ControlReportGuard],
                           },
                           {
                             path: 'document',
                             component: PartnerControlReportDocumentTabComponent,
+                          },
+                          {
+                            path: 'overviewAndFinalizeTab',
+                            component: PartnerControlReportOverviewAndFinalizeTabComponent,
                           },
                         ],
                       }
@@ -336,13 +391,89 @@ export const routes: Routes = [
             ]
           },
           {
+            path: 'projectReports',
+            data: {
+              breadcrumb: 'project.breadcrumb.applicationForm.project.reports',
+            },
+            children: [
+              {
+                path: '',
+                component: ProjectReportComponent,
+              },
+              {
+                path: 'create',
+                component: ProjectReportCreateComponent,
+                data: {breadcrumb: 'project.breadcrumb.applicationForm.project.reports.create'},
+              },
+              {
+                path: ':reportId',
+                redirectTo: ':reportId/identification',
+              },
+              {
+                path: ':reportId',
+                data: {dynamicBreadcrumb: true},
+                resolve: {breadcrumb$: ProjectReportDetailPageBreadcrumbResolver},
+                children: [
+                  {
+                    path: '',
+                    component: ProjectReportDetailPageComponent,
+                    children: [
+                      {
+                        path: 'identification',
+                        component: ProjectReportIdentificationTabComponent,
+                      },
+                      {
+                        path: 'workPlan',
+                        component: ProjectReportWorkPlanTabComponent,
+                      },
+                      {
+                        path: 'resultsAndPrinciples',
+                        component: ProjectReportResultsAndPrinciplesTabComponent,
+                      },
+                      {
+                        path: 'certificate',
+                        component: ProjectReportCertificateTabComponent,
+                      },
+                      {
+                        path: 'annexes',
+                        component: ProjectReportAnnexesTabComponent
+                      },
+                      {
+                        path: 'financialOverview',
+                        component: ProjectReportFinancialOverviewTabComponent,
+                      },
+                      {
+                        path: 'exports',
+                        component: ProjectReportExportsTabComponent,
+                      },
+                      {
+                        path: 'submitReport',
+                        component: ProjectReportSubmitTabComponent,
+                      }
+                    ],
+                  }
+                ]
+              }
+            ]
+          },
+          {
             path: 'contractMonitoring',
-            component: ContractMonitoringComponent,
             data: {
               breadcrumb: 'project.breadcrumb.applicationForm.contract.monitoring',
               permissionsOnly: [PermissionsEnum.ProjectContractingView, PermissionsEnum.ProjectSetToContracted]
             },
-            canActivate: [PermissionGuard],
+            children: [
+              {
+                path: '',
+                component: ContractMonitoringComponent,
+                canActivate: [PermissionGuard],
+              },
+              {
+                path: 'checklist/:checklistId',
+                component: ContractingChecklistPageComponent,
+                data: {breadcrumb: 'checklists.instance.title'},
+              },
+            ]
           },
           {
             path: 'contract',
@@ -415,6 +546,11 @@ export const routes: Routes = [
             path: 'modification',
             component: ModificationPageComponent,
             data: {breadcrumb: 'project.breadcrumb.applicationForm.modification'},
+          },
+          {
+            path: 'sharedFolder',
+            component: SharedFolderPageComponent,
+            data: {breadcrumb: 'project.breadcrumb.applicationForm.shared.folder'}
           },
           {
             path: 'export',
@@ -685,7 +821,7 @@ export const routes: Routes = [
           {
             path: 'applicationFormUnitCosts',
             data: {breadcrumb: 'project.breadcrumb.applicationForm.unit.costs'},
-            children : [
+            children: [
               {
                 path: '',
                 component: ProjectUnitCostsPageComponent,

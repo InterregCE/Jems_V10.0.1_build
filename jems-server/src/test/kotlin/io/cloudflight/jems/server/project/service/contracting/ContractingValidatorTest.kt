@@ -9,8 +9,11 @@ import io.cloudflight.jems.server.project.service.contracting.model.ManagementTy
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingManagement
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoringAddDate
+import io.cloudflight.jems.server.project.service.contracting.partner.partnerLock.ContractingPartnerLockPersistence
+import io.cloudflight.jems.server.project.service.contracting.sectionLock.ProjectContractingSectionLockPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.mockk.MockKAnnotations
+import io.mockk.impl.annotations.MockK
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -60,6 +63,7 @@ class ContractingValidatorTest : UnitTest() {
         private val projectSummary = ProjectSummary(
             id = projectID,
             customIdentifier = "TSTCM",
+            callId = 1L,
             callName = "Test contracting management",
             acronym = "TCM",
             status = ApplicationStatus.APPROVED,
@@ -74,11 +78,21 @@ class ContractingValidatorTest : UnitTest() {
 
     lateinit var validator: ContractingValidator
 
+    @MockK
+    lateinit var projectContractingSectionLockPersistence: ProjectContractingSectionLockPersistence
+
+    @MockK
+    lateinit var contractingPartnerLockPersistence: ContractingPartnerLockPersistence
+
     @BeforeEach
     fun setup() {
         MockKAnnotations.init(this)
         generalValidator = GeneralValidatorDefaultImpl()
-        validator = ContractingValidator(generalValidator)
+        validator = ContractingValidator(
+            generalValidator,
+            projectContractingSectionLockPersistence,
+            contractingPartnerLockPersistence
+        )
     }
 
     @Test
@@ -165,7 +179,7 @@ class ContractingValidatorTest : UnitTest() {
     @Test
     fun `should be successful if project status is correct`() {
         assertDoesNotThrow {
-            validator.validateProjectStepAndStatus(projectSummary)
+            ContractingValidator.validateProjectStepAndStatus(projectSummary)
         }
     }
 
@@ -174,13 +188,14 @@ class ContractingValidatorTest : UnitTest() {
         val projectSummary = ProjectSummary(
             id = projectID,
             customIdentifier = "TST",
+            callId = 1L,
             callName = "Test contracting management",
             acronym = "TCM",
             status = ApplicationStatus.DRAFT
         )
 
         val ex = assertThrows<ContractingDeniedException> {
-            validator.validateProjectStepAndStatus(projectSummary)
+            ContractingValidator.validateProjectStepAndStatus(projectSummary)
         }
         assertEquals(CONTRACTING_ERROR, ex.i18nMessage.i18nKey)
     }
@@ -190,13 +205,14 @@ class ContractingValidatorTest : UnitTest() {
         val projectSummary = ProjectSummary(
             id = projectID,
             customIdentifier = "TST",
+            callId = 1L,
             callName = "Test contracting management",
             acronym = "TCM",
             status = ApplicationStatus.STEP1_SUBMITTED
         )
 
         val ex = assertThrows<ContractingDeniedException> {
-            validator.validateProjectStepAndStatus(projectSummary)
+            ContractingValidator.validateProjectStepAndStatus(projectSummary)
         }
         assertEquals(CONTRACTING_ERROR, ex.i18nMessage.i18nKey)
     }
@@ -206,13 +222,14 @@ class ContractingValidatorTest : UnitTest() {
         val projectSummary = ProjectSummary(
             id = projectID,
             customIdentifier = "TST",
+            callId = 1L,
             callName = "Test contracting monitoring",
             acronym = "TCM",
             status = ApplicationStatus.APPROVED
         )
 
         assertDoesNotThrow {
-            validator.validateProjectStatusForModification(projectSummary)
+            ContractingValidator.validateProjectStatusForModification(projectSummary)
         }
     }
 
@@ -221,13 +238,14 @@ class ContractingValidatorTest : UnitTest() {
         val projectSummary = ProjectSummary(
             id = projectID,
             customIdentifier = "TST",
+            callId = 1L,
             callName = "Test contracting monitoring",
             acronym = "TCM",
             status = ApplicationStatus.STEP1_DRAFT
         )
 
         val ex = assertThrows<ContractingModificationDeniedException> {
-            validator.validateProjectStatusForModification(projectSummary)
+            ContractingValidator.validateProjectStatusForModification(projectSummary)
         }
         assertEquals(CONTRACTING_MODIFICATION_ERROR, ex.i18nMessage.i18nKey)
     }

@@ -1,0 +1,269 @@
+
+    <jems-form *ngIf="data$ | async as data" (save)="onSubmit()"
+               (discard)="resetForm(
+               data.projectContractingMonitoring,
+               data.contractMonitoringEditable,
+               data.status.status)"
+               [formGroup]="decisionForm">
+        <h3>{{'project.application.contract.monitoring.project.dates.title' | translate}}</h3>
+        <div jemsMultiColumnRow class="form-width-limit">
+            <mat-form-field class="date">
+                <mat-label>{{'project.application.contract.monitoring.project.start.date' | translate | dateFormatInfo}}</mat-label>
+                <input formControlName="startDate" matInput
+                       [matDatepicker]="startDate">
+                <mat-datepicker-toggle matSuffix [for]="startDate"></mat-datepicker-toggle>
+                <mat-datepicker #startDate></mat-datepicker>
+                <mat-error>
+                    <jems-form-field-errors
+                            [errors]="decisionForm?.controls?.startDate?.errors">
+                    </jems-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="date">
+                <mat-label>{{'project.application.contract.monitoring.project.end.date' | translate | dateFormatInfo}}</mat-label>
+                <input formControlName="endDate" matInput
+                       [matDatepicker]="endDate">
+                <mat-datepicker-toggle matSuffix [for]="endDate"></mat-datepicker-toggle>
+                <mat-datepicker #endDate></mat-datepicker>
+                <mat-error>
+                    <jems-form-field-errors
+                            [errors]="decisionForm?.controls?.endDate?.errors">
+                    </jems-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+        </div>
+
+        <div jemsMultiColumnRow class="form-width-limit">
+            <mat-form-field class="date">
+                <mat-label>{{'project.application.contract.monitoring.project.entry.into.force.date' | translate | dateFormatInfo}}</mat-label>
+                <input formControlName="entryIntoForceDate" matInput
+                       [matDatepicker]="entryIntoForceDate">
+                <mat-datepicker-toggle matSuffix [for]="entryIntoForceDate"></mat-datepicker-toggle>
+                <mat-datepicker #entryIntoForceDate></mat-datepicker>
+                <mat-error>
+                    <jems-form-field-errors
+                            [errors]="decisionForm?.controls?.entryIntoForceDate?.errors">
+                    </jems-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+
+            <jems-expandable-textarea [control]="decisionForm.controls.entryIntoForceComment"
+                                      [errors]="decisionForm.controls.entryIntoForceComment.errors"
+                                      [minRows]="1"
+                                      [characterLimit]="200"
+                                      [label]="'project.application.contract.monitoring.project.entry.into.force.comment' | translate"
+                                      class="comment">
+            </jems-expandable-textarea>
+        </div>
+
+        <mat-table *ngIf="tableData.length > 0"
+                   id="additional-entry-into-force-dates-table"
+                   class="mt-3 mb-3 form-width-limit"
+                   [jemsTableConfig]="[{maxInRem: 20},{}]"
+                   [dataSource]="tableData"
+                   formArrayName="additionalEntryIntoForceItems">
+            <ng-container matColumnDef="additionalEntryIntoForceDate" stickyEnd>
+                <mat-header-cell *matHeaderCellDef>{{'project.application.contract.monitoring.project.additional.entry.into.force.date' | translate}}</mat-header-cell>
+                <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                    <mat-form-field class="date mt-2">
+                        <mat-label>{{'' | dateFormatInfo}}</mat-label>
+                        <input formControlName="additionalEntryIntoForceDate" matInput required
+                               [matDatepicker]="additionalEntryIntoForceDate">
+                        <mat-datepicker-toggle matSuffix [for]="additionalEntryIntoForceDate"></mat-datepicker-toggle>
+                        <mat-datepicker #additionalEntryIntoForceDate></mat-datepicker>
+                        <mat-error>
+                            <jems-form-field-errors
+                                    [errors]="decisionForm?.controls?.decisionDate?.errors">
+                            </jems-form-field-errors>
+                        </mat-error>
+                    </mat-form-field>
+                </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="additionalEntryIntoForceComment">
+                <mat-header-cell *matHeaderCellDef>{{'project.application.contract.monitoring.project.entry.into.force.comment' | translate}}</mat-header-cell>
+                <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                    <jems-expandable-textarea [control]="control.get('additionalEntryIntoForceComment')"
+                                              [errors]="control.get('additionalEntryIntoForceComment').errors"
+                                              [minRows]="1"
+                                              [characterLimit]="200"
+                                              [label]="'project.application.contract.monitoring.project.entry.into.force.comment' | translate"
+                                              class="comment mt-2">
+                    </jems-expandable-textarea>
+                </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="columnsToDisplay"></mat-header-row>
+            <mat-row *matRowDef="let myRowData; columns: columnsToDisplay; let rowIndex =index"
+                     [class.row-has-error]="additionalEntryIntoForceItems.controls[rowIndex]?.invalid"></mat-row>
+
+        </mat-table>
+
+        <button *ngIf="data.contractMonitoringEditable && !isAdditionalDataActivated && tableData.length < 25"
+                mat-stroked-button type="button" class="mt-2 mb-2"
+                (click)="addAdditionalEntryIntoForceData()"
+                aria-label="add">
+            <mat-icon>add</mat-icon>
+            <span>&nbsp;{{'project.application.contract.monitoring.project.entry.into.force.add' | translate}}</span>
+        </button>
+
+        <h3>{{'project.application.contract.monitoring.project.typology.title' | translate}}</h3>
+        <div class="mt-3 mb-3" [jemsTableConfig]="[{maxInRem: 23},{minInRem: 10,maxInRem:10},{}]">
+            <div class="mat-body-strong">
+                <span>{{'project.application.contract.monitoring.project.typology' | translate }}</span>
+                <span>{{'project.partner.state.aid.answer' | translate }}</span>
+                <span>{{'project.application.contract.monitoring.project.typology.comment' | translate }}</span>
+            </div>
+
+            <div>
+                <span>{{'project.application.contract.monitoring.project.typology.question.typologyProv94' | translate}}</span>
+                <div>
+                    <mat-button-toggle-group formControlName="typologyProv94">
+                        <mat-button-toggle [value]="TypologyProv94Enum.Yes">{{'common.yes' | translate}}</mat-button-toggle>
+                        <mat-button-toggle [value]="TypologyProv94Enum.Partly">{{'common.partly' | translate}}</mat-button-toggle>
+                        <mat-button-toggle [value]="TypologyProv94Enum.No">{{'common.no' | translate}}</mat-button-toggle>
+                    </mat-button-toggle-group>
+                </div>
+                <div>
+                    <jems-expandable-textarea jemsMultiColumnRow class="mt-2 w-100"
+                                              [control]="decisionForm?.controls?.typologyProv94Comment"
+                                              [errors]="decisionForm?.controls?.typologyProv94Comment?.errors"
+                                              [characterLimit]="1000"
+                                              [minRows]="1"
+                                              [maxRows]="30"
+                                              label='common.textarea.enter.text'>
+                    </jems-expandable-textarea>
+                </div>
+            </div>
+
+            <div>
+                <span>{{'project.application.contract.monitoring.project.typology.question.typologyProv95' | translate}}</span>
+                <div>
+                    <mat-button-toggle-group formControlName="typologyProv95">
+                        <mat-button-toggle [value]="TypologyProv95Enum.Yes">{{'common.yes' | translate}}</mat-button-toggle>
+                        <mat-button-toggle [value]="TypologyProv95Enum.Partly">{{'common.partly' | translate}}</mat-button-toggle>
+                        <mat-button-toggle [value]="TypologyProv95Enum.No">{{'common.no' | translate}}</mat-button-toggle>
+                    </mat-button-toggle-group>
+                </div>
+                <div>
+                    <jems-expandable-textarea jemsMultiColumnRow class="mt-2 w-100"
+                                              [control]="decisionForm?.controls?.typologyProv95Comment"
+                                              [errors]="decisionForm?.controls?.typologyProv95Comment?.errors"
+                                              [characterLimit]="1000"
+                                              [minRows]="1"
+                                              [maxRows]="30"
+                                              label='common.textarea.enter.text'>
+                    </jems-expandable-textarea>
+                </div>
+            </div>
+
+            <div>
+                <span>{{'project.application.contract.monitoring.project.typology.question.typologyStrategic' | translate}}</span>
+                <div>
+                    <mat-button-toggle-group formControlName="typologyStrategic">
+                        <mat-button-toggle [value]="TypologyStrategicEnum.Yes">{{'common.yes' | translate}}</mat-button-toggle>
+                        <mat-button-toggle [value]="TypologyStrategicEnum.No">{{'common.no' | translate}}</mat-button-toggle>
+                    </mat-button-toggle-group>
+                </div>
+                <div>
+                    <jems-expandable-textarea jemsMultiColumnRow class="mt-2 w-100"
+                                              [control]="decisionForm?.controls?.typologyStrategicComment"
+                                              [errors]="decisionForm?.controls?.typologyStrategicComment?.errors"
+                                              [characterLimit]="1000"
+                                              [minRows]="1"
+                                              [maxRows]="30"
+                                              label='common.textarea.enter.text'>
+                    </jems-expandable-textarea>
+                </div>
+            </div>
+
+            <div>
+                <span>{{'project.application.contract.monitoring.project.typology.question.typologyPartnership' | translate}}</span>
+                <div>
+                    <mat-button-toggle-group formControlName="typologyPartnership">
+                        <mat-button-toggle [value]="TypologyPartnershipEnum.Yes">{{'common.yes' | translate}}</mat-button-toggle>
+                        <mat-button-toggle [value]="TypologyPartnershipEnum.No">{{'common.no' | translate}}</mat-button-toggle>
+                    </mat-button-toggle-group>
+                </div>
+                <div>
+                    <jems-expandable-textarea jemsMultiColumnRow class="mt-2 w-100"
+                                              [control]="decisionForm?.controls?.typologyPartnershipComment"
+                                              [errors]="decisionForm?.controls?.typologyPartnershipComment?.errors"
+                                              [characterLimit]="1000"
+                                              [minRows]="1"
+                                              [maxRows]="30"
+                                              label='common.textarea.enter.text'>
+                    </jems-expandable-textarea>
+                </div>
+            </div>
+        </div>
+
+        <ng-container *ngIf="areThereFastTrackLumpSums()">
+            <h3>{{'project.application.contract.monitoring.project.fast.track.lump.sums.title' | translate}}</h3>
+            <p>{{'project.application.set.to.contracted.lump.sums.info.one' | translate }}</p>
+            <p>{{'project.application.set.to.contracted.lump.sums.info.two' | translate }}</p>
+            <p>{{'project.application.set.to.contracted.lump.sums.info.three' | translate }}</p>
+            <p>{{'project.application.set.to.contracted.lump.sums.info.four' | translate }}</p>
+            <div [jemsTableConfig]="[{maxInRem:7}, {maxInRem:6}, {maxInRem:8}, {maxInRem:6}, {}]">
+                <div class="mat-body-strong">
+                    <span>{{'project.application.contract.monitoring.project.fast.track.lump.sum' | translate }}</span>
+                    <span>{{'project.application.contract.monitoring.project.total.amount.approved' | translate }}</span>
+                    <span>{{'project.application.contract.monitoring.project.period' | translate }}</span>
+                    <span>
+                        {{'project.application.contract.monitoring.project.ready.for.payment' | translate }}
+                        <jems-context-info infoPosition="right" infoText="{{'project.application.contract.monitoring.project.ready.for.payment.info' | translate}}"></jems-context-info>
+                    </span>
+                    <span>{{'project.application.contract.monitoring.project.typology.comment' | translate }}</span>
+                </div>
+                <div *ngFor="let lumpSum of fastTrackLumpSumsControls; let i=index">
+                    <ng-container formArrayName="lumpSums" *ngIf="lumpSum?.value?.fastTrack">
+                        <ng-container [formGroupName]="getIndexForCurrentLumpSum(lumpSum)">
+                            <span>{{getLumpSum(lumpSum?.value?.programmeLumpSumId, data.projectCallLumpSums) | translateBySystemLanguage | async}}</span>
+                            <span>{{getAmount(lumpSum?.value?.lumpSumContributions) | asMoney}}</span>
+                            <span>{{getPeriodLabel(lumpSum?.value?.period, data.periods)}}</span>
+                            <div>
+                                <mat-button-toggle-group formControlName="readyForPayment" [disabled]="lumpSum?.value?.installmentsAlreadyCreated">
+                                    <mat-button-toggle [value]="true">{{'common.yes' | translate}}</mat-button-toggle>
+                                    <mat-button-toggle [value]="false">{{'common.no' | translate}}</mat-button-toggle>
+                                </mat-button-toggle-group>
+                            </div>
+                            <div>
+                                <jems-expandable-textarea jemsMultiColumnRow class="mt-2 w-100"
+                                                          [control]="lumpSum?.get('comment')"
+                                                          [errors]="lumpSum?.get('comment')?.errors"
+                                                          [characterLimit]="200"
+                                                          [minRows]="1"
+                                                          [maxRows]="30"
+                                                          label='common.textarea.enter.text'>
+                                </jems-expandable-textarea>
+                            </div>
+                        </ng-container>
+                    </ng-container>
+                </div>
+            </div>
+        </ng-container>
+
+        <h3>{{'project.application.contract.monitoring.project.dimension.title' | translate}}</h3>
+        <p>{{'project.application.contract.monitoring.project.dimension.reference' | translate}}
+            <a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?qid=1667987376876&uri=CELEX%3A32021R1060">{{'project.application.contract.monitoring.project.dimension.reference.link' | translate}}</a>
+        </p>
+        <p>{{'project.application.contract.monitoring.project.dimension.description' | translate}}: {{data.projectBudget | asMoney}} &euro;.</p>
+        <jems-contract-monitoring-codes-of-intervention-table
+                [formGroup]="decisionForm"
+                [contractMonitoringDimensionCodesDTO]="dimensionCodesDTO"
+                [dimensionCodes]="data.dimensionCodes"
+                [projectBudget]="data.projectBudget"
+                [projectPartnersNuts]="data.projectPartnersNuts"
+                [editable]="data.contractMonitoringEditable"
+                (changed)="tableChanged()">
+        </jems-contract-monitoring-codes-of-intervention-table>
+
+        <ng-container *jemsHasPermission="[PermissionsEnum.ProjectSetToContracted,
+                                           PermissionsEnum.ProjectContractingView]">
+            <h3>{{'project.application.contract.monitoring.project.contracting.checklists' | translate}}</h3>
+            <jems-contracting-checklist-instance-list [relatedType]="ChecklistType.CONTRACTING"
+                                          [relatedId]="projectId"
+                                          jemsNoWidthLimit>
+            </jems-contracting-checklist-instance-list>
+        </ng-container>
+    </jems-form>

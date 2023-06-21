@@ -1,9 +1,9 @@
 package io.cloudflight.jems.server.project.service.contracting.fileManagement.downloadPartnerFile
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.ProjectContractingFilePersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test
 internal class DownloadPartnerFileTest : UnitTest() {
 
     companion object {
-        private const val PARTNER_ID = 10L
+        private const val PROJECT_ID = 1L
         private const val FILE_ID = 20L
     }
 
@@ -24,7 +24,7 @@ internal class DownloadPartnerFileTest : UnitTest() {
     lateinit var contractingFilePersistence: ProjectContractingFilePersistence
 
     @MockK
-    lateinit var reportFilePersistence: ProjectReportFilePersistence
+    lateinit var filePersistence: JemsFilePersistence
 
 
     @InjectMockKs
@@ -38,10 +38,8 @@ internal class DownloadPartnerFileTest : UnitTest() {
     @Test
     fun `download partner file`() {
         val file = mockk<Pair<String, ByteArray>>()
-        every { reportFilePersistence.getFileTypeByPartnerId(FILE_ID, PARTNER_ID) } returns JemsFileType.ContractPartnerDoc
-        every { contractingFilePersistence.downloadFileByPartnerId(PARTNER_ID, FILE_ID) } returns file
-        Assertions.assertThat(interactor.downloadPartnerFile(partnerId = PARTNER_ID, fileId = FILE_ID)).isEqualTo(file)
+        every { filePersistence.getFileType(FILE_ID, PROJECT_ID) } returns JemsFileType.ContractPartnerDoc
+        every { contractingFilePersistence.downloadFile(PROJECT_ID, FILE_ID) } returns file
+        Assertions.assertThat(interactor.downloadPartnerFile(projectId = PROJECT_ID, fileId = FILE_ID)).isEqualTo(file)
     }
-
 }
-

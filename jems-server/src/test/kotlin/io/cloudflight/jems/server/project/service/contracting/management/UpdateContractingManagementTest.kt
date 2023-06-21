@@ -14,6 +14,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.mockkObject
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -59,6 +60,7 @@ class UpdateContractingManagementTest : UnitTest() {
         private val projectSummary = ProjectSummary(
             id = 12L,
             customIdentifier = "TSTCM",
+            callId = 1L,
             callName = "Test contracting management",
             acronym = "TCM",
             status = ApplicationStatus.APPROVED,
@@ -83,8 +85,9 @@ class UpdateContractingManagementTest : UnitTest() {
 
     @Test
     fun `add project management to approved application`() {
+        mockkObject(ContractingValidator.Companion)
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary
-        every { validator.validateProjectStepAndStatus(projectSummary) } returns Unit
+        every { ContractingValidator.validateProjectStepAndStatus(projectSummary) } returns Unit
         every { validator.validateManagerContacts(projectManagers) } returns Unit
         every { contractingManagementPersistence.updateContractingManagement(projectManagers) } returns projectManagers
 
@@ -94,10 +97,11 @@ class UpdateContractingManagementTest : UnitTest() {
 
     @Test
     fun `add project management to NOT approved application`() {
+        mockkObject(ContractingValidator.Companion)
         every { validator.validateManagerContacts(projectManagers) } returns Unit
         every { contractingManagementPersistence.updateContractingManagement(projectManagers) } returns projectManagers
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary
-        every { validator.validateProjectStepAndStatus(projectSummary) } throws UpdateContractingManagementException(
+        every { ContractingValidator.validateProjectStepAndStatus(projectSummary) } throws UpdateContractingManagementException(
             ContractingDeniedException()
         )
 

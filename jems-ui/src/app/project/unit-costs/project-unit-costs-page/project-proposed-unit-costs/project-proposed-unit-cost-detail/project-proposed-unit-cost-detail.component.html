@@ -10,7 +10,8 @@
         <span jemsMultiColumnRow>
             <a color="primary" class="mr-1" mat-icon-button *ngIf="(formService.dirty$ | async) === false"
                routerLink=".."
-               matTooltip="{{ 'project.application.form.section.part.e.subsection.two.subsection.one.unit.cost.back.to.list' | translate }}">
+               matTooltip="{{ 'project.application.form.section.part.e.subsection.two.subsection.one.unit.cost.back.to.list' | translate }}"
+               aria-label="back">
                 <mat-icon class="icon-back" fontSet="material-icons-outlined">arrow_circle_left</mat-icon>
             </a>
             <h3 class="mb-4 put-icon-to-header-line">{{'project.application.form.section.part.e.subsection.two.subsection.one.unit.cost.title' | translate}}</h3>

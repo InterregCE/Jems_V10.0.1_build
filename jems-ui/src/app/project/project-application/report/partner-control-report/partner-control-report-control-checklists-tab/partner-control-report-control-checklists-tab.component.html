@@ -2,8 +2,10 @@
     <div jemsFormLayout>
         <ng-container>
             <h3 class="mt-3">{{'project.application.partner.report.tab.controlChecklists' | translate}}</h3>
+            <p>{{'project.application.partner.report.tab.controlChecklists.intro' | translate}}</p>
             <jems-control-checklist-instance-list [relatedType]="ChecklistType.CONTROL"
                                           [relatedId]="data.partnerControlReport.id"
+                                          [controlReportControlFinalizedDate]="(controlReport$ | async)?.reportControlEnd"
                                           jemsNoWidthLimit>
             </jems-control-checklist-instance-list>
         </ng-container>

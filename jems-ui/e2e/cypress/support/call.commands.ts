@@ -1,26 +1,7 @@
-import {CallUpdateRequestDTO} from '../../../build/swagger-code-jems-api/model/callUpdateRequestDTO';
-import {PreSubmissionPluginsDTO} from '../../../build/swagger-code-jems-api/model/preSubmissionPluginsDTO';
-import {FlatRateSetupDTO} from '../../../build/swagger-code-jems-api/model/flatRateSetupDTO';
-import {CallCostOptionDTO} from '../../../build/swagger-code-jems-api/model/callCostOptionDTO';
-import {
-  UpdateApplicationFormFieldConfigurationRequestDTO
-} from '../../../build/swagger-code-jems-api/model/updateApplicationFormFieldConfigurationRequestDTO';
 import {faker} from '@faker-js/faker';
 import {loginByRequest} from './login.commands';
 
 declare global {
-
-  interface Call {
-    generalCallSettings: CallUpdateRequestDTO,
-    budgetSettings: {
-      flatRates: FlatRateSetupDTO,
-      lumpSums: number[],
-      unitCosts: number[],
-      allowedCostOption: CallCostOptionDTO
-    },
-    applicationFormConfiguration: UpdateApplicationFormFieldConfigurationRequestDTO[],
-    preSubmissionCheckSettings: PreSubmissionPluginsDTO
-  }
 
   namespace Cypress {
     interface Chainable {
@@ -33,13 +14,13 @@ declare global {
   }
 }
 
-Cypress.Commands.add('createCall', (call: Call, creatingUserEmail?: string) => {
+Cypress.Commands.add('createCall', (call, creatingUserEmail?: string) => {
   call.generalCallSettings.startDateTime = faker.date.recent();
   call.generalCallSettings.endDateTime = faker.date.soon(2);
   createCall(call, creatingUserEmail);
 });
 
-Cypress.Commands.add('create2StepCall', (call: Call, creatingUserEmail?: string) => {
+Cypress.Commands.add('create2StepCall', (call, creatingUserEmail?: string) => {
   call.generalCallSettings.startDateTime = faker.date.recent();
   call.generalCallSettings.endDateTimeStep1 = faker.date.soon(1);
   call.generalCallSettings.endDateTime = faker.date.soon(1, call.generalCallSettings.endDateTimeStep1);
@@ -60,7 +41,7 @@ Cypress.Commands.add('publishCall', (callId: number, publishingUserEmail?: strin
   }
 });
 
-function createCall(call: Call, creatingUserEmail?: string) {
+function createCall(call, creatingUserEmail?: string) {
   call.generalCallSettings.name = `${faker.word.adverb()} ${faker.hacker.noun()} ${faker.datatype.uuid()}`;
   if (creatingUserEmail)
     loginByRequest(creatingUserEmail);
@@ -82,16 +63,14 @@ function createCall(call: Call, creatingUserEmail?: string) {
       setCallApplicationFormConfiguration(callId, call.applicationFormConfiguration);
     if (call.preSubmissionCheckSettings)
       setCallPreSubmissionCheckSettings(callId, call.preSubmissionCheckSettings);
-    if (creatingUserEmail) {
-      cy.get('@currentUser').then((currentUser: any) => {
-        loginByRequest(currentUser.name);
-      });
+    if (creatingUserEmail && this.currentUser) {
+      loginByRequest(this.currentUser.name);
     }
     cy.wrap(callId).as('callId');
   });
 }
 
-function setCallFlatRates(callId: number, flatRates: FlatRateSetupDTO) {
+function setCallFlatRates(callId: number, flatRates) {
   cy.request({
     method: 'PUT',
     url: `api/call/byId/${callId}/flatRate`,
@@ -115,7 +94,7 @@ function setCallUnitCosts(callId: number, unitCosts: number[]) {
   });
 }
 
-function allowedCostOption(callId: number, allowedCostOption: CallCostOptionDTO) {
+function allowedCostOption(callId: number, allowedCostOption) {
   cy.request({
     method: 'PUT',
     url: `api/call/byId/${callId}/allowedCostOption`,
@@ -123,7 +102,7 @@ function allowedCostOption(callId: number, allowedCostOption: CallCostOptionDTO)
   });
 }
 
-function setCallApplicationFormConfiguration(callId: number, applicationFormConfiguration: UpdateApplicationFormFieldConfigurationRequestDTO[]) {
+function setCallApplicationFormConfiguration(callId: number, applicationFormConfiguration: []) {
   cy.request({
     method: 'POST',
     url: `api/call/${callId}/applicationFormFieldConfigurations`,
@@ -131,7 +110,7 @@ function setCallApplicationFormConfiguration(callId: number, applicationFormConf
   });
 }
 
-function setCallPreSubmissionCheckSettings(callId: number, preSubmissionCheckSettings: PreSubmissionPluginsDTO) {
+function setCallPreSubmissionCheckSettings(callId: number, preSubmissionCheckSettings) {
   cy.request({
     method: 'PUT',
     url: `api/call/byId/${callId}/preSubmissionCheck`,

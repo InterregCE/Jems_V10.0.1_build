@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.plugin.services
 
 import io.cloudflight.jems.plugin.contract.models.project.checklist.*
-import io.cloudflight.jems.server.common.gson.toJson
+import io.cloudflight.jems.server.programme.service.checklist.model.toJson
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistComponentInstance
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.ChecklistInstanceMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.ProgrammeChecklistMetadata
@@ -56,6 +56,7 @@ fun ChecklistInstanceDetail.toDataModel() = ChecklistInstanceData(
     type = ChecklistTypeData.valueOf(type!!.name),
     creatorEmail = creatorEmail!!,
     creatorId = creatorId!!,
+    createdAt = createdAt,
     relatedToId = relatedToId,
     finishedDate = finishedDate,
     consolidated = consolidated ?: false,
@@ -74,7 +75,7 @@ fun List<ChecklistComponentInstance>.toDataModel() = map {
         question = it.programmeMetadata.question,
         weight = it.programmeMetadata.weight,
         score = it.instanceMetadata.score,
-        questionMetadataJson = it.instanceMetadata.toJson(),
-        answerMetadataJson = it.programmeMetadata.toJson(),
+        questionMetadataJson = it.programmeMetadata.toJson(),
+        answerMetadataJson = it.instanceMetadata.toJson(),
     )
 }

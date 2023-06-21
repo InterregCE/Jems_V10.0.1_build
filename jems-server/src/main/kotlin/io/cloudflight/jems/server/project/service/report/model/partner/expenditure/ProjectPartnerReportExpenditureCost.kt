@@ -1,24 +1,26 @@
 package io.cloudflight.jems.server.project.service.report.model.partner.expenditure
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
+import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.LocalDate
 
 data class ProjectPartnerReportExpenditureCost(
-    val id: Long?,
-    var lumpSumId: Long?,
+    override val id: Long?,
+    var number: Int,
+    override var lumpSumId: Long?,
     var unitCostId: Long?,
-    var costCategory: ReportBudgetCategory,
+    var gdpr: Boolean,
+    override var costCategory: ReportBudgetCategory,
     var investmentId: Long?,
     var contractId: Long?,
     var internalReferenceNumber: String?,
     var invoiceNumber: String?,
     var invoiceDate: LocalDate?,
     var dateOfPayment: LocalDate?,
-    val description: Set<InputTranslation> = emptySet(),
-    val comment: Set<InputTranslation> = emptySet(),
+    var description: Set<InputTranslation> = emptySet(),
+    var comment: Set<InputTranslation> = emptySet(),
     var totalValueInvoice: BigDecimal? = null,
     var vat: BigDecimal? = null,
     var numberOfUnits: BigDecimal,
@@ -26,9 +28,10 @@ data class ProjectPartnerReportExpenditureCost(
     var declaredAmount: BigDecimal,
     var currencyCode: String,
     var currencyConversionRate: BigDecimal?,
-    var declaredAmountAfterSubmission: BigDecimal?,
+    override var declaredAmountAfterSubmission: BigDecimal?,
     val attachment: JemsFileMetadata?,
-) {
+    override var parkingMetadata: ExpenditureParkingMetadata?,
+): ExpenditureCost {
     fun clearConversions() {
         currencyConversionRate = null
         declaredAmountAfterSubmission = null

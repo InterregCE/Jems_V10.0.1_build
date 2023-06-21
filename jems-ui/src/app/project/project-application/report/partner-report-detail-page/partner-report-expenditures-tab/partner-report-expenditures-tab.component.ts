@@ -1,14 +1,6 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  ElementRef,
-  OnInit,
-  QueryList,
-  ViewChildren
-} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, QueryList, ViewChildren} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {catchError, map, take, tap} from 'rxjs/operators';
+import {catchError, finalize, map, take, tap} from 'rxjs/operators';
 import {HttpErrorResponse} from '@angular/common/http';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {FormService} from '@common/components/section/form/form.service';
@@ -27,26 +19,31 @@ import {
   ProjectPartnerReportDTO,
   ProjectPartnerReportExpenditureCostDTO,
   ProjectPartnerReportLumpSumDTO,
-  ProjectPartnerReportUnitCostDTO
+  ProjectPartnerReportParkedExpenditureDTO,
+  ProjectPartnerReportUnitCostDTO,
+  UserRoleDTO,
 } from '@cat/api';
 import {BudgetCostCategoryEnum} from '@project/model/lump-sums/BudgetCostCategoryEnum';
-import {
-  InvestmentSummary
-} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
+import {InvestmentSummary} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
 import {CurrencyCodesEnum} from '@common/services/currency.store';
 import {NumberService} from '@common/services/number.service';
-import {
-  PartnerFileManagementStore
-} from '@project/project-application/report/partner-report-detail-page/partner-file-management-store';
-import {
-  PartnerReportDetailPageStore
-} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
+import {PartnerFileManagementStore} from '@project/project-application/report/partner-report-detail-page/partner-file-management-store';
+import {PartnerReportDetailPageStore} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 import {RoutingService} from '@common/services/routing.service';
 import {v4 as uuid} from 'uuid';
 import {MatSelect} from '@angular/material/select';
 import {MatDatepicker} from '@angular/material/datepicker';
 import {CustomTranslatePipe} from '@common/pipe/custom-translate-pipe';
 import {TranslateByInputLanguagePipe} from '@common/pipe/translate-by-input-language.pipe';
+import {SecurityService} from 'src/app/security/security.service';
+import {PermissionService} from '../../../../../security/permissions/permission.service';
+import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import {Alert} from '@common/components/forms/alert';
+import {
+  ProjectStore
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {ReportUtil} from '@project/common/report-util';
 
 @UntilDestroy()
 @Component({
@@ -58,14 +55,12 @@ import {TranslateByInputLanguagePipe} from '@common/pipe/translate-by-input-lang
 })
 export class PartnerReportExpendituresTabComponent implements OnInit {
   expenditureFormIndex: number | null;
-  CurrencyCodesEnum = CurrencyCodesEnum;
   CostCategoryEnum = ProjectPartnerReportExpenditureCostDTO.CostCategoryEnum;
   reportExpendituresForm: FormGroup;
   tableData: AbstractControl[] = [];
   constants = PartnerReportExpendituresTabConstants;
   currencies: CurrencyDTO[];
   currentReport: ProjectPartnerReportDTO;
-  isReportEditable$: Observable<boolean>;
   data$: Observable<{
     expendituresCosts: ProjectPartnerReportExpenditureCostDTO[];
     costCategories: string[];
@@ -75,6 +70,16 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     withConfigs: TableConfig[];
     unitCosts: ProjectPartnerReportUnitCostDTO[];
     lumpSums: ProjectPartnerReportLumpSumDTO[];
+    parkedExpenditures: ProjectPartnerReportParkedExpenditureDTO[];
+    isGDPRCompliant: boolean;
+    canEdit: boolean;
+    isMonitorUser: boolean;
+    isReportEditable: boolean;
+    partnerId: string | number | null;
+    partnerReportId: number;
+    projectId: number;
+    isReopenedLast: boolean;
+    isReopenedLimited: boolean;
   }>;
   tableConfiguration$: Observable<{
     columnsToDisplay: string[];
@@ -97,24 +102,32 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   availableCurrenciesPerRow: CurrencyDTO[][] = [];
   contractIDs: IdNamePairDTO[] = [];
   investmentsSummary: InvestmentSummary[] = [];
+  isUploadDone = false;
+  StatusEnum = ProjectPartnerReportDTO.StatusEnum;
 
   readonly PERIOD_PREPARATION: number = 0;
   readonly PERIOD_CLOSURE: number = 255;
+  Alert = Alert;
+  ReportUtil = ReportUtil;
 
   constructor(public pageStore: PartnerReportExpendituresStore,
               protected changeDetectorRef: ChangeDetectorRef,
               private formBuilder: FormBuilder,
-              private formService: FormService,
+              public formService: FormService,
               private partnerFileManagementStore: PartnerFileManagementStore,
               private partnerReportDetailPageStore: PartnerReportDetailPageStore,
               private router: RoutingService,
               private customTranslatePipe: CustomTranslatePipe,
-              private translateByInputLanguagePipe: TranslateByInputLanguagePipe) {
-    this.isReportEditable$ = this.pageStore.isEditable$;
+              private translateByInputLanguagePipe: TranslateByInputLanguagePipe,
+              public securityService: SecurityService,
+              public permissionService: PermissionService,
+              private partnerReportPageStore: PartnerReportPageStore,
+              private projectStore: ProjectStore) {
   }
 
   @ViewChildren('costOptionsSelect') private costOptionsSelect: QueryList<MatSelect>;
   @ViewChildren('costCategorySelect') private costCategorySelect: QueryList<MatSelect>;
+  @ViewChildren('costGDPR') private costGDPR: QueryList<MatSelect>;
   @ViewChildren('investmentNumber') private investmentNumberSelect: QueryList<MatSelect>;
   @ViewChildren('contractId') private contractIdSelect: QueryList<MatSelect>;
   @ViewChildren('internalReferenceNumber') private internalReferenceNumberTextField: QueryList<ElementRef>;
@@ -145,7 +158,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
         })
       )
     );
-    this.pageStore.currentReport$.pipe(untilDestroyed(this)).subscribe(report=> this.currentReport = report);
+    this.pageStore.currentReport$.pipe(untilDestroyed(this)).subscribe(report => this.currentReport = report);
     this.pageStore.currencies$.pipe(untilDestroyed(this)).subscribe(currencies=> this.currencies = currencies);
 
     this.dataAsObservable();
@@ -221,7 +234,8 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   getAvailableCurrenciesByType(type: string | null, unitCost?: any) {
     switch(type) {
       case 'lumpSum': return this.currencies.filter((currency) => currency.code === CurrencyCodesEnum.EUR);
-      case 'unitCost': return this.currencies.filter((currency) => currency.code === CurrencyCodesEnum.EUR || currency.code === this.availableUnitCosts.filter(el => (el.id === unitCost?.value?.id || el.id === unitCost?.id) )[0].foreignCurrencyCode);
+      case 'unitCost': return this.currencies.filter((currency) => currency.code === CurrencyCodesEnum.EUR
+        || currency.code === this.availableUnitCosts.filter(el => (el.id === unitCost?.value?.id || el.id === unitCost?.id) )[0].foreignCurrencyCode);
       default: return this.currencies;
     }
   }
@@ -256,18 +270,36 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     return  this.hasPartnerCurrencySetToEur() ? CurrencyCodesEnum.EUR : unitCost.foreignCurrencyCode ? '' : CurrencyCodesEnum.EUR;
   }
 
-  disableOnReset(control: FormGroup, index: number): void {
-    if (this.isStaffCostsSelectedForCostCategoryRow(control) ||
-      this.isTravelAndAccommodationSelectedForCostCategoryRow(control)) {
-      control.get('investmentId')?.disable();
+  disableFieldSpecificOnReset(control: FormGroup, index: number, isGDPRCompliant: boolean, isMonitorUser: boolean): void {
+    if (!isMonitorUser && (control.get('costGDPR')?.value === true && !isGDPRCompliant)) {
+      control.disable();
     }
-    if (this.isStaffCostsSelectedForCostCategoryRow(control)) {
-      control.get('vat')?.disable();
-      control.get('contractId')?.disable();
-      control.get('invoiceNumber')?.disable();
+    else {
+      if (this.isStaffCostsSelectedForCostCategoryRow(control) ||
+          this.isTravelAndAccommodationSelectedForCostCategoryRow(control)) {
+        control.get('investmentId')?.disable();
+      }
+      if (this.isStaffCostsSelectedForCostCategoryRow(control)) {
+        control.get('vat')?.disable();
+        control.get('contractId')?.disable();
+        control.get('invoiceNumber')?.disable();
+      }
+      if ((control?.get(this.constants.FORM_CONTROL_NAMES.costOptions) as FormControl)?.value !== null) {
+        this.disableCostOptionSelectionRelatedFields(control, control.value?.costOptions?.type, index);
+      }
+      if (control.get('reportOfOriginNumber')?.value || this.currentReport.status === this.StatusEnum.ReOpenSubmittedLast || this.currentReport.status === this.StatusEnum.ReOpenInControlLast) {
+        control.get('currencyCode')?.disable();
+      }
     }
-    if((control?.get(this.constants.FORM_CONTROL_NAMES.costOptions) as FormControl)?.value !== null) {
-      this.disableCostOptionSelectionRelatedFields(control, control.value?.costOptions?.type, index);
+  }
+
+  enableFieldSpecificOnReset(control: FormGroup, isReportEditable: boolean) {
+    if (isReportEditable && ReportUtil.isReopenedPartnerReportLimited(this.currentReport.status)) {
+      control.get('description')?.enable();
+      control.get('comment')?.enable();
+      if ((control.get(this.constants.FORM_CONTROL_NAMES.costOptions) as FormControl)?.value === null) {
+        control.get('contractId')?.enable();
+      }
     }
   }
 
@@ -285,21 +317,30 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       === BudgetCostCategoryEnum.TRAVEL_AND_ACCOMMODATION_COSTS;
   }
 
-  resetForm(partnerReportExpenditures: ProjectPartnerReportExpenditureCostDTO[]): void {
+  resetForm(partnerReportExpenditures: ProjectPartnerReportExpenditureCostDTO[], isGDPRCompliant: boolean , isMonitorUser: boolean, isReportEditable: boolean): void {
     this.availableCurrenciesPerRow = [];
     this.items.clear();
     partnerReportExpenditures.forEach(partnerReportExpenditure => this.addExpenditure(partnerReportExpenditure));
     this.tableData = [...this.items.controls];
-    this.formService.resetEditable();
-    this.items.controls.forEach((formGroup: FormGroup, index) => (
-      this.disableOnReset(formGroup, index)));
+    this.formService.setEditable(isReportEditable && ReportUtil.isReopenedPartnerReportLast(this.currentReport.status) || this.currentReport.status === this.StatusEnum.Draft);
+    this.formService.setDirty(false);
+    this.items.controls.forEach((formGroup: FormGroup, index) => {
+      if (this.formService.isEditable()) {
+        this.disableFieldSpecificOnReset(formGroup, index, isGDPRCompliant, isMonitorUser);
+      } else {
+        this.enableFieldSpecificOnReset(formGroup, isReportEditable);
+      }
+    });
 
     setTimeout(() => this.changeDetectorRef.detectChanges());
   }
 
-  removeItem(index: number): void {
-    this.items.removeAt(index);
-    this.availableCurrenciesPerRow.splice(index, 1);
+  removeItem(indexToBeRemoved: number): void {
+    this.items.removeAt(indexToBeRemoved);
+    this.availableCurrenciesPerRow.splice(indexToBeRemoved, 1);
+    this.items.controls.forEach((formGroup: FormGroup, index) => (
+      formGroup.controls.number.setValue(index + 1)
+    ));
     this.tableData = [...this.items.controls];
     this.formService.setDirty(true);
   }
@@ -307,8 +348,12 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   addNewItem(): void {
     const item = this.formBuilder.group({
       id: null,
+      number: this.tableData.length + 1,
+      reportOfOriginNumber: null,
+      originalExpenditureNumber: null,
       costOptions: null,
       costCategory: ['', Validators.required],
+      costGDPR: '',
       investmentId: '',
       contractId: '',
       internalReferenceNumber: ['', Validators.maxLength(30)],
@@ -354,7 +399,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     this.reportExpendituresForm = this.formBuilder.group({
       items: this.formBuilder.array([], Validators.maxLength(this.constants.MAX_NUMBER_OF_ITEMS))
     });
-    this.formService.init(this.reportExpendituresForm, this.pageStore.isEditable$);
+    this.formService.init(this.reportExpendituresForm);
   }
 
   private dataAsObservable(): void {
@@ -379,18 +424,43 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       this.pageStore.investmentsSummary$,
       this.pageStore.contractIDs$,
       this.tableConfiguration$,
-      this.reportCosts$
+      this.reportCosts$,
+      this.pageStore.parkedExpenditures$,
+      this.partnerReportPageStore.userCanViewGdpr$,
+      this.partnerReportPageStore.userCanEditReport$,
+      this.permissionService.hasPermission(PermissionsEnum.ProjectReportingView),
+      this.pageStore.isEditable$,
+      this.partnerReportDetailPageStore.partnerId$,
+      this.partnerReportDetailPageStore.partnerReportId$,
+      this.projectStore.projectId$,
+      this.pageStore.currentReport$
     ]).pipe(
-      map(([expendituresCosts, costCategories, investmentsSummary, contractIDs, tableConfiguration, reportCosts]) => ({
+      map(([expendituresCosts, costCategories, investmentsSummary, contractIDs, tableConfiguration, reportCosts, parkedExpenditures, isCurrentUserGDPRCompliant, canEdit, isMonitorUser, isReportEditable, partnerId, partnerReportId, projectId, currentReport]: any) => ({
           expendituresCosts,
           costCategories,
           investmentsSummary,
           contractIDs,
           ...tableConfiguration,
-          ...reportCosts
-        })
+          ...reportCosts,
+          parkedExpenditures: parkedExpenditures.map((exp: ProjectPartnerReportParkedExpenditureDTO) => ({
+            ...exp,
+            canBeReIncluded: (exp.lumpSum ? exp.lumpSum.entityStillAvailable : true)
+              && (exp.unitCost ? exp.unitCost.entityStillAvailable : true)
+              && (exp.investment ? exp.investment.entityStillAvailable : true),
+            contractName: (exp.expenditure.contractId ? contractIDs.find((c: IdNamePairDTO) => c.id === exp.expenditure.contractId)?.name : undefined)
+          })),
+        isGDPRCompliant: isCurrentUserGDPRCompliant,
+        canEdit,
+        isMonitorUser,
+        isReportEditable,
+        partnerId,
+        partnerReportId,
+        projectId,
+        isReopenedLast: ReportUtil.isReopenedPartnerReportLast(currentReport.status),
+        isReopenedLimited: ReportUtil.isReopenedPartnerReportLimited(currentReport.status)
+      })
       ),
-      tap(data => this.resetForm(data.expendituresCosts)),
+      tap(data => this.resetForm(data.expendituresCosts, data.isGDPRCompliant, data.isMonitorUser, data.isReportEditable)),
       tap(data => this.contractIDs = data.contractIDs),
       tap(data => this.investmentsSummary = data.investmentsSummary),
     );
@@ -400,6 +470,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   private getColumnsToDisplay(investments: InvestmentSummary[], isEditable: boolean, isCostOptionsAvailable: boolean): string[] {
     const columnsToDisplay = [
       'costItemID',
+      'costGDPR',
       'costCategory',
       'contractId',
       'internalReferenceNumber',
@@ -420,10 +491,10 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       columnsToDisplay.push('actions');
     }
     if (investments.length > 0) {
-      columnsToDisplay.splice(2, 0, 'investmentId');
+      columnsToDisplay.splice(3, 0, 'investmentId');
     }
     if (isCostOptionsAvailable) {
-      columnsToDisplay.splice(1, 0, 'costOptions');
+      columnsToDisplay.splice(2, 0, 'costOptions');
       columnsToDisplay.splice(12, 0, 'numberOfUnits');
       columnsToDisplay.splice(13, 0, 'pricePerUnit');
     }
@@ -431,7 +502,9 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   }
 
   private getTableConfig(investments: InvestmentSummary[], isEditable: boolean, isCostOptionsAvailable: boolean): TableConfig[] {
-    const tableConfig: TableConfig[] = [{minInRem: 1, maxInRem: 3}]; // id
+    const tableConfig: TableConfig[] = [{minInRem: 3, maxInRem: 3}]; // id
+
+    tableConfig.push({minInRem: 1, maxInRem: 1}); // cost GDPR
 
     if (isCostOptionsAvailable) {
       tableConfig.push({minInRem: 11, maxInRem: 16}); // cost options
@@ -467,7 +540,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       tableConfig.push({minInRem: 3, maxInRem: 3}); //delete
     }
     if (investments.length > 0) {
-      tableConfig.splice(2, 0, {minInRem: 11});
+      tableConfig.splice(4, 0, {minInRem: 11});
     }
     return tableConfig;
   }
@@ -486,15 +559,22 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   }
 
   private addExpenditure(reportExpenditureCost: ProjectPartnerReportExpenditureCostDTO): void {
-      const conversionRate = this.getConversionRateByCode(reportExpenditureCost.currencyCode || '', reportExpenditureCost);
+      const isParked = !!reportExpenditureCost.parkingMetadata;
+      const conversionRate = isParked
+        ? reportExpenditureCost.currencyConversionRate
+        : this.getConversionRateByCode(reportExpenditureCost.currencyCode || '', reportExpenditureCost);
       const costOption = this.getUnitCostOrLumpSumObject(reportExpenditureCost);
       this.availableCurrenciesPerRow.push(this.getAvailableCurrenciesByType(this.getUnitCostType(reportExpenditureCost), costOption));
 
       this.items.push(this.formBuilder.group(
         {
           id: this.formBuilder.control(reportExpenditureCost.id),
+          number: this.formBuilder.control(reportExpenditureCost.number),
+          reportOfOriginNumber: this.formBuilder.control(reportExpenditureCost.parkingMetadata?.reportOfOriginNumber),
+          originalExpenditureNumber: this.formBuilder.control(reportExpenditureCost.parkingMetadata?.originalExpenditureNumber),
           costOptions: this.formBuilder.control(costOption),
           costCategory: this.formBuilder.control(reportExpenditureCost.costCategory),
+          costGDPR: this.formBuilder.control(reportExpenditureCost.gdpr),
           investmentId: this.formBuilder.control(reportExpenditureCost.investmentId),
           contractId: this.formBuilder.control(reportExpenditureCost.contractId),
           internalReferenceNumber: this.formBuilder.control(reportExpenditureCost.internalReferenceNumber,
@@ -526,6 +606,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       ...formGroup.getRawValue(),
       lumpSumId: formGroup.getRawValue()?.costOptions?.type === 'lumpSum' ? formGroup.getRawValue()?.costOptions.id : null,
       unitCostId: formGroup.getRawValue()?.costOptions?.type === 'unitCost' ? formGroup.getRawValue()?.costOptions.id : null,
+      gdpr: formGroup.getRawValue()?.costGDPR
      }));
   }
 
@@ -582,13 +663,14 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     if (!target || expenditureId === 0) {
       return;
     }
-
+    this.isUploadDone = false;
     const serviceId = uuid();
     this.router.confirmLeaveMap.set(serviceId, true);
     this.pageStore.uploadFile(target?.files[0], expenditureId)
       .pipe(
         take(1),
-        catchError(err => this.formService.setError(err))
+        catchError(err => this.formService.setError(err)),
+        finalize(() => this.isUploadDone = true)
       )
       .subscribe(value => {
         this.attachment(expenditureIndex)?.patchValue(value);
@@ -632,12 +714,12 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     control.get('declaredAmountInEur')?.disable();
     control.get('investmentId')?.disable();
 
-    if (selectionType == 'lumpSum') {
+    if (selectionType === 'lumpSum') {
       control.get('numberOfUnits')?.disable();
       control.get('currencyCode')?.disable();
     }
 
-    if (selectionType == 'unitCost' && !this.isUnitCostForeignCurrencyAvailable(index)) {
+    if (selectionType === 'unitCost' && !this.isUnitCostForeignCurrencyAvailable(index)) {
       control.get('currencyCode')?.disable();
     }
   }
@@ -679,11 +761,11 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     } else {
       let postfix = '';
       if (costOption.period && costOption.period === this.PERIOD_PREPARATION) {
-        postfix = '-' + this.customTranslatePipe.transform('project.application.form.section.part.e.period.preparation');
+        postfix = ` - ${this.customTranslatePipe.transform('project.application.form.section.part.e.period.preparation')}`;
       } else if (costOption.period && costOption.period === this.PERIOD_CLOSURE) {
-        postfix = '-' + this.customTranslatePipe.transform('project.application.form.section.part.e.period.preparation');
+        postfix = ` - ${this.customTranslatePipe.transform('project.application.form.section.part.e.period.preparation')}`;
       } else if(costOption.period) {
-        postfix = '-' + costOption.period;
+        postfix = ` - ${this.customTranslatePipe.transform('project.partner.budget.table.period')} ${costOption.period}`;
       }
       return this.translateByInputLanguagePipe.transform(costOption.name).pipe(map(n => n + postfix));
     }
@@ -694,8 +776,11 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   }
 
   getAdditionalRowClass(index: number, controlName: string) {
-    if(this.items.at(index).get(controlName)?.disabled || (controlName === PartnerReportExpendituresTabConstants.FORM_CONTROL_NAMES.currencyCode && this.hasPartnerCurrencySetToEur())) {
-      return controlName === PartnerReportExpendituresTabConstants.FORM_CONTROL_NAMES.contractId ? 'border-with-dotted disabled-text' : 'border-with-dotted';
+    if(this.items.at(index).get(controlName)?.disabled
+      || (controlName === PartnerReportExpendituresTabConstants.FORM_CONTROL_NAMES.currencyCode
+        && this.hasPartnerCurrencySetToEur())
+    ) {
+      return 'border-with-dotted';
     } else if (index % 2 === 0) {
       return 'blue-background';
     } else {
@@ -711,6 +796,11 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   getInvestmentIdValue(investmentId: number): string {
     const summary = this.investmentsSummary.find(s => s.id === investmentId);
     return summary?.toString() ?? '';
+  }
+
+  getInvestmentInactive(investmentId: number): boolean {
+    const summary = this.investmentsSummary.find(s => s.id === investmentId);
+    return summary?.deactivated || false;
   }
 
   clearRowSelections() {
@@ -734,7 +824,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     this.currencyCodeSelect.forEach(e => e.close());
   }
 
-  selectRow(index: number, column: String) {
+  selectRow(index: number, column: string) {
     this.expenditureFormIndex = index;
     this.descriptionInputPressed = false;
     this.commentInputPressed = false;
@@ -807,5 +897,24 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
         this.currencyCodeSelect.first.open();
       }, PartnerReportExpendituresTabConstants.FOCUS_TIMEOUT);
     }
+  }
+
+  editAllowed(valueGDPR: boolean, isGDPRCompliant: boolean, canEdit: boolean, isMonitorUser: boolean): boolean {
+     return isMonitorUser || (!valueGDPR && canEdit) || (valueGDPR && isGDPRCompliant);
+  }
+
+  deleteAllowed(valueGDPR: boolean, isGDPRCompliant: boolean, canEdit: boolean): boolean {
+    return (!valueGDPR && canEdit) || (valueGDPR && isGDPRCompliant);
+  }
+
+  toggleGDPR(index: number,  control: FormGroup, value: boolean): void {
+    this.items.at(index).get('costGDPR')?.setValue(value);
+    control.patchValue({costGDPR: value});
+
+    this.formChanged();
+  }
+
+  formChanged(): void {
+    this.formService.setDirty(true);
   }
 }

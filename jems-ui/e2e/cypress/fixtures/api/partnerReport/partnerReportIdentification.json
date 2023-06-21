@@ -1,0 +1,44 @@
+{
+  "startDate": "2022-12-01",
+  "endDate": "2022-12-31",
+  "period": 1,
+  "summary": [
+    {
+      "translation": "API generated summary of partner's report DE",
+      "language": "DE"
+    }, {
+      "translation": "API generated summary of partner's report EN",
+      "language": "EN"
+    }
+  ],
+  "problemsAndDeviations": [
+    {
+      "translation": "API generated problems and deviations of partner's report DE",
+      "language": "DE"
+    }, {
+      "translation": "API generated problems and deviations of partner's report EN",
+      "language": "EN"
+    }
+  ],
+  "targetGroups": [
+    [
+      {
+        "translation": "API generated target groups of partner's report DE",
+        "language": "DE"
+      }, {
+      "translation": "API generated target groups of partner's report EN",
+      "language": "EN"
+    }
+    ]
+  ],
+  "spendingDeviations": [
+    {
+      "translation": "API generated spending profile of partner's report DE",
+      "language": "DE"
+    }, {
+      "translation": "API generated spending profile of partner's report EN",
+      "language": "EN"
+    }
+  ],
+  "nextReportForecast": 20000
+}

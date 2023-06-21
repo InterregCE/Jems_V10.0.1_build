@@ -374,10 +374,6 @@ enum class ApplicationFormFieldSetting(
         "application.config.project.strategy.contribution",
         setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
-    PROJECT_PROJECT_OR_INITIATIVE(
-        "application.config.project.project.or.initiative",
-        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
-    ),
     PROJECT_SYNERGIES(
         "application.config.project.synergies",
         setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)

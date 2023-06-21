@@ -26,6 +26,7 @@ import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectO
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectSetToContracted
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectSubmission
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
+import io.cloudflight.jems.server.user.service.model.UserSettings
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.cloudflight.jems.server.user.service.model.UserWithPassword
@@ -54,6 +55,7 @@ internal class GetUserTest : UnitTest() {
         private val user = User(
             id = USER_ID,
             email = "maintainer@interact.eu",
+            userSettings = UserSettings(sendNotificationsToEmail = false),
             name = "Michael",
             surname = "Schumacher",
             userRole = userRole,
@@ -62,6 +64,7 @@ internal class GetUserTest : UnitTest() {
         private val userSummary = UserSummary(
             id = USER_ID,
             email = user.email,
+            sendNotificationsToEmail = false,
             name = user.name,
             surname = user.surname,
             userRole = UserRoleSummary(id = userRole.id, name = userRole.name),
@@ -71,6 +74,7 @@ internal class GetUserTest : UnitTest() {
         private val userWithPassword = UserWithPassword(
             id = USER_ID,
             email = user.email,
+            userSettings = UserSettings(sendNotificationsToEmail = false),
             name = user.name,
             surname = user.surname,
             userRole = user.userRole,
@@ -162,6 +166,7 @@ internal class GetUserTest : UnitTest() {
         val institutionUserSummary = UserSummary(
             id = institutionUserId,
             email = "user@institution.eu",
+            sendNotificationsToEmail = false,
             name = "user12",
             surname = "test user",
             userRole = UserRoleSummary(id = controllerRole.id, name = controllerRole.name),

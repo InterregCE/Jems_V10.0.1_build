@@ -12,7 +12,7 @@ if (!(System.getenv("TEAMCITY_BUILD") != null && System.getenv("TEAMCITY_BUILD")
 
 description "Jems Project"
 group "io.cloudflight.jems"
-version "6.0.6$customerPostfix"
+version "7.0.0$customerPostfix"
 
 cloudflight {
     softwareProjectKey = "interact/ems"
@@ -52,31 +52,4 @@ subprojects {
 
 allprojects {
     configurations.all { exclude group: 'junit' }
-}
-
-// prevent local compile error
-apply plugin: "org.sonarqube"
-// add rules for sonarqube
-sonarqube {
-    properties {
-        property "sonar.exclusions", "**/*.spec.ts"
-        // exclude frontend files from code coverage
-        property "sonar.coverage.exclusions", "**/*.ts, **/*.html, **/*.scss, **/*.properties"
-        // exclude certain big enums from code duplication checks
-        property "sonar.cpd.exclusions", "**/NaceGroupLevel.kt, **/NaceGroupLevelDTO.kt"
-
-        property "sonar.issue.ignore.multicriteria", "e1,e2,e3,e4"
-        // ignore rule: readonly was decided to provide no big advantage
-        property "sonar.issue.ignore.multicriteria.e1.ruleKey", "typescript:S2933"
-        property "sonar.issue.ignore.multicriteria.e1.resourceKey", "**/*.ts"
-        // ignore rule: not afraid of long ts lines
-        property "sonar.issue.ignore.multicriteria.e2.ruleKey", "typescript:S103"
-        property "sonar.issue.ignore.multicriteria.e2.resourceKey", "**/*.ts"
-        // ignore rule: empty css files do not matter
-        property "sonar.issue.ignore.multicriteria.e3.ruleKey", "css:S4667"
-        property "sonar.issue.ignore.multicriteria.e3.resourceKey", "**/*.scss"
-        // ignore rule: at-rule "@use" in scss
-        property "sonar.issue.ignore.multicriteria.e4.ruleKey", "css:S4662"
-        property "sonar.issue.ignore.multicriteria.e4.resourceKey", "**/*.scss"
-    }
 }

@@ -3,7 +3,6 @@ package io.cloudflight.jems.server.project.service.report.partner.workPlan.updat
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
-import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackage
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackageActivity
@@ -13,14 +12,15 @@ import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.update.UpdateProjectPartnerReportWorkPackageActivity
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.update.UpdateProjectPartnerReportWorkPackageActivityDeliverable
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.update.UpdateProjectPartnerReportWorkPackageOutput
-import io.cloudflight.jems.server.project.service.report.partner.workPlan.ProjectReportWorkPlanPersistence
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.workPlan.ProjectPartnerReportWorkPlanPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UpdateProjectPartnerReportWorkPlan(
-    private val reportPersistence: ProjectReportPersistence,
-    private val reportWorkPlanPersistence: ProjectReportWorkPlanPersistence,
+    private val reportPersistence: ProjectPartnerReportPersistence,
+    private val reportWorkPlanPersistence: ProjectPartnerReportWorkPlanPersistence,
     private val generalValidator: GeneralValidatorService,
 ) : UpdateProjectPartnerReportWorkPlanInteractor {
 
@@ -65,7 +65,7 @@ class UpdateProjectPartnerReportWorkPlan(
     private fun validateInputs(workPlan: List<UpdateProjectPartnerReportWorkPackage>) {
         workPlan.forEach {
             generalValidator.throwIfAnyIsInvalid(
-                generalValidator.maxLength(it.description, 2000, "description"),
+                generalValidator.maxLength(it.description, 5000, "description"),
             )
 
             it.activities.forEach {

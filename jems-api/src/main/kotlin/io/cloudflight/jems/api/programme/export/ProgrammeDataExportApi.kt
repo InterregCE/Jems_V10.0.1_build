@@ -22,7 +22,8 @@ interface ProgrammeDataExportApi {
     fun export(
         @RequestParam pluginKey: String?,
         @RequestParam exportLanguage: SystemLanguage,
-        @RequestParam inputLanguage: SystemLanguage
+        @RequestParam inputLanguage: SystemLanguage,
+        @RequestParam(defaultValue = "") pluginOptions: String
     )
 
     @ApiOperation("Get list of programme data exported files metadata")

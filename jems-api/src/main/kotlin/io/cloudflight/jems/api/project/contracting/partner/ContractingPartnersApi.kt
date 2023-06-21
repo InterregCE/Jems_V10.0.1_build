@@ -1,6 +1,6 @@
 package io.cloudflight.jems.api.project.contracting.partner
 
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
+import io.cloudflight.jems.api.project.dto.contracting.partner.ContractingPartnerSummaryDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*
 interface ContractingPartnersApi {
 
     companion object {
-        private const val ENDPOINT_API_CONTRACTING_PARTNERS =
+        const val ENDPOINT_API_CONTRACTING_PARTNERS =
             "api/project/{projectId}/contracting/partners"
     }
 
@@ -24,6 +24,6 @@ interface ContractingPartnersApi {
     fun getProjectPartnersForContracting(
         @PathVariable projectId: Long,
         pageable: Pageable,
-        @RequestParam(required = false) version: String? = null,
-    ): List<ProjectPartnerSummaryDTO>
+    ): List<ContractingPartnerSummaryDTO>
+
 }

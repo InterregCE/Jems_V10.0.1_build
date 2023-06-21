@@ -1,0 +1,8 @@
+{
+  "fastTrackLumpSum": {
+    "name": "Closure Lump sum",
+    "amount": "900,16",
+    "period": "Closure",
+    "comment": "Some comment for the FTLS"
+  }
+}

@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeObjectiveDimension
 import io.cloudflight.jems.server.project.service.contracting.ContractingModificationDeniedException
 import io.cloudflight.jems.server.project.service.contracting.model.*
+import io.cloudflight.jems.server.project.service.contracting.monitoring.getContractingMonitoringProjectBudget.GetContractingMonitoringProjectBudgetInteractor
 import io.cloudflight.jems.server.project.service.contracting.monitoring.getContractingMonitoringStartDate.GetContractingMonitoringStartDateException
 import io.cloudflight.jems.server.project.service.contracting.monitoring.getContractingMonitoringStartDate.GetContractingMonitoringStartDateInteractor
 import io.cloudflight.jems.server.project.service.contracting.monitoring.getLastApprovedPeriods.GetLastApprovedPeriodsInteractor
@@ -121,6 +122,9 @@ internal class ContractingMonitoringControllerTest: UnitTest() {
     @MockK
     lateinit var getStartDateInteractor: GetContractingMonitoringStartDateInteractor
 
+    @MockK
+    lateinit var getContractingMonitoringProjectBudgetInteractor: GetContractingMonitoringProjectBudgetInteractor
+
     @InjectMockKs
     lateinit var contractingMonitoringController: ContractingMonitoringController
 
@@ -177,5 +181,15 @@ internal class ContractingMonitoringControllerTest: UnitTest() {
         assertThrows<GetContractingMonitoringStartDateException> {
             contractingMonitoringController.getContractingMonitoringStartDate(projectId)
         }
+    }
+
+    @Test
+    fun getContractingMonitoringProjectBudgetInteractor() {
+        every {
+            getContractingMonitoringProjectBudgetInteractor.getProjectBudget(projectId, "1.0")
+        } returns BigDecimal(1055)
+
+        assertThat(contractingMonitoringController.getContractingMonitoringProjectBudget(projectId, "1.0"))
+            .isEqualTo(BigDecimal(1055))
     }
 }

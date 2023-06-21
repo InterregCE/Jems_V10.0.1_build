@@ -35,13 +35,23 @@ import {RoutingService} from '@common/services/routing.service';
 import {ProjectPaths, ProjectUtil} from '@project/common/project-util';
 import {SecurityService} from '../../../../../security/security.service';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
-import {
-  InvestmentSummary
-} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
+import {InvestmentSummary} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
 import {AllowedBudgetCategories, AllowedBudgetCategory} from '@project/model/allowed-budget-category';
 import {NumberService} from '@common/services/number.service';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
+
+export const AFTER_CONTRACTED_STATUSES: ProjectStatusDTO.StatusEnum[] = [
+  ProjectStatusDTO.StatusEnum.CONTRACTED,
+  ProjectStatusDTO.StatusEnum.INMODIFICATION,
+  ProjectStatusDTO.StatusEnum.MODIFICATIONSUBMITTED,
+  ProjectStatusDTO.StatusEnum.MODIFICATIONREJECTED,
+];
+export const AFTER_APPROVED_STATUSES: ProjectStatusDTO.StatusEnum[] = [
+  ProjectStatusDTO.StatusEnum.APPROVED,
+  ProjectStatusDTO.StatusEnum.MODIFICATIONPRECONTRACTING,
+  ...AFTER_CONTRACTED_STATUSES,
+];
 
 /**
  * Stores project related information.
@@ -51,7 +61,7 @@ import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
 })
 export class ProjectStore {
 
-  projectId$ = new ReplaySubject<number>(1);
+  projectId$: Observable<number>;
   projectStatusChanged$ = new Subject();
 
   currentVersionOfProject$: Observable<ProjectDetailDTO>;
@@ -104,11 +114,8 @@ export class ProjectStore {
               private projectUserCollaboratorService: ProjectUserCollaboratorService,
               private projectBudgetService: ProjectBudgetService,
               private partnerUserCollaboratorService: ProjectPartnerUserCollaboratorService) {
-    this.router.routeParameterChanges(ProjectPaths.PROJECT_DETAIL_PATH, 'projectId')
-      .pipe(
-        // TODO: remove init make projectId$ just an observable
-        tap(id => this.projectId$.next(id as number))
-      ).subscribe();
+    this.projectId$ = this.router.routeParameterChanges(ProjectPaths.PROJECT_DETAIL_PATH, 'projectId')
+      .pipe(map(Number));
 
     this.project$ = this.setProject(true);
     this.currentVersionOfProject$ = this.setProject(false);
@@ -267,12 +274,11 @@ export class ProjectStore {
     return combineLatest([
       this.project$,
       this.permissionService.permissionsChanged(),
-      this.securityService.currentUser,
       this.projectVersionStore.isSelectedVersionCurrent$,
       this.collaboratorLevel$,
     ])
       .pipe(
-        map(([project, permissions, currentUser, isSelectedVersionCurrent, collaboratorLevel]) => {
+        map(([project, permissions, isSelectedVersionCurrent, collaboratorLevel]) => {
           if (!isSelectedVersionCurrent) {
             return false;
           }
@@ -369,7 +375,7 @@ export class ProjectStore {
       .pipe(
         switchMap(([project, selectedVersion]) => this.getProjectInvestmentSummaries(project, selectedVersion as string)),
         map((investmentSummeryDTOs: InvestmentSummaryDTO[]) => investmentSummeryDTOs
-          .map(it => new InvestmentSummary(it.id, it.investmentNumber, it.workPackageNumber))),
+          .map(it => new InvestmentSummary(it.id, it.investmentNumber, it.workPackageNumber, it.deactivated))),
         shareReplay(1)
       );
   }
@@ -384,7 +390,7 @@ export class ProjectStore {
       this.investmentChangeEvent$.pipe(startWith(null))])
       .pipe(
         switchMap(([project]) => this.projectService.getProjectInvestmentSummaries(project.id)),
-        map((investmentSummeryDTOs: InvestmentSummaryDTO[]) => investmentSummeryDTOs.map(it => new InvestmentSummary(it.id, it.investmentNumber, it.workPackageNumber)))
+        map((investmentSummeryDTOs: InvestmentSummaryDTO[]) => investmentSummeryDTOs.map(it => new InvestmentSummary(it.id, it.investmentNumber, it.workPackageNumber, it.deactivated)))
       );
   }
 
@@ -401,9 +407,9 @@ export class ProjectStore {
 
   private userIsEditOrManageCollaborator(): Observable<boolean> {
     return this.collaboratorLevel$
-        .pipe(
-            map( collaboratorLevel => collaboratorLevel === ProjectUserCollaboratorDTO.LevelEnum.EDIT || collaboratorLevel === ProjectUserCollaboratorDTO.LevelEnum.MANAGE)
-        );
+      .pipe(
+        map(collaboratorLevel => collaboratorLevel === ProjectUserCollaboratorDTO.LevelEnum.EDIT || collaboratorLevel === ProjectUserCollaboratorDTO.LevelEnum.MANAGE)
+      );
   }
 
   private userIsProjectOwnerOrEditCollaborator(): Observable<boolean> {

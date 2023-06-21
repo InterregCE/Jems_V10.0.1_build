@@ -3,7 +3,7 @@ import {
   ProjectPartnerReportService,
   ProjectPartnerReportWorkPackageDTO,
   ProjectPartnerReportWorkPlanService,
-  ProjectReportFileMetadataDTO,
+  JemsFileMetadataDTO,
   UpdateProjectPartnerReportWorkPackageDTO
 } from '@cat/api';
 import {combineLatest, Observable} from 'rxjs';
@@ -49,7 +49,7 @@ export class PartnerReportWorkPlanPageStore {
     );
   }
 
-  uploadActivityFile(file: File, activityId: number, workPackageId: number): Observable<ProjectReportFileMetadataDTO> {
+  uploadActivityFile(file: File, activityId: number, workPackageId: number): Observable<JemsFileMetadataDTO> {
     return  combineLatest([
       this.partnerId$,
       this.partnerReportPageStore.partnerReportId$,
@@ -60,7 +60,7 @@ export class PartnerReportWorkPlanPageStore {
       ));
   }
 
-  uploadDeliverableFile(file: File, activityId: number, deliverableId: number, workPackageId: number): Observable<ProjectReportFileMetadataDTO> {
+  uploadDeliverableFile(file: File, activityId: number, deliverableId: number, workPackageId: number): Observable<JemsFileMetadataDTO> {
     return  combineLatest([
       this.partnerId$,
       this.partnerReportPageStore.partnerReportId$,
@@ -71,7 +71,7 @@ export class PartnerReportWorkPlanPageStore {
       ));
   }
 
-  uploadOutputFile(file: File, outputId: number, workPackageId: number): Observable<ProjectReportFileMetadataDTO> {
+  uploadOutputFile(file: File, outputId: number, workPackageId: number): Observable<JemsFileMetadataDTO> {
     return  combineLatest([
       this.partnerId$,
       this.partnerReportPageStore.partnerReportId$,

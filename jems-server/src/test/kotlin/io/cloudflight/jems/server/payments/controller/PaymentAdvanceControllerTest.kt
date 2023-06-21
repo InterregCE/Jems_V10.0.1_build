@@ -7,12 +7,12 @@ import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.payments.service.advance.deleteAdvancePayment.DeleteAdvancePaymentInteractor
-import io.cloudflight.jems.server.payments.service.advance.getAdvancePaymentDetail.GetAdvancePaymentDetailInteractor
-import io.cloudflight.jems.server.payments.service.advance.getAdvancePayments.GetAdvancePaymentsInteractor
 import io.cloudflight.jems.server.payments.model.advance.AdvancePayment
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentUpdate
+import io.cloudflight.jems.server.payments.service.advance.deleteAdvancePayment.DeleteAdvancePaymentInteractor
+import io.cloudflight.jems.server.payments.service.advance.getAdvancePaymentDetail.GetAdvancePaymentDetailInteractor
+import io.cloudflight.jems.server.payments.service.advance.getAdvancePayments.GetAdvancePaymentsInteractor
 import io.cloudflight.jems.server.payments.service.advance.updateAdvancePaymentDetail.UpdateAdvancePaymentDetailInteractor
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
@@ -47,20 +47,20 @@ class PaymentAdvanceControllerTest : UnitTest() {
             partnerNumber = null,
             partnerAbbreviation = "abbr.",
             programmeFund = fundDTO,
-            amountAdvance = BigDecimal.TEN,
-            dateOfPayment = currentDate,
+            amountPaid = BigDecimal.TEN,
+            paymentDate = currentDate,
             amountSettled = BigDecimal.ONE
         )
         private val advancePayment = AdvancePayment(
             id = paymentId,
             projectCustomIdentifier = "dummyProj1",
             projectAcronym = "dummyAcronym",
-            partnerType = ProjectPartnerRoleDTO.LEAD_PARTNER,
+            partnerType = ProjectPartnerRole.LEAD_PARTNER,
             partnerNumber = null,
             partnerAbbreviation = "abbr.",
             programmeFund = fund,
-            amountAdvance = BigDecimal.TEN,
-            dateOfPayment = currentDate,
+            amountPaid = BigDecimal.TEN,
+            paymentDate = currentDate,
             amountSettled = BigDecimal.ONE
         )
         private val advancePaymentDetail = AdvancePaymentDetail(
@@ -68,13 +68,14 @@ class PaymentAdvanceControllerTest : UnitTest() {
             projectId = projectId,
             projectCustomIdentifier = "dummyProj1",
             projectAcronym = "dummyAcronym",
+            projectVersion = "1.0",
             partnerId = partnerId,
             partnerType = ProjectPartnerRole.LEAD_PARTNER,
             partnerNumber = null,
             partnerAbbreviation = "abbr.",
             programmeFund = fund,
-            amountAdvance = BigDecimal.TEN,
-            dateOfPayment = currentDate,
+            amountPaid = BigDecimal.TEN,
+            paymentDate = currentDate,
             comment = "random comment",
             paymentAuthorized = true,
             paymentAuthorizedUser = OutputUser(userId, "random@mail", "name", "surname"),
@@ -88,8 +89,8 @@ class PaymentAdvanceControllerTest : UnitTest() {
             projectId = projectId,
             partnerId = partnerId,
             programmeFundId = fund.id,
-            amountAdvance = BigDecimal.TEN,
-            dateOfPayment = currentDate,
+            amountPaid = BigDecimal.TEN,
+            paymentDate = currentDate,
             comment = "random comment",
             paymentAuthorized = true,
             paymentConfirmed = true,
@@ -99,13 +100,14 @@ class PaymentAdvanceControllerTest : UnitTest() {
             projectId = projectId,
             projectCustomIdentifier = "dummyProj1",
             projectAcronym = "dummyAcronym",
+            projectVersion = "1.0",
             partnerId = partnerId,
             partnerType = ProjectPartnerRoleDTO.LEAD_PARTNER,
             partnerNumber = null,
             partnerAbbreviation = "abbr.",
             programmeFund = fundDTO,
-            amountAdvance = BigDecimal.TEN,
-            dateOfPayment = currentDate,
+            amountPaid = BigDecimal.TEN,
+            paymentDate = currentDate,
             comment = "random comment",
             paymentAuthorized = true,
             paymentAuthorizedUser = OutputUser(userId, "random@mail", "name", "surname"),
@@ -159,8 +161,8 @@ class PaymentAdvanceControllerTest : UnitTest() {
             projectId = projectId,
             partnerId = partnerId,
             programmeFundId = fund.id,
-            amountAdvance = BigDecimal.TEN,
-            dateOfPayment = currentDate,
+            amountPaid = BigDecimal.TEN,
+            paymentDate = currentDate,
             comment = "random comment",
             paymentAuthorized = true,
             paymentConfirmed = true

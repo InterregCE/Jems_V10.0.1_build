@@ -20,6 +20,6 @@ class ProjectWorkPackageOutputController(
         workPackageId: Long,
         outputs: List<WorkPackageOutputDTO>
     ): List<WorkPackageOutputDTO> =
-        updateOutputInteractor.updateOutputsForWorkPackage(projectId, workPackageId, outputs.toModel()).toDto()
+        updateOutputInteractor.updateOutputsForWorkPackage(projectId, workPackageId, outputs.toModel(workPackageId)).toDto()
 
 }

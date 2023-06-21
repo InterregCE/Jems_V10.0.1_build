@@ -9,7 +9,10 @@
                 <ng-container [formGroupName]="workPackageIndex">
                     <mat-expansion-panel class="mb-3 mt-3 work-package-panel" [expanded]="false">
                         <mat-expansion-panel-header>
-                            <mat-panel-title class="mt-2">
+                            <mat-panel-title>
+                                <span *ngIf="workPackage.deactivated">
+                                    <mat-icon class="vertical-middle" matTooltip="{{ 'project.application.form.partner.table.status.inactive' | translate }}">do_not_disturb</mat-icon>
+                                </span>
                                 {{'project.application.form.workpackage.form.header' | translate}}
                                 {{workPackage.number}}
                             </mat-panel-title>
@@ -22,7 +25,7 @@
                                     type="textarea"
                                     label="common.textarea.enter.text"
                                     [formControlName]="constants.WORK_PACKAGE_DESCRIPTION.name"
-                                    [maxLength]="2000">
+                                    [maxLength]="5000">
                             </jems-multi-language-form-field>
                         </jems-multi-language-container>
 
@@ -46,7 +49,9 @@
 
                                     <jems-multi-language-container>
                                         <div [formGroupName]="activityIndex" jemsMultiColumnRow class="activity-items">
-                                            <span>{{ 'project.application.partner.report.workplan.activity.table.nr.entry' | translate: {
+                                            <span>
+                                               <mat-icon *ngIf="activity.deactivated" class="vertical-middle" matTooltip="{{ 'project.application.form.partner.table.status.inactive' | translate }}">do_not_disturb</mat-icon>
+                                                {{ 'project.application.partner.report.workplan.activity.table.nr.entry' | translate: {
                                                 workPackageNr: workPackage.number,
                                                 activityNr: activity.number
                                             } }}</span>
@@ -71,6 +76,7 @@
 
                                             <jems-partner-actions-cell class="attachments-element" [formControlName]="constants.ACTIVITY_FILE.name"
                                                                        [isReportEditable]="isReportEditable$ | async"
+                                                                       [isUploadDone]="isUploadDone"
                                                                        (upload)="onUploadActivity($event, activity.id, activityIndex, workPackageIndex, workPackage.id)"
                                                                        (download)="onDownloadFile($event)"
                                                                        (delete)="onDeleteActivity($event, activityIndex, workPackageIndex)">
@@ -83,7 +89,9 @@
                                         <div id="deliverables-table" jemsNoWidthLimit
                                              [jemsTableConfig]="[{minInRem: 5, maxInRem: 8}, {minInRem:22, maxInRem: 25}, {minInRem: 7, maxInRem: 8}, {minInRem: 5, maxInRem: 6}, {minInRem: 25, maxInRem:30}]">
                                             <div class="">
-                                                <span>{{ 'project.application.partner.report.workplan.deliverable.table.nr' | translate }}</span>
+                                                <span>
+                                                    {{ 'project.application.partner.report.workplan.deliverable.table.nr' | translate }}
+                                                </span>
                                                 <span class="justify-start" >
                                                     {{ 'project.application.partner.report.workplan.deliverable.table.title' | translate }}
                                                 </span>
@@ -100,7 +108,9 @@
                                                         *ngFor="let deliverable of activity.deliverables; let deliverableIndex = index"
                                                         [formArrayName]="constants.DELIVERABLES.name">
                                                     <div [formGroupName]="deliverableIndex">
-                                                        <span>{{ 'project.application.partner.report.workplan.deliverable.table.nr.entry' | translate: {
+                                                        <span>
+                                                            <mat-icon *ngIf="deliverable.deactivated" class="vertical-middle" matTooltip="{{ 'project.application.form.partner.table.status.inactive' | translate }}">do_not_disturb</mat-icon>
+                                                            {{ 'project.application.partner.report.workplan.deliverable.table.nr.entry' | translate: {
                                                             workPackageNr: workPackage.number,
                                                             activityNr: activity.number,
                                                             deliverableNr: deliverable.number
@@ -125,6 +135,7 @@
                                                             <jems-partner-actions-cell
                                                                     [formControlName]="constants.DELIVERABLE_FILE.name"
                                                                     [isReportEditable]="isReportEditable$ | async"
+                                                                    [isUploadDone]="isUploadDone"
                                                                     (upload)="onUploadDeliverable($event, activity.id, deliverable.id,
                                                                                         activityIndex, workPackageIndex, deliverableIndex, workPackage.id)"
                                                                     (download)="onDownloadFile($event)"
@@ -163,7 +174,9 @@
                                     <ng-container [formArrayName]="constants.OUTPUTS.name">
                                         <div *ngFor="let output of outputsData; let outputIndex = index"
                                              [formGroupName]="outputIndex">
-                                            <span>{{ 'project.application.partner.report.workplan.output.table.nr.entry' | translate: {
+                                            <span>
+                                                <mat-icon *ngIf="output.deactivated" class="inactive-icon" matTooltip="{{ 'project.application.form.partner.table.status.inactive' | translate }}">do_not_disturb</mat-icon>
+                                                {{ 'project.application.partner.report.workplan.output.table.nr.entry' | translate: {
                                                 workPackageNr: workPackage.number,
                                                 outputNr: output.number
                                             } }}</span>
@@ -186,6 +199,7 @@
                                             <jems-partner-actions-cell
                                                     [formControlName]="constants.OUTPUT_FILE.name"
                                                     [isReportEditable]="isReportEditable$ | async"
+                                                    [isUploadDone]="isUploadDone"
                                                     (upload)="onUploadOutput($event, output.id, outputIndex, workPackageIndex, workPackage.id)"
                                                     (download)="onDownloadFile($event)"
                                                     (delete)="onDeleteOutput($event, outputIndex, workPackageIndex)">

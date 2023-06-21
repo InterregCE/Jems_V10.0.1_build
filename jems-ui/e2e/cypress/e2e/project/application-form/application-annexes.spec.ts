@@ -25,7 +25,7 @@ context('Application annexes tests', () => {
           cy.loginByRequest(user.admin.email);
           cy.visit(`/app/project/detail/${applicationId}/privileges`, {failOnStatusCode: false});
           cy.get('mat-expansion-panel#collaborators-panel').within(() => {
-            cy.contains('button', '+').click();
+            cy.contains('button', 'add').click();
             cy.get('div.mat-form-field-flex').last().type(testData.applicationCollaborator.email);
           })
           cy.contains('button', 'Save changes').click();
@@ -74,7 +74,7 @@ context('Application annexes tests', () => {
           cy.visit(`/app/project/detail/${applicationId}`, {failOnStatusCode: false});
           cy.contains('Application annexes').click();
           cy.get('mat-table').within(() => {
-            cy.contains('mat-ivon', 'delete').should('not.exist');
+            cy.contains('mat-icon', 'delete').should('not.exist');
             cy.contains('mat-icon', 'download').should('be.visible');
             cy.contains('mat-icon', 'download').clickToDownload(`api/project/${applicationId}/file/download/?*`, 'txt').then(returnValue => {
               cy.wrap(returnValue.fileName === 'application-attachment.txt').as('assertion');

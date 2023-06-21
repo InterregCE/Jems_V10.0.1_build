@@ -9,34 +9,42 @@
                 <div class="output-container" jemsFormLayout [formGroupName]="i">
                     <div class="output-header" stretch="1" jemsNoWidthLimit jemsMultiColumnRow justifyContent="space-between">
                         <h4 class="mb-0 output-header-inner" stretch="1" jemsMultiColumnRow>
-                            <span>{{('project.application.form.work.package.output' | translate) + ' ' + data.workPackageNumber + '.' + (i + 1) }}</span>
-                            <span
-                                  *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.TITLE">{{output.get(constants.TITLE.name).value | translateByInputLanguage | async}}</span>
+                            <span>
+                                <mat-icon *ngIf="output.get('deactivated').value" class="vertical-middle"
+                                          matTooltip="{{ 'project.application.form.partner.table.status.inactive' | translate }}">do_not_disturb</mat-icon>
+                                {{('project.application.form.work.package.output' | translate) + ' ' + data.workPackageNumber + '.' + (output.get(constants.OUTPUT_NUMBER.name).value || '?')}}
+                            </span>
+                            <span *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.TITLE">
+                                {{output.get(constants.TITLE.name).value | translateByInputLanguage | async}}
+                            </span>
                         </h4>
-                        <button *ngIf="form.enabled" type="button" mat-icon-button color="accent"
-                                matTooltip="{{'project.application.form.work.package.output.table.action.delete.tooltip' | translate}}"
-                                (click)="removeOutput(i)">
-                            <mat-icon>delete</mat-icon>
+                        <button *ngIf="data.isEditable" type="button" mat-icon-button color="accent" [disabled]="output.get('deactivated').value"
+                                matTooltip="{{ 'project.application.form.work.package.output.table.action.' +
+                                 (data.isAlreadyContracted ? 'deactivate' : 'delete') + '.tooltip' | translate}}"
+                                (click)="data.isAlreadyContracted ? deactivateOutput(i) : removeOutput(i)"
+                                [attr.aria-label]="output.get('deactivated').value ? 'delete' : (data.isAlreadyContracted ? 'deactivate' : 'delete')">
+                            <mat-icon *ngIf="output.get('deactivated').value">delete_forever</mat-icon>
+                            <mat-icon *ngIf="!output.get('deactivated').value">{{ data.isAlreadyContracted ? 'do_not_disturb' : 'delete' }}</mat-icon>
                         </button>
                     </div>
 
                     <jems-multi-language-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.TITLE">
                         <jems-multi-language-form-field type="textarea" minRows="2"
-                                label="project.application.form.work.package.output.title"
-                                [formControlName]="constants.TITLE.name"
-                                [maxLength]="constants.TITLE.maxLength">
+                                                        label="project.application.form.work.package.output.title"
+                                                        [formControlName]="constants.TITLE.name"
+                                                        [maxLength]="constants.TITLE.maxLength">
                         </jems-multi-language-form-field>
                     </jems-multi-language-container>
 
                     <jems-alert [closable]="false"
-                               [type]="Alert.WARNING"
-                               [show]="!data.specificObjective">
-                            {{'project.application.form.overall.objective.specific.objective.required' | translate}}
+                                [type]="Alert.WARNING"
+                                [show]="!data.specificObjective">
+                        {{'project.application.form.overall.objective.specific.objective.required' | translate}}
                     </jems-alert>
                     <jems-alert [closable]="false"
                                 [type]="Alert.WARNING"
                                 [show]="data.specificObjective && !data.outputIndicators?.length">
-                            {{'project.application.form.overall.objective.specific.objective.no.output.indicator.available' | translate}}
+                        {{'project.application.form.overall.objective.specific.objective.no.output.indicator.available' | translate}}
                     </jems-alert>
                     <mat-form-field *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.PROGRAMME_OUTPUT_INDICATOR_AND_MEASUREMENT_UNIT">
                         <mat-label>{{'project.application.form.work.package.output.programme.output.indicator' | translate}}</mat-label>
@@ -52,13 +60,14 @@
                     <div jemsMultiColumnRow stretch>
                         <mat-form-field *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.PROGRAMME_OUTPUT_INDICATOR_AND_MEASUREMENT_UNIT">
                             <mat-label>{{'project.application.form.work.package.output.measurement.unit' | translate}}</mat-label>
-                            <input readonly matInput
+                            <input readonly matInput disabled
                                    value="{{getMeasurementUnit(output.get(constants.RESULT_INDICATOR.name)?.value, data.outputIndicators)
                                             | translateBySystemLanguage | async}}"
-                                   [disabled]="true">
+                            >
                         </mat-form-field>
 
-                        <mat-form-field jemsFormFieldWidth="medium" *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.TARGET_VALUE">
+                        <mat-form-field jemsFormFieldWidth="medium"
+                                        *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.TARGET_VALUE">
                             <mat-label>{{'project.application.form.work.package.output.target.value' | translate}}</mat-label>
                             <input currencyMask type="decimal" [options]="{min: 0.01, max: 99999999, align: 'right'}"
                                    name="targetValue" formControlName="targetValue" matInput>
@@ -75,15 +84,16 @@
 
                     <jems-multi-language-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.DESCRIPTION">
                         <jems-multi-language-form-field type="textarea" minRows="3"
-                                label="project.application.form.work.package.output.description"
-                                [formControlName]="constants.DESCRIPTION.name"
-                                [maxLength]="constants.DESCRIPTION.maxLength">
+                                                        label="project.application.form.work.package.output.description"
+                                                        [formControlName]="constants.DESCRIPTION.name"
+                                                        [maxLength]="constants.DESCRIPTION.maxLength">
                         </jems-multi-language-form-field>
                     </jems-multi-language-container>
                 </div>
             </ng-container>
         </div>
-        <button jemsText *ngIf="addOutputVisible()" mat-stroked-button color="primary"
+
+        <button jemsText *ngIf="data.isEditable && outputs.length < 10" mat-stroked-button color="primary"
                 (click)="addNewOutput()" type="button">
             + {{'project.application.form.workpackage.output.add' | translate}}
         </button>

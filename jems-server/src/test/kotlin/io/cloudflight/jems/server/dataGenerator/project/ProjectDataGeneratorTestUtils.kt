@@ -124,7 +124,9 @@ fun projectResultUpdateRequestDTO(version: String) =
         baseline = BigDecimal.valueOf(34521, 2),
         targetValue = BigDecimal.valueOf(64234, 2),
         periodNumber = 1,
-        description = versionedInputTranslation("description", version)
+        description = versionedInputTranslation("description", version),
+        deactivated = false,
+        resultNumber = 1
     )
 
 fun inputWorkPackageCreate(version: String) =
@@ -139,7 +141,8 @@ fun inputWorkPackageUpdate(id: Long, version: String) =
         id = id,
         name = versionedInputTranslation("name", version),
         specificObjective = versionedInputTranslation("specific objective", version),
-        objectiveAndAudience = versionedInputTranslation("objective and audience", version)
+        objectiveAndAudience = versionedInputTranslation("objective and audience", version),
+        deactivated = false
     )
 
 
@@ -154,12 +157,14 @@ fun workPackageActivity(workPackageActivityDto: WorkPackageActivityDTO, workPack
         startPeriod = workPackageActivityDto.startPeriod,
         endPeriod = workPackageActivityDto.endPeriod,
         partnerIds = workPackageActivityDto.partnerIds,
+        deactivated = false,
         deliverables = workPackageActivityDto.deliverables.map { deliverable ->
             WorkPackageActivityDeliverable(
                 deliverable.deliverableId, deliverable.deliverableNumber!!,
                 description = versionedInputTranslation("description", version),
                 title = versionedInputTranslation("title", version),
-                period = deliverable.period
+                period = deliverable.period,
+                deactivated = false
             )
         }
     )
@@ -177,7 +182,8 @@ fun workPackageOutput(workPackageId: Long, outputDTO: WorkPackageOutputDTO, vers
         ),
         targetValue = outputDTO.targetValue,
         periodNumber = outputDTO.periodNumber,
-        title = versionedInputTranslation("title", version)
+        title = versionedInputTranslation("title", version),
+        deactivated = false,
     )
 
 fun workPackageInvestment(investment: WorkPackageInvestmentDTO, version: String) =
@@ -198,7 +204,8 @@ fun workPackageInvestment(investment: WorkPackageInvestmentDTO, version: String)
         documentationExpectedImpacts = versionedInputTranslation("documentation expected impacts", version),
         ownershipSiteLocation = versionedInputTranslation("ownership site location", version),
         ownershipRetain = versionedInputTranslation("ownership retain", version),
-        ownershipMaintenance = versionedInputTranslation("ownership maintenance", version)
+        ownershipMaintenance = versionedInputTranslation("ownership maintenance", version),
+        deactivated = false,
     )
 
 fun projectPartnerDTO(

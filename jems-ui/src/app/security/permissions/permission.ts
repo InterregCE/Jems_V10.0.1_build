@@ -48,7 +48,15 @@ export class Permission {
       name: 'project.application.reporting.title',
       children: [
         {
-          name: 'project.application.reporting.title',
+          name: 'project.application.project.report.title',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [],
+          editPermissions: [],
+          disabled: true,
+          state: PermissionState.EDIT,
+        },
+        {
+          name: 'project.application.partner.reports.title',
           mode: PermissionMode.HIDDEN_VIEW_EDIT,
           viewPermissions: [],
           editPermissions: [],
@@ -103,7 +111,17 @@ export class Permission {
           editPermissions: [],
           disabled: true,
           state: PermissionState.EDIT,
-          editTooltip: 'permission.inspect.contracting.partner.section'
+          editTooltip: 'permission.inspect.contracting.partner.section',
+          children: [
+              {
+                  name: 'project.application.contract.partner.state.aid.section.title',
+                  mode: PermissionMode.HIDDEN_VIEW_EDIT,
+                  viewPermissions: [],
+                  editPermissions: [],
+                  disabled: true,
+                  state: PermissionState.VIEW,
+            }
+          ]
         }
       ]
     },
@@ -161,6 +179,12 @@ export class Permission {
           viewPermissions: [PermissionsEnum.ProjectCreatorCollaboratorsRetrieve],
           editPermissions: [PermissionsEnum.ProjectCreatorCollaboratorsUpdate],
         },
+        {
+          name: 'project.application.form.section.shared.folder',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.ProjectCreatorSharedFolderView],
+          editPermissions: [PermissionsEnum.ProjectCreatorSharedFolderEdit],
+        }
       ]
     }
   ];
@@ -170,11 +194,37 @@ export class Permission {
       name: 'project.application.reporting.title',
       children: [
         {
-          name: 'project.application.reporting.title',
+          name: 'project.application.project.report.title',
           mode: PermissionMode.HIDDEN_VIEW_EDIT,
-          viewPermissions: [PermissionsEnum.ProjectReportingView],
-          editPermissions: [PermissionsEnum.ProjectReportingEdit],
-          editTooltip: 'permission.inspect.reporting'
+          viewPermissions: [PermissionsEnum.ProjectReportingProjectView],
+          editPermissions: [PermissionsEnum.ProjectReportingProjectEdit],
+        },
+        {
+          name: 'project.application.partner.reports.title',
+          children: [
+            {
+              name: 'project.application.partner.reports.title',
+              mode: PermissionMode.HIDDEN_VIEW_EDIT,
+              viewPermissions: [PermissionsEnum.ProjectReportingView],
+              editPermissions: [PermissionsEnum.ProjectReportingEdit],
+              editTooltip: 'permission.inspect.reporting'
+            },
+            {
+              name: 'project.application.partner.reports.reopen',
+              mode: PermissionMode.TOGGLE_EDIT,
+              editPermissions: [PermissionsEnum.ProjectReportingReOpen]
+            },
+            {
+              name: 'project.application.partner.reports.checklist.after.control',
+              mode: PermissionMode.TOGGLE_EDIT,
+              editPermissions: [PermissionsEnum.ProjectReportingChecklistAfterControl],
+            },
+            {
+              name: 'project.application.partner.reports.control.reopen',
+              mode: PermissionMode.TOGGLE_EDIT,
+              editPermissions: [PermissionsEnum.ProjectPartnerControlReportingReOpen]
+            }
+          ]
         }
       ]
     },
@@ -211,10 +261,23 @@ export class Permission {
         },
         {
           name: 'project.application.contract.partner.section.title',
-          mode: PermissionMode.HIDDEN_VIEW_EDIT,
-          viewPermissions: [PermissionsEnum.ProjectContractingPartnerView],
-          editPermissions: [PermissionsEnum.ProjectContractingPartnerEdit],
-          editTooltip: 'permission.inspect.contracting.partner.section'
+          children: [
+              {
+                name: 'project.application.contract.partner.section.title',
+                mode: PermissionMode.HIDDEN_VIEW_EDIT,
+                viewPermissions: [PermissionsEnum.ProjectContractingPartnerView],
+                editPermissions: [PermissionsEnum.ProjectContractingPartnerEdit],
+                editTooltip: 'permission.inspect.contracting.partner.section',
+              },
+              {
+                  name: 'project.application.contract.partner.state.aid.section.title',
+                  mode: PermissionMode.HIDDEN_VIEW_EDIT,
+                  viewPermissions: [],
+                  editPermissions: [],
+                  disabled: true,
+                  state: PermissionState.EDIT,
+              }
+          ]
         }
       ]
     },
@@ -342,6 +405,12 @@ export class Permission {
           viewPermissions: [PermissionsEnum.ProjectMonitorCollaboratorsRetrieve],
           editPermissions: [PermissionsEnum.ProjectMonitorCollaboratorsUpdate],
         },
+        {
+          name: 'project.application.form.section.shared.folder',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.ProjectMonitorSharedFolderView],
+          editPermissions: [PermissionsEnum.ProjectMonitorSharedFolderEdit],
+        }
       ]
     }
   ];
@@ -368,6 +437,13 @@ export class Permission {
             PermissionsEnum.CallPublishedRetrieve,
           ],
           viewTooltip: 'call.list.open.title.view.tooltip'
+        },
+        {
+          name: 'call.detail.notifications.config.title',
+          mode: PermissionMode.HIDDEN_VIEW,
+          viewPermissions: [
+            PermissionsEnum.NotificationsRetrieve,
+          ],
         },
       ],
     },
@@ -401,6 +477,7 @@ export class Permission {
       viewPermissions: [PermissionsEnum.ProjectRetrieve],
       editPermissions: [PermissionsEnum.ProjectRetrieveEditUserAssignments],
       icon: 'description',
+      viewTooltip: 'permission.top.bar.applications.view',
       editTooltip: 'permission.top.bar.applications.edit'
     },
     {
@@ -453,6 +530,12 @@ export class Permission {
           editPermissions: [PermissionsEnum.InstitutionsAssignmentUpdate],
           editTooltip: 'permission.top.bar.institutions.assignment.data',
         },
+        {
+          name: 'permission.top.bar.assignments.all.toggle',
+          mode: PermissionMode.TOGGLE_EDIT,
+          editPermissions: [PermissionsEnum.AssignmentsUnlimited],
+          infoMessage: 'permission.top.bar.assignments.all.info'
+        }
       ]
     },
     {

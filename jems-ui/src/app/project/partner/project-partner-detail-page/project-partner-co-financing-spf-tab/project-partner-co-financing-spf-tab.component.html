@@ -38,12 +38,14 @@
                                        [formControlName]="constants.FORM_CONTROL_NAMES.fundPercentage"
                                        [options]="{min: 0, max: getMaxRate(fund, data.callFunds), align: 'right'}"
                                        currencyMask matInput name="percentage"
-                                       type="decimal">
+                                       type="decimal"
+                                       aria-label="value">
                                 <div class="pl-1" matSuffix>%</div>
                             </mat-form-field>
                             <div>
                                 <button (click)="deleteAdditionalFund(i, data.totalSpfBudget)"
-                                        *ngIf="data.editable && !first" color="accent" mat-icon-button type="button">
+                                        *ngIf="data.editable && !first" color="accent" mat-icon-button type="button"
+                                        aria-label="delete">
                                     <mat-icon>delete</mat-icon>
                                 </button>
                             </div>
@@ -60,7 +62,8 @@
                 </div>
                 <button (click)="addAdditionalFund(data.callFunds, undefined)"
                         *ngIf="canAddFund(data.callFunds, data.editable)" class="mt-2 co-financing-button"
-                        mat-icon-button type="button">
+                        mat-icon-button type="button"
+                        aria-label="add">
                     <mat-icon>add</mat-icon>
                 </button>
 
@@ -139,7 +142,8 @@
                                 <mat-form-field>
                                     <input [formControlName]="constants.FORM_CONTROL_NAMES.amount"
                                            [options]="{min: 0, align: 'right'}" currencyMask
-                                           matInput type="decimal">
+                                           matInput type="decimal"
+                                           aria-label="value">
                                     <mat-error>
                                         <jems-form-field-errors
                                                 [errors]="partnerContribution.get(constants.FORM_CONTROL_NAMES.amount)?.errors"
@@ -154,7 +158,8 @@
                                             *ngIf="i > 0 && coFinancingSpfForm.enabled"
                                             color="accent"
                                             mat-icon-button
-                                            type="button">
+                                            type="button"
+                                            aria-label="delete">
                                         <mat-icon>delete</mat-icon>
                                     </button>
                                 </div>
@@ -175,7 +180,8 @@
                 <button jemsText (click)="addNewPartnerContribution()"
                         *ngIf="partnerContributions.length < 10 && coFinancingSpfForm.enabled"
                         mat-stroked-button
-                        type="button">
+                        type="button"
+                        aria-label="add">
                     <mat-icon>add</mat-icon>
                     <span>{{ 'project.partner.coFinancing.contribution.add.contribution.origin' | translate }}</span>
                 </button>

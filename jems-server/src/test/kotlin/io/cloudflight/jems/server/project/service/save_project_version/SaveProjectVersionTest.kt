@@ -31,27 +31,20 @@ internal class SaveProjectVersionTest : UnitTest() {
     private val user = UserEntity(
         id = userId,
         email = "admin@admin.dev",
+        sendNotificationsToEmail = false,
         name = "Name",
         surname = "Surname",
         userRole = UserRoleEntity(id = 1, name = "ADMIN"),
         password = "hash_pass",
         userStatus = UserStatus.ACTIVE
     )
+
     private val currentProjectVersion = ProjectVersion(
         "1.0",
         projectId,
         createdAt = ZonedDateTime.now(),
-        user,
         ApplicationStatus.RETURNED_TO_APPLICANT,
         current = false
-    )
-    private val newProjectVersion = ProjectVersion(
-        "2.0",
-        projectId,
-        createdAt = ZonedDateTime.now(),
-        user,
-        ApplicationStatus.SUBMITTED,
-        current = true
     )
 
     private val newProjectVersionSummary = ProjectVersionSummary(
@@ -64,6 +57,7 @@ internal class SaveProjectVersionTest : UnitTest() {
     private val projectSummary = ProjectSummary(
         id = projectId,
         customIdentifier = "01",
+        callId = 1L,
         callName = "",
         acronym = "Gleason Inc",
         status = ApplicationStatus.SUBMITTED

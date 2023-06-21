@@ -3,6 +3,9 @@ package io.cloudflight.jems.server.project.service.report.partner.identification
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.file.service.model.UserSimple
+import io.cloudflight.jems.server.common.validator.GeneralValidatorService
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.programme.entity.ProgrammeDataEntity
 import io.cloudflight.jems.server.programme.repository.ProgrammeDataRepository
 import io.cloudflight.jems.server.project.service.ProjectPersistence
@@ -10,7 +13,6 @@ import io.cloudflight.jems.server.project.service.contracting.monitoring.getProj
 import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
-import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.PartnerReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
@@ -19,24 +21,33 @@ import io.cloudflight.jems.server.project.service.report.model.partner.identific
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportSpendingProfile
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ProjectPartnerControlReport
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ProjectPartnerControlReportChange
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportDesignatedController
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportFileFormat
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportLocationOnTheSpotVerification
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportMethodology
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportOnTheSpotVerification
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportType
-import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectReportIdentificationPersistence
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportVerification
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportDesignatedControllerPersistence
+import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportIdentificationPersistence
+import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportVerificationPersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
 import io.mockk.slot
+import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.ZonedDateTime
+import java.util.Optional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
-import java.math.BigDecimal
-import java.time.LocalDate
-import java.time.ZonedDateTime
-import java.util.Optional
 
 internal class UpdateProjectPartnerControlReportIdentificationTest : UnitTest() {
 
@@ -45,6 +56,8 @@ internal class UpdateProjectPartnerControlReportIdentificationTest : UnitTest() 
         private const val PROJECT_ID = 490L
 
         private val YESTERDAY = ZonedDateTime.now().minusDays(1)
+        private val YESTERDAY_LOCALDATE = LocalDate.now().plusDays(1)
+        private val TOMORROW = LocalDate.now().plusDays(1)
         private val YEARS_AGO_3 = LocalDate.now().minusYears(3)
         private val YEARS_AGO_5 = LocalDate.now().minusYears(5)
 
@@ -54,6 +67,10 @@ internal class UpdateProjectPartnerControlReportIdentificationTest : UnitTest() 
             status = status,
             version = "8.1",
             firstSubmission = YESTERDAY,
+            lastResubmission = null,
+            lastControlReopening = null,
+            projectReportId = 28L,
+            projectReportNumber = 280,
             identification = PartnerReportIdentification(
                 projectIdentifier = "projectIdentifier",
                 projectAcronym = "projectAcronym",
@@ -69,6 +86,7 @@ internal class UpdateProjectPartnerControlReportIdentificationTest : UnitTest() 
                 currency = null,
                 coFinancing = emptyList(),
             ),
+            controlEnd = null
         )
 
         val identification = ProjectPartnerReportIdentification(
@@ -96,6 +114,51 @@ internal class UpdateProjectPartnerControlReportIdentificationTest : UnitTest() 
             type = ReportType.FinalReport,
         )
 
+        private val designatedController = ReportDesignatedController(
+            controlInstitution = "Test",
+            controlInstitutionId = 1,
+            controllingUserId = 2,
+            jobTitle = "JobTitle",
+            divisionUnit = "divisionUnit",
+            address = "address",
+            countryCode = "RO",
+            country = "Romania (RO)",
+            telephone = "0000123456",
+            controllerReviewerId = 3
+        )
+
+        private val verificationInstances = setOf(
+            ReportOnTheSpotVerification(
+                id = 1,
+                verificationFrom = YESTERDAY_LOCALDATE,
+                verificationTo = TOMORROW,
+                verificationLocations = setOf(ReportLocationOnTheSpotVerification.PlaceOfPhysicalProjectOutput),
+                verificationFocus = "some Focus"
+            )
+        )
+
+        private val reportVerification = ReportVerification(
+            generalMethodologies = setOf(ReportMethodology.AdministrativeVerification),
+            verificationInstances = verificationInstances,
+            riskBasedVerificationApplied = true,
+            riskBasedVerificationDescription = "some description"
+        )
+
+        private val controllerUsersAvailable = listOf(
+            UserSimple(
+                id = 2,
+                email = "test",
+                name = "controller",
+                surname = "user"
+            ),
+            UserSimple(
+                id = 3,
+                email = "test2",
+                name = "controller2",
+                surname = "user2"
+            ),
+        )
+
         private fun expectedControlReport(id: Long) = ProjectPartnerControlReport(
             id = id,
             programmeTitle = "programme title",
@@ -110,16 +173,24 @@ internal class UpdateProjectPartnerControlReportIdentificationTest : UnitTest() 
             reportPeriodStart = YEARS_AGO_5,
             reportPeriodEnd = YEARS_AGO_3,
             reportFirstSubmission = YESTERDAY,
+            reportLastResubmission = null,
             controllerFormats = setOf(ReportFileFormat.Originals),
             type = ReportType.FinalReport,
+            designatedController = designatedController,
+            reportVerification = reportVerification,
+            reportControlEnd = null
         )
 
     }
 
     @MockK
-    lateinit var reportPersistence: ProjectReportPersistence
+    lateinit var reportPersistence: ProjectPartnerReportPersistence
     @MockK
-    lateinit var reportIdentificationPersistence: ProjectReportIdentificationPersistence
+    lateinit var reportIdentificationPersistence: ProjectPartnerReportIdentificationPersistence
+    @MockK
+    lateinit var reportDesignatedControllerPersistence: ProjectPartnerReportDesignatedControllerPersistence
+    @MockK
+    lateinit var reportReportVerificationPersistence: ProjectPartnerReportVerificationPersistence
     @MockK
     lateinit var partnerPersistence: PartnerPersistence
     @MockK
@@ -128,6 +199,10 @@ internal class UpdateProjectPartnerControlReportIdentificationTest : UnitTest() 
     lateinit var programmeDataRepository: ProgrammeDataRepository
     @MockK
     lateinit var getContractingMonitoringService: GetContractingMonitoringService
+    @MockK
+    lateinit var controllerInstitutionPersistence: ControllerInstitutionPersistence
+    @RelaxedMockK
+    lateinit var generalValidator: GeneralValidatorService
 
     @InjectMockKs
     lateinit var interactor: UpdateProjectPartnerControlReportIdentification
@@ -135,11 +210,12 @@ internal class UpdateProjectPartnerControlReportIdentificationTest : UnitTest() 
     @BeforeEach
     fun setup() {
         clearMocks(reportPersistence, reportIdentificationPersistence, partnerPersistence,
-            projectPersistence, programmeDataRepository, getContractingMonitoringService)
+            projectPersistence, programmeDataRepository, getContractingMonitoringService,
+            controllerInstitutionPersistence)
     }
 
     @ParameterizedTest(name = "updateControlIdentification (status {0})")
-    @EnumSource(value = ReportStatus::class, names = ["InControl"])
+    @EnumSource(value = ReportStatus::class, names = ["InControl", "ReOpenCertified", "ReOpenInControlLast", "ReOpenInControlLimited"])
     fun `updateControlIdentification - success`(status: ReportStatus) {
         val reportId = 66L + status.ordinal
 
@@ -162,9 +238,16 @@ internal class UpdateProjectPartnerControlReportIdentificationTest : UnitTest() 
             LocalDate.of(2025, 8, 14),
         )
 
+        every {controllerInstitutionPersistence.getControllerUsersForReportByInstitutionId(1)} returns controllerUsersAvailable
+
+        every { reportDesignatedControllerPersistence.updateDesignatedController(PARTNER_ID, reportId, designatedController)} returns designatedController
+        every { reportReportVerificationPersistence.updateReportVerification(PARTNER_ID, reportId, reportVerification)} returns reportVerification
+
         val change = ProjectPartnerControlReportChange(
             controllerFormats = setOf(ReportFileFormat.Electronic),
             type = ReportType.FinalReport,
+            designatedController = designatedController,
+            reportVerification = reportVerification
         )
         assertThat(interactor.updateControlIdentification(PARTNER_ID, reportId = reportId, change))
             .isEqualTo(expectedControlReport(reportId))
@@ -172,7 +255,11 @@ internal class UpdateProjectPartnerControlReportIdentificationTest : UnitTest() 
     }
 
     @ParameterizedTest(name = "updateControlIdentification - wrong status (status {0})")
-    @EnumSource(value = ReportStatus::class, names = ["InControl"], mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(
+        value = ReportStatus::class,
+        names = ["InControl", "ReOpenInControlLast", "ReOpenInControlLimited", "ReOpenCertified"],
+        mode = EnumSource.Mode.EXCLUDE
+    )
     fun `updateControlIdentification - wrong status`(status: ReportStatus) {
         val reportId = 250L + status.ordinal
 

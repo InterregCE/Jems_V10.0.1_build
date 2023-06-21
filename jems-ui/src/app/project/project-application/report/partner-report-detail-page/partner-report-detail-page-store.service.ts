@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {
+  PreConditionCheckResultDTO,
   ProjectPartnerReportDTO,
   ProjectPartnerReportIdentificationDTO,
   ProjectPartnerReportIdentificationService,
@@ -18,6 +19,7 @@ import {
   ProjectStore
 } from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
+import {ReportUtil} from '@project/common/report-util';
 
 @Injectable({providedIn: 'root'})
 export class PartnerReportDetailPageStore {
@@ -57,8 +59,9 @@ export class PartnerReportDetailPageStore {
     this.reportEditable$ = this.reportEditable();
   }
 
-  private partnerReportId(): Observable<any> {
-    return this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId');
+  private partnerReportId(): Observable<number> {
+    return this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')
+      .pipe(map(id => Number(id)));
   }
 
   private partnerReport(): Observable<ProjectPartnerReportDTO> {
@@ -72,7 +75,7 @@ export class PartnerReportDetailPageStore {
         ? this.projectPartnerReportService.getProjectPartnerReport(Number(partnerId), Number(reportId))
           .pipe(
             catchError(() => {
-              this.routingService.navigate([ProjectPaths.PROJECT_DETAIL_PATH, projectId, 'reporting']);
+              this.routingService.navigate([ProjectPaths.PROJECT_DETAIL_PATH, projectId]);
               return of({} as ProjectPartnerReportDTO);
             })
           )
@@ -87,6 +90,13 @@ export class PartnerReportDetailPageStore {
       );
   }
 
+  runPreCheck(partnerId: number, reportId: number): Observable<PreConditionCheckResultDTO> {
+    return this.projectPartnerReportService.runPreCheck(partnerId, reportId)
+      .pipe(
+        tap(status => Log.info('Called pre-submission check on report', reportId, status))
+      );
+  }
+
   submitReport(partnerId: number, reportId: number): Observable<ProjectPartnerReportSummaryDTO.StatusEnum> {
     return this.projectPartnerReportService.submitProjectPartnerReport(partnerId, reportId)
       .pipe(
@@ -96,8 +106,33 @@ export class PartnerReportDetailPageStore {
       );
   }
 
+  reopenReport(partnerId: number, reportId: number): Observable<ProjectPartnerReportSummaryDTO.StatusEnum> {
+    return this.projectPartnerReportService.reOpenProjectPartnerReport(partnerId, reportId)
+      .pipe(
+        map(status => status as ProjectPartnerReportSummaryDTO.StatusEnum),
+        tap(status => this.updatedReportStatus$.next(status)),
+        tap(status => Log.info('Changed status for report', reportId, status))
+      );
+  }
+
   startControlOnPartnerReport(partnerId: number, reportId: number): Observable<ProjectPartnerReportSummaryDTO.StatusEnum> {
     return this.projectPartnerReportService.startControlOnPartnerReport(partnerId, reportId)
+      .pipe(
+        map(status => status as ProjectPartnerReportSummaryDTO.StatusEnum),
+        tap(status => this.updatedReportStatus$.next(status)),
+        tap(status => Log.info('Changed status for report', reportId, status))
+      );
+  }
+
+  runPreCheckOnControlReport(partnerId: number, reportId: number): Observable<PreConditionCheckResultDTO> {
+    return this.projectPartnerReportService.runPreCheckOnControlReport(partnerId, reportId)
+      .pipe(
+        tap(status => Log.info('Called pre-submission check on control report', reportId, status))
+      );
+  }
+
+  finalizeReport(partnerId: number, reportId: number): Observable<ProjectPartnerReportSummaryDTO.StatusEnum> {
+    return this.projectPartnerReportService.finalizeControlOnPartnerReport(partnerId, reportId)
       .pipe(
         map(status => status as ProjectPartnerReportSummaryDTO.StatusEnum),
         tap(status => this.updatedReportStatus$.next(status)),
@@ -177,8 +212,7 @@ export class PartnerReportDetailPageStore {
       this.reportStatus$
     ])
       .pipe(
-        map(([canEdit, status]) => canEdit && status === ProjectPartnerReportSummaryDTO.StatusEnum.Draft)
+        map(([canEdit, status]) => canEdit && ReportUtil.isPartnerReportSubmittable(status))
       );
   }
 }
-

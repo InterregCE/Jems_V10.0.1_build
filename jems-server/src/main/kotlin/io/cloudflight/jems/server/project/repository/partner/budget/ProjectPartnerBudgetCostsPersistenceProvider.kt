@@ -20,7 +20,10 @@ import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toBu
 import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toModel
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsPersistence
 import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostEntry
+import io.cloudflight.jems.server.project.service.partner.model.BudgetTravelAndAccommodationCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetUnitCostEntry
+import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
+import io.cloudflight.jems.server.project.service.partner.model.BudgetSpfCostEntry
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
@@ -40,100 +43,128 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
 ) : ProjectPartnerBudgetCostsPersistence {
 
     @Transactional(readOnly = true)
-    override fun getBudgetStaffCosts(partnerId: Long, version: String?): List<BudgetStaffCostEntry> =
-        projectVersionUtils.fetch(version, getProjectIdForPartner(partnerId, version),
+    override fun getBudgetStaffCosts(partnerIds: Set<Long>, version: String?): List<BudgetStaffCostEntry> {
+        if (partnerIds.isEmpty())
+            return emptyList()
+        return projectVersionUtils.fetch(version, getProjectIdForPartner(partnerIds.first(), version),
             currentVersionFetcher = {
-                budgetStaffCostRepository.findAllByBasePropertiesPartnerIdOrderByIdAsc(partnerId)
+                budgetStaffCostRepository.findAllByBasePropertiesPartnerIdInOrderByIdAsc(partnerIds)
                     .toBudgetStaffCostEntries()
             },
             previousVersionFetcher = { timestamp ->
                 budgetStaffCostRepository.findAllByPartnerIdAsOfTimestamp(
-                    partnerId, timestamp, ProjectPartnerBudgetStaffCostRow::class.java
+                    partnerIds, timestamp, ProjectPartnerBudgetStaffCostRow::class.java
                 ).toBudgetStaffCostEntryList()
             }
         ) ?: emptyList()
+    }
+
 
     @Transactional(readOnly = true)
-    override fun getBudgetTravelAndAccommodationCosts(partnerId: Long, version: String?) =
-        projectVersionUtils.fetch(version, getProjectIdForPartner(partnerId, version),
+    override fun getBudgetTravelAndAccommodationCosts(partnerIds: Set<Long>, version: String?): List<BudgetTravelAndAccommodationCostEntry> {
+        if (partnerIds.isEmpty())
+            return emptyList()
+        return projectVersionUtils.fetch(version, getProjectIdForPartner(partnerIds.first(), version),
             currentVersionFetcher = {
-                budgetTravelRepository.findAllByBasePropertiesPartnerIdOrderByIdAsc(partnerId)
+                budgetTravelRepository.findAllByBasePropertiesPartnerIdInOrderByIdAsc(partnerIds)
                     .toBudgetTravelAndAccommodationCostEntries()
             },
             previousVersionFetcher = { timestamp ->
                 budgetTravelRepository.findAllByPartnerIdAsOfTimestamp(
-                    partnerId, timestamp, ProjectPartnerBudgetTravelCostRow::class.java
+                    partnerIds, timestamp, ProjectPartnerBudgetTravelCostRow::class.java
                 ).toBudgetTravelCostEntryList()
             }
         ) ?: emptyList()
+    }
+
 
     @Transactional(readOnly = true)
-    override fun getBudgetInfrastructureAndWorksCosts(partnerId: Long, version: String?) =
-        projectVersionUtils.fetch(version, getProjectIdForPartner(partnerId, version),
+    override fun getBudgetInfrastructureAndWorksCosts(partnerIds: Set<Long>, version: String?): List<BudgetGeneralCostEntry> {
+        if (partnerIds.isEmpty())
+            return emptyList()
+        return projectVersionUtils.fetch(version, getProjectIdForPartner(partnerIds.first(), version),
             currentVersionFetcher = {
-                budgetInfrastructureRepository.findAllByBasePropertiesPartnerIdOrderByIdAsc(partnerId)
+                budgetInfrastructureRepository.findAllByBasePropertiesPartnerIdInOrderByIdAsc(partnerIds)
                     .toBudgetGeneralEntryList()
             },
             previousVersionFetcher = { timestamp ->
                 budgetInfrastructureRepository.findAllByPartnerIdAsOfTimestamp(
-                    partnerId, timestamp, ProjectPartnerBudgetGeneralRow::class.java
+                    partnerIds, timestamp, ProjectPartnerBudgetGeneralRow::class.java
                 ).toBudgetGeneralCostEntryList()
             }
         ) ?: emptyList()
+    }
+
 
     @Transactional(readOnly = true)
-    override fun getBudgetUnitCosts(partnerId: Long, version: String?): List<BudgetUnitCostEntry> =
-        projectVersionUtils.fetch(version, getProjectIdForPartner(partnerId, version),
+    override fun getBudgetUnitCosts(partnerIds: Set<Long>, version: String?): List<BudgetUnitCostEntry> {
+        if (partnerIds.isEmpty())
+            return emptyList()
+        return projectVersionUtils.fetch(version, getProjectIdForPartner(partnerIds.first(), version),
             currentVersionFetcher = {
-                budgetUnitCostRepository.findAllByBasePropertiesPartnerIdOrderByIdAsc(partnerId).toModel()
+                budgetUnitCostRepository.findAllByBasePropertiesPartnerIdInOrderByIdAsc(partnerIds).toModel()
             },
             previousVersionFetcher = { timestamp ->
-                budgetUnitCostRepository.findAllByPartnerIdAsOfTimestamp(partnerId, timestamp)
+                budgetUnitCostRepository.findAllByPartnerIdAsOfTimestamp(partnerIds, timestamp)
                     .toBudgetUnitCostEntryList()
             }
         ) ?: emptyList()
+    }
+
 
     @Transactional(readOnly = true)
-    override fun getBudgetExternalExpertiseAndServicesCosts(partnerId: Long, version: String?) =
-        projectVersionUtils.fetch(version, getProjectIdForPartner(partnerId, version),
+    override fun getBudgetExternalExpertiseAndServicesCosts(partnerIds: Set<Long>, version: String?): List<BudgetGeneralCostEntry> {
+        if (partnerIds.isEmpty())
+            return emptyList()
+        return projectVersionUtils.fetch(version, getProjectIdForPartner(partnerIds.first(), version),
             currentVersionFetcher = {
-                budgetExternalRepository.findAllByBasePropertiesPartnerIdOrderByIdAsc(partnerId)
+                budgetExternalRepository.findAllByBasePropertiesPartnerIdInOrderByIdAsc(partnerIds)
                     .toBudgetGeneralEntryList()
             },
             previousVersionFetcher = { timestamp ->
                 budgetExternalRepository.findAllByPartnerIdAsOfTimestamp(
-                    partnerId, timestamp, ProjectPartnerBudgetGeneralRow::class.java
+                    partnerIds, timestamp, ProjectPartnerBudgetGeneralRow::class.java
                 ).toBudgetGeneralCostEntryList()
             }
         ) ?: emptyList()
+    }
+
 
     @Transactional(readOnly = true)
-    override fun getBudgetEquipmentCosts(partnerId: Long, version: String?) =
-        projectVersionUtils.fetch(version, getProjectIdForPartner(partnerId, version),
+    override fun getBudgetEquipmentCosts(partnerIds: Set<Long>, version: String?): List<BudgetGeneralCostEntry> {
+        if (partnerIds.isEmpty())
+            return emptyList()
+        return projectVersionUtils.fetch(version, getProjectIdForPartner(partnerIds.first(), version),
             currentVersionFetcher = {
-                budgetEquipmentRepository.findAllByBasePropertiesPartnerIdOrderByIdAsc(partnerId)
+                budgetEquipmentRepository.findAllByBasePropertiesPartnerIdInOrderByIdAsc(partnerIds)
                     .toBudgetGeneralEntryList()
             },
             previousVersionFetcher = { timestamp ->
                 budgetEquipmentRepository.findAllByPartnerIdAsOfTimestamp(
-                    partnerId, timestamp, ProjectPartnerBudgetGeneralRow::class.java
+                    partnerIds, timestamp, ProjectPartnerBudgetGeneralRow::class.java
                 ).toBudgetGeneralCostEntryList()
             }
         ) ?: emptyList()
+    }
+
 
     @Transactional(readOnly = true)
-    override fun getBudgetSpfCosts(partnerId: Long, version: String?) =
-        projectVersionUtils.fetch(version, getProjectIdForPartner(partnerId, version),
+    override fun getBudgetSpfCosts(partnerIds: Set<Long>, version: String?): List<BudgetSpfCostEntry> {
+        if (partnerIds.isEmpty())
+            return emptyList()
+        return projectVersionUtils.fetch(version, getProjectIdForPartner(partnerIds.first(), version),
             currentVersionFetcher = {
-                budgetSpfCostRepository.findAllByBasePropertiesPartnerIdOrderByIdAsc(partnerId)
+                budgetSpfCostRepository.findAllByBasePropertiesPartnerIdInOrderByIdAsc(partnerIds)
                     .toBudgetSpfCostEntries()
             },
             previousVersionFetcher = { timestamp ->
                 budgetSpfCostRepository.findAllByPartnerIdAsOfTimestamp(
-                    partnerId, timestamp, ProjectPartnerBudgetSpfCostRow::class.java
+                    partnerIds, timestamp, ProjectPartnerBudgetSpfCostRow::class.java
                 ).toBudgetSpfCostEntryList()
             }
         ) ?: emptyList()
+    }
+
 
     @Transactional(readOnly = true)
     override fun getBudgetStaffCostTotal(partnerId: Long, version: String?): BigDecimal =

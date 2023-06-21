@@ -28,24 +28,6 @@ $container-max-widths: (
   @return if($min != 0, $min, null);
 }
 
-
-$font-size-base: 1rem !default; // Assumes the browser default, typically `16px`
-$line-height-base: 1.5 !default;
-$nav-link-padding-y: 0rem !default;
-$link-decoration: none !default;
-$nav-link-padding-x: 1rem !default;
-$font-size-lg: $font-size-base * 1.25 !default;
-$navbar-brand-font-size: $font-size-lg !default;
-$navbar-toggler-font-size: $font-size-lg !default;
-$navbar-toggler-padding-x: .75rem !default;
-$navbar-toggler-padding-y: .25rem !default;
-$border-width: 1px !default;
-$nav-link-disabled-color: #6c757d !default;
-$nav-link-height: $font-size-base * $line-height-base + $nav-link-padding-y * 2 !default;
-$navbar-brand-height: $navbar-brand-font-size * $line-height-base !default;
-$navbar-brand-padding-y: ($nav-link-height - $navbar-brand-height) * 0.5 !default;
-
-
 $navbar-nav-link-padding-x: .75rem !default;
 $grid-breakpoints: (
         xs: 0,
@@ -276,11 +258,6 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
 }
 
   @media (max-width: 1339.9px) {
-    .navbar-expand-lg > .container,
-    .navbar-expand-lg > .container-fluid, .navbar-expand-lg > .container-sm, .navbar-expand-lg > .container-md, .navbar-expand-lg > .container-lg, .navbar-expand-lg > .container-xl {
-      padding-right: 0;
-      padding-left: 0;
-    }
   }
 
   @media (min-width: 1400px) {
@@ -288,28 +265,16 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
       -ms-flex-flow: row nowrap;
       flex-flow: row nowrap;
       -ms-flex-pack: start;
-      justify-content: flex-start;
     }
-    .navbar-expand-lg .navbar-nav {
-      -ms-flex-direction: row;
-      flex-direction: row;
-    }
-    .navbar-expand-lg .navbar-nav .dropdown-menu {
+    .navbar-expand-lg .navbar-navigation-items .dropdown-menu {
       position: absolute;
     }
-    .navbar-expand-lg .navbar-nav .nav-link {
+    .navbar-expand-lg .navbar-navigation-items .nav-link {
       padding-right: 0.5rem;
-      padding-left: 0.5rem;
-    }
-    .navbar-expand-lg > .container,
-    .navbar-expand-lg > .container-fluid, .navbar-expand-lg > .container-sm, .navbar-expand-lg > .container-md, .navbar-expand-lg > .container-lg, .navbar-expand-lg > .container-xl {
-      -ms-flex-wrap: nowrap;
-      flex-wrap: nowrap;
     }
     .navbar-expand-lg .navbar-collapse {
-      display: -ms-flexbox !important;
-      display: flex !important;
-      -ms-flex-preferred-size: auto;
+      display: flex;
+      justify-content: flex-end;
     }
     .navbar-expand-lg .navbar-toggler {
       display: none;
@@ -321,13 +286,16 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
     display: flex;
     flex-wrap: wrap; // allow us to do the line break for collapsing content
     justify-content: space-between; // space out brand from logo
-    padding: 0.125rem 1rem 0 0.5rem;
-    border-bottom: 1px solid var(--light-blue-gray);
-    background: linear-gradient(157deg, var(--app-bar) 10rem, var(--app-bar-secondary) 95%);
+    background: white;
+    padding: 0;
+    overflow: hidden;
     &.no-user {
       .navbar-logos {
         visibility: hidden;
       }
+    }
+    &.collapsed {
+      height: 4.5rem;
     }
     // Because flex properties aren't inherited, we need to redeclare these first
     // few properties so that content nested within behave properly.
@@ -337,46 +305,18 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
       align-items: center;
       justify-content: space-between;
     }
-
-    .container,
-    .container-fluid {
-      @extend %container-flex-properties;
-    }
-
-    @each $breakpoint, $container-max-width in $container-max-widths {
-      > .container#{breakpoint-infix($breakpoint, $container-max-widths)} {
-        @extend %container-flex-properties;
-      }
-    }
-  }
-
-  .navbar-brand {
-    display: inline-block;
-    padding-top: $navbar-brand-padding-y;
-    padding-bottom: $navbar-brand-padding-y;
-    margin-right: 1rem;
-    @include font-size($navbar-brand-font-size);
-    line-height: inherit;
-    white-space: nowrap;
-    font-size: 1.5rem;
-    font-weight: 500;
-    color: var(--font-text-link);
-    text-decoration: none;
-
-    @include hover-focus() {
-      text-decoration: none;
-    }
   }
 
   // Button for toggling the navbar when in its collapsed state
   .navbar-toggler {
-    padding: $navbar-toggler-padding-y $navbar-toggler-padding-x;
-    @include font-size($navbar-toggler-font-size);
-    line-height: 1;
+    padding: .25rem .75rem;
+    font-size: 1rem;
     background-color: transparent; // remove default button style
-    border: $border-width solid transparent; // remove default button style
+    border: 1px solid transparent; // remove default button style
     border-radius: .25rem;
-    margin-bottom: 0.5rem;
+    width: 2rem;
+    height: 3rem;
+    margin: auto 1rem;
 
     @include hover-focus() {
       text-decoration: none;
@@ -386,15 +326,6 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
   .navbar-collapse {
     flex-basis: 100%;
     flex-grow: 1;
-    flex-shrink: 1;
-    // For always expanded or extra full navbars, ensure content aligns itself
-    // properly vertically. Can be easily overridden with flex utilities.
-    align-items: stretch;
-    justify-content: flex-end;
-    flex-wrap: wrap-reverse;
-    ul {
-      margin-left: auto;
-    }
   }
 
   .collapse {
@@ -408,19 +339,51 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
     }
   }
 
-
-  .navbar-nav {
+  .navbar-right {
+    position: relative;
+    display: flex;
+    width: 100%;
+    height: 100%;
+  }
+  .navbar-navigation-items {
     display: flex;
     flex-direction: column; // cannot use `inherit` to get the `.navbar`s value
     padding: 0;
     margin: 0;
     list-style: none;
     border-top: none;
+    align-items: center;
+    justify-content: flex-end;
 
-    &.left-side-menu {
-      margin: 0 auto;
-      .nav-item:hover {
-        background: rgba(white, 0.4);
+    button, mat-select, .nav-item {
+      font-weight: 400;
+    }
+
+    &.main-navigation-items {
+      margin: 0;
+      flex-grow: 1;
+      justify-content: stretch;
+      box-shadow: none;
+      button, mat-select, .nav-item {
+        font-size: 0.9rem;
+      }
+      .nav-item {
+        flex-grow: 1;
+        min-width: 6.5rem;
+        max-width: 12rem;
+        justify-content: center;
+      }
+    }
+
+    &.secondary-navigation-items {
+      color: var(--font-color-primary);
+      margin-right: 1rem;
+      mat-select {
+        border-bottom: 1px dotted var(--table-border-color);
+        margin-right: 0.5rem;
+        &:hover {
+          border-bottom: 1px solid var(--primary-color);
+        }
       }
     }
 
@@ -446,17 +409,19 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
     }
   }
 
-  .nav-link {
+  button.nav-link {
     display: block;
-    padding: $nav-link-padding-y $nav-link-padding-x;
+    padding: 0 1rem;
     text-decoration: none;
+    background: none;
+    border: none;
     @include hover-focus() {
       text-decoration: none;
     }
 
     // Disabled state lightens text
     &.disabled {
-      color: $nav-link-disabled-color;
+      color: var(--font-color-secondary);
       pointer-events: none;
       cursor: default;
     }
@@ -475,17 +440,6 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
             padding-right: 0;
             padding-left: 0;
           }
-
-          > .container,
-          > .container-fluid {
-            @extend %container-navbar-expand-#{$breakpoint};
-          }
-
-          @each $size, $container-max-width in $container-max-widths {
-            > .container#{breakpoint-infix($size, $container-max-widths)} {
-              @extend %container-navbar-expand-#{$breakpoint};
-            }
-          }
         }
 
         @include media-breakpoint-up($next) {
@@ -495,16 +449,20 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
           &.no-user {
             border: none;
             background: none;
+            .navbar-navigation-items {
+              margin-right: 1rem;
+              margin-top: 1rem;
+            }
           }
-
-          .navbar-nav {
+          .navbar-navigation-items {
             flex-direction: row;
-            align-items: stretch;
-
+            align-items: center;
+            &.main-navigation-items {
+              align-items: stretch;
+            }
             .dropdown-menu {
               position: absolute;
             }
-
             .nav-link {
               padding-right: $navbar-nav-link-padding-x;
               padding-left: $navbar-nav-link-padding-x;
@@ -516,24 +474,9 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
             flex-wrap: nowrap;
           }
 
-          > .container,
-          > .container-fluid {
-            @extend %container-nesting-#{$breakpoint};
-          }
-
-          @each $size, $container-max-width in $container-max-widths {
-            > .container#{breakpoint-infix($size, $container-max-widths)} {
-              @extend %container-nesting-#{$breakpoint};
-            }
-          }
-
           .navbar-collapse {
             display: flex !important; // stylelint-disable-line declaration-no-important
-
-            // Changes flex-bases to auto because of an IE10 bug
-            flex-basis: auto;
           }
-
           .navbar-toggler {
             display: none;
           }
@@ -560,12 +503,23 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
 
 .language-select {
   width: 11em;
-  border: 2px solid var(--font-text-link);
-  border-radius: 0.35rem;
-  padding: 0.35rem;
-  background: rgb(186, 234, 243);
+  border-radius: 0.2rem;
+  padding: 0rem 0.2rem;
+  background: rgba(255, 255, 255, 0.6);
+  color: var(--primary-color) !important;
+  &:hover {
+    background: white;
+  }
   &:focus {
     background: var(--background-card);
+    outline: 2px solid var(--primary-color);
+  }
+}
+.language-list {
+  ::ng-deep mat-select {
+    .mat-select-value-text, .mat-select-arrow {
+      font-size: .8rem;
+    }
   }
 }
 
@@ -582,18 +536,17 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
   min-width: 17.5rem;
   max-width: fit-content;
   overflow-y: hidden;
-  margin-right: 1rem;
 }
 .programme-logo-container {
-  max-width: 17.5rem;
-  max-height: 100%;
   width: 17.5rem;
-  height: 100%;
+  max-width: 17.5rem;
+  height: 4.5rem;
+  max-height: 4.5rem;
+  padding: .2rem .5rem .2rem .5rem;
   box-sizing: border-box;
-  padding: 0.2rem;
-  padding-right: 1rem;
   position: relative;
   display: flex;
+  background: white;
 }
 .logo {
   margin: auto;
@@ -601,26 +554,10 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
     max-width: 100%;
     max-height: 100%;
   }
-  &.half-size {
-    height: 40%;
-    margin-right: auto;
-    margin-left: 1rem;
-  }
 }
 .show-pointer {
   cursor: pointer;
 }
-
-.vertical-splitter {
-  height: 60%;
-  width: 1px;
-  background: var(--sidebar-background-color);
-  opacity: 0.5;
-  position: absolute;
-  right: 0;
-  top: 20%;
-}
-
 .toolbar {
   position: relative;
   box-sizing: border-box;
@@ -630,37 +567,63 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
 }
 
 .nav-item {
-  padding: 0 .2rem;
-  border-bottom: .125rem solid transparent;
-  transition: border-bottom-color .2s ease-out;
+  transition: background-color .2s ease-out;
   display: flex;
-  font-size: .875rem;
-  font-weight: 500;
-  align-items: center;
+  background-color: transparent;
 
+  &.user-name {
+  }
+  .mat-button-base.logout-button {
+    font-weight: 700;
+    margin-right: 0;
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  }
   .nav-link {
     display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    justify-content: center;
     align-items: center;
     cursor: pointer;
-    color: var(--font-text-link) !important;
-    max-width: 25em;
+    color: var(--primary-dark-color);
+    opacity: 0.87;
     overflow-y: hidden;
+    padding: 0 0.125rem;
+    border-left: 1px solid transparent;
+    border-right: 1px solid transparent;
+    transition: opacity 0.125s ease-out, background-color 0.125s ease-out, box-shadow 0.25s ease-out;
     .nav-text {
-      line-height: 0.95rem;
+      line-height: 1.25em;
+      text-overflow: ellipsis;
+    }
+    mat-icon {
+      margin-right: 0.5rem;
+    }
+    &:hover {
+      opacity: 1;
+      background: var(--table-hover-color);
     }
   }
   &.active-collapsed {
-    border-bottom: .125rem solid var(--font-text-link);
-    background: rgba(white, 0.75);
+    .nav-link {
+      opacity: 1;
+      background: var(--table-hover-color);
+      box-shadow: inset 0 0.35rem 1.5rem -0.1rem rgba(135, 183, 219, 0.75);
+      border-left: 1px solid rgba(0,0,0, 0.1);
+      border-right: 1px solid rgba(0,0,0, 0.1);
+    }
   }
-  &.active-not-collapsed .nav-text {
-    text-decoration: underline;
-    font-weight: 600;
+  &.active-not-collapsed {
+    .nav-link {
+      opacity: 1;
+    }
   }
 }
 
 .mat-select {
-  font-weight: 500;
+  font-weight: var(--font-weight-strong);
 }
 
 .spacer {
@@ -672,14 +635,8 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
 }
 
 .logout-button {
+  padding: 0.15rem;
   &.not-collapsed {
-    margin: 0.25rem 0;
-  }
-}
-
-.language-list {
-  ::ng-deep .mat-select-value-text, .mat-select-arrow {
-    font-size: .875rem;
-    color: var(--font-text-link) !important;
+    margin: 0 0.25rem 0 0;
   }
 }

@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {merge, Observable, Subject} from 'rxjs';
-import {PaymentDetailDTO, PaymentPartnerInstallmentDTO, PaymentsApiService,} from '@cat/api';
+import {PaymentDetailDTO, PaymentsAPIService,} from '@cat/api';
 import {PermissionService} from '../../../security/permissions/permission.service';
 import {RoutingService} from '@common/services/routing.service';
 import {switchMap, tap} from 'rxjs/operators';
@@ -15,7 +15,7 @@ export class PaymentsDetailPageStore {
   paymentDetail$: Observable<PaymentDetailDTO>;
   savedPaymentDetail$ = new Subject<PaymentDetailDTO>();
 
-  constructor(private paymentApiService: PaymentsApiService,
+  constructor(private paymentApiService: PaymentsAPIService,
               private permissionService: PermissionService,
               private routingService: RoutingService) {
     this.paymentDetail$ = this.paymentDetail();
@@ -32,7 +32,7 @@ export class PaymentsDetailPageStore {
     return merge(initialPaymentDetail$, this.savedPaymentDetail$);
   }
 
-   updatePaymentInstallmentsPerPartner(paymentId: number, partnerId: number, installments: PaymentPartnerInstallmentDTO[]): Observable<PaymentPartnerInstallmentDTO[]> {
-    return this.paymentApiService.updatePaymentPartnerInstallments(partnerId, paymentId, installments);
+   updatePaymentInstallments(paymentId: number, paymentDetail: PaymentDetailDTO): Observable<PaymentDetailDTO> {
+    return this.paymentApiService.updatePaymentInstallments(paymentId, paymentDetail);
   }
 }

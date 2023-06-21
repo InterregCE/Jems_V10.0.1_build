@@ -8,7 +8,7 @@ interface OutputRowWithTranslations: TranslationView {
     val workPackageNumber: Int
     val number: Int
     val title: String?
-    val targetValue: BigDecimal
+    val targetValue: BigDecimal?
     val programmeOutputId: Long?
     val programmeResultId: Long?
 }

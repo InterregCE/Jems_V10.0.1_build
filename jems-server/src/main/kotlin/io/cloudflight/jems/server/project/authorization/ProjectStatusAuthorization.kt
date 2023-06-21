@@ -50,7 +50,7 @@ annotation class CanStartSecondStep
 annotation class CanRevertDecision
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectAuthorization.hasPermission('ProjectModificationView', #projectId)")
+@PreAuthorize("@projectStatusAuthorization.hasPermissionOrAsController('ProjectModificationView', #projectId)")
 annotation class CanRetrieveProjectModifications
 
 @Retention(AnnotationRetention.RUNTIME)
@@ -58,7 +58,7 @@ annotation class CanRetrieveProjectModifications
 annotation class CanSetProjectToContracted
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectAuthorization.hasPermission('ProjectContractingView', #projectId)")
+@PreAuthorize("@projectStatusAuthorization.hasPermissionOrAsController('ProjectContractingView', #projectId)")
 annotation class CanRetrieveProjectContractingMonitoring
 
 @Retention(AnnotationRetention.RUNTIME)
@@ -77,6 +77,7 @@ annotation class CanRejectModification
 class ProjectStatusAuthorization(
     override val securityService: SecurityService,
     val projectPersistence: ProjectPersistence,
+    val authorizationUtilService: AuthorizationUtilService
 ) : Authorization(securityService) {
 
     fun hasPermissionOrIsViewCollaborator(permission: UserRolePermission, projectId: Long): Boolean {
@@ -88,6 +89,7 @@ class ProjectStatusAuthorization(
         else
             throw ResourceNotFoundException("project")
     }
+
     fun hasPermissionOrIsEditCollaborator(permission: UserRolePermission, projectId: Long): Boolean {
         val project = projectPersistence.getApplicantAndStatusById(projectId)
         val isOwner = isActiveUserIdEqualToOneOf(project.getUserIdsWithEditLevel())
@@ -98,4 +100,6 @@ class ProjectStatusAuthorization(
             throw ResourceNotFoundException("project")
     }
 
+    fun hasPermissionOrAsController(permission: UserRolePermission, projectId: Long): Boolean =
+        hasPermission(permission, projectId) || authorizationUtilService.hasPermissionAsController(permission, projectId)
 }

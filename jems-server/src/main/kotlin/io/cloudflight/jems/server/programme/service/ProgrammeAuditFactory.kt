@@ -2,7 +2,6 @@ package io.cloudflight.jems.server.programme.service
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
-import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.nuts.service.NutsIdentifier
@@ -156,7 +155,6 @@ fun checklistCreated(context: Any, checklist: ProgrammeChecklistDetail): AuditCa
         context = context,
         auditCandidate = AuditCandidate(
             action = AuditAction.CHECKLIST_IS_CREATED,
-            project = AuditProject(id = checklist.id.toString()),
             description = "[" + checklist.type + "]" +
                 " [" + checklist.name + "]" + " created"
         )
@@ -167,7 +165,6 @@ fun checklistDeleted(context: Any, checklist: ProgrammeChecklistDetail): AuditCa
         context = context,
         auditCandidate = AuditCandidate(
             action = AuditAction.CHECKLIST_IS_DELETED,
-            project = AuditProject(id = checklist.id.toString()),
             description = "[" + checklist.id + "] [" + checklist.type + "]" +
                 " [" + checklist.name + "]" + " deleted"
         )

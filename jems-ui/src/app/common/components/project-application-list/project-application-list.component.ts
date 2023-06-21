@@ -1,13 +1,16 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
-import {ProjectApplicationListStore} from '@common/components/project-application-list/project-application-list-store.service';
+import {
+  ProjectApplicationListStore
+} from '@common/components/project-application-list/project-application-list-store.service';
 import {FormBuilder} from '@angular/forms';
 import {map, tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {combineLatest, Observable} from 'rxjs';
 import {ProgrammeSpecificObjectiveDTO, ProjectStatusDTO} from '@cat/api';
 import {TranslateService} from '@ngx-translate/core';
+import {ColumnWidth} from '@common/components/table/model/column-width';
 
 @Component({
   selector: 'jems-project-application-list',
@@ -27,9 +30,10 @@ export class ProjectApplicationListComponent {
     isTableClickable: true,
     columns: [
       {
-        displayedColumn: 'project.table.column.name.id',
+        displayedColumn: 'project.table.column.name.project.id',
         elementProperty: 'customIdentifier',
-        sortProperty: 'customIdentifier'
+        sortProperty: 'customIdentifier',
+        columnWidth: ColumnWidth.IdColumn
       },
       {
         displayedColumn: 'project.table.column.name.acronym',
@@ -40,18 +44,21 @@ export class ProjectApplicationListComponent {
         displayedColumn: 'project.table.column.name.submission',
         columnType: ColumnType.DateColumn,
         elementProperty: 'firstSubmissionDate',
-        sortProperty: 'firstSubmission.updated'
+        sortProperty: 'firstSubmission.updated',
+        columnWidth: ColumnWidth.DateColumn
       },
       {
         displayedColumn: 'project.table.column.name.resubmission',
         columnType: ColumnType.DateColumn,
         elementProperty: 'lastResubmissionDate',
-        sortProperty: 'lastResubmission.updated'
+        sortProperty: 'lastResubmission.updated',
+        columnWidth: ColumnWidth.DateColumn
       },
       {
         displayedColumn: 'project.table.column.name.priority',
         elementProperty: 'programmePriorityCode',
         sortProperty: 'priorityPolicy.programmePriority.code',
+        columnWidth: ColumnWidth.MediumColumn,
         tooltip: {
           tooltipContent: 'programmePriority.title'
         }
@@ -60,6 +67,7 @@ export class ProjectApplicationListComponent {
         displayedColumn: 'project.table.column.name.objective',
         elementProperty: 'specificObjectiveCode',
         sortProperty: 'priorityPolicy.code',
+        columnWidth: ColumnWidth.MediumColumn,
         tooltip: {
           tooltipContent: 'specificObjective.programmeObjectivePolicy',
           tooltipTranslationKey: 'programme.policy'
@@ -69,7 +77,8 @@ export class ProjectApplicationListComponent {
         displayedColumn: 'project.table.column.name.status',
         elementProperty: 'projectStatus',
         elementTranslationKey: 'common.label.projectapplicationstatus',
-        sortProperty: 'currentStatus.status'
+        sortProperty: 'currentStatus.status',
+        columnWidth: ColumnWidth.MediumColumn
       },
       {
         displayedColumn: 'project.table.column.name.related',
@@ -128,5 +137,4 @@ export class ProjectApplicationListComponent {
       this.filterForm.value.statuses?.length > 0 ||
       this.filterForm.value.calls?.length;
   }
-
 }

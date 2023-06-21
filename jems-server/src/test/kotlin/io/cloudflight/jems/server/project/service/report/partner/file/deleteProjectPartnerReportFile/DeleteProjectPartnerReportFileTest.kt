@@ -1,8 +1,10 @@
 package io.cloudflight.jems.server.project.service.report.partner.file.deleteProjectPartnerReportFile
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
+import io.cloudflight.jems.server.project.service.report.partner.SensitiveDataAuthorizationService
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -24,7 +26,13 @@ class DeleteProjectPartnerReportFileTest : UnitTest() {
     lateinit var partnerPersistence: PartnerPersistence
 
     @MockK
-    lateinit var reportFilePersistence: ProjectReportFilePersistence
+    lateinit var filePersistence: JemsFilePersistence
+
+    @MockK
+    lateinit var reportExpenditurePersistence: ProjectPartnerReportExpenditurePersistence
+
+    @MockK
+    lateinit var sensitiveDataAuthorization: SensitiveDataAuthorizationService
 
     @InjectMockKs
     lateinit var interactor: DeleteProjectPartnerReportFile
@@ -32,20 +40,22 @@ class DeleteProjectPartnerReportFileTest : UnitTest() {
 
     fun reset() {
         clearMocks(partnerPersistence)
-        clearMocks(reportFilePersistence)
+        clearMocks(filePersistence)
     }
 
     @Test
     fun delete() {
         val projectId = 96L
         val fileId = 10L
+        every { reportExpenditurePersistence.existsByPartnerIdAndAttachmentIdAndGdprTrue(partnerId = PARTNER_ID, fileId = fileId) } returns false
+        every { sensitiveDataAuthorization.canEditPartnerSensitiveData(PARTNER_ID) } returns true
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID) } returns projectId
         val searchIndexSlot = slot<String>()
-        every { reportFilePersistence.existsFile(PARTNER_ID, capture(searchIndexSlot), fileId) } returns true
-        every { reportFilePersistence.deleteFile(PARTNER_ID, fileId) } answers { }
+        every { filePersistence.existsFile(PARTNER_ID, capture(searchIndexSlot), fileId) } returns true
+        every { filePersistence.deleteFile(PARTNER_ID, fileId) } answers { }
 
         interactor.delete(PARTNER_ID, reportId = 1890L, fileId)
-        verify(exactly = 1) { reportFilePersistence.deleteFile(PARTNER_ID, fileId) }
+        verify(exactly = 1) { filePersistence.deleteFile(PARTNER_ID, fileId) }
         assertThat(searchIndexSlot.captured).isEqualTo("Project/000096/Report/Partner/000420/PartnerReport/001890/")
     }
 
@@ -53,10 +63,26 @@ class DeleteProjectPartnerReportFileTest : UnitTest() {
     fun `delete - not existing`() {
         val projectId = 94L
         val fileId = -1L
+        every { reportExpenditurePersistence.existsByPartnerIdAndAttachmentIdAndGdprTrue(partnerId = PARTNER_ID, fileId = fileId) } returns false
+        every { sensitiveDataAuthorization.canEditPartnerSensitiveData(PARTNER_ID) } returns true
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID) } returns projectId
-        every { reportFilePersistence.existsFile(PARTNER_ID, any(), fileId) } returns false
+        every { filePersistence.existsFile(PARTNER_ID, any(), fileId) } returns false
         assertThrows<FileNotFound> { interactor.delete(PARTNER_ID, 5L, -1L) }
-        verify(exactly = 0) { reportFilePersistence.deleteFile(any<Long>(), any()) }
+        verify(exactly = 0) { filePersistence.deleteFile(any<Long>(), any()) }
+    }
+
+
+    @Test
+    fun `delete sensitive file throws error for non gdpr user`() {
+        val partnerId = 129L
+        val fileId = 784L
+
+        every { sensitiveDataAuthorization.canEditPartnerSensitiveData(partnerId) } returns false
+        every { reportExpenditurePersistence.existsByPartnerIdAndAttachmentIdAndGdprTrue(
+            partnerId, fileId = fileId) } returns true
+
+        assertThrows<SensitiveFileException> {
+            interactor.delete(partnerId, 871L, fileId = fileId) }
     }
 
 }

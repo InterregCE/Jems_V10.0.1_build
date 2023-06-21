@@ -1,7 +1,6 @@
 package io.cloudflight.jems.api.payments
 
 import io.cloudflight.jems.api.payments.dto.PaymentDetailDTO
-import io.cloudflight.jems.api.payments.dto.PaymentPartnerInstallmentDTO
 import io.cloudflight.jems.api.payments.dto.PaymentToProjectDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
@@ -15,7 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 
-@Api("Payments api")
+@Api("Payments API")
 interface PaymentsApi {
 
     companion object {
@@ -37,14 +36,13 @@ interface PaymentsApi {
         @PathVariable paymentId: Long
     ): PaymentDetailDTO
 
-    @ApiOperation("Update installments for a partner of a payment id")
+    @ApiOperation("Update installments of a payment id")
     @PutMapping(
-        "${ENDPOINT_API_PAYMENTS}/{paymentId}/partnerInstallments/{partnerId}",
+        "${ENDPOINT_API_PAYMENTS}/{paymentId}/partnerInstallments/",
         consumes = [MediaType.APPLICATION_JSON_VALUE]
     )
-    fun updatePaymentPartnerInstallments(
+    fun updatePaymentInstallments(
         @PathVariable paymentId: Long,
-        @PathVariable partnerId: Long,
-        @RequestBody installments: List<PaymentPartnerInstallmentDTO>
-    ): List<PaymentPartnerInstallmentDTO>
+        @RequestBody paymentDetail: PaymentDetailDTO
+    ): PaymentDetailDTO
 }

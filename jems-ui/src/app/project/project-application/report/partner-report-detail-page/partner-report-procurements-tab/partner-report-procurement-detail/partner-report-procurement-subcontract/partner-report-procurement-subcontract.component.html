@@ -145,8 +145,9 @@
                     {{ 'common.delete.entry' | translate }}
                 </mat-header-cell>
                 <mat-cell *matCellDef="let control; let i = index" class="border-cell-left text-center">
-                    <button *ngIf="control.value?.createdInThisReport" (click)="deleteSubcontract(i)"
-                            color="accent" mat-icon-button>
+                    <button type="button" *ngIf="control.value?.createdInThisReport" (click)="deleteSubcontract(i)"
+                            color="accent" mat-icon-button
+                            aria-label="delete">
                         <mat-icon>delete</mat-icon>
                     </button>
                 </mat-cell>
@@ -157,9 +158,10 @@
 
         </mat-table>
 
-        <button mat-raised-button *ngIf="data.isReportEditable" jemsText class="mb-3 mt-3 mat-primary"
+        <button type="button" mat-raised-button *ngIf="data.isReportEditable" jemsText class="mb-3 mt-3 mat-primary"
                 [disabled]="subcontracts.length >= 50"
-                (click)="addSubcontract(null, data.procurementCurrency)">
+                (click)="addSubcontract(null, data.procurementCurrency)"
+                aria-label="add">
             <mat-icon>add</mat-icon>{{ 'project.application.partner.report.procurements.subcontract.add' | translate }}
         </button>
 

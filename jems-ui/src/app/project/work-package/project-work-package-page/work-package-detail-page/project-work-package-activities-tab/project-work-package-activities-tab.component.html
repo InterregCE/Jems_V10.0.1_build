@@ -8,17 +8,33 @@
                     <div jemsFormLayout [formGroupName]="i" class="activity-container">
                         <div class="activity-header" stretch="1" jemsNoWidthLimit jemsMultiColumnRow justifyContent="space-between">
                             <h4 jemsMultiColumnRow stretch="1" class="mb-0 activity-header-inner">
-                                <span>{{('project.work.package.tab.activity' | translate) + ' ' + data.workPackageNumber + '.' + (i + 1) }}</span>
+                                <span>
+                                    <mat-icon  *ngIf="activity.get('deactivated').value" class="vertical-middle" matTooltip="{{ 'project.application.form.partner.table.status.inactive' | translate }}">do_not_disturb</mat-icon>
+                                    {{ ('project.work.package.tab.activity' | translate) + ' ' + data.workPackageNumber + '.' + (i + 1) }}
+                                </span>
+
                                 <span *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.TITLE">
                                     {{activity.get(constants.TITLE.name).value | translateByInputLanguage | async}}
                                 </span>
                             </h4>
 
-                            <button *ngIf="form.enabled"
+                            <button *ngIf="form.enabled && data.isAlreadyContracted"  [disabled]="activity.get('deactivated').value"
+                                    matTooltip="{{ 'project.work.package.tab.activity.deactivate.tooltip' | translate}}"
                                     type="button" mat-icon-button color="accent"
-                                    (click)="removeActivity(i)">
-                                <mat-icon>delete</mat-icon>
+                                    (click)="deactivateActivity(i)"
+                                    aria-label="deactivate">
+                                <mat-icon *ngIf="activity.get('deactivated').value">delete_forever</mat-icon>
+                                <mat-icon *ngIf="!activity.get('deactivated').value">do_not_disturb</mat-icon>
                             </button>
+
+                            <button *ngIf="form.enabled && !data.isAlreadyContracted"
+                                    matTooltip="{{ 'project.work.package.tab.activity.delete.tooltip' | translate}}"
+                                    type="button" mat-icon-button color="accent"
+                                    (click)="removeActivity(i)"
+                                    aria-label="delete">
+                                <mat-icon >delete</mat-icon>
+                            </button>
+
                         </div>
                         <jems-multi-language-container
                                 *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.TITLE">
@@ -76,7 +92,7 @@
                         <mat-form-field class="example-chip-list" appearance="fill"
                                         *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.STATE_AID_PARTNERS_INVOLVED">
                             <mat-label>{{ 'project.work.package.tab.activity.partnersInvolved' | translate }}</mat-label>
-                            <mat-chip-list #chipList [disabled]="!data.isEditable || data.partners.length === 0 ">
+                            <mat-chip-list #chipList [disabled]="!data.isEditable || data.partners.length === 0 " aria-label="involved partners">
                                 <mat-chip
                                         *ngFor="let partner of partners(i).value;let partnerIndex = index"
                                         [selectable]="false"
@@ -90,7 +106,8 @@
                                         #filterPartners
                                         [matAutocomplete]="auto"
                                         [matChipInputFor]="chipList"
-                                        [matChipInputSeparatorKeyCodes]="separatorKeysCodes">
+                                        [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                        aria-label="partner to add">
                             </mat-chip-list>
                             <mat-autocomplete #auto="matAutocomplete"
                                               (optionSelected)="addPartner(i, $event.option.value, data.partners); filterPartners.value = ''; filterPartners.blur()">
@@ -108,7 +125,7 @@
                             <h4>{{'project.work.package.tab.deliverables' | translate}}</h4>
                             <p>{{'project.work.package.tab.deliverables.intro' | translate}}</p>
                             <jems-multi-language-container jemsNoWidthLimit *ngIf="deliverables(i).controls?.length">
-                                <div [jemsTableConfig]="[{maxInRem:3},{minInRem:15},{minInRem:15},{minInRem:10},{maxInRem:2}]">
+                                <div [jemsTableConfig]="[{maxInRem:5},{minInRem:15},{minInRem:15},{minInRem:8},{maxInRem:2}]">
                                     <div>
                                         <span class="mat-body-strong">{{'project.work.package.tab.deliverables.number' | translate }}</span>
                                         <span class="mat-body-strong">{{'project.work.package.tab.deliverables.title' | translate }}</span>
@@ -119,7 +136,10 @@
                                     <div *ngFor="let deliverable of deliverables(i).controls;let j=index">
                                         <ng-container [formArrayName]="constants.DELIVERABLES.name">
                                             <ng-container [formGroupName]="j">
-                                                <div>D.{{data.workPackageNumber}}.{{i + 1}}.{{j + 1}}</div>
+                                                <span class="deliverable-number">
+                                                    <mat-icon *ngIf="deliverable.get('deactivated').value" class="vertical-middle" matTooltip="{{ 'project.application.form.partner.table.status.inactive' | translate }}">do_not_disturb</mat-icon>
+                                                    D.{{data.workPackageNumber}}.{{i + 1}}.{{j + 1}}
+                                                </span>
 
                                                 <jems-multi-language-form-field
                                                         type="textarea"
@@ -142,12 +162,22 @@
                                                         (selectionChanged)="formService.setDirty(true)">
                                                 </jems-project-periods-select>
 
-                                                <div *ngIf="form.enabled">
-                                                    <button type="button"
+                                                <div>
+                                                    <button *ngIf="form.enabled && data.isAlreadyContracted" [disabled]="deliverable.get('deactivated').value"
+                                                            matTooltip="{{ 'project.work.package.tab.deliverables.deactivate.tooltip' | translate}}"
+                                                            type="button" mat-icon-button color="accent"
+                                                            (click)="deactivateDeliverable(i, j)"
+                                                            aria-label="deactivate">
+                                                        <mat-icon *ngIf="deliverable.get('deactivated').value">delete_forever</mat-icon>
+                                                        <mat-icon *ngIf="!deliverable.get('deactivated').value">do_not_disturb</mat-icon>
+                                                    </button>
+
+                                                    <button *ngIf="form.enabled && !data.isAlreadyContracted"
+                                                            matTooltip="{{ 'project.work.package.tab.deliverables.delete.tooltip' | translate}}"
+                                                            type="button" mat-icon-button color="accent"
                                                             (click)="removeDeliverable(i, j)"
-                                                            mat-icon-button
-                                                            color="accent">
-                                                        <mat-icon>delete</mat-icon>
+                                                            aria-label="delete">
+                                                        <mat-icon >delete</mat-icon>
                                                     </button>
                                                 </div>
                                             </ng-container>
@@ -156,7 +186,8 @@
                                 </div>
                             </jems-multi-language-container>
                             <button jemsText *ngIf="addDeliverableVisible(i)" mat-stroked-button type="button"
-                                    (click)="addNewDeliverable(i)">
+                                    (click)="addNewDeliverable(i)"
+                                    aria-label="add">
                                 <mat-icon>add</mat-icon>
                             </button>
                         </ng-container>

@@ -1,8 +1,8 @@
 package io.cloudflight.jems.api.project.contracting
 
+import io.cloudflight.jems.api.common.dto.file.JemsFileDTO
+import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.contracting.file.ProjectContractingFileSearchRequestDTO
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileDTO
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -12,13 +12,13 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestPart
-import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.multipart.MultipartFile
 
 @Api("Project Contracting File Management")
@@ -33,14 +33,14 @@ interface ContractingFileApi {
     fun uploadContractFile(
         @PathVariable projectId: Long,
         @RequestPart("file") file: MultipartFile,
-    ): ProjectReportFileMetadataDTO
+    ): JemsFileMetadataDTO
 
     @ApiOperation("Upload other contract document to contracting")
     @PostMapping("$ENDPOINT_API_CONTRACTING_FILE/contractDocument", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun uploadContractDocumentFile(
         @PathVariable projectId: Long,
         @RequestPart("file") file: MultipartFile,
-    ): ProjectReportFileMetadataDTO
+    ): JemsFileMetadataDTO
 
     @ApiOperation("Upload contract document to partner in contracting section")
     @PostMapping("$ENDPOINT_API_CONTRACTING_FILE/partnerDocument/{partnerId}", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
@@ -48,14 +48,14 @@ interface ContractingFileApi {
         @PathVariable projectId: Long,
         @PathVariable partnerId: Long,
         @RequestPart("file") file: MultipartFile,
-    ): ProjectReportFileMetadataDTO
+    ): JemsFileMetadataDTO
 
     @ApiOperation("Upload contract document to partner in contracting section")
     @PostMapping("$ENDPOINT_API_CONTRACTING_FILE/internal", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun uploadContractInternalFile(
         @PathVariable projectId: Long,
         @RequestPart("file") file: MultipartFile,
-    ): ProjectReportFileMetadataDTO
+    ): JemsFileMetadataDTO
 
     @ApiOperation("List contracting files")
     @ApiImplicitParams(
@@ -75,7 +75,7 @@ interface ContractingFileApi {
         @PathVariable(required = false) partnerId: Long? = null,
         pageable: Pageable,
         @RequestBody searchRequest: ProjectContractingFileSearchRequestDTO,
-    ): Page<ProjectReportFileDTO>
+    ): Page<JemsFileDTO>
 
     @ApiOperation("List contracting partner files")
     @ApiImplicitParams(
@@ -92,7 +92,7 @@ interface ContractingFileApi {
         @PathVariable partnerId: Long,
         pageable: Pageable,
         @RequestBody searchRequest: ProjectContractingFileSearchRequestDTO,
-    ): Page<ProjectReportFileDTO>
+    ): Page<JemsFileDTO>
 
     @ApiOperation("Update description of already uploaded file")
     @PutMapping(
@@ -145,10 +145,10 @@ interface ContractingFileApi {
 
     @ApiOperation("Download partner file")
     @GetMapping(
-        "${ENDPOINT_API_CONTRACTING_FILE}/partnerDocument/{partnerId}/download/{fileId}",
+        "${ENDPOINT_API_CONTRACTING_FILE}/partnerDocument/download/{fileId}",
         produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE]
     )
-    fun downloadPartnerFile(@PathVariable projectId: Long, @PathVariable partnerId: Long, @PathVariable fileId: Long): ResponseEntity<ByteArrayResource>
+    fun downloadPartnerFile(@PathVariable projectId: Long, @PathVariable fileId: Long): ResponseEntity<ByteArrayResource>
 
     @ApiOperation("Delete contract file")
     @DeleteMapping("${ENDPOINT_API_CONTRACTING_FILE}/contract/delete/{fileId}")

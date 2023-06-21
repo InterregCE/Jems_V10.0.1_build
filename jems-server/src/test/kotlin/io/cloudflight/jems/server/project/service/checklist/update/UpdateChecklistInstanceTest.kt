@@ -19,6 +19,7 @@ import io.cloudflight.jems.server.programme.service.checklist.model.metadata.Opt
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.ScoreMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.TextInputMetadata
+import io.cloudflight.jems.server.project.authorization.ProjectChecklistAuthorization
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstanceValidator
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
@@ -40,6 +41,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.context.ApplicationEventPublisher
 import java.math.BigDecimal
+import java.time.ZonedDateTime
 
 internal class UpdateChecklistInstanceTest : UnitTest() {
 
@@ -47,6 +49,7 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
     private val RELATED_TO_ID = 2L
     private val PROGRAMME_CHECKLIST_ID = 4L
     private val CREATOR_ID = 1L
+    private val TODAY = ZonedDateTime.now()
 
     private val checkLisDetail = checklistInstanceDetail()
 
@@ -60,6 +63,7 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
             relatedToId = RELATED_TO_ID,
             creatorEmail = "a@a",
             creatorId = CREATOR_ID,
+            createdAt = TODAY,
             finishedDate = null,
             minScore = BigDecimal(0),
             maxScore = BigDecimal(10),
@@ -122,6 +126,7 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
         name = "name",
         creatorEmail = "a@a",
         creatorId = CREATOR_ID,
+        createdAt = TODAY,
         relatedToId = RELATED_TO_ID,
         finishedDate = null,
         minScore = BigDecimal(0),
@@ -142,7 +147,8 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
         creatorEmail = creatorEmail,
         finishedDate = null,
         consolidated = false,
-        visible = true
+        visible = true,
+        description = "test"
     )
 
     private val checkLisDetailWithErrorOnScore = ChecklistInstanceDetail(
@@ -153,6 +159,7 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
         name = "name",
         relatedToId = RELATED_TO_ID,
         finishedDate = null,
+        createdAt = TODAY,
         minScore = BigDecimal(0),
         maxScore = BigDecimal(10),
         allowsDecimalScore = false,
@@ -171,6 +178,7 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
         name = "name",
         relatedToId = RELATED_TO_ID,
         finishedDate = null,
+        createdAt = TODAY,
         minScore = BigDecimal(0),
         maxScore = BigDecimal(10),
         consolidated = false,
@@ -193,6 +201,9 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
     @MockK
     lateinit var securityService: SecurityService
 
+    @MockK
+    lateinit var checklistAuthorization: ProjectChecklistAuthorization
+
     lateinit var updateChecklistInstance: UpdateChecklistInstance
 
     lateinit var generalValidator: GeneralValidatorService
@@ -207,13 +218,17 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
         generalValidator = GeneralValidatorDefaultImpl()
         checklistInstanceValidator = mockk()
         checklistInstanceValidator = ChecklistInstanceValidator(generalValidator)
-        updateChecklistInstance = UpdateChecklistInstance(persistence, auditPublisher, checklistInstanceValidator, userAuthorization)
+        updateChecklistInstance = UpdateChecklistInstance(
+            persistence, auditPublisher,
+            checklistInstanceValidator, userAuthorization, checklistAuthorization
+        )
     }
 
     @Test
     fun `update - successfully`() {
         every { persistence.update(checkLisDetail) } returns checkLisDetail
-        every { persistence.getChecklistDetail(checkLisDetail.id) } returns checklistInstanceDetail(ChecklistInstanceStatus.DRAFT)
+        every { persistence.getChecklistDetail(checkLisDetail.id, ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT, RELATED_TO_ID) } returns
+                checklistInstanceDetail(ChecklistInstanceStatus.DRAFT)
         Assertions.assertThat(updateChecklistInstance.update(checkLisDetail))
             .isEqualTo(checkLisDetail)
     }
@@ -243,7 +258,7 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
 
     @Test
     fun `update - checkLisDetail is already in FINISHED status`() {
-        every { persistence.getChecklistDetail(CHECKLIST_ID) } returns checkLisDetail
+        every { persistence.getChecklistDetail(CHECKLIST_ID, ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT, RELATED_TO_ID) } returns checkLisDetail
         assertThrows<UpdateChecklistInstanceStatusNotAllowedException> {
             updateChecklistInstance.update(checklistInstanceDetail(ChecklistInstanceStatus.FINISHED))
         }
@@ -271,14 +286,18 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
 
     @Test
     fun `update - text input component max length exception`() {
-        every { persistence.getChecklistDetail(checkLisDetailWithErrorOnTextInput.id) } returns checkLisDetailWithErrorOnTextInput
+        every {
+            persistence.getChecklistDetail(checkLisDetailWithErrorOnTextInput.id, ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT, RELATED_TO_ID)
+        } returns checkLisDetailWithErrorOnTextInput
 
         assertThrows<AppInputValidationException> { updateChecklistInstance.update(checkLisDetailWithErrorOnTextInput) }
     }
 
     @Test
     fun `update - options toggle justification field max length exception`() {
-        every { persistence.getChecklistDetail(checkLisDetailWithErrorOnOptionsToggle.id) } returns checkLisDetailWithErrorOnOptionsToggle
+        every {
+            persistence.getChecklistDetail(checkLisDetailWithErrorOnOptionsToggle.id, ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT, RELATED_TO_ID)
+        } returns checkLisDetailWithErrorOnOptionsToggle
         every { persistence.update(checkLisDetailWithErrorOnOptionsToggle) } returns checkLisDetailWithErrorOnOptionsToggle
 
         assertThrows<AppInputValidationException> { updateChecklistInstance.update(checkLisDetailWithErrorOnOptionsToggle) }
@@ -286,7 +305,8 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
 
     @Test
     fun `update - score justification field max length exception`() {
-        every { persistence.getChecklistDetail(checkLisDetailWithErrorOnScore.id) } returns checkLisDetailWithErrorOnScore
+        every { persistence.getChecklistDetail(checkLisDetailWithErrorOnScore.id, ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT, RELATED_TO_ID) } returns
+                checkLisDetailWithErrorOnScore
 
         assertThrows<AppInputValidationException> { updateChecklistInstance.update(checkLisDetailWithErrorOnScore) }
     }
@@ -307,7 +327,7 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
                 action = AuditAction.ASSESSMENT_CHECKLIST_VISIBILITY_CHANGE,
                 project = AuditProject(id = checklist.relatedToId.toString()),
                 description = "[" + checklist.id + "] [" + checklist.type + "]" +
-                    " [" + checklist.name + "]" + " set to visibility true"
+                        " [" + checklist.name + "]" + " set to visibility true"
             )
         )
     }
@@ -328,9 +348,28 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
                 action = AuditAction.ASSESSMENT_CHECKLIST_VISIBILITY_CHANGE,
                 project = AuditProject(id = checklist.relatedToId.toString()),
                 description = "[" + checklist.id + "] [" + checklist.type + "]" +
-                    " [" + checklist.name + "]" + " set to visibility false"
+                        " [" + checklist.name + "]" + " set to visibility false"
             )
         )
+    }
+
+    @Test
+    fun `update description`() {
+        every { persistence.updateDescription(1L, "test") } returns checklistInstance(ChecklistInstanceStatus.FINISHED)
+        every { persistence.getChecklistSummary(1L) } returns checklistInstance(ChecklistInstanceStatus.FINISHED)
+        every { userAuthorization.getUser().email } returns "user@applicant.dev"
+        every { checklistAuthorization.canConsolidate(RELATED_TO_ID) } returns true
+        Assertions.assertThat(updateChecklistInstance.updateDescription(1L, "test"))
+            .isEqualTo(checklistInstance(ChecklistInstanceStatus.FINISHED))
+    }
+
+    @Test
+    fun `update description throws exception`() {
+        every { persistence.updateDescription(1L, "test") } returns checklistInstance(ChecklistInstanceStatus.FINISHED)
+        every { persistence.getChecklistSummary(1L) } returns checklistInstance(ChecklistInstanceStatus.FINISHED)
+        every { userAuthorization.getUser().email } returns "test@test.com"
+        every { checklistAuthorization.canConsolidate(RELATED_TO_ID) } returns false
+        assertThrows<UpdateChecklistInstanceDescriptionNotAllowedException> { updateChecklistInstance.updateDescription(1L, "test") }
     }
 
 }

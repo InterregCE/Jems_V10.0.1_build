@@ -7,7 +7,7 @@ import {
   Input,
   Output
 } from '@angular/core';
-import {ProjectReportFileMetadataDTO} from '@cat/api';
+import {JemsFileMetadataDTO} from '@cat/api';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {Forms} from '@common/utils/forms';
 import {filter, take, tap} from 'rxjs/operators';
@@ -15,6 +15,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {AcceptedFileTypesConstants} from '@project/common/components/file-management/accepted-file-types.constants';
 import {DatePipe} from '@angular/common';
 import {CustomTranslatePipe} from '@common/pipe/custom-translate-pipe';
+import {FileListTableConstants} from '@common/components/file-list/file-list-table/file-list-table-constants';
 
 @Component({
   selector: 'jems-partner-actions-cell',
@@ -31,10 +32,19 @@ import {CustomTranslatePipe} from '@common/pipe/custom-translate-pipe';
 })
 export class PartnerActionsCellComponent implements ControlValueAccessor {
   acceptedFilesTypes = AcceptedFileTypesConstants.acceptedFilesTypes;
-  fileMetadata: ProjectReportFileMetadataDTO;
+  fileMetadata: JemsFileMetadataDTO;
+  isUploadInProgress = false;
+  anonymizedName = FileListTableConstants.SENSITIVE_FILE_NAME_MASK;
 
   @Input()
   isReportEditable = true;
+
+  @Input()
+  set isUploadDone(value: boolean){
+    if (value) {
+      this.isUploadInProgress = false;
+    }
+  }
   @Output()
   upload = new EventEmitter<any>();
   @Output()
@@ -60,7 +70,7 @@ export class PartnerActionsCellComponent implements ControlValueAccessor {
     // Intentionally left blank
   }
 
-  writeValue(obj: ProjectReportFileMetadataDTO): void {
+  writeValue(obj: JemsFileMetadataDTO): void {
     this.fileMetadata = obj;
     this.changeDetectorRef.detectChanges();
   }
@@ -73,9 +83,10 @@ ${this.translatePipe
   }
 
   uploadFile(event: Event) {
-    if(this.fileMetadata?.name) {
+    this.isUploadInProgress = false;
+    if (this.fileMetadata?.name) {
       Forms.confirm(this.dialog, {
-        title:this.fileMetadata.name,
+        title: this.fileMetadata.name,
         message: {
           i18nKey: 'use.case.update.project.partner.report.workplan.upload.override.file',
           i18nArguments: {fileName: this.fileMetadata.name}
@@ -83,9 +94,14 @@ ${this.translatePipe
       }).pipe(
         take(1),
         filter(yes => yes),
-        tap(() => this.upload.emit(event))
+        tap(() => {
+            this.isUploadInProgress = true;
+            this.upload.emit(event);
+          }
+        )
       ).subscribe();
     } else {
+      this.isUploadInProgress = true;
       this.upload.emit(event);
     }
   }
@@ -102,4 +118,11 @@ ${this.translatePipe
       ).subscribe();
     }
   }
+
+  downloadFile(file: JemsFileMetadataDTO) {
+    if (file.name !== this.anonymizedName) {
+      this.download.emit(file.id);
+    }
+  }
+
 }

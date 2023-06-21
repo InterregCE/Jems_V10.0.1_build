@@ -26,6 +26,8 @@ interface ProjectAssociatedOrganizationRepository : JpaRepository<ProjectAssocia
 
     fun findFirstByProjectIdAndId(projectId: Long, id: Long): Optional<ProjectAssociatedOrganization>
 
+    fun countByProjectId(projectId: Long): Int
+
     @Query(
         """
             SELECT

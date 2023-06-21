@@ -10,5 +10,6 @@ data class ProjectFileMetadata(
     val size: Long,
     val uploadedAt: ZonedDateTime,
     val uploadedBy: UserSummary,
-    val description: String?
+    val description: String?,
+    var category: ProjectFileCategoryType? = null,
 )

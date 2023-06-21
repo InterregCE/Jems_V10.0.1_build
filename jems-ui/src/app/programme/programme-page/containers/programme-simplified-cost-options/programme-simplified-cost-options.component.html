@@ -6,7 +6,8 @@
             <h3>{{'lump.sums.table.title' | translate}}</h3>
             <button mat-stroked-button class="mt-1"
                     *jemsHasPermission="PermissionsEnum.ProgrammeSetupUpdate"
-                    [routerLink]="'/app/programme/costs/lumpSum/create'">
+                    [routerLink]="'/app/programme/costs/lumpSum/create'"
+                    aria-label="add">
                 <mat-icon>add</mat-icon>&nbsp;{{ 'programme.lumpSum.add' | translate }}
             </button>
             <jems-programme-lump-sums-list
@@ -21,7 +22,8 @@
             <h3>{{'unit.cost.table.title' | translate}}</h3>
             <button mat-stroked-button class="mt-1"
                     *jemsHasPermission="PermissionsEnum.ProgrammeSetupUpdate"
-                    [routerLink]="'/app/programme/costs/unitCost/create'">
+                    [routerLink]="'/app/programme/costs/unitCost/create'"
+                    aria-label="add">
                 <mat-icon>add</mat-icon>&nbsp;{{ 'programme.unitCost.add' | translate }}
             </button>
             <jems-programme-unit-costs-list

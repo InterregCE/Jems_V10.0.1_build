@@ -3,11 +3,10 @@ package io.cloudflight.jems.server.project.service.report.partner.workPlan.updat
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
-import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackage
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackageActivity
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackageActivityDeliverable
@@ -16,7 +15,8 @@ import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.update.UpdateProjectPartnerReportWorkPackageActivity
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.update.UpdateProjectPartnerReportWorkPackageActivityDeliverable
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.update.UpdateProjectPartnerReportWorkPackageOutput
-import io.cloudflight.jems.server.project.service.report.partner.workPlan.ProjectReportWorkPlanPersistence
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.workPlan.ProjectPartnerReportWorkPlanPersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -27,6 +27,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import java.time.ZonedDateTime
 
 internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
@@ -46,6 +48,7 @@ internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
                     number = 99,
                     title = setOf(InputTranslation(EN, "[99] title")),
                     progress = setOf(InputTranslation(EN, "[99] progress")),
+                    deactivated = false,
                     deliverables = listOf(
                         ProjectPartnerReportWorkPackageActivityDeliverable(
                             id = 87L,
@@ -53,6 +56,7 @@ internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
                             title = setOf(InputTranslation(EN, "[87] title")),
                             contribution = true,
                             evidence = false,
+                            deactivated = false,
                             attachment = dummyFile,
                         )
                     ),
@@ -67,8 +71,10 @@ internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
                     contribution = false,
                     evidence = null,
                     attachment = dummyFile,
+                    deactivated = false,
                 )
-            )
+            ),
+            deactivated = false
         )
 
         private val newWorkPlan = ProjectPartnerReportWorkPackage(
@@ -81,6 +87,7 @@ internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
                     number = 99,
                     title = setOf(InputTranslation(EN, "[99] title")),
                     progress = setOf(InputTranslation(EN, "[99] progress new")),
+                    deactivated = false,
                     deliverables = listOf(
                         ProjectPartnerReportWorkPackageActivityDeliverable(
                             id = 87L,
@@ -88,6 +95,7 @@ internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
                             title = setOf(InputTranslation(EN, "[87] title")),
                             contribution = false,
                             evidence = false,
+                            deactivated = false,
                             attachment = dummyFile,
                         )
                     ),
@@ -102,8 +110,10 @@ internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
                     contribution = null,
                     evidence = true,
                     attachment = dummyFile,
+                    deactivated = false,
                 )
-            )
+            ),
+            deactivated = false
         )
 
         private val updateWorkPlanModel = UpdateProjectPartnerReportWorkPackage(
@@ -158,10 +168,10 @@ internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
     }
 
     @MockK
-    lateinit var reportPersistence: ProjectReportPersistence
+    lateinit var reportPersistence: ProjectPartnerReportPersistence
 
     @MockK
-    lateinit var reportWpPersistence: ProjectReportWorkPlanPersistence
+    lateinit var reportWpPersistence: ProjectPartnerReportWorkPlanPersistence
 
     @RelaxedMockK
     lateinit var generalValidator: GeneralValidatorService
@@ -175,10 +185,12 @@ internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
         clearMocks(reportWpPersistence)
     }
 
-    @Test
-    fun update() {
+    @ParameterizedTest(name = "update {0}")
+    @EnumSource(value = ReportStatus::class,
+        names = ["Draft", "ReOpenSubmittedLast", "ReOpenSubmittedLimited", "ReOpenInControlLast", "ReOpenInControlLimited"])
+    fun update(status: ReportStatus) {
         every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = 11L) } returns
-            ProjectPartnerReportStatusAndVersion(ReportStatus.Draft, "4.12.0")
+            ProjectPartnerReportStatusAndVersion(11L, status, "4.12.0")
         every { reportWpPersistence.getPartnerReportWorkPlanById(PARTNER_ID, reportId = 11) } returnsMany listOf(
             listOf(oldWorkPlan),
             listOf(newWorkPlan),
@@ -206,7 +218,7 @@ internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
     @Test
     fun `update - no changes`() {
         every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = 12L) } returns
-            ProjectPartnerReportStatusAndVersion(ReportStatus.Draft, "4.12.0")
+            ProjectPartnerReportStatusAndVersion(12L, ReportStatus.Draft, "4.12.0")
         every { reportWpPersistence.getPartnerReportWorkPlanById(PARTNER_ID, reportId = 12) } returnsMany listOf(
             listOf(oldWorkPlan),
             listOf(oldWorkPlan),
@@ -227,10 +239,12 @@ internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
         verify(exactly = 2) { reportWpPersistence.getPartnerReportWorkPlanById(PARTNER_ID, reportId = 12L) }
     }
 
-    @Test
-    fun `update - wrong status`() {
+    @ParameterizedTest(name = "update - wrong status {0}")
+    @EnumSource(value = ReportStatus::class, mode = EnumSource.Mode.EXCLUDE,
+        names = ["Draft", "ReOpenSubmittedLast", "ReOpenSubmittedLimited", "ReOpenInControlLast", "ReOpenInControlLimited"])
+    fun `update - wrong status`(status: ReportStatus) {
         every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = 0L) } returns
-            ProjectPartnerReportStatusAndVersion(ReportStatus.Submitted, "4.12.0")
+            ProjectPartnerReportStatusAndVersion(0L, status, "4.12.0")
         assertThrows<ReportAlreadyClosed> { updateWorkPlan.update(PARTNER_ID, reportId = 0L, emptyList()) }
     }
 }

@@ -1,13 +1,9 @@
 package io.cloudflight.jems.server.project.service.application.submit_application
 
-import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.plugin.contract.pre_condition_check.PreConditionCheckPlugin
 import io.cloudflight.jems.plugin.contract.pre_condition_check.models.PreConditionCheckResult
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
-import io.cloudflight.jems.server.audit.model.AuditProject
-import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.plugin.JemsPluginRegistry
 import io.cloudflight.jems.server.plugin.entity.PluginStatusEntity
@@ -28,7 +24,6 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
-import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -95,16 +90,6 @@ class SubmitApplicationInteractorTest : UnitTest() {
         every { draftState.submit() } returns ApplicationStatus.SUBMITTED
 
         assertThat(submitApplication.submit(projectId)).isEqualTo(ApplicationStatus.SUBMITTED)
-
-        val slotAudit = slot<AuditCandidateEvent>()
-        verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }
-        assertThat(slotAudit.captured.auditCandidate).isEqualTo(
-            AuditCandidate(
-                action = AuditAction.APPLICATION_STATUS_CHANGED,
-                project = AuditProject(id = projectId.toString(), customIdentifier = projectId.toString(), name = "project acronym"),
-                description = "Project application status changed from DRAFT to SUBMITTED"
-            )
-        )
     }
 
     @Test
@@ -171,16 +156,6 @@ class SubmitApplicationInteractorTest : UnitTest() {
         every { returnToApplicantForConditionsState.submit() } returns ApplicationStatus.CONDITIONS_SUBMITTED
 
         assertThat(submitApplication.submit(projectId)).isEqualTo(ApplicationStatus.CONDITIONS_SUBMITTED)
-
-        val slotAudit = mutableListOf<AuditCandidateEvent>()
-        verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }
-        assertThat(slotAudit[0].auditCandidate).isEqualTo(
-            AuditCandidate(
-                action = AuditAction.APPLICATION_STATUS_CHANGED,
-                project = AuditProject(id = projectId.toString(), customIdentifier = projectId.toString(), name = "project acronym"),
-                description = "Project application status changed from RETURNED_TO_APPLICANT_FOR_CONDITIONS to CONDITIONS_SUBMITTED"
-            )
-        )
     }
 
     private fun buildCallSetting(
@@ -212,5 +187,5 @@ class SubmitApplicationInteractorTest : UnitTest() {
         id: Long = 1L, callName: String = "call name",
         acronym: String = "project acronym", status: ApplicationStatus
     ) =
-        ProjectSummary(id, id.toString(), callName, acronym, status)
+        ProjectSummary(id, id.toString(), 1L, callName, acronym, status)
 }

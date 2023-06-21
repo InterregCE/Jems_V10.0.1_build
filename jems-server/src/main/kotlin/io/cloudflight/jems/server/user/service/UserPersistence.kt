@@ -26,6 +26,8 @@ interface UserPersistence {
 
     fun update(user: UserChange): User
 
+    fun updateSetting(userSetting: UserSettingsChange): UserSettings
+
     fun updatePassword(userId: Long, encodedPassword: String)
 
     fun userRoleExists(roleId: Long): Boolean

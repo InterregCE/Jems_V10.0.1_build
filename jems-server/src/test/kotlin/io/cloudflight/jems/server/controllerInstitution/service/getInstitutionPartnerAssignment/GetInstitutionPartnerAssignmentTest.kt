@@ -1,22 +1,27 @@
 package io.cloudflight.jems.server.controllerInstitution.service.getInstitutionPartnerAssignment
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.call.service.model.IdNamePair
-import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.INSTITUTION_ID
 import io.cloudflight.jems.server.controllerInstitution.nutsAustria
 import io.cloudflight.jems.server.controllerInstitution.nutsRomania
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerDetails
+import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerSearchRequest
+import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.adminUser
 import io.cloudflight.jems.server.project.entity.partner.ControllerInstitutionEntity
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
-import java.time.ZonedDateTime
 
 class GetInstitutionPartnerAssignmentTest: UnitTest() {
 
@@ -39,7 +44,7 @@ class GetInstitutionPartnerAssignmentTest: UnitTest() {
             )
         )
 
-        private  val institutionPartnerDetailList = listOf(
+        private val institutionPartnerDetailList = listOf(
             InstitutionPartnerDetails(
                 institutionId = INSTITUTION_ID,
                 partnerId = 1L,
@@ -64,7 +69,7 @@ class GetInstitutionPartnerAssignmentTest: UnitTest() {
                 partnerName = "B",
                 partnerStatus = true,
                 partnerRole = ProjectPartnerRole.PARTNER,
-                partnerSortNumber = 1,
+                partnerSortNumber = 2,
                 partnerNuts3 = "Cluj (RO113)",
                 partnerNuts3Code = "RO113",
                 country = "România",
@@ -72,26 +77,32 @@ class GetInstitutionPartnerAssignmentTest: UnitTest() {
                 city = "Cluj",
                 postalCode = "1998307",
                 callId = 1L,
-                projectId = 1L,
-                projectCustomIdentifier = "0001",
-                projectAcronym = "Project Test"
+                projectId = 2L,
+                projectCustomIdentifier = "0002",
+                projectAcronym = "Project Test #2"
             )
         )
 
     }
 
-
     @MockK
     lateinit var controllerInstitutionPersistence: ControllerInstitutionPersistence
+
+    @MockK
+    lateinit var securityService: SecurityService
 
     @InjectMockKs
     lateinit var getInstitutionPartnerAssignment: GetInstitutionPartnerAssignment
 
-
+    @BeforeEach
+    fun setup() {
+        every { securityService.currentUser } returns adminUser
+        every { securityService.getUserIdOrThrow() } returns adminUser.user.id
+        every { securityService.currentUser?.hasPermission(UserRolePermission.AssignmentsUnlimited) } returns true
+    }
 
     @Test
-    fun `get institutions partners assignments`() {
-
+    fun `get institutions partners assignments - empty search request`() {
         val institutionPartnerDetailListWithInstitutions = listOf(
             institutionPartnerDetailList[0].copy(
                 partnerNutsCompatibleInstitutions = mutableSetOf(IdNamePair(1L, "institution one"))
@@ -100,19 +111,79 @@ class GetInstitutionPartnerAssignmentTest: UnitTest() {
                 partnerNutsCompatibleInstitutions = mutableSetOf(IdNamePair(2L, "institution two"))
             )
         )
-        every { controllerInstitutionPersistence.getAllControllerInstitutions() } returns institutionEntities
-        every { controllerInstitutionPersistence.getInstitutionPartnerAssignments(Pageable.unpaged()) } returns PageImpl(
-            institutionPartnerDetailList
-        )
-        assertThat(getInstitutionPartnerAssignment.getInstitutionPartnerAssignments(Pageable.unpaged()).content).containsAll(
-            institutionPartnerDetailListWithInstitutions
+        val emptyRequest = InstitutionPartnerSearchRequest(
+            callId  = null,
+            projectId = null,
+            acronym = "",
+            partnerName = "",
+            partnerNuts = emptySet(),
+            globallyRestrictedNuts = null // = not restricted
         )
 
+        every { controllerInstitutionPersistence.getAllControllerInstitutions() } returns institutionEntities
+        every { controllerInstitutionPersistence.getInstitutionPartnerAssignments(Pageable.unpaged(), emptyRequest) } returns
+                PageImpl(institutionPartnerDetailList)
+
+        val result = getInstitutionPartnerAssignment.getInstitutionPartnerAssignments(Pageable.unpaged(), emptyRequest)
+
+        assertThat(result.content).containsAll(institutionPartnerDetailListWithInstitutions)
+    }
+
+    @Test
+    fun `get institutions partners assignments - active search request`() {
+        val institutionPartnerDetailListWithInstitutions = listOf(
+            institutionPartnerDetailList[0].copy(
+                partnerNutsCompatibleInstitutions = mutableSetOf(IdNamePair(1L, "institution one"))
+            ),
+            institutionPartnerDetailList[1].copy(
+                partnerNutsCompatibleInstitutions = mutableSetOf(IdNamePair(2L, "institution two"))
+            )
+        )
+        val searchRequest = InstitutionPartnerSearchRequest(
+            callId  = 1,
+            projectId = null,
+            acronym = "",
+            partnerName = "",
+            partnerNuts = emptySet(),
+            globallyRestrictedNuts = null // = not restricted
+        )
+
+        every { controllerInstitutionPersistence.getAllControllerInstitutions() } returns institutionEntities
+        every { controllerInstitutionPersistence.getInstitutionPartnerAssignments(Pageable.unpaged(), searchRequest) } returns
+                PageImpl(institutionPartnerDetailList)
+
+        val result = getInstitutionPartnerAssignment.getInstitutionPartnerAssignments(Pageable.unpaged(), searchRequest)
+
+        assertThat(result.content).containsAll(institutionPartnerDetailListWithInstitutions)
+    }
+
+    @Test
+    fun `get institutions partners assignments - active search request including NUTS`() {
+        val institutionPartnerDetailListWithInstitutions = listOf(
+            institutionPartnerDetailList[1].copy(
+                partnerNutsCompatibleInstitutions = mutableSetOf(IdNamePair(2L, "institution two"))
+            )
+        )
+        val searchRequest = InstitutionPartnerSearchRequest(
+            callId  = 1,
+            projectId = "2",
+            acronym = "Project",
+            partnerName = "B",
+            partnerNuts = setOf("RO1"),
+            globallyRestrictedNuts = setOf("RO113")
+        )
+
+        every { controllerInstitutionPersistence.getAllControllerInstitutions() } returns institutionEntities
+        every { controllerInstitutionPersistence.getInstitutionPartnerAssignments(Pageable.unpaged(), searchRequest) } returns
+                PageImpl(mutableListOf(institutionPartnerDetailList[1]))
+
+        val result = getInstitutionPartnerAssignment.getInstitutionPartnerAssignments(Pageable.unpaged(), searchRequest)
+
+        assertThat(result.content).containsAll(institutionPartnerDetailListWithInstitutions)
     }
 
     @Test
     fun `partner with incomplete address matches correct institution country nuts`() {
-
         val assignmentDetails =  InstitutionPartnerDetails(
             institutionId = INSTITUTION_ID,
             partnerId = 1L,
@@ -131,22 +202,30 @@ class GetInstitutionPartnerAssignmentTest: UnitTest() {
             projectCustomIdentifier = "0001",
             projectAcronym = "Project Test"
         )
+        val emptyRequest = InstitutionPartnerSearchRequest(
+            callId  = null,
+            projectId = null,
+            acronym = "",
+            partnerName = "",
+            partnerNuts = emptySet(),
+            globallyRestrictedNuts = null // = not restricted
+        )
 
         every { controllerInstitutionPersistence.getAllControllerInstitutions() } returns institutionEntities
-        every { controllerInstitutionPersistence.getInstitutionPartnerAssignments(Pageable.unpaged()) } returns PageImpl(
-            listOf(assignmentDetails)
-        )
-        assertThat(getInstitutionPartnerAssignment.getInstitutionPartnerAssignments(Pageable.unpaged()).content).contains(
+        every { controllerInstitutionPersistence.getInstitutionPartnerAssignments(Pageable.unpaged(), emptyRequest) } returns
+                PageImpl(listOf(assignmentDetails))
+
+        val result = getInstitutionPartnerAssignment.getInstitutionPartnerAssignments(Pageable.unpaged(), emptyRequest)
+
+        assertThat(result.content).contains(
             assignmentDetails.copy(
                 partnerNutsCompatibleInstitutions = mutableSetOf(IdNamePair(1L, "institution one"))
             )
         )
-
     }
 
     @Test
     fun `partner with no address is compatible with all institutions`() {
-
         val assignmentDetails =  InstitutionPartnerDetails(
             institutionId = INSTITUTION_ID,
             partnerId = 1L,
@@ -165,22 +244,30 @@ class GetInstitutionPartnerAssignmentTest: UnitTest() {
             projectCustomIdentifier = "0001",
             projectAcronym = "Project Test"
         )
+        val emptyRequest = InstitutionPartnerSearchRequest(
+            callId  = null,
+            projectId = null,
+            acronym = "",
+            partnerName = "",
+            partnerNuts = emptySet(),
+            globallyRestrictedNuts = null // = not restricted
+        )
 
         every { controllerInstitutionPersistence.getAllControllerInstitutions() } returns institutionEntities
-        every { controllerInstitutionPersistence.getInstitutionPartnerAssignments(Pageable.unpaged()) } returns PageImpl(
-            listOf(assignmentDetails)
-        )
-        assertThat(getInstitutionPartnerAssignment.getInstitutionPartnerAssignments(Pageable.unpaged()).content).contains(
+        every { controllerInstitutionPersistence.getInstitutionPartnerAssignments(Pageable.unpaged(), emptyRequest) } returns
+                PageImpl(listOf(assignmentDetails))
+
+        val result = getInstitutionPartnerAssignment.getInstitutionPartnerAssignments(Pageable.unpaged(), emptyRequest)
+
+        assertThat(result.content).contains(
             assignmentDetails.copy(
                 partnerNutsCompatibleInstitutions = mutableSetOf(IdNamePair(1L, "institution one"), IdNamePair(2L, "institution two"))
             )
         )
-
     }
 
     @Test
     fun `partner with missing nuts codes matches correct institution nuts`() {
-
         val assignmentDetails1 =  InstitutionPartnerDetails(
             institutionId = INSTITUTION_ID,
             partnerId = 1L,
@@ -202,7 +289,7 @@ class GetInstitutionPartnerAssignmentTest: UnitTest() {
 
         val assignmentDetails2 = InstitutionPartnerDetails(
             institutionId = INSTITUTION_ID,
-            partnerId = 1L,
+            partnerId = 2L,
             partnerName = "B",
             partnerStatus = true,
             partnerRole = ProjectPartnerRole.PARTNER,
@@ -214,16 +301,26 @@ class GetInstitutionPartnerAssignmentTest: UnitTest() {
             city = "Cluj",
             postalCode = null,
             callId = 1L,
-            projectId = 1L,
-            projectCustomIdentifier = "0001",
-            projectAcronym = "Project Test"
+            projectId = 2L,
+            projectCustomIdentifier = "0002",
+            projectAcronym = "Project Test #2"
+        )
+        val emptyRequest = InstitutionPartnerSearchRequest(
+            callId  = null,
+            projectId = null,
+            acronym = "",
+            partnerName = "",
+            partnerNuts = emptySet(),
+            globallyRestrictedNuts = null // = not restricted
         )
 
         every { controllerInstitutionPersistence.getAllControllerInstitutions() } returns institutionEntities
-        every { controllerInstitutionPersistence.getInstitutionPartnerAssignments(Pageable.unpaged()) } returns PageImpl(
-            listOf(assignmentDetails1, assignmentDetails2)
-        )
-        assertThat(getInstitutionPartnerAssignment.getInstitutionPartnerAssignments(Pageable.unpaged()).content).containsAll(
+        every { controllerInstitutionPersistence.getInstitutionPartnerAssignments(Pageable.unpaged(), emptyRequest) } returns
+                PageImpl(listOf(assignmentDetails1, assignmentDetails2))
+
+        val result = getInstitutionPartnerAssignment.getInstitutionPartnerAssignments(Pageable.unpaged(), emptyRequest)
+
+        assertThat(result.content).containsAll(
             listOf(
                 assignmentDetails1.copy(
                     partnerNutsCompatibleInstitutions = mutableSetOf(IdNamePair(1L, "institution one"))
@@ -233,7 +330,5 @@ class GetInstitutionPartnerAssignmentTest: UnitTest() {
                 )
             )
         )
-
     }
-
 }

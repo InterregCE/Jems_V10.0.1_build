@@ -19,6 +19,8 @@ interface ProjectFilePersistence {
 
     fun getFileCategoryTypeSet(fileId: Long): Set<ProjectFileCategoryType>
 
+    fun getCategoriesMap(fileIds: Set<Long>): Map<Long, Set<ProjectFileCategoryType>>
+
     fun listFileMetadata(projectId: Long, fileCategory: ProjectFileCategory, page: Pageable): Page<ProjectFileMetadata>
 
     fun throwIfFileNameExistsInCategory(projectId: Long, fileName: String, fileCategory: ProjectFileCategory)

@@ -8,4 +8,7 @@ data class ProjectContractingReportingScheduleDTO(
     val periodNumber: Int?,
     val date: LocalDate?,
     val comment: String,
+    val number: Int,
+    val linkedSubmittedProjectReportNumbers: Set<Int>,
+    val linkedDraftProjectReportNumbers: Set<Int>,
 )

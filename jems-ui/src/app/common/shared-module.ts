@@ -18,27 +18,37 @@ import {HelpMenuComponent} from '@common/components/top-bar/help-menu/help-menu.
 import {SideNavComponent} from '@common/components/side-nav/component/side-nav.component';
 import {FormComponent} from '@common/components/section/form/form.component';
 import {PercentagePipe} from './pipe/percentage';
-import {MultiLanguageContainerComponent} from '@common/components/forms/multi-language-container/multi-language-container.component';
+import {
+  MultiLanguageContainerComponent
+} from '@common/components/forms/multi-language-container/multi-language-container.component';
 import {ContextInfoComponent} from '@common/components/info-trigger/context-info.component';
 import {FormFieldWidthDirective} from './directives/form-field-width/form-field-width.directive';
 import {NgxCurrencyModule} from 'ngx-currency';
 import {CurrencyDirective} from './directives/currency.directive';
 import {TableConfigDirective} from './directives/table-config/table-config.directive';
-import {MultiLanguageFormFieldComponent} from '@common/components/forms/multi-language-form-field/multi-language-form-field.component';
+import {
+  MultiLanguageFormFieldComponent
+} from '@common/components/forms/multi-language-form-field/multi-language-form-field.component';
 import {FormLayoutDirective} from './directives/form-layout/form-layout.directive';
 import {MultiColumnRowDirective} from './directives/multi-column-row/multi-column-row.directive';
 import {NoWidthLimitDirective} from './directives/no-width-limit.directive';
 import {LabelDirective} from './directives/form-layout/label.directive';
-import {MainPageTemplateComponent} from '@common/components/page-templates/main-page-template/main-page-template.component';
+import {
+  MainPageTemplateComponent
+} from '@common/components/page-templates/main-page-template/main-page-template.component';
 import {MatBadgeModule} from '@angular/material/badge';
 import {ApiErrorContentComponent} from '@common/components/forms/api-error-content/api-error-content.component';
-import {ProjectApplicationListComponent} from '@common/components/project-application-list/project-application-list.component';
+import {
+  ProjectApplicationListComponent
+} from '@common/components/project-application-list/project-application-list.component';
 import {CallListComponent} from '@common/components/call-list/call-list.component';
 import {InlineEditableFieldComponent} from '@common/components/inline-editable-field/inline-editable-field.component';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {TranslateBySystemLanguagePipe} from './pipe/translate-by-system-language.pipe';
 import {TranslateByInputLanguagePipe} from './pipe/translate-by-input-language.pipe';
-import {TranslateContainerLessInputsBySystemLanguagePipe} from './pipe/translate-container-less-inputs-by-system-language.pipe';
+import {
+  TranslateContainerLessInputsBySystemLanguagePipe
+} from './pipe/translate-container-less-inputs-by-system-language.pipe';
 import {LocaleDatePipe} from './pipe/locale-date.pipe';
 import {DateFormatInfoPipe} from './pipe/date-format-info.pipe';
 import {CustomTranslatePipe} from './pipe/custom-translate-pipe';
@@ -47,7 +57,9 @@ import {HasPermissionDirective} from './directives/has-permission.directive';
 import {HintDirective} from './directives/hint.directive';
 import {TextHintComponent} from '@common/components/forms/text-hint/text-hint.component';
 import {IsMenuActivePipe} from '@common/components/side-nav/is-menu-active.pipe';
-import {FilterAutocompleteInputComponent} from '@common/components/filter/filter-autocomplete-input/filter-autocomplete-input.component';
+import {
+  FilterAutocompleteInputComponent
+} from '@common/components/filter/filter-autocomplete-input/filter-autocomplete-input.component';
 import {FilterTemplateComponent} from '@common/components/filter/filter-template/filter-template.component';
 import {FilterTextInputComponent} from '@common/components/filter/filter-text-input/filter-text-input.component';
 import {FilterListInputComponent} from '@common/components/filter/filter-list-input/filter-list-input.component';
@@ -75,6 +87,19 @@ import {JemsNutsInfoComponent} from '@common/components/jems-nuts-info/jems-nuts
 import {JemsRegionsTreeComponent} from '@common/components/jems-regions-tree/jems-regions-tree.component';
 import {JemsSelectedRegionsComponent} from '@common/components/jems-selected-regions/jems-selected-regions.component';
 import {FileListTableComponent} from '@common/components/file-list/file-list-table/file-list-table.component';
+import {
+  ContractingChecklistInstanceListComponent
+} from '@common/components/checklist/contracting-checklist-instance-list/contracting-checklist-instance-list.component';
+import {ChecklistUtilsComponent} from '@common/components/checklist/checklist-utils/checklist-utils';
+import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
+import {
+  FileOperationsActionCellComponent
+} from '@common/components/file-list/file-list-table/file-operations-action-cell/file-operations-action-cell.component';
+import {
+  FileListTableWithFileLinkingComponent
+} from '@common/components/file-list/file-list-table-with-file-linking/file-list-table-with-file-linking.component';
+import {NotificationListComponent} from '@common/components/notification-list/notification-list.component';
+import {FilterNutsInputComponent} from '@common/components/filter/filter-nuts/filter-nuts-input.component';
 
 const modules = [
   CommonModule,
@@ -87,12 +112,14 @@ const modules = [
   NgxCurrencyModule,
   MatBadgeModule,
   MatProgressSpinnerModule,
-  MatSliderModule
+  MatSliderModule,
+  NgxMatSelectSearchModule
 ];
 
 const declarations = [
   ProjectApplicationListComponent,
   CallListComponent,
+  NotificationListComponent,
   FileListComponent,
   FileListTableComponent,
   TableComponent,
@@ -139,6 +166,7 @@ const declarations = [
   FilterDateInputComponent,
   FilterListInputComponent,
   FilterAutocompleteInputComponent,
+  FilterNutsInputComponent,
   SecondsToTimePipePipe,
   ChecklistAnswersComponent,
   ChecklistInstanceListComponent,
@@ -148,7 +176,11 @@ const declarations = [
   JemsRegionsComponent,
   JemsNutsInfoComponent,
   JemsRegionsTreeComponent,
-  JemsSelectedRegionsComponent
+  JemsSelectedRegionsComponent,
+  ContractingChecklistInstanceListComponent,
+  ChecklistUtilsComponent,
+  FileOperationsActionCellComponent,
+  FileListTableWithFileLinkingComponent,
 ];
 
 const providers = [

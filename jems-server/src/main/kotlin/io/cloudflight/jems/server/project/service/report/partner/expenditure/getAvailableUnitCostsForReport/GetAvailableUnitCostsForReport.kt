@@ -3,14 +3,14 @@ package io.cloudflight.jems.server.project.service.report.partner.expenditure.ge
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanViewPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportUnitCost
-import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 
 @Service
 class GetAvailableUnitCostsForReport (
-    private val reportExpenditurePersistence: ProjectReportExpenditurePersistence,
+    private val reportExpenditurePersistence: ProjectPartnerReportExpenditurePersistence,
 ) : GetAvailableUnitCostsForReportInteractor {
 
     @CanViewPartnerReport

@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.project.entity.projectuser.UserProjectCollabor
 import io.cloudflight.jems.server.project.entity.projectuser.UserProjectId
 import io.cloudflight.jems.server.project.repository.projectuser.UserProjectCollaboratorPersistenceProvider
 import io.cloudflight.jems.server.project.repository.projectuser.UserProjectCollaboratorRepository
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.assignment.CollaboratorAssignedToProject
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -36,9 +37,9 @@ internal class UserProjectCollaboratorPersistenceProviderTest : UnitTest() {
     @Test
     fun getUserIdsForProject() {
         val result = listOf(
-            CollaboratorAssignedToProject(14201L, "email1", ProjectCollaboratorLevel.VIEW),
-            CollaboratorAssignedToProject(14202L, "email2", ProjectCollaboratorLevel.VIEW),
-            CollaboratorAssignedToProject(14203L, "email3", ProjectCollaboratorLevel.VIEW),
+            CollaboratorAssignedToProject(14201L, "email1", sendNotificationsToEmail = false, userStatus = UserStatus.ACTIVE, ProjectCollaboratorLevel.VIEW),
+            CollaboratorAssignedToProject(14202L, "email2", sendNotificationsToEmail = false, userStatus = UserStatus.ACTIVE, ProjectCollaboratorLevel.VIEW),
+            CollaboratorAssignedToProject(14203L, "email3", sendNotificationsToEmail = false, userStatus = UserStatus.ACTIVE, ProjectCollaboratorLevel.VIEW),
         )
         every { collaboratorRepository.findAllByProjectId(20L) } returns result
         assertThat(persistence.getUserIdsForProject(20L)).containsExactlyElementsOf(result)
@@ -64,24 +65,62 @@ internal class UserProjectCollaboratorPersistenceProviderTest : UnitTest() {
         val added = slot<Collection<UserProjectCollaboratorEntity>>()
 
         every { collaboratorRepository.findAllByProjectId(11L) } returns listOf(
-            CollaboratorAssignedToProject(256L, "user-to-be-removed", ProjectCollaboratorLevel.VIEW),
-            CollaboratorAssignedToProject(257L, "user-to-stay", ProjectCollaboratorLevel.MANAGE),
+            CollaboratorAssignedToProject(
+                256L,
+                "user-to-be-removed",
+                sendNotificationsToEmail = false,
+                userStatus = UserStatus.ACTIVE,
+                ProjectCollaboratorLevel.VIEW
+            ),
+            CollaboratorAssignedToProject(
+                257L,
+                "user-to-stay",
+                sendNotificationsToEmail = false,
+                userStatus = UserStatus.ACTIVE,
+                ProjectCollaboratorLevel.MANAGE
+            ),
         ) andThen listOf(
-            CollaboratorAssignedToProject(257L, "user-to-stay", ProjectCollaboratorLevel.MANAGE),
-            CollaboratorAssignedToProject(1000L, "user-new-to-be-assigned", ProjectCollaboratorLevel.EDIT),
+            CollaboratorAssignedToProject(
+                257L,
+                "user-to-stay",
+                sendNotificationsToEmail = false,
+                userStatus = UserStatus.ACTIVE,
+                ProjectCollaboratorLevel.MANAGE
+            ),
+            CollaboratorAssignedToProject(
+                1000L,
+                "user-new-to-be-assigned",
+                sendNotificationsToEmail = false,
+                userStatus = UserStatus.ACTIVE,
+                ProjectCollaboratorLevel.EDIT
+            ),
         )
         every { collaboratorRepository.deleteAllByIdIn(capture(deleted)) } answers { }
         every { collaboratorRepository.saveAll(capture(added)) } returnsArgument 0
 
-        assertThat(persistence.changeUsersAssignedToProject(
-            projectId = 11L,
-            usersToPersist = mapOf(
-                257L to ProjectCollaboratorLevel.MANAGE,
-                1000L to ProjectCollaboratorLevel.EDIT,
+        assertThat(
+            persistence.changeUsersAssignedToProject(
+                projectId = 11L,
+                usersToPersist = mapOf(
+                    257L to ProjectCollaboratorLevel.MANAGE,
+                    1000L to ProjectCollaboratorLevel.EDIT,
+                ),
+            )
+        ).containsExactly(
+            CollaboratorAssignedToProject(
+                userId = 257L,
+                "user-to-stay",
+                sendNotificationsToEmail = false,
+                userStatus = UserStatus.ACTIVE,
+                ProjectCollaboratorLevel.MANAGE
             ),
-        )).containsExactly(
-            CollaboratorAssignedToProject(userId = 257L, "user-to-stay", ProjectCollaboratorLevel.MANAGE),
-            CollaboratorAssignedToProject(userId = 1000L, "user-new-to-be-assigned", ProjectCollaboratorLevel.EDIT),
+            CollaboratorAssignedToProject(
+                userId = 1000L,
+                "user-new-to-be-assigned",
+                sendNotificationsToEmail = false,
+                userStatus = UserStatus.ACTIVE,
+                ProjectCollaboratorLevel.EDIT
+            ),
         )
 
         assertThat(deleted.captured).containsExactlyInAnyOrder(UserProjectId(projectId = 11L, userId = 256L))

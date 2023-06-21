@@ -63,6 +63,7 @@ val CREATED_AT_TIMESTAMP: Timestamp = Timestamp.valueOf(LocalDateTime.of(2020,1,
 fun projectSummary(status: ApplicationStatus = ApplicationStatus.DRAFT) = ProjectSummary(
     id = PROJECT_ID,
     customIdentifier = "01",
+    callId = 1L,
     callName = "",
     acronym = "project acronym",
     status = status
@@ -191,6 +192,7 @@ fun projectPartnerEntity(
 fun userSummary(id: Long, roleId: Long) = UserSummary(
     id = id,
     email = "user@email.com",
+    sendNotificationsToEmail = false,
     name = "",
     surname = "",
     userRole = UserRoleSummary(roleId, "", false),
@@ -326,11 +328,12 @@ val stateAidActivity = ProjectPartnerStateAid(
 val activityEntity = WorkPackageActivityEntity(
     id = activitySummary.activityId,
     activityNumber = activitySummary.activityNumber,
-    workPackage = WorkPackageEntity(id = 1L, number = 10, project = project),
+    workPackage = WorkPackageEntity(id = 1L, number = 10, project = project, deactivated = false),
     translatedValues = mutableSetOf(),
     startPeriod = 1,
     endPeriod = 3,
-    deliverables = mutableSetOf()
+    deliverables = mutableSetOf(),
+    deactivated = false
 )
 
 val activity = WorkPackageActivity(
@@ -341,9 +344,11 @@ val activity = WorkPackageActivity(
     description = setOf(InputTranslation(language = SystemLanguage.EN, translation = "description")),
     startPeriod = 1,
     endPeriod = 3,
+    deactivated = false,
     deliverables = listOf(
         WorkPackageActivityDeliverable(
             period = 1,
+            deactivated = false,
             description = setOf(InputTranslation(language = SystemLanguage.EN, translation = "description"))
         )
     )
@@ -359,6 +364,7 @@ class ProjectPartnerTestUtil {
             name = "Name",
             password = "hash",
             email = "admin@admin.dev",
+            sendNotificationsToEmail = false,
             surname = "Surname",
             userRole = userRole,
             userStatus = UserStatus.ACTIVE
@@ -381,8 +387,12 @@ class ProjectPartnerTestUtil {
             allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD),
             preSubmissionCheckPluginKey = null,
             firstStepPreSubmissionCheckPluginKey = null,
+            reportPartnerCheckPluginKey = "check-off",
+            reportProjectCheckPluginKey = "check-off",
             projectDefinedUnitCostAllowed = true,
             projectDefinedLumpSumAllowed = false,
+            controlReportPartnerCheckPluginKey = "control-report-partner-check-off",
+            controlReportSamplingCheckPluginKey = "control-report-sampling-check-off"
         )
         val projectStatus = ProjectStatusHistoryEntity(
             status = ApplicationStatus.APPROVED,
@@ -400,6 +410,7 @@ class ProjectPartnerTestUtil {
         val userSummary = UserSummary(
             id = 1,
             email = user.email,
+            sendNotificationsToEmail = false,
             name = user.name,
             surname = user.surname,
             userRole = UserRoleSummary(id = 1, name = "ADMIN"),

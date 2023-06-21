@@ -4,12 +4,12 @@ import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
-import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurement
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurementChange
-import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
+import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectPartnerReportProcurementPersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -31,10 +31,10 @@ internal class CreateProjectPartnerReportProcurementTest : UnitTest() {
     }
 
     @MockK
-    lateinit var reportPersistence: ProjectReportPersistence
+    lateinit var reportPersistence: ProjectPartnerReportPersistence
 
     @MockK
-    lateinit var reportProcurementPersistence: ProjectReportProcurementPersistence
+    lateinit var reportProcurementPersistence: ProjectPartnerReportProcurementPersistence
 
     @MockK
     lateinit var generalValidator: GeneralValidatorService
@@ -163,33 +163,6 @@ internal class CreateProjectPartnerReportProcurementTest : UnitTest() {
         )
 
         assertThrows<ReportAlreadyClosed> { interactor.create(PARTNER_ID, reportId = 80L, change) }
-    }
-
-    @Test
-    fun `create - invalid currencies`() {
-        val report = mockk<ProjectPartnerReport>()
-        every { report.id } returns 85L
-        every { report.status } returns ReportStatus.Draft
-        every { report.identification.currency } returns "EUR"
-
-        every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = 85L) } returns report
-        every { reportPersistence.getReportIdsBefore(PARTNER_ID, beforeReportId = 85L) } returns emptySet()
-        every { reportProcurementPersistence.getProcurementContractNamesForReportIds(setOf(85L)) } returns emptySet()
-
-        val change = ProjectPartnerReportProcurementChange(
-            id = 0L,
-            contractName = "",
-            referenceNumber = "",
-            contractDate = NEXT_WEEK,
-            contractType = "",
-            contractAmount = BigDecimal.ZERO,
-            currencyCode = "GBP",
-            supplierName = "",
-            vatNumber = "",
-            comment = "",
-        )
-
-        assertThrows<InvalidCurrency> { interactor.create(PARTNER_ID, reportId = 85L, change) }
     }
 
     @Test

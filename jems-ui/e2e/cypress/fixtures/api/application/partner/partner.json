@@ -31,14 +31,18 @@
     "pic": "111111111",
     "legalStatusId": 3,
     "vat": "444444",
-    "vatRecovery": "Partly"
+    "vatRecovery": "Partly",
+    "active": true
   },
   "address": [
     {
       "type": "Organization",
       "country": "France (FR)",
+      "countryCode": "FR",
       "nutsRegion2": "Rhône-Alpes (FRK2)",
+      "nutsRegion2Code": "FRK2",
       "nutsRegion3": "Savoie (FRK27)",
+      "nutsRegion3Code": "FRK27",
       "street": "Partnerstreet",
       "houseNumber": "2",
       "postalCode": "1020",
@@ -48,8 +52,11 @@
     {
       "type": "Department",
       "country": "España (ES)",
+      "countryCode": "ES",
       "nutsRegion2": "Castilla y León (ES41)",
+      "nutsRegion2Code": "ES41",
       "nutsRegion3": "León (ES413)",
+      "nutsRegion3Code": "ES413",
       "street": "Departmentstreet",
       "houseNumber": "5",
       "postalCode": "4020",
@@ -117,18 +124,6 @@
     },
     "staff": [
       {
-        "id": null,
-        "description": [],
-        "unitType": [
-          {
-            "language": "EN",
-            "translation": "SC type 1 EN"
-          },
-          {
-            "language": "DE",
-            "translation": "SC type 1 DE"
-          }
-        ],
         "unitCostId": 1,
         "comments": [
           {

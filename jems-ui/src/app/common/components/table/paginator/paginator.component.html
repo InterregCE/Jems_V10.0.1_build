@@ -3,5 +3,6 @@
         [pageIndex]="currentPageIndex"
         [pageSize]="currentPageSize"
         [pageSizeOptions]="Tables.DEFAULT_PAGE_OPTIONS"
-        (page)="newPage($event)">
+        (page)="newPage($event)"
+         aria-live="polite">
 </mat-paginator>

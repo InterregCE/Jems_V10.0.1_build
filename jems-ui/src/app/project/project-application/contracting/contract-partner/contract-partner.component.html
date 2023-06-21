@@ -1,0 +1,38 @@
+<ng-container *ngIf="data$ | async as data">
+    <jems-project-page-template [needsCard]="false"
+                                titleKey="project.application.contracting.title"
+                                [subTitleText]="'project.application.contract.partner.section.subtitle' | translate: {partnerInfo: getPartnerTranslationString(data.partnerSummary) | async}"
+                                [isVersionedData]="false"
+                                *ngIf="data.canView">
+        <jems-alert [type]="Alert.WARNING"
+                    [closable]="false"
+                    [show]="!data.partnerSummary.active">
+            <div>{{'project.application.form.section.part.b.deactivated.partner.warning' | translate}}</div>
+        </jems-alert>
+        <jems-contract-partner-beneficial-owner [partnerId]="partnerId"></jems-contract-partner-beneficial-owner>
+        <div class="section-break"></div>
+        <jems-contract-partner-banking-details></jems-contract-partner-banking-details>
+        <div class="section-break"></div>
+        <jems-contract-partner-documents-location [partnerId]="partnerId"></jems-contract-partner-documents-location>
+        <ng-container *ngIf="data.deMinimis !== null">
+            <div class="section-break"></div>
+            <jems-demimis-state-aid
+                    [deMinimis] = data.deMinimis
+                    (updateDeMinimis) = handleUpdateDeMinimis($event)
+                    [success$]="deMinimisSuccess$"
+                    [error$]="deMinimisError$">
+            </jems-demimis-state-aid>
+        </ng-container>
+        <ng-container *ngIf="data.GBER !== null">
+            <div class="section-break"></div>
+            <jems-gber-state-aid
+                    [gber] = data.GBER
+                    (updateGber) = handleUpdateGber($event)
+                    [success$]="gberSuccess$"
+                    [error$]="gberError$">
+            </jems-gber-state-aid>
+        </ng-container>
+        <div class="section-break"></div>
+        <jems-partner-files></jems-partner-files>
+    </jems-project-page-template>
+</ng-container>

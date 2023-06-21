@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {
   ChecklistInstanceDTO,
   ControlChecklistInstanceService,
-  IdNamePairDTO,
+  IdNamePairDTO, PluginInfoDTO, PluginService,
   ProgrammeChecklistDetailDTO,
   ProgrammeChecklistService
 } from '@cat/api';
@@ -19,6 +19,7 @@ export class ControlChecklistInstanceListStore {
   defaultSort: Partial<MatSort> = {active: 'id', direction: 'desc'};
 
   currentUserEmail$: Observable<string>;
+  availablePlugins$: Observable<PluginInfoDTO[]>;
 
   private listChanged$ = new Subject();
 
@@ -30,8 +31,10 @@ export class ControlChecklistInstanceListStore {
   constructor(private controlChecklistInstanceService: ControlChecklistInstanceService,
               private programmeChecklistService: ProgrammeChecklistService,
               private permissionService: PermissionService,
-              private securityService: SecurityService) {
+              private securityService: SecurityService,
+              private pluginService: PluginService) {
     this.currentUserEmail$ = this.currentUserEmail();
+    this.availablePlugins$ = this.availablePlugins();
   }
 
   setInstancesSort(sort: Partial<MatSort>) {
@@ -73,10 +76,23 @@ export class ControlChecklistInstanceListStore {
       );
   }
 
-  currentUserEmail(): Observable<string> {
+  private currentUserEmail(): Observable<string> {
     return this.securityService.currentUser
       .pipe(
         map(user => user?.name || '')
+      );
+  }
+
+  private availablePlugins(): Observable<PluginInfoDTO[]> {
+    return this.pluginService.getAvailablePluginList(PluginInfoDTO.TypeEnum.CHECKLISTEXPORT);
+  }
+
+  updateInstanceDescription(checklistId: number, partnerId: number, reportId: number, description: string): Observable<number> {
+    return this.controlChecklistInstanceService.updateControlChecklistDescription(checklistId, partnerId, reportId, description)
+      .pipe(
+        take(1),
+        tap(checklistInstance => Log.info('Updated control checklist instance description', this, checklistInstance)),
+        map(checklistInstance => checklistInstance.id)
       );
   }
 }

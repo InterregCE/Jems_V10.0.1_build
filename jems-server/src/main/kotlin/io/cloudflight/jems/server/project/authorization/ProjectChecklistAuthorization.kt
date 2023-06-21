@@ -19,12 +19,12 @@ annotation class CanUpdateChecklistAssessment
 annotation class CanDeleteChecklistAssessment
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@authorization.hasPermission('ProjectAssessmentChecklistSelectedRetrieve', #relatedToId)")
+@PreAuthorize("@projectChecklistAuthorization.hasPermissionOrAsController('ProjectAssessmentChecklistSelectedRetrieve', #relatedToId)")
 annotation class CanViewChecklistAssessmentSelection
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@authorization.hasPermission('ProjectAssessmentChecklistSelectedRetrieve', #relatedToId) || " +
-    "@authorization.hasPermission('ProjectAssessmentChecklistUpdate', #relatedToId)")
+@PreAuthorize("@projectChecklistAuthorization.hasPermissionOrAsController('ProjectAssessmentChecklistSelectedRetrieve', #relatedToId) || " +
+    "@projectChecklistAuthorization.hasPermissionOrAsController('ProjectAssessmentChecklistUpdate', #relatedToId)")
 annotation class CanViewChecklistAssessment
 
 @Retention(AnnotationRetention.RUNTIME)
@@ -32,8 +32,14 @@ annotation class CanViewChecklistAssessment
 annotation class CanUpdateChecklistAssessmentSelection
 
 @Component
-class ProjectChecklistAuthorization(securityService: SecurityService) : Authorization(securityService) {
+class ProjectChecklistAuthorization(
+    override val securityService: SecurityService,
+    val authorizationUtilService: AuthorizationUtilService
+) : Authorization(securityService) {
 
     fun canConsolidate(projectId: Long): Boolean =
         hasPermission(UserRolePermission.ProjectAssessmentChecklistConsolidate, projectId)
+
+    fun hasPermissionOrAsController(permission: UserRolePermission, projectId: Long): Boolean =
+        hasPermission(permission, projectId) || authorizationUtilService.hasPermissionAsController(permission, projectId)
 }

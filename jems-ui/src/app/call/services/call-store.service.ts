@@ -2,7 +2,8 @@ import {Injectable} from '@angular/core';
 import {
   CallDetailDTO,
   CallService,
-  FlatRateSetupDTO, PreSubmissionPluginsDTO,
+  FlatRateSetupDTO,
+  PreSubmissionPluginsDTO,
   ProgrammeCostOptionService,
   ProgrammeLumpSumListDTO,
   ProgrammeUnitCostListDTO,
@@ -20,7 +21,7 @@ import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 })
 export class CallStore {
   public static CALL_DETAIL_PATH = '/app/call/detail';
-  private callId: number;
+  callId$: Observable<number>;
   call$: Observable<CallDetailDTO>;
   unitCosts$: Observable<ProgrammeUnitCostListDTO[]>;
   lumpSums$: Observable<ProgrammeLumpSumListDTO[]>;
@@ -36,6 +37,7 @@ export class CallStore {
               private programmeCostOptionService: ProgrammeCostOptionService,
               private permissionService: PermissionService,
               private router: RoutingService) {
+    this.callId$ = this.callId();
     this.call$ = this.call();
     this.unitCosts$ = this.unitCosts();
     this.lumpSums$ = this.lumpSums();
@@ -46,31 +48,32 @@ export class CallStore {
   }
 
   saveFlatRates(flatRates: FlatRateSetupDTO): Observable<CallDetailDTO> {
-    return this.callService.updateCallFlatRateSetup(this.callId, flatRates)
-      .pipe(
-        tap(saved => this.savedCall$.next(saved)),
-        tap(saved => Log.info('Updated call flat rates:', this, saved))
-      );
+    return this.callId$.pipe(
+      switchMap(callId => this.callService.updateCallFlatRateSetup(callId, flatRates)),
+      tap(saved => this.savedCall$.next(saved)),
+      tap(saved => Log.info('Updated call flat rates:', this, saved))
+    );
   }
 
   saveLumpSums(lumpSumIds: number[]): Observable<CallDetailDTO> {
-    return this.callService.updateCallLumpSums(this.callId, lumpSumIds)
-      .pipe(
-        tap(saved => this.savedCall$.next(saved)),
-        tap(saved => Log.info('Updated call lump sums:', this, saved))
-      );
+    return this.callId$.pipe(
+      switchMap(callId => this.callService.updateCallLumpSums(callId, lumpSumIds)),
+      tap(saved => this.savedCall$.next(saved)),
+      tap(saved => Log.info('Updated call lump sums:', this, saved))
+    );
   }
 
   saveUnitCosts(unitCostIds: number[]): Observable<CallDetailDTO> {
-    return this.callService.updateCallUnitCosts(this.callId, unitCostIds)
-      .pipe(
-        tap(saved => this.savedCall$.next(saved)),
-        tap(saved => Log.info('Updated call unit costs:', this, saved))
-      );
+    return this.callId$.pipe(
+      switchMap(callId => this.callService.updateCallUnitCosts(callId, unitCostIds)),
+      tap(saved => this.savedCall$.next(saved)),
+      tap(saved => Log.info('Updated call unit costs:', this, saved))
+    );
   }
 
   savePreSubmissionCheckSettings(pluginKeys: PreSubmissionPluginsDTO): Observable<CallDetailDTO> {
-    return this.callService.updatePreSubmissionCheckSettings(this.callId, pluginKeys).pipe(
+    return this.callId$.pipe(
+      switchMap(callId => this.callService.updatePreSubmissionCheckSettings(callId, pluginKeys)),
       tap(saved => this.savedCall$.next(saved)),
       tap(saved => Log.info('Updated call pre-submission check settings:', this, saved))
     );
@@ -82,11 +85,15 @@ export class CallStore {
     );
   }
 
+  private callId(): Observable<number> {
+    return this.router.routeParameterChanges(CallStore.CALL_DETAIL_PATH, 'callId')
+      .pipe(map(Number));
+  }
+
   private call(): Observable<CallDetailDTO> {
-    const initialCall$ = this.router.routeParameterChanges(CallStore.CALL_DETAIL_PATH, 'callId')
+    const initialCall$ = this.callId$
       .pipe(
         switchMap(id => id ? this.callService.getCallById(Number(id)) : of({} as CallDetailDTO)),
-        tap(call => this.callId = (call as any)?.id),
         tap(call => {
           if (call.type) {
             this.callType$.next(call.type);

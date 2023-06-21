@@ -25,5 +25,5 @@ data class ProgrammeDataExportMetadata(
         exportEndedAt != null && fileName != null && contentType != null
 
     fun getExportationTimeInSeconds() =
-        exportStartedAt?.until(exportEndedAt, ChronoUnit.SECONDS)
+        requestTime.until(exportEndedAt ?: ZonedDateTime.now(), ChronoUnit.SECONDS)
 }

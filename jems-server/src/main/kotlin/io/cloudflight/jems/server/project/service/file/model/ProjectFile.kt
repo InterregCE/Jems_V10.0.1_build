@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.file.model
 
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
+import io.cloudflight.jems.server.common.file.service.model.JemsFileCreate
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import java.io.InputStream
 
 data class ProjectFile(

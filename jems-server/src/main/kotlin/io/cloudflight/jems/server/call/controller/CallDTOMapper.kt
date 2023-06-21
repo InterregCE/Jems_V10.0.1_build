@@ -11,6 +11,8 @@ import io.cloudflight.jems.api.call.dto.PreSubmissionPluginsDTO
 import io.cloudflight.jems.api.call.dto.applicationFormConfiguration.ApplicationFormFieldConfigurationDTO
 import io.cloudflight.jems.api.call.dto.applicationFormConfiguration.StepSelectionOptionDTO
 import io.cloudflight.jems.api.call.dto.applicationFormConfiguration.UpdateApplicationFormFieldConfigurationRequestDTO
+import io.cloudflight.jems.api.call.dto.notificationConfiguration.ProjectNotificationConfigurationDTO
+import io.cloudflight.jems.api.notification.dto.NotificationTypeDTO
 import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.Call
@@ -21,7 +23,9 @@ import io.cloudflight.jems.server.call.service.model.CallFundRate
 import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.call.service.model.PreSubmissionPlugins
+import io.cloudflight.jems.server.call.service.model.notificationConfigurations.ProjectNotificationConfiguration
 import io.cloudflight.jems.server.common.CommonDTOMapper
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType
 import io.cloudflight.jems.server.programme.controller.costoption.toDto
 import io.cloudflight.jems.server.programme.controller.priority.toDto
 import io.cloudflight.jems.server.programme.controller.stateaid.toDto
@@ -60,7 +64,11 @@ fun CallDetail.toDto() = CallDetailDTO(
     unitCosts = unitCosts.toDto(),
     applicationFormFieldConfigurations = applicationFormFieldConfigurations.toDto(type),
     preSubmissionCheckPluginKey = preSubmissionCheckPluginKey,
-    firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey
+    firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey,
+    reportPartnerCheckPluginKey = reportPartnerCheckPluginKey,
+    reportProjectCheckPluginKey = reportProjectCheckPluginKey,
+    controlReportPartnerCheckPluginKey = controlReportPartnerCheckPluginKey,
+    controlReportSamplingCheckPluginKey = controlReportSamplingCheckPluginKey
 )
 
 fun CallUpdateRequestDTO.toModel() = Call(
@@ -82,7 +90,11 @@ fun CallUpdateRequestDTO.toModel() = Call(
 fun PreSubmissionPluginsDTO.toDTO() = callDTOMapper.map(this)
 fun PreSubmissionPluginsDTO.toModel() = PreSubmissionPlugins(
     pluginKey = pluginKey,
-    firstStepPluginKey = firstStepPluginKey,
+    firstStepPluginKey = firstStepPluginKey ?: "",
+    reportPartnerCheckPluginKey = reportPartnerCheckPluginKey,
+    reportProjectCheckPluginKey = reportProjectCheckPluginKey,
+    controlReportPartnerCheckPluginKey = controlReportPartnerCheckPluginKey,
+    controlReportSamplingCheckPluginKey = controlReportSamplingCheckPluginKey
 )
 
 fun CallCostOptionDTO.toModel() = CallCostOption(
@@ -96,6 +108,10 @@ fun CallCostOption.toDto() = CallCostOptionDTO(
 
 fun CallApplicationFormFieldsConfiguration.toDto() =
     callDTOMapper.map(this)
+
+fun List<ProjectNotificationConfiguration>.toDto() = map { it.toDto() }
+
+fun List<ProjectNotificationConfigurationDTO>.toNotificationModel() = map { it.toModel() }
 
 fun MutableSet<ApplicationFormFieldConfiguration>.toDto(callType: CallType) =
     map { callDTOMapper.map(it, callType) }.toMutableSet()
@@ -115,6 +131,33 @@ fun AllowedRealCostsDTO.toModel() = callDTOMapper.map(this)
 fun CallFundRate.toDto() = callDTOMapper.map(this)
 fun CallFundRateDTO.toModel() = callDTOMapper.map(this)
 
+fun NotificationType.toDto() = callDTOMapper.map(this)
+fun NotificationTypeDTO.toModel() = callDTOMapper.map(this)
+
+fun ProjectNotificationConfiguration.toDto() = ProjectNotificationConfigurationDTO(
+    id = id.toDto(),
+    active = active,
+    sendToManager = sendToManager,
+    sendToLeadPartner = sendToLeadPartner,
+    sendToProjectPartners = sendToProjectPartners,
+    sendToProjectAssigned = sendToProjectAssigned,
+    sendToControllers = sendToControllers,
+    emailSubject = emailSubject,
+    emailBody = emailBody,
+)
+
+fun ProjectNotificationConfigurationDTO.toModel() = ProjectNotificationConfiguration(
+    id = id.toModel(),
+    active = active,
+    sendToManager = sendToManager,
+    sendToLeadPartner = sendToLeadPartner,
+    sendToProjectPartners = sendToProjectPartners,
+    sendToProjectAssigned = sendToProjectAssigned,
+    sendToControllers = sendToControllers,
+    emailSubject = emailSubject,
+    emailBody = emailBody,
+)
+
 
 private val callDTOMapper = Mappers.getMapper(CallDTOMapper::class.java)
 
@@ -126,6 +169,9 @@ abstract class CallDTOMapper {
 
     abstract fun map(allowedRealCostsDTO: AllowedRealCostsDTO): AllowedRealCosts
     abstract fun map(allowedRealCosts: AllowedRealCosts): AllowedRealCostsDTO
+
+    abstract fun map(notificationTypeDTO: NotificationTypeDTO): NotificationType
+    abstract fun map(notificationType: NotificationType): NotificationTypeDTO
 
     abstract fun map(callFundRateDTO: CallFundRateDTO): CallFundRate
     abstract fun map(callFundRate: CallFundRate): CallFundRateDTO

@@ -7,34 +7,48 @@
         [subTitleText]="subTitleText"
         [descriptionKey]="descriptionKey"
         [descriptionText]="descriptionText"
+        [ngClass]="(isVersionedData && isInModification()) ? 'in-modification' : ''"
 >
     <ng-content></ng-content>
 </jems-main-page-template>
 <ng-template #versionWarn>
+    <ng-container *ngIf="versionSelectData$ | async as data">
     <ng-container
             *jemsHasPermission="PermissionsEnum.ProjectFileApplicationRetrieve; alternativeCondition pageStore.isThisUserOwner$ | async">
-        <jems-alert *ngIf="versionWarnData$ | async as data"
+        <jems-alert *ngIf="data.versionWarnData"
                     [type]="Alert.WARNING"
-                    [show]="!data.selectedIsCurrent">
+                    [show]="!data.versionWarnData.selectedIsCurrent && !data.isSelectedSameAsLastApproved">
             <div id="version-warn">
-                <span class="mt-2">{{'project.versions.warn.old.version' | translate}}</span>
-                <span class="mt-2">
-                    {{data.selected?.version}}, {{data.selected?.status}}
-                    ({{data.selected?.createdAt | localeDate: 'L' : 'LT'}})
-                </span>
-                <button jemsText id="switch-to-current" mat-raised-button
-                        (click)="pageStore.changeVersion(data.current)">
-                    {{'project.versions.warn.switch' | translate}}
-                </button>
+                <p>
+                    {{'project.versions.warn.old.version' | translate}}
+                    {{'project.versions.select.format' | translate : {version: data.versionWarnData.selected?.version} }}
+                    {{data.stringForSelectedVersion}}
+                    <button mat-stroked-button jemsText id="switch-to-current" (click)="pageStore.changeVersion(data.versionWarnData.current)">
+                        {{'project.versions.warn.switch' | translate}}
+                    </button>
+                </p>
             </div>
         </jems-alert>
+    </ng-container>
+    <ng-container>
+        <div id="versionAndStatusInfo" *ngIf="data.isSelectedSameAsLastApproved || data.selectedVersion.current">
+            <span>{{'project.versions.select.label' | translate}}: </span>
+            <span class="version-info">
+                <mat-icon class="{{getIconForProjectStatus(data.selectedVersion?.status)}}"></mat-icon>
+                {{'project.versions.select.format' | translate : {version: data.selectedVersion.version} }}
+            </span>
+            <span class="status-info">
+                {{ data.stringForSelectedVersion }}
+            </span>
+        </div>
+    </ng-container>
     </ng-container>
 </ng-template>
 
 <ng-template #sidenavVersionSelect>
     <ng-container *ngIf="versionSelectData$ | async as data">
         <mat-form-field *ngIf="data.versions.pastVersions.length || data.versions.lastApprovedVersion || data.versions.currentVersion"
-                        class="ml-4 mt-2">
+                        class="ml-4 mt-2 versionSelection">
             <mat-label>{{'project.versions.select.label' | translate}}</mat-label>
             <mat-select *ngIf="data.selectedVersion?.version"
                         [value]="data.selectedVersion"
@@ -42,6 +56,9 @@
 
                 <mat-select-trigger>
                     <span *ngIf="data.selectedVersion.current"> {{'project.versions.select.format.current' | translate }} </span>
+                    <span *ngIf="data.selectedVersion.status === ProjectStatusEnum.MODIFICATIONREJECTED"><mat-icon>clear</mat-icon></span>
+                    <span *ngIf="isStatusApprovedOrContracted(data.selectedVersion)"><mat-icon>check_circle_outline</mat-icon></span>
+                    <span *ngIf="noDecisionTaken(data.selectedVersion)"><mat-icon>edit</mat-icon></span>
                     <span >{{'project.versions.select.format' | translate : {version: data.selectedVersion.version} }}</span>
                 </mat-select-trigger>
 
@@ -55,7 +72,7 @@
                 <mat-optgroup *ngIf="data.versions.lastApprovedVersion"
                               label="{{'project.version.last.approved' | translate}}">
                     <mat-option [value]="data.versions.lastApprovedVersion">
-                        <mat-icon class="color-green">check</mat-icon>
+                        <mat-icon class="color-green">check_circle_outline</mat-icon>
                         {{'project.versions.select.format' | translate : {version: data.versions.lastApprovedVersion.version} }}
                     </mat-option>
                 </mat-optgroup>
@@ -65,7 +82,7 @@
                     <mat-option *ngFor="let projectVersion of data.versions.pastVersions"
                                 [value]="projectVersion">
                         <span *ngIf="projectVersion.status === ProjectStatusEnum.MODIFICATIONREJECTED"><mat-icon class="color-red">clear</mat-icon></span>
-                        <span *ngIf="isStatusApprovedOrContracted(projectVersion)"><mat-icon class="color-green">check</mat-icon></span>
+                        <span *ngIf="isStatusApprovedOrContracted(projectVersion)"><mat-icon class="color-green">check_circle_outline</mat-icon></span>
                         <span *ngIf="noDecisionTaken(projectVersion)"><mat-icon><!--Empty placeholder--></mat-icon></span>
                         <ng-container *ngIf="!projectVersion.current">
                             {{'project.versions.select.format' | translate : {version: projectVersion.version} }}

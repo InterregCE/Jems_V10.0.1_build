@@ -48,14 +48,15 @@ import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserRole
+import io.cloudflight.jems.server.user.service.model.UserSettings
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import java.math.BigDecimal
 import java.time.ZoneId
 import java.time.ZonedDateTime
-import java.util.*
+import java.util.SortedSet
 
 val START = ZonedDateTime.now().withSecond(0).withNano(0)
-val END = ZonedDateTime.now().plusDays(5).withSecond(0).withNano(0).plusMinutes(1).minusNanos(1)
+val END = ZonedDateTime.now().plusDays(5).withSecond(0).withNano(0).plusMinutes(1).minusNanos(1000000)
 private const val STATE_AID_ID = 23L
 private const val LUMP_SUM_ID = 4L
 private const val UNIT_COST_ID = 3L
@@ -64,6 +65,7 @@ private const val UNIT_COST_ID = 3L
 private val account = UserEntity(
     id = 1,
     email = "admin@admin.dev",
+    sendNotificationsToEmail = false,
     name = "Name",
     surname = "Surname",
     userRole = UserRoleEntity(id = 1, name = "ADMIN"),
@@ -109,9 +111,13 @@ fun createTestCallEntity(
         allowedRealCosts = allowedRealCosts,
         preSubmissionCheckPluginKey = null,
         firstStepPreSubmissionCheckPluginKey = null,
+        reportPartnerCheckPluginKey = "check-off",
+        reportProjectCheckPluginKey = "check-off",
         unitCosts = unitCosts,
         projectDefinedUnitCostAllowed = true,
         projectDefinedLumpSumAllowed = false,
+        controlReportPartnerCheckPluginKey = "control-report-partner-check-off",
+        controlReportSamplingCheckPluginKey = "control-report-sampling-check-off",
     ).apply {
         translatedValues.add(CallTranslEntity(TranslationId(this, SystemLanguage.EN), "This is a dummy call"))
         flatRates.add(
@@ -147,7 +153,11 @@ fun createCallDetailModel(
     applicationFormFieldConfigurations: MutableSet<ApplicationFormFieldConfiguration> =
         applicationFormFieldConfigurationEntities(createTestCallEntity(id,  name = name)).toModel(),
     preSubmissionCheckPluginKey: String? = null,
-    firstStepPreSubmissionCheckPluginKey: String? = null
+    firstStepPreSubmissionCheckPluginKey: String? = null,
+    reportPartnerCheckPluginKey: String? = null,
+    reportProjectCheckPluginKey: String? = null,
+    controlReportPartnerCheckPlugin: String? = null,
+    controlReportSamplingCheckPluginKey: String? = null
 ): CallDetail {
     return CallDetail(
         id = id,
@@ -169,9 +179,13 @@ fun createCallDetailModel(
         unitCosts = unitCosts,
         applicationFormFieldConfigurations = applicationFormFieldConfigurations,
         preSubmissionCheckPluginKey = preSubmissionCheckPluginKey,
+        reportPartnerCheckPluginKey = reportPartnerCheckPluginKey,
+        reportProjectCheckPluginKey = reportProjectCheckPluginKey,
         firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey,
         projectDefinedUnitCostAllowed = true,
         projectDefinedLumpSumAllowed = false,
+        controlReportPartnerCheckPluginKey = controlReportPartnerCheckPlugin,
+        controlReportSamplingCheckPluginKey = controlReportSamplingCheckPluginKey
     )
 }
 
@@ -187,6 +201,7 @@ fun userWithId(id: Long) = LocalCurrentUser(
     user = User(
         id = id,
         email = "x@y",
+        userSettings = UserSettings(sendNotificationsToEmail = false),
         name = "",
         surname = "",
         userRole = UserRole(0, "", permissions = emptySet(), isDefault = false),
@@ -248,7 +263,11 @@ fun callDetail(
     lengthOfPeriod : Int = 12,
     applicationFormFieldConfigurations : MutableSet<ApplicationFormFieldConfiguration> = mutableSetOf(),
     preSubmissionCheckPluginKey: String? = null,
-    firstStepPreSubmissionCheckPluginKey: String? = null
+    firstStepPreSubmissionCheckPluginKey: String? = null,
+    reportPartnerCheckPluginKey: String? = null,
+    reportProjectCheckPluginKey: String? = null,
+    controlReportPartnerCheckPlugin: String? = null,
+    controlReportSamplingCheckPluginKey: String? = null
 ) = CallDetail(
     id = id,
     name = name,
@@ -262,8 +281,12 @@ fun callDetail(
     applicationFormFieldConfigurations =  applicationFormFieldConfigurations,
     preSubmissionCheckPluginKey = preSubmissionCheckPluginKey,
     firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey,
+    reportPartnerCheckPluginKey = reportPartnerCheckPluginKey,
+    reportProjectCheckPluginKey = reportProjectCheckPluginKey,
     projectDefinedUnitCostAllowed = false,
     projectDefinedLumpSumAllowed = true,
+    controlReportPartnerCheckPluginKey = controlReportPartnerCheckPlugin,
+    controlReportSamplingCheckPluginKey = controlReportSamplingCheckPluginKey
 )
 
 fun defaultAllowedRealCostsByCallType(callType: CallType) : AllowedRealCostsEntity {

@@ -27,10 +27,13 @@
 
         <ng-container matColumnDef="uploadDate">
             <mat-header-cell *matHeaderCellDef [mat-sort-header]="sortingEnabled ? 'uploaded' : null" [disabled]="!sortingEnabled">
-                <span jemsText maxLines="2">{{'file.table.column.name.timestamp' | translate }}</span>
+                <span jemsText maxLines="2">{{ overrideUploadTranslation | translate }}</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let file">
-                {{ file?.uploaded | localeDate: 'L' : 'LT'}}
+                <div class="date-time-cell">
+                    <div class="date">{{ file?.uploaded | localeDate: 'L'}}</div>
+                    <div class="time">{{ file?.uploaded | localeDate: 'LT'}}</div>
+                </div>
             </mat-cell>
         </ng-container>
 
@@ -62,14 +65,15 @@
                 <ng-container *ngIf="descriptionForm.value.id !== file.id">
                     <span *ngIf="file.description" jemsText maxLines="2"
                           class="mr-1 text-left fill-space-left-to-button" [matTooltip]="file.description">{{ file.description }}</span>
-                    <button (click)="editDescription(file)" *ngIf="file.editable"
+                    <button (click)="editDescription(file)" *ngIf="file.editable && file.name !== SENSITIVE_FILE_NAME_MASK"
                             [disabled]="descriptionForm.value.id && descriptionForm.value.id !== file.id"
-                            color="primary" mat-icon-button matTooltip="{{ 'file.table.action.description.tooltip' | translate }}" class="my-fab">
+                            color="primary" mat-icon-button matTooltip="{{ 'file.table.action.description.tooltip' | translate }}" class="my-fab"
+                            aria-label="edit">
                         <mat-icon>edit</mat-icon>
                     </button>
                 </ng-container>
 
-                <form [formGroup]="descriptionForm" *ngIf="descriptionForm.value.id === file.id && file.editable" class="w-100">
+                <form [formGroup]="descriptionForm" *ngIf="descriptionForm.value.id === file.id && (file.editable && file.name !== SENSITIVE_FILE_NAME_MASK)" class="w-100">
                     <jems-expandable-textarea class="w-100"
                             label="file.table.column.name.description"
                             [control]="descriptionForm.controls.description"
@@ -84,7 +88,7 @@
 
                         <button (click)="saveDescription()" mat-flat-button type="submit"
                                 [disabled]="descriptionForm.invalid || (savingDescriptionId$ | async) === file.id" class="ml-2 small-flat-btn" color="primary">
-                            <mat-icon class="mr-1" *ngIf="(savingDescriptionId$ | async) !== file.id">check</mat-icon>
+                            <mat-icon class="mr-1" *ngIf="(savingDescriptionId$ | async) !== file.id">check_circle_outline</mat-icon>
                             <mat-spinner *ngIf="(savingDescriptionId$ | async) === file.id" class="mr-4" color="primary" [diameter]="17"></mat-spinner>
                             {{'project.file.description.button.save' | translate}}
                         </button>
@@ -99,20 +103,25 @@
                 <span jemsText maxLines="2">{{'file.table.column.name.action' | translate }}</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let file" class="text-center border-cell-left">
+                <span matTooltip="{{ (file.name === SENSITIVE_FILE_NAME_MASK ? 'file.table.action.can.not.download.sensitive' : 'file.table.action.download.tooltip') | translate }}">
+                    <button [disabled]="file.name === SENSITIVE_FILE_NAME_MASK"
+                            (click)="onDownload.emit(file)"
+                            color="primary"
+                            mat-icon-button
+                            aria-label="download">
+                        <mat-icon fontSet="material-icons-outlined">
+                            {{ file.name === SENSITIVE_FILE_NAME_MASK ? 'file_download_off' : 'file_download' }}
+                        </mat-icon>
+                    </button>
+                </span>
 
-                <button (click)="onDownload.emit(file)"
-                        color="primary"
-                        mat-icon-button
-                        matTooltip="{{'file.table.action.download.tooltip' | translate}}">
-                    <mat-icon fontSet="material-icons-outlined">file_download</mat-icon>
-                </button>
-
-                <span [matTooltip]="((file.deletable ? 'file.table.action.delete.tooltip' : file.tooltipIfNotDeletable) | translate)">
-                    <button (click)="deleteFile(file)" [disabled]="!file.deletable || (deletingId$ | async) === file.id"
-                            color="accent" mat-icon-button>
+                <span *ngIf="(file.deletable && file.name !== SENSITIVE_FILE_NAME_MASK) || (file.tooltipIfNotDeletable !== '' && file.iconIfNotDeletable !== '')"
+                      [matTooltip]="((file.deletable && file.name !== SENSITIVE_FILE_NAME_MASK ? 'file.table.action.delete.tooltip' : file.tooltipIfNotDeletable) | translate)">
+                    <button (click)="deleteFile(file)" [disabled]="!file.deletable || (deletingId$ | async) === file.id || file.name === SENSITIVE_FILE_NAME_MASK"
+                            color="accent" mat-icon-button aria-label="delete">
                         <mat-icon [class.icon-hidden]="!file.deletable && !file.iconIfNotDeletable"
                                   *ngIf="(deletingId$ | async) !== file.id">
-                            {{ file.deletable ? 'delete' : file.iconIfNotDeletable }}
+                            {{ file.name !== SENSITIVE_FILE_NAME_MASK && file.deletable ? 'delete' : file.iconIfNotDeletable }}
                         </mat-icon>
                         <mat-spinner *ngIf="(deletingId$ | async) === file.id" class="mr-4" color="primary" [diameter]="17"></mat-spinner>
                     </button>

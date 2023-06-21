@@ -12,7 +12,7 @@ import javax.persistence.OneToMany
 import javax.validation.constraints.NotNull
 
 @Entity(name = "project_result")
-data class ProjectResultEntity (
+data class ProjectResultEntity(
 
     @EmbeddedId
     val resultId: ProjectResultId,
@@ -33,4 +33,8 @@ data class ProjectResultEntity (
     @Column
     val targetValue: BigDecimal? = null,
 
-    )
+    @Column
+    @field:NotNull
+    var deactivated: Boolean,
+
+)

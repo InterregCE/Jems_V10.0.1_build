@@ -1,18 +1,20 @@
 package io.cloudflight.jems.server.controllerInstitution.service
 
-import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionList
+import io.cloudflight.jems.api.nuts.dto.OutputNuts
+import io.cloudflight.jems.server.common.file.service.model.UserSimple
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitution
-import io.cloudflight.jems.server.controllerInstitution.service.model.UpdateControllerInstitution
+import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionList
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionUser
-import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerDetails
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignment
-import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignmentWithUsers
+import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerDetails
+import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerSearchRequest
+import io.cloudflight.jems.server.controllerInstitution.service.model.ProjectPartnerAssignmentMetadata
+import io.cloudflight.jems.server.controllerInstitution.service.model.UpdateControllerInstitution
 import io.cloudflight.jems.server.controllerInstitution.service.model.UserInstitutionAccessLevel
 import io.cloudflight.jems.server.project.entity.partner.ControllerInstitutionEntity
+import java.util.Optional
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import java.util.Optional
-
 
 interface ControllerInstitutionPersistence {
 
@@ -40,9 +42,11 @@ interface ControllerInstitutionPersistence {
 
     fun getInstitutionUsersByInstitutionId(institutionId: Long): List<ControllerInstitutionUser>
 
+    fun getControllerUsersForReportByInstitutionId(institutionId: Long): List<UserSimple>
+
     fun getControllerInstitutionUsersByInstitutionIds(institutionIds: Set<Long>): List<ControllerInstitutionUser>
 
-    fun getInstitutionPartnerAssignments(pageable: Pageable): Page<InstitutionPartnerDetails>
+    fun getInstitutionPartnerAssignments(pageable: Pageable, searchRequest: InstitutionPartnerSearchRequest): Page<InstitutionPartnerDetails>
 
     fun assignInstitutionToPartner(
         partnerIdsToRemove: Set<Long>,
@@ -51,14 +55,21 @@ interface ControllerInstitutionPersistence {
 
     fun getInstitutionPartnerAssignmentsByInstitutionId(institutionId: Long): List<InstitutionPartnerAssignment>
 
-    fun getInstitutionPartnerAssignmentsWithUsersByPartnerProjectIdsIn(partnerProjectIds: Set<Long>): List<InstitutionPartnerAssignmentWithUsers>
-
     fun getRelatedUserIdsForProject(projectId: Long): Set<Long>
+
+    fun getRelatedUserIdsForPartner(partnerId: Long): Set<Long>
 
     fun getControllerUserAccessLevelForPartner(userId: Long, partnerId: Long): UserInstitutionAccessLevel?
 
     fun getRelatedProjectAndPartnerIdsForUser(userId: Long): Map<Long, Set<Long>>
 
     fun getInstitutionPartnerAssignmentsToDeleteByProjectId(projectId: Long): List<InstitutionPartnerAssignment>
+
     fun getInstitutionPartnerAssignmentsToDeleteByInstitutionId(institutionId: Long): List<InstitutionPartnerAssignment>
+
+    fun updatePartnerDataInAssignments(partners: Collection<ProjectPartnerAssignmentMetadata>)
+
+    fun deletePartnerDataInAssignmentsForProject(projectId: Long)
+
+    fun getNutsAvailableForUser(userId: Long): List<OutputNuts>
 }

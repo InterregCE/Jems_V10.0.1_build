@@ -1,0 +1,6 @@
+<jems-project-page-template *ngIf="pageStore.projectReport$ | async as partnerReport"
+                            [titleText]="'project.application.project.reports.title.create.report' | translate"
+                            [subTitleText]=""
+                            [isVersionedData]="false">
+    <jems-project-report-identification-tab></jems-project-report-identification-tab>
+</jems-project-page-template>

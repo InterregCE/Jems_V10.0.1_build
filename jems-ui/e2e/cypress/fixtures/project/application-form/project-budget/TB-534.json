@@ -417,11 +417,11 @@
         ],
         "unit": [
           {
-            "unitCostId": 4,
+            "unitCostId": 6,
             "numberOfUnits": 1,
             "budgetPeriods": [
               {
-                "amount": 55.56,
+                "amount": 155.22,
                 "number": 1
               },
               {
@@ -471,7 +471,7 @@
         "partnerContributions": [
           {
             "status": "Public",
-            "amount": 47244.45,
+            "amount": 25062.09,
             "partner": true
           }
         ]
@@ -484,11 +484,11 @@
         "10.000,00",
         "10.000,00",
         "0,00",
-        "55.555,56",
-        "55,56",
-        "118.111,12"
+        "0,00",
+        "155,22",
+        "62.655,22"
       ],
-      "cofinancingAmount": "70.866,67"
+      "cofinancingAmount": "37.593,13"
     },
     {
       "abbreviation": "PP2",
@@ -603,9 +603,9 @@
                 "language": "EN"
               }
             ],
-            "unitCostId": 3,
+            "unitCostId": 4,
             "numberOfUnits": 1,
-            "pricePerUnit": 555.56,
+            "pricePerUnit": 1234.56,
             "budgetPeriods": [
               {
                 "amount": 250,
@@ -632,7 +632,7 @@
                 "number": 6
               },
               {
-                "amount": 0.56,
+                "amount": 679.56,
                 "number": 7
               },
               {
@@ -724,11 +724,11 @@
         ],
         "unit": [
           {
-            "unitCostId": 4,
+            "unitCostId": 6,
             "numberOfUnits": 1,
             "budgetPeriods": [
               {
-                "amount": 55.56,
+                "amount": 155.22,
                 "number": 1
               },
               {
@@ -778,24 +778,24 @@
         "partnerContributions": [
           {
             "status": "Private",
-            "amount": 101102.22,
+            "amount": 101484.30,
             "partner": true
           }
         ]
       },
       "budgetOverview": [
-        "40.111,11",
-        "6.016,66",
-        "6.016,66",
+        "40.246,91",
+        "6.037,03",
+        "6.037,03",
         "100.000,00",
-        "555,56",
+        "1.234,56",
         "100.000,00",
         "0,00",
         "0,00",
-        "55,56",
-        "252.755,55"
+        "155,22",
+        "253.710,75"
       ],
-      "cofinancingAmount": "151.653,33"
+      "cofinancingAmount": "152.226,45"
     },
     {
       "abbreviation": "PP3",
@@ -1999,24 +1999,24 @@
     }
   ],
   "fundingAmounts": {
-    "totalERDF": "272.950,00",
+    "totalERDF": "240.249,58",
     "totalCBC": "8.800,12",
-    "total": "494.776,91",
+    "total": "440.276,21",
     "totalBudgetOverview": [
-      "94.225,57",
-      "29.566,66",
-      "39.916,66",
+      "94.361,37",
+      "29.587,03",
+      "39.937,03",
       "120.000,00",
-      "40.555,56",
+      "41.234,56",
       "110.000,00",
       "4.845,78",
-      "55.555,56",
-      "111,12",
-      "494.776,91"
+      "0,00",
+      "310,44",
+      "440.276,21"
     ],
     "automaticPublicContribution": "0,00",
-    "totalPublicContribution": "47.244,45",
-    "privateContribution": "165.782,34"
+    "totalPublicContribution": "25.062,09",
+    "privateContribution": "166.164,42"
   }
 }
 

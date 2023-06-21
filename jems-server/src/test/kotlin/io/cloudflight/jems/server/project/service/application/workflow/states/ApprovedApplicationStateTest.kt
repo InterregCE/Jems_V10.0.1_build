@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.application.workflow.states
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.project.repository.ProjectVersionPersistenceProvider
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
@@ -21,6 +22,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
+import java.time.LocalDate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -29,7 +31,6 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
-import java.time.LocalDate
 
 @ExtendWith(MockKExtension::class)
 class ApprovedApplicationStateTest {
@@ -63,6 +64,9 @@ class ApprovedApplicationStateTest {
     @MockK
     lateinit var projectVersionPersistenceProvider: ProjectVersionPersistenceProvider
 
+    @MockK
+    lateinit var controllerInstitutionPersistence: ControllerInstitutionPersistence
+
     @InjectMockKs
     private lateinit var approvedApplicationState: ApprovedApplicationState
 
@@ -84,6 +88,7 @@ class ApprovedApplicationStateTest {
     @Test
     fun `revertDecision to APPROVED_WITH_CONDITIONS`() {
         val status = ApplicationStatus.APPROVED_WITH_CONDITIONS
+        every { controllerInstitutionPersistence.deletePartnerDataInAssignmentsForProject(PROJECT_ID) } returns Unit
         every { projectWorkflowPersistence.getApplicationPreviousStatus(PROJECT_ID) } returns getStatusModelForStatus(status)
         every { projectWorkflowPersistence.revertCurrentStatusToPreviousStatus(PROJECT_ID) } returns status
         every { projectWorkflowPersistence.resetProjectFundingDecisionToCurrentStatus(PROJECT_ID) } returns status
@@ -97,6 +102,7 @@ class ApprovedApplicationStateTest {
 
     @Test
     fun `revertDecision to ELIGIBLE`() {
+        every { controllerInstitutionPersistence.deletePartnerDataInAssignmentsForProject(PROJECT_ID) } returns Unit
         every { projectWorkflowPersistence.getApplicationPreviousStatus(PROJECT_ID) } returns getStatusModelForStatus(ApplicationStatus.ELIGIBLE)
         every { projectWorkflowPersistence.revertCurrentStatusToPreviousStatus(PROJECT_ID) } returns ApplicationStatus.ELIGIBLE
         every { projectWorkflowPersistence.clearProjectFundingDecision(PROJECT_ID) } answers { }
@@ -158,5 +164,4 @@ class ApprovedApplicationStateTest {
     fun refuse() {
         assertThrows<RefuseIsNotAllowedException> { approvedApplicationState.refuse(actionInfo) }
     }
-
 }

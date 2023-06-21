@@ -1,11 +1,11 @@
 import {Injectable} from '@angular/core';
-import {combineLatest, Observable, of, ReplaySubject, Subject} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {
-  PageProjectReportFileDTO,
+  PageJemsFileDTO,
   ProjectContractingFileManagementService,
   ProjectContractingFileSearchRequestDTO,
-  ProjectReportFileDTO,
-  ProjectReportFileMetadataDTO,
+  JemsFileDTO,
+  JemsFileMetadataDTO,
   SettingsService,
   UserRoleDTO
 } from '@cat/api';
@@ -16,22 +16,29 @@ import {CategoryInfo, CategoryNode} from '@project/common/components/category-tr
 import {APIError} from '@common/models/APIError';
 import {I18nMessage} from '@common/models/I18nMessage';
 import {DownloadService} from '@common/services/download.service';
-import {PartnerReportDetailPageStore} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
+import {
+  PartnerReportDetailPageStore
+} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 import {FileManagementStore} from '@project/common/components/file-management/file-management-store';
-import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
-import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {
+  ProjectPartnerStore
+} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
+import {
+  ProjectStore
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {PermissionService} from '../../../security/permissions/permission.service';
 import {ProjectUtil} from '@project/common/project-util';
 import {RoutingService} from '@common/services/routing.service';
-import FileTypeEnum = ProjectReportFileDTO.TypeEnum;
+import FileTypeEnum = JemsFileDTO.TypeEnum;
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import {FileListItem} from '@common/components/file-list/file-list-item';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ContractingFilesStoreService {
 
-  fileList$: Observable<PageProjectReportFileDTO>;
+  fileList$: Observable<PageJemsFileDTO>;
   fileCategories$: Observable<CategoryNode>;
   selectedCategory$ = new ReplaySubject<CategoryInfo | undefined>(1);
   selectedCategoryPath$: Observable<I18nMessage[]>;
@@ -42,8 +49,8 @@ export class ContractingFilesStoreService {
   deleteSuccess$ = new Subject<boolean>();
   error$ = new Subject<APIError | null>();
 
-  newPageSize$ = new Subject<number>();
-  newPageIndex$ = new Subject<number>();
+  newPageSize$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_SIZE);
+  newPageIndex$ = new BehaviorSubject<number>(0);
   newSort$ = new Subject<Partial<MatSort>>();
   filesChanged$ = new Subject<void>();
 
@@ -70,7 +77,7 @@ export class ContractingFilesStoreService {
     this.fileCategories$ = fileCategories;
   }
 
-  uploadFile(file: File): Observable<ProjectReportFileMetadataDTO> {
+  uploadFile(file: File): Observable<JemsFileMetadataDTO> {
     return this.selectedCategory$
       .pipe(
         take(1),
@@ -93,7 +100,7 @@ export class ContractingFilesStoreService {
         tap(() => this.error$.next(null)),
         catchError(error => {
           this.error$.next(error.error);
-          return of({} as ProjectReportFileMetadataDTO);
+          return of({} as JemsFileMetadataDTO);
         })
       );
   }
@@ -119,7 +126,6 @@ export class ContractingFilesStoreService {
     );
   }
 
-
   deleteFile(fileId: number): Observable<void> {
     return this.selectedCategory$.pipe(
       withLatestFrom(this.projectStore.projectId$, this.routingService.routeParameterChanges('/', 'partnerId')),
@@ -141,31 +147,30 @@ export class ContractingFilesStoreService {
       tap(() => setTimeout(() => this.deleteSuccess$.next(false), 3000)),
       catchError(error => {
         this.error$.next(error.error);
-        return of({} as ProjectReportFileMetadataDTO);
+        return of({} as JemsFileMetadataDTO);
       })
     );
   }
 
-  downloadFile(fileId: number): Observable<any> {
-    return this.selectedCategory$.pipe(
-      withLatestFrom(this.projectStore.projectId$, this.routingService.routeParameterChanges('/', 'partnerId')),
-      switchMap(([category, projectId, partnerIdInRoute]) => {
-        switch (category?.type) {
+  downloadFile(file: FileListItem): Observable<any> {
+    return this.projectStore.projectId$.pipe(
+      switchMap((projectId) => {
+        switch (file.type) {
           case FileTypeEnum.Contract:
           case FileTypeEnum.ContractDoc:
           case FileTypeEnum.ContractSupport:
-            return this.downloadService.download(`/api/project/${projectId}/contracting/file/contract/download/${fileId}`, 'contracting-file');
+            return this.downloadService.download(`/api/project/${projectId}/contracting/file/contract/download/${file.id}`, 'contracting-file');
           case FileTypeEnum.ContractPartner:
           case FileTypeEnum.ContractPartnerDoc:
-            return this.downloadService.download(`/api/project/${projectId}/contracting/file/partnerDocument/${partnerIdInRoute}/download/${fileId}`, 'contracting-file');
+            return this.downloadService.download(`/api/project/${projectId}/contracting/file/partnerDocument/download/${file.id}`, 'contracting-file');
           case FileTypeEnum.ContractInternal:
           default:
-            return this.downloadService.download(`/api/project/${projectId}/contracting/file/internal/download/${fileId}`, 'contracting-file');
+            return this.downloadService.download(`/api/project/${projectId}/contracting/file/internal/download/${file.id}`, 'contracting-file');
         }
       }),
       catchError(error => {
         this.error$.next(error.error);
-        return of({} as ProjectReportFileMetadataDTO);
+        return of({} as JemsFileMetadataDTO);
       })
     );
   }
@@ -186,13 +191,13 @@ export class ContractingFilesStoreService {
     );
   }
 
-  private fileList(): Observable<PageProjectReportFileDTO> {
+  private fileList(): Observable<PageJemsFileDTO> {
     return combineLatest([
       this.selectedCategory$,
       this.projectStore.projectId$,
       this.routingService.routeParameterChanges('/', 'partnerId'),
-      this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
-      this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
+      this.newPageIndex$,
+      this.newPageSize$,
       this.newSort$.pipe(
         startWith(Tables.DEFAULT_INITIAL_SORT),
         map(sort => sort?.direction ? sort : Tables.DEFAULT_INITIAL_SORT),
@@ -225,7 +230,12 @@ export class ContractingFilesStoreService {
             pageSize,
             sort
           )
-        )
+        ),
+        tap(page => {
+          if (page.totalPages > 0 && page.number >= page.totalPages) {
+            this.newPageIndex$.next(page.totalPages - 1);
+          }
+        }),
       );
   }
 
@@ -242,6 +252,10 @@ export class ContractingFilesStoreService {
     return this.settingsService.getMaximumAllowedFileSize();
   }
 
+  changeFilter(section: CategoryInfo): void {
+    this.selectedCategory$.next(section);
+    this.newPageIndex$.next(0);
+  }
 
   readonly canSeeProjectContracts$: Observable<boolean> = combineLatest([
     this.permissionService.hasPermission(PermissionsEnum.ProjectContractsView),
@@ -255,5 +269,4 @@ export class ContractingFilesStoreService {
       ProjectUtil.isInApprovedOrAnyStatusAfterApproved(projectStatus)
     )
   );
-
 }

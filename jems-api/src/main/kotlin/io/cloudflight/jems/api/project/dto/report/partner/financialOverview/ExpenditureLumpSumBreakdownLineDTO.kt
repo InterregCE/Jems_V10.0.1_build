@@ -11,9 +11,13 @@ data class ExpenditureLumpSumBreakdownLineDTO(
 
     val totalEligibleBudget: BigDecimal,
     val previouslyReported: BigDecimal,
+    var previouslyReportedParked: BigDecimal,
     val previouslyPaid: BigDecimal,
     val currentReport: BigDecimal,
+    var currentReportReIncluded: BigDecimal,
+    val totalEligibleAfterControl: BigDecimal,
     val totalReportedSoFar: BigDecimal,
     val totalReportedSoFarPercentage: BigDecimal,
     val remainingBudget: BigDecimal,
+    val previouslyValidated: BigDecimal,
 )

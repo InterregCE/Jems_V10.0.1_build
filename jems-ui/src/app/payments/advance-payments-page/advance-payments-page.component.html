@@ -33,8 +33,11 @@
     <span *ngIf="getSourceType(payment) === SOURCE_TYPE.contribution">{{getContributionName(payment)}}</span>
 </ng-template>
 
+<ng-template #advanceAmountPaidCell let-payment>
+    {{payment.amountPaid | asMoney}}
+</ng-template>
 <ng-template #remainingToBeSettledCell let-payment>
-    {{(payment.amountAdvance - payment.amountSettled) | asMoney}}
+    {{(payment.amountPaid - payment.amountSettled) | asMoney}}
 </ng-template>
 
 <ng-template #deleteButtonCell let-payment>
@@ -43,7 +46,8 @@
             class="delete-button"
             color="accent" mat-icon-button
             matTooltip="{{'common.delete.entry.tooltip' | translate}}"
-            type="button">
+            type="button"
+            aria-label="delete">
         <mat-icon>delete</mat-icon>
     </button>
 </ng-template>

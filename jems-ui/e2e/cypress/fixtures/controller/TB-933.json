@@ -1,0 +1,32 @@
+{
+  "institution": {
+    "name": "randomize",
+    "description": "Controller institution for control-report",
+    "institutionNuts": ["FRK27"],
+    "institutionUsers": [
+      {
+        "userEmail": "randomize",
+        "accessLevel": "Edit"
+      },
+      {
+        "userEmail": "randomize",
+        "accessLevel": "Edit"
+      }
+    ]
+  },
+  "partnerCollaborator": [
+    {
+      "userEmail": "applicant.user@jems.eu",
+      "level": "EDIT"
+    }
+  ],
+  "controllerAssignment": {
+    "assignmentsToAdd": [
+      {
+        "partnerId": null,
+        "institutionId": null
+      }
+    ],
+    "assignmentsToRemove": []
+  }
+}

@@ -1,0 +1,278 @@
+<h3>{{'project.application.project.report.financial.breakdown.per.partner.current.header' | translate }}</h3>
+
+<mat-table jemsNoWidthLimit [dataSource]="dataSource">
+
+    <ng-container matColumnDef="partner" sticky>
+        <mat-header-cell *matHeaderCellDef>
+            <span jemsText maxLines="2">{{'project.application.project.report.financial.breakdown.per.partner.header.partner' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let partner">{{'common.label.project.partner.role.shortcut.' + partner.partnerRole | adaptTranslationKeyByCallType | async | translate : {partner: partner.partnerNumber} }}
+        </mat-cell>
+        <mat-footer-cell *matFooterCellDef>{{'project.application.project.report.financial.breakdown.per.partner.footer.total' | translate }}</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="organizationAbbreviation">
+        <mat-header-cell *matHeaderCellDef>
+            <span jemsText maxLines="2">{{'project.application.project.report.financial.breakdown.per.partner.header.organisation.abbreviation' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let partner">{{ partner.partnerAbbreviation | translate }}</mat-cell>
+        <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="country">
+        <mat-header-cell *matHeaderCellDef class="border-cell-right">
+            <span jemsText maxLines="2">{{'project.application.project.report.financial.breakdown.per.partner.header.country' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let partner" class="border-cell-right">{{ partner.country }}</mat-cell>
+        <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="staffCosts" *ngIf="this.allowedCostCategories.get(CategoryEnum.StaffCosts)">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="1">{{'project.application.project.report.financial.breakdown.per.partner.header.staff.costs' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let partner" [ngClass]="partner.staffCostsFlatRate ? 'text-right block' : 'text-right'">
+            <div>{{ partner.current.staff | asMoney }}</div>
+            <div *ngIf="partner.staffCostsFlatRate" class="additional-info-text mat-small">
+                {{'export.flat.rate' | translate}} {{ partner.staffCostsFlatRate ?? 0 }}
+            </div>
+        </mat-cell>
+        <mat-footer-cell class="text-right" *matFooterCellDef>{{ breakdown.totalCurrent.staff | asMoney }}</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="officeAndAdministration" *ngIf="this.allowedCostCategories.get(CategoryEnum.OfficeAndAdministrationCosts)">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{'project.application.project.report.financial.breakdown.per.partner.header.office.and.administration' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let partner" [ngClass]="partner.officeAndAdministrationOnStaffCostsFlatRate || partner.officeAndAdministrationOnDirectCostsFlatRate ? 'text-right block' : 'text-right'">
+            <div>{{ partner.current.office | asMoney }}</div>
+            <div *ngIf="partner.officeAndAdministrationOnStaffCostsFlatRate || partner.officeAndAdministrationOnDirectCostsFlatRate" class="additional-info-text mat-small">
+                {{'project.application.project.report.financial.breakdown.per.partner.flat.rate' | translate}} {{ partner.officeAndAdministrationOnStaffCostsFlatRate ?? (partner.officeAndAdministrationOnDirectCostsFlatRate ?? 0) }}
+            </div>
+        </mat-cell>
+        <mat-footer-cell class="text-right" *matFooterCellDef>{{ breakdown.totalCurrent.office | asMoney }}</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="travelAndAccommodation" *ngIf="this.allowedCostCategories.get(CategoryEnum.TravelAndAccommodationCosts)">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{'project.application.project.report.financial.breakdown.per.partner.header.travel.and.accommodation' | translate}}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let partner" [ngClass]="partner.travelAndAccommodationOnStaffCostsFlatRate ? 'text-right block' : 'text-right'">
+            <div>{{ partner.current.travel | asMoney }}</div>
+            <div *ngIf="partner.travelAndAccommodationOnStaffCostsFlatRate" class="additional-info-text mat-small">
+                {{'export.flat.rate' | translate}} {{ partner.travelAndAccommodationOnStaffCostsFlatRate ?? 0 }}
+            </div>
+        </mat-cell>
+        <mat-footer-cell class="text-right" *matFooterCellDef>{{ breakdown.totalCurrent.travel | asMoney }}</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="externalServices" *ngIf="this.allowedCostCategories.get(CategoryEnum.ExternalCosts)">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{'project.application.project.report.financial.breakdown.per.partner.header.external.services' | translate}}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let partner" class="text-right">{{ partner.current.external | asMoney }}</mat-cell>
+        <mat-footer-cell class="text-right" *matFooterCellDef>{{ breakdown.totalCurrent.external | asMoney }}</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="equipment" *ngIf="this.allowedCostCategories.get(CategoryEnum.EquipmentCosts)">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{'project.application.project.report.financial.breakdown.per.partner.header.equipment' | translate}}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let partner" class="text-right">{{ partner.current.equipment | asMoney }}</mat-cell>
+        <mat-footer-cell class="text-right" *matFooterCellDef>{{ breakdown.totalCurrent.equipment | asMoney }}</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="infraAndWorks" *ngIf="this.allowedCostCategories.get(CategoryEnum.InfrastructureCosts)">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{'project.application.project.report.financial.breakdown.per.partner.header.infrastructure.and.works' | translate}}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let partner" class="text-right">{{ partner.current.infrastructure | asMoney }}</mat-cell>
+        <mat-footer-cell class="text-right" *matFooterCellDef>{{ breakdown.totalCurrent.infrastructure | asMoney }}</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="otherCosts" *ngIf="this.allowedCostCategories.get(CategoryEnum.Multiple)">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{'project.application.project.report.financial.breakdown.per.partner.header.other.costs' | translate}}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let partner" [ngClass]="partner.otherCostsOnStaffCostsFlatRate ? 'text-right block' : 'text-right'">
+            <div>{{ partner.current.other | asMoney }}</div>
+            <div *ngIf="partner.otherCostsOnStaffCostsFlatRate" class="additional-info-text mat-small">
+                {{'export.flat.rate' | translate}} {{ partner.otherCostsOnStaffCostsFlatRate ?? 0 }}
+            </div>
+        </mat-cell>
+        <mat-footer-cell class="text-right" *matFooterCellDef>{{ breakdown.totalCurrent.other | asMoney }}</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="lumpSum" *ngIf="this.allowedCostCategories.get('LumpSum')">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{'project.application.project.report.financial.breakdown.per.partner.header.lump.sum' | translate}}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let partner" class="text-right">{{ partner.current.lumpSum | asMoney }}</mat-cell>
+        <mat-footer-cell class="text-right" *matFooterCellDef>{{ breakdown.totalCurrent.lumpSum | asMoney }}</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="unitCosts" *ngIf="this.allowedCostCategories.get('UnitCost')">
+        <mat-header-cell *matHeaderCellDef class="text-right border-cell-right">
+            <span jemsText maxLines="2">{{'project.application.project.report.financial.breakdown.per.partner.header.unit.costs' | translate}}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let partner" class="text-right border-cell-right">
+            <span>{{ partner.current.unitCost | asMoney }}</span>
+        </mat-cell>
+        <mat-footer-cell *matFooterCellDef class="border-cell-right text-right">
+            <span>{{ breakdown.totalCurrent.unitCost | asMoney }}</span>
+        </mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="totalBudget">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{'project.application.project.report.financial.breakdown.per.partner.header.total.budget' | translate}}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let partner" class="text-right">{{ partner.current.sum | asMoney }}</mat-cell>
+        <mat-footer-cell class="text-right" *matFooterCellDef>{{ breakdown.totalCurrent.sum | asMoney }}</mat-footer-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+    <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
+
+</mat-table>
+
+<h3>{{'project.application.project.report.financial.breakdown.per.partner.after.control.header' | translate }}</h3>
+
+<mat-table jemsNoWidthLimit [dataSource]="dataSource">
+
+    <ng-container matColumnDef="partner" sticky>
+        <mat-header-cell *matHeaderCellDef>
+            <span jemsText maxLines="2">{{'project.application.project.report.financial.breakdown.per.partner.header.partner' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let partner">{{'common.label.project.partner.role.shortcut.' + partner.partnerRole | adaptTranslationKeyByCallType | async | translate : {partner: partner.partnerNumber} }}
+        </mat-cell>
+        <mat-footer-cell *matFooterCellDef>{{'project.application.project.report.financial.breakdown.per.partner.footer.total' | translate }}</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="organizationAbbreviation">
+        <mat-header-cell *matHeaderCellDef>
+            <span jemsText maxLines="2">{{'project.application.project.report.financial.breakdown.per.partner.header.organisation.abbreviation' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let partner">{{ partner.partnerAbbreviation | translate }}</mat-cell>
+        <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="country">
+        <mat-header-cell *matHeaderCellDef class="border-cell-right">
+            <span jemsText maxLines="2">{{'project.application.project.report.financial.breakdown.per.partner.header.country' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let partner" class="border-cell-right">{{ partner.country }}</mat-cell>
+        <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="staffCosts" *ngIf="this.allowedCostCategories.get(CategoryEnum.StaffCosts)">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="1">{{'project.application.project.report.financial.breakdown.per.partner.header.staff.costs' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let partner" [ngClass]="partner.staffCostsFlatRate ? 'text-right block' : 'text-right'">
+            <div>{{ partner.deduction.staff | asMoney }}</div>
+            <div *ngIf="partner.staffCostsFlatRate" class="additional-info-text mat-small">
+                {{'export.flat.rate' | translate}} {{ partner.staffCostsFlatRate ?? 0 }}
+            </div>
+        </mat-cell>
+        <mat-footer-cell class="text-right" *matFooterCellDef>{{ breakdown.totalDeduction.staff | asMoney }}</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="officeAndAdministration" *ngIf="this.allowedCostCategories.get(CategoryEnum.OfficeAndAdministrationCosts)">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{'project.application.project.report.financial.breakdown.per.partner.header.office.and.administration' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let partner" [ngClass]="partner.officeAndAdministrationOnStaffCostsFlatRate || partner.officeAndAdministrationOnDirectCostsFlatRate ? 'text-right block' : 'text-right'">
+            <div>{{ partner.deduction.office | asMoney }}</div>
+            <div *ngIf="partner.officeAndAdministrationOnStaffCostsFlatRate || partner.officeAndAdministrationOnDirectCostsFlatRate" class="additional-info-text mat-small">
+                {{'project.application.project.report.financial.breakdown.per.partner.flat.rate' | translate}} {{ partner.officeAndAdministrationOnStaffCostsFlatRate ?? (partner.officeAndAdministrationOnDirectCostsFlatRate ?? 0) }}
+            </div>
+        </mat-cell>
+        <mat-footer-cell class="text-right" *matFooterCellDef>{{ breakdown.totalDeduction.office | asMoney }}</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="travelAndAccommodation" *ngIf="this.allowedCostCategories.get(CategoryEnum.TravelAndAccommodationCosts)">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{'project.application.project.report.financial.breakdown.per.partner.header.travel.and.accommodation' | translate}}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let partner" [ngClass]="partner.travelAndAccommodationOnStaffCostsFlatRate ? 'text-right block' : 'text-right'">
+            <div>{{ partner.deduction.travel | asMoney }}</div>
+            <div *ngIf="partner.travelAndAccommodationOnStaffCostsFlatRate" class="additional-info-text mat-small">
+                {{'export.flat.rate' | translate}} {{ partner.travelAndAccommodationOnStaffCostsFlatRate ?? 0 }}
+            </div>
+        </mat-cell>
+        <mat-footer-cell class="text-right" *matFooterCellDef>{{ breakdown.totalDeduction.travel | asMoney }}</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="externalServices" *ngIf="this.allowedCostCategories.get(CategoryEnum.ExternalCosts)">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{'project.application.project.report.financial.breakdown.per.partner.header.external.services' | translate}}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let partner" class="text-right">{{ partner.deduction.external | asMoney }}</mat-cell>
+        <mat-footer-cell class="text-right" *matFooterCellDef>{{ breakdown.totalDeduction.external | asMoney }}</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="equipment" *ngIf="this.allowedCostCategories.get(CategoryEnum.EquipmentCosts)">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{'project.application.project.report.financial.breakdown.per.partner.header.equipment' | translate}}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let partner" class="text-right">{{ partner.deduction.equipment | asMoney }}</mat-cell>
+        <mat-footer-cell class="text-right" *matFooterCellDef>{{ breakdown.totalDeduction.equipment | asMoney }}</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="infraAndWorks" *ngIf="this.allowedCostCategories.get(CategoryEnum.InfrastructureCosts)">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{'project.application.project.report.financial.breakdown.per.partner.header.infrastructure.and.works' | translate}}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let partner" class="text-right">{{ partner.deduction.infrastructure | asMoney }}</mat-cell>
+        <mat-footer-cell class="text-right" *matFooterCellDef>{{ breakdown.totalDeduction.infrastructure | asMoney }}</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="otherCosts" *ngIf="this.allowedCostCategories.get(CategoryEnum.Multiple)">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{'project.application.project.report.financial.breakdown.per.partner.header.other.costs' | translate}}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let partner" [ngClass]="partner.otherCostsOnStaffCostsFlatRate ? 'text-right block' : 'text-right'">
+            <div>{{ partner.deduction.other | asMoney }}</div>
+            <div *ngIf="partner.otherCostsOnStaffCostsFlatRate" class="additional-info-text mat-small">
+                {{'export.flat.rate' | translate}} {{ partner.otherCostsOnStaffCostsFlatRate ?? 0 }}
+            </div>
+        </mat-cell>
+        <mat-footer-cell class="text-right" *matFooterCellDef>{{ breakdown.totalDeduction.other | asMoney }}</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="lumpSum" *ngIf="this.allowedCostCategories.get('LumpSum')">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{'project.application.project.report.financial.breakdown.per.partner.header.lump.sum' | translate}}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let partner" class="text-right">{{ partner.deduction.lumpSum | asMoney }}</mat-cell>
+        <mat-footer-cell class="text-right" *matFooterCellDef>{{ breakdown.totalDeduction.lumpSum | asMoney }}</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="unitCosts" *ngIf="this.allowedCostCategories.get('UnitCost')">
+        <mat-header-cell *matHeaderCellDef class="text-right border-cell-right">
+            <span jemsText maxLines="2">{{'project.application.project.report.financial.breakdown.per.partner.header.unit.costs' | translate}}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let partner" class="text-right border-cell-right">
+            <span>{{ partner.deduction.unitCost | asMoney }}</span>
+        </mat-cell>
+        <mat-footer-cell *matFooterCellDef class="border-cell-right text-right">
+            <span>{{ breakdown.totalDeduction.unitCost | asMoney }}</span>
+        </mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="totalBudget">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{'project.application.project.report.financial.breakdown.per.partner.header.total.deduction' | translate}}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let partner" class="text-right">{{ partner.deduction.sum | asMoney }}</mat-cell>
+        <mat-footer-cell class="text-right" *matFooterCellDef>{{ breakdown.totalDeduction.sum | asMoney }}</mat-footer-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+    <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
+
+</mat-table>
+

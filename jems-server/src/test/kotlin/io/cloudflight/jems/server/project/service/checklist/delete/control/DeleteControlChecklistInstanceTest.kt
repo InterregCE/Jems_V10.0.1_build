@@ -17,7 +17,7 @@ import io.cloudflight.jems.server.programme.service.checklist.model.metadata.Opt
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.TextInputMetadata
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
-import io.cloudflight.jems.server.project.service.checklist.getInstances.control.GetControlChecklistDetailNotAllowedException
+import io.cloudflight.jems.server.project.service.checklist.getInstances.GetChecklistInstanceDetailNotFoundException
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
 import io.cloudflight.jems.server.project.service.checklist.model.metadata.TextInputInstanceMetadata
@@ -31,6 +31,10 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDe
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerMotivation
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
+import io.cloudflight.jems.server.project.service.report.model.partner.PartnerReportIdentification
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.user.service.authorization.UserAuthorization
 import io.cloudflight.jems.server.utils.user
 import io.mockk.every
@@ -38,12 +42,14 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.slot
 import io.mockk.verify
+import java.math.BigDecimal
+import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
-import java.math.BigDecimal
-import java.time.ZonedDateTime
 
 internal class DeleteControlChecklistInstanceTest : UnitTest() {
 
@@ -53,8 +59,10 @@ internal class DeleteControlChecklistInstanceTest : UnitTest() {
     private val partnerName = "LP1"
     private val reportId = 3L
     private val projectId = 5L
+    private val controlReportId = 2
+    private val TODAY = ZonedDateTime.now()
 
-    private val controlCheckLisDetail = ChecklistInstanceDetail(
+    private val controlChecklistDetail = ChecklistInstanceDetail(
         id = checklistId,
         programmeChecklistId = 1L,
         status = ChecklistInstanceStatus.DRAFT,
@@ -62,6 +70,7 @@ internal class DeleteControlChecklistInstanceTest : UnitTest() {
         name = "name",
         creatorEmail = "a@a",
         creatorId = creatorId,
+        createdAt = TODAY,
         relatedToId = reportId,
         finishedDate = null,
         minScore = BigDecimal(0),
@@ -82,7 +91,7 @@ internal class DeleteControlChecklistInstanceTest : UnitTest() {
                 ProgrammeChecklistComponentType.OPTIONS_TOGGLE,
                 2,
                 OptionsToggleMetadata("What option do you choose", "yes", "no", "maybe", ""),
-                OptionsToggleInstanceMetadata("yes","test")
+                OptionsToggleInstanceMetadata("yes", "test")
             ),
             ChecklistComponentInstance(
                 4L,
@@ -94,7 +103,7 @@ internal class DeleteControlChecklistInstanceTest : UnitTest() {
         )
     )
 
-    private val controlCheckLisDetailWithFinishStatus = ChecklistInstanceDetail(
+    private val controlChecklistDetailWithFinishStatus = ChecklistInstanceDetail(
         id = checklistId,
         programmeChecklistId = 1L,
         status = ChecklistInstanceStatus.FINISHED,
@@ -102,6 +111,7 @@ internal class DeleteControlChecklistInstanceTest : UnitTest() {
         name = "name",
         creatorEmail = "a@a",
         creatorId = creatorId,
+        createdAt = TODAY,
         relatedToId = reportId,
         finishedDate = null,
         consolidated = false,
@@ -151,6 +161,35 @@ internal class DeleteControlChecklistInstanceTest : UnitTest() {
         )
     )
 
+    private fun getProjectPartnerReport(status: ReportStatus) =
+        ProjectPartnerReport(
+            id = 2,
+            reportNumber = 1,
+            status = status,
+            version = "1.0",
+            firstSubmission = null,
+            lastResubmission = null,
+            controlEnd = TODAY,
+            lastControlReopening = null,
+            projectReportId = 96L,
+            projectReportNumber = 963,
+            identification = PartnerReportIdentification(
+                projectIdentifier = "projectIdentifier",
+                projectAcronym = "projectAcronym",
+                partnerNumber = 2,
+                partnerAbbreviation = "",
+                partnerRole = ProjectPartnerRole.PARTNER,
+                nameInOriginalLanguage = null,
+                nameInEnglish = null,
+                legalStatus = null,
+                partnerType = null,
+                vatRecovery = null,
+                country = null,
+                currency = null,
+                coFinancing = emptyList(),
+            )
+        )
+
     @MockK
     lateinit var persistence: ChecklistInstancePersistence
 
@@ -166,19 +205,34 @@ internal class DeleteControlChecklistInstanceTest : UnitTest() {
     @MockK
     lateinit var partnerPersistence: PartnerPersistence
 
+    @MockK
+    lateinit var reportPersistence: ProjectPartnerReportPersistence
+
     @InjectMockKs
     lateinit var deleteControlChecklistInstance: DeleteControlChecklistInstance
 
     @Test
     fun `delete control checklist - OK`() {
-        every { userAuthorization.getUser() } returns user
+        every{
+            reportPersistence.getPartnerReportById(partnerId, reportId)
+        } returns getProjectPartnerReport(ReportStatus.InControl)
+        every { securityService.currentUser?.user?.id } returns creatorId
         every { securityService.getUserIdOrThrow() } returns user.id
-        every { persistence.getChecklistDetail(checklistId) } returns controlCheckLisDetail
+        every {
+            persistence.getChecklistDetail(
+                checklistId,
+                ProgrammeChecklistType.CONTROL,
+                reportId
+            )
+        } returns controlChecklistDetail
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
         every { persistence.deleteById(checklistId) } answers {}
         every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
         every { partnerPersistence.getById(partnerId) } returns projectPartner
+        every { reportPersistence.getPartnerReportById(partnerId, reportId).reportNumber } returns controlReportId
+        every { reportPersistence.getPartnerReportById(partnerId, reportId).status } returns ReportStatus.InControl
+        every { reportPersistence.getPartnerReportById(partnerId, reportId).controlEnd } returns TODAY
         deleteControlChecklistInstance.deleteById(partnerId, reportId, checklistId)
         verify { persistence.deleteById(checklistId) }
 
@@ -187,27 +241,78 @@ internal class DeleteControlChecklistInstanceTest : UnitTest() {
             AuditCandidate(
                 action = AuditAction.CHECKLIST_DELETED,
                 project = AuditProject(id = projectId.toString()),
-                description = "Checklist '${controlCheckLisDetail.id}' type '${controlCheckLisDetail.type}' name '${controlCheckLisDetail.name}' " +
-                        "for partner '${partnerName}' and partner report 'R.${reportId}' was deleted"
+                description = "Checklist ${controlChecklistDetail.id} type ${controlChecklistDetail.type} name ${controlChecklistDetail.name} " +
+                        "for partner $partnerName and partner report R.$controlReportId was deleted"
             )
         )
     }
 
     @Test
     fun `delete control checklist - does not exist`() {
-        every { persistence.getChecklistDetail(-1) } throws GetControlChecklistDetailNotAllowedException()
+        every {
+            persistence.getChecklistDetail(
+                -1,
+                ProgrammeChecklistType.CONTROL,
+                reportId
+            )
+        } throws GetChecklistInstanceDetailNotFoundException()
+        every{
+            reportPersistence.getPartnerReportById(partnerId, reportId)
+        } returns getProjectPartnerReport(ReportStatus.InControl)
+        every { securityService.currentUser?.user?.id } returns creatorId
         every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
         every { partnerPersistence.getById(partnerId) } returns projectPartner
-        assertThrows<GetControlChecklistDetailNotAllowedException> {
+        assertThrows<GetChecklistInstanceDetailNotFoundException> {
             deleteControlChecklistInstance.deleteById(partnerId, reportId, -1L)
         }
     }
 
     @Test
     fun `delete control checklist - is already in FINISHED status (cannot be deleted)`() {
-        every { persistence.getChecklistDetail(checklistId) } returns controlCheckLisDetailWithFinishStatus
+        every {
+            persistence.getChecklistDetail(
+                checklistId,
+                ProgrammeChecklistType.CONTROL,
+                reportId
+            )
+        } returns controlChecklistDetailWithFinishStatus
+        every{
+            reportPersistence.getPartnerReportById(partnerId, reportId)
+        } returns getProjectPartnerReport(ReportStatus.InControl)
+        every { securityService.currentUser?.user?.id } returns 1
         every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
         every { partnerPersistence.getById(partnerId) } returns projectPartner
-        assertThrows<DeleteControlChecklistInstanceStatusNotAllowedException> { deleteControlChecklistInstance.deleteById(partnerId, reportId, checklistId) }
+        assertThrows<DeleteControlChecklistInstanceStatusNotAllowedException> {
+            deleteControlChecklistInstance.deleteById(
+                partnerId,
+                reportId,
+                checklistId
+            )
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = ReportStatus::class, names = ["InControl"], mode = EnumSource.Mode.EXCLUDE)
+    fun `delete control checklist failed - report is certified`(status: ReportStatus) {
+        every {
+            persistence.getChecklistDetail(
+                checklistId,
+                ProgrammeChecklistType.CONTROL,
+                reportId
+            )
+        } returns controlChecklistDetailWithFinishStatus
+        every{
+            reportPersistence.getPartnerReportById(partnerId, reportId)
+        } returns getProjectPartnerReport(status)
+        every { securityService.currentUser?.user?.id } returns 1
+        every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
+        every { partnerPersistence.getById(partnerId) } returns projectPartner
+        assertThrows<DeleteControlChecklistInstanceStatusNotAllowedException> {
+            deleteControlChecklistInstance.deleteById(
+                partnerId,
+                reportId,
+                checklistId
+            )
+        }
     }
 }

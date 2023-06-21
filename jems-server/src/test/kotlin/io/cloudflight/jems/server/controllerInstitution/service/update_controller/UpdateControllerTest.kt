@@ -1,19 +1,18 @@
 package io.cloudflight.jems.server.controllerInstitution.service.update_controller
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.INSTITUTION_ID
 import io.cloudflight.jems.server.controllerInstitution.MONITOR_USER_1_EMAIL
 import io.cloudflight.jems.server.controllerInstitution.MONITOR_USER_1_ID
 import io.cloudflight.jems.server.controllerInstitution.MONITOR_USER_2_EMAIL
 import io.cloudflight.jems.server.controllerInstitution.MONITOR_USER_2_ID
 import io.cloudflight.jems.server.controllerInstitution.institutionUsers
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionValidator
 import io.cloudflight.jems.server.controllerInstitution.service.createControllerInstitution.AssignUsersToInstitutionException
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitution
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionUser
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignment
-import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignmentWithUsers
 import io.cloudflight.jems.server.controllerInstitution.service.model.UpdateControllerInstitution
 import io.cloudflight.jems.server.controllerInstitution.service.model.UserInstitutionAccessLevel
 import io.cloudflight.jems.server.controllerInstitution.service.updateControllerInstitution.UpdateController
@@ -28,12 +27,12 @@ import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.RelaxedMockK
+import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.context.ApplicationEventPublisher
-import java.time.ZonedDateTime
 
 class UpdateControllerTest : UnitTest() {
 
@@ -60,7 +59,6 @@ class UpdateControllerTest : UnitTest() {
 
     }
 
-
     @RelaxedMockK
     lateinit var controllerInstitutionPersistence: ControllerInstitutionPersistence
 
@@ -84,7 +82,6 @@ class UpdateControllerTest : UnitTest() {
         clearMocks(controllerInstitutionPersistence)
         clearMocks(userPersistence)
     }
-
 
     @Test
     fun updateInstitution() {
@@ -113,6 +110,7 @@ class UpdateControllerTest : UnitTest() {
         val user1Summary = UserSummary(
             id = MONITOR_USER_1_ID,
             email = MONITOR_USER_1_EMAIL,
+            sendNotificationsToEmail = false,
             name = "user1",
             surname = "",
             userRole = UserRoleSummary(4, "Controller"),
@@ -146,6 +144,7 @@ class UpdateControllerTest : UnitTest() {
         val institutionUser1Summary = UserSummary(
             id = MONITOR_USER_1_ID,
             email = MONITOR_USER_1_EMAIL,
+            sendNotificationsToEmail = false,
             name = "user1",
             surname = "",
             userRole = UserRoleSummary(4, "Controller"),
@@ -173,17 +172,6 @@ class UpdateControllerTest : UnitTest() {
             partnerId = 1L,
             partnerProjectId = 1L
         )
-        val institutionPartnerAssignmentsWithUsers = listOf(
-            InstitutionPartnerAssignmentWithUsers(
-                institutionId = 1L,
-                userId = MONITOR_USER_1_ID,
-                partnerProjectId = 1L
-            ), InstitutionPartnerAssignmentWithUsers(
-                institutionId = 1L,
-                userId = MONITOR_USER_2_ID,
-                partnerProjectId = 1L
-            )
-        )
 
         every { userPersistence.findAllByEmails(listOf(institutionUser1.userEmail)) } returns listOf(
             institutionUser1Summary
@@ -209,13 +197,6 @@ class UpdateControllerTest : UnitTest() {
         every { controllerInstitutionPersistence.getInstitutionPartnerAssignmentsByInstitutionId(INSTITUTION_ID) } returns listOf(
             institutionPartnerAssignment
         )
-        every {
-            controllerInstitutionPersistence.getInstitutionPartnerAssignmentsWithUsersByPartnerProjectIdsIn(
-                setOf(
-                    INSTITUTION_ID
-                )
-            )
-        } returns institutionPartnerAssignmentsWithUsers
 
         every { controllerInstitutionPersistence.updateControllerInstitution(updateControllerInstitution) } returns
             ControllerInstitution(
@@ -253,21 +234,11 @@ class UpdateControllerTest : UnitTest() {
         val institution1UserSummary = UserSummary(
             id = MONITOR_USER_1_ID,
             email = MONITOR_USER_1_EMAIL,
+            sendNotificationsToEmail = false,
             name = "user1",
             surname = "",
             userRole = UserRoleSummary(4, "Controller"),
             userStatus = UserStatus.ACTIVE
-        )
-        val institutionPartnerAssignmentWithUsers = listOf(
-            InstitutionPartnerAssignmentWithUsers(
-                institutionId = 1L,
-                userId = MONITOR_USER_1_ID,
-                partnerProjectId = 1L
-            ), InstitutionPartnerAssignmentWithUsers(
-                institutionId = 2L,
-                userId = MONITOR_USER_1_ID,
-                partnerProjectId = 1L
-            )
         )
 
         val institutionsPartnerAssignments = listOf(institutionPartnerAssignment1, institutionPartnerAssignment2)
@@ -298,11 +269,6 @@ class UpdateControllerTest : UnitTest() {
         } returns institutionUsers.toSet()
 
         every { controllerInstitutionPersistence.getInstitutionPartnerAssignmentsByInstitutionId(INSTITUTION_ID) } returns institutionsPartnerAssignments
-        every {
-            controllerInstitutionPersistence.getInstitutionPartnerAssignmentsWithUsersByPartnerProjectIdsIn(
-                institutionsPartnerAssignments.map { it.partnerProjectId }.toSet()
-            )
-        } returns institutionPartnerAssignmentWithUsers
 
         assertThat(updateController.updateControllerInstitution(INSTITUTION_ID, updateControllerInstitution).institutionUsers)
             .isEmpty()
@@ -341,6 +307,7 @@ class UpdateControllerTest : UnitTest() {
             UserSummary(
                 id = MONITOR_USER_1_ID,
                 email = MONITOR_USER_1_EMAIL,
+                sendNotificationsToEmail = false,
                 name = "user1",
                 surname = "",
                 userRole = UserRoleSummary(4, "Controller"),
@@ -349,23 +316,11 @@ class UpdateControllerTest : UnitTest() {
             UserSummary(
                 id = MONITOR_USER_2_ID,
                 email = MONITOR_USER_2_EMAIL,
+                sendNotificationsToEmail = false,
                 name = "user2",
                 surname = "",
                 userRole = UserRoleSummary(4, "Controller"),
                 userStatus = UserStatus.ACTIVE
-            )
-        )
-
-        val institutionPartnerAssignmentWithUsers = listOf(
-            InstitutionPartnerAssignmentWithUsers(
-                institutionId = INSTITUTION_ID,
-                userId = MONITOR_USER_1_ID,
-                partnerProjectId = 1L
-            ),
-            InstitutionPartnerAssignmentWithUsers(
-                institutionId = INSTITUTION_ID,
-                userId = MONITOR_USER_1_ID,
-                partnerProjectId = 3L
             )
         )
 
@@ -397,11 +352,6 @@ class UpdateControllerTest : UnitTest() {
         } returns institutionUsers.toSet()
 
         every { controllerInstitutionPersistence.getInstitutionPartnerAssignmentsByInstitutionId(INSTITUTION_ID) } returns institutionAssignments
-        every {
-            controllerInstitutionPersistence.getInstitutionPartnerAssignmentsWithUsersByPartnerProjectIdsIn(
-                institutionAssignments.map { it.partnerProjectId }.toSet()
-            )
-        } returns institutionPartnerAssignmentWithUsers
 
         every { controllerInstitutionPersistence.updateControllerInstitution(updateControllerInstitution) } returns
             ControllerInstitution(

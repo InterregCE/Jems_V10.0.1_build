@@ -26,7 +26,8 @@
                     <input [readonly]="!isStaffCostFlatRateActive.value || disabled(data.call.flatRates.staffCostFlatRateSetup, data)"
                            currencyMask type="integer" name="staffCostFlatRate" matInput
                            [formControl]="staffCostFlatRate"
-                           [options]="{min: constants.FLAT_RATE_MIN_VALUES, max: constants.FLAT_RATE_MAX_VALUE, align: 'right'}">
+                           [options]="{min: constants.FLAT_RATE_MIN_VALUES, max: constants.FLAT_RATE_MAX_VALUE, align: 'right'}"
+                           aria-label="percentage value">
                     <span matSuffix>{{'project.partner.budget.options.staff.costs.flat.rate.percent' | translate}}</span>
                 </mat-form-field>
                 <jems-call-flat-rates-toggle-column
@@ -48,7 +49,8 @@
                     <input [readonly]="!isOfficeOnStaffFlatRateActive.value || disabled(data.call.flatRates.officeAndAdministrationOnStaffCostsFlatRateSetup, data)"
                            currencyMask type="integer" name="officeOnStaffFlatRate" matInput
                            [formControl]="officeOnStaffFlatRate"
-                           [options]="{min: constants.FLAT_RATE_MIN_VALUES, max: constants.FLAT_RATE_MAX_VALUE, align: 'right'}">
+                           [options]="{min: constants.FLAT_RATE_MIN_VALUES, max: constants.FLAT_RATE_MAX_VALUE, align: 'right'}"
+                           aria-label="percentage value">
                     <span matSuffix>{{'project.partner.budget.options.staff.costs.flat.rate.percent' | translate}}</span>
                 </mat-form-field>
                 <jems-call-flat-rates-toggle-column
@@ -70,7 +72,8 @@
                     <input [readonly]="!isOfficeOnOtherFlatRateActive.value || disabled(data.call.flatRates.officeAndAdministrationOnDirectCostsFlatRateSetup, data)"
                            currencyMask type="integer" name="officeOnOtherFlatRate" matInput
                            [formControl]="officeOnOtherFlatRate"
-                           [options]="{min: constants.FLAT_RATE_MIN_VALUES, max: constants.FLAT_RATE_MAX_VALUE, align: 'right'}">
+                           [options]="{min: constants.FLAT_RATE_MIN_VALUES, max: constants.FLAT_RATE_MAX_VALUE, align: 'right'}"
+                           aria-label="percentage value">
                     <span matSuffix>{{'project.partner.budget.options.staff.costs.flat.rate.percent' | translate}}</span>
                 </mat-form-field>
                 <jems-call-flat-rates-toggle-column
@@ -92,7 +95,8 @@
                     <input [readonly]="!isTravelOnStaffFlatRateActive.value || disabled(data.call.flatRates.travelAndAccommodationOnStaffCostsFlatRateSetup, data)"
                            currencyMask type="integer" name="travelOnStaffFlatRate" matInput
                            [formControl]="travelOnStaffFlatRate"
-                           [options]="{min: constants.FLAT_RATE_MIN_VALUES, max: constants.FLAT_RATE_MAX_VALUE, align: 'right'}">
+                           [options]="{min: constants.FLAT_RATE_MIN_VALUES, max: constants.FLAT_RATE_MAX_VALUE, align: 'right'}"
+                           aria-label="percentage value">
                     <span matSuffix>{{'project.partner.budget.options.staff.costs.flat.rate.percent' | translate}}</span>
                 </mat-form-field>
                 <jems-call-flat-rates-toggle-column
@@ -114,7 +118,8 @@
                     <input [readonly]="!isOtherOnStaffFlatRateActive.value || disabled(data.call.flatRates.otherCostsOnStaffCostsFlatRateSetup, data)"
                            currencyMask type="integer" name="otherOnStaffFlatRate" matInput
                            [formControl]="otherOnStaffFlatRate"
-                           [options]="{min: constants.FLAT_RATE_MIN_VALUES, max: constants.FLAT_RATE_MAX_VALUE, align: 'right'}">
+                           [options]="{min: constants.FLAT_RATE_MIN_VALUES, max: constants.FLAT_RATE_MAX_VALUE, align: 'right'}"
+                           aria-label="percentage value">
                     <span matSuffix>{{'project.partner.budget.options.staff.costs.flat.rate.percent' | translate}}</span>
                 </mat-form-field>
                 <jems-call-flat-rates-toggle-column

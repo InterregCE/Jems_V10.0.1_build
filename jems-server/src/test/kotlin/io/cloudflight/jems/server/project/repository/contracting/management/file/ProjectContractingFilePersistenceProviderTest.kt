@@ -1,14 +1,17 @@
 package io.cloudflight.jems.server.project.repository.contracting.management.file
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.common.minio.JemsProjectFileRepository
-import io.cloudflight.jems.server.common.minio.MinioStorage
-import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
-import io.cloudflight.jems.server.project.repository.report.file.ProjectReportFileRepository
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
-import io.mockk.*
+import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
+import io.cloudflight.jems.server.common.file.minio.MinioStorage
+import io.cloudflight.jems.server.common.file.repository.JemsFileMetadataRepository
+import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType
+import io.mockk.clearMocks
+import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -18,35 +21,35 @@ class ProjectContractingFilePersistenceProviderTest : UnitTest() {
 
     companion object {
         private const val PROJECT_ID = 389L
-
-        private val LAST_WEEK = ZonedDateTime.now().minusWeeks(1)
         private const val BUCKET = "bucket_buck_buck"
 
-        private fun file(id: Long, name: String = "file.txt", filePathFull: String = "path/to/file.txt") = ReportProjectFileEntity(
-            id = id,
-            projectId = PROJECT_ID,
-            partnerId = null,
-            path = "",
-            minioBucket = BUCKET,
-            minioLocation = filePathFull,
-            name = name,
-            type = JemsFileType.Contract,
-            size = 45L,
-            user = mockk(),
-            uploaded = LAST_WEEK,
-            description = "dummy description",
-        )
+        private val LAST_WEEK = ZonedDateTime.now().minusWeeks(1)
 
+        private fun file(id: Long, name: String = "file.txt", filePathFull: String = "path/to/file.txt") =
+            JemsFileMetadataEntity(
+                id = id,
+                projectId = PROJECT_ID,
+                partnerId = null,
+                path = "",
+                minioBucket = BUCKET,
+                minioLocation = filePathFull,
+                name = name,
+                type = JemsFileType.Contract,
+                size = 45L,
+                user = mockk(),
+                uploaded = LAST_WEEK,
+                description = "dummy description",
+            )
     }
 
     @MockK
-    lateinit var reportFileRepository: ProjectReportFileRepository
+    lateinit var reportFileRepository: JemsFileMetadataRepository
 
     @MockK
     lateinit var minioStorage: MinioStorage
 
     @MockK
-    lateinit var fileRepository: JemsProjectFileRepository
+    lateinit var fileRepository: JemsProjectFileService
 
     @InjectMockKs
     lateinit var persistence: ProjectContractingFilePersistenceProvider
@@ -62,7 +65,7 @@ class ProjectContractingFilePersistenceProviderTest : UnitTest() {
     fun downloadFile() {
         val filePathFull = "sample/path/to/file.txt"
         every { reportFileRepository.findByProjectIdAndId(PROJECT_ID, fileId = 19L) } returns
-            file(id = 17L, name = "file.txt", filePathFull = filePathFull)
+                file(id = 17L, name = "file.txt", filePathFull = filePathFull)
         every { minioStorage.getFile(BUCKET, filePathFull) } returns ByteArray(5)
 
         assertThat(persistence.downloadFile(PROJECT_ID, fileId = 19L))
@@ -78,7 +81,7 @@ class ProjectContractingFilePersistenceProviderTest : UnitTest() {
 
     @Test
     fun deleteFile() {
-        val file = mockk<ReportProjectFileEntity>()
+        val file = mockk<JemsFileMetadataEntity>()
         every { file.minioBucket } returns BUCKET
         every { file.minioLocation } returns "location"
         every { reportFileRepository.findByProjectIdAndId(PROJECT_ID, fileId = 15L) } returns file
@@ -103,7 +106,7 @@ class ProjectContractingFilePersistenceProviderTest : UnitTest() {
     fun `download file by partner id`() {
         val filePathFull = "sample/path/to/file.txt"
         every { reportFileRepository.findByPartnerIdAndId(partnerId = 1L, fileId = 19L) } returns
-            file(id = 19, name = "file.txt", filePathFull = filePathFull)
+                file(id = 19, name = "file.txt", filePathFull = filePathFull)
         every { minioStorage.getFile(BUCKET, filePathFull) } returns ByteArray(5)
 
         assertThat(persistence.downloadFileByPartnerId(partnerId = 1L, fileId = 19L))
@@ -113,7 +116,7 @@ class ProjectContractingFilePersistenceProviderTest : UnitTest() {
 
     @Test
     fun `delete file by partner id`() {
-        val file = mockk<ReportProjectFileEntity>()
+        val file = mockk<JemsFileMetadataEntity>()
         every { file.minioBucket } returns BUCKET
         every { file.minioLocation } returns "location"
         every { reportFileRepository.findByPartnerIdAndId(partnerId = 1L, fileId = 15L) } returns file
@@ -124,5 +127,4 @@ class ProjectContractingFilePersistenceProviderTest : UnitTest() {
 
         verify(exactly = 1) { fileRepository.delete(file) }
     }
-
 }

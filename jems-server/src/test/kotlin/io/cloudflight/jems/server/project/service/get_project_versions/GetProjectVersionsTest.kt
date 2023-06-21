@@ -21,15 +21,6 @@ internal class GetProjectVersionsTest : UnitTest() {
             version = "1.0",
             projectId = 1,
             createdAt = ZonedDateTime.now(),
-            user = UserEntity(
-                id = 1,
-                name = "Name",
-                password = "hash",
-                email = "admin@admin.dev",
-                surname = "surname",
-                userRole = UserRoleEntity(id = 1, name = "ADMIN"),
-                userStatus = UserStatus.ACTIVE
-            ),
             status = ApplicationStatus.APPROVED,
             current = true
         )

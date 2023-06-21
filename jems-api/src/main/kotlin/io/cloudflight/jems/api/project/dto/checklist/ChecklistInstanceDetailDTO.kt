@@ -2,6 +2,7 @@ package io.cloudflight.jems.api.project.dto.checklist
 
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.ZonedDateTime
 
 open class ChecklistInstanceDetailDTO(
     val id: Long? = null,
@@ -10,6 +11,8 @@ open class ChecklistInstanceDetailDTO(
     val name: String?,
     val creatorEmail: String?,
     val consolidated: Boolean?,
+    val relatedToId: Long?,
+    val createdAt: ZonedDateTime?,
     val minScore: BigDecimal?,
     val maxScore: BigDecimal?,
     val allowsDecimalScore: Boolean? = false,

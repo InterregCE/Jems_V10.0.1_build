@@ -32,7 +32,6 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
-import org.aspectj.weaver.patterns.ConcreteCflowPointcut
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -47,6 +46,7 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
         private val projectSummary = ProjectSummary(
             id = PROJECT_ID,
             customIdentifier = "CUST_ID",
+            callId = 1L,
             callName = "",
             acronym = "PROJ_ACR",
             status = ApplicationStatus.DRAFT,
@@ -258,7 +258,7 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
         val partnerId = 190L
         val partner = mockk<ProjectPartnerDetail>()
         every { partner.id } returns partnerId
-        every { partnerPersistence.findTop30ByProjectId(PROJECT_ID) } returns listOf(partner)
+        every { partnerPersistence.findTop50ByProjectId(PROJECT_ID) } returns listOf(partner)
 
         val deleteSlots = categories.map { Pair(it, slot<Set<Long>>()) }.toMap()
         mockBudgetUpdates(partnerId, deleteSlots)
@@ -287,7 +287,7 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
     }
 
     private fun mockBudgetUpdates(partnerId: Long, slots: Map<BudgetCategoryDTO, CapturingSlot<Set<Long>>>) {
-        every { projectPartnerBudgetCostsPersistence.getBudgetStaffCosts(partnerId) } returns listOf(oldStaffCost)
+        every { projectPartnerBudgetCostsPersistence.getBudgetStaffCosts(setOf(partnerId)) } returns listOf(oldStaffCost)
         every { projectPartnerBudgetCostsUpdatePersistence
             .deleteAllBudgetStaffCostsExceptFor(partnerId, capture(slots[BudgetCategoryDTO.StaffCosts]!!))
         } answers { }
@@ -295,7 +295,7 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
             .createOrUpdateBudgetStaffCosts(PROJECT_ID, partnerId, any())
         } returnsArgument 2
 
-        every { projectPartnerBudgetCostsPersistence.getBudgetEquipmentCosts(partnerId) } returns listOf(oldEquipmentCost)
+        every { projectPartnerBudgetCostsPersistence.getBudgetEquipmentCosts(setOf(partnerId)) } returns listOf(oldEquipmentCost)
         every { projectPartnerBudgetCostsUpdatePersistence
             .deleteAllBudgetEquipmentCostsExceptFor(partnerId, capture(slots[BudgetCategoryDTO.EquipmentCosts]!!))
         } answers { }
@@ -303,7 +303,7 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
             .createOrUpdateBudgetEquipmentCosts(PROJECT_ID, partnerId, any())
         } returnsArgument 2
 
-        every { projectPartnerBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(partnerId) } returns listOf(oldExternalCost)
+        every { projectPartnerBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(setOf(partnerId)) } returns listOf(oldExternalCost)
         every { projectPartnerBudgetCostsUpdatePersistence
             .deleteAllBudgetExternalExpertiseAndServicesCostsExceptFor(partnerId, capture(slots[BudgetCategoryDTO.ExternalCosts]!!))
         } answers { }
@@ -311,7 +311,7 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
             .createOrUpdateBudgetExternalExpertiseAndServicesCosts(PROJECT_ID, partnerId, any())
         } returnsArgument 2
 
-        every { projectPartnerBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(partnerId) } returns listOf(oldInfraCost)
+        every { projectPartnerBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(setOf(partnerId)) } returns listOf(oldInfraCost)
         every { projectPartnerBudgetCostsUpdatePersistence
             .deleteAllBudgetInfrastructureAndWorksCostsExceptFor(partnerId, capture(slots[BudgetCategoryDTO.InfrastructureCosts]!!))
         } answers { }
@@ -319,7 +319,7 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
             .createOrUpdateBudgetInfrastructureAndWorksCosts(PROJECT_ID, partnerId, any())
         } returnsArgument 2
 
-        every { projectPartnerBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(partnerId) } returns listOf(oldTravelCost)
+        every { projectPartnerBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(setOf(partnerId)) } returns listOf(oldTravelCost)
         every { projectPartnerBudgetCostsUpdatePersistence
             .deleteAllBudgetTravelAndAccommodationCostsExceptFor(partnerId, capture(slots[BudgetCategoryDTO.TravelAndAccommodationCosts]!!))
         } answers { }
@@ -327,7 +327,7 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
             .createOrUpdateBudgetTravelAndAccommodationCosts(PROJECT_ID, partnerId, any())
         } returnsArgument 2
 
-        every { projectPartnerBudgetCostsPersistence.getBudgetUnitCosts(partnerId) } returns listOf(oldMultiCost)
+        every { projectPartnerBudgetCostsPersistence.getBudgetUnitCosts(setOf(partnerId)) } returns listOf(oldMultiCost)
         every { projectPartnerBudgetCostsUpdatePersistence
             .deleteAllUnitCostsExceptFor(partnerId, capture(slots[BudgetCategoryDTO.Multiple]!!))
         } answers { }
@@ -365,7 +365,7 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
         val partnerId = 195L
         val partner = mockk<ProjectPartnerDetail>()
         every { partner.id } returns partnerId
-        every { partnerPersistence.findTop30ByProjectId(PROJECT_ID) } returns listOf(partner)
+        every { partnerPersistence.findTop50ByProjectId(PROJECT_ID) } returns listOf(partner)
 
         val deleteSlots = categories.map { Pair(it, slot<Set<Long>>()) }.toMap()
         mockBudgetUpdates(partnerId, deleteSlots)
@@ -407,7 +407,7 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
         val partnerId = 199L
         val partner = mockk<ProjectPartnerDetail>()
         every { partner.id } returns partnerId
-        every { partnerPersistence.findTop30ByProjectId(PROJECT_ID) } returns listOf(partner)
+        every { partnerPersistence.findTop50ByProjectId(PROJECT_ID) } returns listOf(partner)
 
         val deleteSlots = categories.map { Pair(it, slot<Set<Long>>()) }.toMap()
         mockBudgetUpdates(partnerId, deleteSlots)
@@ -452,7 +452,7 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
         val partnerId = 203L
         val partner = mockk<ProjectPartnerDetail>()
         every { partner.id } returns partnerId
-        every { partnerPersistence.findTop30ByProjectId(PROJECT_ID) } returns listOf(partner)
+        every { partnerPersistence.findTop50ByProjectId(PROJECT_ID) } returns listOf(partner)
 
         every { programmeUnitCostPersistence.updateUnitCost(any()) } returnsArgument 0
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary
@@ -462,7 +462,7 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
         assertThat(interactor.updateProjectUnitCost(PROJECT_ID, oldUnitCost.copy(projectId = null))).isEqualTo(oldUnitCost.copy())
         verify(exactly = 1) { programmeUnitCostPersistence.updateUnitCost(oldUnitCost) }
 
-        verify(exactly = 0) { partnerPersistence.findTop30ByProjectId(any()) }
+        verify(exactly = 0) { partnerPersistence.findTop50ByProjectId(any()) }
 
         verify(exactly = 1) { auditPublisher.publishEvent(any()) }
     }

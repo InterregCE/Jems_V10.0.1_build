@@ -1,9 +1,9 @@
-import { ProjectReportFileDTO, UserSimpleDTO } from '@cat/api';
+import {JemsFileDTO, UserSimpleDTO} from '@cat/api';
 
 export interface FileListItem {
   id: number;
   name: string;
-  type: ProjectReportFileDTO.TypeEnum;
+  type: JemsFileDTO.TypeEnum;
   uploaded: Date;
   author: UserSimpleDTO;
   sizeString: string;

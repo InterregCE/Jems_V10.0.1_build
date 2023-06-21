@@ -22,6 +22,7 @@ import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserRole
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
+import io.cloudflight.jems.server.user.service.model.UserSettings
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import org.springframework.mock.web.MockMultipartFile
@@ -49,6 +50,7 @@ val uploadedBy =
     UserSummary(
         USER_ID,
         USER_EMAIL,
+        sendNotificationsToEmail = false,
         USER_NAME,
         USER_SURNAME,
         UserRoleSummary(USER_ROLE_ID, USER_ROLE_NAME),
@@ -58,6 +60,7 @@ val uploadedBy =
 val user = User(
     id = USER_ID,
     email = USER_EMAIL,
+    userSettings = UserSettings(sendNotificationsToEmail = false),
     name = USER_NAME,
     surname = USER_SURNAME,
     userRole = UserRole(id = USER_ROLE_ID, name = USER_ROLE_NAME, permissions = emptySet(), isDefault = true),
@@ -76,6 +79,7 @@ val userEntity = UserEntity(
     name = USER_NAME,
     password = "hash",
     email = USER_EMAIL,
+    sendNotificationsToEmail = false,
     surname = USER_SURNAME,
     userRole = userRole,
     userStatus = UserStatus.ACTIVE
@@ -98,8 +102,12 @@ val callEntity = CallEntity(
     allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD),
     preSubmissionCheckPluginKey = null,
     firstStepPreSubmissionCheckPluginKey = null,
+    reportPartnerCheckPluginKey = "check-off",
+    reportProjectCheckPluginKey = "check-off",
     projectDefinedUnitCostAllowed = true,
     projectDefinedLumpSumAllowed = false,
+    controlReportPartnerCheckPluginKey = "control-report-partner-check-off",
+    controlReportSamplingCheckPluginKey = "control-report-sampling-check-off"
 )
 val projectStatusEntity = ProjectStatusHistoryEntity(
     status = ApplicationStatus.APPROVED,

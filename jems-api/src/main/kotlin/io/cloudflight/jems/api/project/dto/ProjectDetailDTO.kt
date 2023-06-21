@@ -5,6 +5,7 @@ import io.cloudflight.jems.api.programme.dto.priority.OutputProgrammePrioritySim
 import io.cloudflight.jems.api.project.dto.status.ProjectDecisionDTO
 import io.cloudflight.jems.api.project.dto.status.ProjectStatusDTO
 import io.cloudflight.jems.api.user.dto.OutputUser
+import java.time.LocalDate
 
 data class ProjectDetailDTO(
     val id: Long?,
@@ -23,5 +24,6 @@ data class ProjectDetailDTO(
     val step2Active: Boolean,
     val firstStepDecision: ProjectDecisionDTO? = null,
     val secondStepDecision: ProjectDecisionDTO? = null,
-    val contractedDecision: ProjectStatusDTO? = null
+    val contractedDecision: ProjectStatusDTO? = null,
+    val contractedOnDate: LocalDate? = null,
 )

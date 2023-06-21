@@ -1,6 +1,6 @@
 .end-flex-header-table {
   display: flex;
-  justify-content: end;
+  justify-content: flex-end;
 }
 
 .custom-wrapper {
@@ -30,19 +30,13 @@
 }
 
 .align-right {
-  justify-content: end !important;
+  justify-content: flex-end !important;
 }
 
 .border-with-dotted {
   border-bottom-style: dotted !important;
   border-width: thin !important;
   border-color: rgb(220, 220, 220) !important;
-}
-
-.disabled-text {
-  color: rgb(142, 142, 142) !important;
-  cursor: default !important;
-  padding-bottom: 0.05rem !important;
 }
 
 .custom-dropdown-text {
@@ -94,5 +88,30 @@
 ::ng-deep .tooltip {
   position: relative !important;
   top: -0.75rem !important;
+}
+
+.inactive-icon {
+  height: 1rem;
+  font-size: 1rem;
+  vertical-align: text-top;
+  width: 1rem;
+}
+
+.inactive-icon-dropdown {
+  font-size: 1rem;
+  vertical-align: bottom;
+  width: 1rem;
+  position: relative;
+  margin-bottom: -0.3rem;
+}
+
+.mat-column-costGDPR {
+  padding-left: 0.4rem;
+  border-left: 1px solid var(--table-border-color);
+  border-right: 1px solid var(--table-border-color);
+}
+
+.custom-icon.gdpr {
+  margin-left: -0.25rem;
 }
 

@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 
-internal class ProjectContractingManagementAuthorizationTest: UnitTest() {
+internal class projectContractingAuthorizationTest: UnitTest() {
 
     companion object {
         private const val PARTNER_COLLABORATOR = 111L
@@ -76,7 +76,7 @@ internal class ProjectContractingManagementAuthorizationTest: UnitTest() {
     private lateinit var controllerInstitutionPersistence: ControllerInstitutionPersistence
 
     @InjectMockKs
-    private lateinit var authorization: ProjectContractingManagementAuthorization
+    private lateinit var authorization: ProjectContractingAuthorization
 
 
     @BeforeEach

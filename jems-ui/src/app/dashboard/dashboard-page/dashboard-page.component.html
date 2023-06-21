@@ -3,6 +3,11 @@
         <h1>{{'project.welcome' | translate: {name: currentUser.name, surname: currentUser.surname} }}</h1>
     </ng-container>
 
+    <ng-container *jemsHasPermission="Permissions.NotificationsRetrieve">
+        <h2>{{'call.detail.notifications.config.title' | translate}}</h2>
+        <jems-notification-list jemsNoWidthLimit></jems-notification-list>
+    </ng-container>
+
     <ng-container *jemsHasPermission="Permissions.ProjectsWithOwnershipRetrieve">
         <h2>{{'call.applications.title' | translate}}</h2>
         <jems-project-application-list jemsNoWidthLimit filterByOwner="true"></jems-project-application-list>

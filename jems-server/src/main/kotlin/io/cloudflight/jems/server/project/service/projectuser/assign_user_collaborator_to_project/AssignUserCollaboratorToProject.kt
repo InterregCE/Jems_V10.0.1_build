@@ -72,7 +72,7 @@ class AssignUserCollaboratorToProject(
             throw MinOneManagingCollaboratorRequiredException()
     }
 
-    private fun collaboratorsChangedEvent(id: Long, collaborators: List<CollaboratorAssignedToProject>) = AssignUserCollaboratorEvent(
+    private fun collaboratorsChangedEvent(id: Long, collaborators: List<CollaboratorAssignedToProject>) = AssignUserCollaboratorToProjectEvent(
         project = projectPersistence.getProjectSummary(id),
         collaborators = collaborators,
     )

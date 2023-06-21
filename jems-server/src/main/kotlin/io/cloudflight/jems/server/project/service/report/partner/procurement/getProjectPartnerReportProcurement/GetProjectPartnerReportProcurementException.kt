@@ -34,3 +34,8 @@ class GetProjectPartnerReportProcurementByIdException(cause: Throwable) : Applic
     i18nMessage = I18nMessage("$GET_PROJECT_PARTNER_REPORT_PROCUREMENT_ERROR_KEY_PREFIX.by.id.failed"),
     cause = cause
 )
+
+class PartnerReportNotFoundById : ApplicationNotFoundException(
+    code = "$GET_PROJECT_PARTNER_REPORT_PROCUREMENT_ERROR_CODE_PREFIX-BYID-001",
+    i18nMessage = I18nMessage("$GET_PROJECT_PARTNER_REPORT_PROCUREMENT_ERROR_KEY_PREFIX.by.id.partner.report.not.found"),
+)

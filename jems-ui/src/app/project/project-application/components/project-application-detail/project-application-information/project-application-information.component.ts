@@ -5,6 +5,8 @@ import {CallStore} from '../../../../../call/services/call-store.service';
 import {LocaleDatePipe} from '@common/pipe/locale-date.pipe';
 import {ProjectUtil} from '@project/common/project-util';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
+import {PermissionService} from '../../../../../security/permissions/permission.service';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'jems-project-application-information',
@@ -16,11 +18,14 @@ export class ProjectApplicationInformationComponent {
   CALL_PATH = CallStore.CALL_DETAIL_PATH;
   ProjectUtil = ProjectUtil;
   PermissionsEnum = PermissionsEnum;
+  canUserAccessCall$: Observable<boolean>;
 
   @Input()
   project: ProjectDetailDTO;
 
-  constructor(private localeDatePipe: LocaleDatePipe) {
+  constructor(private localeDatePipe: LocaleDatePipe,
+              private permissionService: PermissionService) {
+    this.canUserAccessCall$ =  this.permissionService.hasPermission([PermissionsEnum.CallRetrieve, PermissionsEnum.ProjectCreate]);
   }
 
   getApplicantName(): string {

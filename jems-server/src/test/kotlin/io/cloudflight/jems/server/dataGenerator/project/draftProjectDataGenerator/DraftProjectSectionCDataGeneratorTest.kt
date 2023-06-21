@@ -73,7 +73,7 @@ class DraftProjectSectionCDataGeneratorTest(@LocalServerPort private val port: I
     }
 
     @Test
-    @ExpectSelect(18)
+    @ExpectSelect(21)
     @ExpectInsert(5)
     @ExpectUpdate(0)
     @ExpectDelete(1)

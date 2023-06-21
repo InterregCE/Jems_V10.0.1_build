@@ -26,14 +26,17 @@
             </div>
         </div>
 
-        <jems-alert [type]="Alert.WARNING" [show]="true">{{'project.detail.new.hint' | translate}}</jems-alert>
+        <h3>{{'project.detail.new.title' | translate}}</h3>
+        <jems-alert [type]="Alert.INFO" [show]="true" [closable]="false">{{'project.detail.new.hint' | translate}}</jems-alert>
+
+        <p>{{'project.application.form.field.project.acronym.info' | translate}}</p>
 
         <mat-form-field>
             <mat-label>{{'project.detail.new.field.acronym' | translate}}</mat-label>
-            <input name="acronym" formControlName="acronym" matInput required>
-            <jems-context-info
-                    infoText="{{'project.application.form.field.project.acronym.info' | translate}}">
-            </jems-context-info>
+            <input #acronym name="acronym" formControlName="acronym" matInput required>
+            <mat-hint [jemsHintFor]="acronym">
+                <jems-text-hint [currentLength]="acronym.value.length" [maxLength]="25"></jems-text-hint>
+            </mat-hint>
             <mat-error>
                 <jems-form-field-errors [errors]="submissionForm?.controls?.acronym?.errors">
                 </jems-form-field-errors>

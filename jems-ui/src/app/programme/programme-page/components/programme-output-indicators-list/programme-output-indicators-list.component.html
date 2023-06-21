@@ -29,3 +29,10 @@
         <mat-icon>delete</mat-icon>
     </button>
 </ng-template>
+
+<ng-template #resultIndicator let-outputIndicator>
+    <a [routerLink]="'/app/programme/indicators/resultIndicator/detail/' + outputIndicator.resultIndicatorId" queryParamsHandling="merge"
+       (click)="$event.stopPropagation()">
+        <span>{{ outputIndicator.resultIndicatorIdentifier }}</span>
+    </a>
+</ng-template>

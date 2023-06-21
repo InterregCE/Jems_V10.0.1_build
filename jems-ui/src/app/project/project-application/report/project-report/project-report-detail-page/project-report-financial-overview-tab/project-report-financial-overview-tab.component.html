@@ -1,0 +1,42 @@
+<jems-form *ngIf="data$ | async as data">
+
+    <h3 class="mb5">{{ 'project.application.partner.report.financial.tab.title' | translate}}</h3>
+    <p>{{ 'project.application.project.report.financial.breakdown.explanation' | translate}}</p>
+
+    <h3>{{ 'project.application.project.report.financial.breakdown.co.financing' | translate}}</h3>
+    <jems-project-breakdown-co-financing
+            [breakdown]="data.perCoFinancing"
+            [funds]="data.funds">
+    </jems-project-breakdown-co-financing>
+
+    <h3>{{ 'project.application.project.report.financial.breakdown.cost.category' | translate}}</h3>
+    <jems-project-report-cost-category
+            [breakdown]="data.perCostCategory"
+            [allowedCostCategories]="data.allowedCostCategories">
+    </jems-project-report-cost-category>
+
+    <ng-container *ngIf="data.perInvestment.investments.length > 0">
+        <h3>{{ 'project.application.project.report.financial.breakdown.investment' | translate}}</h3>
+
+        <jems-project-breakdown-investment [breakdown]="data.perInvestment">
+        </jems-project-breakdown-investment>
+    </ng-container>
+
+    <ng-container *ngIf="data.perLumpSum.lumpSums.length > 0">
+        <h3>{{ 'project.application.project.report.financial.breakdown.lump.sum' | translate}}</h3>
+        <jems-project-breakdown-lump-sum [breakdown]="data.perLumpSum">
+        </jems-project-breakdown-lump-sum>
+    </ng-container>
+
+    <ng-container *ngIf="data.perUnitCost.unitCosts.length > 0">
+        <h3>{{ 'project.application.project.report.financial.breakdown.unit.cost' | translate}}</h3>
+        <jems-project-breakdown-unit-cost [breakdown]="data.perUnitCost">
+        </jems-project-breakdown-unit-cost>
+    </ng-container>
+
+    <ng-container *ngIf="data.perPartnerCostCategory.partners.length > 0">
+        <jems-project-breakdown-per-partner [breakdown]="data.perPartnerCostCategory" [allowedCostCategories]="data.allowedCostCategories">
+        </jems-project-breakdown-per-partner>
+    </ng-container>
+
+</jems-form>

@@ -1,0 +1,239 @@
+<h3 class="mt-4">{{ 'project.application.partner.report.expenditures.parked.title' | translate }}</h3>
+
+<mat-table *ngIf="expenditures.length" jemsNoWidthLimit [dataSource]="expenditures">
+
+    <ng-container matColumnDef="costItemID" sticky>
+        <mat-header-cell *matHeaderCellDef class="border-cell-right">
+            <span jemsText maxLines="2">{{ 'project.application.partner.report.expenditures.tab.cost.ID' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let exp" class="border-cell-right">
+            {{ 'R' + exp.expenditure.parkingMetadata.reportOfOriginNumber + '.' + exp.expenditure.parkingMetadata.originalExpenditureNumber }}
+        </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="costGDPR" sticky>
+        <mat-header-cell *matHeaderCellDef>
+            <div class ="custom-icon gdpr">
+                <mat-icon>privacy_tip</mat-icon>
+            </div>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let exp">
+            <mat-checkbox
+                    [disabled]="true"
+                    [checked]="exp.expenditure.gdpr === true">
+            </mat-checkbox>
+        </mat-cell>
+        <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="costOptions">
+        <mat-header-cell *matHeaderCellDef>
+            <span jemsText maxLines="2">{{ 'project.application.partner.report.expenditures.tab.cost.lump.sum' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let exp">
+            <mat-icon color="accent" class="mr-1" *ngIf="exp.lumpSum && !exp.lumpSum.entityStillAvailable">warning_amber</mat-icon>
+            <span *ngIf="exp.lumpSum" [class.grayed-out]="!exp.lumpSum.entityStillAvailable">{{ exp.lumpSumName | translateByInputLanguage | async }}</span>
+            <mat-icon color="accent" class="mr-1" *ngIf="exp.unitCost && !exp.unitCost.entityStillAvailable">warning_amber</mat-icon>
+            <span *ngIf="exp.unitCost" [class.grayed-out]="!exp.unitCost.entityStillAvailable">{{ exp.unitCostName | translateByInputLanguage | async }}</span>
+            <span *ngIf="!exp.lumpSum && !exp.unitCost">{{ 'common.not.applicable.option' | translate }}</span>
+        </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="costCategory">
+        <mat-header-cell *matHeaderCellDef>
+            <span jemsText maxLines="2">{{ 'project.application.partner.report.expenditures.tab.cost.category' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let exp">
+            {{ ('project.application.partner.report.expenditures.cost.category.' + exp.expenditure.costCategory) | translate }}
+        </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="investmentId">
+        <mat-header-cell *matHeaderCellDef>
+            <span jemsText maxLines="2">{{ 'project.application.partner.report.expenditures.tab.investment.number' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let exp">
+            <mat-icon color="accent" class="mr-1" *ngIf="exp.investment && !exp.investment.entityStillAvailable"
+                      matTooltip="{{ 'Investment cannot be resolved' | translate }}">warning_amber</mat-icon>
+            <span *ngIf="exp.investment" [class.grayed-out]="!exp.investment.entityStillAvailable">{{ exp.investmentName }}</span>
+            <span *ngIf="!exp.investment">{{ 'common.not.applicable.option' | translate }}</span>
+        </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="contractId">
+        <mat-header-cell *matHeaderCellDef>
+            <span jemsText maxLines="2">{{ 'project.application.partner.report.expenditures.tab.contract.ID' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let exp">
+            <span *ngIf="exp.expenditure.contractId">{{ exp.contractName }}</span>
+            <span *ngIf="!exp.expenditure.contractId">{{ 'common.not.applicable.option' | translate }}</span>
+        </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="internalReferenceNumber">
+        <mat-header-cell *matHeaderCellDef>
+            <span jemsText maxLines="2">{{ 'project.application.partner.report.expenditures.tab.internal.reference.number' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let exp">
+            {{ exp.expenditure.internalReferenceNumber }}
+        </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="invoiceNumber">
+        <mat-header-cell *matHeaderCellDef>
+            <span jemsText maxLines="2">{{ 'project.application.partner.report.expenditures.tab.invoice.number' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let exp">
+            {{ exp.expenditure.invoiceNumber }}
+        </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="invoiceDate">
+        <mat-header-cell *matHeaderCellDef>
+            <span jemsText maxLines="2">{{ 'project.application.partner.report.expenditures.tab.invoice.date' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let exp">
+            {{ exp.expenditure.invoiceDate | localeDate }}
+        </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="dateOfPayment">
+        <mat-header-cell *matHeaderCellDef>
+            <span jemsText maxLines="2">{{ 'project.application.partner.report.expenditures.tab.date.of.payment' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let exp">
+            {{ exp.expenditure.dateOfPayment | localeDate }}
+        </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="description">
+        <mat-header-cell *matHeaderCellDef>
+            <span jemsText maxLines="2">{{ 'project.application.partner.report.expenditures.tab.description' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let exp">
+            {{ exp.expenditure.description | translateByInputLanguage | async }}
+        </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="comment">
+        <mat-header-cell *matHeaderCellDef>
+            <span jemsText maxLines="2">{{ 'project.application.partner.report.expenditures.tab.comment' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let exp">
+            {{ exp.expenditure.comment | translateByInputLanguage | async }}
+        </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="totalValueInvoice">
+        <mat-header-cell *matHeaderCellDef class="justify-end">
+            <span jemsText maxLines="2">{{ 'project.application.partner.report.expenditures.tab.total.value.invoice' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let exp" class="justify-end">
+            {{ exp.expenditure.totalValueInvoice | asMoney }}
+        </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="numberOfUnits">
+        <mat-header-cell *matHeaderCellDef class="justify-end">
+            <span jemsText maxLines="2">{{ 'project.application.partner.report.expenditures.tab.number.of.units' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let exp" class="justify-end">
+            <span *ngIf="exp.unitCost || exp.lumpSum">
+                {{ exp.expenditure.numberOfUnits | asMoney }}
+            </span>
+        </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="pricePerUnit">
+        <mat-header-cell *matHeaderCellDef class="justify-end">
+            <span jemsText maxLines="2">{{ 'project.application.partner.report.expenditures.tab.price.per.unit' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let exp" class="justify-end">
+            <span *ngIf="exp.unitCost || exp.lumpSum">
+                {{ exp.expenditure.pricePerUnit | asMoney }}
+            </span>
+        </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="vat">
+        <mat-header-cell *matHeaderCellDef class="justify-end">
+            <span jemsText maxLines="2">{{ 'project.application.partner.report.expenditures.tab.vat' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let exp" class="justify-end">
+            {{ exp.expenditure.vat | asMoney }}
+        </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="declaredAmount">
+        <mat-header-cell *matHeaderCellDef class="justify-end">
+            <span jemsText maxLines="2">{{ 'project.application.partner.report.expenditures.declared.amount' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let exp" class="justify-end">
+            {{ exp.expenditure.declaredAmount | asMoney }}
+        </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="currencyCode">
+        <mat-header-cell *matHeaderCellDef>
+            <span jemsText maxLines="2">{{ 'project.application.partner.report.expenditures.currency' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let exp">
+            {{ exp.expenditure.currencyCode }}
+        </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="currencyConversionRate">
+        <mat-header-cell class="justify-end" *matHeaderCellDef>
+            <span jemsText maxLines="2">{{ 'project.application.partner.report.expenditures.conversion.rate' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let exp" class="justify-end">
+            {{ exp.expenditure.currencyConversionRate | number : '1.5-5' : 'de-DE' }}
+        </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="declaredAmountInEur">
+        <mat-header-cell class="justify-end" *matHeaderCellDef>
+            <span jemsText maxLines="2">{{ 'project.application.partner.report.expenditures.declared.amount.eur' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let exp" class="justify-end">
+            {{ exp.expenditure.declaredAmountAfterSubmission | asMoney }}
+        </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="uploadFunction">
+        <mat-header-cell *matHeaderCellDef>
+            <span jemsText maxLines="2">{{ 'project.application.partner.report.attachments' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let exp">
+            {{ exp.expenditure.attachment?.name }}
+        </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="actions" stickyEnd>
+        <mat-header-cell *matHeaderCellDef class="text-center border-cell-left">
+            <span jemsText maxLines="2">{{ 'common.action' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let exp" class="text-center border-cell-left">
+            <button color="primary" mat-icon-button matTooltip="{{ 'project.application.partner.report.expenditures.re.include' | translate }}"
+                    *ngIf="exp.canBeReIncluded"
+                    (click)="reInclude(exp)" [disabled]="listDirty$ | async"
+                    aria-label="re-include">
+                <mat-icon>sync</mat-icon>
+            </button>
+            <span matTooltip="{{ 'project.application.partner.report.expenditures.re.include.error' | translate }}">
+                <button mat-icon-button *ngIf="!exp.canBeReIncluded" [disabled]="true"
+                        aria-label="re-include">
+                    <mat-icon>sync_disabled</mat-icon>
+                </button>
+            </span>
+            <button color="accent" mat-icon-button matTooltip="{{ 'common.delete.entry' | translate }}"
+                    (click)="delete(exp)" [disabled]="listDirty$ | async">
+                <mat-icon>delete</mat-icon>
+            </button>
+        </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="columns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: columns"></mat-row>
+
+</mat-table>

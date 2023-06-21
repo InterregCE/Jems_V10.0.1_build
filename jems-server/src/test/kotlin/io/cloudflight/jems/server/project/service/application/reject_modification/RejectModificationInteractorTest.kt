@@ -1,15 +1,12 @@
 package io.cloudflight.jems.server.project.service.application.reject_modification
 
-import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
-import io.cloudflight.jems.server.audit.model.AuditProject
-import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.notification.handler.ProjectStatusChangeEvent
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationStateFactory
 import io.cloudflight.jems.server.project.service.application.workflow.states.ModificationPreContractingSubmittedApplicationState
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
@@ -32,6 +29,7 @@ class RejectModificationInteractorTest : UnitTest() {
         private val summary = ProjectSummary(
             id = PROJECT_ID,
             customIdentifier = "01",
+            callId = 1L,
             callName = "",
             acronym = "project acronym",
             status = ApplicationStatus.MODIFICATION_PRECONTRACTING
@@ -75,17 +73,17 @@ class RejectModificationInteractorTest : UnitTest() {
         every { applicationStateFactory.getInstance(any()) } returns inModificationState
         every { inModificationState.rejectModification(actionInfo) } returns ApplicationStatus.MODIFICATION_REJECTED
 
-        val slotAudit = slot<AuditCandidateEvent>()
+        val slotAudit = slot<ProjectStatusChangeEvent>()
         every { auditPublisher.publishEvent(capture(slotAudit)) }.returnsMany(Unit)
 
         assertThat(rejectModification.reject(PROJECT_ID, actionInfo)).isEqualTo(ApplicationStatus.MODIFICATION_REJECTED)
 
         verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }
-        assertThat(slotAudit.captured.auditCandidate).isEqualTo(
-            AuditCandidate(
-                action = AuditAction.APPLICATION_STATUS_CHANGED,
-                project = AuditProject(id = PROJECT_ID.toString(), customIdentifier = "01", name = "project acronym"),
-                description = "Project application status changed from MODIFICATION_PRECONTRACTING to MODIFICATION_REJECTED"
+        assertThat(slotAudit.captured).isEqualTo(
+            ProjectStatusChangeEvent(
+                context = rejectModification,
+                projectSummary = summary,
+                newStatus = ApplicationStatus.MODIFICATION_REJECTED
             )
         )
     }

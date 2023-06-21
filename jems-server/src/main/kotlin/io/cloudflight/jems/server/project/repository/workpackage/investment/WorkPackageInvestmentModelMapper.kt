@@ -21,7 +21,8 @@ fun List<WorkPackageInvestmentEntity>.toInvestmentSummaryList() =
 fun WorkPackageInvestmentEntity.toInvestmentSummary() = InvestmentSummary(
     id = id,
     investmentNumber = investmentNumber,
-    workPackageNumber = workPackage.number
+    workPackageNumber = workPackage.number,
+    deactivated = deactivated,
 )
 
 fun Iterable<WorkPackageInvestmentEntity>.toModel() =  map { it.toWorkPackageInvestment() }
@@ -65,6 +66,7 @@ fun WorkPackageInvestmentEntity.toWorkPackageInvestment() = WorkPackageInvestmen
     ownershipRetain = translatedValues.mapTo(HashSet()) {
         InputTranslation(it.investmentTranslation.language, it.ownershipRetain)
     },
+    deactivated = deactivated,
 )
 
 fun WorkPackageInvestment.toWorkPackageInvestmentEntity(workPackageEntity: WorkPackageEntity) =
@@ -73,6 +75,7 @@ fun WorkPackageInvestment.toWorkPackageInvestmentEntity(workPackageEntity: WorkP
         investmentNumber = investmentNumber,
         expectedDeliveryPeriod = expectedDeliveryPeriod,
         address = address?.toAddressEntity(),
+        deactivated = deactivated,
         id = id ?: 0L
     ).apply {
         translatedValues.addAll(
@@ -165,7 +168,8 @@ fun List<WorkPackageInvestmentRow>.toWorkPackageInvestmentHistoricalData() =
         documentationExpectedImpacts = groupedRows.value.extractField { it.documentationExpectedImpacts },
         ownershipSiteLocation = groupedRows.value.extractField { it.ownershipSiteLocation },
         ownershipRetain = groupedRows.value.extractField { it.ownershipRetain },
-        ownershipMaintenance = groupedRows.value.extractField { it.ownershipMaintenance }
+        ownershipMaintenance = groupedRows.value.extractField { it.ownershipMaintenance },
+        deactivated = groupedRows.value.first().deactivated ?: false,
     ) }.first()
 
 fun List<WorkPackageInvestmentRow>.toWorkPackageInvestmentHistoricalList() =
@@ -194,7 +198,9 @@ fun List<WorkPackageInvestmentRow>.toWorkPackageInvestmentHistoricalList() =
         documentationExpectedImpacts = groupedRows.value.extractField { it.documentationExpectedImpacts },
         ownershipSiteLocation = groupedRows.value.extractField { it.ownershipSiteLocation },
         ownershipRetain = groupedRows.value.extractField { it.ownershipRetain },
-        ownershipMaintenance = groupedRows.value.extractField { it.ownershipMaintenance }
+        ownershipMaintenance = groupedRows.value.extractField { it.ownershipMaintenance },
+        deactivated = groupedRows.value.first().deactivated ?: false,
+        expectedDeliveryPeriod = groupedRows.value.first().expectedDeliveryPeriod
     ) }.sortedBy { it.investmentNumber }
 
 fun List<WorkPackageSummaryRow>.toWorkPackageInvestmentSummaryList(workPackageNumber: Int?) =
@@ -202,6 +208,7 @@ fun List<WorkPackageSummaryRow>.toWorkPackageInvestmentSummaryList(workPackageNu
         InvestmentSummary(
             id = it.id,
             investmentNumber = it.investmentNumber,
-            workPackageNumber = workPackageNumber
+            workPackageNumber = workPackageNumber,
+            deactivated = it.deactivated,
         )
     }

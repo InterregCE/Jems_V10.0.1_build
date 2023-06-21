@@ -117,7 +117,7 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
         val name: String,
         var entity: T,
         val repository: ProjectPartnerBaseBudgetRepository<T>,
-        val callback: (partnerId: Long, version: String?) -> List<E>,
+        val callback: (partnerIds: Set<Long>, version: String?) -> List<E>,
         val expectedResult: E
     )
 
@@ -125,7 +125,7 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
         val name: String,
         var row: R,
         val repository: ProjectPartnerBaseBudgetRepository<T>,
-        val callback: (partnerId: Long, version: String?) -> List<E>,
+        val callback: (partnerIds: Set<Long>, version: String?) -> List<E>,
         val expectedResult: E,
         val projectClass: KClass<*> = ProjectPartnerBudgetStaffCostRow::class,
         val isForGettingUnitCosts: Boolean = false

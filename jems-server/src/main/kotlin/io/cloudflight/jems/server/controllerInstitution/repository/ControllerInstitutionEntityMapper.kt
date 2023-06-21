@@ -1,23 +1,23 @@
 package io.cloudflight.jems.server.controllerInstitution.repository
 
+import io.cloudflight.jems.server.common.file.service.model.UserSimple
+import io.cloudflight.jems.server.controllerInstitution.entity.ControllerInstitutionPartnerEntity
 import io.cloudflight.jems.server.controllerInstitution.entity.ControllerInstitutionUserEntity
 import io.cloudflight.jems.server.controllerInstitution.entity.ControllerInstitutionUserId
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitution
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionList
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionUser
-import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerDetails
-import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerDetailsRow
-import io.cloudflight.jems.server.controllerInstitution.service.model.UpdateControllerInstitution
-import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignmentRow
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignment
+import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignmentRow
+import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerDetails
+import io.cloudflight.jems.server.controllerInstitution.service.model.UpdateControllerInstitution
 import io.cloudflight.jems.server.nuts.entity.NutsRegion3
 import io.cloudflight.jems.server.nuts.service.groupNuts
 import io.cloudflight.jems.server.nuts.service.toOutputNuts
 import io.cloudflight.jems.server.project.entity.partner.ControllerInstitutionEntity
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.user.entity.UserEntity
-import org.springframework.data.domain.Page
 import java.time.ZonedDateTime
+import org.springframework.data.domain.Page
 
 fun Page<ControllerInstitution>.toEntity() = map { it.toEntity() }
 fun Page<ControllerInstitutionEntity>.toModel(institutionUsers: List<ControllerInstitutionUserEntity>) =
@@ -80,6 +80,13 @@ fun ControllerInstitutionUserEntity.toModel() = ControllerInstitutionUser(
     accessLevel = accessLevel
 )
 
+fun ControllerInstitutionUserEntity.toModelForReport() = UserSimple(
+    id = id.user.id,
+    name = id.user.name,
+    surname = id.user.surname,
+    email = id.user.email
+)
+
 fun institutionUserEntityToModel(
     entity: ControllerInstitutionUserEntity,
 ): ControllerInstitutionUser = ControllerInstitutionUser(
@@ -90,27 +97,26 @@ fun institutionUserEntityToModel(
 )
 fun Set<NutsRegion3>.toDto() = groupNuts(this).toOutputNuts()
 
-
-fun InstitutionPartnerDetailsRow.toModel() = InstitutionPartnerDetails(
-    institutionId = institutionId,
+fun ControllerInstitutionPartnerEntity.toFullModel() = InstitutionPartnerDetails(
+    institutionId = institution?.id,
     partnerId = partnerId,
-    partnerName = partnerName,
-    partnerStatus = partnerStatus,
-    partnerSortNumber = partnerSortNumber,
-    partnerRole = ProjectPartnerRole.valueOf(partnerRole),
-    partnerNuts3 = partnerNuts3,
-    partnerNuts3Code = partnerNuts3Code,
-    country = country,
-    countryCode = countryCode,
-    city = city,
-    postalCode = postalCode,
-    callId = callId,
-    projectId = projectId,
-    projectCustomIdentifier = projectCustomIdentifier,
+    partnerName = partnerAbbreviation,
+    partnerStatus = partnerActive,
+    partnerSortNumber = partnerNumber,
+    partnerRole = partnerRole,
+    partnerNuts3 = addressNuts3,
+    partnerNuts3Code = addressNuts3Code,
+    country = addressCountry,
+    countryCode = addressCountryCode,
+    city = addressCity,
+    postalCode = addressPostalCode,
+    callId = partner.project.call.id,
+    projectId = partner.project.id,
+    projectCustomIdentifier = projectIdentifier,
     projectAcronym = projectAcronym
 )
 
-fun Page<InstitutionPartnerDetailsRow>.toModel() = map { it.toModel() }
+fun Page<ControllerInstitutionPartnerEntity>.toModel() = map { it.toFullModel() }
 
 fun List<InstitutionPartnerAssignmentRow>.toModels() = map { it.toModel() }
 
@@ -119,4 +125,3 @@ fun InstitutionPartnerAssignmentRow.toModel() = InstitutionPartnerAssignment(
     partnerId = partnerId,
     partnerProjectId = partnerProjectId
 )
-

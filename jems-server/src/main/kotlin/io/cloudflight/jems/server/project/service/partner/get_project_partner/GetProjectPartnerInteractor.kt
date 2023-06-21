@@ -16,5 +16,5 @@ interface GetProjectPartnerInteractor {
 
     fun findAllByProjectIdForDropdown(projectId: Long, sort: Sort, version: String? = null): List<ProjectPartnerSummary>
 
-    fun findAllByProjectIdWithContributionsForDropdown(projectId: Long): List<ProjectPartnerPaymentSummary>
+    fun findAllByProjectIdWithContributionsForDropdown(projectId: Long, version: String?): List<ProjectPartnerPaymentSummary>
 }

@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserRole
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
+import io.cloudflight.jems.server.user.service.model.UserSettings
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.MockKAnnotations
 import io.mockk.clearMocks
@@ -25,6 +26,7 @@ class ProjectMonitoringAuthorizationTest: UnitTest() {
         val programmeUser = User(
             id = 22,
             email = "user@programme.dev",
+            userSettings = UserSettings(sendNotificationsToEmail = false),
             name = "",
             surname = "",
             userRole = UserRole(id = 2, name = "programme user", permissions = emptySet(), isDefault = false),
@@ -34,10 +36,10 @@ class ProjectMonitoringAuthorizationTest: UnitTest() {
 
     @MockK
     lateinit var securityService: SecurityService
-
     @MockK
     lateinit var authorization: Authorization
-
+    @MockK
+    lateinit var authorizationUtilService: AuthorizationUtilService
     @MockK
     lateinit var currentUser: CurrentUser
 
@@ -79,6 +81,19 @@ class ProjectMonitoringAuthorizationTest: UnitTest() {
         every { authorization.hasPermissionForProject(UserRolePermission.ProjectContractingView, 1L) } returns true
         every { authorization.hasPermissionForProject(UserRolePermission.ProjectSetToContracted, 1L) } returns true
         assertThat(projectMonitoringAuthorization.canEditProjectMonitoring(1L)).isTrue
+        assertThat(projectMonitoringAuthorization.canViewProjectMonitoring(1L)).isTrue
+    }
+
+    @Test
+    fun canViewProjectMonitoringAsController() {
+        val currentUser = LocalCurrentUser(
+            programmeUser, "hash_pass", listOf(SimpleGrantedAuthority(UserRolePermission.ProjectContractingView.key))
+        )
+        every { securityService.currentUser } returns currentUser
+        every { authorization.hasPermissionForProject(UserRolePermission.ProjectContractingView, 1L) } returns false
+        every {
+            authorizationUtilService.hasPermissionAsController(UserRolePermission.ProjectContractingView, 1L)
+        } returns true
         assertThat(projectMonitoringAuthorization.canViewProjectMonitoring(1L)).isTrue
     }
 }

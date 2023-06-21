@@ -5,6 +5,9 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
+import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.result.ProjectResultPersistence
 import io.cloudflight.jems.server.project.service.result.model.ProjectResult
 import io.mockk.clearMocks
@@ -30,7 +33,19 @@ class UpdateProjectResultsTest : UnitTest() {
         targetValue = BigDecimal.ONE,
         periodNumber = 7,
         description = setOf(InputTranslation(language = FI, translation = "FI desc")),
+        deactivated = false
     )
+
+    fun projectSummary(projectId: Long, status: ApplicationStatus): ProjectSummary {
+        return ProjectSummary(
+            id = projectId,
+            customIdentifier = "test",
+            callId = 1L,
+            callName = "call",
+            acronym = "test",
+            status = status,
+        )
+    }
 
     @MockK
     lateinit var persistence: ProjectResultPersistence
@@ -39,10 +54,14 @@ class UpdateProjectResultsTest : UnitTest() {
     lateinit var generalValidator: GeneralValidatorService
 
     @MockK
+    lateinit var projectPersistence: ProjectPersistenceProvider
+
+    @MockK
     lateinit var veryBigResultsList: List<ProjectResult>
 
     @InjectMockKs
     lateinit var updateProjectResult: UpdateProjectResults
+
 
     @BeforeEach
     fun reset() {
@@ -53,6 +72,8 @@ class UpdateProjectResultsTest : UnitTest() {
     fun updateResultsForProject() {
         every { persistence.updateResultsForProject(1L, any()) } returnsArgument 1
         every { persistence.getAvailablePeriodNumbers(1L) } returns setOf(7)
+        every { projectPersistence.getProjectSummary(1L) } returns projectSummary(3L, ApplicationStatus.DRAFT)
+
         Assertions.assertThat(updateProjectResult.updateResultsForProject(1L, listOf(result1)))
             .containsExactly(result1)
     }
@@ -61,6 +82,7 @@ class UpdateProjectResultsTest : UnitTest() {
     fun `updateResultsForProject - empty periods`() {
         every { persistence.updateResultsForProject(2L, any()) } returnsArgument 1
         every { persistence.getAvailablePeriodNumbers(2L) } returns emptySet()
+        every { projectPersistence.getProjectSummary(2L) } returns projectSummary(3L, ApplicationStatus.DRAFT)
         val result = result1.copy(periodNumber = null)
         Assertions.assertThat(updateProjectResult.updateResultsForProject(2L, listOf(result)))
             .containsExactly(result)
@@ -82,6 +104,7 @@ class UpdateProjectResultsTest : UnitTest() {
     @Test
     fun `update results - empty results should pass`() {
         every { persistence.updateResultsForProject(3L, any()) } returns emptyList()
+        every { projectPersistence.getProjectSummary(3L) } returns projectSummary(3L, ApplicationStatus.DRAFT)
         assertDoesNotThrow { updateProjectResult.updateResultsForProject(3L, emptyList()) }
     }
 
@@ -139,5 +162,48 @@ class UpdateProjectResultsTest : UnitTest() {
         }
         verify(exactly = 1) { generalValidator.scale(result1.baseline, 2, "baseline") }
         verify(exactly = 1) { generalValidator.scale(result2.baseline, 2, "baseline") }
+    }
+
+    @Test
+    fun `updateResultsForProject - when project is contracted`() {
+        every { persistence.updateResultsForProject(5L, any()) } returnsArgument 1
+        every { persistence.getAvailablePeriodNumbers(5L) } returns setOf(7)
+        every { projectPersistence.getProjectSummary(5L) } returns projectSummary(5L, ApplicationStatus.CONTRACTED)
+        every { persistence.getResultsForProject(5L, null) } returns listOf(result1)
+
+        val updated = result1.copy(deactivated = true)
+        Assertions.assertThat(updateProjectResult.updateResultsForProject(5L, listOf(updated)))
+            .containsExactly(updated)
+    }
+
+    @Test
+    fun `updateResultsForProject - try to deactivate when project is not contracted yet`() {
+        every { persistence.updateResultsForProject(5L, any()) } returnsArgument 1
+        every { persistence.getAvailablePeriodNumbers(5L) } returns setOf(7)
+        every { projectPersistence.getProjectSummary(5L) } returns projectSummary(5L, ApplicationStatus.DRAFT)
+        every { persistence.getResultsForProject(5L, null) } returns listOf(result1)
+
+        val updated = result1.copy(deactivated = true)
+        assertThrows<ProjectResultDeactivationNotAllowedException> { updateProjectResult.updateResultsForProject(5L, listOf(updated)) }
+    }
+
+    @Test
+    fun `updateResultsForProject - try to delete when project is contracted`() {
+        every { persistence.updateResultsForProject(5L, any()) } returnsArgument 1
+        every { persistence.getAvailablePeriodNumbers(5L) } returns setOf(7)
+        every { projectPersistence.getProjectSummary(5L) } returns projectSummary(5L, ApplicationStatus.CONTRACTED)
+        every { persistence.getResultsForProject(5L, null) } returns listOf(result1)
+
+        assertThrows<ProjectResultDeletionNotAllowedException> { updateProjectResult.updateResultsForProject(5L, listOf()) }
+    }
+
+    @Test
+    fun `updateResultsForProject - try to activate a project result`() {
+        val deactivated = result1.copy(deactivated = true)
+        every { persistence.updateResultsForProject(5L, any()) } returnsArgument 1
+        every { persistence.getAvailablePeriodNumbers(5L) } returns setOf(7)
+        every { projectPersistence.getProjectSummary(5L) } returns projectSummary(5L, ApplicationStatus.CONTRACTED)
+        every { persistence.getResultsForProject(5L, null) } returns listOf(deactivated)
+        assertThrows<ProjectResultActivationNotAllowedException> { updateProjectResult.updateResultsForProject(5L, listOf(result1)) }
     }
 }

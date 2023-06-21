@@ -1,0 +1,17 @@
+{
+  "institution": {
+    "name": "randomize",
+    "description": "Controller institution for FRK27",
+    "institutionNuts": ["FRK27"],
+    "users": [
+      {
+        "email": "randomize",
+        "accessLevel": "view"
+      },
+      {
+        "email": "randomize",
+        "accessLevel": "edit"
+      }
+    ]
+  }
+}

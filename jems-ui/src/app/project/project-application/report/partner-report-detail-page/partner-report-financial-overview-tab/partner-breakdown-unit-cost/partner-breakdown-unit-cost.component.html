@@ -1,6 +1,5 @@
 <jems-multi-language-container *ngIf="dataSource.data.length">
 <mat-table jemsNoWidthLimit [dataSource]="dataSource">
-
     <ng-container matColumnDef="name" sticky>
         <mat-header-cell *matHeaderCellDef class="border-cell-right">
             <span jemsText maxLines="2">{{ 'unit.cost.title' | translate }}</span>
@@ -25,16 +24,44 @@
         <mat-header-cell *matHeaderCellDef class="text-right">
             <span jemsText maxLines="2">{{ 'project.application.partner.report.financial.previously.reported' | translate }}</span>
         </mat-header-cell>
-        <mat-cell *matCellDef="let line" class="text-right">{{ line.previouslyReported | asMoney }}</mat-cell>
-        <mat-footer-cell *matFooterCellDef class="text-right">{{ breakdown.total.previouslyReported | asMoney }}</mat-footer-cell>
+        <mat-cell *matCellDef="let line" class="text-right block">
+            <div>{{ line.previouslyReported | asMoney }}</div>
+            <div class="additional-info-text mat-small">
+                {{'project.application.partner.report.financial.parked.label' | translate}} {{line.previouslyReportedParked | asMoney}}
+            </div>
+        </mat-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right block">
+            <div>{{ breakdown.total.previouslyReported | asMoney }}</div>
+            <div class="additional-info-text mat-small">
+                {{'project.application.partner.report.financial.parked.label' | translate}} {{breakdown.total.previouslyReportedParked | asMoney}}
+            </div>
+        </mat-footer-cell>
     </ng-container>
 
     <ng-container matColumnDef="currentReport">
         <mat-header-cell *matHeaderCellDef class="text-right">
             <span jemsText maxLines="2">{{ 'project.application.partner.report.financial.current.report' | translate }}</span>
         </mat-header-cell>
-        <mat-cell *matCellDef="let line" class="text-right">{{ line.currentReport | asMoney }}</mat-cell>
-        <mat-footer-cell *matFooterCellDef class="text-right">{{ breakdown.total.currentReport | asMoney }}</mat-footer-cell>
+        <mat-cell *matCellDef="let line" class="text-right block">
+            <div>{{ line.currentReport | asMoney }}</div>
+            <div class="additional-info-text mat-small">
+                {{'project.application.partner.report.financial.reincluded.label' | translate}} {{line.currentReportReIncluded | asMoney}}
+            </div>
+        </mat-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right block">
+            <div>{{ breakdown.total.currentReport | asMoney }}</div>
+            <div class="additional-info-text mat-small">
+                {{'project.application.partner.report.financial.reincluded.label' | translate}} {{breakdown.total.currentReportReIncluded | asMoney}}
+            </div>
+        </mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="totalEligibleAfterControl">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{ 'project.application.partner.report.control.tab.overviewAndFinalize.total.eligible.after.control' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let line" class="text-right">{{ line.totalEligibleAfterControl | asMoney }}</mat-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right">{{ breakdown.total.totalEligibleAfterControl | asMoney }}</mat-footer-cell>
     </ng-container>
 
     <ng-container matColumnDef="totalReportedSoFar">
@@ -53,6 +80,15 @@
             <span *ngIf="line.totalEligibleBudget">{{ line.totalReportedSoFarPercentage | asMoney }}&nbsp;%</span>
         </mat-cell>
         <mat-footer-cell *matFooterCellDef class="text-right">{{ breakdown.total.totalReportedSoFarPercentage | asMoney }}&nbsp;%</mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="previouslyValidated">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{ 'project.application.partner.report.financial.previouslyValidated' | translate }}</span>
+            <jems-context-info infoPosition="right" infoText="{{ 'project.application.partner.report.financial.previouslyValidated.tooltip' | translate}}"></jems-context-info>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let line" class="text-right">{{ line.previouslyValidated | asMoney }}</mat-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right">{{ breakdown.total.previouslyValidated | asMoney }}</mat-footer-cell>
     </ng-container>
 
     <ng-container matColumnDef="remainingBudget">

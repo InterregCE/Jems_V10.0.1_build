@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserRole
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
+import io.cloudflight.jems.server.user.service.model.UserSettings
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 
@@ -14,6 +15,7 @@ internal class AuthorizationUtil {
             id = 1,
             email = "admin@admin.dev",
             name = "Name",
+            userSettings = UserSettings(sendNotificationsToEmail = false),
             surname = "Surname",
             userRole = UserRole(
                 id = 1,
@@ -27,6 +29,7 @@ internal class AuthorizationUtil {
         val userProgramme = User(
             id = 2,
             email = "user@programme.dev",
+            userSettings = UserSettings(sendNotificationsToEmail = false),
             name = "",
             surname = "",
             userRole = UserRole(id = 2, name = "programme user", permissions = emptySet(), isDefault = false),
@@ -36,6 +39,7 @@ internal class AuthorizationUtil {
         val userApplicant = User(
             id = 3,
             email = "user@applicant.dev",
+            userSettings = UserSettings(sendNotificationsToEmail = false),
             name = "applicant",
             surname = "",
             userRole = UserRole(id = 3, name = "applicant user", permissions = emptySet(), isDefault = true),

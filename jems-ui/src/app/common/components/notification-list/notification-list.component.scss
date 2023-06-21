@@ -1,0 +1,90 @@
+
+.mat-column-created {
+  min-width: 6.5rem;
+  width: 6.5rem;
+}
+
+.mat-column-call {
+  min-width: 8rem;
+  width: 16rem;
+}
+
+.mat-column-project {
+  min-width: 6rem;
+  width: 6rem;
+}
+
+.mat-column-acronym {
+  min-width: 6rem;
+  width: 12rem;
+}
+
+.mat-column-partner {
+  min-width: 6rem;
+  width: 12rem;
+}
+
+.mat-column-subject {
+  min-width: 16rem;
+}
+
+.mat-column-expand {
+  min-width: 2.5rem;
+  width: 2.5rem;
+  padding-left: .5rem;
+  padding-right: .5rem !important;
+}
+
+.mat-column-created,
+.mat-column-call,
+.mat-column-project,
+.mat-column-acronym {
+  padding-right: .5rem;
+}
+
+.wrapper {
+  overflow: auto;
+  border-right: .0625rem solid var(--table-border-color);
+  border-left: .0625rem solid var(--table-border-color);
+}
+
+#notification-list-table {
+  width: 100%;
+  min-width: 100%; // necessary to make the columns scale correctly betw. min-width and width!
+  max-width: 100%; // necessary to make the columns scale correctly betw. min-width and width!
+  box-sizing: border-box;
+  border-right: 0;
+  border-left: 0;
+
+  tr.notification-detail-row {
+    height: 0;
+  }
+
+  tr.notification-row:not(.notification-expanded-row):hover {
+    background: var(--table-backaground-color);
+  }
+
+  tr.notification-element-row:not(.notification-expanded-row):active {
+    background: var(--table-highlight-color);
+  }
+
+  tr.notification-expanded-row {
+    background: var(--table-highlight-color);
+  }
+
+  .element-detail {
+    overflow: hidden;
+    display: flex;
+  }
+
+  .notification-body {
+    padding: .75rem 0 1.5rem 1rem;
+    white-space: pre-line;
+  }
+
+  .d-flex-and-vcenter {
+    display: flex;
+    align-items: center;
+  }
+
+}

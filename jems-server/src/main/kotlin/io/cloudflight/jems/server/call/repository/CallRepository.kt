@@ -2,7 +2,6 @@ package io.cloudflight.jems.server.call.repository
 
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.server.call.entity.CallEntity
-import io.cloudflight.jems.server.user.entity.UserEntity
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository

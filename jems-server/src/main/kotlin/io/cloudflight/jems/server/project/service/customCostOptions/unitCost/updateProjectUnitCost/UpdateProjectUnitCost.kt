@@ -76,7 +76,7 @@ class UpdateProjectUnitCost(
         deselectedCategories: Set<BudgetCategory>,
         coverageTypeChanged: Boolean,
     ) {
-        val partnerIds = partnerPersistence.findTop30ByProjectId(unitCost.projectId!!).mapTo(HashSet()) { it.id }
+        val partnerIds = partnerPersistence.findTop50ByProjectId(unitCost.projectId!!).mapTo(HashSet()) { it.id }
 
         val unitCostForStaffCostsTable =
             if (coverageTypeChanged || deselectedCategories.contains(BudgetCategory.StaffCosts)) null else unitCost
@@ -102,7 +102,7 @@ class UpdateProjectUnitCost(
     }
 
     private fun updateStaffCosts(projectId: Long, partnerId: Long, oldUnitCostId: Long, unitCost: ProgrammeUnitCost?) {
-        val staffCosts = projectPartnerBudgetCostsPersistence.getBudgetStaffCosts(partnerId)
+        val staffCosts = projectPartnerBudgetCostsPersistence.getBudgetStaffCosts(setOf(partnerId))
             .let {
                 if (unitCost == null)
                     it.filter { it.unitCostId != oldUnitCostId }
@@ -121,7 +121,7 @@ class UpdateProjectUnitCost(
     }
 
     private fun updateEquipmentCosts(projectId: Long, partnerId: Long, oldUnitCostId: Long, unitCost: ProgrammeUnitCost?) {
-        val equipmentCosts = projectPartnerBudgetCostsPersistence.getBudgetEquipmentCosts(partnerId)
+        val equipmentCosts = projectPartnerBudgetCostsPersistence.getBudgetEquipmentCosts(setOf(partnerId))
             .let {
                 if (unitCost == null)
                     it.filter { it.unitCostId != oldUnitCostId }
@@ -140,7 +140,7 @@ class UpdateProjectUnitCost(
     }
 
     private fun updateExternalCosts(projectId: Long, partnerId: Long, oldUnitCostId: Long, unitCost: ProgrammeUnitCost?) {
-        val externalCosts = projectPartnerBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(partnerId)
+        val externalCosts = projectPartnerBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(setOf(partnerId))
             .let {
                 if (unitCost == null)
                     it.filter { it.unitCostId != oldUnitCostId }
@@ -159,7 +159,7 @@ class UpdateProjectUnitCost(
     }
 
     private fun updateInfrastructureCosts(projectId: Long, partnerId: Long, oldUnitCostId: Long, unitCost: ProgrammeUnitCost?) {
-        val infrastructureCosts = projectPartnerBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(partnerId)
+        val infrastructureCosts = projectPartnerBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(setOf(partnerId))
             .let {
                 if (unitCost == null)
                     it.filter { it.unitCostId != oldUnitCostId }
@@ -178,7 +178,7 @@ class UpdateProjectUnitCost(
     }
 
     private fun updateTravelCosts(projectId: Long, partnerId: Long, oldUnitCostId: Long, unitCost: ProgrammeUnitCost?) {
-        val travelCosts = projectPartnerBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(partnerId)
+        val travelCosts = projectPartnerBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(setOf(partnerId))
             .let {
                 if (unitCost == null)
                     it.filter { it.unitCostId != oldUnitCostId }
@@ -197,7 +197,7 @@ class UpdateProjectUnitCost(
     }
 
     private fun updateMultiCategoriesUnitCosts(projectId: Long, partnerId: Long, oldUnitCostId: Long, unitCost: ProgrammeUnitCost?) {
-        val multiCatCosts = projectPartnerBudgetCostsPersistence.getBudgetUnitCosts(partnerId)
+        val multiCatCosts = projectPartnerBudgetCostsPersistence.getBudgetUnitCosts(setOf(partnerId))
             .let {
                 if (unitCost == null)
                     it.filter { it.unitCostId != oldUnitCostId }

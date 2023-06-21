@@ -37,6 +37,7 @@ class ProjectWorkPackageOutputControllerTest : UnitTest() {
             programmeOutputIndicatorId = 50L,
             programmeOutputIndicatorIdentifier = "ID.50",
             targetValue = BigDecimal.ONE,
+            deactivated = false,
         )
         private val output2 = WorkPackageOutput(
             workPackageId = 1L,
@@ -44,6 +45,7 @@ class ProjectWorkPackageOutputControllerTest : UnitTest() {
             title = emptySet(),
             description = emptySet(),
             periodNumber = 3,
+            deactivated = false,
         )
 
     @MockK
@@ -122,11 +124,13 @@ class ProjectWorkPackageOutputControllerTest : UnitTest() {
                 periodNumber = 1,
                 programmeOutputIndicatorId = 15,
                 targetValue = BigDecimal.ONE,
+                deactivated = false,
             ),
             WorkPackageOutput(
                 workPackageId = 1L,
                 outputNumber = 0,
                 periodNumber = 3,
+                deactivated = false,
             )
         )
     }

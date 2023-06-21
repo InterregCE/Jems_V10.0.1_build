@@ -13,9 +13,10 @@ class CreateCallException(cause: Throwable) : ApplicationException(
     cause = cause
 )
 
-class CallNameNotUnique : ApplicationUnprocessableException(
+class CallNameNotUnique(callName: String) : ApplicationUnprocessableException(
     code = "$CREATE_CALL_ERROR_CODE_PREFIX-001",
     i18nMessage = I18nMessage("$CREATE_CALL_ERROR_KEY_PREFIX.name.not.unique"),
+    message = "call with name $callName already exists",
 )
 
 class CallCreatedIsNotDraft : ApplicationUnprocessableException(

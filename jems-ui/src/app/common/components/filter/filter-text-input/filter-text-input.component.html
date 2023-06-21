@@ -1,6 +1,6 @@
 <mat-form-field>
     <mat-label>{{label | translate}}</mat-label>
-    <mat-chip-list #filterChip>
+    <mat-chip-list #filterChip aria-label="filter values">
         <mat-chip *ngIf="value" [removable]="true" [selectable]="false" class="chip-option" [matTooltip]="value">
             <span class="chip-span-option"> {{value}}</span>
             <mat-icon (click)="changeValue(null)" matChipRemove>cancel</mat-icon>
@@ -9,10 +9,12 @@
         <input (keyup.enter)="changeValue($event.target.value)"
                *ngIf="type === 'number' && !value"
                [matChipInputFor]="filterChip" [options]="{allowZero:true, thousands:'', nullable: true}"
-               currencyMask matInput>
+               currencyMask matInput
+               aria-label="filter input">
         <input (keyup.enter)="changeValue($event.target.value)"
                *ngIf="type === 'text' && !value"
-               [matChipInputFor]="filterChip" matInput>
+               [matChipInputFor]="filterChip" matInput
+               aria-label="filter input">
     </mat-chip-list>
 </mat-form-field>
 

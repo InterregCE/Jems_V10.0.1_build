@@ -12,14 +12,12 @@ import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.UserRolePersistence
 import io.cloudflight.jems.server.user.service.authorization.CanUpdateCollaborators
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectCreate
-import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.cloudflight.jems.server.user.service.model.assignment.PartnerCollaborator
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-@OptIn(ExperimentalStdlibApi::class)
 class AssignUserCollaboratorToPartner(
     private val userPersistence: UserPersistence,
     private val userRolePersistence: UserRolePersistence,
@@ -35,22 +33,25 @@ class AssignUserCollaboratorToPartner(
     override fun updateUserAssignmentsOnPartner(
         projectId: Long,
         partnerId: Long,
-        emailsWithLevel: Set<Pair<String, PartnerCollaboratorLevel>>
+        emailsWithLevel: Map<String, Pair<PartnerCollaboratorLevel, Boolean>>
     ): Set<PartnerCollaborator> {
+        val emailsToLevelNormalized = emailsWithLevel.mapKeys { it.key.lowercase() }
         val allowedRoleIds = getAvailableRoleIds()
-        val emailToLevelMap = emailsWithLevel.associateBy({ it.first.lowercase() }, { it.second })
-        val usersToBePersistedThatCanBePersisted = userPersistence.findAllByEmails(emails = emailToLevelMap.keys)
-            .filter { allowedRoleIds.contains(it.userRole.id) }.associateWith { emailToLevelMap[it.email.lowercase()]!! }
+        val usersToBePersisted = userPersistence
+            .findAllByEmails(emails = emailsToLevelNormalized.keys)
+            .filter { it.userRole.id in allowedRoleIds }
+            .map { it.copy(email = it.email.lowercase()) }
+            .associateWith { emailsToLevelNormalized[it.email]!! }
 
         validateAllUsersAreValid(
-            requestedUsers = emailsWithLevel,
-            availUsers = usersToBePersistedThatCanBePersisted,
+            requestedUsers = emailsToLevelNormalized.keys,
+            availableUsers = usersToBePersisted.keys.mapTo(HashSet()) { it.email },
         )
 
         val result = partnerCollaboratorPersistence.changeUsersAssignedToPartner(
             projectId = projectId,
             partnerId = partnerId,
-            usersToPersist = usersToBePersistedThatCanBePersisted.mapKeys { it.key.id }
+            usersToPersist = usersToBePersisted.mapKeys { it.key.id }
         )
         eventPublisher.publishEvent(collaboratorsChangedEvent(projectId, partnerId, result))
         return result
@@ -62,18 +63,17 @@ class AssignUserCollaboratorToPartner(
             needsNotToHaveAnyOf = emptySet(),
         )
 
-    private fun validateAllUsersAreValid(requestedUsers: Set<Pair<String, PartnerCollaboratorLevel>>,
-                                         availUsers: Map<UserSummary, PartnerCollaboratorLevel>) {
-        val foundUserEmails = availUsers.mapTo(HashSet()) { it.key.email.lowercase() }
-        val notFoundUserEmails = requestedUsers.mapTo(HashSet()) { it.first.lowercase() }
-        notFoundUserEmails.removeAll(foundUserEmails)
-
+    private fun validateAllUsersAreValid(
+        requestedUsers: Set<String>,
+        availableUsers: Set<String>
+    ) {
+        val notFoundUserEmails = requestedUsers.minus(availableUsers)
         if (notFoundUserEmails.isNotEmpty())
             throw UsersAreNotValid(emails = notFoundUserEmails)
     }
 
     private fun collaboratorsChangedEvent(projectId: Long, partnerId: Long, collaborators: Set<PartnerCollaborator>) =
-        AssignCollaboratorToPartnerEvent(
+        AssignUserCollaboratorToPartnerEvent(
             project = projectPersistence.getProjectSummary(projectId),
             partner = partnerRepository.getById(partnerId).toModel(),
             collaborators = collaborators,

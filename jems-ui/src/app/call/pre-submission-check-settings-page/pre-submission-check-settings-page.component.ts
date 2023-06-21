@@ -6,7 +6,6 @@ import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {PreSubmissionCheckSettingsPageStore} from './pre-submission-check-settings-page-store.service';
 import {PluginInfoDTO} from '@cat/api';
 import {catchError, map, tap} from 'rxjs/operators';
-import {CallPageSidenavService} from '../services/call-page-sidenav.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {PluginKeys} from './plugin-keys';
 
@@ -25,28 +24,43 @@ export class PreSubmissionCheckSettingsPageComponent {
   data$: Observable<{
     pluginKeys: PluginKeys;
     preSubmissionCheckPlugins: PluginInfoDTO[];
+    reportPartnerCheckPlugins: PluginInfoDTO[];
+    reportProjectCheckPlugins: PluginInfoDTO[];
+    controlReportPartnerCheckPlugins: PluginInfoDTO[];
+    controlReportSamplingCheckPlugins: PluginInfoDTO[];
     callIsEditable: boolean;
   }>;
 
   form = this.formBuilder.group({
     pluginKey: ['', Validators.required],
+    reportPartnerCheckPluginKey: ['', Validators.required],
+    reportProjectCheckPluginKey: ['', Validators.required],
+    controlReportPartnerCheckPluginKey: ['', Validators.required],
+    controlReportSamplingCheckPluginKey: ['', Validators.required],
     callHasTwoSteps: false
   });
 
   constructor(private formService: FormService,
               private formBuilder: FormBuilder,
-              private pageStore: PreSubmissionCheckSettingsPageStore,
-              private callSidenavService: CallPageSidenavService) {
+              private pageStore: PreSubmissionCheckSettingsPageStore) {
     this.formService.init(this.form);
     this.data$ = combineLatest([
       pageStore.callIsEditable$,
       pageStore.preSubmissionCheckPlugins,
+      pageStore.reportPartnerCheckPlugins,
+      pageStore.reportProjectCheckPlugins,
+      pageStore.controlReportPartnerCheckPlugins,
+      pageStore.controlReportSamplingCheckPlugins,
       pageStore.pluginKeys$,
     ]).pipe(
-      map(([callIsEditable, preSubmissionCheckPlugins, pluginKeys]) => ({
-          preSubmissionCheckPlugins,
-          callIsEditable,
-          pluginKeys
+      map(([callIsEditable, preSubmissionCheckPlugins, reportPartnerCheckPlugins, reportProjectCheckPlugins, controlReportPartnerCheckPlugins, controlReportSamplingCheckPlugins, pluginKeys]: any) => ({
+        preSubmissionCheckPlugins,
+        reportPartnerCheckPlugins,
+        reportProjectCheckPlugins,
+        controlReportPartnerCheckPlugins,
+        controlReportSamplingCheckPlugins,
+        callIsEditable,
+        pluginKeys,
       })),
       tap((data ) => this.resetForm(data.pluginKeys))
     );
@@ -59,6 +73,10 @@ export class PreSubmissionCheckSettingsPageComponent {
       this.firstStepPluginKey.setValue(pluginKeys.firstStepPluginKey);
     }
     this.pluginKey.setValue(pluginKeys.pluginKey);
+    this.reportPartnerCheckPluginKey.setValue(pluginKeys.reportPartnerCheckPluginKey);
+    this.controlReportPartnerCheckPluginKey.setValue(pluginKeys.controlReportPartnerCheckPluginKey);
+    this.reportProjectCheckPluginKey.setValue(pluginKeys.reportProjectCheckPluginKey);
+    this.controlReportSamplingCheckPluginKey.setValue(pluginKeys.controlReportSamplingCheckPluginKey);
   }
 
   save(): void {
@@ -75,6 +93,22 @@ export class PreSubmissionCheckSettingsPageComponent {
 
   get firstStepPluginKey(): FormControl {
     return this.form.get('firstStepPluginKey') as FormControl;
+  }
+
+  get reportPartnerCheckPluginKey(): FormControl {
+    return this.form.get('reportPartnerCheckPluginKey') as FormControl;
+  }
+
+  get reportProjectCheckPluginKey(): FormControl {
+    return this.form.get('reportProjectCheckPluginKey') as FormControl;
+  }
+
+  get controlReportPartnerCheckPluginKey(): FormControl {
+    return this.form.get('controlReportPartnerCheckPluginKey') as FormControl;
+  }
+
+  get controlReportSamplingCheckPluginKey(): FormControl {
+    return this.form.get('controlReportSamplingCheckPluginKey') as FormControl;
   }
 
   get callHasTwoSteps(): FormControl {

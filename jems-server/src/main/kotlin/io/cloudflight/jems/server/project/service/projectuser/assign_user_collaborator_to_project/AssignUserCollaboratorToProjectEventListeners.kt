@@ -9,7 +9,7 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.event.TransactionalEventListener
 
-data class AssignUserCollaboratorEvent(val project: ProjectSummary, val collaborators: List<CollaboratorAssignedToProject>)
+data class AssignUserCollaboratorToProjectEvent(val project: ProjectSummary, val collaborators: List<CollaboratorAssignedToProject>)
 
 @Service
 data class AssignUserCollaboratorToProjectEventListeners(
@@ -17,12 +17,12 @@ data class AssignUserCollaboratorToProjectEventListeners(
 ) {
 
     @TransactionalEventListener
-    fun publishJemsAuditEvent(event: AssignUserCollaboratorEvent) =
+    fun publishJemsAuditEvent(event: AssignUserCollaboratorToProjectEvent) =
         eventPublisher.publishEvent(
             JemsAuditEvent(
-                auditCandidate = AuditBuilder(AuditAction.PROJECT_USER_ASSIGNMENT_PROGRAMME)
+                auditCandidate = AuditBuilder(AuditAction.PROJECT_USER_ASSIGNMENT_APPLICANTS)
                     .project(event.project)
-                    .description("[Applicant form users] List of users:: ${collaboratorsWithLevels(event.collaborators)}")
+                    .description("[Applicant form users] List of users:: [${collaboratorsWithLevels(event.collaborators)}]")
                     .build()
             )
         )

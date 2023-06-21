@@ -15,20 +15,20 @@ context('SPF Call Management tests', () => {
     cy.get('input.mat-input-element:first').should('not.have.attr', 'readonly');
 
     // creating the call
-    cy.get('input.mat-input-element:first').type(faker.internet.domainWord());
-    cy.get('svg.mat-datepicker-toggle-default-icon:first').click();
-    cy.contains('div.mat-calendar-body-cell-content', '5').click({force: true});
+    cy.contains('div', 'Call name').find('input').type(faker.internet.domainWord());
+    cy.contains('mat-form-field', 'Start date').find('button').click();
+    cy.contains('div.mat-calendar-body-cell-content', '5').click();
     cy.contains('mat-icon', 'done').click();
-    cy.get('svg.mat-datepicker-toggle-default-icon:last').click();
-    cy.contains('div.mat-calendar-body-cell-content', '7').click({force: true});
+    cy.contains('mat-form-field', 'End date (MM').find('button').click();
+    cy.contains('div.mat-calendar-body-cell-content', '7').click();
     cy.contains('mat-icon', 'done').click();
-    cy.get('[formcontrolname="lengthOfPeriod"]').type(String(Math.round((Math.random()+1)*8)));
-    cy.get('[formarrayname="funds"]:first input[type="checkbox"]:first').click({force: true});
+    cy.contains('div', 'Period length (in months)').find('input').type(String(Math.round((Math.random()+1)*8)));
+    cy.contains('mat-checkbox', 'ERDF').click();
     cy.contains('button', 'Create').click();
 
     cy.contains('button', 'Publish call').should('be.disabled');
-    cy.contains('div#successMessage', 'pre-submission check plugin').should('be.visible');
-    cy.get('[formcontrolname="name"]:first').should('not.have.attr', 'readonly');
+    cy.contains('You cannot publish call because you did not set up pre-submission check plugin').should('be.visible');
+    cy.contains('div', 'Call name').find('input').should('not.have.attr', 'readonly');
     for (const navItem of ['General call settings', 'Application form configuration', 'Budget Settings', 'Pre-submission check settings']) {
       cy.contains('div', navItem).should('be.visible');
     }

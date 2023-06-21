@@ -2,15 +2,16 @@ package io.cloudflight.jems.server.project.service.report.partner.file.control.u
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
+import io.cloudflight.jems.server.common.file.service.model.JemsFileCreate
+import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.file.ProjectPartnerReportFilePersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -18,12 +19,12 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import java.io.InputStream
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
-import java.io.InputStream
 
 class UploadFileToControlReportTest : UnitTest() {
 
@@ -36,10 +37,13 @@ class UploadFileToControlReportTest : UnitTest() {
     }
 
     @MockK
-    lateinit var reportFilePersistence: ProjectReportFilePersistence
+    lateinit var reportFilePersistence: ProjectPartnerReportFilePersistence
 
     @MockK
-    lateinit var reportPersistence: ProjectReportPersistence
+    lateinit var filePersistence: JemsFilePersistence
+
+    @MockK
+    lateinit var reportPersistence: ProjectPartnerReportPersistence
 
     @MockK
     lateinit var partnerPersistence: PartnerPersistence
@@ -52,20 +56,19 @@ class UploadFileToControlReportTest : UnitTest() {
 
     @BeforeEach
     fun reset() {
-        clearMocks(partnerPersistence)
-        clearMocks(reportFilePersistence)
+        clearMocks(partnerPersistence, filePersistence, reportFilePersistence)
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID) } returns PROJECT_ID
         every { securityService.getUserIdOrThrow() } returns USER_ID
     }
 
     @ParameterizedTest(name = "uploadToControlReport (status {0})")
-    @EnumSource(value = ReportStatus::class, names = ["InControl"])
+    @EnumSource(value = ReportStatus::class, names = ["InControl", "ReOpenInControlLast", "ReOpenInControlLimited", "Certified"])
     fun uploadToControlReport(status: ReportStatus) {
         val reportId = 49L
         val report = mockk<ProjectPartnerReport>()
         every { report.status } returns status
         every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = reportId) } returns report
-        every { reportFilePersistence
+        every { filePersistence
             .existsFile("Project/000360/Report/Partner/000434/PartnerControlReport/000049/ControlDocument/", "test.xlsx")
         } returns false
 
@@ -95,7 +98,8 @@ class UploadFileToControlReportTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "uploadToControlReport - wrong status (status {0})")
-    @EnumSource(value = ReportStatus::class, names = ["InControl"], mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = ReportStatus::class, mode = EnumSource.Mode.EXCLUDE,
+        names = ["InControl", "ReOpenInControlLast", "ReOpenInControlLimited", "ReOpenCertified" ,"Certified"])
     fun `uploadToControlReport - wrong status`(status: ReportStatus) {
         val reportId = 56L
         val report = mockk<ProjectPartnerReport>()
@@ -112,7 +116,7 @@ class UploadFileToControlReportTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "uploadToControlReport - wrong file type (status {0})")
-    @EnumSource(value = ReportStatus::class, names = ["InControl"])
+    @EnumSource(value = ReportStatus::class, names = ["InControl", "ReOpenInControlLast", "ReOpenInControlLimited", "Certified"])
     fun `uploadToControlReport - wrong file type`(status: ReportStatus) {
         val reportId = 10L
         val report = mockk<ProjectPartnerReport>()
@@ -129,13 +133,13 @@ class UploadFileToControlReportTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "uploadToControlReport - file duplicate (status {0})")
-    @EnumSource(value = ReportStatus::class, names = ["InControl"])
+    @EnumSource(value = ReportStatus::class, names = ["InControl", "ReOpenInControlLast", "ReOpenInControlLimited", "Certified"])
     fun `uploadToControlReport - file duplicate`(status: ReportStatus) {
         val reportId = 28L
         val report = mockk<ProjectPartnerReport>()
         every { report.status } returns status
         every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = reportId) } returns report
-        every { reportFilePersistence
+        every { filePersistence
             .existsFile("Project/000360/Report/Partner/000434/PartnerControlReport/000028/ControlDocument/", "duplicate.xlsx")
         } returns true
 
@@ -151,5 +155,4 @@ class UploadFileToControlReportTest : UnitTest() {
         assertThrows<FileAlreadyExists> { interactor.uploadToControlReport(PARTNER_ID, reportId, file) }
         verify(exactly = 0) { reportFilePersistence.addAttachmentToPartnerReport(any()) }
     }
-
 }

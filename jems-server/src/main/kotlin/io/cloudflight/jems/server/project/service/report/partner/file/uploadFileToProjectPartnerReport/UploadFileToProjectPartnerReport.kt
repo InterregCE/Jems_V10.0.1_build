@@ -2,22 +2,24 @@ package io.cloudflight.jems.server.project.service.report.partner.file.uploadFil
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
+import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.file.uploadProjectFile.isFileTypeInvalid
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.file.ProjectPartnerReportFilePersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UploadFileToProjectPartnerReport(
-    private val reportPersistence: ProjectReportPersistence,
+    private val reportPersistence: ProjectPartnerReportPersistence,
     private val partnerPersistence: PartnerPersistence,
-    private val reportFilePersistence: ProjectReportFilePersistence,
+    private val reportFilePersistence: ProjectPartnerReportFilePersistence,
+    private val filePersistence: JemsFilePersistence,
     private val securityService: SecurityService,
 ) : UploadFileToProjectPartnerReportInteractor {
 
@@ -35,7 +37,7 @@ class UploadFileToProjectPartnerReport(
             val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
             val location = generatePath(projectId, partnerId, reportId)
 
-            if (reportFilePersistence.existsFile(exactPath = location, fileName = file.name))
+            if (filePersistence.existsFile(exactPath = location, fileName = file.name))
                 throw FileAlreadyExists(file.name)
 
             return reportFilePersistence.addAttachmentToPartnerReport(
@@ -43,5 +45,4 @@ class UploadFileToProjectPartnerReport(
             )
         }
     }
-
 }

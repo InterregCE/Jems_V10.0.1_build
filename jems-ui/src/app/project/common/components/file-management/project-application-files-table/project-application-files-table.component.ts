@@ -1,6 +1,11 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {map, switchMap, take, tap} from 'rxjs/operators';
-import {PageProjectFileMetadataDTO, ProjectFileMetadataDTO, ProjectFileService, ProjectStatusDTO} from '@cat/api';
+import {finalize, map, switchMap, take, tap} from 'rxjs/operators';
+import {
+  PageProjectFileMetadataDTO,
+  ProjectFileMetadataDTO,
+  ProjectFileService,
+  ProjectStatusDTO
+} from '@cat/api';
 import {FileManagementStore} from '@project/common/components/file-management/file-management-store';
 import {Tables} from '@common/utils/tables';
 import {Alert} from '@common/components/forms/alert';
@@ -12,7 +17,6 @@ import {AcceptedFileTypesConstants} from '@project/common/components/file-manage
 import {FileListItem} from '@common/components/file-list/file-list-item';
 import {FileCategoryTypeEnum} from '@project/common/components/file-management/file-category-type';
 import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
-import {ProjectUtil} from '@project/common/project-util';
 import {
   ProjectStore
 } from '@project/project-application/containers/project-application-detail/services/project-store.service';
@@ -33,6 +37,7 @@ export class ProjectApplicationFilesTableComponent {
   dataSource = new MatTableDataSource<ProjectFileMetadataDTO>();
   maximumAllowedFileSizeInMB: number;
   fileSizeOverLimitError$ = new Subject<boolean>();
+  isUploadInProgress = false;
 
   data$: Observable<{
     files: PageProjectFileMetadataDTO;
@@ -43,45 +48,47 @@ export class ProjectApplicationFilesTableComponent {
   constructor(
     public fileManagementStore: FileManagementStore,
     private projectFileService: ProjectFileService,
-    private projectStore: ProjectStore,
+    private projectStore: ProjectStore
   ) {
     this.data$ = combineLatest([
       this.fileManagementStore.fileList$,
-      this.fileManagementStore.projectStatus$,
       this.fileManagementStore.selectedCategory$,
       this.fileManagementStore.canChangeApplicationFile$,
       this.fileManagementStore.canChangeAssessmentFile$,
       this.fileManagementStore.canChangeModificationFile$,
       this.fileManagementStore.userIsProjectOwnerOrEditCollaborator$,
+      this.fileManagementStore.currentProjectStatus$
     ])
       .pipe(
-        map(([files, projectStatus, selectedCategory,
-               canChangeApplicationFile, canChangeAssessmentFile, canChangeModificationFile, isOwner]: any) => ({
+        map(([files, selectedCategory, canChangeApplicationFile, canChangeAssessmentFile, canChangeModificationFile, isOwner, currentProjectStatus]: any) => ({
           files,
           fileList: files.content.map((file: ProjectFileMetadataDTO) => ({
             id: file.id,
             name: file.name,
-            type: selectedCategory?.type,
+            type: file.category || selectedCategory?.type,
             uploaded: file.uploadedAt,
             author: file.uploadedBy,
             sizeString: file.sizeString,
             description: file.description,
             editable: ProjectApplicationFilesTableComponent.isFileEditable(
               selectedCategory?.type,
-              projectStatus,
-              canChangeApplicationFile,
-              canChangeAssessmentFile,
-              canChangeModificationFile,
-              isOwner,
-            ),
-            deletable: ProjectApplicationFilesTableComponent.isFileDeletable(
-              selectedCategory?.type,
-              projectStatus,
+              currentProjectStatus,
               canChangeApplicationFile,
               canChangeAssessmentFile,
               canChangeModificationFile,
               file.uploadedAt,
               isOwner,
+              this.fileManagementStore.isInModifiableStatus(currentProjectStatus.status)
+            ),
+            deletable: ProjectApplicationFilesTableComponent.isFileDeletable(
+              selectedCategory?.type,
+              currentProjectStatus,
+              canChangeApplicationFile,
+              canChangeAssessmentFile,
+              canChangeModificationFile,
+              file.uploadedAt,
+              isOwner,
+              this.fileManagementStore.isInModifiableStatus(currentProjectStatus.status)
             ),
             tooltipIfNotDeletable: '',
             iconIfNotDeletable: '',
@@ -90,6 +97,7 @@ export class ProjectApplicationFilesTableComponent {
         })),
         tap(data => this.dataSource.data = data.files?.content),
       );
+
     this.fileManagementStore.getMaximumAllowedFileSize().pipe(untilDestroyed(this)).subscribe((maxAllowedSize) => this.maximumAllowedFileSizeInMB = maxAllowedSize);
   }
 
@@ -99,17 +107,21 @@ export class ProjectApplicationFilesTableComponent {
     canChangeApplicationFile: boolean,
     canChangeAssessmentFile: boolean,
     canChangeModificationFile: boolean,
+    uploadedAt: Date,
     isOwner: boolean,
+    isInModifiableStatus: boolean
   ): boolean {
+    const fileIsNotLocked = uploadedAt > status.updated;
+
     switch (type) {
       case FileCategoryTypeEnum.MODIFICATION:
         return canChangeModificationFile;
       case FileCategoryTypeEnum.ASSESSMENT:
-        return canChangeAssessmentFile;
+        return canChangeAssessmentFile && fileIsNotLocked;
       case FileCategoryTypeEnum.APPLICATION:
       case FileCategoryTypeEnum.PARTNER:
       case FileCategoryTypeEnum.INVESTMENT:
-        return canChangeApplicationFile || (isOwner && ProjectUtil.isOpenForModifications(status));
+        return (canChangeApplicationFile || isOwner) && fileIsNotLocked && isInModifiableStatus;
       default:
         return false;
     }
@@ -123,29 +135,23 @@ export class ProjectApplicationFilesTableComponent {
     canChangeModificationFile: boolean,
     uploadedAt: Date,
     isOwner: boolean,
+    isInModifiableStatus: boolean,
   ): boolean {
+    // the user can only delete files that are added after a last status change
+    const fileIsNotLocked = uploadedAt > status?.updated;
+
     switch (type) {
       case FileCategoryTypeEnum.MODIFICATION:
         return canChangeModificationFile;
       case FileCategoryTypeEnum.ASSESSMENT:
-        return canChangeAssessmentFile;
+        return canChangeAssessmentFile && fileIsNotLocked;
       case FileCategoryTypeEnum.APPLICATION:
       case FileCategoryTypeEnum.PARTNER:
       case FileCategoryTypeEnum.INVESTMENT:
-        return ProjectApplicationFilesTableComponent.isApplicationFileDeletable(status, uploadedAt, isOwner, canChangeApplicationFile);
+        return (canChangeApplicationFile || isOwner) && fileIsNotLocked && isInModifiableStatus;
       default:
         return false;
     }
-  }
-
-  private static isApplicationFileDeletable(status: ProjectStatusDTO, uploadedAt: Date, isOwner: boolean, isAllowedToChange: boolean): boolean {
-    // the user can only delete files that are added after a last status change
-    const lastStatusChange = status?.updated;
-    const fileIsNotLocked = uploadedAt > lastStatusChange;
-
-    const userIsAbleToDelete = isAllowedToChange
-      || (isOwner && ProjectUtil.isOpenForModifications(status));
-    return fileIsNotLocked && userIsAbleToDelete;
   }
 
   uploadFile(target: any): void {
@@ -161,8 +167,12 @@ export class ProjectApplicationFilesTableComponent {
       return;
     }
 
+    this.isUploadInProgress = true;
     this.fileManagementStore.uploadFile(target?.files[0])
-      .pipe(take(1))
+      .pipe(
+        take(1),
+        finalize(() => this.isUploadInProgress = false)
+      )
       .subscribe();
   }
 

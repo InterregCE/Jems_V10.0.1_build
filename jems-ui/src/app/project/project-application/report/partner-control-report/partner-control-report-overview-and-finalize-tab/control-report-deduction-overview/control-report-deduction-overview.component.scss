@@ -1,0 +1,77 @@
+@use '../../../partner-report-detail-page/partner-report-financial-overview-tab/remove-custom-table-overrides';
+
+.no-border-bottom {
+  mat-header-cell {
+    border-bottom: none;
+  }
+}
+.flat-rate-header {
+  min-height: 1.75rem;
+
+  mat-header-cell {
+    font-weight: 600 !important;
+    color: var(--font-color-primary) !important;
+  }
+}
+
+.border-cell-right {
+  border-right: .0625rem solid var(--table-border-color);
+}
+
+.mat-column-typeOfError,
+.mat-column-typeOfError-sub {
+  min-width: 20rem;
+}
+
+.mat-column-staff,
+.mat-column-staff-sub,
+.mat-column-officeAndAdministration,
+.mat-column-officeAndAdministration-sub,
+.mat-column-travelAndAccommodation,
+.mat-column-travelAndAccommodation-sub,
+.mat-column-external,
+.mat-column-external-sub,
+.mat-column-equipment,
+.mat-column-equipment-sub,
+.mat-column-infrastructure,
+.mat-column-infrastructure-sub,
+.mat-column-lumpSum,
+.mat-column-lumpSum-sub,
+.mat-column-unitCost,
+.mat-column-unitCost-sub,
+.mat-column-other,
+.mat-column-other-sub,
+.mat-column-total,
+.mat-column-total-sub {
+  padding-left: 1.5rem;
+}
+.mat-column-other,
+.mat-column-other-sub {
+  padding-right: 1rem;
+}
+
+.mat-column-staff,
+.mat-column-staff-sub,
+.mat-column-officeAndAdministration,
+.mat-column-officeAndAdministration-sub,
+.mat-column-travelAndAccommodation,
+.mat-column-travelAndAccommodation-sub,
+.mat-column-external,
+.mat-column-external-sub,
+.mat-column-equipment,
+.mat-column-equipment-sub,
+.mat-column-infrastructure,
+.mat-column-infrastructure-sub,
+.mat-column-lumpSum,
+.mat-column-lumpSum-sub,
+.mat-column-unitCost,
+.mat-column-unitCost-sub,
+.mat-column-other,
+.mat-column-other-sub {
+  min-width: 8rem;
+}
+
+.mat-column-total,
+.mat-column-total-sub {
+  min-width: 6rem;
+}

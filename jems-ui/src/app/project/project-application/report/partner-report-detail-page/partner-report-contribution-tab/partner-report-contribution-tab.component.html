@@ -107,7 +107,7 @@
                     </mat-header-cell>
 
                     <mat-cell *matCellDef="let control; let i = index" [formGroupName]="i" class="justify-end">
-                        <span>{{control.value.previouslyReported + control.value.currentlyReported | asMoney }}</span>
+                        <span>{{control.value.previouslyReported + (control.value.currentlyReported ?? 0) | asMoney }}</span>
                     </mat-cell>
                 </ng-container>
 
@@ -119,6 +119,7 @@
                                 *ngIf="control.get('id').value !== 0"
                                 [formControlName]="'attachment'"
                                 [isReportEditable]="partnerReportDetailPageStore.reportEditable$ | async"
+                                [isUploadDone]="isUploadDone"
                                 (upload)="onUploadFile($event, control.get('id').value, i)"
                                 (download)="onDownloadFile($event)"
                                 (delete)="onDeleteFile($event, i)">
@@ -133,7 +134,8 @@
                                 type="button"
                                 *ngIf="control.value.createdInThisReport"
                                 [disabled]="!!control.get('attachment').value"
-                                (click)="removeContribution(i)">
+                                (click)="removeContribution(i)"
+                                aria-label="delete">
                             <mat-icon
                                     matTooltip="{{ (attachment(i).value ? 'project.application.partner.report.attachment.delete.file.first' : null) | translate }}">
                                 {{ attachment(i).value ? 'delete_forever' : 'delete'}}
@@ -150,7 +152,9 @@
             <button *ngIf="contributionForm.enabled && contributions.length <= 24"
                     jemsText mat-stroked-button
                     color="primary"
-                    (click)="addContribution(null)">
+                    [disabled]="isReportReopenedLimited"
+                    (click)="addContribution(null)"
+                    aria-label="add">
                 <mat-icon>add</mat-icon>
             </button>
 

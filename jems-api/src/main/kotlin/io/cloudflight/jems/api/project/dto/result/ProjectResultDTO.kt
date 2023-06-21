@@ -10,5 +10,6 @@ data class ProjectResultDTO(
     val baseline: BigDecimal,
     val targetValue: BigDecimal? = null,
     val periodNumber: Int? = null,
-    val description: Set<InputTranslation> = emptySet()
+    val description: Set<InputTranslation> = emptySet(),
+    val deactivated: Boolean
 )

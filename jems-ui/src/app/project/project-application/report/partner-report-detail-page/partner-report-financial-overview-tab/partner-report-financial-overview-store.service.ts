@@ -14,7 +14,7 @@ import {
 } from '@cat/api';
 
 import {PartnerReportDetailPageStore} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
-import {map, switchMap, tap} from 'rxjs/operators';
+import {filter, map, switchMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import CategoryEnum = ProjectPartnerReportUnitCostDTO.CategoryEnum;
@@ -130,6 +130,7 @@ export class PartnerReportFinancialOverviewStoreService {
       this.partnerReportDetailPageStore.partnerReportId$,
     ])
       .pipe(
+        filter(([call, partnerId, reportId]) => partnerId != null && reportId != null),
         switchMap(([call, partnerId, reportId]) => combineLatest([
           this.callService.getAllowedRealCosts(call.callId),
           of(call.flatRates),

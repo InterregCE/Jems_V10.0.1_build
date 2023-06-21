@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.programme.entity.checklist.ProgrammeChecklistE
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
 import io.cloudflight.jems.server.user.entity.UserEntity
 import java.time.LocalDate
+import java.time.ZonedDateTime
 import javax.persistence.CascadeType
 import javax.persistence.Entity
 import javax.persistence.EnumType
@@ -49,5 +50,9 @@ class ChecklistInstanceEntity(
     var components: MutableSet<ChecklistComponentInstanceEntity>? = mutableSetOf(),
 
     @field:NotNull
-    var consolidated: Boolean = false
+    var consolidated: Boolean = false,
+
+    var description: String? = null,
+
+    var createdAt: ZonedDateTime?,
 )
