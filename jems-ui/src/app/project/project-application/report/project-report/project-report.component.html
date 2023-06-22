@@ -111,6 +111,48 @@
                 </mat-cell>
             </ng-container>
 
+            <ng-container matColumnDef="verificationEndDate">
+                <mat-header-cell *matHeaderCellDef class="text-left">
+                    <span jemsText maxLines="2">{{ 'project.application.project.report.table.verification.end.date' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let projectReport" class="text-left">
+                    <div class="date-time-cell">
+                        <div class="date">{{ projectReport.verificationEndDate | localeDate: 'L'}}</div>
+                        <div class="time">{{ projectReport.verificationEndDate | localeDate: 'LT'}}</div>
+                    </div>
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="amountRequested">
+                <mat-header-cell *matHeaderCellDef class="text-right">
+                    <span jemsText maxLines="2">{{ 'project.application.project.report.table.amount.requested' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let projectReport" class="text-right">
+                    {{ projectReport.amountRequested  | asMoney }}
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="totalEligible">
+                <mat-header-cell *matHeaderCellDef class="text-right">
+                    <span jemsText maxLines="2">{{ 'project.application.project.report.table.total.eligible' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let projectReport" class="text-right">
+                    {{ projectReport.totalEligibleAfterVerification | asMoney }}
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="verification">
+                <mat-header-cell *matHeaderCellDef class="text-left">
+                    <span jemsText maxLines="2">{{ 'project.application.project.report.table.verification' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let projectReport" class="text-left">
+                    <jems-start-verification-report [reportId]="projectReport.id"
+                                                    [reportStatus]="projectReport.status"
+                                                    (onError)="showErrorMessage($event)">
+                    </jems-start-verification-report>
+                </mat-cell>
+            </ng-container>
+
             <ng-container matColumnDef="delete" stickyEnd>
                 <mat-header-cell *matHeaderCellDef class="id-column-width border-cell-left text-center">
                     {{ 'common.delete.entry' | translate }}

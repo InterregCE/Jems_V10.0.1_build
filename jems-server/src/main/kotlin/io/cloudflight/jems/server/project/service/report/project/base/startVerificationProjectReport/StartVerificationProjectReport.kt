@@ -44,5 +44,4 @@ class StartVerificationProjectReport(
         if (report.status != ProjectReportStatus.Submitted)
             throw ReportNotSubmitted()
     }
-
 }

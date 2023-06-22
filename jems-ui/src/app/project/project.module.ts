@@ -532,6 +532,11 @@ import {
 import { DemimisStateAidComponent } from './project-application/contracting/contract-partner/demimis-state-aid/demimis-state-aid.component';
 import { GberStateAidComponent } from './project-application/contracting/contract-partner/gber-state-aid/gber-state-aid.component';
 import { StartControlReportComponent } from './project-application/report/start-control-report/start-control-report.component';
+import { ProjectVerificationReportComponent } from './project-application/report/project-verification-report/project-verification-report.component';
+import {
+  ProjectVerificationReportDocumentTabComponent
+} from '@project/project-application/report/project-verification-report/project-verification-report-document-tab/project-verification-report-document-tab.component';
+import {StartVerificationReportComponent} from '@project/project-application/report/start-verification-report/start-verification-report.component';
 
 @NgModule({
   declarations: [
@@ -719,6 +724,9 @@ import { StartControlReportComponent } from './project-application/report/start-
     DemimisStateAidComponent,
     GberStateAidComponent,
     StartControlReportComponent,
+    StartVerificationReportComponent,
+    ProjectVerificationReportComponent,
+    ProjectVerificationReportDocumentTabComponent,
   ],
   imports: [
     SharedModule,

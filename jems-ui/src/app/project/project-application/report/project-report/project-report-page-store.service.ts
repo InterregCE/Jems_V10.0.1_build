@@ -22,6 +22,8 @@ export class ProjectReportPageStore {
   projectReports$: Observable<PageProjectReportSummaryDTO>;
   userCanViewReport$: Observable<boolean>;
   userCanEditReport$: Observable<boolean>;
+  userCanViewVerification$: Observable<boolean>;
+  userCanEditVerification$: Observable<boolean>;
 
   newPageSize$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_SIZE);
   newPageIndex$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_INDEX);
@@ -36,6 +38,8 @@ export class ProjectReportPageStore {
     this.projectReports$ = this.projectReports();
     this.userCanViewReport$ = this.userCanViewReports();
     this.userCanEditReport$ = this.userCanEditReports();
+    this.userCanViewVerification$ = this.userCanViewVerification();
+    this.userCanEditVerification$ = this.userCanEditVerification();
   }
 
   createProjectReport(identification: ProjectReportUpdateDTO): Observable<ProjectReportDTO> {
@@ -108,4 +112,21 @@ export class ProjectReportPageStore {
       );
   }
 
+  private userCanViewVerification(): Observable<boolean> {
+    return combineLatest([
+      this.projectReportLevel(),
+      this.permissionService.hasPermission(PermissionsEnum.ProjectReportingVerificationProjectView),
+      this.permissionService.hasPermission(PermissionsEnum.ProjectReportingVerificationProjectEdit),
+    ]).pipe(
+      map(([level, canView, canEdit]) => level === 'MANAGE' || canView || canEdit)
+    );
+  }
+
+  private userCanEditVerification(): Observable<boolean> {
+    return combineLatest([
+      this.permissionService.hasPermission(PermissionsEnum.ProjectReportingVerificationProjectEdit),
+    ]).pipe(
+      map(([canEdit]) => canEdit)
+    );
+  }
 }

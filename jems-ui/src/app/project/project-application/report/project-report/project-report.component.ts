@@ -32,7 +32,8 @@ export class ProjectReportComponent {
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
   error$ = new BehaviorSubject<APIError | null>(null);
   Alert = Alert;
-  displayedColumns = ['reportNumber', 'status', 'linkedFormVersion', 'reportingPeriod', 'type', 'createdAt', 'firstSubmission', 'delete'];
+  displayedColumns = ['reportNumber', 'status', 'linkedFormVersion', 'reportingPeriod', 'type', 'createdAt', 'firstSubmission',
+    'amountRequested', 'verificationEndDate', 'totalEligible', 'verification', 'delete'];
   dataSource: MatTableDataSource<ProjectReportSummaryDTO> = new MatTableDataSource([]);
 
   data$: Observable<{
@@ -56,7 +57,7 @@ export class ProjectReportComponent {
       pageStore.projectReports$,
       pageStore.userCanEditReport$
     ]).pipe(
-      tap(([projectReports, isEditable]) => this.dataSource.data = projectReports.content),
+      tap(([projectReports, _]) => this.dataSource.data = projectReports.content),
       map(([projectReports, isEditable]) => ({
         projectReports,
         canEditReports: isEditable,
@@ -65,7 +66,7 @@ export class ProjectReportComponent {
     );
   }
 
-  private showErrorMessage(error: APIError): Observable<null> {
+  showErrorMessage(error: APIError): Observable<null> {
     this.error$.next(error);
     setTimeout(() => {
       this.error$.next(null);
