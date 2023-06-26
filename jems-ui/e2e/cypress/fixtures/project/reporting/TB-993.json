@@ -1,0 +1,238 @@
+{
+  "partnerCollaborator": [
+    {
+      "userEmail": "applicant.user@jems.eu",
+      "level": "EDIT"
+    }
+  ],
+  "expenditures": [
+    {
+      "costCategoryInFile": "Travel and accommodation",
+      "costCategory": "TravelAndAccommodationCosts",
+      "internalReferenceNumber": "1",
+      "invoiceNumber": "i.1",
+      "invoiceDate": "2022-12-01",
+      "dateOfPayment": "2022-12-02",
+      "description": [
+        {
+          "translation": "API generated expenditure 1 description DE",
+          "language": "DE"
+        }, {
+          "translation": "API generated expenditure 1 description EN",
+          "language": "EN"
+        }
+      ],
+      "comment": [
+        {
+          "translation": "API generated expenditure 1 comment DE",
+          "language": "DE"
+        }, {
+          "translation": "API generated expenditure 1 comment EN",
+          "language": "EN"
+        }
+      ],
+      "totalValueInvoice": 123,
+      "vat": 3,
+      "numberOfUnits": 0,
+      "pricePerUnit": 0,
+      "declaredAmount": 200.16,
+      "currencyCode": "EUR",
+      "currencyConversionRate": 1,
+      "declaredAmountInEur": 200.16
+    },
+    {
+      "costCategoryInFile": "External expertise and services",
+      "costCategory": "ExternalCosts",
+      "internalReferenceNumber": "2",
+      "invoiceNumber": "i.2",
+      "investmentId": 10,
+      "contractId": "",
+      "invoiceDate": "2022-12-02",
+      "dateOfPayment": "2022-12-09",
+      "description": [
+        {
+          "translation": "API generated expenditure 2 description DE",
+          "language": "DE"
+        }, {
+          "translation": "API generated expenditure 2 description EN",
+          "language": "EN"
+        }
+      ],
+      "comment": [
+        {
+          "translation": "API generated expenditure 2 comment DE",
+          "language": "DE"
+        }, {
+          "translation": "API generated expenditure 2 comment EN",
+          "language": "EN"
+        }
+      ],
+      "totalValueInvoice": 555.55,
+      "vat": 55.55,
+      "numberOfUnits": 0,
+      "pricePerUnit": 0,
+      "declaredAmount": 187.33,
+      "currencyCode": "EUR",
+      "currencyConversionRate": 1,
+      "declaredAmountInEur": 187.33
+    },
+    {
+      "costCategoryInFile": "Equipment",
+      "costCategory": "EquipmentCosts",
+      "internalReferenceNumber": "3",
+      "invoiceNumber": "i.3",
+      "investmentId": 10,
+      "contractId": "",
+      "invoiceDate": "2022-12-03",
+      "dateOfPayment": "2022-12-16",
+      "description": [
+        {
+          "translation": "API generated expenditure 3 description DE",
+          "language": "DE"
+        }, {
+          "translation": "API generated expenditure 3 description EN",
+          "language": "EN"
+        }
+      ],
+      "comment": [
+        {
+          "translation": "API generated expenditure 3 comment DE",
+          "language": "DE"
+        }, {
+          "translation": "API generated expenditure 3 comment EN",
+          "language": "EN"
+        }
+      ],
+      "totalValueInvoice": 870.99,
+      "vat": 10.99,
+      "numberOfUnits": 0,
+      "pricePerUnit": 0,
+      "declaredAmount": 555.55,
+      "currencyCode": "EUR",
+      "currencyConversionRate": 1,
+      "declaredAmountInEur": 555.55
+    },
+    {
+      "costCategoryInFile": "Infrastructure and works",
+      "costCategory": "InfrastructureCosts",
+      "internalReferenceNumber": "4",
+      "invoiceNumber": "i.4",
+      "investmentId": 10,
+      "contractId": "",
+      "invoiceDate": "2022-12-31",
+      "dateOfPayment": "2022-12-23",
+      "description": [
+        {
+          "translation": "API generated expenditure 4 description DE",
+          "language": "DE"
+        }, {
+          "translation": "API generated expenditure 4 description EN",
+          "language": "EN"
+        }
+      ],
+      "comment": [
+        {
+          "translation": "API generated expenditure 4 comment DE",
+          "language": "DE"
+        }, {
+          "translation": "API generated expenditure 4 comment EN",
+          "language": "EN"
+        }
+      ],
+      "totalValueInvoice": 50,
+      "vat": 1,
+      "numberOfUnits": 0,
+      "pricePerUnit": 0,
+      "declaredAmount": 1234.8,
+      "currencyCode": "EUR",
+      "currencyConversionRate": 1,
+      "declaredAmountInEur": 1234.8
+    },
+    {
+      "costCategoryInFile": "Travel and accommodation",
+      "costCategory": "TravelAndAccommodationCosts",
+      "internalReferenceNumber": null,
+      "invoiceNumber": null,
+      "reportOfOriginNumber": null,
+      "originalExpenditureNumber": null,
+      "costGDPR": "",
+      "investmentId": null,
+      "contractId": null,
+      "invoiceDate": null,
+      "dateOfPayment": null,
+      "description": [
+        {
+          "translation": "test description DE",
+          "language": "DE"
+        }, {
+          "translation": "test description EN",
+          "language": "EN"
+        }
+      ],
+      "comment": [
+        {
+          "translation": "test comment DE",
+          "language": "DE"
+        }, {
+          "translation": "test comment EN",
+          "language": "EN"
+        }
+      ],
+      "totalValueInvoice": null,
+      "vat": null,
+      "numberOfUnits": 1,
+      "pricePerUnit": 4321.99,
+      "declaredAmount": 4321.99,
+      "currencyCode": "EUR",
+      "currencyConversionRate": 1,
+      "declaredAmountInEur": 4321.99,
+      "attachment": null,
+      "lumpSumId": null,
+      "unitCostId": null,
+      "gdpr": ""
+    },
+    {
+      "costCategoryInFile": "Multiple",
+      "costCategory": "Multiple",
+      "internalReferenceNumber": null,
+      "invoiceNumber": null,
+      "reportOfOriginNumber": null,
+      "originalExpenditureNumber": null,
+      "costGDPR": "",
+      "investmentId": null,
+      "contractId": null,
+      "invoiceDate": null,
+      "dateOfPayment": null,
+      "description": [
+        {
+          "translation": "test description DE",
+          "language": "DE"
+        }, {
+          "translation": "test description EN",
+          "language": "EN"
+        }
+      ],
+      "comment": [
+        {
+          "translation": "test comment DE",
+          "language": "DE"
+        }, {
+          "translation": "test comment EN",
+          "language": "EN"
+        }
+      ],
+      "totalValueInvoice": null,
+      "vat": null,
+      "numberOfUnits": 1,
+      "pricePerUnit": 2000,
+      "declaredAmount": 2000,
+      "currencyCode": "EUR",
+      "currencyConversionRate": 1,
+      "declaredAmountInEur": 2000,
+      "attachment": null,
+      "lumpSumId": null,
+      "unitCostId": null,
+      "gdpr": ""
+    }
+  ]
+}
