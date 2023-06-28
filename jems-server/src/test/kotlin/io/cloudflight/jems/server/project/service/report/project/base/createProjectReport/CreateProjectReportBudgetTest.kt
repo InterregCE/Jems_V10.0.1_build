@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.report.project.base.createPro
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
+import io.cloudflight.jems.server.payments.model.regular.contributionMeta.PartnerContributionSplit
 import io.cloudflight.jems.server.payments.service.regular.PaymentRegularPersistence
 import io.cloudflight.jems.server.project.repository.report.project.financialOverview.coFinancing.ProjectReportCertificateCoFinancingPersistenceProvider
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
@@ -131,7 +132,7 @@ internal class CreateProjectReportBudgetTest : UnitTest() {
     )
 
     private val cumulativeFund = ReportCertificateCoFinancingColumn(
-        funds = mapOf(1L to BigDecimal(100), null to BigDecimal.valueOf(184L)),
+        funds = mapOf(1L to BigDecimal(100), null to BigDecimal.valueOf(10L)),
         partnerContribution = BigDecimal.valueOf(24),
         publicContribution = BigDecimal.valueOf(25),
         automaticPublicContribution = BigDecimal.valueOf(26),
@@ -226,6 +227,12 @@ internal class CreateProjectReportBudgetTest : UnitTest() {
         every { partnerBudgetCostsPersistence.getBudgetUnitCosts(setOf(1L), version) } returns budgetUnitCostEntries()
         every { reportCertificateUnitCostPersistence.getUnitCostsCumulative(setOf(1L)) } returns mapOf(Pair(1L, BigDecimal.TEN))
         every { reportInvestmentPersistence.getInvestmentCumulative(setOf(1L)) } returns mapOf(Pair(1L, BigDecimal.TEN))
+        every { paymentPersistence.getContributionsCumulative(30L) } returns PartnerContributionSplit(
+            partnerContribution = BigDecimal.valueOf(24),
+            publicContribution = BigDecimal.valueOf(25),
+            automaticPublicContribution = BigDecimal.valueOf(26),
+            privateContribution = BigDecimal.valueOf(27),
+        )
 
         val result = service.retrieveBudgetDataFor(
             projectId,
@@ -242,10 +249,10 @@ internal class CreateProjectReportBudgetTest : UnitTest() {
         )
 
         assertThat(result.coFinancing.previouslyReportedSum).isEqualTo(BigDecimal(38.33).setScale(2, RoundingMode.HALF_EVEN))
-        assertThat(result.coFinancing.previouslyReportedPartner).isEqualTo(BigDecimal(34.33).setScale(2, RoundingMode.HALF_EVEN))
-        assertThat(result.coFinancing.previouslyReportedPrivate).isEqualTo(BigDecimal(27.00).setScale(2, RoundingMode.HALF_EVEN))
-        assertThat(result.coFinancing.previouslyReportedPublic).isEqualTo(BigDecimal(25.00).setScale(2, RoundingMode.HALF_EVEN))
-        assertThat(result.coFinancing.previouslyReportedAutoPublic).isEqualTo(BigDecimal(26.00).setScale(2, RoundingMode.HALF_EVEN))
+        assertThat(result.coFinancing.previouslyReportedPartner).isEqualTo(BigDecimal(-179.34).setScale(2, RoundingMode.HALF_EVEN))
+        assertThat(result.coFinancing.previouslyReportedPrivate).isEqualTo(BigDecimal(54))
+        assertThat(result.coFinancing.previouslyReportedPublic).isEqualTo(BigDecimal(50))
+        assertThat(result.coFinancing.previouslyReportedAutoPublic).isEqualTo(BigDecimal(52))
         assertThat(result.coFinancing.totalAutoPublic).isEqualTo(BigDecimal.ZERO)
         assertThat(result.coFinancing.totalPartner).isEqualTo(BigDecimal.ZERO)
         assertThat(result.coFinancing.totalPrivate).isEqualTo(BigDecimal.ZERO)
@@ -256,14 +263,14 @@ internal class CreateProjectReportBudgetTest : UnitTest() {
                 fundId = 1L,
                 percentage = BigDecimal(0),
                 total = BigDecimal(0),
-                previouslyReported = BigDecimal(100).setScale(2, RoundingMode.HALF_EVEN),
+                previouslyReported = BigDecimal(200),
                 previouslyPaid = BigDecimal(0)
             ),
             PreviouslyProjectReportedFund(
                 fundId = null,
                 percentage = BigDecimal(100),
                 total = BigDecimal(0),
-                previouslyReported = BigDecimal(34.33).setScale(2, RoundingMode.HALF_EVEN),
+                previouslyReported = BigDecimal(-65.67).setScale(2, RoundingMode.HALF_EVEN),
                 previouslyPaid = BigDecimal(0)
             )
         )

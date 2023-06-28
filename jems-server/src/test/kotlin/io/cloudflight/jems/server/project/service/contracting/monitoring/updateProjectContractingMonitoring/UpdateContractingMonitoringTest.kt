@@ -364,7 +364,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
                 partnerId = 52L,
                 programmeLumpSumId = 2L,
                 orderNr = 1,
-                partnerContribution = BigDecimal.valueOf(8534L, 2),
+                partnerContribution = BigDecimal.valueOf(8535L, 2),
                 publicContribution = BigDecimal.valueOf(2510L, 2),
                 automaticPublicContribution = BigDecimal.valueOf(2844L, 2),
                 privateContribution = BigDecimal.valueOf(3179L, 2),

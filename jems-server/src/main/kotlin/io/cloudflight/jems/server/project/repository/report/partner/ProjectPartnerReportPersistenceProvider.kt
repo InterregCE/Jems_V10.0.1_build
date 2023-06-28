@@ -115,4 +115,8 @@ class ProjectPartnerReportPersistenceProvider(
     override fun deletePartnerReportById(reportId: Long) {
         partnerReportRepository.deleteById(reportId)
     }
+
+    @Transactional(readOnly = true)
+    override fun getReportStatusById(reportId: Long): ReportStatus =
+        partnerReportRepository.getById(reportId).status
 }

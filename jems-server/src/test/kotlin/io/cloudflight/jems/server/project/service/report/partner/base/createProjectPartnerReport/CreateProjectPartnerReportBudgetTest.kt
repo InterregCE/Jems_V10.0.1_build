@@ -474,7 +474,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
             PreviouslyReportedFund(
                 fund.id, percentage = BigDecimal.valueOf(30),
                 total = BigDecimal.valueOf(570, 2), previouslyReported = BigDecimal.valueOf(1709, 2),
-                previouslyPaid = BigDecimal.valueOf(11), previouslyValidated = BigDecimal.valueOf(141, 1),
+                previouslyPaid = BigDecimal.valueOf(11), previouslyValidated = BigDecimal.valueOf(1719, 2),
                 previouslyReportedParked = BigDecimal.valueOf(14)
             ),
             PreviouslyReportedFund(
@@ -486,7 +486,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
             PreviouslyReportedFund(
                 null, percentage = BigDecimal.valueOf(70),
                 total = BigDecimal.valueOf(1330, 2), previouslyReported = BigDecimal.valueOf(3223, 2),
-                previouslyPaid = BigDecimal.valueOf(0), previouslyValidated = BigDecimal.valueOf(251, 1),
+                previouslyPaid = BigDecimal.valueOf(0), previouslyValidated = BigDecimal.valueOf(3233, 2),
                 previouslyReportedParked = BigDecimal.valueOf(25)
             ),
         ),
@@ -505,11 +505,11 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         previouslyReportedParkedAutoPublic = BigDecimal.valueOf(3),
         previouslyReportedParkedPrivate = BigDecimal.valueOf(4),
         previouslyReportedParkedSum = BigDecimal.valueOf(5),
-        previouslyValidatedPartner = BigDecimal.valueOf(91L, 1),
-        previouslyValidatedPublic = BigDecimal.valueOf(21L, 1),
-        previouslyValidatedAutoPublic = BigDecimal.valueOf(31L, 1),
-        previouslyValidatedPrivate = BigDecimal.valueOf(41L, 1),
-        previouslyValidatedSum = BigDecimal.valueOf(51L, 1),
+        previouslyValidatedPartner = BigDecimal.valueOf(4941L, 2),
+        previouslyValidatedPublic = BigDecimal.valueOf(943L, 2),
+        previouslyValidatedAutoPublic = BigDecimal.valueOf(1343L, 2),
+        previouslyValidatedPrivate = BigDecimal.valueOf(1643L, 2),
+        previouslyValidatedSum = BigDecimal.valueOf(5573L, 2),
     )
 
     private val zeros = BudgetCostsCalculationResultFull(
@@ -661,7 +661,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
                 previouslyReported = BigDecimal.valueOf(21033, 2),
                 previouslyPaid = BigDecimal.valueOf(11),
                 previouslyReportedParked = BigDecimal.TEN,
-                previouslyValidated = BigDecimal.valueOf(10)
+                previouslyValidated = BigDecimal.valueOf(20.33)
             ),
         )
         assertThat(result.unitCosts.map { it.unitCostId }).containsExactlyInAnyOrder(4, 5, 6, 7, 8, 9, 10)
@@ -729,7 +729,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
                             total = BigDecimal.ZERO,
                             previouslyReported = BigDecimal.valueOf(723, 2),
                             previouslyReportedParked = BigDecimal.ZERO,
-                            previouslyValidated = BigDecimal.ZERO,
+                            previouslyValidated = BigDecimal.valueOf(7.23),
                             previouslyPaid = BigDecimal.ZERO,
                         ),
                     ),

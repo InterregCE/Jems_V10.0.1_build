@@ -20,9 +20,9 @@ import {ProjectStore} from '@project/project-application/containers/project-appl
 import {
   ProjectReportDetailPageStore
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-detail-page-store.service';
-import CategoryEnum = ProjectPartnerReportUnitCostDTO.CategoryEnum;
 import {ProgrammeUnitCost} from '@project/model/programmeUnitCost';
-import {BudgetCostCategoryEnumUtils} from '@project/model/lump-sums/BudgetCostCategoryEnum';
+import {BudgetCostCategoryEnum, BudgetCostCategoryEnumUtils} from '@project/model/lump-sums/BudgetCostCategoryEnum';
+import CategoryEnum = ProjectPartnerReportUnitCostDTO.CategoryEnum;
 
 @Injectable({providedIn: 'root'})
 export class ProjectReportFinancialOverviewStoreService {
@@ -122,7 +122,6 @@ export class ProjectReportFinancialOverviewStoreService {
       this.projectStore.projectCall$,
       this.projectStore.projectId$,
       this.projectReportDetailPageStore.projectReportId$,
-
     ])
       .pipe(
         filter(([call, partnerId, reportId]) => partnerId != null && reportId != null),
@@ -135,13 +134,20 @@ export class ProjectReportFinancialOverviewStoreService {
         map(([allowedRealCosts, flatRates, lumpSumsFromCall, unitCosts]) => {
           const setting = new Map<ProjectPartnerReportUnitCostDTO.CategoryEnum | 'LumpSum' | 'UnitCost', boolean>();
 
-          setting.set(CategoryEnum.StaffCosts, allowedRealCosts.allowRealStaffCosts || flatRates.staffCostFlatRateSetup != null);
+          setting.set(CategoryEnum.StaffCosts,
+            allowedRealCosts.allowRealStaffCosts || flatRates.staffCostFlatRateSetup != null
+            || this.anySingleCostCategory(unitCosts, BudgetCostCategoryEnum.STAFF_COSTS));
           setting.set(CategoryEnum.OfficeAndAdministrationCosts,
             flatRates.officeAndAdministrationOnStaffCostsFlatRateSetup != null || flatRates.officeAndAdministrationOnDirectCostsFlatRateSetup != null);
-          setting.set(CategoryEnum.TravelAndAccommodationCosts, allowedRealCosts.allowRealTravelAndAccommodationCosts || flatRates.travelAndAccommodationOnStaffCostsFlatRateSetup != null);
-          setting.set(CategoryEnum.ExternalCosts, allowedRealCosts.allowRealExternalExpertiseAndServicesCosts);
-          setting.set(CategoryEnum.EquipmentCosts, allowedRealCosts.allowRealEquipmentCosts);
-          setting.set(CategoryEnum.InfrastructureCosts, allowedRealCosts.allowRealInfrastructureCosts);
+          setting.set(CategoryEnum.TravelAndAccommodationCosts,
+            allowedRealCosts.allowRealTravelAndAccommodationCosts || flatRates.travelAndAccommodationOnStaffCostsFlatRateSetup != null
+            || this.anySingleCostCategory(unitCosts, BudgetCostCategoryEnum.TRAVEL_AND_ACCOMMODATION_COSTS));
+          setting.set(CategoryEnum.ExternalCosts,
+            allowedRealCosts.allowRealExternalExpertiseAndServicesCosts || this.anySingleCostCategory(unitCosts, BudgetCostCategoryEnum.EXTERNAL_COSTS));
+          setting.set(CategoryEnum.EquipmentCosts,
+            allowedRealCosts.allowRealEquipmentCosts || this.anySingleCostCategory(unitCosts, BudgetCostCategoryEnum.EQUIPMENT_COSTS));
+          setting.set(CategoryEnum.InfrastructureCosts,
+            allowedRealCosts.allowRealInfrastructureCosts || this.anySingleCostCategory(unitCosts, BudgetCostCategoryEnum.INFRASTRUCTURE_COSTS));
           setting.set(CategoryEnum.Multiple, flatRates.otherCostsOnStaffCostsFlatRateSetup != null);
           setting.set('LumpSum', !!lumpSumsFromCall.length);
           setting.set('UnitCost', !!unitCosts?.find(cost => !cost.isOneCostCategory));
@@ -150,6 +156,10 @@ export class ProjectReportFinancialOverviewStoreService {
         }),
         tap(data => Log.info('Fetched call budget visibility settings', this, data)),
       );
+  }
+
+  private anySingleCostCategory(unitCosts: Array<ProgrammeUnitCost>, costCategory: BudgetCostCategoryEnum) {
+    return unitCosts.some(unitCost => unitCost.isOneCostCategory && unitCost.categories.includes(costCategory))
   }
 
   private perCostCategory(): Observable<CertificateCostCategoryBreakdownDTO> {

@@ -5,6 +5,8 @@ import io.cloudflight.jems.server.currency.service.model.CurrencyConversion
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCostOld
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCurrencyRateChange
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportParkedExpenditure
+import org.springframework.data.domain.Page
 import java.math.BigDecimal
 
 fun List<ProjectPartnerReportExpenditureCost>.fillCurrencyRates(rates: Map<String, CurrencyConversion>) = map {
@@ -53,6 +55,11 @@ fun List<ProjectPartnerReportExpenditureCost>.anonymizeSensitiveDataIf(canNotWor
     }
 }
 
+fun Page<ProjectPartnerReportParkedExpenditure>.anonymizeSensitiveDataIf(canNotWorkWithSensitive: Boolean) {
+    if (canNotWorkWithSensitive) {
+        this.content.onEach { it.expenditure.anonymizeIfSensitive() }
+    }
+}
 fun ProjectPartnerReportExpenditureCost.asOld() = ProjectPartnerReportExpenditureCostOld(
     id = id!!,
     number = number,

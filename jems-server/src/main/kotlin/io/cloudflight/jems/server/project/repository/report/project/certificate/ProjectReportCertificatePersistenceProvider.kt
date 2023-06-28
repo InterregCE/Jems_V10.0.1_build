@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.project.repository.report.partner.toIdentifica
 import io.cloudflight.jems.server.project.repository.report.partner.toSubmissionSummary
 import io.cloudflight.jems.server.project.repository.report.project.base.ProjectReportRepository
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.certificate.PartnerReportCertificate
 import io.cloudflight.jems.server.project.service.report.model.project.identification.ProjectPartnerReportIdentificationSummary
 import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence

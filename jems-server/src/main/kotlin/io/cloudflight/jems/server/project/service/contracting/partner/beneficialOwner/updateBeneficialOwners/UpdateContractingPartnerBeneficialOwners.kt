@@ -19,7 +19,7 @@ class UpdateContractingPartnerBeneficialOwners(
     companion object {
         const val MAX_NUM_BENEFICIAL_OWNERS = 10
         const val MAX_NAME_LENGTH = 50
-        const val MAX_VAT_LENGTH = 30
+        const val MAX_VAT_LENGTH = 50
     }
 
     @CanUpdateProjectContractingPartner

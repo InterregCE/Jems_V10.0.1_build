@@ -23,4 +23,16 @@ interface PaymentContributionMetaRepository: JpaRepository<PaymentContributionMe
     """)
     fun getContributionCumulative(partnerId: Long): PartnerContributionSplit
 
+    @Query("""
+        SELECT new io.cloudflight.jems.server.payments.model.regular.contributionMeta.PartnerContributionSplit(
+            COALESCE(SUM(pcm.partnerContribution), 0),
+            COALESCE(SUM(pcm.publicContribution), 0),
+            COALESCE(SUM(pcm.automaticPublicContribution), 0),
+            COALESCE(SUM(pcm.privateContribution), 0)
+        )
+        FROM #{#entityName} pcm
+        WHERE pcm.projectId = :projectId
+    """)
+    fun getContributionCumulativePerProject(projectId: Long): PartnerContributionSplit
+
 }

@@ -132,13 +132,15 @@ fun BigDecimal.applyPercentage(percentage: BigDecimal, roundingMode: RoundingMod
 
 fun getCurrentFrom(input: ReportExpenditureCoFinancingCalculationInput): ReportExpenditureCoFinancingColumn {
     with(input) {
-        val partnerContrib = currentTotal.applyPercentage(partnerContributionPercentage)
+        val funds = fundsPercentages.mapValues { fundPercentage -> currentTotal.applyPercentage(fundPercentage.value) }
+        val fundsTotal = funds.values.sumOf { it }
+        val partnerContrib = currentTotal.minus(fundsTotal)
 
         return ReportExpenditureCoFinancingColumn(
             // main funds + partner contribution
             funds = fundsPercentages.mapValues { fundPercentage -> currentTotal.applyPercentage(fundPercentage.value) }
                 .plus(Pair(null, partnerContrib)),
-            partnerContribution = currentTotal.applyPercentage(partnerContributionPercentage),
+            partnerContribution = partnerContrib,
             publicContribution = currentTotal.applyPercentage(publicPercentage),
             automaticPublicContribution = currentTotal.applyPercentage(automaticPublicPercentage),
             privateContribution = currentTotal.applyPercentage(privatePercentage),

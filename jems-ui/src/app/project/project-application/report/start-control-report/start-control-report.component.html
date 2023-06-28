@@ -8,7 +8,6 @@
         </jems-pending-button>
         <button jemsText *ngIf="ReportUtil.isControlReportExists(reportStatus)"
                 mat-stroked-button type="submit" class="ml-1"
-                [disabled]="ReportUtil.isControlReportOpen(reportStatus) && !data.isController"
                 (click)="redirectToControl(reportId, data.isController)">
             {{'project.application.partner.reports.open.control' | translate}}
         </button>
