@@ -109,9 +109,9 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
             funds = mapOf(
                 29L to BigDecimal.valueOf(5174, 2),
                 35L to BigDecimal.valueOf(23380, 2),
-                null to BigDecimal.valueOf(8486, 2),
+                null to BigDecimal.valueOf(8487, 2),
             ),
-            partnerContribution = BigDecimal.valueOf(8486, 2),
+            partnerContribution = BigDecimal.valueOf(8487, 2),
             publicContribution = BigDecimal.valueOf(2222, 2),
             automaticPublicContribution = BigDecimal.valueOf(2963, 2),
             privateContribution = BigDecimal.valueOf(3704, 2),
@@ -122,9 +122,9 @@ internal class FinalizeControlPartnerReportTest : UnitTest() {
             funds = mapOf(
                 29L to BigDecimal.valueOf(139, 2),
                 35L to BigDecimal.valueOf(631, 2),
-                null to BigDecimal.valueOf(229, 2),
+                null to BigDecimal.valueOf(230, 2),
             ),
-            partnerContribution = BigDecimal.valueOf(229, 2),
+            partnerContribution = BigDecimal.valueOf(230, 2),
             publicContribution = BigDecimal.valueOf(60, 2),
             automaticPublicContribution = BigDecimal.valueOf(80, 2),
             privateContribution = BigDecimal.valueOf(100, 2),

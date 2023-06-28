@@ -141,14 +141,20 @@ export class PartnerReportFinancialOverviewStoreService {
         map(([allowedRealCosts, flatRates, lumpSums, lumpSumsFromCall, unitCosts]) => {
           const setting = new Map<ProjectPartnerReportUnitCostDTO.CategoryEnum | 'LumpSum' | 'UnitCost', boolean>();
 
-          setting.set(CategoryEnum.StaffCosts, allowedRealCosts.allowRealStaffCosts || flatRates.staffCostFlatRateSetup != null);
+          setting.set(CategoryEnum.StaffCosts,
+            allowedRealCosts.allowRealStaffCosts || flatRates.staffCostFlatRateSetup != null || this.anySingleCostCategory(unitCosts, CategoryEnum.StaffCosts));
           setting.set(CategoryEnum.OfficeAndAdministrationCosts,
             flatRates.officeAndAdministrationOnStaffCostsFlatRateSetup != null || flatRates.officeAndAdministrationOnDirectCostsFlatRateSetup != null);
-          setting.set(CategoryEnum.TravelAndAccommodationCosts, allowedRealCosts.allowRealTravelAndAccommodationCosts || flatRates.travelAndAccommodationOnStaffCostsFlatRateSetup != null);
-          setting.set(CategoryEnum.ExternalCosts, allowedRealCosts.allowRealExternalExpertiseAndServicesCosts);
-          setting.set(CategoryEnum.EquipmentCosts, allowedRealCosts.allowRealEquipmentCosts);
-          setting.set(CategoryEnum.InfrastructureCosts, allowedRealCosts.allowRealInfrastructureCosts);
-          setting.set(CategoryEnum.Multiple, flatRates.otherCostsOnStaffCostsFlatRateSetup != null);
+          setting.set(CategoryEnum.TravelAndAccommodationCosts,
+            allowedRealCosts.allowRealTravelAndAccommodationCosts || flatRates.travelAndAccommodationOnStaffCostsFlatRateSetup != null || this.anySingleCostCategory(unitCosts, CategoryEnum.TravelAndAccommodationCosts));
+          setting.set(CategoryEnum.ExternalCosts,
+            allowedRealCosts.allowRealExternalExpertiseAndServicesCosts || this.anySingleCostCategory(unitCosts, CategoryEnum.ExternalCosts));
+          setting.set(CategoryEnum.EquipmentCosts,
+            allowedRealCosts.allowRealEquipmentCosts || this.anySingleCostCategory(unitCosts, CategoryEnum.EquipmentCosts));
+          setting.set(CategoryEnum.InfrastructureCosts,
+            allowedRealCosts.allowRealInfrastructureCosts || this.anySingleCostCategory(unitCosts, CategoryEnum.InfrastructureCosts));
+          setting.set(CategoryEnum.Multiple,
+            flatRates.otherCostsOnStaffCostsFlatRateSetup != null);
           setting.set('LumpSum', !!lumpSums.length || !!lumpSumsFromCall.length);
           setting.set('UnitCost', !!unitCosts.length);
 
@@ -158,6 +164,9 @@ export class PartnerReportFinancialOverviewStoreService {
       );
   }
 
+  private anySingleCostCategory(unitCosts: Array<ProjectPartnerReportUnitCostDTO>, costCategory: CategoryEnum): boolean {
+    return unitCosts.some(unitCost => unitCost.category === costCategory);
+  }
 }
 
 export interface CostCategory {

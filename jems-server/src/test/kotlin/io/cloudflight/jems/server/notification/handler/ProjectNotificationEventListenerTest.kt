@@ -63,6 +63,7 @@ class ProjectNotificationEventListenerTest : UnitTest() {
             Arguments.of(ApplicationStatus.CONTRACTED, ApplicationStatus.IN_MODIFICATION, NotificationType.ProjectInModification),
             Arguments.of(ApplicationStatus.APPROVED, ApplicationStatus.MODIFICATION_PRECONTRACTING, NotificationType.ProjectInModification),
             Arguments.of(ApplicationStatus.IN_MODIFICATION, ApplicationStatus.MODIFICATION_SUBMITTED, NotificationType.ProjectModificationSubmitted),
+            Arguments.of(ApplicationStatus.CONDITIONS_SUBMITTED, ApplicationStatus.APPROVED, NotificationType.ProjectApproved),
             Arguments.of(ApplicationStatus.MODIFICATION_PRECONTRACTING, ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED, NotificationType.ProjectModificationSubmitted),
             Arguments.of(ApplicationStatus.MODIFICATION_SUBMITTED, ApplicationStatus.CONTRACTED, NotificationType.ProjectModificationApproved),
             Arguments.of(ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED, ApplicationStatus.APPROVED, NotificationType.ProjectModificationApproved),

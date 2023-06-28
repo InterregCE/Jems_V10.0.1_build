@@ -10,7 +10,6 @@ import io.cloudflight.jems.server.project.service.report.model.project.certifica
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import java.time.ZonedDateTime
-import java.util.stream.Stream
 
 interface ProjectPartnerReportPersistence {
 
@@ -57,4 +56,5 @@ interface ProjectPartnerReportPersistence {
 
     fun deletePartnerReportById(reportId: Long)
 
+    fun getReportStatusById(reportId: Long): ReportStatus
 }

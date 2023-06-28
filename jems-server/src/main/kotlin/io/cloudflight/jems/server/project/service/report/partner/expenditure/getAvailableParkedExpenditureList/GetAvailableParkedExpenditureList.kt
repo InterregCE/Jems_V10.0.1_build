@@ -8,8 +8,10 @@ import io.cloudflight.jems.server.project.service.report.model.partner.expenditu
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportParkedExpenditure
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportUnitCost
+import io.cloudflight.jems.server.project.service.report.partner.SensitiveDataAuthorizationService
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.PartnerReportParkedExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.anonymizeSensitiveDataIf
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional
 class GetAvailableParkedExpenditureList(
     private val reportExpenditurePersistence: ProjectPartnerReportExpenditurePersistence,
     private val reportParkedExpenditurePersistence: PartnerReportParkedExpenditurePersistence,
+    private val sensitiveDataAuthorization: SensitiveDataAuthorizationService
 ) : GetAvailableParkedExpenditureListInteractor {
 
     @CanViewPartnerReport
@@ -39,6 +42,8 @@ class GetAvailableParkedExpenditureList(
             ids = parkedExpendituresById.keys,
             pageable = pageable,
         )
+
+        result.anonymizeSensitiveDataIf(canNotWorkWithSensitive = !sensitiveDataAuthorization.canViewPartnerSensitiveData(partnerId))
 
         return result
             .fillInParkingData(parkedExpendituresById)

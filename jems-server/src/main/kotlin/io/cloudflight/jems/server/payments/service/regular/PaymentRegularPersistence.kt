@@ -11,6 +11,7 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentPerPartner
 import io.cloudflight.jems.server.payments.model.regular.PaymentToCreate
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
 import io.cloudflight.jems.server.payments.model.regular.contributionMeta.ContributionMeta
+import io.cloudflight.jems.server.payments.model.regular.contributionMeta.PartnerContributionSplit
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -59,5 +60,7 @@ interface PaymentRegularPersistence {
     fun deleteContributionsWhenReadyForPaymentReverted(projectId: Long, orderNrs: Set<Int>)
 
     fun getCoFinancingAndContributionsCumulative(partnerId: Long): ReportExpenditureCoFinancingColumn
+
+    fun getContributionsCumulative(projectId: Long): PartnerContributionSplit
 
 }

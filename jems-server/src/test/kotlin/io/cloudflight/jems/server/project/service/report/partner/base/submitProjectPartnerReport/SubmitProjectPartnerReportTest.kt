@@ -239,9 +239,9 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             funds = mapOf(
                 29L to BigDecimal.valueOf(516L, 2),
                 35L to BigDecimal.valueOf(2335L, 2),
-                null to BigDecimal.valueOf(847L, 2),
+                null to BigDecimal.valueOf(849L, 2),
             ),
-            partnerContribution = BigDecimal.valueOf(847L, 2),
+            partnerContribution = BigDecimal.valueOf(849L, 2),
             publicContribution = BigDecimal.valueOf(222L, 2),
             automaticPublicContribution = BigDecimal.valueOf(296L, 2),
             privateContribution = BigDecimal.valueOf(370L, 2),
@@ -252,9 +252,9 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             funds = mapOf(
                 29L to BigDecimal.valueOf(87L, 2),
                 35L to BigDecimal.valueOf(393L, 2),
-                null to BigDecimal.valueOf(142L, 2),
+                null to BigDecimal.valueOf(143L, 2),
             ),
-            partnerContribution = BigDecimal.valueOf(142L, 2),
+            partnerContribution = BigDecimal.valueOf(143L, 2),
             publicContribution = BigDecimal.valueOf(37L, 2),
             automaticPublicContribution = BigDecimal.valueOf(49L, 2),
             privateContribution = BigDecimal.valueOf(62L, 2),

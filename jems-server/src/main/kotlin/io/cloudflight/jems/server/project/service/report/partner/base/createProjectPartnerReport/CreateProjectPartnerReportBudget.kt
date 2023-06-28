@@ -245,8 +245,10 @@ class CreateProjectPartnerReportBudget(
         val lumpSumPartnerShare = it.lumpSumContributions.firstOrNull { it.partnerId == partnerId }?.amount ?: ZERO
 
         var fromPrevious = previouslyReported.get(it.orderNr)?.current ?: ZERO
+        var previouslyValidatedSum =  previouslyValidated.get(it.orderNr) ?: ZERO
         if (it.isReady()) {
             fromPrevious += lumpSumPartnerShare
+            previouslyValidatedSum += lumpSumPartnerShare
         }
 
         PartnerReportLumpSum(
@@ -256,7 +258,7 @@ class CreateProjectPartnerReportBudget(
             total = lumpSumPartnerShare,
             previouslyReported = fromPrevious,
             previouslyReportedParked = previouslyReported.get(it.orderNr)?.currentParked ?: ZERO,
-            previouslyValidated = previouslyValidated.get(it.orderNr) ?: ZERO,
+            previouslyValidated = previouslyValidatedSum,
             previouslyPaid = previouslyPaid.get(it.programmeLumpSumId)?.get(it.orderNr) ?: ZERO,
         )
     }
@@ -447,6 +449,10 @@ class CreateProjectPartnerReportBudget(
             previouslyReported = previouslyReported.copy(
                 lumpSum = previouslyReported.lumpSum.plus(paymentReadyFastTrackLumpSums),
                 sum = previouslyReported.sum.plus(paymentReadyFastTrackLumpSums)
+            ),
+            previouslyValidated = previouslyValidated.copy(
+                lumpSum = previouslyValidated.lumpSum.plus(paymentReadyFastTrackLumpSums),
+                sum = previouslyValidated.sum.plus(paymentReadyFastTrackLumpSums)
             )
         )
     }
@@ -459,12 +465,20 @@ class CreateProjectPartnerReportBudget(
             previouslyReportedAutoPublic = previouslyReportedAutoPublic.plus(paymentLumpSums.automaticPublicContribution),
             previouslyReportedPrivate = previouslyReportedPrivate.plus(paymentLumpSums.privateContribution),
             previouslyReportedSum = previouslyReportedSum.plus(paymentLumpSums.sum),
+
+            previouslyValidatedPartner = previouslyValidatedPartner.plus(paymentLumpSums.partnerContribution),
+            previouslyValidatedPublic = previouslyValidatedPublic.plus(paymentLumpSums.publicContribution),
+            previouslyValidatedAutoPublic = previouslyValidatedAutoPublic.plus(paymentLumpSums.automaticPublicContribution),
+            previouslyValidatedPrivate = previouslyValidatedPrivate.plus(paymentLumpSums.privateContribution),
+            previouslyValidatedSum = previouslyValidatedSum.plus(paymentLumpSums.sum)
         )
     }
 
     private fun List<PreviouslyReportedFund>.mergeWith(otherFundSums: Map<Long?, BigDecimal>) = map { previouslyReportedFund ->
         previouslyReportedFund.copy(
             previouslyReported = previouslyReportedFund.previouslyReported
+                .plus(otherFundSums.getOrDefault(previouslyReportedFund.fundId, ZERO)),
+            previouslyValidated = previouslyReportedFund.previouslyValidated
                 .plus(otherFundSums.getOrDefault(previouslyReportedFund.fundId, ZERO))
         )
     }

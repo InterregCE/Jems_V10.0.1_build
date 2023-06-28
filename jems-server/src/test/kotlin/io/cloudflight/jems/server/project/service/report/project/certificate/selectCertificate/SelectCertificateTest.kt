@@ -1,7 +1,10 @@
 package io.cloudflight.jems.server.project.service.report.project.certificate.selectCertificate
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
 import io.mockk.clearMocks
@@ -19,22 +22,27 @@ internal class SelectCertificateTest : UnitTest() {
     private lateinit var projectReportPersistence: ProjectReportPersistence
     @MockK
     private lateinit var projectReportCertificatePersistence: ProjectReportCertificatePersistence
+    @MockK
+    private lateinit var projectPartnerReportPersistence: ProjectPartnerReportPersistence
 
     @InjectMockKs
     lateinit var interactor: SelectCertificate
 
     @BeforeEach
     fun reset() {
-        clearMocks(projectReportPersistence, projectReportCertificatePersistence)
+        clearMocks(projectReportPersistence, projectReportCertificatePersistence, projectPartnerReportPersistence)
     }
 
     @Test
     fun selectCertificate() {
         val report = mockk<ProjectReportModel>()
         every { report.id } returns 497L
+        every { report.type } returns ContractingDeadlineType.Finance
         every { projectReportPersistence.getReportById(projectId = 1L, reportId = 497L) } returns report
 
         every { projectReportCertificatePersistence.selectCertificate(projectReportId = 497L, certificateId = 22L) } answers { }
+
+        every { projectPartnerReportPersistence.getReportStatusById(reportId = 22L) } returns ReportStatus.Certified
 
         interactor.selectCertificate(projectId = 1L, reportId = 497L, certificateId = 22L)
         verify(exactly = 1) { projectReportCertificatePersistence.selectCertificate(projectReportId = 497L, certificateId = 22L) }

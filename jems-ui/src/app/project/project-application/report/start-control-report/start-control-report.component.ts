@@ -51,10 +51,10 @@ export class StartControlReportComponent {
       pageStore.userCanViewReport$,
       pageStore.userCanEditReport$
     ]).pipe(
-      map(([partnerId, institutionView, institutionEdit, projectView, projectEdit]) => ({
+      map(([partnerId, institutionView, institutionEdit, reportView, reportEdit]) => ({
         partnerId,
         isController: institutionView || institutionEdit,
-        canView: (institutionView || institutionEdit) || projectView || projectEdit,
+        canView: (institutionView || institutionEdit) || reportView || reportEdit,
         canEdit: institutionEdit
       })),
     );

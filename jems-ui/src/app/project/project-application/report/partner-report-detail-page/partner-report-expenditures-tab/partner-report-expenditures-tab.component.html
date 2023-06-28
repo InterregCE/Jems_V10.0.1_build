@@ -129,7 +129,9 @@
                                                 [matTooltip]="costCategorySelect.triggerValue"
                                                 [placeholder]="'project.application.partner.report.expenditures.cost.category.placeholder' | translate">
                                         <mat-option *ngIf="isCostOptionSelectedInCurrentFormGroup(i)"
-                                                [value]="CostCategoryEnum.Multiple">{{'project.application.partner.report.expenditures.cost.category.Multiple' | translate}}</mat-option>
+                                                [value]="control.get(constants.FORM_CONTROL_NAMES.costCategory).value">
+                                            {{'project.application.partner.report.expenditures.cost.category.' + control.get(constants.FORM_CONTROL_NAMES.costCategory).value | translate}}
+                                        </mat-option>
                                         <mat-option *ngFor="let costCategory of data.costCategories"
                                                     [value]="costCategory">
                                             {{ ('project.application.partner.report.expenditures.cost.category.' + costCategory) | translate}}

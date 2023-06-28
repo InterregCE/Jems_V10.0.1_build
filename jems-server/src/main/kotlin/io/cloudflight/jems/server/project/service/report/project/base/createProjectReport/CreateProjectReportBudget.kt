@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service.report.project.base.createPro
 
 import io.cloudflight.jems.server.payments.service.regular.PaymentRegularPersistence
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
+import io.cloudflight.jems.server.payments.model.regular.contributionMeta.PartnerContributionSplit
 import io.cloudflight.jems.server.project.repository.report.project.financialOverview.coFinancing.ProjectReportCertificateCoFinancingPersistenceProvider
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
 import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_funds.GetPartnerBudgetPerFundService
@@ -23,7 +24,6 @@ import io.cloudflight.jems.server.project.service.report.model.project.base.crea
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.CertificateCostCategoryPreviouslyReported
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
-import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.applyPercentage
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateInvestmentPersistence
@@ -33,7 +33,6 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 import java.math.BigDecimal.ZERO
-import java.math.RoundingMode
 import java.util.LinkedList
 
 @Service
@@ -91,8 +90,10 @@ class CreateProjectReportBudget(
                 .toCreateModel(
                     totalsFromAF = totalsFromAF,
                     total = budget.sumOf { it.totalCosts },
-                    paymentReadyFastTrackLumpSums = sumOfPaymentReady,
+                    paymentReadyFastTrackLumpSums = installmentsPaid.approvedByFund(),
+                    totalPaymentReadyFastTrackLumpSums = sumOfPaymentReady,
                     paymentPaid = installmentsPaid.byFund(),
+                    cumulativeContributionsPreviouslyReported = paymentPersistence.getContributionsCumulative(projectId)
                 ),
             costCategorySetup = costCategorySetup(
                 budget = costCategoryBreakdownFromAF,
@@ -143,8 +144,10 @@ class CreateProjectReportBudget(
     private fun ReportCertificateCoFinancingColumn.toCreateModel(
         totalsFromAF: ProjectPartnerBudgetPerFund,
         total: BigDecimal,
-        paymentReadyFastTrackLumpSums: BigDecimal,
+        paymentReadyFastTrackLumpSums: Map<Long, BigDecimal>,
+        totalPaymentReadyFastTrackLumpSums: BigDecimal,
         paymentPaid: Map<Long, BigDecimal>,
+        cumulativeContributionsPreviouslyReported: PartnerContributionSplit
     ): PreviouslyProjectReportedCoFinancing {
         val totals = totalsFromAF.budgetPerFund.filter{ it.fund !== null }
             .associateBy({ it.fund?.id }, { it.value })
@@ -202,17 +205,14 @@ class CreateProjectReportBudget(
         )
 
         // calculate lump sums values to be added from payments
-        val currentFundsPercentages = currentFunds.associateBy ({it.fundId}, {it.percentage })
-        val partnerContributionPercentage = BigDecimal.valueOf(100).minus(currentFunds.sumOf { it.percentage })
-
+        val partnerContribution = totalPaymentReadyFastTrackLumpSums.minus(paymentReadyFastTrackLumpSums.values.sumOf { it })
         val currentLumpSumValues = ReportCertificateCoFinancingColumn(
-            funds = currentFundsPercentages.mapValues { fundPercentage -> paymentReadyFastTrackLumpSums.applyPercentage(fundPercentage.value) }
-                .plus(Pair(null, paymentReadyFastTrackLumpSums.applyPercentage(partnerContributionPercentage))),
-            partnerContribution = paymentReadyFastTrackLumpSums.applyPercentage(partnerContributionPercentage),
-            publicContribution = paymentReadyFastTrackLumpSums.applyPercentage(publicTotalAmount.getPercentageOf(total)),
-            automaticPublicContribution = paymentReadyFastTrackLumpSums.applyPercentage(autoPublicTotalAmount.getPercentageOf(total)),
-            privateContribution = paymentReadyFastTrackLumpSums.applyPercentage(privateTotalAmount.getPercentageOf(total)),
-            sum = paymentReadyFastTrackLumpSums
+            funds = paymentReadyFastTrackLumpSums.plus(Pair(null, partnerContribution)),
+            partnerContribution = partnerContribution,
+            publicContribution = cumulativeContributionsPreviouslyReported.publicContribution,
+            automaticPublicContribution = cumulativeContributionsPreviouslyReported.automaticPublicContribution,
+            privateContribution = cumulativeContributionsPreviouslyReported.privateContribution,
+            sum = totalPaymentReadyFastTrackLumpSums
         )
 
         //add one extra fund to generate the partner contribution total
@@ -239,6 +239,10 @@ class CreateProjectReportBudget(
         groupBy { it.fundId }
             .mapValues { (_, payments) -> payments.sumOf { it.amountPaidPerFund } }
 
+    private fun List<PaymentToProject>.approvedByFund() =
+        groupBy { it.fundId }
+            .mapValues { (_, payments) -> payments.sumOf { it.amountApprovedPerFund } }
+
     private fun Collection<ProjectLumpSum>.onlyReadyForPayment() = filter { it.isReady() }
 
     private fun Collection<ProjectLumpSum>.sumOfPaymentReady(): BigDecimal =
@@ -264,13 +268,6 @@ class CreateProjectReportBudget(
             previouslyReported = previouslyReportedFund.previouslyReported
                 .plus(otherFundSums.getOrDefault(previouslyReportedFund.fundId, ZERO))
         ) }
-
-    private fun BigDecimal.getPercentageOf(total: BigDecimal) =
-        if (total.compareTo(ZERO) == 0)
-            ZERO
-        else
-            this.multiply(BigDecimal.valueOf(100))
-                .divide(total, 17, RoundingMode.DOWN)
 
     private fun CertificateCostCategoryPreviouslyReported.addExtraPaymentReadyFastTrackLumpSums(
         paymentReadyFastTrackLumpSums: BigDecimal,

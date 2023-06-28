@@ -226,6 +226,10 @@ class PaymentRegularPersistenceProvider(
         )
     }
 
+    @Transactional(readOnly = true)
+    override fun getContributionsCumulative(projectId: Long) =
+        paymentContributionMetaRepository.getContributionCumulativePerProject(projectId)
+
     private fun getUserOrNull(userId: Long?): UserEntity? =
         if (userId != null) {
             userRepository.getById(userId)

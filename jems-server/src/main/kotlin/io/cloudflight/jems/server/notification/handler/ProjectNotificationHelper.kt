@@ -58,6 +58,7 @@ fun ApplicationStatus.toNotificationType(prevStatus: ApplicationStatus): Notific
     this == ApplicationStatus.MODIFICATION_SUBMITTED || this == ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED -> ProjectModificationSubmitted
     this == ApplicationStatus.CONTRACTED && prevStatus == ApplicationStatus.MODIFICATION_SUBMITTED -> ProjectModificationApproved
     this == ApplicationStatus.APPROVED && prevStatus == ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED -> ProjectModificationApproved
+    this == ApplicationStatus.APPROVED && prevStatus == ApplicationStatus.CONDITIONS_SUBMITTED -> ProjectApproved
     this == ApplicationStatus.MODIFICATION_REJECTED -> ProjectModificationRejected
     else -> null
 }.enforceIsProjectNotification()
