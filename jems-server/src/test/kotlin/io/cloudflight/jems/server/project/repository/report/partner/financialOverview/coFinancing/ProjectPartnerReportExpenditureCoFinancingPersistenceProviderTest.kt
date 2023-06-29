@@ -229,8 +229,8 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProviderTest : UnitTe
         )
 
         private val coFinCumulative = ReportExpenditureCoFinancingColumn(
-            funds = mapOf(20L to BigDecimal.valueOf(62L), null to BigDecimal.valueOf(184L)),
-            partnerContribution = BigDecimal.valueOf(24),
+            funds = mapOf(20L to BigDecimal.valueOf(62L), null to BigDecimal.valueOf(-34L)),
+            partnerContribution = BigDecimal.valueOf(-34),
             publicContribution = BigDecimal.valueOf(25),
             automaticPublicContribution = BigDecimal.valueOf(26),
             privateContribution = BigDecimal.valueOf(27),
@@ -238,8 +238,8 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProviderTest : UnitTe
         )
 
         private val coFinParkedCumulative = ReportExpenditureCoFinancingColumn(
-            funds = mapOf(20L to BigDecimal.valueOf(62L), null to BigDecimal.valueOf(184L)),
-            partnerContribution = BigDecimal.valueOf(11),
+            funds = mapOf(20L to BigDecimal.valueOf(62L), null to BigDecimal.valueOf(-47L)),
+            partnerContribution = BigDecimal.valueOf(-47),
             publicContribution = BigDecimal.valueOf(12),
             automaticPublicContribution = BigDecimal.valueOf(13),
             privateContribution = BigDecimal.valueOf(14),
@@ -247,8 +247,8 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProviderTest : UnitTe
         )
 
         private val coFinValidatedCumulative = ReportExpenditureCoFinancingColumn(
-            funds = mapOf(20L to BigDecimal.valueOf(625L, 1), null to BigDecimal.valueOf(1845L, 1)),
-            partnerContribution = BigDecimal.valueOf(34),
+            funds = mapOf(20L to BigDecimal.valueOf(625L, 1), null to BigDecimal.valueOf(-245L, 1)),
+            partnerContribution = BigDecimal.valueOf(-245L, 1),
             publicContribution = BigDecimal.valueOf(35),
             automaticPublicContribution = BigDecimal.valueOf(36),
             privateContribution = BigDecimal.valueOf(37),
