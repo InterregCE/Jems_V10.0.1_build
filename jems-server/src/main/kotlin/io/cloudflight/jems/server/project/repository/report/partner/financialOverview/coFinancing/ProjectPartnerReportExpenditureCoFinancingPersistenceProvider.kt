@@ -30,15 +30,20 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getCoFinancingCumulative(submittedReportIds: Set<Long>, finalizedReportIds: Set<Long>): ExpenditureCoFinancingPrevious {
         val cumulativeByFund = partnerReportCoFinancingRepository.findCumulativeForReportIds(submittedReportIds)
+            .filter { it.reportFundId != null }
             .associateBy { it.reportFundId }
         val cumulativeValidatedByFund = partnerReportCoFinancingRepository.findCumulativeTotalsForReportIds(finalizedReportIds)
+            .filter { it.reportFundId != null }
             .associateBy { it.reportFundId }
+        val fundSumWithoutPartnerContribution = cumulativeByFund.mapValues { it.value.currentSum }.values.sumOf{it}
+        val fundSumWithoutPartnerContributionParked = cumulativeByFund.mapValues { it.value.currentParkedSum }.values.sumOf{it}
+        val fundSumWithoutPartnerContributionValidated = cumulativeValidatedByFund.mapValues { it.value.sum }.values.sumOf{it}
 
         return ExpenditureCoFinancingPrevious(
             previous = with(expenditureCoFinancingRepository.findCumulativeForReportIds(submittedReportIds)) {
                 ReportExpenditureCoFinancingColumn(
-                    funds = cumulativeByFund.mapValues { it.value.currentSum },
-                    partnerContribution = partnerContribution,
+                    funds = cumulativeByFund.mapValues { it.value.currentSum }.plus(Pair(null, sum.minus(fundSumWithoutPartnerContribution))),
+                    partnerContribution = sum.minus(fundSumWithoutPartnerContribution),
                     publicContribution = publicContribution,
                     automaticPublicContribution = automaticPublicContribution,
                     privateContribution = privateContribution,
@@ -47,8 +52,8 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProvider(
             },
             previousParked = with(expenditureCoFinancingRepository.findCumulativeParkedForReportIds(submittedReportIds)) {
                 ReportExpenditureCoFinancingColumn(
-                    funds = cumulativeByFund.mapValues { it.value.currentParkedSum },
-                    partnerContribution = partnerContribution,
+                    funds = cumulativeByFund.mapValues { it.value.currentParkedSum }.plus(Pair(null, sum.minus(fundSumWithoutPartnerContributionParked))),
+                    partnerContribution = sum.minus(fundSumWithoutPartnerContributionParked),
                     publicContribution = publicContribution,
                     automaticPublicContribution = automaticPublicContribution,
                     privateContribution = privateContribution,
@@ -57,8 +62,8 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProvider(
             },
             previousValidated = with(expenditureCoFinancingRepository.findCumulativeTotalsForReportIds(finalizedReportIds)) {
                 ReportExpenditureCoFinancingColumn(
-                    funds = cumulativeValidatedByFund.mapValues { it.value.sum },
-                    partnerContribution = partnerContribution,
+                    funds = cumulativeValidatedByFund.mapValues { it.value.sum }.plus(Pair(null, sum.minus(fundSumWithoutPartnerContributionValidated))),
+                    partnerContribution = sum.minus(fundSumWithoutPartnerContributionValidated),
                     publicContribution = publicContribution,
                     automaticPublicContribution = automaticPublicContribution,
                     privateContribution = privateContribution,
