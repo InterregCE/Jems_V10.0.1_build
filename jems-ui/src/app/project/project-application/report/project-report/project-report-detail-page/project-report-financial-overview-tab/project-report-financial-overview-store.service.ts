@@ -158,8 +158,8 @@ export class ProjectReportFinancialOverviewStoreService {
       );
   }
 
-  private anySingleCostCategory(unitCosts: Array<ProgrammeUnitCost>, costCategory: BudgetCostCategoryEnum) {
-    return unitCosts.some(unitCost => unitCost.isOneCostCategory && unitCost.categories.includes(costCategory))
+  private anySingleCostCategory(unitCosts: ProgrammeUnitCost[], costCategory: BudgetCostCategoryEnum) {
+    return unitCosts.some(unitCost => unitCost.isOneCostCategory && unitCost.categories.includes(costCategory));
   }
 
   private perCostCategory(): Observable<CertificateCostCategoryBreakdownDTO> {

@@ -5,6 +5,7 @@ import io.cloudflight.jems.api.payments.dto.AdvancePaymentDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentDetailDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentSearchRequestDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentUpdateDTO
+import io.cloudflight.jems.api.payments.dto.AdvancePaymentSettlementDTO
 import io.cloudflight.jems.api.payments.dto.PaymentDetailDTO
 import io.cloudflight.jems.api.payments.dto.PaymentPartnerDTO
 import io.cloudflight.jems.api.payments.dto.PaymentPartnerInstallmentDTO
@@ -16,6 +17,7 @@ import io.cloudflight.jems.server.payments.model.advance.AdvancePayment
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSearchRequest
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentUpdate
+import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSettlement
 import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
 import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
@@ -116,7 +118,9 @@ fun AdvancePaymentDetail.toDTO() = AdvancePaymentDetailDTO(
     paymentAuthorizedDate = paymentAuthorizedDate,
     paymentConfirmed = paymentConfirmed,
     paymentConfirmedUser = paymentConfirmedUser,
-    paymentConfirmedDate = paymentConfirmedDate
+    paymentConfirmedDate = paymentConfirmedDate,
+    paymentSettlements = paymentSettlements.map { it.toDto() }
+
 )
 
 private fun idNamePairDtoOrNull(idName: IdNamePair?): IdNamePairDTO? {
@@ -136,7 +140,8 @@ fun AdvancePaymentUpdateDTO.toModel() = AdvancePaymentUpdate(
     paymentDate = paymentDate,
     comment = comment,
     paymentAuthorized = paymentAuthorized,
-    paymentConfirmed = paymentConfirmed
+    paymentConfirmed = paymentConfirmed,
+    paymentSettlements = paymentSettlements.map { it.toModel() }
 )
 
 fun AdvancePayment.toDTO() = AdvancePaymentDTO(
@@ -153,6 +158,22 @@ fun AdvancePayment.toDTO() = AdvancePaymentDTO(
     amountPaid = amountPaid,
     paymentDate = paymentDate,
     amountSettled = amountSettled
+)
+
+fun AdvancePaymentSettlement.toDto() = AdvancePaymentSettlementDTO(
+    id = id,
+    number = number,
+    amountSettled = amountSettled,
+    settlementDate = settlementDate,
+    comment = comment
+)
+
+fun AdvancePaymentSettlementDTO.toModel() = AdvancePaymentSettlement(
+    id = id,
+    number = number,
+    amountSettled = amountSettled,
+    settlementDate = settlementDate,
+    comment = comment
 )
 
 private val mapper = Mappers.getMapper(PaymentMapper::class.java)

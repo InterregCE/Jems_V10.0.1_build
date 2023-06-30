@@ -6,12 +6,13 @@ import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorDefaultImpl
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
+import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
+import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSettlement
+import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentUpdate
 import io.cloudflight.jems.server.payments.service.advance.AdvancePaymentValidator.Companion.PAYMENT_ADVANCE_AUTHORIZE_ERROR_KEY
 import io.cloudflight.jems.server.payments.service.advance.AdvancePaymentValidator.Companion.PAYMENT_ADVANCE_DELETION_ERROR_KEY
 import io.cloudflight.jems.server.payments.service.advance.AdvancePaymentValidator.Companion.PAYMENT_ADVANCE_NO_SOURCE_ERROR_KEY
 import io.cloudflight.jems.server.payments.service.advance.AdvancePaymentValidator.Companion.PAYMENT_ADVANCE_SAVE_ERROR_KEY
-import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
-import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentUpdate
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.mockk.MockKAnnotations
@@ -36,6 +37,14 @@ class AdvancePaymentValidatorTest : UnitTest() {
 
         private val fund = ProgrammeFund(id = 5L, selected = true)
 
+        private val paymentSettlement = AdvancePaymentSettlement(
+            id = 1L,
+            number = 1,
+            amountSettled = BigDecimal(5),
+            settlementDate = currentDate.minusDays(1),
+            comment = "half"
+        )
+
         private val advancePaymentDetail = AdvancePaymentDetail(
             id = paymentId,
             projectId = projectId,
@@ -55,7 +64,8 @@ class AdvancePaymentValidatorTest : UnitTest() {
             paymentAuthorizedDate = currentDate.minusDays(3),
             paymentConfirmed = true,
             paymentConfirmedUser = OutputUser(userId, "random@mail", "name", "surname"),
-            paymentConfirmedDate = currentDate.minusDays(2)
+            paymentConfirmedDate = currentDate.minusDays(2),
+            paymentSettlements = listOf(paymentSettlement)
         )
         private val advancePaymentUpdate = AdvancePaymentUpdate(
             id = paymentId,
@@ -69,7 +79,8 @@ class AdvancePaymentValidatorTest : UnitTest() {
             paymentAuthorizedDate = currentDate.minusDays(3),
             paymentConfirmed = true,
             paymentConfirmedUserId = userId,
-            paymentConfirmedDate = currentDate.minusDays(2)
+            paymentConfirmedDate = currentDate.minusDays(2),
+            paymentSettlements = listOf(paymentSettlement)
         )
     }
 

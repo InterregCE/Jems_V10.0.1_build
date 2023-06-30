@@ -7,8 +7,9 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.call.createTestCallEntity
 import io.cloudflight.jems.server.common.exception.I18nValidationException
-import io.cloudflight.jems.server.payments.service.advance.deleteAdvancePayment.DeleteAdvancePayment
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
+import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSettlement
+import io.cloudflight.jems.server.payments.service.advance.deleteAdvancePayment.DeleteAdvancePayment
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.repository.toSettingsModel
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -75,6 +76,8 @@ class DeleteAdvancePaymentTest: UnitTest() {
             duration = 11
         )
 
+
+
         private val partnerDetail = ProjectPartnerDetail(
             projectId = projectId,
             id = partnerId,
@@ -93,6 +96,14 @@ class DeleteAdvancePaymentTest: UnitTest() {
             vat = "test vat",
             vatRecovery = ProjectPartnerVatRecovery.Yes,
             legalStatusId = 3L
+        )
+
+        private val paymentSettlement = AdvancePaymentSettlement(
+            id = 1L,
+            number = 1,
+            amountSettled = BigDecimal(5),
+            settlementDate = currentDate.minusDays(1),
+            comment = "half"
         )
 
         private val advancePaymentDetail = AdvancePaymentDetail(
@@ -114,7 +125,8 @@ class DeleteAdvancePaymentTest: UnitTest() {
             paymentAuthorizedDate = currentDate.minusDays(3),
             paymentConfirmed = true,
             paymentConfirmedUser = paymentConfirmedUser.toOutputUser(),
-            paymentConfirmedDate = currentDate.minusDays(2)
+            paymentConfirmedDate = currentDate.minusDays(2),
+            paymentSettlements = listOf(paymentSettlement)
         )
     }
 
