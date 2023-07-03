@@ -113,13 +113,21 @@ export class Permission {
           state: PermissionState.EDIT,
           editTooltip: 'permission.inspect.contracting.partner.section',
           children: [
-              {
-                  name: 'project.application.contract.partner.state.aid.section.title',
-                  mode: PermissionMode.HIDDEN_VIEW_EDIT,
-                  viewPermissions: [],
-                  editPermissions: [],
-                  disabled: true,
-                  state: PermissionState.VIEW,
+            {
+              name: 'project.application.contract.partner.section.title',
+              mode: PermissionMode.HIDDEN_VIEW_EDIT,
+              viewPermissions: [],
+              editPermissions: [],
+              disabled: true,
+              state: PermissionState.EDIT,
+            },
+            {
+              name: 'project.application.contract.partner.state.aid.section.title',
+              mode: PermissionMode.HIDDEN_VIEW_EDIT,
+              viewPermissions: [],
+              editPermissions: [],
+              disabled: true,
+              state: PermissionState.VIEW,
             }
           ]
         }
