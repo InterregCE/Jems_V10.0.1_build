@@ -94,3 +94,23 @@ fun controlReportCreated(
             "${if (report.identification.partnerRole.isLead) "LP" else "PP"}${report.identification.partnerNumber}")
         .build()
 )
+
+fun partnerReportStartedVerification(
+    context: Any,
+    projectId: Long,
+    report: ProjectReportSubmissionSummary,
+): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.PROJECT_REPORT_VERIFICATION_ONGOING)
+            .project(
+                projectId = projectId,
+                customIdentifier = report.projectIdentifier,
+                acronym = report.projectAcronym,
+            )
+            .entityRelatedId(entityRelatedId = report.id)
+            .description("[" +
+                    report.projectIdentifier +
+                    "] Project report R.${report.reportNumber} verification ongoing")
+            .build()
+    )

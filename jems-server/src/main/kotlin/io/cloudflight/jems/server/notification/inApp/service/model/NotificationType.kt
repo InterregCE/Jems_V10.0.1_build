@@ -31,7 +31,8 @@ enum class NotificationType {
     PartnerReportReOpenCertified,
 
     // Project Report
-    ProjectReportSubmitted;
+    ProjectReportSubmitted,
+    ProjectReportVerificationOngoing;
 
 
     companion object {
@@ -68,6 +69,7 @@ enum class NotificationType {
 
         val projectReportNotifications = sortedSetOf(
             ProjectReportSubmitted,
+            ProjectReportVerificationOngoing,
         )
     }
 

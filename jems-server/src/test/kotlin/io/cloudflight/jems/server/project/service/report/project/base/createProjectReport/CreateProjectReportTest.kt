@@ -156,6 +156,9 @@ internal class CreateProjectReportTest : UnitTest() {
                 createdAt = ZonedDateTime.now(),
                 firstSubmission = null,
                 verificationDate = null,
+                verificationEndDate = null,
+                amountRequested = BigDecimal.ZERO,
+                totalEligibleAfterVerification = BigDecimal.ZERO
         )
 
         private fun expectedProjectReport(projectId: Long) = ProjectReport(
@@ -404,6 +407,9 @@ internal class CreateProjectReportTest : UnitTest() {
                         createdAt = created,
                         firstSubmission = null,
                         verificationDate = null,
+                        verificationEndDate = null,
+                        amountRequested = BigDecimal.ZERO,
+                        totalEligibleAfterVerification = BigDecimal.ZERO
                 ),
                 reportBudget = ProjectReportBudget(
                         coFinancing = PreviouslyProjectReportedCoFinancing(

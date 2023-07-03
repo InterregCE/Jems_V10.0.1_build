@@ -13,6 +13,7 @@ import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import java.math.BigDecimal
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -48,6 +49,9 @@ internal class GetProjectReportTest : UnitTest() {
             createdAt = NOW,
             firstSubmission = WEEK_AGO,
             verificationDate = NEXT_MONTH,
+            verificationEndDate = NEXT_MONTH,
+            amountRequested = BigDecimal.ZERO,
+            totalEligibleAfterVerification = BigDecimal.ZERO
         )
 
         val period = ProjectPeriod(7, 13, 14)
@@ -87,6 +91,9 @@ internal class GetProjectReportTest : UnitTest() {
             firstSubmission = WEEK_AGO,
             verificationDate = NEXT_MONTH,
             deletable = false,
+            verificationEndDate = NEXT_MONTH,
+            amountRequested = BigDecimal.ZERO,
+            totalEligibleAfterVerification = BigDecimal.ZERO
         )
 
     }

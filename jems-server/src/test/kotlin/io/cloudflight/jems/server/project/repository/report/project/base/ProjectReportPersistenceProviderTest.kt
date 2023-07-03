@@ -8,7 +8,9 @@ import io.cloudflight.jems.server.project.repository.contracting.reporting.Proje
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.project.identification.ProjectReportSpendingProfileRepository
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
+import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportDeadline
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.mockk.clearMocks
@@ -58,6 +60,9 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
             createdAt = LAST_WEEK,
             firstSubmission = LAST_YEAR,
             verificationDate = null,
+            verificationEndDate = null,
+            amountRequested = BigDecimal.ZERO,
+            totalEligibleAfterVerification = BigDecimal.ZERO
         )
 
         private fun report(id: Long, projectId: Long) = ProjectReportModel(
@@ -81,6 +86,9 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
             createdAt = LAST_WEEK,
             firstSubmission = LAST_YEAR,
             verificationDate = null,
+            verificationEndDate = null,
+            amountRequested = BigDecimal.ZERO,
+            totalEligibleAfterVerification = BigDecimal.ZERO
         )
 
         fun report(id: Long, deadlineType: ContractingDeadlineType?, reportType: ContractingDeadlineType?): ProjectReportEntity {
@@ -96,6 +104,18 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
             every { report.type } returns reportType
             return report
         }
+
+        private fun draftReportSubmissionEntity(id: Long, projectId: Long) = ProjectReportSubmissionSummary(
+            id = id,
+            reportNumber = 1,
+            status = ProjectReportStatus.Draft,
+            version = "3.0",
+            firstSubmission = LAST_YEAR,
+            createdAt = LAST_WEEK,
+            projectIdentifier = "projectIdentifier",
+            projectAcronym = "projectAcronym",
+            projectId = projectId
+        )
     }
 
     @MockK
@@ -244,8 +264,7 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
             projectReportRepository.findAllByProjectIdAndStatusInOrderByNumberDesc(
                 projectId, setOf(
                     ProjectReportStatus.Submitted,
-                    ProjectReportStatus.Verified,
-                    ProjectReportStatus.Paid
+                    ProjectReportStatus.InVerification
                 )
             )
         } returns listOf(
@@ -292,6 +311,22 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
 
         verify(exactly = 1) { projectReportRepository.findAllByProjectIdAndNumberGreaterThan(projectId, reportNumber) }
         assertThat(reports.map { it.number }).containsExactly(5, 6, 7)
+    }
+
+    @Test
+    fun startVerificationOnReportById() {
+        val projectId = 3L
+
+        val report = reportEntity(id = 47L, projectId)
+        every { projectReportRepository.getByIdAndProjectId(47L, projectId) } returns report
+
+        val inVerificationReport = persistence.startVerificationOnReportById(projectId, 47L)
+
+        assertThat(inVerificationReport).isEqualTo(
+            draftReportSubmissionEntity(id = 47L, projectId).copy(
+                status = ProjectReportStatus.InVerification,
+            )
+        )
     }
 
 }

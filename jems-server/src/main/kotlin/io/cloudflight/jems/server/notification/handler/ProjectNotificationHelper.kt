@@ -85,6 +85,7 @@ fun NotificationType?.enforceIsPartnerReportNotification() = if (this != null &&
 
 fun ProjectReportStatus.toNotificationType(): NotificationType? = when(this) {
     ProjectReportStatus.Submitted -> ProjectReportSubmitted
+    ProjectReportStatus.InVerification -> NotificationType.ProjectReportVerificationOngoing
     else -> null
 }.enforceIsProjectReportNotification()
 

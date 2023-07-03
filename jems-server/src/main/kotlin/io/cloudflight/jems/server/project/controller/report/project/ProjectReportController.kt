@@ -10,6 +10,7 @@ import io.cloudflight.jems.server.project.service.report.project.base.deleteProj
 import io.cloudflight.jems.server.project.service.report.project.base.getProjectReport.GetProjectReportInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.getProjectReportList.GetProjectReportListInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.runProjectReportPreSubmissionCheck.RunProjectReportPreSubmissionCheck
+import io.cloudflight.jems.server.project.service.report.project.base.startVerificationProjectReport.StartVerificationProjectReportInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.submitProjectReport.SubmitProjectReportInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.updateProjectReport.UpdateProjectReportInteractor
 import org.springframework.data.domain.Pageable
@@ -23,7 +24,8 @@ class ProjectReportController(
     private val updateReport: UpdateProjectReportInteractor,
     private val deleteReport: DeleteProjectReportInteractor,
     private val runProjectReportPreSubmissionCheck: RunProjectReportPreSubmissionCheck,
-    private val submitReport: SubmitProjectReportInteractor
+    private val submitReport: SubmitProjectReportInteractor,
+    private val startVerificationReport: StartVerificationProjectReportInteractor,
 ) : ProjectReportApi {
 
     override fun getProjectReportList(projectId: Long, pageable: Pageable) =
@@ -46,4 +48,7 @@ class ProjectReportController(
 
     override fun submitProjectReport(projectId: Long, reportId: Long): ProjectReportStatusDTO =
         submitReport.submit(projectId = projectId, reportId = reportId).toDto()
+
+    override fun startVerificationOnProjectReport(projectId: Long, reportId: Long) =
+        startVerificationReport.startVerification(projectId = projectId, reportId = reportId).toDto()
 }

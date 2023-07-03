@@ -21,6 +21,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.base.crea
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportUnitCostBase
 import java.math.BigDecimal
+import java.math.BigDecimal.ZERO
 
 
 fun ProjectReportEntity.toModelSummary(
@@ -41,6 +42,9 @@ fun ProjectReportEntity.toModelSummary(
     firstSubmission = firstSubmission,
     verificationDate = verificationDate,
     deletable = false,
+    verificationEndDate = verificationEndDate,
+    totalEligibleAfterVerification = totalEligibleAfterVerification,
+    amountRequested = amountRequested
 )
 
 fun ProjectReportEntity.toModel() = ProjectReportModel(
@@ -65,6 +69,9 @@ fun ProjectReportEntity.toModel() = ProjectReportModel(
     createdAt = createdAt,
     firstSubmission = firstSubmission,
     verificationDate = verificationDate,
+    verificationEndDate = verificationEndDate,
+    amountRequested = amountRequested,
+    totalEligibleAfterVerification = totalEligibleAfterVerification
 )
 
 fun ProjectReportModel.toEntity(
@@ -90,6 +97,9 @@ fun ProjectReportModel.toEntity(
     createdAt = createdAt,
     firstSubmission = firstSubmission,
     verificationDate = verificationDate,
+    verificationEndDate = null,
+    totalEligibleAfterVerification = ZERO,
+    amountRequested = ZERO
 )
 
 fun ProjectReportEntity.toSubmissionSummary() =

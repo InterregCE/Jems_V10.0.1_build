@@ -20,6 +20,7 @@ import io.cloudflight.jems.server.project.service.report.project.base.deleteProj
 import io.cloudflight.jems.server.project.service.report.project.base.getProjectReport.GetProjectReportInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.getProjectReportList.GetProjectReportListInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.runProjectReportPreSubmissionCheck.RunProjectReportPreSubmissionCheck
+import io.cloudflight.jems.server.project.service.report.project.base.startVerificationProjectReport.StartVerificationProjectReportInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.submitProjectReport.SubmitProjectReportInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.updateProjectReport.UpdateProjectReportInteractor
 import io.mockk.clearMocks
@@ -28,6 +29,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.slot
 import io.mockk.verify
+import java.math.BigDecimal
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -100,6 +102,9 @@ internal class ProjectReportControllerTest : UnitTest() {
         firstSubmission = MONTH_AGO,
         verificationDate = YESTERDAY,
         deletable = false,
+        verificationEndDate = YESTERDAY,
+        amountRequested = BigDecimal.ZERO,
+        totalEligibleAfterVerification = BigDecimal.ZERO
     )
 
     private val expectedReportSummary = ProjectReportSummaryDTO(
@@ -116,6 +121,9 @@ internal class ProjectReportControllerTest : UnitTest() {
         firstSubmission = MONTH_AGO,
         verificationDate = YESTERDAY,
         deletable = false,
+        verificationEndDate = YESTERDAY,
+        amountRequested = BigDecimal.ZERO,
+        totalEligibleAfterVerification = BigDecimal.ZERO
     )
 
     @MockK
@@ -138,6 +146,9 @@ internal class ProjectReportControllerTest : UnitTest() {
 
     @MockK
     private lateinit var submitReport: SubmitProjectReportInteractor
+
+    @MockK
+    private lateinit var startVerificationReport: StartVerificationProjectReportInteractor
 
     @InjectMockKs
     private lateinit var controller: ProjectReportController
@@ -239,5 +250,11 @@ internal class ProjectReportControllerTest : UnitTest() {
         every { submitReport.submit(21L, reportId = 10L) } returns ProjectReportStatus.Submitted
         controller.submitProjectReport(21L, reportId = 10L)
         assertThat(submitReport.submit(21L, reportId = 10L)).isEqualTo(ProjectReportStatus.Submitted)
+    }
+
+    @Test
+    fun startVerificationOnProjectReport() {
+        every { startVerificationReport.startVerification(21L, reportId = 10L) } returns ProjectReportStatus.InVerification
+        assertThat(controller.startVerificationOnProjectReport(21L, reportId = 10L)).isEqualTo(ProjectReportStatusDTO.InVerification)
     }
 }
