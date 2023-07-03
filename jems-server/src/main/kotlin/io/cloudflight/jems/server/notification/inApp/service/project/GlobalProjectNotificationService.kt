@@ -30,14 +30,16 @@ class GlobalProjectNotificationService(
 ) : GlobalProjectNotificationServiceInteractor {
 
     @Transactional
-    override fun sendNotifications(type: NotificationType, variables: Map<NotificationVariable, Any>) = when {
-        type.isProjectNotification() || type.isProjectReportNotification() -> sendProjectNotification(type, variables)
-        type.isPartnerReportNotification() -> sendPartnerReportNotification(type, variables)
-        else -> Unit
+    override fun sendNotifications(type: NotificationType, variables: Map<NotificationVariable, Any>) {
+        validateVariables(variables, type)
+        when {
+            type.isProjectNotification() || type.isProjectReportNotification() -> sendProjectNotification(type, variables)
+            type.isPartnerReportNotification() -> sendPartnerReportNotification(type, variables)
+            else -> Unit
+        }
     }
 
     fun sendProjectNotification(type: NotificationType, variables: Map<NotificationVariable, Any>) {
-        validateVariables(variables, NotificationVariable.projectNotificationVariables)
 
         val projectId = variables[NotificationVariable.ProjectId] as Long
         val notificationConfig = getNotificationConfiguration(type, projectId) ?: return
@@ -49,7 +51,6 @@ class GlobalProjectNotificationService(
     }
 
     fun sendPartnerReportNotification(type: NotificationType, variables: Map<NotificationVariable, Any>) {
-        validateVariables(variables, NotificationVariable.partnerReportNotificationVariables)
 
         val projectId = variables[NotificationVariable.ProjectId] as Long
         val notificationConfig = getNotificationConfiguration(type, projectId) ?: return
@@ -81,8 +82,15 @@ class GlobalProjectNotificationService(
         eventPublisher.publishEvent(inAppNotifications.buildSendEmailEvent())
     }
 
-    private fun validateVariables(variables: Map<NotificationVariable, Any>, minimumNeeded: Set<NotificationVariable>) {
-        if (!variables.keys.containsAll(minimumNeeded))
+    private fun validateVariables(variables: Map<NotificationVariable, Any>, type: NotificationType) {
+        val minimumNeeded = when {
+            type.isProjectNotification() -> NotificationVariable.projectNotificationVariables
+            type.isProjectReportNotification() -> NotificationVariable.projectReportNotificationVariables
+            type.isPartnerReportNotification() -> NotificationVariable.partnerReportNotificationVariables
+            else -> emptySet()
+        }
+
+        if (!variables.keys.containsAll(minimumNeeded) || minimumNeeded.isEmpty())
             throw IllegalArgumentException("Provided variables: $variables, does not all the minimum needed ones: $minimumNeeded")
     }
 
