@@ -58,13 +58,13 @@ export class ContractMonitoringExtensionComponent {
     entryIntoForceComment: ['', Validators.maxLength(200)],
     additionalEntryIntoForceItems: this.formBuilder.array([], Validators.maxLength(25)),
     typologyProv94: [],
-    typologyProv94Comment: [Validators.maxLength(1000)],
+    typologyProv94Comment: ['', Validators.maxLength(1000)],
     typologyProv95: [],
-    typologyProv95Comment: [Validators.maxLength(1000)],
+    typologyProv95Comment: ['', Validators.maxLength(1000)],
     typologyStrategic: [],
-    typologyStrategicComment: [Validators.maxLength(1000)],
+    typologyStrategicComment: ['', Validators.maxLength(1000)],
     typologyPartnership: [],
-    typologyPartnershipComment: [Validators.maxLength(1000)],
+    typologyPartnershipComment: ['', Validators.maxLength(1000)],
     lumpSums: this.formBuilder.array([]),
     dimensionCodesItems: this.formBuilder.array([], Validators.maxLength(25))
   });
