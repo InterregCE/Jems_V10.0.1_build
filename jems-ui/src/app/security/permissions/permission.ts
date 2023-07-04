@@ -111,7 +111,6 @@ export class Permission {
           editPermissions: [],
           disabled: true,
           state: PermissionState.EDIT,
-          editTooltip: 'permission.inspect.contracting.partner.section',
           children: [
             {
               name: 'project.application.contract.partner.section.title',
@@ -120,6 +119,7 @@ export class Permission {
               editPermissions: [],
               disabled: true,
               state: PermissionState.EDIT,
+              editTooltip: 'permission.inspect.contracting.partner.section.applicant'
             },
             {
               name: 'project.application.contract.partner.state.aid.section.title',
