@@ -8,6 +8,9 @@ import {
   ProjectReportDetailPageStore
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-detail-page-store.service';
 import {ProjectReportDTO} from '@cat/api';
+import {Alert} from '@common/components/forms/alert';
+import {BehaviorSubject, Observable, of} from 'rxjs';
+import {APIError} from '@common/models/APIError';
 
 @Component({
   selector: 'jems-project-report-detail-page',
@@ -19,6 +22,8 @@ export class ProjectReportDetailPageComponent {
 
   ProjectReportDTO = ProjectReportDTO;
   TypeEnum = ProjectReportDTO.TypeEnum;
+  error$ = new BehaviorSubject<APIError | null>(null);
+  Alert = Alert;
   constructor(private activatedRoute: ActivatedRoute,
               public pageStore: ProjectReportDetailPageStore,
               private router: RoutingService,
@@ -31,4 +36,13 @@ export class ProjectReportDetailPageComponent {
   routeTo(route: string): void {
     this.router.navigate([route], {relativeTo: this.activatedRoute, queryParamsHandling: 'merge'});
   }
+
+  public showErrorMessage(error: APIError): Observable<null> {
+    this.error$.next(error);
+    setTimeout(() => {
+      this.error$.next(null);
+    }, 4000);
+    return of(null);
+  }
+
 }

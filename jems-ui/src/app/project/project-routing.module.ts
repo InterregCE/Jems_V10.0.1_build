@@ -258,6 +258,10 @@ import {SharedFolderPageComponent} from '@project/project-application/shared-fol
 import {
   ProjectReportExportsTabComponent
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-exports-tab/project-report-exports-tab.component';
+import {ProjectVerificationReportComponent} from '@project/project-application/report/project-verification-report/project-verification-report.component';
+import {
+  ProjectVerificationReportDocumentTabComponent
+} from '@project/project-application/report/project-verification-report/project-verification-report-document-tab/project-verification-report-document-tab.component';
 
 export const routes: Routes = [
   {
@@ -451,6 +455,22 @@ export const routes: Routes = [
                         component: ProjectReportSubmitTabComponent,
                       }
                     ],
+                  },
+                  {
+                    path: 'verificationReport',
+                    children: [
+                      {
+                        path: '',
+                        component: ProjectVerificationReportComponent,
+                        data: {breadcrumb: 'project.application.project.verification.work.breadcrumb.title'},
+                        children: [
+                          {
+                            path: 'document',
+                            component: ProjectVerificationReportDocumentTabComponent,
+                          },
+                        ],
+                      }
+                    ]
                   }
                 ]
               }

@@ -203,9 +203,25 @@ export class Permission {
       children: [
         {
           name: 'project.application.project.report.title',
-          mode: PermissionMode.HIDDEN_VIEW_EDIT,
-          viewPermissions: [PermissionsEnum.ProjectReportingProjectView],
-          editPermissions: [PermissionsEnum.ProjectReportingProjectEdit],
+          children: [
+            {
+              name: 'project.application.project.report.title',
+              mode: PermissionMode.HIDDEN_VIEW_EDIT,
+              viewPermissions: [PermissionsEnum.ProjectReportingProjectView],
+              editPermissions: [PermissionsEnum.ProjectReportingProjectEdit],
+            },
+            {
+              name: 'project.application.project.verification.work.title',
+              mode: PermissionMode.HIDDEN_VIEW_EDIT,
+              viewPermissions: [PermissionsEnum.ProjectReportingVerificationProjectView],
+              editPermissions: [PermissionsEnum.ProjectReportingVerificationProjectEdit],
+            },
+            {
+              name: 'project.application.project.verification.work.finalize.title',
+              mode: PermissionMode.TOGGLE_EDIT,
+              editPermissions: [PermissionsEnum.ProjectReportingVerificationFinalize],
+            },
+          ]
         },
         {
           name: 'project.application.partner.reports.title',

@@ -104,5 +104,14 @@ export class ProjectReportDetailPageStore {
         tap(status => Log.info('Changed status for report', reportId, status))
       );
   }
+
+  startVerificationWork(projectId: number, reportId: number) {
+    return this.projectReportService.startVerificationOnProjectReport(projectId, reportId)
+      .pipe(
+        map(status => status as ProjectReportSummaryDTO.StatusEnum),
+        tap(status => this.updatedReportStatus$.next(status)),
+        tap(status => Log.info('Changed status for report', reportId, status))
+      )
+  }
 }
 

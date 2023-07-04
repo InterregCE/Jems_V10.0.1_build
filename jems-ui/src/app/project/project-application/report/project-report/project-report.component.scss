@@ -18,16 +18,15 @@ mat-row, mat-header-row {
   }
 }
 
-.mat-column-reportNumber {
+.mat-column-reportNumber,
+.mat-column-delete {
   min-width: 3rem;
-  max-width: 4rem;
+  max-width: 3rem;
 }
 .mat-column-status {
   min-width: 10rem;
 }
-.mat-column-projectReport {
-  min-width: 3rem;
-}
+.mat-column-projectReport,
 .mat-column-linkedFormVersion {
   min-width: 3rem;
 }
@@ -38,10 +37,13 @@ mat-row, mat-header-row {
   min-width: 8rem;
 }
 .mat-column-createdAt,
-.mat-column-firstSubmission {
+.mat-column-firstSubmission,
+.mat-column-verificationEndDate {
   min-width: 5rem;
+  max-width: 10rem;
 }
-.mat-column-delete {
-  min-width: 3rem;
-  max-width: 3rem;
+.mat-column-amountRequested,
+.mat-column-totalEligible,
+.mat-column-verification {
+  min-width: 10rem;
 }

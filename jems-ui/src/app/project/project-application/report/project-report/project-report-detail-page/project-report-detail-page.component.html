@@ -3,6 +3,24 @@
                                 [titleText]="'project.application.project.reports.title.number' | translate : {reportNumber: projectReport?.reportNumber}"
                                 [subTitleText]=""
                                 [isVersionedData]="false">
+
+        <div class="mb-3 status-wrapper">
+            <span class="status-label">Status</span>
+            <span class="ml-2"><jems-project-report-status [status]="projectReport.status" [longVersion]="false"></jems-project-report-status></span>
+
+            <jems-start-verification-report showStart="true"
+                                            [reportId]="projectReport.id"
+                                            [reportStatus]="projectReport.status"
+                                            (onError)="showErrorMessage($event)">
+            </jems-start-verification-report>
+        </div>
+
+        <jems-alert *ngIf="error$ | async as error"
+                    [show]="!!error.i18nMessage?.i18nKey"
+                    [type]="Alert.ERROR">
+            <jems-api-error-content [error]="error"></jems-api-error-content>
+        </jems-alert>
+
         <nav mat-tab-nav-bar>
             <a [active]="activeTab('identification')" mat-tab-link
                (click)="routeTo('identification')">

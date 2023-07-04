@@ -1,7 +1,8 @@
-import {ProjectPartnerReportDTO} from '@cat/api';
+import {ProjectPartnerReportDTO, ProjectReportSummaryDTO} from '@cat/api';
 
 export class ReportUtil {
 
+  // Partner Report
   static isPartnerReportSubmittable(status: ProjectPartnerReportDTO.StatusEnum): boolean {
     return [
       ProjectPartnerReportDTO.StatusEnum.Draft,
@@ -57,4 +58,16 @@ export class ReportUtil {
       || status === ProjectPartnerReportDTO.StatusEnum.ReOpenCertified;
   }
 
+  // Project Report
+  static isProjectReportOpen(status: ProjectReportSummaryDTO.StatusEnum): boolean {
+    return status === ProjectReportSummaryDTO.StatusEnum.Draft;
+  }
+
+  static isProjectReportSubmitted(status: ProjectReportSummaryDTO.StatusEnum): boolean {
+    return status === ProjectReportSummaryDTO.StatusEnum.Submitted;
+  }
+
+  static isProjectReportVerificationOngoing(status: ProjectReportSummaryDTO.StatusEnum): boolean {
+    return status === ProjectReportSummaryDTO.StatusEnum.InVerification;
+  }
 }
