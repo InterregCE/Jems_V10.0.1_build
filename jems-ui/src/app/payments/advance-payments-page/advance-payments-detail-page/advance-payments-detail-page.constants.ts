@@ -7,7 +7,7 @@ export class AdvancePaymentsDetailPageConstants {
     projectId: 'projectId',
     projectIdSearch: 'projectIdSearch',
     advancePayment: 'advancePayment',
-    settlements: 'settlements',
+    settlements: 'paymentSettlements',
 
     projectCustomIdentifier: 'projectCustomIdentifier',
     projectCustomIdentifierSearch: 'projectCustomIdentifierSearch',

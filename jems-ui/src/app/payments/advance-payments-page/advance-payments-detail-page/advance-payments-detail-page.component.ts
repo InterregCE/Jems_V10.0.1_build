@@ -77,7 +77,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
     paymentConfirmed: this.formBuilder.control(''),
     paymentConfirmedUser: this.formBuilder.control(''),
     paymentConfirmedDate: this.formBuilder.control(''),
-    settlements: this.formBuilder.array([]),
+    paymentSettlements: this.formBuilder.array([]),
   });
   initialAdvancePaymentDetail: AdvancePaymentDetailDTO;
   currentUserDetails: UserDTO;
@@ -245,7 +245,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.paymentConfirmedUser)?.setValue(paymentDetail?.paymentConfirmedUser ? this.getOutputUserObject(paymentDetail?.paymentConfirmedUser) : null);
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.paymentConfirmedDate)?.setValue(paymentDetail?.paymentConfirmedDate ? paymentDetail?.paymentConfirmedDate : null);
     this.settlementsArray.clear();
-    paymentDetail.paymentSettlements.forEach(settlement => {
+    paymentDetail.paymentSettlements?.forEach(settlement => {
           this.settlementsArray.push(
               this.formBuilder.group({
                     id: settlement.id,
@@ -316,7 +316,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
     } else {
       this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.paymentConfirmed)?.enable();
     }
-    if (settlements.length > 0) {
+    if (settlements?.length > 0) {
       this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.paymentConfirmed)?.disable();
     }
   }
@@ -403,7 +403,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
       comment: data.comment,
       paymentAuthorized: data.paymentAuthorized,
       paymentConfirmed: data.paymentConfirmed,
-      paymentSettlements: data.settlements
+      paymentSettlements: data.paymentSettlements
     };
   }
 
