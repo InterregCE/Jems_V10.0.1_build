@@ -12,9 +12,11 @@ import io.cloudflight.jems.server.common.file.repository.JemsFileMetadataReposit
 import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.payments.entity.AdvancePaymentEntity
+import io.cloudflight.jems.server.payments.entity.AdvancePaymentSettlementEntity
 import io.cloudflight.jems.server.payments.model.advance.AdvancePayment
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSearchRequest
+import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSettlement
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentUpdate
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
@@ -161,7 +163,7 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
             legalStatusId = 3L
         )
 
-        private fun advancePaymentEntity() = AdvancePaymentEntity(
+        private val advancePaymentEntity = AdvancePaymentEntity(
             id = paymentId,
             projectId = projectId,
             projectVersion = version,
@@ -182,7 +184,28 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
             paymentAuthorizedDate = currentDate.minusDays(3),
             isPaymentConfirmed = true,
             paymentConfirmedUser = paymentConfirmedUser,
-            paymentConfirmedDate = currentDate.minusDays(2)
+            paymentConfirmedDate = currentDate.minusDays(2),
+        )
+
+        private fun advancePaymentEntity(settlements: MutableSet<AdvancePaymentSettlementEntity>) =
+            advancePaymentEntity.apply { this.paymentSettlements = settlements }
+
+        private val advancePaymentSettlementEntity = AdvancePaymentSettlementEntity(
+            id = 1L,
+            number = 1,
+            advancePayment = advancePaymentEntity,
+            amountSettled = BigDecimal(5),
+            settlementDate = currentDate.minusDays(1),
+            comment = "half"
+        )
+
+
+        private val paymentSettlement = AdvancePaymentSettlement(
+            id = 1L,
+            number = 1,
+            amountSettled = BigDecimal(5),
+            settlementDate = currentDate.minusDays(1),
+            comment = "half"
         )
 
         private val advancePayment = AdvancePayment(
@@ -197,7 +220,8 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
             amountPaid = BigDecimal.TEN,
             paymentDate = currentDate.minusDays(3),
             // amountSettled is not yet included
-            amountSettled = BigDecimal.ZERO
+            amountSettled = BigDecimal.ZERO,
+            paymentSettlements = listOf(paymentSettlement)
         )
         private val advancePaymentDetail = AdvancePaymentDetail(
             id = paymentId,
@@ -218,7 +242,8 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
             paymentAuthorizedDate = currentDate.minusDays(3),
             paymentConfirmed = true,
             paymentConfirmedUser = paymentConfirmedUser.toOutputUser(),
-            paymentConfirmedDate = currentDate.minusDays(2)
+            paymentConfirmedDate = currentDate.minusDays(2),
+            paymentSettlements = listOf(paymentSettlement)
         )
 
         fun advancePaymentToPersist(paymentId: Long? = null): AdvancePaymentUpdate
@@ -235,8 +260,9 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
                 paymentAuthorizedDate = currentDate.minusDays(3),
                 paymentConfirmed = true,
                 paymentConfirmedUserId = paymentConfirmedUser.id,
-                paymentConfirmedDate = currentDate.minusDays(2)
-            )
+                paymentConfirmedDate = currentDate.minusDays(2),
+                paymentSettlements = listOf(paymentSettlement)
+           )
 
         private val contribution = ProjectPartnerContribution(
             id = contribSourceId,
@@ -301,7 +327,7 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
         )
         val slotPredicate = slot<BooleanOperation>()
         every { advancePaymentRepository.findAll(capture(slotPredicate), Pageable.unpaged()) } returns
-                PageImpl(mutableListOf(advancePaymentEntity()))
+                PageImpl(mutableListOf(advancePaymentEntity(mutableSetOf(advancePaymentSettlementEntity))))
 
         assertThat(advancePaymentPersistenceProvider.list(Pageable.unpaged(), filters))
             .containsAll(listOf(advancePayment))
@@ -329,7 +355,7 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
 
     @Test
     fun getPaymentsByProjectId() {
-        every { advancePaymentRepository.findAllByProjectId(86L) } returns listOf(advancePaymentEntity())
+        every { advancePaymentRepository.findAllByProjectId(86L) } returns listOf(advancePaymentEntity(mutableSetOf(advancePaymentSettlementEntity)))
         assertThat(advancePaymentPersistenceProvider.getPaymentsByProjectId(86L)).containsExactly(advancePayment)
     }
 
@@ -342,7 +368,7 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
 
     @Test
     fun getPaymentDetail() {
-        every { advancePaymentRepository.getById(paymentId) } returns advancePaymentEntity()
+        every { advancePaymentRepository.getById(paymentId) } returns advancePaymentEntity(mutableSetOf(advancePaymentSettlementEntity))
         assertThat(advancePaymentPersistenceProvider.getPaymentDetail(paymentId)).isEqualTo(advancePaymentDetail)
     }
 
@@ -359,20 +385,21 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
 
         assertThat(advancePaymentPersistenceProvider.updatePaymentDetail(
             AdvancePaymentUpdate(
-            id = null,
-            projectId = projectId,
-            partnerId = partnerId,
-            programmeFundId = fund.id,
-            amountPaid = BigDecimal.TEN,
-            paymentDate = currentDate.minusDays(3),
-            comment = "comment",
-            paymentAuthorized = true,
-            paymentAuthorizedUserId = paymentAuthorizedUser.id,
-            paymentAuthorizedDate = currentDate.minusDays(3),
-            paymentConfirmed = true,
-            paymentConfirmedUserId = paymentConfirmedUser.id,
-            paymentConfirmedDate = currentDate.minusDays(2)
-        )
+                id = null,
+                projectId = projectId,
+                partnerId = partnerId,
+                programmeFundId = fund.id,
+                amountPaid = BigDecimal.TEN,
+                paymentDate = currentDate.minusDays(3),
+                comment = "comment",
+                paymentAuthorized = true,
+                paymentAuthorizedUserId = paymentAuthorizedUser.id,
+                paymentAuthorizedDate = currentDate.minusDays(3),
+                paymentConfirmed = true,
+                paymentConfirmedUserId = paymentConfirmedUser.id,
+                paymentConfirmedDate = currentDate.minusDays(2),
+                paymentSettlements = listOf(paymentSettlement)
+            )
         )).isEqualTo(advancePaymentDetail.copy(id = 0L))
     }
 
@@ -384,7 +411,7 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
         every { programmeFundRepository.getById(fund.id) } returns ProgrammeFundEntity(fund.id, true)
         every { userRepository.getById(userEntity.id) } returns userEntity
         every { userRepository.getById(userEntity2.id) } returns userEntity2
-        every { advancePaymentRepository.getById(paymentId) } returns advancePaymentEntity()
+        every { advancePaymentRepository.getById(paymentId) } returns advancePaymentEntity(mutableSetOf(advancePaymentSettlementEntity))
         every { advancePaymentRepository.save(any()) } returnsArgument 0
 
         assertThat(advancePaymentPersistenceProvider.updatePaymentDetail(advancePaymentToPersist(2L)))
@@ -401,7 +428,7 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
         } returns coFinancingContribution
         every { userRepository.getById(userEntity.id) } returns userEntity
         every { userRepository.getById(userEntity2.id) } returns userEntity2
-        every { advancePaymentRepository.getById(paymentId) } returns advancePaymentEntity()
+        every { advancePaymentRepository.getById(paymentId) } returns advancePaymentEntity(mutableSetOf(advancePaymentSettlementEntity))
 
         val toBeSavedSlot = slot<AdvancePaymentEntity>()
         every { advancePaymentRepository.save(capture(toBeSavedSlot)) } returnsArgument 0
@@ -425,7 +452,7 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
         every { partnerCoFinancingPersistence.getSpfCoFinancingAndContributions(partnerId, "2.0") } returns coFinancingContributionSpf
         every { userRepository.getById(userEntity.id) } returns userEntity
         every { userRepository.getById(userEntity2.id) } returns userEntity2
-        every { advancePaymentRepository.getById(paymentId) } returns advancePaymentEntity()
+        every { advancePaymentRepository.getById(paymentId) } returns advancePaymentEntity(mutableSetOf(advancePaymentSettlementEntity))
 
         val toBeSavedSlot = slot<AdvancePaymentEntity>()
         every { advancePaymentRepository.save(capture(toBeSavedSlot)) } returnsArgument 0

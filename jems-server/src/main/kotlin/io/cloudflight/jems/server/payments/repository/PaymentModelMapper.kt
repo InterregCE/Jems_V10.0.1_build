@@ -5,9 +5,11 @@ import io.cloudflight.jems.server.common.entity.toInstant
 import io.cloudflight.jems.server.payments.entity.AdvancePaymentEntity
 import io.cloudflight.jems.server.payments.entity.PaymentEntity
 import io.cloudflight.jems.server.payments.entity.PaymentPartnerEntity
+import io.cloudflight.jems.server.payments.entity.AdvancePaymentSettlementEntity
 import io.cloudflight.jems.server.payments.entity.PaymentPartnerInstallmentEntity
 import io.cloudflight.jems.server.payments.model.advance.AdvancePayment
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
+import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSettlement
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentUpdate
 import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
 import io.cloudflight.jems.server.payments.model.regular.PaymentConfirmedInfo
@@ -208,7 +210,9 @@ fun AdvancePaymentUpdate.toEntity(
     isPaymentConfirmed = paymentConfirmed,
     paymentConfirmedUser = paymentConfirmedUser,
     paymentConfirmedDate = paymentConfirmedDate
-)
+).also { entity ->
+    entity.paymentSettlements = paymentSettlements.map { it.toEntity(entity) }.toMutableSet()
+}
 
 fun AdvancePaymentEntity.toDetailModel() = AdvancePaymentDetail(
     id = id,
@@ -231,7 +235,8 @@ fun AdvancePaymentEntity.toDetailModel() = AdvancePaymentDetail(
     paymentAuthorizedDate = paymentAuthorizedDate,
     paymentConfirmed = isPaymentConfirmed,
     paymentConfirmedUser = paymentConfirmedUser?.toOutputUser(),
-    paymentConfirmedDate = paymentConfirmedDate
+    paymentConfirmedDate = paymentConfirmedDate,
+    paymentSettlements = paymentSettlements?.map { it.toModel() }?.sortedBy { it.number } ?: emptyList()
 )
 
 private fun idNamePairOrNull(id: Long?, name: String?): IdNamePair? {
@@ -256,6 +261,25 @@ fun AdvancePaymentEntity.toModel(): AdvancePayment {
         amountSettled = BigDecimal.ZERO,
         programmeFund = programmeFund?.toModel(),
         partnerContribution = idNamePairOrNull(partnerContributionId, partnerContributionName),
-        partnerContributionSpf = idNamePairOrNull(partnerContributionSpfId, partnerContributionSpfName)
+        partnerContributionSpf = idNamePairOrNull(partnerContributionSpfId, partnerContributionSpfName),
+        paymentSettlements = paymentSettlements?.map { it.toModel() } ?: emptyList()
+
     )
 }
+
+fun AdvancePaymentSettlementEntity.toModel() = AdvancePaymentSettlement(
+    id = id,
+    number = number,
+    amountSettled = amountSettled,
+    settlementDate = settlementDate,
+    comment = comment
+)
+
+fun AdvancePaymentSettlement.toEntity(advancePayment:AdvancePaymentEntity) = AdvancePaymentSettlementEntity(
+    id = id,
+    number = number,
+    advancePayment = advancePayment,
+    amountSettled = amountSettled,
+    settlementDate = settlementDate,
+    comment = comment
+)

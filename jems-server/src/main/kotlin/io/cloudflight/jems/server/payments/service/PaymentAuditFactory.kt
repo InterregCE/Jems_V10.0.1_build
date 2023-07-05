@@ -6,10 +6,12 @@ import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.common.entity.extractTranslation
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
+import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSettlement
 import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
 import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import java.math.RoundingMode
 
 fun monitoringFtlsReadyForPayment(
     context: Any,
@@ -120,6 +122,38 @@ fun advancePaymentConfirmed(
         .description("Advance payment details for advance payment ${paymentDetail.id} of " +
             "partner ${getPartnerName(paymentDetail.partnerType, paymentDetail.partnerNumber)} " +
             "for funding source ${getFundingSourceName(paymentDetail)} are confirmed")
+        .build()
+)
+
+fun advancePaymentSettlementCreated(
+    context: Any,
+    settlement: AdvancePaymentSettlement,
+    paymentDetail: AdvancePaymentDetail
+): AuditCandidateEvent = AuditCandidateEvent(
+    context = context,
+    auditCandidate = AuditBuilder(AuditAction.ADVANCE_PAYMENT_SETTLEMENT_CREATED)
+        .project(paymentDetail.projectId, paymentDetail.projectCustomIdentifier, paymentDetail.projectAcronym)
+        .description(
+            "${settlement.amountSettled.setScale(2, RoundingMode.HALF_UP)} EUR was settled in settlement no. ${settlement.number} " +
+                    "for advance payment no. ${paymentDetail.id} of partner ${getPartnerName(paymentDetail.partnerType, paymentDetail.partnerNumber)} " +
+                    "for funding source ${paymentDetail.programmeFund?.abbreviation?.extractTranslation(SystemLanguage.EN)} is created"
+        )
+        .build()
+)
+
+fun advancePaymentSettlementDeleted(
+    context: Any,
+    settlement: AdvancePaymentSettlement,
+    paymentDetail: AdvancePaymentDetail
+): AuditCandidateEvent = AuditCandidateEvent(
+    context = context,
+    auditCandidate = AuditBuilder(AuditAction.ADVANCE_PAYMENT_SETTLEMENT_DELETED)
+        .project(paymentDetail.projectId, paymentDetail.projectCustomIdentifier, paymentDetail.projectAcronym)
+        .description(
+            "${settlement.amountSettled} EUR was settled in settlement no. ${settlement.number} " +
+                    "for advance payment no. ${paymentDetail.id} of partner ${getPartnerName(paymentDetail.partnerType, paymentDetail.partnerNumber)} " +
+                    "for funding source ${paymentDetail.programmeFund?.abbreviation?.extractTranslation(SystemLanguage.EN)} is deleted"
+        )
         .build()
 )
 

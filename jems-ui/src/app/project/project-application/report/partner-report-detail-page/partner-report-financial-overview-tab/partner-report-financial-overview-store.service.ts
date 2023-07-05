@@ -164,7 +164,7 @@ export class PartnerReportFinancialOverviewStoreService {
       );
   }
 
-  private anySingleCostCategory(unitCosts: Array<ProjectPartnerReportUnitCostDTO>, costCategory: CategoryEnum): boolean {
+  private anySingleCostCategory(unitCosts: ProjectPartnerReportUnitCostDTO[], costCategory: CategoryEnum): boolean {
     return unitCosts.some(unitCost => unitCost.category === costCategory);
   }
 }

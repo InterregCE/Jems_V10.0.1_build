@@ -1,8 +1,10 @@
 package io.cloudflight.jems.server.payments.controller
 
+
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentDetailDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentSearchRequestDTO
+import io.cloudflight.jems.api.payments.dto.AdvancePaymentSettlementDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentUpdateDTO
 import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
@@ -11,6 +13,7 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.payments.model.advance.AdvancePayment
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSearchRequest
+import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSettlement
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentUpdate
 import io.cloudflight.jems.server.payments.service.advance.deleteAdvancePayment.DeleteAdvancePaymentInteractor
 import io.cloudflight.jems.server.payments.service.advance.getAdvancePaymentDetail.GetAdvancePaymentDetailInteractor
@@ -29,7 +32,6 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
 import java.time.LocalDate
-import java.time.ZonedDateTime
 
 class PaymentAdvanceControllerTest : UnitTest() {
 
@@ -65,8 +67,18 @@ class PaymentAdvanceControllerTest : UnitTest() {
             programmeFund = fund,
             amountPaid = BigDecimal.TEN,
             paymentDate = currentDate,
-            amountSettled = BigDecimal.ONE
+            amountSettled = BigDecimal.ONE,
+            paymentSettlements = emptyList()
         )
+
+        private val advancePaymentSettlement = AdvancePaymentSettlement(
+            id = 1L,
+            number = 1,
+            amountSettled = BigDecimal(5),
+            settlementDate = currentDate.minusDays(1),
+            comment = "half"
+        )
+
         private val advancePaymentDetail = AdvancePaymentDetail(
             id = paymentId,
             projectId = projectId,
@@ -86,7 +98,9 @@ class PaymentAdvanceControllerTest : UnitTest() {
             paymentAuthorizedDate = currentDate.minusDays(3),
             paymentConfirmed = true,
             paymentConfirmedUser = OutputUser(userId, "random@mail", "name", "surname"),
-            paymentConfirmedDate = currentDate.minusDays(2)
+            paymentConfirmedDate = currentDate.minusDays(2),
+            paymentSettlements = listOf(advancePaymentSettlement),
+
         )
         private val advancePaymentUpdate = AdvancePaymentUpdate(
             id = paymentId,
@@ -98,7 +112,17 @@ class PaymentAdvanceControllerTest : UnitTest() {
             comment = "random comment",
             paymentAuthorized = true,
             paymentConfirmed = true,
+            paymentSettlements = listOf(advancePaymentSettlement),
         )
+
+        private val advancePaymentSettlementDTO = AdvancePaymentSettlementDTO(
+            id = 1L,
+            number = 1,
+            amountSettled = BigDecimal(5),
+            settlementDate = currentDate.minusDays(1),
+            comment = "half"
+        )
+
         private val advancePaymentDetailDTO = AdvancePaymentDetailDTO(
             id = paymentId,
             projectId = projectId,
@@ -118,7 +142,8 @@ class PaymentAdvanceControllerTest : UnitTest() {
             paymentAuthorizedDate = currentDate.minusDays(3),
             paymentConfirmed = true,
             paymentConfirmedUser = OutputUser(userId, "random@mail", "name", "surname"),
-            paymentConfirmedDate = currentDate.minusDays(2)
+            paymentConfirmedDate = currentDate.minusDays(2),
+            paymentSettlements = listOf(advancePaymentSettlementDTO)
         )
 
     }
@@ -208,7 +233,14 @@ class PaymentAdvanceControllerTest : UnitTest() {
             paymentDate = currentDate,
             comment = "random comment",
             paymentAuthorized = true,
-            paymentConfirmed = true
+            paymentConfirmed = true,
+            paymentSettlements = listOf(AdvancePaymentSettlementDTO(
+                id = 1L,
+                number = 1,
+                amountSettled = BigDecimal(5),
+                settlementDate = currentDate.minusDays(1),
+                comment = "half"
+            ))
         )
         every {
             updateAdvancePayment.updateDetail(advancePaymentUpdate)

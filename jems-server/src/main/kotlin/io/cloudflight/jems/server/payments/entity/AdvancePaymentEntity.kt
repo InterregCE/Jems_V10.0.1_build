@@ -13,6 +13,8 @@ import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
+import javax.persistence.CascadeType
+import javax.persistence.OneToMany
 import javax.validation.constraints.NotNull
 
 @Entity(name = "payment_advance")
@@ -62,6 +64,9 @@ class AdvancePaymentEntity (
     @ManyToOne(optional = true)
     @JoinColumn(name = "payment_confirmed_account_id")
     var paymentConfirmedUser: UserEntity?,
-    var paymentConfirmedDate: LocalDate?
+    var paymentConfirmedDate: LocalDate?,
+
+    @OneToMany(mappedBy = "advancePayment", cascade = [CascadeType.ALL], orphanRemoval = true)
+    var paymentSettlements: MutableSet<AdvancePaymentSettlementEntity>? = mutableSetOf()
 
 )

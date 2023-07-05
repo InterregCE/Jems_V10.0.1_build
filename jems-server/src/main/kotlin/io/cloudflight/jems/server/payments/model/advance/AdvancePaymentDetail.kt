@@ -32,5 +32,7 @@ data class AdvancePaymentDetail (
     val paymentAuthorizedDate: LocalDate? = null,
     val paymentConfirmed: Boolean? = null,
     val paymentConfirmedUser: OutputUser? = null,
-    val paymentConfirmedDate: LocalDate? = null
+    val paymentConfirmedDate: LocalDate? = null,
+
+    val paymentSettlements: List<AdvancePaymentSettlement>
 )

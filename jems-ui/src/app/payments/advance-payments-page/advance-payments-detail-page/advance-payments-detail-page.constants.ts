@@ -33,10 +33,10 @@ export class AdvancePaymentsDetailPageConstants {
     paymentConfirmedUserId: 'paymentConfirmedUserId',
     paymentConfirmedDate: 'paymentConfirmedDate',
 
-    settlementNr: 'settlementNr',
+    settlementNr: 'number',
     amountSettled: 'amountSettled',
     settlementDate: 'settlementDate',
-    settlementComment: 'settlementComment'
+    settlementComment: 'comment'
   };
 
   public static inputErrorMessages = {

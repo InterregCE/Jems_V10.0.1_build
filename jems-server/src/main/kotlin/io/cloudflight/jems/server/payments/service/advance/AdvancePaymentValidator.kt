@@ -15,18 +15,31 @@ class AdvancePaymentValidator(private val validator: GeneralValidatorService) {
         const val PAYMENT_ADVANCE_SAVE_ERROR_KEY = "payment.advance.save.invalid.fields"
         const val PAYMENT_ADVANCE_NO_SOURCE_ERROR_KEY = "payment.advance.save.without.contribution.not.possible"
         const val PAYMENT_ADVANCE_AUTHORIZE_ERROR_KEY = "payment.advance.save.unauthorize.not.possible"
+        const val PAYMENT_ADVANCE_CONFIRMATION_ERROR_KEY = "payment.advance.save.confirmation.not.possible"
     }
 
     fun validateDetail(update: AdvancePaymentUpdate, saved: AdvancePaymentDetail?) {
+
         validateCheckboxStates(update)
+
         if (isInstallmentAuthorized(saved) && update.paymentAuthorized == false) {
             throw I18nValidationException(i18nKey = PAYMENT_ADVANCE_AUTHORIZE_ERROR_KEY)
         }
+
+        if (paymentConfirmationRemoved(update, saved) && saved.hasSettlements()) {
+            throw I18nValidationException(i18nKey = PAYMENT_ADVANCE_CONFIRMATION_ERROR_KEY)
+        }
+
         validator.throwIfAnyIsInvalid(
             *validateDetails(update).toTypedArray()
         )
         validateContributionSource(update)
     }
+
+
+    fun paymentConfirmationRemoved(update: AdvancePaymentUpdate, saved: AdvancePaymentDetail?) =
+        saved?.paymentConfirmed == true && update.paymentConfirmed == false
+
 
     private fun validateDetails(update: AdvancePaymentUpdate): List<Map<String, I18nMessage>> {
         val feedback = mutableListOf<Map<String, I18nMessage>>()
@@ -66,5 +79,7 @@ class AdvancePaymentValidator(private val validator: GeneralValidatorService) {
     private fun isNotSet(id: Long?): Boolean =
         id == null || id <= 0
 
+    private fun AdvancePaymentDetail?.hasSettlements() =
+        this != null && this.paymentSettlements.isNotEmpty()
 }
 

@@ -9,6 +9,7 @@ import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
+import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSettlement
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentUpdate
 import io.cloudflight.jems.server.payments.service.advance.updateAdvancePaymentDetail.UpdateAdvancePaymentDetail
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
@@ -49,6 +50,14 @@ class UpdateAdvancePaymentTest : UnitTest() {
             abbreviation = setOf(InputTranslation(SystemLanguage.EN, "FUND")),
         )
 
+        private val paymentSettlement = AdvancePaymentSettlement(
+            id = 1L,
+            number = 1,
+            amountSettled = BigDecimal(5),
+            settlementDate = currentDate.minusDays(1),
+            comment = "half"
+        )
+
         private val paymentUpdate = AdvancePaymentUpdate(
             id = paymentId,
             projectId = projectId,
@@ -58,7 +67,8 @@ class UpdateAdvancePaymentTest : UnitTest() {
             paymentDate = currentDate,
             comment = "random comment",
             paymentAuthorized = true,
-            paymentConfirmed = true
+            paymentConfirmed = true,
+            paymentSettlements = listOf(paymentSettlement)
         )
         private val paymentDetail = AdvancePaymentDetail(
             id = paymentId,
@@ -79,7 +89,8 @@ class UpdateAdvancePaymentTest : UnitTest() {
             paymentAuthorizedDate = currentDate.minusDays(3),
             paymentConfirmed = true,
             paymentConfirmedUser = OutputUser(userId, "random@mail", "name", "surname"),
-            paymentConfirmedDate = currentDate.minusDays(2)
+            paymentConfirmedDate = currentDate.minusDays(2),
+            paymentSettlements = listOf(paymentSettlement)
         )
     }
 
@@ -220,6 +231,7 @@ class UpdateAdvancePaymentTest : UnitTest() {
         every { result.partnerId } returns partnerId
         every { result.partnerType } returns paymentDetail.partnerType
         every { result.partnerNumber } returns paymentDetail.partnerNumber
+        every { result.paymentSettlements } returns paymentDetail.paymentSettlements
         val toUpdateSlot = slot<AdvancePaymentUpdate>()
         every {
             paymentPersistence.updatePaymentDetail(capture(toUpdateSlot))

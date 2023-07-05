@@ -2,25 +2,16 @@ package io.cloudflight.jems.server.payments.service.advance
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.payments.model.advance.AdvancePayment
-import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSearchRequest
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSettlement
-import io.cloudflight.jems.server.payments.service.advance.getAdvancePayments.GetAdvancePayments
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.toScaledBigDecimal
-import io.mockk.every
-import io.mockk.impl.annotations.InjectMockKs
-import io.mockk.impl.annotations.MockK
-import io.mockk.mockk
-import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import org.springframework.data.domain.PageImpl
-import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
 import java.time.LocalDate
 
-class GetAdvancePaymentsTest: UnitTest() {
-
+class AdvancePaymentCalculatorHelperTest: UnitTest() {
 
     companion object {
 
@@ -42,14 +33,14 @@ class GetAdvancePaymentsTest: UnitTest() {
                 AdvancePaymentSettlement(
                     id = 1L,
                     number = 1,
-                    amountSettled = BigDecimal(57.9),
+                    amountSettled = 1.34.toScaledBigDecimal(),
                     settlementDate = currentDate.minusDays(1),
                     comment = "half"
                 ),
                 AdvancePaymentSettlement(
                     id = 1L,
                     number = 1,
-                    amountSettled = BigDecimal(42.1),
+                    amountSettled = 2.40.toScaledBigDecimal(),
                     settlementDate = currentDate.minusDays(1),
                     comment = "half"
                 )
@@ -57,21 +48,10 @@ class GetAdvancePaymentsTest: UnitTest() {
         )
     }
 
-    @MockK
-    private lateinit var paymentPersistence: PaymentAdvancePersistence
-
-    @InjectMockKs
-    private lateinit var getAdvancePayments: GetAdvancePayments
-
 
     @Test
-    fun `list advance payments`() {
-
-        val filters = mockk<AdvancePaymentSearchRequest>()
-        every { paymentPersistence.list(Pageable.unpaged(), filters) } returns PageImpl(listOf(advancePayment))
-
-        val result = advancePayment.copy(amountSettled = 100.00.toScaledBigDecimal())
-        assertThat(getAdvancePayments.list(Pageable.unpaged(), filters)).contains(result)
+    fun `sum of settled amounts`() {
+        Assertions.assertEquals(advancePayment.calculateAmountSettled(), advancePayment.copy(amountSettled = 3.74.toScaledBigDecimal()))
     }
 
 }

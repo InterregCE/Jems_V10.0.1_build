@@ -28,7 +28,7 @@ export class AdvancePaymentsPageComponent implements OnInit, AfterViewInit {
   @ViewChild('remainingToBeSettledCell', {static: true})
   remainingToBeSettledCell: TemplateRef<any>;
 
-  @ViewChild('remainingToBeSettledCell', {static: true})
+  @ViewChild('advanceAmountPaidCell', {static: true})
   advanceAmountPaidCell: TemplateRef<any>;
 
   @ViewChild('deleteButtonCell', {static: true})
