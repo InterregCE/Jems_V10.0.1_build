@@ -3,10 +3,12 @@ package io.cloudflight.jems.server.plugin.services.payments
 import io.cloudflight.jems.plugin.contract.models.common.IdNamePairData
 import io.cloudflight.jems.plugin.contract.models.payments.advance.AdvancePaymentData
 import io.cloudflight.jems.plugin.contract.models.payments.advance.AdvancePaymentDetailData
+import io.cloudflight.jems.plugin.contract.models.payments.advance.AdvancePaymentSettlementData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerRoleData
 import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.payments.model.advance.AdvancePayment
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
+import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSettlement
 import io.cloudflight.jems.server.plugin.services.toDataModel
 
 
@@ -48,10 +50,19 @@ fun AdvancePaymentDetail.toDataModel() = AdvancePaymentDetailData(
     paymentAuthorizedDate = paymentAuthorizedDate,
     paymentConfirmed = paymentConfirmed,
     paymentConfirmedUser = paymentConfirmedUser?.toUserSummaryDataModel(),
-    paymentConfirmedDate = paymentConfirmedDate
+    paymentConfirmedDate = paymentConfirmedDate,
+    paymentSettlements = paymentSettlements.map { it.toDataModel() }
 )
 
 fun IdNamePair.toDataModel() = IdNamePairData(
     id = id,
     name = name
+)
+
+fun AdvancePaymentSettlement.toDataModel() = AdvancePaymentSettlementData(
+    id = id,
+    number = number,
+    settlementDate = settlementDate,
+    amountSettled = amountSettled,
+    comment = comment
 )
