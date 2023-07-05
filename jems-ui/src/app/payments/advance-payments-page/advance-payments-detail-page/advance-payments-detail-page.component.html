@@ -211,7 +211,7 @@
                                 </div>
 
                                 <div *ngFor="let settlement of settlementsArray.controls; let i=index">
-                                    <ng-container formArrayName="settlements">
+                                    <ng-container formArrayName="paymentSettlements">
                                         <ng-container [formGroupName]="i">
                                             <div class="w-50">{{settlement.get(constants.FORM_CONTROL_NAMES.settlementNr).value}}</div>
                                             <div>
