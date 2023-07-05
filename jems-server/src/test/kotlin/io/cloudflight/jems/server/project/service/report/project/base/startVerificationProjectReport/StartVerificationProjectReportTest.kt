@@ -79,7 +79,7 @@ internal class StartVerificationProjectReportTest : UnitTest() {
         Assertions.assertThat(auditSlot.captured.auditCandidate.project?.customIdentifier).isEqualTo("FG01_654")
         Assertions.assertThat(auditSlot.captured.auditCandidate.project?.name).isEqualTo("acronym")
         Assertions.assertThat(auditSlot.captured.auditCandidate.entityRelatedId).isEqualTo(37L)
-        Assertions.assertThat(auditSlot.captured.auditCandidate.description).isEqualTo("[FG01_654] Project report R.4 verification ongoing")
+        Assertions.assertThat(auditSlot.captured.auditCandidate.description).isEqualTo("[FG01_654] Project report R.4 verification started")
     }
 
     @ParameterizedTest(name = "startVerification - wrong status (status {0})")

@@ -215,11 +215,13 @@ export class Permission {
               mode: PermissionMode.HIDDEN_VIEW_EDIT,
               viewPermissions: [PermissionsEnum.ProjectReportingVerificationProjectView],
               editPermissions: [PermissionsEnum.ProjectReportingVerificationProjectEdit],
+              editTooltip: 'permission.inspect.reporting.project.verify'
             },
             {
               name: 'project.application.project.verification.work.finalize.title',
               mode: PermissionMode.TOGGLE_EDIT,
               editPermissions: [PermissionsEnum.ProjectReportingVerificationFinalize],
+              infoMessage: 'permission.inspect.reporting.project.finalize',
             },
           ]
         },

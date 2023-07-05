@@ -111,6 +111,6 @@ fun partnerReportStartedVerification(
             .entityRelatedId(entityRelatedId = report.id)
             .description("[" +
                     report.projectIdentifier +
-                    "] Project report R.${report.reportNumber} verification ongoing")
+                    "] Project report R.${report.reportNumber} verification started")
             .build()
     )
