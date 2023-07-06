@@ -287,6 +287,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
     this.settlementsArray.controls.forEach(control => {
           control.get(this.constants.FORM_CONTROL_NAMES.settlementDate)?.setValidators([Validators.required]);
           control.get(this.constants.FORM_CONTROL_NAMES.amountSettled)?.setValidators([Validators.required]);
+          control.get(this.constants.FORM_CONTROL_NAMES.settlementComment)?.setValidators([Validators.maxLength(500)]);
       }
     );
   }

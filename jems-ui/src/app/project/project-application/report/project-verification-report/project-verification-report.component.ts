@@ -19,7 +19,7 @@ export class ProjectVerificationReportComponent {
 
   Alert = Alert;
   data$: Observable<{
-    projectReport: ProjectReportDTO,
+    projectReport: ProjectReportDTO;
   }>;
   error$ = new BehaviorSubject<APIError | null>(null);
 
