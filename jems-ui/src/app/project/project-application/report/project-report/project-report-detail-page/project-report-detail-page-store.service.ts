@@ -111,7 +111,7 @@ export class ProjectReportDetailPageStore {
         map(status => status as ProjectReportSummaryDTO.StatusEnum),
         tap(status => this.updatedReportStatus$.next(status)),
         tap(status => Log.info('Changed status for report', reportId, status))
-      )
+      );
   }
 }
 

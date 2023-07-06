@@ -269,7 +269,7 @@
                                     </ng-container>
                                 </div>
                             </div>
-                            <button *ngIf="(userCanEdit$ | async) && (settlementsArray.length < 10)" mat-stroked-button
+                            <button *ngIf="(userCanEdit$ | async) && (settlementsArray.length < 25)" mat-stroked-button
                                     class="mt-2"
                                     (click)="addSettlement()">
                                 {{'payments.advance.payments.detail.settlement.add.button' | translate}}

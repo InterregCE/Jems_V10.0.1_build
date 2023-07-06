@@ -13,6 +13,7 @@ import io.cloudflight.jems.server.payments.service.advance.AdvancePaymentValidat
 import io.cloudflight.jems.server.payments.service.advance.AdvancePaymentValidator.Companion.PAYMENT_ADVANCE_DELETION_ERROR_KEY
 import io.cloudflight.jems.server.payments.service.advance.AdvancePaymentValidator.Companion.PAYMENT_ADVANCE_NO_SOURCE_ERROR_KEY
 import io.cloudflight.jems.server.payments.service.advance.AdvancePaymentValidator.Companion.PAYMENT_ADVANCE_SAVE_ERROR_KEY
+import io.cloudflight.jems.server.payments.service.advance.AdvancePaymentValidator.Companion.PAYMENT_ADVANCE_SETTLEMENTS_ERROR_KEY
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.mockk.MockKAnnotations
@@ -136,7 +137,8 @@ class AdvancePaymentValidatorTest : UnitTest() {
                 advancePaymentUpdate.copy(
                     programmeFundId = 1L,
                     paymentConfirmed = false,
-                    paymentDate = null
+                    paymentDate = null,
+                    paymentSettlements = emptyList()
                 ), null
             )
         }
@@ -162,7 +164,8 @@ class AdvancePaymentValidatorTest : UnitTest() {
             validator.validateDetail(
                 advancePaymentUpdate.copy(
                     paymentConfirmed = false,
-                    paymentDate = null
+                    paymentDate = null,
+                    paymentSettlements = emptyList()
                 ), null
             )
         }
@@ -203,5 +206,16 @@ class AdvancePaymentValidatorTest : UnitTest() {
             ))
         }
         assertEquals(PAYMENT_ADVANCE_SAVE_ERROR_KEY, ex.i18nKey)
+    }
+
+    @Test
+    fun `should throw for not confirmed payment with settlements `() {
+        val ex = assertThrows<I18nValidationException> {
+            validator.validateDetail(
+                update= advancePaymentUpdate.copy(paymentAuthorized = true, paymentConfirmed = false),
+                saved = advancePaymentDetail.copy(paymentAuthorized = false, paymentConfirmed = false, paymentSettlements = emptyList())
+            )
+        }
+        assertEquals(PAYMENT_ADVANCE_SETTLEMENTS_ERROR_KEY, ex.i18nKey)
     }
 }

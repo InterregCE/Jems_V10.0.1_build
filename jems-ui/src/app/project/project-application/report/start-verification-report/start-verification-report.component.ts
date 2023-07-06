@@ -24,7 +24,7 @@ export class StartVerificationReportComponent {
   ProjectReportSummaryDTO = ProjectReportSummaryDTO;
 
   @Input()
-  showStart: boolean = false;
+  showStart = false;
   @Input()
   reportId: number;
   @Input()
@@ -34,9 +34,9 @@ export class StartVerificationReportComponent {
 
   pendingAction$ = new BehaviorSubject(false);
   data$: Observable<{
-    projectId: number,
-    canView: boolean,
-    canEdit: boolean,
+    projectId: number;
+    canView: boolean;
+    canEdit: boolean;
   }>;
 
   constructor(
