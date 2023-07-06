@@ -1,5 +1,5 @@
 <div class="global-warning-container-card-container">
-    <mat-card *ngIf="!validateUserAgent" class="global-warning">
+    <mat-card *ngIf="!validateUserAgent()" class="global-warning">
         <mat-card-content class="global-warning-content">
             <div>{{ 'user.agent.info.1' | translate }}</div>
             <div>{{ 'user.agent.info.2' | translate }}</div>
