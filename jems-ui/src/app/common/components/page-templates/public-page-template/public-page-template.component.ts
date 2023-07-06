@@ -41,11 +41,11 @@ export class PublicPageTemplateComponent {
 
   validateBrowser(regex: string, reqVersion: number): boolean {
     const match = this.userAgent$.match(regex)
-    if (match != null) {
+    if (match == null) {
       return false;
     }
 
-    const version: number = Number(match ? [1] : -1)
+    const version: number = Number(match ? match[1] : -1)
     return version >= reqVersion;
   }
 }
