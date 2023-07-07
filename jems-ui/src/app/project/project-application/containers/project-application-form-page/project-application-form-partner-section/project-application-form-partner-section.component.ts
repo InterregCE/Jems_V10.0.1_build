@@ -91,4 +91,10 @@ export class ProjectApplicationFormPartnerSectionComponent {
         ? partners.some(partner => partner.active) : false)
     );
   }
+
+  canAddPartner(): Observable<boolean> {
+    return this.partnerStore.partners$.pipe(
+        map((partners) => partners.length < 50)
+      );
+  }
 }
