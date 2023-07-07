@@ -154,7 +154,14 @@ export class TableComponent implements OnInit, OnChanges {
       queryParams = {queryParams: {version: this.selectedVersion?.version}};
     }
 
-    this.routingService.navigate([this.configuration.routerLink, row.id ], {...queryParams, relativeTo: this.activatedRoute});
+    if (this.configuration.extraPathParamFields && this.configuration.extraPathParamFields.length > 0) {
+      this.configuration.extraPathParamFields.forEach((element) => {
+        this.configuration.routerLink = this.configuration.routerLink?.replace(`{${element}}`, row[element]);
+      });
+      this.routingService.navigate([this.configuration.routerLink], {...queryParams, relativeTo: this.activatedRoute});
+    } else {
+      this.routingService.navigate([this.configuration.routerLink, row.id], {...queryParams, relativeTo: this.activatedRoute});
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {

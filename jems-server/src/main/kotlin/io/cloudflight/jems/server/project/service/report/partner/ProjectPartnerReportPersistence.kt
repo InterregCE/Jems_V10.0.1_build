@@ -34,7 +34,7 @@ interface ProjectPartnerReportPersistence {
 
     fun getPartnerReportById(partnerId: Long, reportId: Long): ProjectPartnerReport
 
-    fun listPartnerReports(partnerId: Long, pageable: Pageable): Page<ProjectPartnerReportSummary>
+    fun listPartnerReports(partnerIds: Set<Long>, statuses: Set<ReportStatus>, pageable: Pageable): Page<ProjectPartnerReportSummary>
 
     fun getAllPartnerReportsBaseDataByProjectId(projectId: Long): Sequence<ProjectPartnerReportBaseData>
 

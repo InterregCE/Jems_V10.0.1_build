@@ -43,6 +43,24 @@ export class Permission {
     PermissionsEnum.AdvancePaymentsUpdate
   ];
 
+  public static readonly MONITORING_PERMISSIONS = [
+    PermissionsEnum.ProjectFormRetrieve,
+    PermissionsEnum.ProjectFileApplicationRetrieve,
+    PermissionsEnum.ProjectCheckApplicationForm,
+    PermissionsEnum.ProjectAssessmentView,
+    PermissionsEnum.ProjectStatusDecisionRevert,
+    PermissionsEnum.ProjectStatusReturnToApplicant,
+    PermissionsEnum.ProjectStartStepTwo,
+    PermissionsEnum.ProjectFileAssessmentRetrieve,
+    PermissionsEnum.ProjectContractingView,
+    PermissionsEnum.ProjectSetToContracted,
+    PermissionsEnum.ProjectReportingView,
+    PermissionsEnum.ProjectReportingEdit,
+    PermissionsEnum.ProjectModificationView,
+    PermissionsEnum.ProjectOpenModification,
+    PermissionsEnum.ProjectModificationFileAssessmentRetrieve
+  ];
+
   public static readonly DEFAULT_USER_CREATE_AND_COLLABORATE_PERMISSIONS: PermissionNode[] = [
     {
       name: 'project.application.reporting.title',
@@ -450,6 +468,14 @@ export class Permission {
       disabled: true,
       icon: 'dashboard',
       children: [
+        {
+          name: 'user.partner.reports',
+          mode: PermissionMode.HIDDEN_VIEW,
+          viewPermissions: [
+            PermissionsEnum.PartnerReportsRetrieve,
+          ],
+          viewTooltip: 'permission.top.bar.partner.reports'
+        },
         {
           name: 'call.applications.title',
           mode: PermissionMode.HIDDEN_VIEW,

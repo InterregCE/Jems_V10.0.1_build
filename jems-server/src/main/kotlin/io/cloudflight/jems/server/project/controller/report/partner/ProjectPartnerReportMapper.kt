@@ -52,6 +52,12 @@ fun ProjectPartnerReportSummary.toDto() = ProjectPartnerReportSummaryDTO(
     totalEligibleAfterControl = totalEligibleAfterControl,
     totalAfterSubmitted = totalAfterSubmitted,
     deletable = deletable,
+    partnerAbbreviation = partnerAbbreviation,
+    partnerRole = ProjectPartnerRoleDTO.valueOf(partnerRole.name),
+    projectCustomIdentifier = projectCustomIdentifier,
+    projectId = projectId,
+    partnerId = partnerId,
+    partnerNumber = partnerNumber
 )
 
 fun ProjectPartnerReportPeriod.toDto() = ProjectPartnerReportPeriodDTO(

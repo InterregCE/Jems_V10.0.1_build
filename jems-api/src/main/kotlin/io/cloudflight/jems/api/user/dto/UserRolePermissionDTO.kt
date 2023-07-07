@@ -89,6 +89,7 @@ enum class UserRolePermissionDTO(val key: String) {
     // endregion Monitor
 
     // region top navigation
+    PartnerReportsRetrieve("PartnerReportsRetrieve"),
     ProjectsWithOwnershipRetrieve("ProjectsWithOwnershipRetrieve"),
     CallPublishedRetrieve("CallPublishedRetrieve"),
     NotificationsRetrieve("NotificationsRetrieve"),

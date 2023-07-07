@@ -30,6 +30,10 @@ annotation class CanEditPartnerReportNotSpecific
 annotation class CanViewPartnerReport
 
 @Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@projectAuthorization.hasPermission('PartnerReportsRetrieve')")
+annotation class CanViewMyPartnerReports
+
+@Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("@projectPartnerReportAuthorization.canEditPartnerControlReport(#partnerId, #reportId)")
 annotation class CanEditPartnerControlReport
 

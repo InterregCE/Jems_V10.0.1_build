@@ -99,6 +99,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
             id: Long,
             createdAt: ZonedDateTime = ZonedDateTime.now(),
             status: ReportStatus = ReportStatus.Draft,
+            partnerId: Long = 99L
         ) = ReportSummary(
             id = id,
             number = 1,
@@ -119,6 +120,12 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
             periodBudgetCumulative = TEN,
             projectReportId = 54L,
             projectReportNumber = 540,
+            partnerNumber = 1,
+            partnerAbbreviation = "sample partner",
+            projectId = 10L,
+            partnerId = partnerId,
+            partnerRole = ProjectPartnerRole.LEAD_PARTNER,
+            projectCustomIdentifier = "project"
         )
 
         private fun draftReportSubmissionEntity(id: Long, createdAt: ZonedDateTime = ZonedDateTime.now()) = ProjectPartnerReportSubmissionSummary(
@@ -187,10 +194,15 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
             )
         )
 
-        private fun draftReportSummary(id: Long, createdAt: ZonedDateTime) = ProjectPartnerReportSummary(
+        private fun reportSummaryModel(
+            id: Long,
+            createdAt: ZonedDateTime,
+            status: ReportStatus,
+            partnerId: Long
+        ) = ProjectPartnerReportSummary(
             id = id,
             reportNumber = 1,
-            status = ReportStatus.Draft,
+            status = status,
             version = "3.0",
             firstSubmission = null,
             lastReSubmission = LAST_MONTH,
@@ -210,6 +222,12 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
             totalEligibleAfterControl = TEN,
             totalAfterSubmitted = ONE,
             deletable = false,
+            partnerNumber = 1,
+            partnerAbbreviation = "sample partner",
+            projectId = 10L,
+            partnerId = partnerId,
+            partnerRole = ProjectPartnerRole.LEAD_PARTNER,
+            projectCustomIdentifier = "project"
         )
 
         private fun coFinancingEntities(report: ProjectPartnerReportEntity) = listOf(
@@ -255,7 +273,6 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
                 percentage = TEN,
             ),
         )
-
     }
 
     @MockK
@@ -418,11 +435,35 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
     fun listPartnerReports() {
         val twoWeeksAgo = ZonedDateTime.now().minusDays(14)
 
-        every { partnerReportRepository.findAllByPartnerId(PARTNER_ID, Pageable.unpaged()) } returns
+        every { partnerReportRepository.findAllByPartnerIdInAndStatusIn(
+            setOf(PARTNER_ID),
+            ReportStatus.values().toSet(),
+            Pageable.unpaged()
+        ) } returns
             PageImpl(listOf(reportSummary(id = 18L, createdAt = twoWeeksAgo)))
 
-        assertThat(persistence.listPartnerReports(PARTNER_ID, Pageable.unpaged()).content)
-            .containsExactly(draftReportSummary(id = 18L, createdAt = twoWeeksAgo))
+        assertThat(persistence.listPartnerReports(setOf(PARTNER_ID), ReportStatus.values().toSet(), Pageable.unpaged()).content)
+            .containsExactly(reportSummaryModel(id = 18L, createdAt = twoWeeksAgo, status = ReportStatus.Draft, partnerId = 99L))
+    }
+
+    @Test
+    fun listPartnerReportsMine() {
+        val partnerIds = setOf(99L, 100L)
+        val twoWeeksAgo = ZonedDateTime.now().minusDays(14)
+
+        every { partnerReportRepository.findAllByPartnerIdInAndStatusIn(partnerIds,
+            ReportStatus.FINANCIALLY_CLOSED_STATUSES,
+            Pageable.unpaged())
+        } returns PageImpl(listOf(
+            reportSummary(101L, createdAt = twoWeeksAgo, status = ReportStatus.Submitted, partnerId = 99L),
+            reportSummary(102L, createdAt = twoWeeksAgo, status = ReportStatus.Certified, partnerId = 100L)
+        ))
+
+        assertThat(persistence.listPartnerReports(partnerIds, ReportStatus.FINANCIALLY_CLOSED_STATUSES, Pageable.unpaged()).content)
+            .containsExactly(
+                reportSummaryModel(id = 101L, createdAt = twoWeeksAgo, status = ReportStatus.Submitted, partnerId = 99L),
+                reportSummaryModel(id = 102L, createdAt = twoWeeksAgo, status = ReportStatus.Certified, partnerId = 100L)
+            )
     }
 
     @Test

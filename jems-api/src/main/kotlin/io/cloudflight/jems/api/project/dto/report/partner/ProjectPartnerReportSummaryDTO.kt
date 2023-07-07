@@ -1,5 +1,6 @@
 package io.cloudflight.jems.api.project.dto.report.partner
 
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.api.project.dto.report.partner.identification.ProjectPartnerReportPeriodDTO
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -7,6 +8,12 @@ import java.time.ZonedDateTime
 
 data class ProjectPartnerReportSummaryDTO(
     val id: Long,
+    val projectId: Long,
+    val partnerId: Long,
+    val projectCustomIdentifier: String,
+    val partnerRole: ProjectPartnerRoleDTO,
+    val partnerNumber: Int,
+    val partnerAbbreviation: String,
     val reportNumber: Int,
     val status: ReportStatusDTO,
     val linkedFormVersion: String,

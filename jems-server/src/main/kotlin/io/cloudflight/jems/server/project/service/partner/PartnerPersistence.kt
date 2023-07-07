@@ -60,4 +60,6 @@ interface PartnerPersistence {
     fun getPartnerProjectIdByPartnerIdAndProjectStatusIn(partnerIds: Set<Long>, projectStatuses: Set<ApplicationStatus>): List<Pair<Long, Long>>
 
     fun getCurrentPartnerAssignmentMetadata(projectId: Long): List<ProjectPartnerAssignmentMetadata>
+
+    fun getPartnerIdsByProjectIds(projectIds: Set<Long>): Set<Long>
 }
