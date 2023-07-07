@@ -34,9 +34,9 @@ export class StartVerificationReportComponent {
 
   pendingAction$ = new BehaviorSubject(false);
   data$: Observable<{
-    projectId: number;
-    canView: boolean;
-    canEdit: boolean;
+    projectId: number,
+    canView: boolean,
+    canEdit: boolean,
   }>;
 
   constructor(
@@ -49,13 +49,14 @@ export class StartVerificationReportComponent {
   ) {
     this.data$ = combineLatest([
       this.projectStore.projectId$,
+      this.projectReportStore.userCanViewReport$,
       this.projectReportStore.userCanViewVerification$,
-      this.projectReportStore.userCanEditVerification$
+      this.projectReportStore.userCanEditVerification$,
     ]).pipe(
-      map(([projectId, canView, canEdit]) => ({
+      map(([projectId, canViewProjectReports, canViewVerification, canEditVerification]) => ({
         projectId,
-        canView,
-        canEdit
+        canView: canViewProjectReports || canViewVerification,
+        canEdit: canEditVerification,
       }))
     );
   }
