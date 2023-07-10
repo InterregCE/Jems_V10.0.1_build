@@ -2282,22 +2282,7 @@ context('Partner reports tests', () => {
     loginByRequest(user.applicantUser.email).then(() => {
       cy.visit(`app/project/detail/${applicationId}/applicationFormPartner`, {failOnStatusCode: false});
       cy.contains('Add new partner')
-        .click()
-      cy.contains('button', 'Partner')
-        .click();
-      cy.get(`[name='abbreviation']`)
-        .type('PP51');
-      cy.get(`[name='legalStatusId']`)
-        .click()
-      cy.contains('Public')
-        .click();
-      cy.contains('button', 'Create')
-        .click();
-
-      cy.contains('Failed to create the project partner (error code: S-CPP)')
-        .should('be.visible');
-      cy.contains('It is not possible to add more than "50" partner to the project application (error code: S-CPP-005)')
-        .should('be.visible');
+        .should('not.exist')
     });
   }
 
