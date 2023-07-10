@@ -15,7 +15,7 @@
                     <mat-expansion-panel-header jemsNoWidthLimit>
                         <mat-panel-title>
                             <span class="mt-1" *ngIf="workPackage.get(constants.WORK_PACKAGE_DEACTIVATED.name)?.value">
-                                <mat-icon [matTooltip]="'project.application.form.partner.table.status.inactive' | translate">do_not_disturb</mat-icon>
+                                <mat-icon class="vertical-middle" [matTooltip]="'project.application.form.partner.table.status.inactive' | translate">do_not_disturb</mat-icon>
                             </span>
                             <span *ngIf="workPackage.get(constants.WORK_PACKAGE_COMPLETED.name)?.value">
                                 <mat-icon class="mt-1 mr-2 green-icon" [matTooltip]="'project.application.project.report.tab.work.plan.work.package.completed' | translate">check_circle_outline</mat-icon>
