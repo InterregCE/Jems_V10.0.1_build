@@ -8,6 +8,9 @@ data class ProjectContractingMonitoringDTO(
     val startDate: LocalDate? = null,
     val endDate: LocalDate? = null,
 
+    val entryIntoForceDate: LocalDate? = null,
+    val entryIntoForceComment: String? = null,
+
     val typologyProv94: ContractingMonitoringExtendedOptionDTO? = null,
     val typologyProv94Comment: String? = null,
     val typologyProv95: ContractingMonitoringExtendedOptionDTO? = null,
