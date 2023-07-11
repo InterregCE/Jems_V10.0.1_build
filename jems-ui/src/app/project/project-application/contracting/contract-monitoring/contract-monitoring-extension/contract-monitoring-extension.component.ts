@@ -182,6 +182,8 @@ export class ContractMonitoringExtensionComponent {
     this.dimensionCodesFormItems.clear();
     this.decisionForm.controls.startDate.setValue(projectContractingMonitoring.startDate);
     this.decisionForm.controls.endDate.setValue(projectContractingMonitoring.endDate);
+    this.decisionForm.controls.entryIntoForceDate.setValue(projectContractingMonitoring.entryIntoForceDate);
+    this.decisionForm.controls.entryIntoForceComment.setValue(projectContractingMonitoring.entryIntoForceComment);
     this.decisionForm.controls.typologyProv94.setValue(projectContractingMonitoring.typologyProv94);
     this.decisionForm.controls.typologyProv94Comment.setValue(projectContractingMonitoring.typologyProv94Comment);
     this.decisionForm.controls.typologyProv95.setValue(projectContractingMonitoring.typologyProv95);
