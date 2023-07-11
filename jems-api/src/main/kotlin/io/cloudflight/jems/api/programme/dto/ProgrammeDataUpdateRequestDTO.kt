@@ -15,6 +15,7 @@ data class ProgrammeDataUpdateRequestDTO(
     val commissionDecisionDate: LocalDate?,
     val programmeAmendingDecisionNumber: String?,
     val programmeAmendingDecisionDate: LocalDate?,
+    val technicalAssistanceFlatRate: Double?,
     val projectIdProgrammeAbbreviation: String?,
     val projectIdUseCallId: Boolean
 

@@ -40,6 +40,7 @@ context('Programme management tests', () => {
         cy.contains('div', 'Commission decision date').find('input').type(testData.commissionDecisionDate);
         cy.contains('div', 'Programme amending decision number').find('input').type(testData.programmeAmendingDecisionNumber);
         cy.contains('div', 'Programme amending decision entry').find('input').type(testData.programmeAmendingDecisionDate);
+        cy.contains('div', 'Technical assistance flat rate').find('input').type(testData.technicalAssistanceFlatRate);
 
         cy.contains('Save').click();
         cy.contains('Confirm').should('be.visible').click();

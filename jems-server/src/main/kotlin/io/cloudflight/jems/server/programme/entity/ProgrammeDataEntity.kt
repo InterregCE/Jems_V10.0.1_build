@@ -32,6 +32,8 @@ data class ProgrammeDataEntity(
     val programmeAmendingDecisionNumber: String?,
     val programmeAmendingDecisionDate: LocalDate?,
 
+    val technicalAssistanceFlatRate: Double?,
+
     val projectIdProgrammeAbbreviation: String?,
     @field:NotNull
     val projectIdUseCallId: Boolean,

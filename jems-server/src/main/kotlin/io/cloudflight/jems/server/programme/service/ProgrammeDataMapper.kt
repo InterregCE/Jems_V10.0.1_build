@@ -23,6 +23,7 @@ fun ProgrammeDataUpdateRequestDTO.toEntity(
     commissionDecisionDate = commissionDecisionDate,
     programmeAmendingDecisionNumber = programmeAmendingDecisionNumber,
     programmeAmendingDecisionDate = programmeAmendingDecisionDate,
+    technicalAssistanceFlatRate = technicalAssistanceFlatRate,
     projectIdProgrammeAbbreviation = projectIdProgrammeAbbreviation,
     projectIdUseCallId = projectIdUseCallId,
     programmeNuts = programmeNuts,
@@ -41,6 +42,7 @@ fun ProgrammeDataEntity.toProgrammeDataDTO() = ProgrammeDataDTO(
     commissionDecisionDate = commissionDecisionDate,
     programmeAmendingDecisionNumber = programmeAmendingDecisionNumber,
     programmeAmendingDecisionDate = programmeAmendingDecisionDate,
+    technicalAssistanceFlatRate = technicalAssistanceFlatRate,
     projectIdProgrammeAbbreviation = projectIdProgrammeAbbreviation,
     projectIdUseCallId = projectIdUseCallId,
     programmeNuts = programmeNuts.toDto()

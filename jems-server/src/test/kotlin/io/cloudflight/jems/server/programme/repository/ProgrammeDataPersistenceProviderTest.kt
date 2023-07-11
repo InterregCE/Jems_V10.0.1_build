@@ -41,6 +41,7 @@ class ProgrammeDataPersistenceProviderTest : UnitTest() {
             commissionDecisionDate = LocalDate.of(2020, 1, 1),
             programmeAmendingDecisionNumber = "",
             programmeAmendingDecisionDate = LocalDate.of(2020, 1, 1),
+            technicalAssistanceFlatRate = 10.0,
             projectIdProgrammeAbbreviation = "NL-DE_",
             projectIdUseCallId = true,
             defaultUserRoleId = 1L
@@ -59,6 +60,7 @@ class ProgrammeDataPersistenceProviderTest : UnitTest() {
             commissionDecisionDate = LocalDate.of(2020, 1, 1),
             programmeAmendingDecisionNumber = "",
             programmeAmendingDecisionDate = LocalDate.of(2020, 1, 1),
+            technicalAssistanceFlatRate = 10.0,
             projectIdProgrammeAbbreviation = "NL-DE_",
             projectIdUseCallId = true,
             defaultUserRoleId = 1L
