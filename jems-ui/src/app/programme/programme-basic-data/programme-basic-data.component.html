@@ -1,7 +1,7 @@
 <jems-main-page-template [needsCard]="true"
-                        *ngIf="programme$ | async as programme"
-                        titleKey="programme.data.page.title"
-                        subTitleKey="programme.tab.data">
+                         *ngIf="programme$ | async as programme"
+                         titleKey="programme.data.page.title"
+                         subTitleKey="programme.tab.data">
     <form jemsFormLayout [formGroup]="programmeForm">
         <div jemsMultiColumnRow>
             <h3 class="mb-0">{{'programme.data.header' | translate}}</h3>
@@ -30,7 +30,8 @@
                 <mat-label>{{'programme.data.field.version' | translate}}</mat-label>
                 <input [title]="programme.version" name="version" formControlName="version" matInput>
                 <mat-error>
-                    <jems-form-field-errors [errors]="programmeForm?.controls?.version?.errors"></jems-form-field-errors>
+                    <jems-form-field-errors
+                            [errors]="programmeForm?.controls?.version?.errors"></jems-form-field-errors>
                 </mat-error>
             </mat-form-field>
         </div>
@@ -148,6 +149,24 @@
                 </mat-error>
             </mat-form-field>
         </div>
+        <div jemsMultiColumnRow>
+            <mat-form-field>
+                <mat-label>{{'programme.data.field.technical.assistance.flatrate' | translate}}</mat-label>
+                <input currencyMask matInput type="decimal" name="technicalAssistanceFlatRate" formControlName="technicalAssistanceFlatRate"  aria-label="percentage value"
+                       [options]="{min: 0, max: 100, align: 'right'}"
+                       [min]="programmeForm?.controls?.technicalAssistanceFlatRate?.value"
+                       (paste)="tools.checkDigitsOnPaste($event)" (keypress)="tools.checkDigitsOnInput($event)">
+                <span matSuffix class="pl-1">%</span>
+                <mat-error>
+                    <jems-form-field-errors
+                            [errors]="programmeForm?.controls?.technicalAssistanceFlatRate?.errors"
+                            [messages]="flatRateErrors"
+                            [args]="flatRateArgs"
+                    >
+                    </jems-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+        </div>
         <h3>{{'programme.data.field.project.id' | translate}}</h3>
         <span>{{'programme.data.field.project.id.description' | translate}}</span>
         <div jemsMultiColumnRow stretch class="mb-3">
@@ -191,8 +210,8 @@
             <p>{{'programme.data.save.success' | translate}}</p>
         </jems-alert>
         <jems-alert *ngIf="programmeSaveError$ | async as error"
-                   [show]="!submitted && !!error.i18nMessage?.i18nKey"
-                   [type]="Alert.ERROR">
+                    [show]="!submitted && !!error.i18nMessage?.i18nKey"
+                    [type]="Alert.ERROR">
             <jems-api-error-content [error]="error"></jems-api-error-content>
         </jems-alert>
     </form>

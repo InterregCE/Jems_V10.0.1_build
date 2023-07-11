@@ -9,5 +9,6 @@
   "commissionDecisionNumber": "CY.1.23",
   "commissionDecisionDate": "12/1/2020",
   "programmeAmendingDecisionNumber": "CY.3.2.1",
-  "programmeAmendingDecisionDate": "12/1/2020"
+  "programmeAmendingDecisionDate": "12/1/2020",
+  "technicalAssistanceFlatRate": "50"
 }

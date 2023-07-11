@@ -72,6 +72,7 @@ export class ProgrammeBasicDataComponent extends ViewEditFormComponent implement
     commissionDecisionDate: [''],
     programmeAmendingDecisionNumber: ['', Validators.maxLength(255)],
     programmeAmendingDecisionDate: [''],
+    technicalAssistanceFlatRate: ['', Validators.compose([Validators.min(0), Validators.max(100)])],
     projectIdProgrammeAbbreviation: ['', Validators.maxLength(12)],
     projectIdUseCallId: false,
   },{
@@ -107,6 +108,16 @@ export class ProgrammeBasicDataComponent extends ViewEditFormComponent implement
   eligibleUntilErrors = {
     matDatepickerParse: ProgrammeBasicDataComponent.DATE_SHOULD_BE_VALID,
     matDatepickerMin: 'programme.eligibleUntil.must.be.after.eligibleFrom',
+  };
+
+  flatRateArgs = {
+    min: {min: 0, max: 100},
+    max: {min: 0, max: 100}
+  };
+
+  flatRateErrors = {
+    max: ProgrammeBasicDataComponent.NUMBER_OUT_OF_RANGE_ERROR,
+    min: ProgrammeBasicDataComponent.NUMBER_OUT_OF_RANGE_ERROR
   };
 
   constructor(private formBuilder: FormBuilder,
@@ -166,6 +177,7 @@ export class ProgrammeBasicDataComponent extends ViewEditFormComponent implement
     controls.commissionDecisionDate.setValue(programme.commissionDecisionDate);
     controls.programmeAmendingDecisionNumber.setValue(this.getSizedValue(programme.programmeAmendingDecisionNumber));
     controls.programmeAmendingDecisionDate.setValue(programme.programmeAmendingDecisionDate);
+    controls.technicalAssistanceFlatRate.setValue(programme.technicalAssistanceFlatRate)
     controls.projectIdProgrammeAbbreviation.setValue(programme.projectIdProgrammeAbbreviation);
     controls.projectIdUseCallId.setValue(programme.projectIdUseCallId);
   }
@@ -194,6 +206,7 @@ export class ProgrammeBasicDataComponent extends ViewEditFormComponent implement
       commissionDecisionDate: controls?.commissionDecisionDate?.value,
       programmeAmendingDecisionNumber: controls?.programmeAmendingDecisionNumber?.value,
       programmeAmendingDecisionDate: controls?.programmeAmendingDecisionDate?.value,
+      technicalAssistanceFlatRate: controls?.technicalAssistanceFlatRate?.value,
       projectIdProgrammeAbbreviation: controls?.projectIdProgrammeAbbreviation?.value,
       projectIdUseCallId: controls?.projectIdUseCallId?.value,
     } as ProgrammeDataDTO);

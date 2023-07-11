@@ -25,6 +25,7 @@ internal class StartDateBeforeEndDateValidatorImplTest : UnitTest() {
             commissionDecisionDate = LocalDate.of(2020, 1, 1),
             programmeAmendingDecisionNumber = "pad number",
             programmeAmendingDecisionDate = LocalDate.of(2020, 1, 1),
+            technicalAssistanceFlatRate = 10.0,
             projectIdProgrammeAbbreviation = "NL-DE_",
             projectIdUseCallId = true
         )

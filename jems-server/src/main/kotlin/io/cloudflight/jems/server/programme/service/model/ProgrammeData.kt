@@ -15,6 +15,7 @@ data class ProgrammeData(
     val commissionDecisionDate: LocalDate?,
     val programmeAmendingDecisionNumber: String?,
     val programmeAmendingDecisionDate: LocalDate?,
+    val technicalAssistanceFlatRate: Double?,
     val projectIdProgrammeAbbreviation: String?,
     val projectIdUseCallId: Boolean,
     val defaultUserRoleId: Long?

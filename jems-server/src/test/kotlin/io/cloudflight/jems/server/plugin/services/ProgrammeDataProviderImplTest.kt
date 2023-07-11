@@ -30,7 +30,7 @@ internal class ProgrammeDataProviderImplTest : UnitTest() {
     fun `should return programme data info`() {
         val date = LocalDate.now()
         val programmeData = ProgrammeData(
-            2L, "cci", "title", "1.0", 2000, 2020, date, date, "123", LocalDate.now(), "321", date, "abb", true, 1L
+            2L, "cci", "title", "1.0", 2000, 2020, date, date, "123", LocalDate.now(), "321", date, 10.0, "abb", true, 1L
         )
         val programmeFunds = listOf(
             ProgrammeFund(1L, true, ProgrammeFundType.ERDF, emptySet(), emptySet())
