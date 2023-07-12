@@ -64,9 +64,7 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
             createdAt = LAST_WEEK,
             firstSubmission = LAST_YEAR,
             verificationDate = null,
-            verificationEndDate = null,
-            amountRequested = BigDecimal.ONE,
-            totalEligibleAfterVerification = null
+            verificationEndDate = null
         )
 
         private fun reportProjectCertificateCoFinancingEntity(): ReportProjectCertificateCoFinancingEntity? {
@@ -74,6 +72,32 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
             every { mocked.sumCurrent } returns BigDecimal.ONE
             return mocked
         }
+
+        private fun reportForListing(id: Long, projectId: Long) = ProjectReportModel(
+            id = id,
+            reportNumber = 1,
+            status = ProjectReportStatus.Draft,
+            linkedFormVersion = "3.0",
+            startDate = YESTERDAY,
+            endDate = MONTH_AGO,
+
+            type = ContractingDeadlineType.Both,
+            deadlineId = null,
+            periodNumber = 4,
+            reportingDate = YESTERDAY.minusDays(1),
+            projectId = projectId,
+            projectIdentifier = "projectIdentifier",
+            projectAcronym = "projectAcronym",
+            leadPartnerNameInOriginalLanguage = "nameInOriginalLanguage",
+            leadPartnerNameInEnglish = "nameInEnglish",
+
+            createdAt = LAST_WEEK,
+            firstSubmission = LAST_YEAR,
+            verificationDate = null,
+            verificationEndDate = null,
+            amountRequested = BigDecimal.ONE,
+            totalEligibleAfterVerification = null
+        )
 
         private fun report(id: Long, projectId: Long) = ProjectReportModel(
             id = id,
@@ -97,7 +121,7 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
             firstSubmission = LAST_YEAR,
             verificationDate = null,
             verificationEndDate = null,
-            amountRequested = BigDecimal.ONE,
+            amountRequested = null,
             totalEligibleAfterVerification = null
         )
 
@@ -182,7 +206,7 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
         every { result.results } returns listOf(tuple)
         every { query.fetchResults() } returns result
 
-        assertThat(persistence.listReports(projectId, Pageable.ofSize(1))).containsExactly(report(42L, projectId))
+        assertThat(persistence.listReports(projectId, Pageable.ofSize(1))).containsExactly(reportForListing(42L, projectId))
     }
 
     @Test
