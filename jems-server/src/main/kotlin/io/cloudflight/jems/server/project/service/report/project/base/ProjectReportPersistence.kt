@@ -48,5 +48,8 @@ interface ProjectReportPersistence {
 
     fun exists(projectId: Long, reportId: Long): Boolean
 
-    fun startVerificationOnReportById(projectId: Long, reportId: Long): ProjectReportSubmissionSummary
+    fun startVerificationOnReportById(
+        projectId: Long,
+        reportId: Long
+    ): ProjectReportSubmissionSummary
 }

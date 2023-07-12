@@ -21,6 +21,6 @@ data class ProjectReportSummary(
     val verificationDate: ZonedDateTime?,
     val verificationEndDate: ZonedDateTime?,
     var deletable: Boolean,
-    val amountRequested: BigDecimal?,
+    var amountRequested: BigDecimal?,
     val totalEligibleAfterVerification: BigDecimal?
 )

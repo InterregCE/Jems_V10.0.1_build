@@ -40,7 +40,6 @@ internal class StartVerificationProjectReportTest : UnitTest() {
             projectAcronym = "acronym",
             projectId = PROJECT_ID,
         )
-
     }
 
     @MockK

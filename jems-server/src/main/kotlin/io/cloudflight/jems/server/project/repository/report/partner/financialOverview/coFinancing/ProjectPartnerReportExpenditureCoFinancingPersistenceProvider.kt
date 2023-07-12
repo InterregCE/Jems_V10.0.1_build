@@ -151,4 +151,11 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProvider(
                 fundsData = partnerReportCoFinancingRepository
                     .findCumulativeTotalsForReportIds(reportIds),
             )
+
+    @Transactional(readOnly = true)
+    override fun getTotalsForProjectReports(projectReportIds: Set<Long>): Map<Long, BigDecimal> =
+        expenditureCoFinancingRepository
+            .findCumulativeTotalsForProjectReportIds(projectReportIds = projectReportIds)
+            .associate { it.first to it.second }
+
 }

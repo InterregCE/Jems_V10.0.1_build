@@ -3,6 +3,8 @@ package io.cloudflight.jems.server.project.service.report.project.base.getProjec
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancingColumn
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.getProjectReport.GetProjectReportTest.Companion.expectedReportSummary
 import io.cloudflight.jems.server.project.service.report.project.base.getProjectReport.GetProjectReportTest.Companion.period
@@ -11,6 +13,8 @@ import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
+import java.math.BigDecimal
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
@@ -20,8 +24,16 @@ import org.springframework.data.domain.Pageable
 
 internal class GetProjectReportListTest : UnitTest() {
 
+    private fun cumulative() : ReportCertificateCoFinancingColumn {
+        val cumulative = mockk<ReportCertificateCoFinancingColumn>()
+        every { cumulative.sum } returns BigDecimal.ONE
+        return cumulative
+    }
+
     @MockK
     private lateinit var reportPersistence: ProjectReportPersistence
+    @MockK
+    private lateinit var certificateCoFinancingPersistence: ProjectPartnerReportExpenditureCoFinancingPersistence
     @MockK
     private lateinit var projectPersistence: ProjectPersistence
 
@@ -30,8 +42,12 @@ internal class GetProjectReportListTest : UnitTest() {
 
     @BeforeEach
     fun reset() {
-        clearMocks(reportPersistence, projectPersistence)
+        clearMocks(reportPersistence, certificateCoFinancingPersistence, projectPersistence)
         every { projectPersistence.getProjectPeriods(any(), "v4") } returns listOf(period)
+        every { certificateCoFinancingPersistence.getTotalsForProjectReports(any())} returns mapOf(
+            Pair(7L, BigDecimal.ONE),
+            Pair(8L, BigDecimal.ONE)
+        )
     }
 
     @ParameterizedTest(name = "findAll, when last report in {0}")

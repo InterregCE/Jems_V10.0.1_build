@@ -26,7 +26,7 @@ class StartVerificationProjectReport(
 
         return reportPersistence.startVerificationOnReportById(
             projectId = projectId,
-            reportId = reportId,
+            reportId = reportId
         ).also {
             auditPublisher.publishEvent(ProjectReportStatusChanged(this, it))
 

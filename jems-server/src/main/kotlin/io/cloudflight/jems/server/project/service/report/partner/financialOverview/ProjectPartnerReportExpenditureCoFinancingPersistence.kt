@@ -20,4 +20,7 @@ interface ProjectPartnerReportExpenditureCoFinancingPersistence {
     fun getReportCurrentSum(partnerId: Long, reportId: Long): BigDecimal
 
     fun getCoFinancingTotalEligible(reportIds: Set<Long>): ReportCertificateCoFinancingColumn
+
+    fun getTotalsForProjectReports(projectReportIds: Set<Long>): Map<Long, BigDecimal>
+
 }

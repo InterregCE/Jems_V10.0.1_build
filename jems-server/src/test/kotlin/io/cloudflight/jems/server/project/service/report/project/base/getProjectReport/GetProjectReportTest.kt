@@ -92,7 +92,7 @@ internal class GetProjectReportTest : UnitTest() {
             verificationDate = NEXT_MONTH,
             deletable = false,
             verificationEndDate = NEXT_MONTH,
-            amountRequested = BigDecimal.ZERO,
+            amountRequested = BigDecimal.ONE,
             totalEligibleAfterVerification = BigDecimal.ZERO
         )
 

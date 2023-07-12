@@ -74,6 +74,33 @@ fun ProjectReportEntity.toModel() = ProjectReportModel(
     totalEligibleAfterVerification = totalEligibleAfterVerification
 )
 
+fun Pair<ProjectReportEntity, ReportProjectCertificateCoFinancingEntity?>.toModel() = ProjectReportModel(
+    id = first.id,
+    reportNumber = first.number,
+    status = first.status,
+    linkedFormVersion = first.applicationFormVersion,
+    startDate = first.startDate,
+    endDate = first.endDate,
+
+    deadlineId = first.deadline?.id,
+    type = first.deadline?.type ?: first.type,
+    periodNumber = first.deadline?.periodNumber ?: first.periodNumber,
+    reportingDate = first.deadline?.deadline ?: first.reportingDate,
+
+    projectId = first.projectId,
+    projectIdentifier = first.projectIdentifier,
+    projectAcronym = first.projectAcronym,
+    leadPartnerNameInOriginalLanguage = first.leadPartnerNameInOriginalLanguage,
+    leadPartnerNameInEnglish = first.leadPartnerNameInEnglish,
+
+    createdAt = first.createdAt,
+    firstSubmission = first.firstSubmission,
+    verificationDate = first.verificationDate,
+    verificationEndDate = first.verificationEndDate,
+    amountRequested = second?.sumCurrent,
+    totalEligibleAfterVerification = null,
+)
+
 fun ProjectReportModel.toEntity(
     deadlineResolver: (Long) -> ProjectContractingReportingEntity,
 ) = ProjectReportEntity(
