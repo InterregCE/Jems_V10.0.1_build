@@ -1,18 +1,21 @@
 <jems-main-page-template [needsCard]="true"
-                        titleKey="topbar.main.user.role.management"
-                        subTitleKey="userRole.breadcrumb.list">
-    <button jemsText *jemsHasPermission="PermissionsEnum.RoleCreate"
-            mat-raised-button
-            class="mb-3"
-            color="primary"
-            routerLink="/app/system/role/create"
-            aria-label="add">
-        <mat-icon>add</mat-icon>{{'userRole.breadcrumb.create' | translate}}
-    </button>
+                         titleKey="topbar.main.user.role.management"
+                         subTitleKey="userRole.breadcrumb.list">
+    <div *ngIf="(roleStore.roleSummaryList$ | async)?.totalElements < 50">
+        <button jemsText *jemsHasPermission="PermissionsEnum.RoleCreate"
+                mat-raised-button
+                class="mb-3"
+                color="primary"
+                routerLink="/app/system/role/create"
+                aria-label="add">
+            <mat-icon>add</mat-icon>
+            {{'userRole.breadcrumb.create' | translate}}
+        </button>
+    </div>
 
     <jems-alert *ngIf="success"
-               [show]="true"
-               [type]="Alert.SUCCESS">
+                [show]="true"
+                [type]="Alert.SUCCESS">
         <p *ngIf="success.i18nKey">{{success.i18nKey | translate : success.i18nArguments}}</p>
     </jems-alert>
 
