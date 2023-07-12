@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.project.entity.report.partner.financialOvervie
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
+import java.math.BigDecimal
 
 @Repository
 interface ReportProjectPartnerExpenditureCoFinancingRepository :
@@ -53,5 +54,16 @@ interface ReportProjectPartnerExpenditureCoFinancingRepository :
         WHERE report.reportEntity.id IN :reportIds
     """)
     fun findCumulativeTotalsForReportIds(reportIds: Set<Long>): ReportExpenditureCoFinancingColumnWithoutFunds
+
+    @Query("""
+        SELECT new kotlin.Pair(
+            coFin.reportEntity.projectReport.id,
+            coFin.sumTotalEligibleAfterControl
+        )
+        FROM #{#entityName} coFin
+        WHERE coFin.reportEntity.projectReport.id IN :projectReportIds
+        GROUP BY coFin.reportEntity.projectReport.id
+    """)
+    fun findCumulativeTotalsForProjectReportIds(projectReportIds: Set<Long>): List<Pair<Long, BigDecimal>>
 
 }

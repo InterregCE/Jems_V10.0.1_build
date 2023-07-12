@@ -1,14 +1,19 @@
 package io.cloudflight.jems.server.project.repository.report.project.base
 
+import com.querydsl.core.QueryResults
+import com.querydsl.core.Tuple
+import com.querydsl.core.types.EntityPath
+import com.querydsl.jpa.impl.JPAQuery
+import com.querydsl.jpa.impl.JPAQueryFactory
 import io.cloudflight.jems.plugin.contract.models.report.project.identification.ProjectReportBaseData
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.entity.contracting.reporting.ProjectContractingReportingEntity
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
+import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateCoFinancingEntity
 import io.cloudflight.jems.server.project.repository.contracting.reporting.ProjectContractingReportingRepository
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.project.identification.ProjectReportSpendingProfileRepository
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportDeadline
@@ -26,7 +31,6 @@ import java.util.stream.Stream
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 
 class ProjectReportPersistenceProviderTest : UnitTest() {
@@ -61,9 +65,15 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
             firstSubmission = LAST_YEAR,
             verificationDate = null,
             verificationEndDate = null,
-            amountRequested = BigDecimal.ZERO,
-            totalEligibleAfterVerification = BigDecimal.ZERO
+            amountRequested = BigDecimal.ONE,
+            totalEligibleAfterVerification = null
         )
+
+        private fun reportProjectCertificateCoFinancingEntity(): ReportProjectCertificateCoFinancingEntity? {
+            val mocked = mockk<ReportProjectCertificateCoFinancingEntity>()
+            every { mocked.sumCurrent } returns BigDecimal.ONE
+            return mocked
+        }
 
         private fun report(id: Long, projectId: Long) = ProjectReportModel(
             id = id,
@@ -87,8 +97,8 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
             firstSubmission = LAST_YEAR,
             verificationDate = null,
             verificationEndDate = null,
-            amountRequested = BigDecimal.ZERO,
-            totalEligibleAfterVerification = BigDecimal.ZERO
+            amountRequested = BigDecimal.ONE,
+            totalEligibleAfterVerification = null
         )
 
         fun report(id: Long, deadlineType: ContractingDeadlineType?, reportType: ContractingDeadlineType?): ProjectReportEntity {
@@ -130,6 +140,9 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
     @MockK
     private lateinit var projectReportSpendingProfileRepository: ProjectReportSpendingProfileRepository
 
+    @MockK
+    private lateinit var jpaQueryFactory: JPAQueryFactory
+
     @InjectMockKs
     private lateinit var persistence: ProjectReportPersistenceProvider
 
@@ -140,15 +153,36 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
             contractingDeadlineRepository,
             partnerReportRepository,
             projectReportSpendingProfileRepository,
+            jpaQueryFactory
         )
     }
 
     @Test
     fun listReports() {
         val projectId = 95L
-        val report = reportEntity(42L, projectId)
-        every { projectReportRepository.findAllByProjectId(projectId, Pageable.unpaged()) } returns PageImpl(listOf(report))
-        assertThat(persistence.listReports(projectId, Pageable.unpaged())).containsExactly(report(42L, projectId))
+
+        val query = mockk<JPAQuery<Tuple>>()
+        every { jpaQueryFactory.select(any(), any()) } returns query
+        every { query.from(any()) } returns query
+        every { query.leftJoin(any<EntityPath<Any>>()) } returns query
+        every { query.on(any()) } returns query
+        every { query.where(any()) } returns query
+        every { query.groupBy(any()) } returns query
+        every { query.having(any()) } returns query
+        every { query.offset(any()) } returns query
+        every { query.limit(any()) } returns query
+        every { query.orderBy(any()) } returns query
+
+        val tuple = mockk<Tuple>()
+        every { tuple.get(0, ProjectReportEntity::class.java) } returns reportEntity(42L, projectId)
+        every { tuple.get(1, ReportProjectCertificateCoFinancingEntity::class.java) } returns reportProjectCertificateCoFinancingEntity()
+
+        val result = mockk<QueryResults<Tuple>>()
+        every { result.total } returns 1
+        every { result.results } returns listOf(tuple)
+        every { query.fetchResults() } returns result
+
+        assertThat(persistence.listReports(projectId, Pageable.ofSize(1))).containsExactly(report(42L, projectId))
     }
 
     @Test
