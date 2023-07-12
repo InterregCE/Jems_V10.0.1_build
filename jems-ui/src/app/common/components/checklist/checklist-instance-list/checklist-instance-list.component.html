@@ -59,14 +59,6 @@
     </mat-tab>
 </mat-tab-group>
 
-<ng-template #downloadCell let-checklist>
-    <button class="ml-1" mat-icon-button color="primary"
-            (click)="download(checklist.id)"
-            matTooltip="{{'programme.checklists.export' | translate}}">
-        <mat-icon>download</mat-icon>
-    </button>
-</ng-template>
-
 <ng-template #actionsCell let-checklist>
     <button class="ml-1" [disabled]="(pageStore.currentUserEmail$ | async) !== checklist.creatorEmail && (pageStore.userCanConsolidate$ | async) === false"
             mat-icon-button color="primary"
@@ -74,6 +66,11 @@
             matTooltip="{{'programme.checklists.edit.comment' | translate}}"
             aria-label="edit">
         <mat-icon>edit</mat-icon>
+    </button>
+    <button class="ml-1" mat-icon-button color="primary"
+            (click)="download(checklist.id)"
+            matTooltip="{{'programme.checklists.export' | translate}}">
+        <mat-icon>download</mat-icon>
     </button>
     <button class="ml-1" *ngIf="checklist.status === Status.DRAFT && (pageStore.currentUserEmail$ | async) === checklist.creatorEmail"
             mat-icon-button color="accent"
