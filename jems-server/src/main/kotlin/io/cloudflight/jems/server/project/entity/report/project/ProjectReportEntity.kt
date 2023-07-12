@@ -79,7 +79,4 @@ class ProjectReportEntity(
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
     val translatedValues: MutableSet<ProjectReportIdentificationTranslEntity> = mutableSetOf(),
-
-    var amountRequested: BigDecimal?,
-    var totalEligibleAfterVerification: BigDecimal?
 )

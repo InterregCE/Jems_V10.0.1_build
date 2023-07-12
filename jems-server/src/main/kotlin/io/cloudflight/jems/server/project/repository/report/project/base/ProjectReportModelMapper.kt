@@ -23,30 +23,6 @@ import io.cloudflight.jems.server.project.service.report.model.project.base.crea
 import java.math.BigDecimal
 import java.math.BigDecimal.ZERO
 
-
-fun ProjectReportEntity.toModelSummary(
-    periodResolver: (Int) -> ProjectPeriod?,
-) = ProjectReportSummary(
-    id = id,
-    reportNumber = number,
-    status = status,
-    linkedFormVersion = applicationFormVersion,
-    startDate = startDate,
-    endDate = endDate,
-
-    type = deadline?.type ?: type,
-    periodDetail = (deadline?.periodNumber ?: periodNumber)?.let { periodResolver.invoke(it) },
-    reportingDate = deadline?.deadline ?: reportingDate,
-
-    createdAt = createdAt,
-    firstSubmission = firstSubmission,
-    verificationDate = verificationDate,
-    deletable = false,
-    verificationEndDate = verificationEndDate,
-    totalEligibleAfterVerification = totalEligibleAfterVerification,
-    amountRequested = amountRequested
-)
-
 fun ProjectReportEntity.toModel() = ProjectReportModel(
     id = id,
     reportNumber = number,
@@ -70,8 +46,8 @@ fun ProjectReportEntity.toModel() = ProjectReportModel(
     firstSubmission = firstSubmission,
     verificationDate = verificationDate,
     verificationEndDate = verificationEndDate,
-    amountRequested = amountRequested,
-    totalEligibleAfterVerification = totalEligibleAfterVerification
+    amountRequested = null,
+    totalEligibleAfterVerification = null
 )
 
 fun Pair<ProjectReportEntity, ReportProjectCertificateCoFinancingEntity?>.toModel() = ProjectReportModel(
@@ -125,8 +101,6 @@ fun ProjectReportModel.toEntity(
     firstSubmission = firstSubmission,
     verificationDate = verificationDate,
     verificationEndDate = null,
-    totalEligibleAfterVerification = ZERO,
-    amountRequested = ZERO
 )
 
 fun ProjectReportEntity.toSubmissionSummary() =
