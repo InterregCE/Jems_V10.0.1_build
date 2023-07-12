@@ -14,6 +14,7 @@ import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerRe
 import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportCoFinancingIdEntity
 import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
+import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.report.partner.model.CertificateSummary
 import io.cloudflight.jems.server.project.repository.report.partner.model.ReportSummary
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
@@ -46,7 +47,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.util.stream.Stream
-import kotlin.streams.asSequence
 
 class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
 
@@ -259,13 +259,16 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
     }
 
     @MockK
-    lateinit var partnerReportRepository: ProjectPartnerReportRepository
+    private lateinit var partnerReportRepository: ProjectPartnerReportRepository
 
     @MockK
-    lateinit var partnerReportCoFinancingRepository: ProjectPartnerReportCoFinancingRepository
+    private lateinit var partnerReportCoFinancingRepository: ProjectPartnerReportCoFinancingRepository
+
+    @MockK
+    private lateinit var partnerRepository: ProjectPartnerRepository
 
     @InjectMockKs
-    lateinit var persistence: ProjectPartnerReportPersistenceProvider
+    private lateinit var persistence: ProjectPartnerReportPersistenceProvider
 
     @Test
     fun `updateStatusAndTimes - update status and first submission`() {
@@ -334,6 +337,44 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
                 controlEnd = YESTERDAY,
             )
         )
+    }
+
+    @Test
+    fun getPartnerReportStatusAndVersion() {
+        val report = reportEntity(id = 49L, LAST_YEAR, null)
+        every { partnerReportRepository.findByIdAndPartnerId(49L, 16L) } returns report
+
+        assertThat(persistence.getPartnerReportStatusAndVersion(16L, 49L)).isEqualTo(
+            ProjectPartnerReportStatusAndVersion(
+                reportId = 49L,
+                status = ReportStatus.Draft,
+                version = "3.0",
+            )
+        )
+    }
+
+    @Test
+    fun `getPartnerReportByProjectIdAndId - projectId fits`() {
+        val report = reportEntity(id = 50L, LAST_YEAR, null)
+        every { partnerReportRepository.getById(50L) } returns report
+        every { partnerRepository.getProjectIdForPartner(PARTNER_ID) } returns 777L
+
+        assertThat(persistence.getPartnerReportByProjectIdAndId(777L, 50L)).isEqualTo(
+            ProjectPartnerReportStatusAndVersion(
+                reportId = 50L,
+                status = ReportStatus.Draft,
+                version = "3.0",
+            )
+        )
+    }
+
+    @Test
+    fun `getPartnerReportByProjectIdAndId - projectId does NOT fit`() {
+        val report = reportEntity(id = 51L, LAST_YEAR, null)
+        every { partnerReportRepository.getById(51L) } returns report
+        every { partnerRepository.getProjectIdForPartner(PARTNER_ID) } returns -1L // important part here
+
+        assertThat(persistence.getPartnerReportByProjectIdAndId(777L, 51L)).isNull()
     }
 
     @Test

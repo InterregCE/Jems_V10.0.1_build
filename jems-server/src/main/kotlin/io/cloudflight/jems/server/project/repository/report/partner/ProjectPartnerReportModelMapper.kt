@@ -26,6 +26,7 @@ import io.cloudflight.jems.server.project.repository.report.partner.model.Report
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.partner.PartnerReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PreviouslyReportedCoFinancing
@@ -445,3 +446,9 @@ fun ReportExpenditureCostCategory.toCreateEntity(report: ProjectPartnerReportEnt
         sumPreviouslyReportedParked = previouslyReportedParked.sum,
 
     )
+
+fun ProjectPartnerReportEntity.toStatusAndVersion() = ProjectPartnerReportStatusAndVersion(
+    reportId = id,
+    status = status,
+    version = applicationFormVersion,
+)

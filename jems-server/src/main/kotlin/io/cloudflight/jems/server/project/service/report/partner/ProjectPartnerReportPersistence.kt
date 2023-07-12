@@ -30,6 +30,8 @@ interface ProjectPartnerReportPersistence {
 
     fun getPartnerReportStatusAndVersion(partnerId: Long, reportId: Long): ProjectPartnerReportStatusAndVersion
 
+    fun getPartnerReportByProjectIdAndId(projectId: Long, reportId: Long): ProjectPartnerReportStatusAndVersion?
+
     fun getPartnerReportById(partnerId: Long, reportId: Long): ProjectPartnerReport
 
     fun listPartnerReports(partnerId: Long, pageable: Pageable): Page<ProjectPartnerReportSummary>
