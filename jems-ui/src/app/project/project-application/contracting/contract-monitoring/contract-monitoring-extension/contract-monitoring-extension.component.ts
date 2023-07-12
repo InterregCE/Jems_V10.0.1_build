@@ -10,17 +10,17 @@ import {
   ContractingDimensionCodeDTO,
   InputTranslation,
   ProgrammeChecklistDetailDTO,
+  ProgrammeLumpSumDTO,
   ProgrammeSpecificObjectiveDTO,
   ProjectContractingMonitoringAddDateDTO,
   ProjectContractingMonitoringDTO,
   ProjectPartnerLumpSumDTO,
   ProjectPartnerSummaryDTO,
-   ProjectPeriodForMonitoringDTO,
+  ProjectPeriodForMonitoringDTO,
   ProjectStatusDTO,
   UserRoleDTO
 } from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
-import {ProgrammeLumpSum} from '@project/model/lump-sums/programmeLumpSum';
 import {ProjectLumpSumsStore} from '@project/lump-sums/project-lump-sums-page/project-lump-sums-store.service';
 import {TranslateService} from '@ngx-translate/core';
 import {
@@ -32,7 +32,9 @@ import {
 import {
   ProjectPartnerStore
 } from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
-import {ContractReportingStore} from '@project/project-application/contracting/contract-reporting/contract-reporting.store';
+import {
+  ContractReportingStore
+} from '@project/project-application/contracting/contract-reporting/contract-reporting.store';
 
 @Component({
   selector: 'jems-contract-monitoring-extension',
@@ -78,7 +80,7 @@ export class ContractMonitoringExtensionComponent {
     projectContractingMonitoring: ProjectContractingMonitoringDTO;
     contractMonitoringViewable: boolean;
     contractMonitoringEditable: boolean;
-    projectCallLumpSums: ProgrammeLumpSum[];
+    projectCallLumpSums: ProgrammeLumpSumDTO[];
     periods: ProjectPeriodForMonitoringDTO[];
     status: ProjectStatusDTO;
     dimensionCodes:  {[p: string]: string[]};
@@ -312,7 +314,7 @@ export class ContractMonitoringExtensionComponent {
     return this.lumpSumsForm.controls.filter(lumpSum => lumpSum.value.fastTrack);
   }
 
-  getLumpSum(id: number, lumpSums: ProgrammeLumpSum[]): InputTranslation[] | null {
+  getLumpSum(id: number, lumpSums: ProgrammeLumpSumDTO[]): InputTranslation[] | null {
     const lumpSum = lumpSums.find(it => it.id === id);
     return lumpSum ? lumpSum.name : null;
   }

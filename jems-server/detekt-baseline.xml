@@ -32,6 +32,7 @@
     <ID>ComplexMethod:UpdateProjectPartnerReportExpenditure.kt$UpdateProjectPartnerReportExpenditure$private fun ProjectPartnerReportExpenditureCost.toValidItem(validationData: ExpenditureValidationData): ProjectPartnerReportExpenditureCostUpdate</ID>
     <ID>FunctionOnlyReturningConstant:MockedMethodSignature.kt$MockedMethodSignature$@ExceptionWrapper(SampleWrapperException::class) fun methodWithAspectWhichReturnsNormally(): String</ID>
     <ID>FunctionOnlyReturningConstant:ProgrammeSetupAuthorization.kt$ProgrammeSetupAuthorization$ fun canReadProgrammeSetup()</ID>
+    <ID>LargeClass:CallPersistenceProviderTest.kt$CallPersistenceProviderTest</ID>
     <ID>LargeClass:CreateProjectPartnerReportBudgetTest.kt$CreateProjectPartnerReportBudgetTest : UnitTest</ID>
     <ID>LargeClass:GetBudgetFundsPerPeriodInteractorTest.kt$GetBudgetFundsPerPeriodInteractorTest : UnitTest</ID>
     <ID>LargeClass:GetReportExpenditureCostCategoryCalculatorServiceTest.kt$GetReportExpenditureCostCategoryCalculatorServiceTest$Companion</ID>
@@ -135,6 +136,7 @@
     <ID>MaxLineLength:UpdateBudgetTravelAndAccommodationCostsInteractor.kt$UpdateBudgetTravelAndAccommodationCostsInteractor$fun updateBudgetTravelAndAccommodationCosts(partnerId: Long, travelCosts: List&lt;BudgetTravelAndAccommodationCostEntry&gt;): List&lt;BudgetTravelAndAccommodationCostEntry&gt;</ID>
     <ID>MaxLineLength:UpdateOutputIndicatorTest.kt$UpdateOutputIndicatorTest$fun</ID>
     <ID>MaxLineLength:UpdatePreSubmissionCheckSettingsTest.kt$UpdatePreSubmissionCheckSettingsTest$every { jemsPluginRegistry.get(ControlReportPartnerCheckPlugin::class, PartnerControlReportCheckPluginKey) } returns PartnerControlReportCheckSamplePlugin()</ID>
+    <ID>MaxLineLength:UpdateProjectPartnerReportContribution.kt$UpdateProjectPartnerReportContribution$val directContributionsNotAllowed = !callPersistence.getCallByProjectId(partnerPersistence.getProjectIdForPartnerId(partnerId)).isDirectContributionsAllowed</ID>
     <ID>MaxLineLength:UploadFileToProjectPartnerReportProcurementGdprAttachmentException.kt$MaxAmountOfAttachmentReachedException$i18nMessage = I18nMessage(i18nKey = "$UPLOAD_FILE_TO_PROJECT_PARTNER_REPORT_PROCUREMENT_GDPR_ATTACHMENT_ERROR_KEY_PREFIX.max.amount.of.beneficials.reached")</ID>
     <ID>MaxLineLength:UploadFileToProjectPartnerReportWorkPlanTest.kt$UploadFileToProjectPartnerReportWorkPlanTest$assertThat(path).isEqualTo("Project/000450/Report/Partner/000478/PartnerReport/000462/WorkPlan/WorkPackage/000481/Activity/000010/Deliverable/000012/")</ID>
     <ID>MaxLineLength:UploadTranslationFileTest.kt$UploadTranslationFileTest$fun</ID>

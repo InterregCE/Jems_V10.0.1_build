@@ -86,6 +86,7 @@ export class PartnerReportContributionTabComponent {
   });
   isUploadDone = false;
   isReportReopenedLimited = false;
+  isDirectContributionsAllowed = true;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -100,10 +101,12 @@ export class PartnerReportContributionTabComponent {
     this.savedContribution$ = combineLatest([
       this.pageStore.partnerContribution$,
       this.partnerReportDetailPageStore.reportEditable$,
-      this.pageStore.currentReport$
+      this.pageStore.currentReport$,
+      this.pageStore.directContributionsAllowed$
     ]).pipe(
-      tap(([contribution,,currentReport]) => {
+      tap(([contribution,,currentReport, directContributionsAllowed]) => {
         this.isReportReopenedLimited = currentReport.status === ProjectPartnerReportDTO.StatusEnum.ReOpenSubmittedLimited || currentReport.status === ProjectPartnerReportDTO.StatusEnum.ReOpenInControlLimited;
+        this.isDirectContributionsAllowed = directContributionsAllowed;
         this.resetForm(contribution);
       }),
       tap(([,editable]) => this.generateColumns(editable)),

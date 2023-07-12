@@ -234,6 +234,7 @@ internal class CallPersistenceProviderTest {
             startDate = expectedStandardCallDetail.startDate,
             endDate = expectedStandardCallDetail.endDate,
             isAdditionalFundAllowed = expectedStandardCallDetail.isAdditionalFundAllowed,
+            isDirectContributionsAllowed = expectedStandardCallDetail.isDirectContributionsAllowed,
             lengthOfPeriod = expectedStandardCallDetail.lengthOfPeriod!!,
             description = setOf(InputTranslation(SystemLanguage.EN, "This is a dummy call")),
             priorityPolicies = setOf(Digitisation, AdvancedTechnologies),
@@ -249,6 +250,7 @@ internal class CallPersistenceProviderTest {
             startDate = expectedSPFCallDetail.startDate,
             endDate = expectedSPFCallDetail.endDate,
             isAdditionalFundAllowed = expectedSPFCallDetail.isAdditionalFundAllowed,
+            isDirectContributionsAllowed = expectedSPFCallDetail.isDirectContributionsAllowed,
             lengthOfPeriod = expectedSPFCallDetail.lengthOfPeriod!!,
             description = setOf(InputTranslation(SystemLanguage.EN, "This is a dummy call")),
             priorityPolicies = setOf(Digitisation, AdvancedTechnologies),
@@ -328,6 +330,7 @@ internal class CallPersistenceProviderTest {
                 prioritySpecificObjectives = mutableSetOf(),
                 strategies = mutableSetOf(),
                 isAdditionalFundAllowed = false,
+                isDirectContributionsAllowed = true,
                 funds = mutableSetOf(),
                 lengthOfPeriod = 1,
                 allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD),
@@ -656,6 +659,7 @@ internal class CallPersistenceProviderTest {
             assertThat(endDate).isEqualTo(expectedResultEntity.endDate.withSecond(0).withNano(0).plusMinutes(1).minusNanos(1000000))
             assertThat(lengthOfPeriod).isEqualTo(expectedResultEntity.lengthOfPeriod)
             assertThat(isAdditionalFundAllowed).isEqualTo(expectedResultEntity.isAdditionalFundAllowed)
+            assertThat(isDirectContributionsAllowed).isEqualTo(expectedResultEntity.isDirectContributionsAllowed)
             assertThat(prioritySpecificObjectives).containsExactlyInAnyOrderElementsOf(specificObjectives)
             assertThat(funds.map { it.setupId.programmeFund }).containsExactly(fund.setupId.programmeFund)
             assertThat(strategies).containsExactlyInAnyOrderElementsOf(strategies)
@@ -712,6 +716,7 @@ internal class CallPersistenceProviderTest {
             assertThat(endDate).isEqualTo(expectedResultEntity.endDate.withSecond(0).withNano(0).plusMinutes(1).minusNanos(1000000))
             assertThat(lengthOfPeriod).isEqualTo(expectedResultEntity.lengthOfPeriod)
             assertThat(isAdditionalFundAllowed).isEqualTo(expectedResultEntity.isAdditionalFundAllowed)
+            assertThat(isDirectContributionsAllowed).isEqualTo(expectedResultEntity.isDirectContributionsAllowed)
             assertThat(prioritySpecificObjectives).containsExactlyInAnyOrderElementsOf(specificObjectives)
             assertThat(funds.map { it.setupId.programmeFund }).containsExactly(fund.setupId.programmeFund)
             assertThat(strategies).containsExactlyInAnyOrderElementsOf(strategies)
@@ -762,6 +767,7 @@ internal class CallPersistenceProviderTest {
             type = CallType.STANDARD,
             startDate = START,
             isAdditionalFundAllowed = true,
+            isDirectContributionsAllowed = true,
             lengthOfPeriod = 25,
             stateAidIds = setOf(254L),
         )
@@ -774,6 +780,7 @@ internal class CallPersistenceProviderTest {
             type = CallType.STANDARD,
             startDate = START,
             isAdditionalFundAllowed = true,
+            isDirectContributionsAllowed = true,
             lengthOfPeriod = 25,
             applicationFormFieldConfigurations = mutableSetOf(ApplicationFormFieldConfiguration("af-id", FieldVisibilityStatus.STEP_TWO_ONLY)),
             preSubmissionCheckPluginKey = null,

@@ -77,6 +77,7 @@ fun CallEntity.toSettingsModel(
     endDateStep1 = endDateStep1,
     lengthOfPeriod = lengthOfPeriod,
     isAdditionalFundAllowed = isAdditionalFundAllowed,
+    isDirectContributionsAllowed = isDirectContributionsAllowed,
     flatRates = flatRates.toModel(),
     lumpSums = lumpSums.map { it.toModel() }.sortedBy { it.id },
     unitCosts = unitCosts.toProgrammeUnitCost(),

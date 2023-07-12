@@ -73,6 +73,7 @@ class WorkPackageServiceTest {
         prioritySpecificObjectives = mutableSetOf(),
         strategies = mutableSetOf(),
         isAdditionalFundAllowed = false,
+        isDirectContributionsAllowed = true,
         funds = mutableSetOf(),
         startDate = ZonedDateTime.now(),
         endDateStep1 = null,

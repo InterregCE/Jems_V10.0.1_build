@@ -16,6 +16,7 @@ data class Call(
     var endDateStep1: ZonedDateTime? = null,
     var endDate: ZonedDateTime,
     val isAdditionalFundAllowed: Boolean,
+    val isDirectContributionsAllowed: Boolean,
     val lengthOfPeriod: Int,
     val description: Set<InputTranslation> = emptySet(),
     val priorityPolicies: Set<ProgrammeObjectivePolicy> = emptySet(),

@@ -307,6 +307,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             unitCosts = emptyList(),
             stateAids = emptyList(),
             isAdditionalFundAllowed = false,
+            isDirectContributionsAllowed = true,
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,
             firstStepPreSubmissionCheckPluginKey = null,

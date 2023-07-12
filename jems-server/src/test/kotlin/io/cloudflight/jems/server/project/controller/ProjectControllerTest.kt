@@ -99,6 +99,7 @@ class ProjectControllerTest {
             unitCosts = emptyList(),
             stateAids = emptyList(),
             isAdditionalFundAllowed = false,
+            isDirectContributionsAllowed = true,
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,
             firstStepPreSubmissionCheckPluginKey = null,
@@ -316,6 +317,7 @@ class ProjectControllerTest {
             endDateStep1 = null,
             lengthOfPeriod = 6,
             isAdditionalFundAllowed = false,
+            isDirectContributionsAllowed = true,
             flatRates = setOf(
                 ProjectCallFlatRate(type = FlatRateType.STAFF_COSTS, rate = 15, adjustable = true),
             ),
@@ -363,6 +365,7 @@ class ProjectControllerTest {
                 endDateStep1 = null,
                 lengthOfPeriod = 6,
                 additionalFundAllowed = false,
+                directContributionsAllowed = true,
                 flatRates = FlatRateSetupDTO(
                     staffCostFlatRateSetup = FlatRateDTO(15, true),
                 ),
@@ -466,6 +469,7 @@ class ProjectControllerTest {
                     callSettings.endDateStep1,
                     callSettings.lengthOfPeriod,
                     callSettings.isAdditionalFundAllowed,
+                    callSettings.isDirectContributionsAllowed,
                     FlatRateSetupDTO(),
                     emptyList(),
                     emptyList(),

@@ -22,6 +22,7 @@ data class CallDetail(
     val endDateStep1: ZonedDateTime?,
     val endDate: ZonedDateTime,
     val isAdditionalFundAllowed: Boolean,
+    val isDirectContributionsAllowed: Boolean,
     val lengthOfPeriod: Int?,
     val description: Set<InputTranslation> = emptySet(),
     val objectives: List<ProgrammePriority> = emptyList(),
@@ -74,6 +75,9 @@ data class CallDetail(
 
         if (old == null || isAdditionalFundAllowed != old.isAdditionalFundAllowed)
             changes["isAdditionalFundAllowed"] = Pair(old?.isAdditionalFundAllowed, isAdditionalFundAllowed)
+
+        if (old == null || isDirectContributionsAllowed != old.isDirectContributionsAllowed)
+            changes["isDirectContributionsAllowed"] = Pair(old?.isDirectContributionsAllowed, isDirectContributionsAllowed)
 
         if (old == null || lengthOfPeriod != old.lengthOfPeriod)
             changes["lengthOfPeriod"] = Pair(old?.lengthOfPeriod, lengthOfPeriod)

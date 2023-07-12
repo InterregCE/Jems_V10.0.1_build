@@ -34,6 +34,7 @@ class CallFactory(
                 prioritySpecificObjectives = mutableSetOf(),
                 strategies = mutableSetOf(),
                 isAdditionalFundAllowed = false,
+                isDirectContributionsAllowed = true,
                 funds = mutableSetOf(),
                 startDate = callStart,
                 endDateStep1 = null,

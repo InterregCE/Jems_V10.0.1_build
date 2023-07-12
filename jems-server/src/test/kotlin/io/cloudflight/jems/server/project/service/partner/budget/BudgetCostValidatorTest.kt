@@ -498,6 +498,7 @@ internal class BudgetCostValidatorTest : UnitTest() {
             endDateStep1 = null,
             lengthOfPeriod = 2,
             isAdditionalFundAllowed = false,
+            isDirectContributionsAllowed = true,
             flatRates = emptySet(),
             lumpSums = emptyList(),
             unitCosts = emptyList(),

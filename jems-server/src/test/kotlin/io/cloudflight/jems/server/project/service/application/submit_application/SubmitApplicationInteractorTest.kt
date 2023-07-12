@@ -167,6 +167,7 @@ class SubmitApplicationInteractorTest : UnitTest() {
         endDateStep1: ZonedDateTime? = ZonedDateTime.now().plusDays(2),
         lengthOfPeriod: Int = 1,
         isAdditionalFundAllowed: Boolean = true,
+        isDirectContributionsAllowed: Boolean = true,
         flatRates: Set<ProjectCallFlatRate> = emptySet(),
         lumpSums: List<ProgrammeLumpSum> = emptyList(),
         unitCosts: List<ProgrammeUnitCost> = emptyList(),
@@ -176,7 +177,7 @@ class SubmitApplicationInteractorTest : UnitTest() {
     ) =
         ProjectCallSettings(
             callId, callName, callType, startDate, endDate, endDateStep1,
-            lengthOfPeriod, isAdditionalFundAllowed, flatRates, lumpSums, unitCosts, stateAids,
+            lengthOfPeriod, isAdditionalFundAllowed, isDirectContributionsAllowed, flatRates, lumpSums, unitCosts, stateAids,
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = preSubmissionCheckPluginKey,
             firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey,

@@ -9,6 +9,7 @@ import {
 import {
   CallFundRateDTO,
   CallService,
+  ProgrammeLumpSumDTO,
   ProjectBudgetService,
   ProjectCostOptionService,
   ProjectLumpSumService,
@@ -42,7 +43,6 @@ import {
 import {ProjectPartnerStateAidsStore} from '@project/partner/services/project-partner-state-aids.store';
 import {PartnerLumpSum} from '@project/model/lump-sums/partnerLumpSum';
 import {ProjectLumpSumsStore} from '@project/lump-sums/project-lump-sums-page/project-lump-sums-store.service';
-import {ProgrammeLumpSum} from '@project/model/lump-sums/programmeLumpSum';
 import {PartnerBudgetSpfTables} from '@project/model/budget/partner-budget-spf-tables';
 import {ProjectUtil} from '@project/common/project-util';
 import {
@@ -53,7 +53,7 @@ import {BudgetCostCategoryEnumUtils} from '@project/model/lump-sums/BudgetCostCa
 @Injectable()
 export class ProjectPartnerDetailPageStore {
   callFlatRatesSettings$: Observable<CallFlatRateSetting>;
-  projectCallLumpSums$: Observable<ProgrammeLumpSum[]>;
+  projectCallLumpSums$: Observable<ProgrammeLumpSumDTO[]>;
   budgetOptions$: Observable<BudgetOptions>;
   partnerLumpSums$: Observable<PartnerLumpSum[]>;
   partnerTotalLumpSum$: Observable<number>;
@@ -104,7 +104,7 @@ export class ProjectPartnerDetailPageStore {
     this.callFunds$ = this.callFunds();
     this.isProjectEditable$ = this.projectStore.projectEditable$;
     this.periods$ = this.projectStore.projectPeriods$;
-    this.multipleFundsAllowed$ = this.projectStore.projectCall$.pipe(map(it => it.multipleFundsAllowed));
+    this.multipleFundsAllowed$ = this.projectStore.projectCallSettings$.pipe(map(it => it.additionalFundAllowed));
     this.partner$ = this.partnerStore.partner$;
     this.stateAid$ = this.projectPartnerStateAidsStore.stateAid$;
     this.allowedBudgetCategories$ = this.projectStore.allowedBudgetCategories$;
@@ -211,7 +211,7 @@ export class ProjectPartnerDetailPageStore {
   }
 
   private callFlatRateSettings(): Observable<CallFlatRateSetting> {
-    return this.projectStore.projectCall$.pipe(
+    return this.projectStore.projectCallSettings$.pipe(
       map(call => call.flatRates),
     );
   }

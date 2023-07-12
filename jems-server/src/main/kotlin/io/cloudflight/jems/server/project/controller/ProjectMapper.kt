@@ -194,6 +194,7 @@ abstract class ProjectMapper {
             endDateStep1 = projectCallSettings.endDateStep1,
             lengthOfPeriod = projectCallSettings.lengthOfPeriod,
             additionalFundAllowed = projectCallSettings.isAdditionalFundAllowed,
+            directContributionsAllowed = projectCallSettings.isDirectContributionsAllowed,
             flatRates = projectCallSettings.flatRates.toDto(),
             lumpSums = this.mapToLumpSumDTO(projectCallSettings.lumpSums),
             unitCosts = this.mapToUnitCostDTO(projectCallSettings.unitCosts),

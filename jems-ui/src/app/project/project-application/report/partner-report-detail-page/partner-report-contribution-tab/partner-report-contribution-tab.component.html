@@ -149,7 +149,7 @@
 
             </mat-table>
 
-            <button *ngIf="contributionForm.enabled && contributions.length <= 24"
+            <button *ngIf="(contributionForm.enabled && contributions.length <= 24) && isDirectContributionsAllowed"
                     jemsText mat-stroked-button
                     color="primary"
                     [disabled]="isReportReopenedLimited"

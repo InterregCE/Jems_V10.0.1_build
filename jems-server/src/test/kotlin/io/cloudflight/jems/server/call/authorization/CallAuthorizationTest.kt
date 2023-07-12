@@ -61,6 +61,7 @@ internal class CallAuthorizationTest {
             endDateStep1 = null,
             endDate = ZonedDateTime.now().plusDays(2),
             isAdditionalFundAllowed = false,
+            isDirectContributionsAllowed = true,
             lengthOfPeriod = 10,
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,

@@ -396,6 +396,7 @@ internal class ProjectPersistenceProviderTest : UnitTest() {
                 endDateStep1 = call.endDateStep1,
                 lengthOfPeriod = call.lengthOfPeriod,
                 isAdditionalFundAllowed = call.isAdditionalFundAllowed,
+                isDirectContributionsAllowed = call.isDirectContributionsAllowed,
                 flatRates = call.flatRates.toModel(),
                 lumpSums = call.lumpSums.toModel(),
                 unitCosts = call.unitCosts.toModel(),

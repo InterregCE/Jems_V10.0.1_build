@@ -62,6 +62,9 @@ class CallEntity(
     @field:NotNull
     var isAdditionalFundAllowed: Boolean,
 
+    @field:NotNull
+    var isDirectContributionsAllowed: Boolean,
+
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
     val translatedValues: MutableSet<CallTranslEntity> = mutableSetOf(),
 
