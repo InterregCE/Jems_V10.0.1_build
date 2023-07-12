@@ -25,7 +25,7 @@ export class RoleStore {
       this.rolesChanged$.pipe(startWith(null))]
     ).pipe(
       switchMap(([permissions]) =>
-        permissions.includes(PermissionsEnum.RoleRetrieve) ? this.userRoleService.list() : of(null)
+        permissions.includes(PermissionsEnum.RoleRetrieve) ? this.userRoleService.list(0, 50) : of(null)
       ),
       map(page => page ? page.content : []),
       tap(roles => Log.info('Fetched the user roles:', this, roles)),
