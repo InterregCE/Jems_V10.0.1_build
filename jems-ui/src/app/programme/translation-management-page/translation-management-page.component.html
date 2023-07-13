@@ -30,7 +30,8 @@
 <ng-template #table let-dataSource let-data="data" let-fileType="fileType" let-fileInput="fileInput">
 
     <div jemsFormLayout>
-        <h3> {{'programme.translation.management.' + fileType.toLowerCase() + '.translations' | translate}}</h3>
+        <h3>{{'programme.translation.management.' + fileType.toLowerCase() + '.translations' | translate}}</h3>
+        <span> {{'programme.translation.management.' + fileType.toLowerCase() + '.description' | translate }} </span>
         <jems-pending-button *ngIf="(programmeEditableStateStore.hasEditPermission$ | async)"
                             (clicked)="downloadDefaultTranslationFile(fileType)"
                             [pending]="this.getInProgressSubjectByFileType(fileType) | async"
