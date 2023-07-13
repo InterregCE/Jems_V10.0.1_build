@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.controllerInstitution.service.update_controller
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.controllerInstitution.INSTITUTION_ID
 import io.cloudflight.jems.server.controllerInstitution.MONITOR_USER_1_EMAIL
 import io.cloudflight.jems.server.controllerInstitution.MONITOR_USER_1_ID
@@ -8,8 +9,8 @@ import io.cloudflight.jems.server.controllerInstitution.MONITOR_USER_2_EMAIL
 import io.cloudflight.jems.server.controllerInstitution.MONITOR_USER_2_ID
 import io.cloudflight.jems.server.controllerInstitution.institutionUsers
 import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
-import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionValidator
 import io.cloudflight.jems.server.controllerInstitution.service.createControllerInstitution.AssignUsersToInstitutionException
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionValidator
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitution
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionUser
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignment
@@ -70,6 +71,9 @@ class UpdateControllerTest : UnitTest() {
 
     @RelaxedMockK
     lateinit var auditPublisher: ApplicationEventPublisher
+
+    @RelaxedMockK
+    lateinit var generalValidatorService: GeneralValidatorService
 
     @InjectMockKs
     lateinit var controllerInstitutionValidator: ControllerInstitutionValidator

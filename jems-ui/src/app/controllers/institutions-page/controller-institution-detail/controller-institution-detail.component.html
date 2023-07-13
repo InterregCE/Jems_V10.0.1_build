@@ -6,7 +6,10 @@
             <mat-form-field>
                 <mat-label>
                     {{'common.name' | translate}}</mat-label>
-                <input name="name" formControlName="name" matInput required>
+                <input name="name" formControlName="name" matInput required #name>
+                <mat-hint [jemsHintFor]="name">
+                    <jems-text-hint [currentLength]="name.value.length" [maxLength]="250"></jems-text-hint>
+                </mat-hint>
                 <mat-error>
                     <jems-form-field-errors
                             [errors]="controllerForm?.controls?.name?.errors">
