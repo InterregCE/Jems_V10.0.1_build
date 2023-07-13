@@ -60,11 +60,11 @@ class UpdateContractingMonitoring(
                 .fillLumpSumsList(resolveLumpSums = {
                     projectLumpSumPersistence.getLumpSums(projectId = projectId, version)
                 })
+            val project = projectPersistence.getProject(projectId = projectId, version)
             val updated = contractingMonitoringPersistence.updateContractingMonitoring(
                 contractMonitoring.copy(projectId = projectId)
-            ).fillEndDateWithDuration(resolveDuration = {
-                projectPersistence.getProject(projectId = projectId, version).duration
-            }).apply { fastTrackLumpSums = contractMonitoring.fastTrackLumpSums }
+            ).fillEndDateWithDuration(resolveDuration = { project.duration })
+                .apply { fastTrackLumpSums = contractMonitoring.fastTrackLumpSums }
 
             val lumpSumsOrderNrTobeAdded: MutableSet<Int> = mutableSetOf()
             val lumpSumsOrderNrToBeDeleted: MutableSet<Int> = mutableSetOf()
@@ -78,7 +78,8 @@ class UpdateContractingMonitoring(
                 orderNrsToBeDeleted = lumpSumsOrderNrToBeDeleted
             )
             projectLumpSumPersistence.updateLumpSums(projectId, contractMonitoring.fastTrackLumpSums!!)
-            updateApprovedAmountPerPartner(projectSummary, lumpSumsOrderNrTobeAdded, lumpSumsOrderNrToBeDeleted)
+            updateApprovedAmountPerPartner(projectSummary, lumpSumsOrderNrTobeAdded, lumpSumsOrderNrToBeDeleted,
+                projectCustomIdentifier = project.customIdentifier, projectAcronym = project.acronym)
             updateApprovedAmountContributions(
                 projectId = projectId,
                 lumpSumsToUpdate = lumpSums.filter { it.orderNr in lumpSumsOrderNrTobeAdded },
@@ -144,6 +145,8 @@ class UpdateContractingMonitoring(
         project: ProjectSummary,
         orderNrsToBeAdded: MutableSet<Int>,
         orderNrsToBeDeleted: Set<Int>,
+        projectCustomIdentifier: String,
+        projectAcronym: String,
     ) {
         val projectId = project.id
         if (orderNrsToBeDeleted.isNotEmpty()) {
@@ -166,7 +169,9 @@ class UpdateContractingMonitoring(
                                 o.amountApprovedPerPartner
                             )
                         },
-                        partnerPayments.sumOf { it.amountApprovedPerPartner }
+                        partnerPayments.sumOf { it.amountApprovedPerPartner },
+                        projectCustomIdentifier = projectCustomIdentifier,
+                        projectAcronym = projectAcronym,
                     )
                 }
 

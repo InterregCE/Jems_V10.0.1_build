@@ -1,10 +1,14 @@
 package io.cloudflight.jems.server.payments.repository.regular
 
+import com.querydsl.jpa.impl.JPAQueryFactory
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.common.file.repository.JemsFileMetadataRepository
 import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType.PaymentAttachment
 import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
+import io.cloudflight.jems.server.payments.entity.QPaymentEntity
+import io.cloudflight.jems.server.payments.entity.QPaymentPartnerEntity
+import io.cloudflight.jems.server.payments.entity.QPaymentPartnerInstallmentEntity
 import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
 import io.cloudflight.jems.server.payments.model.regular.PartnerPaymentSimple
 import io.cloudflight.jems.server.payments.model.regular.PaymentConfirmedInfo
@@ -12,8 +16,10 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallmentUpdate
 import io.cloudflight.jems.server.payments.model.regular.PaymentPerPartner
+import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequest
 import io.cloudflight.jems.server.payments.model.regular.PaymentToCreate
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
+import io.cloudflight.jems.server.payments.model.regular.PaymentToProjectTmp
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.payments.model.regular.contributionMeta.ContributionMeta
 import io.cloudflight.jems.server.payments.repository.toDetailModel
@@ -37,6 +43,7 @@ import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 import java.time.LocalDate
 
+
 @Repository
 class PaymentRegularPersistenceProvider(
     private val paymentRepository: PaymentRepository,
@@ -51,6 +58,7 @@ class PaymentRegularPersistenceProvider(
     private val fundRepository: ProgrammeFundRepository,
     private val projectFileMetadataRepository: JemsFileMetadataRepository,
     private val fileRepository: JemsProjectFileService,
+    private val jpaQueryFactory: JPAQueryFactory,
 ) : PaymentRegularPersistence {
 
     @Transactional(readOnly = true)
@@ -58,17 +66,50 @@ class PaymentRegularPersistenceProvider(
         paymentRepository.existsById(id)
 
     @Transactional(readOnly = true)
-    override fun getAllPaymentToProject(pageable: Pageable): Page<PaymentToProject> {
-        return paymentRepository.findAll(pageable).toListModel(
-            getLumpSum = { projectId, orderNr ->
-                projectLumpSumRepository.getByIdProjectIdAndIdOrderNr(
-                    projectId,
-                    orderNr
-                )
-            },
-            getProject = { projectId, version -> projectPersistence.getProject(projectId, version) },
-            getConfirm = { id -> getConfirmedInfosForPayment(id) }
-        )
+    override fun getAllPaymentToProject(pageable: Pageable, filters: PaymentSearchRequest): Page<PaymentToProject> {
+        return fetchPayments(pageable, filters).map { with(it) {
+            PaymentToProject(
+                id = payment.id,
+                paymentType = payment.type,
+                projectCustomIdentifier = payment.projectCustomIdentifier,
+                projectAcronym = payment.projectAcronym,
+                paymentClaimNo = 0,
+                paymentClaimSubmissionDate = payment.project.contractedDecision?.updated,
+                lumpSumId = payment.projectLumpSum.programmeLumpSum.id,
+                orderNr = payment.projectLumpSum.id.orderNr,
+                paymentApprovalDate = payment.projectLumpSum.paymentEnabledDate,
+                totalEligibleAmount = payment.projectLumpSum.programmeLumpSum.cost,
+                fundId = payment.fund.id,
+                fundName = payment.fund.type.name,
+                amountApprovedPerFund = payment.amountApprovedPerFund!!,
+                amountPaidPerFund = amountPaid ?: BigDecimal.ZERO,
+                dateOfLastPayment = lastPaymentDate,
+                lastApprovedVersionBeforeReadyForPayment = payment.projectLumpSum.lastApprovedVersionBeforeReadyForPayment,
+            )
+        } }
+    }
+
+    private fun fetchPayments(pageable: Pageable, filters: PaymentSearchRequest): Page<PaymentToProjectTmp> {
+        val specPayment = QPaymentEntity.paymentEntity
+        val specPaymentPartner = QPaymentPartnerEntity.paymentPartnerEntity
+        val specPaymentPartnerInstallment = QPaymentPartnerInstallmentEntity.paymentPartnerInstallmentEntity
+
+        val results = jpaQueryFactory
+            .select(specPayment, specPaymentPartnerInstallment.amountPaid.sum(), specPaymentPartnerInstallment.paymentDate.max())
+            .from(specPayment)
+            .leftJoin(specPaymentPartner)
+                .on(specPaymentPartner.payment.id.eq(specPayment.id))
+            .leftJoin(specPaymentPartnerInstallment)
+                .on(specPaymentPartnerInstallment.paymentPartner.id.eq(specPaymentPartner.id).and(specPaymentPartnerInstallment.isPaymentConfirmed.isTrue))
+            .where(filters.transformToWhereClause())
+            .groupBy(specPayment)
+            .having(filters.transformToHavingClause())
+            .offset(pageable.offset)
+            .limit(pageable.pageSize.toLong())
+            .orderBy(pageable.sort.toQueryDslOrderBy())
+            .fetchResults()
+
+        return results.toPageResult(pageable)
     }
 
     @Transactional(readOnly = true)
@@ -113,10 +154,10 @@ class PaymentRegularPersistenceProvider(
             model.toEntity(
                 projectEntity = projectEntity,
                 paymentType = PaymentType.FTLS,
-                orderNr = id.orderNr,
+                lumpSum = projectLumpSumRepository.getByIdProjectIdAndIdOrderNr(projectId, id.orderNr),
                 fundEntity = fundRepository.getById(id.programmeFundId)
             )
-        }).associateBy { PaymentGroupingId(it.orderNr, it.fund.id) }
+        }).associateBy { PaymentGroupingId(it.projectLumpSum.id.orderNr, it.fund.id) }
 
         paymentEntities.forEach { (paymentId, entity) ->
             paymentPartnerRepository.saveAll(
@@ -188,12 +229,6 @@ class PaymentRegularPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getPaymentsByProjectId(projectId: Long): List<PaymentToProject> {
         return paymentRepository.findAllByProjectId(projectId).toListModel(
-            getLumpSum = { internalProjectId, orderNr ->
-                projectLumpSumRepository.getByIdProjectIdAndIdOrderNr(
-                    internalProjectId,
-                    orderNr
-                )
-            },
             getProject = { internalProjectId, version -> projectPersistence.getProject(internalProjectId, version) },
             getConfirm = { id -> getConfirmedInfosForPayment(id) }
         )

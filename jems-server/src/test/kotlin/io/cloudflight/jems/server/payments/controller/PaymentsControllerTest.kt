@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.payments.controller
 import io.cloudflight.jems.api.payments.dto.PaymentDetailDTO
 import io.cloudflight.jems.api.payments.dto.PaymentPartnerDTO
 import io.cloudflight.jems.api.payments.dto.PaymentPartnerInstallmentDTO
+import io.cloudflight.jems.api.payments.dto.PaymentSearchRequestDTO
 import io.cloudflight.jems.api.payments.dto.PaymentToProjectDTO
 import io.cloudflight.jems.api.payments.dto.PaymentTypeDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
@@ -12,8 +13,10 @@ import io.cloudflight.jems.server.call.createTestCallEntity
 import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
 import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
+import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequest
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
+import io.cloudflight.jems.server.payments.repository.advance.PaymentAdvancePersistenceProviderTest
 import io.cloudflight.jems.server.payments.service.regular.getPaymentDetail.GetPaymentDetailInteractor
 import io.cloudflight.jems.server.payments.service.regular.getPayments.GetPaymentsInteractor
 import io.cloudflight.jems.server.payments.service.regular.updatePaymentInstallments.UpdatePaymentInstallmentsInteractor
@@ -29,17 +32,20 @@ import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
+import java.time.LocalDate
 import java.time.ZonedDateTime
 
 class PaymentsControllerTest : UnitTest() {
 
     companion object {
         private val currentTime = ZonedDateTime.now()
+        private val currentDate = LocalDate.now()
         private const val paymentId = 1L
         private const val projectId = 2L
         private const val partnerId = 3L
@@ -160,6 +166,34 @@ class PaymentsControllerTest : UnitTest() {
                 )
             )
         )
+
+        private val dummyFilterDto = PaymentSearchRequestDTO(
+            paymentId = 855L,
+            paymentType = PaymentTypeDTO.FTLS,
+            projectIdentifiers = setOf("472", "INT00473", ""),
+            projectAcronym = "acr-filter",
+            claimSubmissionDateFrom = currentDate.minusDays(2),
+            claimSubmissionDateTo = currentDate.minusDays(2),
+            approvalDateFrom = currentDate.minusDays(3),
+            approvalDateTo = currentDate.minusDays(3),
+            fundIds = setOf(511L, 512L),
+            lastPaymentDateFrom = currentDate.minusDays(1),
+            lastPaymentDateTo = currentDate.minusDays(1),
+        )
+
+        private val dummyFilter = PaymentSearchRequest(
+            paymentId = 855L,
+            paymentType = PaymentType.FTLS,
+            projectIdentifiers = setOf("472", "INT00473", ""),
+            projectAcronym = "acr-filter",
+            claimSubmissionDateFrom = currentDate.minusDays(2),
+            claimSubmissionDateTo = currentDate.minusDays(2),
+            approvalDateFrom = currentDate.minusDays(3),
+            approvalDateTo = currentDate.minusDays(3),
+            fundIds = setOf(511L, 512L),
+            lastPaymentDateFrom = currentDate.minusDays(1),
+            lastPaymentDateTo = currentDate.minusDays(1),
+        )
     }
 
     @MockK
@@ -176,9 +210,10 @@ class PaymentsControllerTest : UnitTest() {
 
     @Test
     fun getPaymentsToProjects() {
-        every { getPayments.getPayments(any()) } returns PageImpl(listOf(paymentToProject))
+        val slotFilter = slot<PaymentSearchRequest>()
+        every { getPayments.getPayments(any(), capture(slotFilter)) } returns PageImpl(listOf(paymentToProject))
 
-        assertThat(controller.getPaymentsToProjects(Pageable.unpaged())).containsExactly(
+        assertThat(controller.getPaymentsToProjects(Pageable.unpaged(), dummyFilterDto)).containsExactly(
             PaymentToProjectDTO(
                 id = paymentId,
                 paymentType = PaymentTypeDTO.FTLS,
@@ -195,6 +230,28 @@ class PaymentsControllerTest : UnitTest() {
                 lastApprovedVersionBeforeReadyForPayment = paymentToProject.lastApprovedVersionBeforeReadyForPayment
             )
         )
+        assertThat(slotFilter.captured).isEqualTo(dummyFilter)
+    }
+
+    @Test
+    fun `getPaymentsToProjects - emptyFilter`() {
+        val slotFilter = slot<PaymentSearchRequest>()
+        every { getPayments.getPayments(any(), capture(slotFilter)) } returns PageImpl(emptyList())
+
+        assertThat(controller.getPaymentsToProjects(Pageable.unpaged(), null)).isEmpty()
+        assertThat(slotFilter.captured).isEqualTo(PaymentSearchRequest(
+            paymentId = null,
+            paymentType = null,
+            projectIdentifiers = emptySet(),
+            projectAcronym = null,
+            claimSubmissionDateFrom = null,
+            claimSubmissionDateTo = null,
+            approvalDateFrom = null,
+            approvalDateTo = null,
+            fundIds = emptySet(),
+            lastPaymentDateFrom = null,
+            lastPaymentDateTo = null,
+        ))
     }
 
     @Test

@@ -356,7 +356,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
         )
         assertThat(payments.captured).containsExactlyEntriesOf(
             mapOf(PaymentGroupingId(programmeFundId = 1L, orderNr = 1) to
-                    PaymentToCreate(2L, listOf(PaymentPartnerToCreate(1L, BigDecimal.ONE)), BigDecimal.ONE))
+                    PaymentToCreate(2L, listOf(PaymentPartnerToCreate(1L, BigDecimal.ONE)), BigDecimal.ONE, "identifier", "acronym"))
         )
         assertThat(payContribs.captured).containsExactly(
             ContributionMeta(
