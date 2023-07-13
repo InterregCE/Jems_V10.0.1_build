@@ -20,9 +20,9 @@ mat-chip {
 .status-Submitted {
   background-color: var(--status-submitted) !important;
 }
-.status-Verified {
+.status-InVerification {
   background-color: var(--status-approved-with-conditions) !important;
 }
-.status-Paid {
+.status-Finalized {
   background-color: var(--status-contracted) !important;
 }

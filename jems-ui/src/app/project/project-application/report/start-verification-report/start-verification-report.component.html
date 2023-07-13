@@ -6,7 +6,7 @@
                              (clicked)="startControlWork(data.projectId, reportId, data.canEdit)">
             {{'project.application.project.verification.work.start.verification' | translate}}
         </jems-pending-button>
-        <button jemsText *ngIf="ReportUtil.isProjectReportVerificationOngoing(reportStatus)"
+        <button jemsText *ngIf="ReportUtil.isProjectReportAfterVerificationStarted(reportStatus)"
                 mat-stroked-button type="submit" class="ml-1"
                 (click)="redirectToVerification(reportId)">
             {{'project.application.project.verification.work.open.verification' | translate}}

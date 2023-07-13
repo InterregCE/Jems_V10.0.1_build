@@ -22,9 +22,16 @@
     <nav mat-tab-nav-bar>
         <a [active]="activeTab('document')" mat-tab-link (click)="routeTo('document')">
             <span jemsText maxWidth="230">
-                {{ 'project.application.partner.report.control.tab.document' | translate }}
+                {{ 'project.application.project.verification.work.tab.document' | translate }}
             </span>
         </a>
+
+        <a *ngIf="data.allTabsVisible" [active]="activeTab('finalise')" mat-tab-link (click)="routeTo('finalise')">
+            <span jemsText maxWidth="230">
+                {{ 'project.application.project.verification.work.tab.finalise' | translate }}
+            </span>
+        </a>
+
     </nav>
     <router-outlet></router-outlet>
 </jems-project-page-template>

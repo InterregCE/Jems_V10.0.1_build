@@ -534,6 +534,8 @@ import {
   ProjectVerificationReportDocumentTabComponent
 } from '@project/project-application/report/project-verification-report/project-verification-report-document-tab/project-verification-report-document-tab.component';
 import {StartVerificationReportComponent} from '@project/project-application/report/start-verification-report/start-verification-report.component';
+import { ProjectVerificationReportFinalizeTabComponent } from './project-application/report/project-verification-report/project-verification-report-finalize-tab/project-verification-report-finalize-tab.component';
+import { ProjectVerificationReportFinalizeClarificationRequestListComponent } from './project-application/report/project-verification-report/project-verification-report-finalize-tab/project-verification-report-finalize-clarification-request-list/project-verification-report-finalize-clarification-request-list.component';
 
 @NgModule({
   declarations: [
@@ -723,6 +725,8 @@ import {StartVerificationReportComponent} from '@project/project-application/rep
     StartVerificationReportComponent,
     ProjectVerificationReportComponent,
     ProjectVerificationReportDocumentTabComponent,
+    ProjectVerificationReportFinalizeTabComponent,
+    ProjectVerificationReportFinalizeClarificationRequestListComponent,
   ],
   imports: [
     SharedModule,
