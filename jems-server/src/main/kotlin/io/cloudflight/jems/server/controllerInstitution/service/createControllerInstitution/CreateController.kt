@@ -30,6 +30,7 @@ class CreateController(
     @ExceptionWrapper(UpdateControllerInstitutionException::class)
     override fun createController(controllerInstitution: UpdateControllerInstitution): ControllerInstitution {
         val userSummaries = mutableListOf<UserSummary>()
+        controllerInstitutionValidator.validateInputData(controllerInstitution)
         if (controllerInstitution.institutionUsers.isNotEmpty()) {
             userSummaries.addAll(userPersistence.findAllByEmails(controllerInstitution.institutionUsers.map { it.userEmail }))
             controllerInstitutionValidator.validateInstitutionUsers(controllerInstitution.institutionUsers, getEmailsOfUsersThatCanBePersisted(userSummaries))

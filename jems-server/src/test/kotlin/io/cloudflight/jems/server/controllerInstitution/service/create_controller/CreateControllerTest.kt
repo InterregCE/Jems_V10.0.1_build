@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.controllerInstitution.service.create_controller
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionValidator
 import io.cloudflight.jems.server.controllerInstitution.service.createControllerInstitution.AssignUsersToInstitutionException
@@ -38,8 +39,11 @@ class CreateControllerTest: UnitTest() {
     @RelaxedMockK
     lateinit var userPersistence: UserPersistence
 
+    @RelaxedMockK
+    lateinit var generalValidatorService: GeneralValidatorService
+
     @InjectMockKs
-    lateinit var controllerInstitutionValidator : ControllerInstitutionValidator
+    lateinit var controllerInstitutionValidator: ControllerInstitutionValidator
 
     @InjectMockKs
     lateinit var createController: CreateController
