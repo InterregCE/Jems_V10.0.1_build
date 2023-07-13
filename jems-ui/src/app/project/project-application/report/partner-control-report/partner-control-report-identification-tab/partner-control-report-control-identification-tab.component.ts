@@ -73,7 +73,7 @@ export class PartnerControlReportControlIdentificationTabComponent implements On
       country: this.formBuilder.control(''),
       countryCode: this.formBuilder.control(''),
       telephone: this.formBuilder.control('', Validators.compose([
-          Validators.pattern('^[0-9 +()/-]*$'),
+          Validators.pattern('^([\s]+[0-9+()/]+)|([0-9+()/]+)[ 0-9+()/-]*$'),
           Validators.maxLength(this.constants.PHONE_MAX_LENGTH)
         ])
       ),

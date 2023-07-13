@@ -36,7 +36,7 @@ export class ProjectApplicationFormPartnerContactComponent {
       Validators.maxLength(255)
     ])],
     partnerContactTelephone: ['', Validators.compose([
-      Validators.pattern('^[0-9 +()/-]*$'),
+      Validators.pattern('^([\s]+[0-9+()/]+)|([0-9+()/]+)[ 0-9+()/-]*$'),
       Validators.maxLength(25)
     ])]
   });
