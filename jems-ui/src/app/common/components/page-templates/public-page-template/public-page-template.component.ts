@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ResourceStoreService} from '@common/services/resource-store.service';
-import {Alert} from "../../forms/alert";
+import {Alert} from '../../forms/alert';
 
 @Component({
   selector: 'jems-public-page-template',
@@ -16,20 +16,20 @@ export class PublicPageTemplateComponent {
   browserAgents = {
     firefox: {
       version: 82,
-      link: "https://www.mozilla.org",
-      regex: "Firefox/(.*)"
+      link: 'https://www.mozilla.org',
+      regex: 'Firefox/(.*)'
     },
     chrome: {
       version: 85,
-      link: "https://www.google.com/chrome",
-      regex: "Chrome\/([^.]*)"
+      link: 'https://www.google.com/chrome',
+      regex: 'Chrome\/([^.]*)'
     },
     edge: {
       version: 84,
-      link: "https://www.microsoft.com/edge",
-      regex: "Edg\/([^.]*)"
+      link: 'https://www.microsoft.com/edge',
+      regex: 'Edg\/([^.]*)'
     }
-  }
+  };
 
   constructor(public resourceStore: ResourceStoreService) {
     this.userAgent$ = window.navigator.userAgent;
@@ -40,12 +40,12 @@ export class PublicPageTemplateComponent {
   }
 
   validateBrowser(regex: string, reqVersion: number): boolean {
-    const match = this.userAgent$.match(regex)
+    const match = this.userAgent$.match(regex);
     if (match == null) {
       return false;
     }
 
-    const version: number = Number(match ? match[1] : -1)
+    const version = Number(match ? match[1] : -1);
     return version >= reqVersion;
   }
 }

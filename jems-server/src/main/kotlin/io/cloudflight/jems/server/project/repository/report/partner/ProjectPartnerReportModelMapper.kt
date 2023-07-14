@@ -60,6 +60,12 @@ fun ReportSummary.toModelSummary() =
         totalEligibleAfterControl = totalEligibleAfterControl,
         totalAfterSubmitted = totalAfterSubmitted,
         deletable = false,
+        projectId = projectId,
+        projectCustomIdentifier = projectCustomIdentifier,
+        partnerId = partnerId,
+        partnerAbbreviation = partnerAbbreviation,
+        partnerNumber = partnerNumber,
+        partnerRole = partnerRole
     )
 
 fun CertificateSummary.toModel() =
@@ -95,6 +101,12 @@ fun ProjectPartnerReportEntity.toModelSummaryAfterCreate() =
         totalEligibleAfterControl = null,
         totalAfterSubmitted = null,
         deletable = false,
+        partnerId = partnerId,
+        partnerAbbreviation = identification.partnerAbbreviation,
+        partnerRole = identification.partnerRole,
+        partnerNumber = identification.partnerNumber,
+        projectCustomIdentifier = identification.projectAcronym,
+        projectId = 0,
     )
 
 fun ProjectPartnerReportEntity.toSubmissionSummary() =

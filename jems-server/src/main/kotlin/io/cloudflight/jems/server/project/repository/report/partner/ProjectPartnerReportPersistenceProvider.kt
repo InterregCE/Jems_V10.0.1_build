@@ -75,8 +75,8 @@ class ProjectPartnerReportPersistenceProvider(
         )
 
     @Transactional(readOnly = true)
-    override fun listPartnerReports(partnerId: Long, pageable: Pageable): Page<ProjectPartnerReportSummary> =
-        partnerReportRepository.findAllByPartnerId(partnerId = partnerId, pageable = pageable)
+    override fun listPartnerReports(partnerIds: Set<Long>, statuses: Set<ReportStatus>, pageable: Pageable): Page<ProjectPartnerReportSummary> =
+        partnerReportRepository.findAllByPartnerIdInAndStatusIn(partnerIds, statuses, pageable)
             .map { it.toModelSummary() }
 
     @Transactional(readOnly = true)

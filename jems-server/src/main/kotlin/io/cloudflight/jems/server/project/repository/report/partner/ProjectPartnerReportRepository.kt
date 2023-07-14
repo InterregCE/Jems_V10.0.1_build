@@ -21,6 +21,12 @@ interface ProjectPartnerReportRepository : JpaRepository<ProjectPartnerReportEnt
         """
         SELECT new io.cloudflight.jems.server.project.repository.report.partner.model.ReportSummary(
             report.id,
+            project_partner.project.id,
+            report.identification.projectIdentifier,
+            report.partnerId,
+            report.identification.partnerRole,
+            report.identification.partnerNumber,
+            report.identification.partnerAbbreviation,
             report.number,
             report.status,
             report.applicationFormVersion,
@@ -49,10 +55,12 @@ interface ProjectPartnerReportRepository : JpaRepository<ProjectPartnerReportEnt
             ON report.id = report_co_fin.reportEntity.id
         LEFT JOIN report_project reportProject
             ON report.projectReport.id = reportProject.id
-        WHERE report.partnerId = :partnerId
+        LEFT JOIN project_partner project_partner
+            ON report.partnerId = project_partner.id
+        WHERE report.partnerId IN :partnerIds AND report.status IN :statuses
     """
     )
-    fun findAllByPartnerId(partnerId: Long, pageable: Pageable): Page<ReportSummary>
+    fun findAllByPartnerIdInAndStatusIn(partnerIds: Set<Long>, statuses: Set<ReportStatus>, pageable: Pageable): Page<ReportSummary>
 
     @Query(
         """

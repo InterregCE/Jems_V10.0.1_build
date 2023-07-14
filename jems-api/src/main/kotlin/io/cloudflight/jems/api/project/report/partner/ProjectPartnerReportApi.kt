@@ -52,6 +52,17 @@ interface ProjectPartnerReportApi {
         pageable: Pageable,
     ): Page<ProjectPartnerReportSummaryDTO>
 
+    @ApiOperation("Returns all partner reports (submitted and onwards) of user")
+    @ApiImplicitParams(
+        ApiImplicitParam(paramType = "query", name = "page", dataType = "integer"),
+        ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
+        ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
+    )
+    @GetMapping("$ENDPOINT_API_PROJECT_PARTNER_REPORT/mine")
+    fun getMyProjectPartnerReports(
+        pageable: Pageable,
+    ): Page<ProjectPartnerReportSummaryDTO>
+
     @ApiOperation("Returns project partner report detail")
     @GetMapping("$ENDPOINT_API_PROJECT_PARTNER_REPORT/byPartnerId/{partnerId}/byReportId/{reportId}")
     fun getProjectPartnerReport(

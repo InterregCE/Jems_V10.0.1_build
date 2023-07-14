@@ -101,6 +101,10 @@ import {
 } from '@common/components/file-list/file-list-table-with-file-linking/file-list-table-with-file-linking.component';
 import {NotificationListComponent} from '@common/components/notification-list/notification-list.component';
 import {FilterNutsInputComponent} from '@common/components/filter/filter-nuts/filter-nuts-input.component';
+import {PartnerReportListComponent} from '@common/components/partner-report-list/partner-report-list.component';
+import {
+  PartnerReportStatusComponent
+} from '@project/project-application/report/partner-report-status/partner-report-status.component';
 
 const modules = [
   CommonModule,
@@ -183,6 +187,8 @@ const declarations = [
   ChecklistUtilsComponent,
   FileOperationsActionCellComponent,
   FileListTableWithFileLinkingComponent,
+  PartnerReportListComponent,
+  PartnerReportStatusComponent
 ];
 
 const providers = [

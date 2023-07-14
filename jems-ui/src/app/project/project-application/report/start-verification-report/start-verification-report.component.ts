@@ -34,9 +34,9 @@ export class StartVerificationReportComponent {
 
   pendingAction$ = new BehaviorSubject(false);
   data$: Observable<{
-    projectId: number,
-    canView: boolean,
-    canEdit: boolean,
+    projectId: number;
+    canView: boolean;
+    canEdit: boolean;
   }>;
 
   constructor(
