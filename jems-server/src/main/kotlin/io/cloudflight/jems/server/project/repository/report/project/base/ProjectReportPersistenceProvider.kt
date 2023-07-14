@@ -17,6 +17,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.ProjectRe
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportDeadline
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
+import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportStatusAndType
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -132,9 +133,9 @@ class ProjectReportPersistenceProvider(
             }.toSubmissionSummary()
 
     @Transactional(readOnly = true)
-    override fun getSubmittedProjectReportIds(projectId: Long): List<Pair<Long, ContractingDeadlineType>> =
+    override fun getSubmittedProjectReports(projectId: Long): List<ProjectReportStatusAndType> =
         projectReportRepository.findAllByProjectIdAndStatusInOrderByNumberDesc(projectId, statuses = ProjectReportStatus.SUBMITTED_STATUSES)
-            .map { Pair(it.id, it.deadline?.type ?: it.type!!) }
+            .map { ProjectReportStatusAndType(it.id, it.status, it.deadline?.type ?: it.type!!) }
 
     @Transactional(readOnly = true)
     override fun getDeadlinesWithLinkedReportStatus(projectId: Long): Map<Long, ProjectReportStatus> =
@@ -186,4 +187,6 @@ class ProjectReportPersistenceProvider(
 
         return OrderSpecifier(if (orderBy.isAscending) Order.ASC else Order.DESC, dfg)
     }
+
 }
+

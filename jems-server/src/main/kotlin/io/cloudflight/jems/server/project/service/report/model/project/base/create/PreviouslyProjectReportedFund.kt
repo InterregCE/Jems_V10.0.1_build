@@ -4,8 +4,8 @@ import java.math.BigDecimal
 
 data class PreviouslyProjectReportedFund(
     val fundId: Long?,
-    val percentage: BigDecimal,
     val total: BigDecimal,
     val previouslyReported: BigDecimal,
+    val previouslyVerified: BigDecimal,
     val previouslyPaid: BigDecimal,
 )

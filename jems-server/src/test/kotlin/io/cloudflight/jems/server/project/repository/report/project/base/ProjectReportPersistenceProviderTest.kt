@@ -18,6 +18,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.ProjectRe
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportDeadline
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
+import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportStatusAndType
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -129,7 +130,7 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
             totalEligibleAfterVerification = null
         )
 
-        fun report(id: Long, deadlineType: ContractingDeadlineType?, reportType: ContractingDeadlineType?): ProjectReportEntity {
+        fun report(id: Long, status: ProjectReportStatus, deadlineType: ContractingDeadlineType?, reportType: ContractingDeadlineType?): ProjectReportEntity {
             val report = mockk<ProjectReportEntity>()
             every { report.id } returns id
             if (deadlineType == null) {
@@ -139,6 +140,7 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
                 every { deadline.type } returns deadlineType
                 every { report.deadline } returns deadline
             }
+            every { report.status } returns status
             every { report.type } returns reportType
             return report
         }
@@ -347,14 +349,14 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
                 )
             )
         } returns listOf(
-            report(id = 45L, deadlineType = null, reportType = ContractingDeadlineType.Content),
-            report(id = 46L, deadlineType = ContractingDeadlineType.Both, reportType = ContractingDeadlineType.Content),
-            report(id = 47L, deadlineType = ContractingDeadlineType.Finance, reportType = null),
+            report(id = 45L, ProjectReportStatus.Draft, deadlineType = null, reportType = ContractingDeadlineType.Content),
+            report(id = 46L, ProjectReportStatus.Submitted, deadlineType = ContractingDeadlineType.Both, reportType = ContractingDeadlineType.Content),
+            report(id = 47L, ProjectReportStatus.InVerification, deadlineType = ContractingDeadlineType.Finance, reportType = null),
         )
-        assertThat(persistence.getSubmittedProjectReportIds(projectId)).containsExactly(
-            Pair(45L, ContractingDeadlineType.Content),
-            Pair(46L, ContractingDeadlineType.Both),
-            Pair(47L, ContractingDeadlineType.Finance),
+        assertThat(persistence.getSubmittedProjectReports(projectId)).containsExactly(
+            ProjectReportStatusAndType(45L, ProjectReportStatus.Draft, ContractingDeadlineType.Content),
+            ProjectReportStatusAndType(46L, ProjectReportStatus.Submitted, ContractingDeadlineType.Both),
+            ProjectReportStatusAndType(47L, ProjectReportStatus.InVerification, ContractingDeadlineType.Finance),
         )
     }
 

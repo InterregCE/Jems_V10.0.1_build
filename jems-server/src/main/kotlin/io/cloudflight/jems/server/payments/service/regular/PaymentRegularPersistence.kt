@@ -12,8 +12,8 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequest
 import io.cloudflight.jems.server.payments.model.regular.PaymentToCreate
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
 import io.cloudflight.jems.server.payments.model.regular.contributionMeta.ContributionMeta
-import io.cloudflight.jems.server.payments.model.regular.contributionMeta.PartnerContributionSplit
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.PaymentCumulativeData
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
@@ -62,6 +62,6 @@ interface PaymentRegularPersistence {
 
     fun getCoFinancingAndContributionsCumulative(partnerId: Long): ReportExpenditureCoFinancingColumn
 
-    fun getContributionsCumulative(projectId: Long): PartnerContributionSplit
+    fun getPaymentsCumulativeForProject(projectId: Long): PaymentCumulativeData
 
 }

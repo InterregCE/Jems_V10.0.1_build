@@ -21,7 +21,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.base.crea
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportUnitCostBase
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
 import io.cloudflight.jems.server.project.service.report.model.project.verification.ProjectReportVerificationConclusion
-import java.math.BigDecimal
+import java.math.BigDecimal.ZERO
 
 
 fun ProjectReportEntity.toModelSummary(
@@ -161,17 +161,29 @@ fun PreviouslyProjectReportedCoFinancing.toProjectReportEntity(
         privateContributionTotal = totalPrivate,
         sumTotal = totalSum,
 
-        partnerContributionCurrent = BigDecimal.ZERO,
-        publicContributionCurrent = BigDecimal.ZERO,
-        automaticPublicContributionCurrent = BigDecimal.ZERO,
-        privateContributionCurrent = BigDecimal.ZERO,
-        sumCurrent = BigDecimal.ZERO,
+        partnerContributionCurrent = ZERO,
+        publicContributionCurrent = ZERO,
+        automaticPublicContributionCurrent = ZERO,
+        privateContributionCurrent = ZERO,
+        sumCurrent = ZERO,
 
         partnerContributionPreviouslyReported = previouslyReportedPartner,
         publicContributionPreviouslyReported = previouslyReportedPublic,
         automaticPublicContributionPreviouslyReported = previouslyReportedAutoPublic,
         privateContributionPreviouslyReported = previouslyReportedPrivate,
         sumPreviouslyReported = previouslyReportedSum,
+
+        partnerContributionCurrentVerified = ZERO,
+        publicContributionCurrentVerified = ZERO,
+        automaticPublicContributionCurrentVerified = ZERO,
+        privateContributionCurrentVerified = ZERO,
+        sumCurrentVerified = ZERO,
+
+        partnerContributionPreviouslyVerified = previouslyVerifiedPartner,
+        publicContributionPreviouslyVerified = previouslyVerifiedPublic,
+        automaticPublicContributionPreviouslyVerified = previouslyVerifiedAutoPublic,
+        privateContributionPreviouslyVerified = previouslyVerifiedPrivate,
+        sumPreviouslyVerified = previouslyVerifiedSum,
     )
 }
 
@@ -184,10 +196,11 @@ fun List<PreviouslyProjectReportedFund>.toProjectReportEntity(
         ProjectReportCoFinancingEntity(
             id = ProjectReportCoFinancingIdEntity(reportEntity, index.plus(1)),
             programmeFund = fund.fundId?.let { programmeFundResolver.invoke(it) },
-            percentage = fund.percentage,
             total = fund.total,
-            current = BigDecimal.ZERO,
+            current = ZERO,
             previouslyReported = fund.previouslyReported,
+            currentVerified = ZERO,
+            previouslyVerified = fund.previouslyVerified,
             previouslyPaid = fund.previouslyPaid,
         )
     }
@@ -208,16 +221,16 @@ fun ReportCertificateCostCategory.toCreateEntity(report: ProjectReportEntity) =
         unitCostTotal = totalsFromAF.unitCost,
         sumTotal = totalsFromAF.sum,
 
-        staffCurrent = BigDecimal.ZERO,
-        officeCurrent = BigDecimal.ZERO,
-        travelCurrent = BigDecimal.ZERO,
-        externalCurrent = BigDecimal.ZERO,
-        equipmentCurrent = BigDecimal.ZERO,
-        infrastructureCurrent = BigDecimal.ZERO,
-        otherCurrent = BigDecimal.ZERO,
-        lumpSumCurrent = BigDecimal.ZERO,
-        unitCostCurrent = BigDecimal.ZERO,
-        sumCurrent = BigDecimal.ZERO,
+        staffCurrent = ZERO,
+        officeCurrent = ZERO,
+        travelCurrent = ZERO,
+        externalCurrent = ZERO,
+        equipmentCurrent = ZERO,
+        infrastructureCurrent = ZERO,
+        otherCurrent = ZERO,
+        lumpSumCurrent = ZERO,
+        unitCostCurrent = ZERO,
+        sumCurrent = ZERO,
 
         staffPreviouslyReported = previouslyReported.staff,
         officePreviouslyReported = previouslyReported.office,
@@ -241,7 +254,7 @@ fun ProjectReportLumpSum.toEntity(
     orderNr = orderNr,
     periodNumber = period,
     total = total,
-    current = BigDecimal.ZERO,
+    current = ZERO,
     previouslyReported = previouslyReported,
     previouslyPaid = previouslyPaid,
 )
@@ -253,7 +266,7 @@ fun ProjectReportUnitCostBase.toEntity(
     reportEntity = report,
     programmeUnitCost = unitCostResolver.invoke(unitCostId),
     total = totalCost,
-    current = BigDecimal.ZERO,
+    current = ZERO,
     previouslyReported = previouslyReported,
 )
 

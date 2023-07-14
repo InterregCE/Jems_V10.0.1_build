@@ -16,4 +16,10 @@ data class PreviouslyProjectReportedCoFinancing(
     val previouslyReportedAutoPublic: BigDecimal,
     val previouslyReportedPrivate: BigDecimal,
     val previouslyReportedSum: BigDecimal,
+
+    val previouslyVerifiedPartner: BigDecimal,
+    val previouslyVerifiedPublic: BigDecimal,
+    val previouslyVerifiedAutoPublic: BigDecimal,
+    val previouslyVerifiedPrivate: BigDecimal,
+    val previouslyVerifiedSum: BigDecimal,
 )

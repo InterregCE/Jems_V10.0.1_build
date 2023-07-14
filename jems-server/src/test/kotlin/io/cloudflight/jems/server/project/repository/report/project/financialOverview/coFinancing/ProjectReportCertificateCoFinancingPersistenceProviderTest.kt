@@ -11,6 +11,7 @@ import io.cloudflight.jems.server.project.repository.report.project.ProjectRepor
 import io.cloudflight.jems.server.project.repository.report.project.coFinancing.ProjectReportCumulativeFund
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancingColumn
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancingPrevious
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -51,6 +52,18 @@ class ProjectReportCertificateCoFinancingPersistenceProviderTest : UnitTest() {
             automaticPublicContributionPreviouslyReported = BigDecimal.valueOf(4),
             privateContributionPreviouslyReported = BigDecimal.valueOf(5),
             sumPreviouslyReported = BigDecimal.valueOf(6),
+
+            partnerContributionCurrentVerified = BigDecimal.valueOf(105),
+            publicContributionCurrentVerified = BigDecimal.valueOf(34),
+            automaticPublicContributionCurrentVerified = BigDecimal.valueOf(35),
+            privateContributionCurrentVerified = BigDecimal.valueOf(36),
+            sumCurrentVerified = BigDecimal.valueOf(125),
+
+            partnerContributionPreviouslyVerified = BigDecimal.valueOf(420),
+            publicContributionPreviouslyVerified = BigDecimal.valueOf(130),
+            automaticPublicContributionPreviouslyVerified = BigDecimal.valueOf(140),
+            privateContributionPreviouslyVerified = BigDecimal.valueOf(150),
+            sumPreviouslyVerified = BigDecimal.valueOf(600),
         )
 
         private val coFin = ReportCertificateCoFinancing(
@@ -78,6 +91,22 @@ class ProjectReportCertificateCoFinancingPersistenceProviderTest : UnitTest() {
                 privateContribution = BigDecimal.valueOf(5),
                 sum = BigDecimal.valueOf(6),
             ),
+            currentVerified = ReportCertificateCoFinancingColumn(
+                funds = mapOf(20L to BigDecimal.valueOf(17L), null to BigDecimal.valueOf(47L)),
+                partnerContribution = BigDecimal.valueOf(105),
+                publicContribution = BigDecimal.valueOf(34),
+                automaticPublicContribution = BigDecimal.valueOf(35),
+                privateContribution = BigDecimal.valueOf(36),
+                sum = BigDecimal.valueOf(125),
+            ),
+            previouslyVerified = ReportCertificateCoFinancingColumn(
+                funds = mapOf(20L to BigDecimal.valueOf(33L), null to BigDecimal.valueOf(79L)),
+                partnerContribution = BigDecimal.valueOf(420),
+                publicContribution = BigDecimal.valueOf(130),
+                automaticPublicContribution = BigDecimal.valueOf(140),
+                privateContribution = BigDecimal.valueOf(150),
+                sum = BigDecimal.valueOf(600),
+            ),
             previouslyPaid = ReportCertificateCoFinancingColumn(
                 funds = mapOf(20L to BigDecimal.valueOf(81L), null to BigDecimal.valueOf(123L)),
                 partnerContribution = BigDecimal.ZERO,
@@ -91,48 +120,75 @@ class ProjectReportCertificateCoFinancingPersistenceProviderTest : UnitTest() {
         private fun fund() = ProjectReportCoFinancingEntity(
             id = ProjectReportCoFinancingIdEntity(report, 1),
             programmeFund = ProgrammeFundEntity(id = 20L, selected = true, type = ProgrammeFundType.ERDF),
-            percentage = BigDecimal.valueOf(25L),
             total = BigDecimal.valueOf(250L),
             current = BigDecimal.valueOf(125L),
             previouslyReported = BigDecimal.valueOf(50L),
+            currentVerified = BigDecimal.valueOf(17L),
+            previouslyVerified = BigDecimal.valueOf(33L),
             previouslyPaid = BigDecimal.valueOf(81L),
         )
 
         private fun partnerContribution() = ProjectReportCoFinancingEntity(
             id = ProjectReportCoFinancingIdEntity(report, 2),
             programmeFund = null,
-            percentage = BigDecimal.valueOf(75L),
             total = BigDecimal.valueOf(750L),
             current = BigDecimal.valueOf(375L),
             previouslyReported = BigDecimal.valueOf(150L),
+            currentVerified = BigDecimal.valueOf(47L),
+            previouslyVerified = BigDecimal.valueOf(79L),
             previouslyPaid = BigDecimal.valueOf(123L),
         )
 
-        private val reportsCumulative = ReportCertificateCoFinancingColumnWithoutFunds(
+        private val cumulativeCurrent = ReportCertificateCoFinancingColumnWithoutFunds(
             partnerContribution = BigDecimal.valueOf(24),
             publicContribution = BigDecimal.valueOf(25),
             automaticPublicContribution = BigDecimal.valueOf(26),
             privateContribution = BigDecimal.valueOf(27),
             sum = BigDecimal.valueOf(28),
         )
+        private val cumulativeVerified = ReportCertificateCoFinancingColumnWithoutFunds(
+            partnerContribution = BigDecimal.valueOf(34),
+            publicContribution = BigDecimal.valueOf(35),
+            automaticPublicContribution = BigDecimal.valueOf(36),
+            privateContribution = BigDecimal.valueOf(37),
+            sum = BigDecimal.valueOf(38),
+        )
 
-        private val cumulativeFund = ProjectReportCumulativeFund(
+        private val cumulativeCurrentFund = ProjectReportCumulativeFund(
             reportFundId = fund().programmeFund!!.id,
-            sum = BigDecimal.valueOf(62)
+            sum = BigDecimal.valueOf(62),
+        )
+        private val cumulativeVerifiedFund = ProjectReportCumulativeFund(
+            reportFundId = fund().programmeFund!!.id,
+            sum = BigDecimal.valueOf(63),
         )
 
-        private val cumulativePartnerContrib = ProjectReportCumulativeFund(
+        private val cumulativeCurrentPartnerContrib = ProjectReportCumulativeFund(
             reportFundId = null,
-            sum = BigDecimal.valueOf(184)
+            sum = BigDecimal.valueOf(184),
+        )
+        private val cumulativeVerifiedPartnerContrib = ProjectReportCumulativeFund(
+            reportFundId = null,
+            sum = BigDecimal.valueOf(185),
         )
 
-        private val coFinCumulative = ReportCertificateCoFinancingColumn(
-            funds = mapOf(20L to BigDecimal.valueOf(62L), null to BigDecimal.valueOf(184L)),
-            partnerContribution = BigDecimal.valueOf(24),
-            publicContribution = BigDecimal.valueOf(25),
-            automaticPublicContribution = BigDecimal.valueOf(26),
-            privateContribution = BigDecimal.valueOf(27),
-            sum = BigDecimal.valueOf(28),
+        private val coFinCumulative = ReportCertificateCoFinancingPrevious(
+            previouslyReported = ReportCertificateCoFinancingColumn(
+                funds = mapOf(20L to BigDecimal.valueOf(62L), null to BigDecimal.valueOf(184L)),
+                partnerContribution = BigDecimal.valueOf(24),
+                publicContribution = BigDecimal.valueOf(25),
+                automaticPublicContribution = BigDecimal.valueOf(26),
+                privateContribution = BigDecimal.valueOf(27),
+                sum = BigDecimal.valueOf(28),
+            ),
+            previouslyVerified = ReportCertificateCoFinancingColumn(
+                funds = mapOf(20L to BigDecimal.valueOf(63L), null to BigDecimal.valueOf(185L)),
+                partnerContribution = BigDecimal.valueOf(34),
+                publicContribution = BigDecimal.valueOf(35),
+                automaticPublicContribution = BigDecimal.valueOf(36),
+                privateContribution = BigDecimal.valueOf(37),
+                sum = BigDecimal.valueOf(38),
+            ),
         )
 
         private val coFinNewValues = ReportCertificateCoFinancingColumn(
@@ -170,10 +226,16 @@ class ProjectReportCertificateCoFinancingPersistenceProviderTest : UnitTest() {
 
     @Test
     fun getCoFinancingCumulative() {
-        every { certificateCoFinancingRepository.findCumulativeForReportIds(reportIds = setOf(9L)) } returns reportsCumulative
-        every { projectReportCoFinancingRepository.findCumulativeForReportIds(reportIds = setOf(9L)) } returns
-            listOf(cumulativeFund, cumulativePartnerContrib)
-        assertThat(persistence.getCoFinancingCumulative(reportIds = setOf(9L))).isEqualTo(coFinCumulative)
+        every { certificateCoFinancingRepository.findCumulativeCurrentForReportIds(reportIds = setOf(9L)) } returns cumulativeCurrent
+        every { projectReportCoFinancingRepository.findCumulativeCurrentForReportIds(reportIds = setOf(9L)) } returns
+            listOf(cumulativeCurrentFund, cumulativeCurrentPartnerContrib)
+
+        every { certificateCoFinancingRepository.findCumulativeVerifiedForReportIds(reportIds = setOf(10L)) } returns cumulativeVerified
+        every { projectReportCoFinancingRepository.findCumulativeVerifiedForReportIds(reportIds = setOf(10L)) } returns
+            listOf(cumulativeVerifiedFund, cumulativeVerifiedPartnerContrib)
+
+        assertThat(persistence.getCoFinancingCumulative(submittedReportIds = setOf(9L), finalizedReportIds = setOf(10L)))
+            .isEqualTo(coFinCumulative)
     }
 
     @Test

@@ -6,9 +6,7 @@ import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
-import io.cloudflight.jems.server.notification.handler.PartnerReportStatusChanged
 import io.cloudflight.jems.server.notification.handler.ProjectReportStatusChanged
-import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.model.ProjectHorizontalPrinciples
@@ -18,7 +16,6 @@ import io.cloudflight.jems.server.project.service.report.model.partner.ReportSta
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
-import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
 import io.cloudflight.jems.server.project.service.report.model.project.projectResults.ProjectReportResultPrinciple
@@ -50,7 +47,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
-import org.mockito.Mock
 import org.springframework.context.ApplicationEventPublisher
 import java.math.BigDecimal
 import java.time.ZonedDateTime
@@ -89,41 +85,6 @@ internal class SubmitProjectReportTest : UnitTest() {
             partnerNumber = 5,
             partnerRole = ProjectPartnerRole.LEAD_PARTNER,
             partnerId = 1L
-        )
-
-        private val certificateCoFin = ReportCertificateCoFinancing(
-            totalsFromAF = ReportCertificateCoFinancingColumn(
-                funds = mapOf(20L to BigDecimal.valueOf(250L), null to BigDecimal.valueOf(750L)),
-                partnerContribution = BigDecimal.valueOf(900),
-                publicContribution = BigDecimal.valueOf(200),
-                automaticPublicContribution = BigDecimal.valueOf(300),
-                privateContribution = BigDecimal.valueOf(400),
-                sum = BigDecimal.valueOf(1000),
-            ),
-            currentlyReported = ReportCertificateCoFinancingColumn(
-                funds = mapOf(20L to BigDecimal.valueOf(125L), null to BigDecimal.valueOf(375L)),
-                partnerContribution = BigDecimal.valueOf(50),
-                publicContribution = BigDecimal.valueOf(100),
-                automaticPublicContribution = BigDecimal.valueOf(150),
-                privateContribution = BigDecimal.valueOf(200),
-                sum = BigDecimal.valueOf(250),
-            ),
-            previouslyReported = ReportCertificateCoFinancingColumn(
-                funds = mapOf(20L to BigDecimal.valueOf(50L), null to BigDecimal.valueOf(150L)),
-                partnerContribution = BigDecimal.valueOf(2),
-                publicContribution = BigDecimal.valueOf(3),
-                automaticPublicContribution = BigDecimal.valueOf(4),
-                privateContribution = BigDecimal.valueOf(5),
-                sum = BigDecimal.valueOf(6),
-            ),
-            previouslyPaid = ReportCertificateCoFinancingColumn(
-                funds = mapOf(20L to BigDecimal.valueOf(81L), null to BigDecimal.valueOf(123L)),
-                partnerContribution = BigDecimal.ZERO,
-                publicContribution = BigDecimal.ZERO,
-                automaticPublicContribution = BigDecimal.ZERO,
-                privateContribution = BigDecimal.ZERO,
-                sum = BigDecimal.valueOf(204),
-            ),
         )
 
         private val totalEligibleAfterControl = ReportCertificateCoFinancingColumn(
@@ -232,7 +193,6 @@ internal class SubmitProjectReportTest : UnitTest() {
         every { auditPublisher.publishEvent(ofType(ProjectReportStatusChanged::class)) } returns Unit
         every { reportIdentificationPersistence.getSpendingProfileCurrentValues(REPORT_ID) } returns mapOf()
         every { reportIdentificationPersistence.updateSpendingProfile(REPORT_ID, mapOf()) } returnsArgument 0
-        every { reportCertificateCoFinancingPersistence.getCoFinancing(PROJECT_ID, REPORT_ID) } returns certificateCoFin
         every { reportExpenditureCoFinancingPersistence.getCoFinancingTotalEligible(setOf(42L)) } returns totalEligibleAfterControl
         every { reportCertificateCoFinancingPersistence.updateCurrentlyReportedValues(any(), any(), any()) } returnsArgument 0
 

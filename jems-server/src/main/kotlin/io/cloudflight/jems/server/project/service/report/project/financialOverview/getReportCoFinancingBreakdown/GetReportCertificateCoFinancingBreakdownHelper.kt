@@ -6,7 +6,6 @@ import io.cloudflight.jems.server.project.service.report.model.project.financial
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancingColumn
 import java.math.BigDecimal
-import java.math.RoundingMode
 
 fun ReportCertificateCoFinancing.toLinesModel() = CertificateCoFinancingBreakdown(
     funds = totalsFromAF.funds.map {
@@ -14,39 +13,51 @@ fun ReportCertificateCoFinancing.toLinesModel() = CertificateCoFinancingBreakdow
             fundId = it.key,
             totalEligibleBudget = it.value,
             previouslyReported = previouslyReported.funds.getOrDefault(it.key, BigDecimal.ZERO),
-            previouslyPaid = previouslyPaid.funds.getOrDefault(it.key, BigDecimal.ZERO),
             currentReport = currentlyReported.funds.getOrDefault(it.key, BigDecimal.ZERO),
+            previouslyVerified = previouslyVerified.funds.getOrDefault(it.key, BigDecimal.ZERO),
+            currentVerified = currentVerified.funds.getOrDefault(it.key, BigDecimal.ZERO),
+            previouslyPaid = previouslyPaid.funds.getOrDefault(it.key, BigDecimal.ZERO),
         )
     },
     partnerContribution = CertificateCoFinancingBreakdownLine(
         totalEligibleBudget = totalsFromAF.partnerContribution,
         previouslyReported = previouslyReported.partnerContribution,
-        previouslyPaid = previouslyPaid.partnerContribution,
         currentReport = currentlyReported.partnerContribution,
+        previouslyVerified = previouslyVerified.partnerContribution,
+        currentVerified = currentVerified.partnerContribution,
+        previouslyPaid = previouslyPaid.partnerContribution,
     ),
     publicContribution = CertificateCoFinancingBreakdownLine(
         totalEligibleBudget = totalsFromAF.publicContribution,
         previouslyReported = previouslyReported.publicContribution,
-        previouslyPaid = previouslyPaid.publicContribution,
         currentReport = currentlyReported.publicContribution,
+        previouslyVerified = previouslyVerified.publicContribution,
+        currentVerified = currentVerified.publicContribution,
+        previouslyPaid = previouslyPaid.publicContribution,
     ),
     automaticPublicContribution = CertificateCoFinancingBreakdownLine(
         totalEligibleBudget = totalsFromAF.automaticPublicContribution,
         previouslyReported = previouslyReported.automaticPublicContribution,
-        previouslyPaid = previouslyPaid.automaticPublicContribution,
         currentReport = currentlyReported.automaticPublicContribution,
+        previouslyVerified = previouslyVerified.automaticPublicContribution,
+        currentVerified = currentVerified.automaticPublicContribution,
+        previouslyPaid = previouslyPaid.automaticPublicContribution,
     ),
     privateContribution = CertificateCoFinancingBreakdownLine(
         totalEligibleBudget = totalsFromAF.privateContribution,
         previouslyReported = previouslyReported.privateContribution,
-        previouslyPaid = previouslyPaid.privateContribution,
         currentReport = currentlyReported.privateContribution,
+        previouslyVerified = previouslyVerified.privateContribution,
+        currentVerified = currentVerified.privateContribution,
+        previouslyPaid = previouslyPaid.privateContribution,
     ),
     total = CertificateCoFinancingBreakdownLine(
         totalEligibleBudget = totalsFromAF.sum,
         previouslyReported = previouslyReported.sum,
-        previouslyPaid = previouslyPaid.sum,
         currentReport = currentlyReported.sum,
+        previouslyVerified = previouslyVerified.sum,
+        currentVerified = currentVerified.sum,
+        previouslyPaid = previouslyPaid.sum,
     ),
 )
 

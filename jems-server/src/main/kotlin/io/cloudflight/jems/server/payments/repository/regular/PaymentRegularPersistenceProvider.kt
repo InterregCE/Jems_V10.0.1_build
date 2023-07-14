@@ -34,6 +34,8 @@ import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepos
 import io.cloudflight.jems.server.project.repository.partner.toProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.PaymentCumulativeAmounts
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.PaymentCumulativeData
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.data.domain.Page
@@ -262,8 +264,23 @@ class PaymentRegularPersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun getContributionsCumulative(projectId: Long) =
-        paymentContributionMetaRepository.getContributionCumulativePerProject(projectId)
+    override fun getPaymentsCumulativeForProject(projectId: Long): PaymentCumulativeData {
+        val contribution = paymentContributionMetaRepository.getContributionCumulativePerProject(projectId)
+        val funds = paymentPartnerRepository.getPaymentCumulativeForProject(projectId).toMap()
+
+        val cumulativeAmounts = PaymentCumulativeAmounts(
+            funds = funds,
+            partnerContribution = contribution.partnerContribution,
+            publicContribution = contribution.publicContribution,
+            automaticPublicContribution = contribution.automaticPublicContribution,
+            privateContribution = contribution.privateContribution,
+        )
+
+        return PaymentCumulativeData(
+            amounts = cumulativeAmounts,
+            confirmedAndPaid = paymentPartnerInstallmentRepository.getConfirmedCumulativeForProject(projectId).toMap(),
+        )
+    }
 
     private fun getUserOrNull(userId: Long?): UserEntity? =
         if (userId != null) {

@@ -569,6 +569,8 @@ class ProjectReportDataProviderImplTest : UnitTest() {
                 previouslyReported = BigDecimal.ONE,
                 previouslyPaid = BigDecimal.ONE,
                 currentReport = BigDecimal.ONE,
+                previouslyVerified = BigDecimal.valueOf(150L),
+                currentVerified = BigDecimal.valueOf(15L),
                 totalReportedSoFar = BigDecimal.ONE,
                 totalReportedSoFarPercentage = BigDecimal.ONE,
                 remainingBudget = BigDecimal.valueOf(5)

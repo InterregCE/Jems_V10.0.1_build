@@ -61,6 +61,8 @@ import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.PaymentCumulativeAmounts
+import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.PaymentCumulativeData
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.repository.user.UserRepository
@@ -656,6 +658,42 @@ class PaymentRegularPersistenceProviderTest: UnitTest() {
                 automaticPublicContribution = BigDecimal.valueOf(170L),
                 privateContribution = BigDecimal.valueOf(190L),
                 sum = BigDecimal.valueOf(1607L),
+            )
+        )
+    }
+
+    @Test
+    fun getPaymentsCumulativeForProject() {
+        every { paymentContributionMetaRepository.getContributionCumulativePerProject(projectId) } returns PartnerContributionSplit(
+            partnerContribution = BigDecimal.valueOf(810L),
+            publicContribution = BigDecimal.valueOf(250L),
+            automaticPublicContribution = BigDecimal.valueOf(270L),
+            privateContribution = BigDecimal.valueOf(290L),
+        )
+        every { paymentPartnerRepository.getPaymentCumulativeForProject(projectId) } returns listOf(
+            Pair(47L, BigDecimal.valueOf(650L)),
+            Pair(48L, BigDecimal.valueOf(247L)),
+        )
+        every { paymentPartnerInstallmentRepository.getConfirmedCumulativeForProject(projectId) } returns listOf(
+            Pair(47L, BigDecimal.valueOf(111L)),
+            Pair(48L, BigDecimal.valueOf(333L)),
+        )
+        assertThat(paymentPersistenceProvider.getPaymentsCumulativeForProject(projectId)).isEqualTo(
+            PaymentCumulativeData(
+                amounts = PaymentCumulativeAmounts(
+                    funds = mapOf(
+                        47L to BigDecimal.valueOf(650L),
+                        48L to BigDecimal.valueOf(247L),
+                    ),
+                    partnerContribution = BigDecimal.valueOf(810L),
+                    publicContribution = BigDecimal.valueOf(250L),
+                    automaticPublicContribution = BigDecimal.valueOf(270L),
+                    privateContribution = BigDecimal.valueOf(290L),
+                ),
+                confirmedAndPaid = mapOf(
+                    47L to BigDecimal.valueOf(111L),
+                    48L to BigDecimal.valueOf(333L),
+                ),
             )
         )
     }

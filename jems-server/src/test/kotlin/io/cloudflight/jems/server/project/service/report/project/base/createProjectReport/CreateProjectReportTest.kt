@@ -27,6 +27,7 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAd
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddressType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.PartnerReportInvestmentSummary
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReport
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportUpdate
@@ -39,6 +40,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.base.crea
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportPartnerCreateModel
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportResultCreate
+import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportStatusAndType
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportUnitCostBase
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackage
@@ -47,6 +49,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.workPlan.
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageActivityCreate
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageActivityDeliverableCreate
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageCreate
+import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageInvestmentCreate
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.create.ProjectReportWorkPackageOutputCreate
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportCreatePersistence
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
@@ -59,6 +62,7 @@ import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersist
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackageFull
+import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
 import io.mockk.clearMocks
 import io.mockk.every
@@ -214,27 +218,32 @@ internal class CreateProjectReportTest : UnitTest() {
         )
 
         val budget = ProjectReportBudget(
-                coFinancing = PreviouslyProjectReportedCoFinancing(
-                        fundsSorted = listOf(
-                                PreviouslyProjectReportedFund(
-                                        fundId = 410L,
-                                        percentage = BigDecimal.valueOf(40),
-                                        total = BigDecimal.valueOf(1500),
-                                        previouslyReported = BigDecimal.valueOf(256),
-                                        previouslyPaid = BigDecimal.valueOf(512),
-                                ),
-                        ),
-                        totalPartner = BigDecimal.valueOf(13),
-                        totalPublic = BigDecimal.valueOf(14),
-                        totalAutoPublic = BigDecimal.valueOf(15),
-                        totalPrivate = BigDecimal.valueOf(16),
-                        totalSum = BigDecimal.valueOf(17),
-                        previouslyReportedPartner = BigDecimal.valueOf(33),
-                        previouslyReportedPublic = BigDecimal.valueOf(34),
-                        previouslyReportedAutoPublic = BigDecimal.valueOf(35),
-                        previouslyReportedPrivate = BigDecimal.valueOf(36),
-                        previouslyReportedSum = BigDecimal.valueOf(37),
+            coFinancing = PreviouslyProjectReportedCoFinancing(
+                fundsSorted = listOf(
+                    PreviouslyProjectReportedFund(
+                        fundId = 410L,
+                        total = BigDecimal.valueOf(1500),
+                        previouslyReported = BigDecimal.valueOf(256),
+                        previouslyVerified = BigDecimal.valueOf(104),
+                        previouslyPaid = BigDecimal.valueOf(512),
+                    ),
                 ),
+                totalPartner = BigDecimal.valueOf(13),
+                totalPublic = BigDecimal.valueOf(14),
+                totalAutoPublic = BigDecimal.valueOf(15),
+                totalPrivate = BigDecimal.valueOf(16),
+                totalSum = BigDecimal.valueOf(17),
+                previouslyReportedPartner = BigDecimal.valueOf(33),
+                previouslyReportedPublic = BigDecimal.valueOf(34),
+                previouslyReportedAutoPublic = BigDecimal.valueOf(35),
+                previouslyReportedPrivate = BigDecimal.valueOf(36),
+                previouslyReportedSum = BigDecimal.valueOf(37),
+                previouslyVerifiedPartner = BigDecimal.valueOf(53),
+                previouslyVerifiedPublic = BigDecimal.valueOf(54),
+                previouslyVerifiedAutoPublic = BigDecimal.valueOf(55),
+                previouslyVerifiedPrivate = BigDecimal.valueOf(56),
+                previouslyVerifiedSum = BigDecimal.valueOf(57),
+            ),
                 costCategorySetup = ReportCertificateCostCategory(
                         totalsFromAF = BudgetCostsCalculationResultFull(
                                 staff = BigDecimal.valueOf(105),
@@ -345,7 +354,15 @@ internal class CreateProjectReportTest : UnitTest() {
                                 deactivated = false,
                         ),
                 ),
-                investments = emptyList(),
+                investments = listOf(
+                    WorkPackageInvestment(
+                        id = 744L,
+                        investmentNumber = 14,
+                        title = setOf(InputTranslation(SystemLanguage.EN, "investment-14")),
+                        deactivated = false,
+                        address = null,
+                    ),
+                ),
                 deactivated = false,
         )
 
@@ -388,51 +405,56 @@ internal class CreateProjectReportTest : UnitTest() {
         )
 
         fun expectedToCreateModel(projectId: Long, created: ZonedDateTime) = ProjectReportCreateModel(
-                reportBase = ProjectReportModel(
-                        id = 0L,
-                        reportNumber = 8,
-                        status = ProjectReportStatus.Draft,
-                        linkedFormVersion = "version",
-                        startDate = YESTERDAY,
-                        endDate = TOMORROW,
-                        deadlineId = null,
-                        type = ContractingDeadlineType.Both,
-                        periodNumber = 4,
-                        reportingDate = YESTERDAY.minusDays(1),
-                        projectId = projectId,
-                        projectIdentifier = "proj-custom-iden",
-                        projectAcronym = "proj-acr",
-                        leadPartnerNameInOriginalLanguage = "lead-orig",
-                        leadPartnerNameInEnglish = "lead-en",
-                        createdAt = created,
-                        firstSubmission = null,
-                        verificationDate = null,
-                        verificationEndDate = null,
-                        amountRequested = BigDecimal.ZERO,
-                        totalEligibleAfterVerification = BigDecimal.ZERO
-                ),
-                reportBudget = ProjectReportBudget(
-                        coFinancing = PreviouslyProjectReportedCoFinancing(
-                                fundsSorted = listOf(
-                                        PreviouslyProjectReportedFund(
-                                                fundId = 410L,
-                                                percentage = BigDecimal.valueOf(40),
-                                                total = BigDecimal.valueOf(1500),
-                                                previouslyReported = BigDecimal.valueOf(256),
-                                                previouslyPaid = BigDecimal.valueOf(512),
-                                        ),
-                                ),
-                                totalPartner = BigDecimal.valueOf(13),
-                                totalPublic = BigDecimal.valueOf(14),
-                                totalAutoPublic = BigDecimal.valueOf(15),
-                                totalPrivate = BigDecimal.valueOf(16),
-                                totalSum = BigDecimal.valueOf(17),
-                                previouslyReportedPartner = BigDecimal.valueOf(33),
-                                previouslyReportedPublic = BigDecimal.valueOf(34),
-                                previouslyReportedAutoPublic = BigDecimal.valueOf(35),
-                                previouslyReportedPrivate = BigDecimal.valueOf(36),
-                                previouslyReportedSum = BigDecimal.valueOf(37),
+            reportBase = ProjectReportModel(
+                id = 0L,
+                reportNumber = 8,
+                status = ProjectReportStatus.Draft,
+                linkedFormVersion = "version",
+                startDate = YESTERDAY,
+                endDate = TOMORROW,
+                deadlineId = null,
+                type = ContractingDeadlineType.Both,
+                periodNumber = 4,
+                reportingDate = YESTERDAY.minusDays(1),
+                projectId = projectId,
+                projectIdentifier = "proj-custom-iden",
+                projectAcronym = "proj-acr",
+                leadPartnerNameInOriginalLanguage = "lead-orig",
+                leadPartnerNameInEnglish = "lead-en",
+                createdAt = created,
+                firstSubmission = null,
+                verificationDate = null,
+                verificationEndDate = null,
+                amountRequested = BigDecimal.ZERO,
+                totalEligibleAfterVerification = BigDecimal.ZERO
+            ),
+            reportBudget = ProjectReportBudget(
+                coFinancing = PreviouslyProjectReportedCoFinancing(
+                    fundsSorted = listOf(
+                        PreviouslyProjectReportedFund(
+                            fundId = 410L,
+                            total = BigDecimal.valueOf(1500),
+                            previouslyReported = BigDecimal.valueOf(256),
+                            previouslyVerified = BigDecimal.valueOf(104),
+                            previouslyPaid = BigDecimal.valueOf(512),
                         ),
+                    ),
+                    totalPartner = BigDecimal.valueOf(13),
+                    totalPublic = BigDecimal.valueOf(14),
+                    totalAutoPublic = BigDecimal.valueOf(15),
+                    totalPrivate = BigDecimal.valueOf(16),
+                    totalSum = BigDecimal.valueOf(17),
+                    previouslyReportedPartner = BigDecimal.valueOf(33),
+                    previouslyReportedPublic = BigDecimal.valueOf(34),
+                    previouslyReportedAutoPublic = BigDecimal.valueOf(35),
+                    previouslyReportedPrivate = BigDecimal.valueOf(36),
+                    previouslyReportedSum = BigDecimal.valueOf(37),
+                    previouslyVerifiedPartner = BigDecimal.valueOf(53),
+                    previouslyVerifiedPublic = BigDecimal.valueOf(54),
+                    previouslyVerifiedAutoPublic = BigDecimal.valueOf(55),
+                    previouslyVerifiedPrivate = BigDecimal.valueOf(56),
+                    previouslyVerifiedSum = BigDecimal.valueOf(57),
+                ),
                         costCategorySetup = ReportCertificateCostCategory(
                                 totalsFromAF = BudgetCostsCalculationResultFull(
                                         staff = BigDecimal.valueOf(105),
@@ -554,7 +576,28 @@ internal class CreateProjectReportTest : UnitTest() {
                                                 currentReport = BigDecimal.ZERO
                                         ),
                                 ),
-                                investments = emptyList(),
+                        investments = listOf(
+                            ProjectReportWorkPackageInvestmentCreate(
+                                investmentId = 744L,
+                                number = 14,
+                                title = setOf(InputTranslation(SystemLanguage.EN, "investment-14")),
+                                expectedDeliveryPeriod = null,
+                                justificationExplanation = emptySet(),
+                                justificationTransactionalRelevance = emptySet(),
+                                justificationBenefits = emptySet(),
+                                justificationPilot = emptySet(),
+                                address = null,
+                                risk = emptySet(),
+                                documentation = emptySet(),
+                                documentationExpectedImpacts = emptySet(),
+                                ownershipSiteLocation = emptySet(),
+                                ownershipRetain = emptySet(),
+                                ownershipMaintenance = emptySet(),
+                                deactivated = false,
+                                previousProgress = emptySet(),
+                                progress = emptySet(),
+                            )
+                        ),
                                 previousCommunicationStatus = ProjectReportWorkPlanStatus.Partly,
                                 previousCompleted = true,
                                 previousSpecificStatus = ProjectReportWorkPlanStatus.Fully,
@@ -675,10 +718,14 @@ internal class CreateProjectReportTest : UnitTest() {
         every { reportPersistence.getCurrentLatestReportFor(projectId) } returns currentLatestReport(7)
         every { projectPartnerPersistence.findTop50ByProjectId(projectId, "version") } returns listOf(leadPartner())
         every { projectDescriptionPersistence.getBenefits(projectId, "version") } returns projectRelevanceBenefits()
-        every { reportPersistence.getSubmittedProjectReportIds(projectId) } returns listOf(Pair(11L, ContractingDeadlineType.Both))
+        val reports = listOf(
+            ProjectReportStatusAndType(11L, ProjectReportStatus.Submitted, ContractingDeadlineType.Both),
+        )
+        every { reportPersistence.getSubmittedProjectReports(projectId) } returns reports
         every { projectWorkPackagePersistence.getWorkPackagesWithAllDataByProjectId(projectId, "version") } returns listOf(workPackage)
-        every { projectReportIdentificationPersistence.getSpendingProfileCumulative(any()) } returns mapOf(11L to BigDecimal.valueOf(83L, 1))
-        every { createProjectReportBudget.retrieveBudgetDataFor(any(), any(), any()) } returns budget
+        every { projectReportIdentificationPersistence.getSpendingProfileCumulative(setOf(11L)) } returns mapOf(11L to BigDecimal.valueOf(83L, 1))
+        val slotInvestments = slot<List<PartnerReportInvestmentSummary>>()
+        every { createProjectReportBudget.retrieveBudgetDataFor(projectId, "version", capture(slotInvestments), reports) } returns budget
         every { workPlanPersistence.getDeliverableCumulative(setOf(11L)) } returns
                 mapOf(15 to mapOf(25 to mapOf(35 to BigDecimal.valueOf(502))))
         every { workPlanPersistence.getOutputCumulative(setOf(11L)) } returns
@@ -705,6 +752,9 @@ internal class CreateProjectReportTest : UnitTest() {
         val returned = interactor.createReportFor(projectId, data)
         assertThat(returned).isEqualTo(
                 expectedProjectReport(projectId).copy(createdAt = returned.createdAt)
+        )
+        assertThat(slotInvestments.captured).containsExactly(
+            PartnerReportInvestmentSummary(744L, 14, 15, setOf(InputTranslation(SystemLanguage.EN, "investment-14")), false)
         )
         assertThat(reportStored.captured).isEqualTo(expectedToCreateModel(projectId, created = reportStored.captured.reportBase.createdAt))
 
