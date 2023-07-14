@@ -47,6 +47,7 @@ class FirstStepDraftApplicationStateTest : UnitTest() {
             endDateStep1 = ZonedDateTime.now().plusHours(1),
             lengthOfPeriod = 0,
             isAdditionalFundAllowed = false,
+            isDirectContributionsAllowed = true,
             flatRates = emptySet(),
             lumpSums = emptyList(),
             unitCosts = emptyList(),

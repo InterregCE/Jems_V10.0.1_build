@@ -179,6 +179,18 @@
                     {{'call.multiple.funds.allowed' | translate}}
                 </mat-checkbox>
             </span>
+
+            <span *ngIf="data.callIsEditable || callForm?.controls?.directContributionsAllowed.value">
+                <h4>{{'call.reporting.contributions.title' | translate}}</h4>
+                <mat-checkbox
+                    (click)="$event.stopPropagation()"
+                    [checked]="callForm?.controls?.directContributionsAllowed.value"
+                    formControlName="directContributionsAllowed"
+                    name="directContributionsAllowed">
+                    {{'call.reporting.contributions.info' | translate}}
+                </mat-checkbox>
+            </span>
+
             <h4>{{'call.funds.select.funds' | translate}}</h4>
             <jems-call-funds (selectionChanged)="formChanged()"
                             [callForm]="callForm"

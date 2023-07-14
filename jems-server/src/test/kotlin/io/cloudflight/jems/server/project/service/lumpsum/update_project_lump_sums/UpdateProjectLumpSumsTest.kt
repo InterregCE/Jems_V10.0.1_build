@@ -45,6 +45,7 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
             endDateStep1 = null,
             lengthOfPeriod = 6,
             isAdditionalFundAllowed = false,
+            isDirectContributionsAllowed = true,
             flatRates = emptySet(),
             lumpSums = lumpSums,
             unitCosts = listOf(),

@@ -47,6 +47,7 @@ class DraftApplicationStateTest : UnitTest() {
             endDateStep1 = null,
             lengthOfPeriod = 0,
             isAdditionalFundAllowed = false,
+            isDirectContributionsAllowed = true,
             flatRates = emptySet(),
             lumpSums = emptyList(),
             unitCosts = emptyList(),

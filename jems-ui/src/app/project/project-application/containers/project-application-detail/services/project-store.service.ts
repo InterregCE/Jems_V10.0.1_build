@@ -7,6 +7,7 @@ import {
   OutputProgrammePrioritySimple,
   ProgrammePriorityDTO,
   ProgrammeSpecificObjectiveDTO,
+  ProgrammeUnitCostDTO,
   ProjectBudgetService,
   ProjectCallSettingsDTO,
   ProjectDecisionDTO,
@@ -25,17 +26,14 @@ import {
 import {filter, map, mergeMap, shareReplay, startWith, switchMap, tap, withLatestFrom} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
-import {ProjectCallSettings} from '@project/model/projectCallSettings';
-import {CallFlatRateSetting} from '@project/model/call-flat-rate-setting';
-import {ProgrammeLumpSum} from '@project/model/lump-sums/programmeLumpSum';
-import {ProgrammeUnitCost} from '@project/model/programmeUnitCost';
-import {LumpSumPhaseEnumUtils} from '@project/model/lump-sums/LumpSumPhaseEnum';
-import {BudgetCostCategoryEnum, BudgetCostCategoryEnumUtils} from '@project/model/lump-sums/BudgetCostCategoryEnum';
+import {BudgetCostCategoryEnum} from '@project/model/lump-sums/BudgetCostCategoryEnum';
 import {RoutingService} from '@common/services/routing.service';
 import {ProjectPaths, ProjectUtil} from '@project/common/project-util';
 import {SecurityService} from '../../../../../security/security.service';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
-import {InvestmentSummary} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
+import {
+  InvestmentSummary
+} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
 import {AllowedBudgetCategories, AllowedBudgetCategory} from '@project/model/allowed-budget-category';
 import {NumberService} from '@common/services/number.service';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
@@ -88,8 +86,7 @@ export class ProjectStore {
   projectPeriods$: Observable<ProjectPeriodDTO[]>;
   collaboratorLevel$: Observable<ProjectUserCollaboratorDTO.LevelEnum>;
 
-  // move to page store
-  projectCall$: Observable<ProjectCallSettings>;
+  projectCallSettings$: Observable<ProjectCallSettingsDTO>;
 
   investmentChangeEvent$ = new Subject<void>();
 
@@ -125,7 +122,7 @@ export class ProjectStore {
     this.projectStatus$ = ProjectStore.projectStatus(this.project$);
     this.projectCallType$ = ProjectStore.projectCallType(this.project$);
     this.currentVersionOfProjectStatus$ = ProjectStore.projectStatus(this.currentVersionOfProject$);
-    this.projectCall$ = this.projectCallSettings();
+    this.projectCallSettings$ = this.projectCallSettings();
     this.currentVersionOfProjectTitle$ = this.currentVersionOfProject$
       .pipe(
         map(project => `${project.customIdentifier} – ${project.acronym}`)
@@ -293,33 +290,10 @@ export class ProjectStore {
       );
   }
 
-  private projectCallSettings(): Observable<ProjectCallSettings> {
-    return this.project$
+  private projectCallSettings(): Observable<ProjectCallSettingsDTO> {
+    return this.projectId$
       .pipe(
-        map(project => project.callSettings),
-        map((callSetting: ProjectCallSettingsDTO) => new ProjectCallSettings(
-          callSetting.callId,
-          callSetting.callName,
-          callSetting.callType,
-          callSetting.startDate,
-          callSetting.endDate,
-          callSetting.endDateStep1,
-          callSetting.lengthOfPeriod,
-          new CallFlatRateSetting(
-            callSetting.flatRates.staffCostFlatRateSetup,
-            callSetting.flatRates.officeAndAdministrationOnStaffCostsFlatRateSetup,
-            callSetting.flatRates.officeAndAdministrationOnDirectCostsFlatRateSetup,
-            callSetting.flatRates.travelAndAccommodationOnStaffCostsFlatRateSetup,
-            callSetting.flatRates.otherCostsOnStaffCostsFlatRateSetup
-          ),
-          callSetting.lumpSums.map(lumpSum =>
-            new ProgrammeLumpSum(lumpSum.id, lumpSum.name, lumpSum.description, lumpSum.cost, lumpSum.splittingAllowed, LumpSumPhaseEnumUtils.toLumpSumPhaseEnum(lumpSum.phase), BudgetCostCategoryEnumUtils.toBudgetCostCategoryEnums(lumpSum.categories))),
-          callSetting.unitCosts
-            .map(unitCost => new ProgrammeUnitCost(unitCost.id, unitCost.name, unitCost.description, unitCost.type, unitCost.costPerUnit, unitCost.oneCostCategory, BudgetCostCategoryEnumUtils.toBudgetCostCategoryEnums(unitCost.categories), unitCost.projectDefined)),
-          callSetting.additionalFundAllowed,
-          callSetting.applicationFormFieldConfigurations
-        )),
-        shareReplay(1)
+        switchMap(projectId => this.projectService.getProjectCallSettingsById(projectId))
       );
   }
 
@@ -330,7 +304,7 @@ export class ProjectStore {
         switchMap(callId => this.callService.getAllowedRealCosts(callId))
       );
 
-    return combineLatest([allowedRealCosts$, this.projectCall$])
+    return combineLatest([allowedRealCosts$, this.projectCallSettings$])
       .pipe(
         map(([allowedRealCosts, callSettings]) => (
           new AllowedBudgetCategories([
@@ -347,13 +321,13 @@ export class ProjectStore {
 
   private allowedBudgetCategory(category: BudgetCostCategoryEnum,
                                 allowedRealCost: boolean,
-                                unitCosts: ProgrammeUnitCost[]): any {
-    const unitCostsEnabled = !!unitCosts.find(unitCost => unitCost.isOneCostCategory && unitCost.categories.includes(category));
+                                unitCosts: ProgrammeUnitCostDTO[]): any {
+    const unitCostsEnabled = !!unitCosts.find(unitCost => unitCost.oneCostCategory && unitCost.categories.includes(category));
     return [category, new AllowedBudgetCategory(allowedRealCost, unitCostsEnabled)];
   }
 
   private callHasTwoSteps(): Observable<boolean> {
-    return this.projectCall$
+    return this.projectCallSettings$
       .pipe(
         map(call => !!call.endDateStep1)
       );

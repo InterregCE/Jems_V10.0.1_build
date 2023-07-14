@@ -41,6 +41,7 @@ val callSettings = ProjectCallSettings(
     lengthOfPeriod = 2,
     endDateStep1 = null,
     isAdditionalFundAllowed = false,
+    isDirectContributionsAllowed = true,
     flatRates = emptySet(),
     lumpSums = emptyList(),
     unitCosts = emptyList(),

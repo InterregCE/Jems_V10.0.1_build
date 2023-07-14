@@ -52,6 +52,7 @@ class ApplicationFormConfigurationControllerTest : UnitTest() {
             endDateStep1 = null,
             endDate = ZonedDateTime.now().plusDays(1),
             isAdditionalFundAllowed = true,
+            isDirectContributionsAllowed = true,
             lengthOfPeriod = 8,
             description = setOf(
                 InputTranslation(language = SystemLanguage.EN, translation = "EN desc"),

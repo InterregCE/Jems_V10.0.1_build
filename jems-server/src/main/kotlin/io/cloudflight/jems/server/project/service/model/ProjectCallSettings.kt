@@ -18,6 +18,7 @@ data class ProjectCallSettings(
     val endDateStep1: ZonedDateTime?,
     val lengthOfPeriod: Int,
     val isAdditionalFundAllowed: Boolean,
+    val isDirectContributionsAllowed: Boolean,
     val flatRates: Set<ProjectCallFlatRate>,
     val lumpSums: List<ProgrammeLumpSum>,
     val unitCosts: List<ProgrammeUnitCost>,

@@ -93,6 +93,7 @@ internal class UpdateCoFinancingInteractorTest {
             endDateStep1 = null,
             endDate = ZonedDateTime.now().plusDays(1),
             isAdditionalFundAllowed = true,
+            isDirectContributionsAllowed = true,
             lengthOfPeriod = 9,
             description = setOf(
                 InputTranslation(language = SystemLanguage.EN, translation = "EN desc"),
@@ -143,6 +144,7 @@ internal class UpdateCoFinancingInteractorTest {
             endDateStep1 = null,
             endDate = ZonedDateTime.now().plusDays(1),
             isAdditionalFundAllowed = true,
+            isDirectContributionsAllowed = true,
             lengthOfPeriod = 9,
             description = setOf(
                 InputTranslation(language = SystemLanguage.EN, translation = "EN desc"),
@@ -199,6 +201,7 @@ internal class UpdateCoFinancingInteractorTest {
             endDateStep1 = null,
             endDate = ZonedDateTime.now().plusDays(1),
             isAdditionalFundAllowed = true,
+            isDirectContributionsAllowed = true,
             lengthOfPeriod = 9,
             description = setOf(
                 InputTranslation(language = SystemLanguage.EN, translation = "EN desc"),

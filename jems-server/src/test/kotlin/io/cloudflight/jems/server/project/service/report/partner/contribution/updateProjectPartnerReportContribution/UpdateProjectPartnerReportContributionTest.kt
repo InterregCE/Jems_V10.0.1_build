@@ -2,9 +2,11 @@ package io.cloudflight.jems.server.project.service.report.partner.contribution.u
 
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
+import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.ProjectPartnerReportContribution
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.ProjectPartnerReportContributionData
@@ -245,6 +247,12 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
     @RelaxedMockK
     lateinit var generalValidator: GeneralValidatorService
 
+    @RelaxedMockK
+    lateinit var callPersistence: CallPersistence
+
+    @RelaxedMockK
+    lateinit var partnerPersistence: PartnerPersistence
+
     @InjectMockKs
     lateinit var updateContribution: UpdateProjectPartnerReportContribution
 
@@ -258,6 +266,7 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
 
     @Test
     fun update() {
+
         every { reportContributionPersistence.getPartnerReportContribution(partnerId = PARTNER_ID, reportId = 8L) } returnsMany listOf(
             listOf(oldContribution, toBeDeletedUnsuccessfully, toBeDeleted, oldContributionFromThisReport),
             listOf(newContribution, toBeDeletedUnsuccessfully, createdContribution, oldContributionFromThisReportUpdated),

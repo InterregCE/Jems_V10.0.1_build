@@ -79,7 +79,8 @@ export class CallDetailPageComponent {
     description: [[], Validators.maxLength(1000)],
     lengthOfPeriod: ['', [Validators.required, Validators.max(99), Validators.min(1)]],
     funds: this.formBuilder.array([]),
-    additionalFundAllowed: [false]
+    additionalFundAllowed: [false],
+    directContributionsAllowed: [true]
   });
 
   constructor(private router: Router,
@@ -229,6 +230,7 @@ export class CallDetailPageComponent {
       if (!call.additionalFundAllowed) {
         this.callForm.controls.additionalFundAllowed.enable();
       }
+      this.callForm.controls.directContributionsAllowed.enable();
     }
   }
 

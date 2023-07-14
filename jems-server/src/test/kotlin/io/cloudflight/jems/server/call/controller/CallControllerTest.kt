@@ -102,6 +102,7 @@ class CallControllerTest : UnitTest() {
             endDateStep1 = null,
             endDate = call.endDate,
             isAdditionalFundAllowed = true,
+            isDirectContributionsAllowed = true,
             lengthOfPeriod = 8,
             description = setOf(
                 InputTranslation(language = EN, translation = "EN desc"),
@@ -157,6 +158,7 @@ class CallControllerTest : UnitTest() {
             endDateTimeStep1 = null,
             endDateTime = call.endDate,
             additionalFundAllowed = true,
+            directContributionsAllowed = true,
             lengthOfPeriod = 8,
             description = setOf(
                 InputTranslation(language = EN, translation = "EN desc"),
@@ -199,6 +201,7 @@ class CallControllerTest : UnitTest() {
             startDateTime = call.startDate,
             endDateTime = call.endDate,
             additionalFundAllowed = true,
+            directContributionsAllowed = true,
             lengthOfPeriod = 8,
             description = setOf(
                 InputTranslation(language = EN, translation = "EN desc"),
@@ -217,6 +220,7 @@ class CallControllerTest : UnitTest() {
             startDate = call.startDate,
             endDate = call.endDate,
             isAdditionalFundAllowed = true,
+            isDirectContributionsAllowed = true,
             lengthOfPeriod = 8,
             description = setOf(
                 InputTranslation(language = EN, translation = "EN desc"),

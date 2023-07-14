@@ -1,7 +1,9 @@
 import {Injectable} from '@angular/core';
 import {ApplicationFormModel} from '@project/common/application-form-model';
 import {ApplicationFormFieldConfigurationDTO} from '@cat/api';
-import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {
+  ProjectStore
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import AvailableInStepEnum = ApplicationFormFieldConfigurationDTO.AvailableInStepEnum;
@@ -24,7 +26,7 @@ export class FormVisibilityStatusService {
   }
 
   isVisible$(fieldIds: string | ApplicationFormModel): Observable<boolean> {
-    return combineLatest([this.projectStore.project$, this.projectStore.projectCall$, this.projectStore.callHasTwoSteps$]).pipe(
+    return combineLatest([this.projectStore.project$, this.projectStore.projectCallSettings$, this.projectStore.callHasTwoSteps$]).pipe(
       map(([project, callSetting, hasCallTwoSteps]) =>
         this.shouldBeVisible(fieldIds, callSetting.applicationFormFieldConfigurations, hasCallTwoSteps, project.step2Active)
       )
