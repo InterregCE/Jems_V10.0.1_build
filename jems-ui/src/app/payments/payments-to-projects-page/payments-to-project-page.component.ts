@@ -2,19 +2,21 @@ import {AfterViewInit, ChangeDetectionStrategy, Component, OnInit, TemplateRef, 
 import {combineLatest, Observable} from 'rxjs';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
-import {PagePaymentToProjectDTO} from '@cat/api';
+import {PagePaymentToProjectDTO, PaymentSearchRequestDTO, ProgrammeFundDTO, ProgrammeFundService} from '@cat/api';
 import {ColumnWidth} from '@common/components/table/model/column-width';
 import {PaymentsToProjectPageStore} from './payments-to-projects-page.store';
-import {map} from 'rxjs/operators';
-import {NumberService} from '@common/services/number.service';
+import {map, startWith, tap} from 'rxjs/operators';
+import {FormBuilder} from "@angular/forms";
 
 @Component({
   selector: 'jems-payments-to-projects-page',
-  templateUrl: './payments-to-projects-page.component.html',
-  styleUrls: ['./payments-to-projects-page.component.scss'],
+  templateUrl: './payments-to-project-page.component.html',
+  styleUrls: ['./payments-to-project-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
+
+  PaymentTypeEnum = PaymentSearchRequestDTO.PaymentTypeEnum;
 
   @ViewChild('remainingToBePaidCell', {static: true})
   remainingToBePaidCell: TemplateRef<any>;
@@ -22,24 +24,66 @@ export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
   @ViewChild('idCell', {static: true})
   idCell: TemplateRef<any>;
 
+  @ViewChild('typeCell', {static: true})
+  typeCell: TemplateRef<any>;
+
   data$: Observable<{
     userCanView: boolean;
     page: PagePaymentToProjectDTO;
     tableConfiguration: TableConfiguration;
+    availableFunds: Map<number, string>;
   }>;
+
+  filtersActive = false;
+  filterForm = this.formBuilder.group({
+    paymentId: [null],
+    paymentType: [null],
+    projectIdentifiers: [[]],
+    projectAcronym: [null],
+    claimSubmissionDateFrom: [null],
+    claimSubmissionDateTo: [null],
+    approvalDateFrom: [null],
+    approvalDateTo: [null],
+    fundIds: [[]],
+    lastPaymentDateFrom: [null],
+    lastPaymentDateTo: [null],
+  });
+  defaultFilter = JSON.stringify(this.filterForm.value);
+
+  filterChanges = this.filterForm.valueChanges.pipe(
+    startWith(this.filterForm.value),
+    tap(filters => this.filtersActive = this.defaultFilter !== JSON.stringify(filters)),
+    tap(filters => this.paymentToProjectsStore.filter$.next(this.transformFiltersToSearchDto(filters))),
+  );
 
   tableConfiguration: TableConfiguration;
 
-  constructor(public paymentToProjectsStore: PaymentsToProjectPageStore) {
+  constructor(
+    public paymentToProjectsStore: PaymentsToProjectPageStore,
+    private formBuilder: FormBuilder,
+    private programmeFundService: ProgrammeFundService,
+  ) {
   }
 
   ngOnInit(): void {
     this.data$ = combineLatest([
       this.paymentToProjectsStore.paymentToProjectDTO$,
-      this.paymentToProjectsStore.userCanView$
+      this.paymentToProjectsStore.userCanView$,
+      this.programmeFundService.getProgrammeFundList(),
+      this.filterChanges,
     ])
       .pipe(
-        map(([page, userCanView]) => ({page, userCanView, tableConfiguration: this.tableConfiguration})),
+        map(([page, userCanView, funds]) => ({
+          page,
+          userCanView,
+          tableConfiguration: this.tableConfiguration,
+          availableFunds: new Map(funds
+            .filter(fund => fund.selected)
+            .map(fund =>
+              [fund.id, fund.type !== ProgrammeFundDTO.TypeEnum.OTHER ? fund.type : `${fund.type} (${fund.id})`]
+            )
+          ),
+        })),
       );
   }
 
@@ -50,16 +94,15 @@ export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
       columns: [
         {
           displayedColumn: 'payments.payment.to.project.table.column.id',
-          elementProperty: 'id',
           sortProperty: 'id',
           columnWidth: ColumnWidth.IdColumn,
           customCellTemplate: this.idCell,
         },
         {
           displayedColumn: 'payments.payment.to.project.table.column.payment.type',
-          elementProperty: 'paymentType',
           sortProperty: 'type',
           columnWidth: ColumnWidth.SmallColumn,
+          customCellTemplate: this.typeCell,
         },
         {
           displayedColumn: 'payments.payment.to.project.table.column.project.id',
@@ -139,12 +182,9 @@ export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
     this.tableConfiguration.routerLink = `/app/payments`;
   }
 
-  truncateAmounts(dto: PagePaymentToProjectDTO): PagePaymentToProjectDTO {
-    for (const paymentToProject of dto.content) {
-      paymentToProject.totalEligibleAmount = NumberService.truncateNumber(paymentToProject.totalEligibleAmount);
-      paymentToProject.amountPaidPerFund = NumberService.truncateNumber(paymentToProject.amountPaidPerFund);
-      paymentToProject.amountApprovedPerFund = NumberService.truncateNumber(paymentToProject.amountApprovedPerFund);
-    }
-    return dto;
+  private transformFiltersToSearchDto(filters: any): PaymentSearchRequestDTO {
+    return {
+      ...filters,
+    } as PaymentSearchRequestDTO;
   }
 }
