@@ -6,6 +6,7 @@
     "endDateTimeStep1": null,
     "endDateTime": null,
     "additionalFundAllowed": true,
+    "directContributionsAllowed": true,
     "lengthOfPeriod": 3,
     "description": [
       {
