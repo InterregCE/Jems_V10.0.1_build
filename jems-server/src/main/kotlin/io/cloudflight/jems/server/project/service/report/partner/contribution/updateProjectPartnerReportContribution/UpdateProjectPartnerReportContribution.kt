@@ -86,7 +86,7 @@ class UpdateProjectPartnerReportContribution(
     }
 
     private fun validateMaxAmountOfContributions(existing: Int, removed: Int, added: Int) {
-        if (existing - removed + added > MAX_AMOUNT_OF_CONTRIBUTIONS)
+        if (existing - removed + added > MAX_AMOUNT_OF_CONTRIBUTIONS && added != 0)
             throw MaxAmountOfContributionsReachedException(MAX_AMOUNT_OF_CONTRIBUTIONS)
     }
 
