@@ -49,7 +49,7 @@
                                         <mat-option [formGroup]="projectCustomIdentifierSearchForm">
                                             <ngx-mat-select-search placeholderLabel="{{'payments.advance.payments.detail.project.id.dropdown.search.placeholder' | translate}}"
                                                                    noEntriesFoundLabel="{{'payments.advance.payments.detail.project.id.dropdown.search.no.entries.placeholder' | translate}}"
-                                                                   [clearSearchInput]="false"
+                                                                   [clearSearchInput]="true"
                                                                    [formControlName]="constants.FORM_CONTROL_NAMES.projectCustomIdentifierSearch"></ngx-mat-select-search>
                                         </mat-option>
                                         <mat-option *ngFor="let project of contractedProjects$ | async" [value]="project">
