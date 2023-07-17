@@ -91,8 +91,10 @@ class UpdateProjectPartnerReportContribution(
     }
 
     private fun validateRightsToAddContributions(data: UpdateProjectPartnerReportContributionWrapper, partnerId: Long) {
+        val newContributionsAdded = data.toBeCreated.isNotEmpty()
         val directContributionsNotAllowed = !callPersistence.getCallByProjectId(partnerPersistence.getProjectIdForPartnerId(partnerId)).isDirectContributionsAllowed
-        if(data.toBeCreated.isEmpty() && directContributionsNotAllowed) {
+
+        if(newContributionsAdded && directContributionsNotAllowed) {
             throw NotAllowedToAddContributionsException()
         }
     }
