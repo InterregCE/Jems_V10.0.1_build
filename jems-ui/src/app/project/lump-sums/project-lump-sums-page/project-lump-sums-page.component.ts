@@ -390,7 +390,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       this.getAmountControl(control)?.setErrors(null);
     });
 
-    if (lumpSumsFormControl?.value && !lumpSumsFormControl.value.isSplittingAllowed) {
+    if (lumpSumsFormControl?.value && !lumpSumsFormControl.value.splittingAllowed) {
       const amounts = partnersContributionFormArray?.controls?.map(control => this.getAmountControl(control)?.value) || [];
       const positiveAmountIndexes = amounts.map((amount, index) => amount > 0 ? index : -1).filter(index => index !== -1);
       if (positiveAmountIndexes.length > 1) {
@@ -438,5 +438,9 @@ export class ProjectLumpSumsPageComponent implements OnInit {
 
   get items(): FormArray {
     return this.lumpSumsForm.get(this.constants.FORM_CONTROL_NAMES.items) as FormArray;
+  }
+
+  compareLumpSums(l1: ProgrammeLumpSumDTO, l2: ProgrammeLumpSumDTO) {
+    return l1.id === l2.id;
   }
 }

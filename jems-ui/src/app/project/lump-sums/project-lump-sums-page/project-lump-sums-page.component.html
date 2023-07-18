@@ -50,6 +50,7 @@
                                             <mat-select
                                                     [matTooltip]="control.get(constants.FORM_CONTROL_NAMES.lumpSum)?.value?.name| translateByInputLanguage | async"
                                                     [formControlName]="constants.FORM_CONTROL_NAMES.lumpSum"
+                                                    [compareWith]="compareLumpSums"
                                                     class="placeholder-required"
                                                     placeholder="{{'project.application.form.section.part.e.lump.sums.label' | translate}}">
                                                 <mat-option *ngFor="let lumpSum of data.lumpSums" [value]="lumpSum"
@@ -114,7 +115,7 @@
                                     </mat-header-cell>
                                     <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                         <div *ngIf="isLumpSumSelectedForRow(control)">
-                                            {{control.get(constants.FORM_CONTROL_NAMES.lumpSum)?.value?.isSplittingAllowed ? ('common.yes' | translate) : 'common.no' | translate}}
+                                            {{control.get(constants.FORM_CONTROL_NAMES.lumpSum)?.value?.splittingAllowed ? ('common.yes' | translate) : 'common.no' | translate}}
                                         </div>
                                     </mat-cell>
                                     <mat-footer-cell *matFooterCellDef></mat-footer-cell>
