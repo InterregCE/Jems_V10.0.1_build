@@ -96,7 +96,7 @@
         <h3 class="mt-0">{{'project.application.partner.control.report.section.three' | translate}}</h3>
         <div id="control-project-partner-controller" class="mb-5 mt-3" [formGroupName]="constants.FORM_CONTROL_NAMES.designatedController">
             <div class="control-institution-container">
-                <mat-form-field [matTooltip]="'project.application.partner.control.report.controller.institution.name' | translate" jemsFormFieldWidth="full" >
+                <mat-form-field [matTooltip]="this.designatedController?.get('controlInstitution')?.value" jemsFormFieldWidth="full" >
                     <mat-label>{{'project.application.partner.control.report.controller.institution.name' | translate}}</mat-label>
                     <input [formControlName]="constants.FORM_CONTROL_NAMES.controlInstitution" matInput>
                 </mat-form-field>
