@@ -1,17 +1,27 @@
 package io.cloudflight.jems.server.project.service.report.partner.file.control.uploadFileToControlReport
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.authentication.model.CurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.file.service.model.JemsFileCreate
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
+import io.cloudflight.jems.server.notification.handler.ProjectFileChangeEvent
+import io.cloudflight.jems.server.payments.controller.PaymentAdvanceAttachmentControllerTest
+import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
+import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.file.ProjectPartnerReportFilePersistence
+import io.cloudflight.jems.server.project.service.sharedFolder.delete.DeleteFileFromSharedFolderTest
+import io.cloudflight.jems.server.utils.FILE_NAME
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -25,6 +35,8 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
+import org.springframework.context.ApplicationEventPublisher
+import java.time.ZonedDateTime
 
 class UploadFileToControlReportTest : UnitTest() {
 
@@ -32,6 +44,39 @@ class UploadFileToControlReportTest : UnitTest() {
         private const val PROJECT_ID = 360L
         private const val PARTNER_ID = 434L
         private const val USER_ID = 9L
+
+        private fun partnerReportSubmissionSummary(status: ReportStatus): ProjectPartnerReportSubmissionSummary {
+            return ProjectPartnerReportSubmissionSummary(
+                id = 49L,
+                reportNumber = 1,
+                status = status,
+                version = "v1.0",
+                firstSubmission = ZonedDateTime.now().minusDays(1),
+                controlEnd = mockk(),
+                createdAt = ZonedDateTime.now().minusDays(2),
+                projectIdentifier = "test",
+                partnerAbbreviation = "pa",
+                partnerId = PARTNER_ID,
+                partnerNumber = 1,
+                partnerRole = ProjectPartnerRole.PARTNER,
+                projectAcronym = "project"
+            )
+        }
+
+        private val projectSummary = ProjectSummary(
+            id = PROJECT_ID,
+            customIdentifier = "test",
+            callId = 1L,
+            callName = "",
+            acronym = "project",
+            status = ApplicationStatus.CONTRACTED
+        )
+
+        private val fileMetadata = JemsFileMetadata(
+            id = 904L,
+            name = "test.xlsx",
+            uploaded = ZonedDateTime.now(),
+        )
 
         private val content = mockk<InputStream>()
     }
@@ -49,14 +94,20 @@ class UploadFileToControlReportTest : UnitTest() {
     lateinit var partnerPersistence: PartnerPersistence
 
     @MockK
+    lateinit var projectPersistence: ProjectPersistence
+
+    @MockK
     lateinit var securityService: SecurityService
+
+    @MockK
+    lateinit var eventPublisher: ApplicationEventPublisher
 
     @InjectMockKs
     lateinit var interactor: UploadFileToControlReport
 
     @BeforeEach
     fun reset() {
-        clearMocks(partnerPersistence, filePersistence, reportFilePersistence)
+        clearMocks(partnerPersistence, filePersistence, reportFilePersistence, eventPublisher)
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID) } returns PROJECT_ID
         every { securityService.getUserIdOrThrow() } returns USER_ID
     }
@@ -71,17 +122,24 @@ class UploadFileToControlReportTest : UnitTest() {
         every { filePersistence
             .existsFile("Project/000360/Report/Partner/000434/PartnerControlReport/000049/ControlDocument/", "test.xlsx")
         } returns false
+        every { reportPersistence.getProjectPartnerReportSubmissionSummary(PARTNER_ID, reportId = reportId) } returns
+            partnerReportSubmissionSummary(status)
+        every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary
+        every { securityService.currentUser!!.user.email } returns "test@email.com"
+        every { securityService.getUserIdOrThrow() } returns USER_ID
+        every { eventPublisher.publishEvent(ofType(ProjectFileChangeEvent::class)) } returns Unit
 
         val fileToAdd = slot<JemsFileCreate>()
-        val mockResult = mockk<JemsFileMetadata>()
-        every { reportFilePersistence.addAttachmentToPartnerReport(capture(fileToAdd)) } returns mockResult
+        every { reportFilePersistence.addAttachmentToPartnerReport(capture(fileToAdd)) } returns fileMetadata
 
         val file = ProjectFile(
             stream = content,
             name = "test.xlsx",
             size = 20L,
         )
-        assertThat(interactor.uploadToControlReport(PARTNER_ID, reportId, file)).isEqualTo(mockResult)
+        val changeEventSlot = slot<ProjectFileChangeEvent>()
+        assertThat(interactor.uploadToControlReport(PARTNER_ID, reportId, file)).isEqualTo(fileMetadata)
+        verify(exactly = 1) { eventPublisher.publishEvent(capture(changeEventSlot)) }
 
         assertThat(fileToAdd.captured).isEqualTo(
             JemsFileCreate(
@@ -105,6 +163,8 @@ class UploadFileToControlReportTest : UnitTest() {
         val report = mockk<ProjectPartnerReport>()
         every { report.status } returns status
         every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = reportId) } returns report
+        every { reportPersistence.getProjectPartnerReportSubmissionSummary(PARTNER_ID, reportId = reportId) } returns
+            partnerReportSubmissionSummary(status)
 
         val file = ProjectFile(
             stream = content,
@@ -122,6 +182,8 @@ class UploadFileToControlReportTest : UnitTest() {
         val report = mockk<ProjectPartnerReport>()
         every { report.status } returns status
         every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = reportId) } returns report
+        every { reportPersistence.getProjectPartnerReportSubmissionSummary(PARTNER_ID, reportId = reportId) } returns
+            partnerReportSubmissionSummary(status)
 
         val file = ProjectFile(
             stream = content,
@@ -142,6 +204,8 @@ class UploadFileToControlReportTest : UnitTest() {
         every { filePersistence
             .existsFile("Project/000360/Report/Partner/000434/PartnerControlReport/000028/ControlDocument/", "duplicate.xlsx")
         } returns true
+        every { reportPersistence.getProjectPartnerReportSubmissionSummary(PARTNER_ID, reportId = reportId) } returns
+            partnerReportSubmissionSummary(status)
 
         val fileToAdd = slot<JemsFileCreate>()
         val mockResult = mockk<JemsFileMetadata>()

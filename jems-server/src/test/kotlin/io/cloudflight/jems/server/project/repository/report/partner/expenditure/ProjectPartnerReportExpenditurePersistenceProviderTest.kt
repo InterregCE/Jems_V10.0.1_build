@@ -574,7 +574,8 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
                 uploaded = time,
                 author = UserSimple(id = 210L, "email", name = "name", surname = "surname"),
                 size = 324L,
-                description = "desc"
+                description = "desc",
+                indexedPath = "path"
             )
         )
     }

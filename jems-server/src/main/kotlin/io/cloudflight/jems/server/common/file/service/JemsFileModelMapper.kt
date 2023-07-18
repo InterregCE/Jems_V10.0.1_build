@@ -3,8 +3,10 @@ package io.cloudflight.jems.server.common.file.service
 import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.common.file.service.model.JemsFile
 import io.cloudflight.jems.server.common.file.service.model.JemsFileCreate
+import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.common.file.service.model.UserSimple
 import io.cloudflight.jems.server.user.entity.UserEntity
+import io.cloudflight.jems.server.user.service.model.User
 import org.springframework.data.domain.Page
 import java.time.ZonedDateTime
 
@@ -36,7 +38,8 @@ fun JemsFileMetadataEntity.toFullModel() = JemsFile(
     uploaded = uploaded,
     author = user.toModel(),
     size = size,
-    description = description
+    description = description,
+    indexedPath = path,
 )
 
 fun UserEntity.toModel() = UserSimple(
@@ -44,4 +47,15 @@ fun UserEntity.toModel() = UserSimple(
     email = email,
     name = name,
     surname = surname,
+)
+
+fun JemsFileMetadata.toModel(createModel: JemsFileCreate) = JemsFile(
+    id = id,
+    name = name,
+    uploaded = uploaded,
+    type = createModel.type,
+    size = createModel.size,
+    description = createModel.defaultDescription,
+    indexedPath = createModel.path,
+    author = UserSimple(createModel.userId, "", "", "")
 )

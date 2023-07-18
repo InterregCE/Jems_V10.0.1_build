@@ -84,9 +84,11 @@ class GlobalProjectNotificationService(
 
     private fun validateVariables(variables: Map<NotificationVariable, Any>, type: NotificationType) {
         val minimumNeeded = when {
-            type.isProjectNotification() -> NotificationVariable.projectNotificationVariables
+            type.isProjectStatusNotification() -> NotificationVariable.projectNotificationVariables
+            type.isProjectFileActionNotification() -> NotificationVariable.projectFileActionNotificationVariables
             type.isProjectReportNotification() -> NotificationVariable.projectReportNotificationVariables
-            type.isPartnerReportNotification() -> NotificationVariable.partnerReportNotificationVariables
+            type.isPartnerReportStatusNotification() -> NotificationVariable.partnerReportNotificationVariables
+            type.isPartnerReportFileActionNotification() -> NotificationVariable.partnerReportFileActionNotificationVariables
             else -> emptySet()
         }
 

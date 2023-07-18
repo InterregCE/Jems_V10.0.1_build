@@ -9,5 +9,6 @@ data class JemsFile(
     val uploaded: ZonedDateTime,
     val author: UserSimple,
     val size: Long,
-    var description: String
+    var description: String,
+    val indexedPath: String,
 )

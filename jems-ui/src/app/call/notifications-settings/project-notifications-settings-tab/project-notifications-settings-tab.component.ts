@@ -34,6 +34,8 @@ export class ProjectNotificationsSettingsTabComponent {
     NotificationVariable.PROJECT_ID,
     NotificationVariable.PROJECT_IDENTIFIER,
     NotificationVariable.PROJECT_ACRONYM,
+    NotificationVariable.FILE_USERNAME,
+    NotificationVariable.FILE_NAME
   ];
 
   constructor(
@@ -104,4 +106,3 @@ export class ProjectNotificationsSettingsTabComponent {
     ].includes(id);
   }
 }
-

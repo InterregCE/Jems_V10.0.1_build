@@ -7,21 +7,27 @@ import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.common.file.service.model.JemsFileCreate
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
+import io.cloudflight.jems.server.notification.handler.ProjectFileChangeEvent
 import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
+import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.sharedFolderFile.upload.FileAlreadyExists
 import io.cloudflight.jems.server.project.service.sharedFolderFile.upload.UploadFileToSharedFolder
-import io.mockk.clearMocks
+import io.mockk.mockk
 import io.mockk.every
+import io.mockk.slot
+import io.mockk.verify
+import io.mockk.clearMocks
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.mockk
-import io.mockk.slot
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.springframework.context.ApplicationEventPublisher
 import java.io.InputStream
+import java.time.ZonedDateTime
 
 class UploadFileToSharedFolderTest : UnitTest() {
 
@@ -31,6 +37,21 @@ class UploadFileToSharedFolderTest : UnitTest() {
         private const val EXPECTED_PATH = "Project/000456/SharedFolder/"
         private const val FILE_NAME = "shared_folder_file.pdf"
         private val content = mockk<InputStream>()
+
+        private val projectSummary = ProjectSummary(
+            id = PROJECT_ID,
+            customIdentifier = "test",
+            callId = 1L,
+            callName = "",
+            acronym = "project",
+            status = ApplicationStatus.CONTRACTED
+        )
+
+        private val fileMetadata = JemsFileMetadata(
+            id = 904L,
+            name = FILE_NAME,
+            uploaded = ZonedDateTime.now(),
+        )
     }
 
     @MockK
@@ -45,6 +66,9 @@ class UploadFileToSharedFolderTest : UnitTest() {
     @MockK
     private lateinit var securityService: SecurityService
 
+    @MockK
+    private lateinit var eventPublisher: ApplicationEventPublisher
+
     @InjectMockKs
     private lateinit var interactor: UploadFileToSharedFolder
 
@@ -58,17 +82,20 @@ class UploadFileToSharedFolderTest : UnitTest() {
         every { projectPersistence.throwIfNotExists(PROJECT_ID, any()) } returns Unit
         every { filePersistence.existsFile(EXPECTED_PATH, FILE_NAME) } returns false
         val fileToAdd = slot<JemsFileCreate>()
-        val mockResult = mockk<JemsFileMetadata>()
-        every { projectFileService.persistFile(capture(fileToAdd)) } returns mockResult
+        every { projectFileService.persistFile(capture(fileToAdd)) } returns fileMetadata
         every { securityService.getUserIdOrThrow() } returns USER_ID
+        every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary
+        every { securityService.currentUser!!.user.email } returns "test@email.com"
+        every { eventPublisher.publishEvent(ofType(ProjectFileChangeEvent::class)) } returns Unit
 
         val file = ProjectFile(
             stream = content,
             name = FILE_NAME,
             size = 5L
         )
-
-        Assertions.assertThat(interactor.upload(PROJECT_ID, file)).isEqualTo(mockResult)
+        val changeEventSlot = slot<ProjectFileChangeEvent>()
+        Assertions.assertThat(interactor.upload(PROJECT_ID, file)).isEqualTo(fileMetadata)
+        verify(exactly = 1) { eventPublisher.publishEvent(capture(changeEventSlot)) }
         Assertions.assertThat(fileToAdd.captured).isEqualTo(
             JemsFileCreate(
                 projectId = PROJECT_ID,

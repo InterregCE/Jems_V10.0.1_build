@@ -21,6 +21,8 @@ enum class NotificationType {
     ProjectModificationSubmitted,
     ProjectModificationApproved,
     ProjectModificationRejected,
+    SharedFolderFileUpload,
+    SharedFolderFileDelete,
 
     // Partner Report
     PartnerReportSubmitted,
@@ -28,6 +30,8 @@ enum class NotificationType {
     PartnerReportControlOngoing,
     PartnerReportCertified,
     PartnerReportReOpenCertified,
+    ControlCommunicationFileUpload,
+    ControlCommunicationFileDelete,
 
     // Project Report
     ProjectReportSubmitted,
@@ -37,7 +41,7 @@ enum class NotificationType {
 
     companion object {
 
-        val projectNotifications = sortedSetOf(
+        val projectStatusNotifications = sortedSetOf(
             ProjectSubmittedStep1,
             ProjectSubmitted,
             ProjectApprovedStep1,
@@ -56,22 +60,37 @@ enum class NotificationType {
             ProjectInModification,
             ProjectModificationSubmitted,
             ProjectModificationApproved,
-            ProjectModificationRejected
+            ProjectModificationRejected,
         )
 
-        val partnerReportNotifications = sortedSetOf(
+        val projectFileActionNotifications = sortedSetOf(
+            SharedFolderFileUpload,
+            SharedFolderFileDelete
+        )
+
+        val projectNotifications = projectStatusNotifications union projectFileActionNotifications
+
+        val partnerReportStatusNotifications  = sortedSetOf(
             PartnerReportSubmitted,
             PartnerReportReOpen,
             PartnerReportControlOngoing,
             PartnerReportCertified,
-            PartnerReportReOpenCertified
+            PartnerReportReOpenCertified,
         )
+
+        val partnerReportFileActionNotifications = sortedSetOf(
+            ControlCommunicationFileUpload,
+            ControlCommunicationFileDelete
+        )
+
+        val partnerReportNotifications = partnerReportStatusNotifications union partnerReportFileActionNotifications
 
         val projectReportNotifications = sortedSetOf(
             ProjectReportSubmitted,
             ProjectReportVerificationOngoing,
             ProjectReportVerificationFinalized
         )
+
     }
 
     fun isProjectNotification() = this in projectNotifications
@@ -85,5 +104,13 @@ enum class NotificationType {
     fun isProjectReportNotification() = this in projectReportNotifications
 
     fun isNotProjectReportNotification() = !isProjectReportNotification()
+
+    fun isProjectStatusNotification() = this in projectStatusNotifications
+
+    fun isProjectFileActionNotification() = this in projectFileActionNotifications
+
+    fun isPartnerReportStatusNotification() = this in partnerReportStatusNotifications
+
+    fun isPartnerReportFileActionNotification() = this in partnerReportFileActionNotifications
 
 }

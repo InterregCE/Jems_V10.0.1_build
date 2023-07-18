@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPa
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.certificate.PartnerReportCertificate
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import org.springframework.data.domain.Page
@@ -73,6 +74,17 @@ class ProjectPartnerReportPersistenceProvider(
         partnerReportRepository.findByIdAndPartnerId(id = reportId, partnerId = partnerId).toModel(
             coFinancing = partnerReportCoFinancingRepository.findAllByIdReportIdOrderByIdFundSortNumber(reportId)
         )
+
+    @Transactional(readOnly = true)
+    override fun getPartnerReportByIdUnsecured(reportId: Long): ProjectPartnerReportSubmissionSummary =
+        partnerReportRepository.getById(reportId).toSubmissionSummary()
+
+    @Transactional(readOnly = true)
+    override fun getProjectPartnerReportSubmissionSummary(
+        partnerId: Long,
+        reportId: Long
+    ): ProjectPartnerReportSubmissionSummary =
+        partnerReportRepository.findByIdAndPartnerId(id = reportId, partnerId = partnerId).toSubmissionSummary()
 
     @Transactional(readOnly = true)
     override fun listPartnerReports(partnerIds: Set<Long>, statuses: Set<ReportStatus>, pageable: Pageable): Page<ProjectPartnerReportSummary> =

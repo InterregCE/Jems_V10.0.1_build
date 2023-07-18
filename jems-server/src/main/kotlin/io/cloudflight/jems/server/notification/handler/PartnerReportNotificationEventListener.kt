@@ -43,4 +43,5 @@ data class PartnerReportNotificationEventListener(
         NotificationVariable.PartnerReportId to partnerReportSummary.id,
         NotificationVariable.PartnerReportNumber to partnerReportSummary.reportNumber,
     )
+
 }

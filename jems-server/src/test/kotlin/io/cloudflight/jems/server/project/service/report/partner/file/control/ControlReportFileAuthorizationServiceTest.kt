@@ -40,7 +40,8 @@ class ControlReportFileAuthorizationServiceTest : UnitTest() {
             uploaded = UPLOADED_DATE,
             author = UserSimple(USER_ID, "dummy@email", name = "Dummy", surname = "Surname"),
             size = 653225L,
-            description = "desc"
+            description = "desc",
+            indexedPath = ""
         )
     }
 

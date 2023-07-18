@@ -65,7 +65,8 @@ class ContractingFileControllerTest : UnitTest() {
             uploaded = YESTERDAY,
             author = UserSimple(45L, email = "admin@cloudflight.io", name = "Admin", surname = "Big"),
             size = 47889L,
-            description = "example desc"
+            description = "example desc",
+            indexedPath = ""
         )
 
         private val contractingFileDto = JemsFileDTO(
@@ -86,7 +87,8 @@ class ContractingFileControllerTest : UnitTest() {
             uploaded = YESTERDAY,
             author = UserSimple(45L, email = "admin@cloudflight.io", name = "Admin", surname = "Big"),
             size = 47889L,
-            description = "example desc"
+            description = "example desc",
+            indexedPath = ""
         )
 
         private val partnerFileDto = JemsFileDTO(
