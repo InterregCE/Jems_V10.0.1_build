@@ -1,13 +1,13 @@
 import {Injectable} from '@angular/core';
 import {
+  JemsFileMetadataDTO,
   ProjectPartnerReportService,
   ProjectPartnerReportWorkPackageDTO,
   ProjectPartnerReportWorkPlanService,
-  JemsFileMetadataDTO,
   UpdateProjectPartnerReportWorkPackageDTO
 } from '@cat/api';
-import {combineLatest, Observable} from 'rxjs';
-import {switchMap, take, tap} from 'rxjs/operators';
+import {combineLatest, merge, Observable, Subject} from 'rxjs';
+import {shareReplay, switchMap, take, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {Log} from '@common/utils/log';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
@@ -18,6 +18,7 @@ export class PartnerReportWorkPlanPageStore {
 
   partnerId$: Observable<string | number | null>;
   partnerWorkPackages$: Observable<ProjectPartnerReportWorkPackageDTO[]>;
+  private savedWorkPackages$ = new Subject<ProjectPartnerReportWorkPackageDTO[]>();
 
   constructor(private routingService: RoutingService,
               private partnerReportPageStore: PartnerReportDetailPageStore,
@@ -29,39 +30,44 @@ export class PartnerReportWorkPlanPageStore {
   }
 
   getWorkPackages(): Observable<ProjectPartnerReportWorkPackageDTO[]> {
-    return combineLatest([
+    const workPackages = combineLatest([
       this.partnerId$,
       this.partnerReportPageStore.partnerReportId$,
     ]).pipe(
       switchMap(([partnerId, reportId]) => this.projectPartnerReportWorkPlanService.getWorkPlan(Number(partnerId), Number(reportId))),
       tap(data => Log.info('Fetched project work packages for report', this, data))
     );
+
+    return merge(workPackages, this.savedWorkPackages$).pipe(
+      shareReplay(1),
+    );
   }
 
   saveWorkPackages(workPackages: UpdateProjectPartnerReportWorkPackageDTO[]): Observable<UpdateProjectPartnerReportWorkPackageDTO[]> {
-     return combineLatest([
+    return combineLatest([
       this.partnerId$,
-       this.partnerReportPageStore.partnerReportId$,
+      this.partnerReportPageStore.partnerReportId$,
     ]).pipe(
       switchMap(([partnerId, reportId]) =>
         this.projectPartnerReportWorkPlanService.updateWorkPlan(Number(partnerId), Number(reportId), workPackages)),
-      tap(data => Log.info('Updated work packages for report', this, data))
+      tap(data => this.savedWorkPackages$.next(data)),
+      tap(data => Log.info('Updated work packages for report', this, data)),
     );
   }
 
   uploadActivityFile(file: File, activityId: number, workPackageId: number): Observable<JemsFileMetadataDTO> {
-    return  combineLatest([
+    return combineLatest([
       this.partnerId$,
       this.partnerReportPageStore.partnerReportId$,
     ]).pipe(
       take(1),
       switchMap(([partnerId, reportId]) => this.projectPartnerReportWorkPlanService.uploadFileToActivityForm(
-          file, activityId, partnerId as number, reportId, workPackageId)
+        file, activityId, partnerId as number, reportId, workPackageId)
       ));
   }
 
   uploadDeliverableFile(file: File, activityId: number, deliverableId: number, workPackageId: number): Observable<JemsFileMetadataDTO> {
-    return  combineLatest([
+    return combineLatest([
       this.partnerId$,
       this.partnerReportPageStore.partnerReportId$,
     ]).pipe(
@@ -72,7 +78,7 @@ export class PartnerReportWorkPlanPageStore {
   }
 
   uploadOutputFile(file: File, outputId: number, workPackageId: number): Observable<JemsFileMetadataDTO> {
-    return  combineLatest([
+    return combineLatest([
       this.partnerId$,
       this.partnerReportPageStore.partnerReportId$,
     ]).pipe(
