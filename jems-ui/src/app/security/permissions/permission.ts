@@ -469,6 +469,13 @@ export class Permission {
       icon: 'dashboard',
       children: [
         {
+          name: 'call.detail.notifications.config.title',
+          mode: PermissionMode.HIDDEN_VIEW,
+          viewPermissions: [
+            PermissionsEnum.NotificationsRetrieve,
+          ],
+        },
+        {
           name: 'user.partner.reports',
           mode: PermissionMode.HIDDEN_VIEW,
           viewPermissions: [
@@ -490,14 +497,7 @@ export class Permission {
             PermissionsEnum.CallPublishedRetrieve,
           ],
           viewTooltip: 'call.list.open.title.view.tooltip'
-        },
-        {
-          name: 'call.detail.notifications.config.title',
-          mode: PermissionMode.HIDDEN_VIEW,
-          viewPermissions: [
-            PermissionsEnum.NotificationsRetrieve,
-          ],
-        },
+        }
       ],
     },
     {
