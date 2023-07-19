@@ -127,7 +127,7 @@ internal class UpdateProjectPartnerReportProcurementTest : UnitTest() {
         assertThrows<AppInputValidationException> { interactor.update(PARTNER_ID, reportId = 0L, change) }
         assertThat(validationSlot).containsExactly(
             mapOf("contractName" to I18nMessage("contractName NEW---not blank")),
-            mapOf("contractName" to I18nMessage("contractName NEW---50")),
+            mapOf("contractName" to I18nMessage("contractName NEW---300")),
             mapOf("referenceNumber" to I18nMessage("referenceNumber NEW---30")),
             mapOf("contractType" to I18nMessage("contractType NEW---30")),
             mapOf("supplierName" to I18nMessage("supplierName NEW---30")),
