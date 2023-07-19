@@ -39,13 +39,9 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
   @Input()
   projectId: number;
   @Input()
-  projectStatus: ProjectStatusDTO;
-  @Input()
   partnerPage$: Observable<PageProjectBudgetPartnerSummaryDTO>;
   @Input()
   pageIndex: number;
-  @Input()
-  editable: boolean;
 
   @Output()
   newPageSize: EventEmitter<number> = new EventEmitter<number>();
@@ -75,6 +71,7 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
   data$: Observable<{
     tableRows: ProjectBudgetPartner[];
     projectCallType: CallTypeEnum;
+    projectStatus: ProjectStatusDTO;
   }>;
 
   totalElements = 0;
@@ -87,15 +84,19 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.data$ = combineLatest([this.partnerPage$, this.projectStore.projectCallType$])
+    this.data$ = combineLatest([this.partnerPage$, this.projectStore.projectCallType$, this.projectStore.projectStatus$, this.projectStore.projectEditable$])
       .pipe(
-        tap(data => this.totalElements = data[0].totalElements),
-        tap(data => this.generateTableConfiguration(data[1] === CallTypeEnum.STANDARD ? '' : 'spf.')),
-        map(data => ({tableRows: this.getProjectPartnerSummary(data[0]), projectCallType: data[1]}))
+        map(([partnerPage, projectCallType, projectStatus, projectEditable]) => ({
+          tableRows: this.getProjectPartnerSummary(partnerPage, projectEditable),
+          projectCallType,
+          projectStatus,
+        })),
+        tap(data => this.totalElements = data.tableRows.length),
+        tap(data => this.generateTableConfiguration(data.projectCallType === CallTypeEnum.STANDARD ? '' : 'spf.', data.projectStatus)),
       );
   }
 
-  private generateTableConfiguration(prefixCallType: string) {
+  private generateTableConfiguration(prefixCallType: string, projectStatus: ProjectStatusDTO) {
     this.tableConfiguration = new TableConfiguration({
       routerLink: '..',
       isTableClickable: true,
@@ -137,14 +138,14 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
             columnType: ColumnType.CustomComponent,
             customCellTemplate: this.budgetCell,
           },] : [],
-        ...ProjectUtil.isInModifiableStatusBeforeApproved(this.projectStatus) ?
+        ...ProjectUtil.isInModifiableStatusBeforeApproved(projectStatus) ?
           [{
             displayedColumn: ' ',
             columnType: ColumnType.CustomComponent,
             customCellTemplate: this.deletionCell,
             columnWidth: ColumnWidth.NarrowColumn
           }] : [],
-        ...ProjectUtil.isInModifiableStatusAfterApproved(this.projectStatus) ?
+        ...ProjectUtil.isInModifiableStatusAfterApproved(projectStatus) ?
           [{
             displayedColumn: '   ',
             columnType: ColumnType.CustomComponent,
@@ -155,7 +156,7 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
     });
   }
 
-  getProjectPartnerSummary(projectPartnerSummary: PageProjectBudgetPartnerSummaryDTO): ProjectBudgetPartner[]{
+  getProjectPartnerSummary(projectPartnerSummary: PageProjectBudgetPartnerSummaryDTO, projectEditable: boolean): ProjectBudgetPartner[]{
     return projectPartnerSummary.content.map(projectPartnerBudgetSummary => ( {
       id: projectPartnerBudgetSummary.partnerSummary.id,
       active: projectPartnerBudgetSummary.partnerSummary.active,
@@ -164,7 +165,8 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
       country: projectPartnerBudgetSummary.partnerSummary.country,
       region: projectPartnerBudgetSummary.partnerSummary.region,
       sortNumber: projectPartnerBudgetSummary.partnerSummary.sortNumber,
-      totalBudget: projectPartnerBudgetSummary.totalBudget
+      totalBudget: projectPartnerBudgetSummary.totalBudget,
+      projectEditable: projectEditable
     }));
   }
 

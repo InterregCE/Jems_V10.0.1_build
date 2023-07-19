@@ -1,19 +1,19 @@
 <ng-container *ngIf="data$ | async as data">
     <p *ngIf="!data.tableRows.length">{{'project.application.form.partner.list.empty' | translate}}</p>
     <jems-table *ngIf="data.tableRows.length"
-               [configuration]="tableConfiguration"
-               [rows]="data.tableRows"
-               [totalElements]="totalElements"
-               [pageIndex]="pageIndex"
-               (newPageIndex)="newPageIndex.emit($event)"
-               (newPageSize)="newPageSize.emit($event)"
-               (sortRows)="newSort.emit($event)">
+                [configuration]="tableConfiguration"
+                [rows]="data.tableRows"
+                [totalElements]="totalElements"
+                [pageIndex]="pageIndex"
+                (newPageIndex)="newPageIndex.emit($event)"
+                (newPageSize)="newPageSize.emit($event)"
+                (sortRows)="newSort.emit($event)">
     </jems-table>
 </ng-container>
 
 <ng-template #statusCell let-partnerSummary>
     <mat-chip-list aria-label="status">
-        <mat-chip  [removable]="false" [selectable]="false">
+        <mat-chip [removable]="false" [selectable]="false">
             <ng-container *ngIf="partnerSummary.active">
                 <mat-icon>person</mat-icon>
                 <span>{{'project.application.form.partner.table.status.active' | translate}}</span>
@@ -29,25 +29,27 @@
 
 <ng-template #deletionCell let-partnerSummary>
     <jems-delete-action-cell class="ml-auto"
-            (click)="$event.stopPropagation()"
-            [element]="partnerSummary"
-            [disabled]="!editable"
-            (delete)="delete($event)">
+                             (click)="$event.stopPropagation()"
+                             [element]="partnerSummary"
+                             [disabled]="!partnerSummary.projectEditable"
+                             (delete)="delete($event)">
     </jems-delete-action-cell>
 </ng-template>
 
 <ng-template #deactivationCell let-partnerSummary>
     <button class="ml-auto" mat-stroked-button
             (click)="$event.stopPropagation();deactivate(partnerSummary)"
-            [disabled]="!editable || !partnerSummary.active">
+            [disabled]="!partnerSummary.projectEditable || !partnerSummary.active">
         <mat-icon>person_off</mat-icon>
         <span class="ml-1">{{'project.application.form.partner.table.action.deactivate.label' | translate}}</span>
     </button>
 </ng-template>
 
-<ng-template #budgetCell let-partnerSummary >
+<ng-template #budgetCell let-partnerSummary>
     <div class="ml-auto">
-        {{partnerSummary.totalBudget | asMoney : undefined : { style: 'currency', currency: 'EUR' } }}
+        {{partnerSummary.totalBudget | asMoney : undefined : {style: 'currency', currency: 'EUR'} }}
     </div>
-    <mat-icon [routerLink]="[partnerSummary.id, 'budget']" queryParamsHandling="merge" class="ml-2 mr-5 mat-primary" aria-label="navigate directly to partner budget">launch</mat-icon>
+    <mat-icon [routerLink]="[partnerSummary.id, 'budget']" queryParamsHandling="merge" class="ml-2 mr-5 mat-primary"
+              aria-label="navigate directly to partner budget">launch
+    </mat-icon>
 </ng-template>
