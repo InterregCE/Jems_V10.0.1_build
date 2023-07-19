@@ -49,7 +49,7 @@
     </mat-form-field>
 
     <div jemsMultiColumnRow>
-        <mat-form-field jemsFormFieldWidth="two-thirds" class="mr-2" [class.mat-form-field-disabled]="!isForeignCurrencySelected()">
+        <mat-form-field jemsFormFieldWidth="two-thirds" class="mr-2" [class.mat-form-field-disabled]="!isForeignCurrencySelected() || this.unitCostForm.controls.costPerUnitForeignCurrency.disabled">
             <mat-label>{{'unit.cost.form.field.cost.currency.other' | translate}}</mat-label>
             <input currencyMask type="decimal"
                    [required]="isForeignCurrencySelected()"
