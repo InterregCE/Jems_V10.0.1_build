@@ -168,7 +168,7 @@
             </span>
 
             <h3>{{'call.funds.title' | translate}}</h3>
-            <span *ngIf="data.callIsEditable || callForm?.controls?.additionalFundAllowed.value">
+            <span *ngIf="(data.callIsEditable || callForm?.controls?.additionalFundAllowed.value) && this.getAvailableFunds().length > 1">
                 <h4>{{'call.funds.options' | translate}}</h4>
                 <mat-checkbox
                         (click)="$event.stopPropagation()"

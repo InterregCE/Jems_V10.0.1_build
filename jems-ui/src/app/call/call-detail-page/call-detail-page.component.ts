@@ -345,5 +345,9 @@ export class CallDetailPageComponent {
   private getLengthOfSelectedStrategies(strategies: OutputProgrammeStrategy[]): number {
     return strategies.filter(strategy => strategy.active).length;
   }
+
+  public getAvailableFunds() {
+    return this.callForm.getRawValue().funds;
+  }
 }
 
