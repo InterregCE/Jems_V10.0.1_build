@@ -473,6 +473,91 @@ context('Control report tests', () => {
       });
     });
   });
+
+  it('TB-934 Controller identification - Control institution name change', function () {
+    cy.fixture('controller/TB-934.json').then(testData => {
+
+      cy.loginByRequest(user.applicantUser.email);
+      cy.createContractedApplication(application, user.programmeUser.email).then(function (applicationId) {
+        const partnerId = this[application.partners[0].details.abbreviation];
+
+        // create controller role/user + assignment
+        cy.loginByRequest(user.admin.email);
+        testData.controllerRole.name = `controllerRole_${faker.random.alphaNumeric(5)}`;
+        testData.controllerUser1.email = faker.internet.email();
+        cy.createRole(testData.controllerRole).then(roleId => {
+          testData.controllerUser1.userRoleId = roleId;
+          cy.createUser(testData.controllerUser1);
+          testData.controllerInstitution.name = `${faker.word.adjective()} ${faker.word.noun()}`;
+          testData.controllerInstitution.institutionUsers[0].userEmail = testData.controllerUser1.email;
+          cy.createInstitution(testData.controllerInstitution).then(institutionId => {
+            testData.controllerAssignment.assignmentsToAdd[0].partnerId = partnerId;
+            testData.controllerAssignment.assignmentsToAdd[0].institutionId = institutionId;
+            cy.assignInstitution(testData.controllerAssignment);
+          });
+        });
+        cy.loginByRequest(user.applicantUser.email);
+        cy.assignPartnerCollaborators(applicationId, partnerId, testData.partnerCollaborator);
+
+        cy.addPartnerReport(partnerId).then(reportId => {
+          cy.wrap(reportId).as('reportId');
+          cy.updatePartnerReportIdentification(partnerId, reportId, partnerReportIdentification);
+          cy.updatePartnerReportExpenditures(partnerId, reportId, partnerReportExpenditures);
+          cy.runPreSubmissionPartnerReportCheck(partnerId, reportId);
+          cy.submitPartnerReport(partnerId, reportId);
+
+          // start control work
+          cy.loginByRequest(testData.controllerUser1.email);
+          cy.startControlWork(partnerId, reportId);
+
+          // RTM Group 1
+          // check if institution is displayed correctly
+          cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/controlReport/identificationTab`, {failOnStatusCode: false});
+          cy.contains('mat-form-field', 'Control institution/body/intermediate body responsible for the verification (filled automatically)').find('input').should('be.disabled', 'have.value', testData.controllerInstitution.name);
+          cy.get('#control-project-partner-controller').scrollIntoView().contains('div', 'Controller name').click();
+          cy.contains('mat-option', testData.controllerUser1.email).click();
+          cy.contains('button', 'Save changes').click();
+
+          // RTM Group 2
+          // change name of institution
+          cy.loginByRequest(user.admin.email);
+          cy.visit(`/app/controller/`, {failOnStatusCode: false});
+          cy.contains('div', testData.controllerInstitution.name).click();
+          testData.controllerInstitution.updatedName = `${faker.word.adjective()} ${faker.word.noun()}`;
+          cy.contains('mat-form-field', 'Name').find('input').clear().type(testData.controllerInstitution.updatedName);
+          cy.contains('button', 'Save changes').click();
+
+          // RTM Group 3
+          // check if institution was updated
+          cy.loginByRequest(testData.controllerUser1.email);
+          cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/controlReport/identificationTab`, {failOnStatusCode: false});
+          cy.contains('mat-form-field', 'Control institution/body/intermediate body responsible for the verification (filled automatically)').find('input').should('have.value', testData.controllerInstitution.updatedName);
+
+          // RTM Group 4
+          // submit control report
+          cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/controlReport/overviewAndFinalizeTab`, {failOnStatusCode: false});
+          cy.contains('Run pre-submission check').scrollIntoView();
+          cy.contains('Run pre-submission check').click();
+          cy.get('jems-project-application-pre-condition-check-result').should('be.visible');
+          cy.contains('button', 'Finalize control').click();
+          cy.contains('Confirm').should('be.visible').click();
+          cy.contains('Certified').should('be.visible');
+
+          //change name of institution again to the original
+          cy.loginByRequest(user.admin.email);
+          cy.visit(`/app/controller/`, {failOnStatusCode: false});
+          cy.contains('div', testData.controllerInstitution.updatedName).click();
+          cy.contains('mat-form-field', 'Name').find('input').clear().type(testData.controllerInstitution.name);
+          cy.contains('button', 'Save changes').click();
+
+          //check if institution was not updated
+          cy.loginByRequest(testData.controllerUser1.email);
+          cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/controlReport/identificationTab`, {failOnStatusCode: false});
+          cy.contains('mat-form-field', 'Control institution/body/intermediate body responsible for the verification (filled automatically)').find('input').should('have.value', testData.controllerInstitution.updatedName);
+        });
+      });
+    });
+  });
 });
 
 function instantiateEmptyChecklist(applicationId, partnerId, reportId, checklistName) {
