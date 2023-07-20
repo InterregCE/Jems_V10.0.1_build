@@ -38,7 +38,7 @@ export class PartnerReportProcurementIdentificationComponent {
     }],
     contractName: ['', Validators.compose([
       Validators.required,
-      Validators.maxLength(50),
+      Validators.maxLength(300),
     ])],
     referenceNumber: ['', Validators.maxLength(30)],
     contractDate: null,
