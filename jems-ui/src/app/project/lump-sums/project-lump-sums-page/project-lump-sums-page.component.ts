@@ -27,7 +27,7 @@ import {TranslateService} from '@ngx-translate/core';
 import {MatTable} from '@angular/material/table';
 import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
-import {ProgrammeLumpSumDTO} from "@cat/api";
+import {ProgrammeLumpSumDTO} from '@cat/api';
 
 @UntilDestroy()
 @Component({

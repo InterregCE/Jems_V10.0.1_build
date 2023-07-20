@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.notification.inApp.service.model
 
-
 enum class NotificationType {
     // Project
     ProjectSubmittedStep1,
@@ -32,7 +31,8 @@ enum class NotificationType {
 
     // Project Report
     ProjectReportSubmitted,
-    ProjectReportVerificationOngoing;
+    ProjectReportVerificationOngoing,
+    ProjectReportVerificationFinalized;
 
 
     companion object {
@@ -70,6 +70,7 @@ enum class NotificationType {
         val projectReportNotifications = sortedSetOf(
             ProjectReportSubmitted,
             ProjectReportVerificationOngoing,
+            ProjectReportVerificationFinalized
         )
     }
 

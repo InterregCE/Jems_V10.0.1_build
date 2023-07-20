@@ -13,10 +13,10 @@ import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import java.math.BigDecimal
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
 
@@ -93,7 +93,10 @@ internal class GetProjectReportTest : UnitTest() {
             deletable = false,
             verificationEndDate = NEXT_MONTH,
             amountRequested = BigDecimal.ONE,
-            totalEligibleAfterVerification = BigDecimal.ZERO
+            totalEligibleAfterVerification = BigDecimal.ZERO,
+            verificationConclusionJS = null,
+            verificationConclusionMA = null,
+            verificationFollowup = null
         )
 
     }

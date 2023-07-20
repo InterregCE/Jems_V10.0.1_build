@@ -24,10 +24,10 @@ import java.time.ZonedDateTime
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import kotlin.streams.asSequence
-import org.springframework.data.domain.Sort
 
 @Repository
 class ProjectReportPersistenceProvider(
@@ -162,7 +162,17 @@ class ProjectReportPersistenceProvider(
         projectReportRepository.getByIdAndProjectId(id = reportId, projectId = projectId)
             .apply {
                 status = ProjectReportStatus.InVerification
+                verificationDate = ZonedDateTime.now()
             }.toSubmissionSummary()
+
+    @Transactional
+    override fun finalizeVerificationOnReportById(projectId: Long, reportId: Long): ProjectReportSubmissionSummary =
+        projectReportRepository.getByIdAndProjectId(id = reportId, projectId = projectId)
+            .apply {
+                status = ProjectReportStatus.Finalized
+                verificationEndDate = ZonedDateTime.now()
+            }.toSubmissionSummary()
+
 
     private fun Sort.toQueryDslOrderBy(): OrderSpecifier<*> {
         val orderBy = if (isSorted) this.get().findFirst().get() else Sort.Order.desc("id")
@@ -176,5 +186,4 @@ class ProjectReportPersistenceProvider(
 
         return OrderSpecifier(if (orderBy.isAscending) Order.ASC else Order.DESC, dfg)
     }
-
 }

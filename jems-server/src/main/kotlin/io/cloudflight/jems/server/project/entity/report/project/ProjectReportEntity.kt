@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.ProjectRe
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
+import javax.persistence.CascadeType
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
@@ -14,11 +15,10 @@ import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.ManyToOne
-import javax.persistence.NamedEntityGraphs
-import javax.persistence.NamedEntityGraph
 import javax.persistence.NamedAttributeNode
+import javax.persistence.NamedEntityGraph
+import javax.persistence.NamedEntityGraphs
 import javax.persistence.OneToMany
-import javax.persistence.CascadeType
 import javax.validation.constraints.NotNull
 
 @Entity(name = "report_project")
@@ -79,4 +79,8 @@ class ProjectReportEntity(
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
     val translatedValues: MutableSet<ProjectReportIdentificationTranslEntity> = mutableSetOf(),
+
+    var verificationConclusionJs: String?,
+    var verificationConclusionMa: String?,
+    var verificationFollowup: String?
 )

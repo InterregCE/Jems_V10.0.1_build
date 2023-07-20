@@ -22,5 +22,9 @@ data class ProjectReportSummaryDTO(
     val verificationEndDate: ZonedDateTime?,
     val deletable: Boolean,
     val amountRequested: BigDecimal?,
-    val totalEligibleAfterVerification: BigDecimal?
+    val totalEligibleAfterVerification: BigDecimal?,
+
+    val verificationConclusionJS: String?,
+    val verificationConclusionMA: String?,
+    val verificationFollowup: String?
     )

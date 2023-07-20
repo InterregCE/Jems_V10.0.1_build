@@ -2,7 +2,6 @@ package io.cloudflight.jems.server.payments.entity
 
 import java.math.BigDecimal
 import java.time.LocalDate
-import java.util.Objects
 import javax.persistence.Id
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
@@ -34,14 +33,4 @@ class AdvancePaymentSettlementEntity(
 
     val comment: String?
 
-){
-    override fun equals(other: Any?): Boolean = this === other ||
-            other is AdvancePaymentSettlementEntity &&
-            id == other.id &&
-            number == other.number &&
-            amountSettled == other.amountSettled &&
-            settlementDate == other.settlementDate &&
-            comment == other.comment
-
-    override fun hashCode() = Objects.hash(id, number, amountSettled, settlementDate, comment)
-}
+)
