@@ -9,6 +9,9 @@ import {
   ProjectReportDetailPageStore
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-detail-page-store.service';
 import {Alert} from '@common/components/forms/alert';
+import {
+  ProjectReportPageStore
+} from '@project/project-application/report/project-report/project-report-page-store.service';
 
 @Component({
   selector: 'jems-project-verification-report',
@@ -20,6 +23,7 @@ export class ProjectVerificationReportComponent {
   Alert = Alert;
   data$: Observable<{
     projectReport: ProjectReportDTO;
+    allTabsVisible: boolean;
   }>;
   error$ = new BehaviorSubject<APIError | null>(null);
 
@@ -27,12 +31,16 @@ export class ProjectVerificationReportComponent {
     private activatedRoute: ActivatedRoute,
     private router: RoutingService,
     private projectReportDetailStore: ProjectReportDetailPageStore,
+    private reportPageStore: ProjectReportPageStore,
   ) {
     this.data$ = combineLatest([
-      this.projectReportDetailStore.projectReport$
+      this.projectReportDetailStore.projectReport$,
+      this.reportPageStore.userCanEditVerification$,
+      this.reportPageStore.userCanViewVerification$,
     ]).pipe(
-      map(([projectReport]) => ({
-        projectReport
+      map(([projectReport, canEdit, canView]) => ({
+        projectReport,
+        allTabsVisible: canEdit || canView
       }))
     );
   }

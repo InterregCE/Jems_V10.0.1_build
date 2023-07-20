@@ -13,6 +13,7 @@ export class ProjectReportStatusComponent {
     ProjectReportSummaryDTO.StatusEnum.Draft,
     ProjectReportSummaryDTO.StatusEnum.Submitted,
     ProjectReportSummaryDTO.StatusEnum.InVerification,
+    ProjectReportSummaryDTO.StatusEnum.Finalized,
   ];
 
   @Input()
@@ -29,6 +30,8 @@ export class ProjectReportStatusComponent {
         return 'send';
       case 'InVerification':
         return 'checklist';
+      case 'Finalized':
+        return 'workspace_premium';
       default:
         return 'help';
     }

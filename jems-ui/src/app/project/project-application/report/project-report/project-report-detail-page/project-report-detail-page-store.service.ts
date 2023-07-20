@@ -1,5 +1,12 @@
 import {Injectable} from '@angular/core';
-import {PreConditionCheckResultDTO, ProjectReportDTO, ProjectReportService, ProjectReportSummaryDTO, ProjectReportUpdateDTO} from '@cat/api';
+import {
+  PreConditionCheckResultDTO,
+  ProjectPartnerReportSummaryDTO,
+  ProjectReportDTO,
+  ProjectReportService,
+  ProjectReportSummaryDTO,
+  ProjectReportUpdateDTO
+} from '@cat/api';
 import {combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {catchError, map, startWith, switchMap, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
@@ -27,7 +34,7 @@ export class ProjectReportDetailPageStore {
   constructor(private routingService: RoutingService,
               public projectReportPageStore: ProjectReportPageStore,
               private projectReportService: ProjectReportService,
-              private projectStore: ProjectStore) {
+              public projectStore: ProjectStore) {
     this.projectReportId$ = this.projectReportId();
     this.projectReport$ = this.projectReport();
     this.reportStatus$ = this.reportStatus();
@@ -107,6 +114,15 @@ export class ProjectReportDetailPageStore {
 
   startVerificationWork(projectId: number, reportId: number) {
     return this.projectReportService.startVerificationOnProjectReport(projectId, reportId)
+      .pipe(
+        map(status => status as ProjectReportSummaryDTO.StatusEnum),
+        tap(status => this.updatedReportStatus$.next(status)),
+        tap(status => Log.info('Changed status for report', reportId, status))
+      );
+  }
+
+  finalizeReport(projectId: number, reportId: number): Observable<ProjectReportSummaryDTO.StatusEnum> {
+    return this.projectReportService.finalizeVerificationOnProjectReport(projectId, reportId)
       .pipe(
         map(status => status as ProjectReportSummaryDTO.StatusEnum),
         tap(status => this.updatedReportStatus$.next(status)),

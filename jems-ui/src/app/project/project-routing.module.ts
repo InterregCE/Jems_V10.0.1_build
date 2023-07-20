@@ -262,6 +262,9 @@ import {ProjectVerificationReportComponent} from '@project/project-application/r
 import {
   ProjectVerificationReportDocumentTabComponent
 } from '@project/project-application/report/project-verification-report/project-verification-report-document-tab/project-verification-report-document-tab.component';
+import {
+  ProjectVerificationReportFinalizeTabComponent
+} from '@project/project-application/report/project-verification-report/project-verification-report-finalize-tab/project-verification-report-finalize-tab.component';
 
 export const routes: Routes = [
   {
@@ -467,6 +470,10 @@ export const routes: Routes = [
                           {
                             path: 'document',
                             component: ProjectVerificationReportDocumentTabComponent,
+                          },
+                          {
+                            path: 'finalise',
+                            component: ProjectVerificationReportFinalizeTabComponent,
                           },
                         ],
                       }
