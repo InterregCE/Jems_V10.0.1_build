@@ -3,7 +3,6 @@ package io.cloudflight.jems.server.project.authorization
 import io.cloudflight.jems.server.authentication.authorization.Authorization
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.service.ProjectPersistence
-import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import org.springframework.security.access.prepost.PreAuthorize
@@ -24,6 +23,17 @@ annotation class CanRetrieveProjectReport
 @Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("@projectReportAuthorization.canStartReportVerification(#projectId, #reportId)")
 annotation class CanStartProjectReportVerification
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@projectReportAuthorization.canViewReportVerification(#projectId)")
+annotation class CanViewReportVerification
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@projectReportAuthorization.canEditReportVerification(#projectId)")
+annotation class CanEditReportVerification
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@projectReportAuthorization.canFinalizeReportVerification(#projectId)")
+annotation class CanFinalizeProjectReportVerification
 
 @Component
 class ProjectReportAuthorization(
@@ -55,10 +65,17 @@ class ProjectReportAuthorization(
         return canMonitorView || canCreatorView
     }
 
-    fun canStartReportVerification(projectId: Long, reportId: Long): Boolean {
-        val report = reportPersistence.getReportById(projectId = projectId, reportId = reportId)
-        return report.status === ProjectReportStatus.Submitted
-                && hasPermission(UserRolePermission.ProjectReportingVerificationProjectEdit, projectId)
+    fun canStartReportVerification(projectId: Long): Boolean {
+        return hasPermission(UserRolePermission.ProjectReportingVerificationProjectEdit, projectId)
     }
+
+    fun canFinalizeReportVerification(projectId: Long): Boolean =
+        hasPermission(UserRolePermission.ProjectReportingVerificationFinalize, projectId)
+
+    fun canEditReportVerification(projectId: Long): Boolean =
+        hasPermission(UserRolePermission.ProjectReportingVerificationProjectEdit, projectId)
+
+    fun canViewReportVerification(projectId: Long): Boolean =
+        hasPermission(UserRolePermission.ProjectReportingVerificationProjectView, projectId)
 
 }

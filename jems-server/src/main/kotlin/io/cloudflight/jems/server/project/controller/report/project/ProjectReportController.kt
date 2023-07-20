@@ -7,6 +7,7 @@ import io.cloudflight.jems.api.project.report.project.ProjectReportApi
 import io.cloudflight.jems.server.project.controller.toDTO
 import io.cloudflight.jems.server.project.service.report.project.base.createProjectReport.CreateProjectReportInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.deleteProjectReport.DeleteProjectReportInteractor
+import io.cloudflight.jems.server.project.service.report.project.base.finalizeVerification.FinalizeVerificationProjectReportInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.getProjectReport.GetProjectReportInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.getProjectReportList.GetProjectReportListInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.runProjectReportPreSubmissionCheck.RunProjectReportPreSubmissionCheck
@@ -26,6 +27,7 @@ class ProjectReportController(
     private val runProjectReportPreSubmissionCheck: RunProjectReportPreSubmissionCheck,
     private val submitReport: SubmitProjectReportInteractor,
     private val startVerificationReport: StartVerificationProjectReportInteractor,
+    private val finalizeVerificationProjectReport: FinalizeVerificationProjectReportInteractor
 ) : ProjectReportApi {
 
     override fun getProjectReportList(projectId: Long, pageable: Pageable) =
@@ -51,4 +53,7 @@ class ProjectReportController(
 
     override fun startVerificationOnProjectReport(projectId: Long, reportId: Long) =
         startVerificationReport.startVerification(projectId = projectId, reportId = reportId).toDto()
+
+    override fun finalizeVerificationOnProjectReport(projectId: Long, reportId: Long) =
+        finalizeVerificationProjectReport.finalizeVerification(projectId, reportId).toDto()
 }

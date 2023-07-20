@@ -17,6 +17,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.ProjectRe
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportUpdate
 import io.cloudflight.jems.server.project.service.report.project.base.createProjectReport.CreateProjectReportInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.deleteProjectReport.DeleteProjectReportInteractor
+import io.cloudflight.jems.server.project.service.report.project.base.finalizeVerification.FinalizeVerificationProjectReportInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.getProjectReport.GetProjectReportInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.getProjectReportList.GetProjectReportListInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.runProjectReportPreSubmissionCheck.RunProjectReportPreSubmissionCheck
@@ -30,13 +31,13 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.slot
 import io.mockk.verify
 import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
-import java.time.LocalDate
-import java.time.ZonedDateTime
 
 internal class ProjectReportControllerTest : UnitTest() {
 
@@ -104,7 +105,10 @@ internal class ProjectReportControllerTest : UnitTest() {
         deletable = false,
         verificationEndDate = YESTERDAY,
         amountRequested = BigDecimal.ZERO,
-        totalEligibleAfterVerification = BigDecimal.ZERO
+        totalEligibleAfterVerification = BigDecimal.ZERO,
+        verificationConclusionJS = null,
+        verificationConclusionMA = null,
+        verificationFollowup = null
     )
 
     private val expectedReportSummary = ProjectReportSummaryDTO(
@@ -123,7 +127,10 @@ internal class ProjectReportControllerTest : UnitTest() {
         deletable = false,
         verificationEndDate = YESTERDAY,
         amountRequested = BigDecimal.ZERO,
-        totalEligibleAfterVerification = BigDecimal.ZERO
+        totalEligibleAfterVerification = BigDecimal.ZERO,
+        verificationConclusionJS = null,
+        verificationConclusionMA = null,
+        verificationFollowup = null
     )
 
     @MockK
@@ -149,6 +156,9 @@ internal class ProjectReportControllerTest : UnitTest() {
 
     @MockK
     private lateinit var startVerificationReport: StartVerificationProjectReportInteractor
+
+    @MockK
+    private lateinit var finalizeVerificationProjectReport: FinalizeVerificationProjectReportInteractor
 
     @InjectMockKs
     private lateinit var controller: ProjectReportController
@@ -256,5 +266,11 @@ internal class ProjectReportControllerTest : UnitTest() {
     fun startVerificationOnProjectReport() {
         every { startVerificationReport.startVerification(21L, reportId = 10L) } returns ProjectReportStatus.InVerification
         assertThat(controller.startVerificationOnProjectReport(21L, reportId = 10L)).isEqualTo(ProjectReportStatusDTO.InVerification)
+    }
+
+    @Test
+    fun finalizeVerificationOnProjectReport() {
+        every { finalizeVerificationProjectReport.finalizeVerification(22L, reportId = 6L) } returns ProjectReportStatus.Finalized
+        assertThat(controller.finalizeVerificationOnProjectReport(22L, reportId = 6L)).isEqualTo(ProjectReportStatusDTO.Finalized)
     }
 }

@@ -6,7 +6,7 @@ import io.cloudflight.jems.server.project.authorization.CanStartProjectReportVer
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
-import io.cloudflight.jems.server.project.service.report.project.partnerReportStartedVerification
+import io.cloudflight.jems.server.project.service.report.project.projectReportStartedVerification
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -31,7 +31,7 @@ class StartVerificationProjectReport(
             auditPublisher.publishEvent(ProjectReportStatusChanged(this, it))
 
             auditPublisher.publishEvent(
-                partnerReportStartedVerification(
+                projectReportStartedVerification(
                     context = this,
                     projectId = projectId,
                     report = it,

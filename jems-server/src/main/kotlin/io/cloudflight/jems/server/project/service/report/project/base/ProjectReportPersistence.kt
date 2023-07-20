@@ -52,4 +52,6 @@ interface ProjectReportPersistence {
         projectId: Long,
         reportId: Long
     ): ProjectReportSubmissionSummary
+
+    fun finalizeVerificationOnReportById(projectId: Long, reportId: Long): ProjectReportSubmissionSummary
 }

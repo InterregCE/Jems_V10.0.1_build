@@ -85,4 +85,11 @@ interface ProjectReportApi {
         @PathVariable projectId: Long,
         @PathVariable reportId: Long,
     ): ProjectReportStatusDTO
+
+    @ApiOperation("Finalise verification on project report")
+    @PostMapping("$ENDPOINT_API_PROJECT_REPORT/finalizeVerification")
+    fun finalizeVerificationOnProjectReport(
+        @PathVariable projectId: Long,
+        @PathVariable reportId: Long,
+    ): ProjectReportStatusDTO
 }

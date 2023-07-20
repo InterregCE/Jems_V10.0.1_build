@@ -6,7 +6,7 @@ import {PagePaymentToProjectDTO, PaymentSearchRequestDTO, ProgrammeFundDTO, Prog
 import {ColumnWidth} from '@common/components/table/model/column-width';
 import {PaymentsToProjectPageStore} from './payments-to-projects-page.store';
 import {map, startWith, tap} from 'rxjs/operators';
-import {FormBuilder} from "@angular/forms";
+import {FormBuilder} from '@angular/forms';
 
 @Component({
   selector: 'jems-payments-to-projects-page',

@@ -95,7 +95,7 @@ fun controlReportCreated(
         .build()
 )
 
-fun partnerReportStartedVerification(
+fun projectReportStartedVerification(
     context: Any,
     projectId: Long,
     report: ProjectReportSubmissionSummary,
@@ -112,5 +112,25 @@ fun partnerReportStartedVerification(
             .description("[" +
                     report.projectIdentifier +
                     "] Project report R.${report.reportNumber} verification started")
+            .build()
+    )
+
+fun projectReportFinalizedVerification(
+    context: Any,
+    projectId: Long,
+    report: ProjectReportSubmissionSummary,
+): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.PROJECT_REPORT_VERIFICATION_FINALIZED)
+            .project(
+                projectId = projectId,
+                customIdentifier = report.projectIdentifier,
+                acronym = report.projectAcronym,
+            )
+            .entityRelatedId(entityRelatedId = report.id)
+            .description("[" +
+                    report.projectIdentifier +
+                    "] Project report R.${report.reportNumber} verification was finalised") // todo add the rest of the message when the expenditures are merged
             .build()
     )

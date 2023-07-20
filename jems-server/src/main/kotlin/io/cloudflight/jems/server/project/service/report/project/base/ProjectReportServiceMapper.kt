@@ -51,5 +51,9 @@ fun ProjectReportModel.toServiceSummaryModel(
     verificationEndDate = verificationEndDate,
     deletable = status.isOpen(),
     amountRequested = amountRequested,
-    totalEligibleAfterVerification
+    totalEligibleAfterVerification = totalEligibleAfterVerification,
+
+    verificationConclusionJS = null,
+    verificationConclusionMA = null,
+    verificationFollowup = null
 )

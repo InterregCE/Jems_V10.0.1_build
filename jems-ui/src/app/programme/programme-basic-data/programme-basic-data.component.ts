@@ -177,7 +177,7 @@ export class ProgrammeBasicDataComponent extends ViewEditFormComponent implement
     controls.commissionDecisionDate.setValue(programme.commissionDecisionDate);
     controls.programmeAmendingDecisionNumber.setValue(this.getSizedValue(programme.programmeAmendingDecisionNumber));
     controls.programmeAmendingDecisionDate.setValue(programme.programmeAmendingDecisionDate);
-    controls.technicalAssistanceFlatRate.setValue(programme.technicalAssistanceFlatRate)
+    controls.technicalAssistanceFlatRate.setValue(programme.technicalAssistanceFlatRate);
     controls.projectIdProgrammeAbbreviation.setValue(programme.projectIdProgrammeAbbreviation);
     controls.projectIdUseCallId.setValue(programme.projectIdUseCallId);
   }

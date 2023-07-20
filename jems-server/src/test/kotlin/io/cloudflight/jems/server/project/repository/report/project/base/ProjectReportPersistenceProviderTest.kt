@@ -64,7 +64,11 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
             createdAt = LAST_WEEK,
             firstSubmission = LAST_YEAR,
             verificationDate = null,
-            verificationEndDate = null
+            verificationEndDate = null,
+
+            verificationConclusionJs = null,
+            verificationConclusionMa = null,
+            verificationFollowup = null
         )
 
         private fun reportProjectCertificateCoFinancingEntity(): ReportProjectCertificateCoFinancingEntity? {
@@ -316,13 +320,30 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
     }
 
     @Test
+    fun submitReport() {
+        val projectId = 8L
+        val report = reportEntity(id = 49L, projectId)
+        val YESTERDAY = ZonedDateTime.now().minusDays(1)
+
+        every { projectReportRepository.getByIdAndProjectId(49L, projectId) } returns report
+
+        assertThat(persistence.submitReport(projectId, 49L, YESTERDAY)).isEqualTo(
+            draftReportSubmissionEntity(49L, projectId).copy(
+                status = ProjectReportStatus.Submitted,
+                firstSubmission = YESTERDAY
+            )
+        )
+    }
+
+    @Test
     fun getSubmittedProjectReportIds() {
         val projectId = 1L
         every {
             projectReportRepository.findAllByProjectIdAndStatusInOrderByNumberDesc(
                 projectId, setOf(
                     ProjectReportStatus.Submitted,
-                    ProjectReportStatus.InVerification
+                    ProjectReportStatus.InVerification,
+                    ProjectReportStatus.Finalized,
                 )
             )
         } returns listOf(
@@ -387,4 +408,17 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
         )
     }
 
+    @Test
+    fun finalizeVerificationOnReportById() {
+        val projectId = 3L
+        val report = reportEntity(id = 48L, projectId)
+
+        every { projectReportRepository.getByIdAndProjectId(48L, projectId) } returns report
+
+        assertThat(persistence.finalizeVerificationOnReportById(projectId, 48L)).isEqualTo(
+            draftReportSubmissionEntity(48L, projectId).copy(
+                status = ProjectReportStatus.Finalized
+            )
+        )
+    }
 }
