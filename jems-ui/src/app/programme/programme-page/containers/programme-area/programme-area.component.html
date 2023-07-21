@@ -15,6 +15,6 @@
                   (selectionChanged)="selectionChanged$.next(regionTreeDataSource.data)"
                   (saveRegions)="saveSelectedRegions$.next()"
                   (cancelEdit)="cancelEdit$.next()"
-                  [isEditable$]=isEditable()>
+                  [isLocked$]=isLocked()>
     </jems-regions>
 </jems-main-page-template>
