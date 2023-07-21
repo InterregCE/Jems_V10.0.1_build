@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, TemplateRef, ViewChild} from '@angular/core';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {
@@ -11,6 +11,7 @@ import {combineLatest, Observable} from 'rxjs';
 import {ProgrammeSpecificObjectiveDTO, ProjectStatusDTO} from '@cat/api';
 import {TranslateService} from '@ngx-translate/core';
 import {ColumnWidth} from '@common/components/table/model/column-width';
+import { OnInit } from '@angular/core';
 
 @Component({
   selector: 'jems-project-application-list',
@@ -20,75 +21,17 @@ import {ColumnWidth} from '@common/components/table/model/column-width';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 @UntilDestroy()
-export class ProjectApplicationListComponent {
+export class ProjectApplicationListComponent implements OnInit {
 
   @Input()
   filterByOwner: false;
 
   defaultPageSize = 10;
 
-  tableConfiguration: TableConfiguration = new TableConfiguration({
-    routerLink: '/app/project/detail',
-    isTableClickable: true,
-    columns: [
-      {
-        displayedColumn: 'project.table.column.name.project.id',
-        elementProperty: 'customIdentifier',
-        sortProperty: 'customIdentifier',
-        columnWidth: ColumnWidth.IdColumn
-      },
-      {
-        displayedColumn: 'project.table.column.name.acronym',
-        elementProperty: 'acronym',
-        sortProperty: 'acronym',
-      },
-      {
-        displayedColumn: 'project.table.column.name.submission',
-        columnType: ColumnType.DateColumn,
-        elementProperty: 'firstSubmissionDate',
-        sortProperty: 'firstSubmission.updated',
-        columnWidth: ColumnWidth.DateColumn
-      },
-      {
-        displayedColumn: 'project.table.column.name.resubmission',
-        columnType: ColumnType.DateColumn,
-        elementProperty: 'lastResubmissionDate',
-        sortProperty: 'lastResubmission.updated',
-        columnWidth: ColumnWidth.DateColumn
-      },
-      {
-        displayedColumn: 'project.table.column.name.priority',
-        elementProperty: 'programmePriorityCode',
-        sortProperty: 'priorityPolicy.programmePriority.code',
-        columnWidth: ColumnWidth.MediumColumn,
-        tooltip: {
-          tooltipContent: 'programmePriority.title'
-        }
-      },
-      {
-        displayedColumn: 'project.table.column.name.objective',
-        elementProperty: 'specificObjectiveCode',
-        sortProperty: 'priorityPolicy.code',
-        columnWidth: ColumnWidth.MediumColumn,
-        tooltip: {
-          tooltipContent: 'specificObjective.programmeObjectivePolicy',
-          tooltipTranslationKey: 'programme.policy'
-        }
-      },
-      {
-        displayedColumn: 'project.table.column.name.status',
-        elementProperty: 'projectStatus',
-        elementTranslationKey: 'common.label.projectapplicationstatus',
-        sortProperty: 'currentStatus.status',
-        columnWidth: ColumnWidth.MediumColumn
-      },
-      {
-        displayedColumn: 'project.table.column.name.related',
-        elementProperty: 'callName',
-        sortProperty: 'callName'
-      }
-    ]
-  });
+  @ViewChild('callNameCell', {static: true})
+  callNameCell: TemplateRef<any>;
+
+  tableConfiguration: TableConfiguration;
 
   filterForm = this.formBuilder.group({
     id: '',
@@ -113,7 +56,7 @@ export class ProjectApplicationListComponent {
               private translateService: TranslateService) {
     this.filterData$ = combineLatest([listStore.policyObjectives$, listStore.publishedCalls$])
       .pipe(
-        map(([objectives, calls]) =>({
+        map(([objectives, calls]) => ({
           objectives: new Map(objectives.map(objective => [objective.programmeObjectivePolicy, objective.code])),
           calls: new Map(calls.map(call => [call.id, call.name])),
           statuses: new Map(Object.values(ProjectStatusDTO.StatusEnum).map(status => [
@@ -128,6 +71,10 @@ export class ProjectApplicationListComponent {
     ).subscribe();
   }
 
+  ngOnInit(): void {
+    this.tableConfiguration = this.initializeTableConfiguration();
+  }
+
   isThereAnyActiveFilter(): boolean {
     return this.filterForm.value.id?.length > 0 ||
       this.filterForm.value.acronym?.length > 0 ||
@@ -138,5 +85,70 @@ export class ProjectApplicationListComponent {
       this.filterForm.value.objectives?.length > 0 ||
       this.filterForm.value.statuses?.length > 0 ||
       this.filterForm.value.calls?.length;
+  }
+
+  private initializeTableConfiguration(): TableConfiguration {
+    return new TableConfiguration({
+      routerLink: '/app/project/detail',
+      isTableClickable: true,
+      columns: [
+        {
+          displayedColumn: 'project.table.column.name.project.id',
+          elementProperty: 'customIdentifier',
+          sortProperty: 'customIdentifier',
+          columnWidth: ColumnWidth.IdColumn
+        },
+        {
+          displayedColumn: 'project.table.column.name.acronym',
+          elementProperty: 'acronym',
+          sortProperty: 'acronym',
+        },
+        {
+          displayedColumn: 'project.table.column.name.submission',
+          columnType: ColumnType.DateColumn,
+          elementProperty: 'firstSubmissionDate',
+          sortProperty: 'firstSubmission.updated',
+          columnWidth: ColumnWidth.DateColumn
+        },
+        {
+          displayedColumn: 'project.table.column.name.resubmission',
+          columnType: ColumnType.DateColumn,
+          elementProperty: 'lastResubmissionDate',
+          sortProperty: 'lastResubmission.updated',
+          columnWidth: ColumnWidth.DateColumn
+        },
+        {
+          displayedColumn: 'project.table.column.name.priority',
+          elementProperty: 'programmePriorityCode',
+          sortProperty: 'priorityPolicy.programmePriority.code',
+          columnWidth: ColumnWidth.MediumColumn,
+          tooltip: {
+            tooltipContent: 'programmePriority.title'
+          }
+        },
+        {
+          displayedColumn: 'project.table.column.name.objective',
+          elementProperty: 'specificObjectiveCode',
+          sortProperty: 'priorityPolicy.code',
+          columnWidth: ColumnWidth.MediumColumn,
+          tooltip: {
+            tooltipContent: 'specificObjective.programmeObjectivePolicy',
+            tooltipTranslationKey: 'programme.policy'
+          }
+        },
+        {
+          displayedColumn: 'project.table.column.name.status',
+          elementProperty: 'projectStatus',
+          elementTranslationKey: 'common.label.projectapplicationstatus',
+          sortProperty: 'currentStatus.status',
+          columnWidth: ColumnWidth.MediumColumn
+        },
+        {
+          displayedColumn: 'project.table.column.name.related',
+          customCellTemplate: this.callNameCell,
+          sortProperty: 'callName'
+        }
+      ]
+    });
   }
 }

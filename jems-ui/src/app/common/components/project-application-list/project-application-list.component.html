@@ -75,3 +75,9 @@
                 (sortRows)="listStore.newSort$.next($event)">
     </jems-table>
 </ng-container>
+
+<ng-template #callNameCell let-project>
+    <span>
+        {{project.callId}} - {{project.callName}}
+    </span>
+</ng-template>

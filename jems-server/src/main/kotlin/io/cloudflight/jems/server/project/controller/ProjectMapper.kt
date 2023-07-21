@@ -130,6 +130,7 @@ fun Page<ProjectSummary>.toDto() = map {
         id = it.id,
         customIdentifier = it.customIdentifier,
         callName = it.callName,
+        callId = it.callId,
         acronym = it.acronym,
         projectStatus = ApplicationStatusDTO.valueOf(it.status.name),
         firstSubmissionDate = it.firstSubmissionDate,
