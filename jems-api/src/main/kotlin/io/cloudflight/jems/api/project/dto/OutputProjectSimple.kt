@@ -7,6 +7,7 @@ data class OutputProjectSimple(
     val id: Long?,
     val customIdentifier: String,
     val callName: String,
+    val callId: Long,
     val acronym: String,
     val projectStatus: ApplicationStatusDTO,
     val firstSubmissionDate: ZonedDateTime?,
