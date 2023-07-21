@@ -40,6 +40,10 @@ export class TableComponent implements OnInit, OnChanges {
   confirmPageChange = false;
   @Input()
   isMultiLanguage = false;
+  @Input()
+  currentPageSize = Tables.DEFAULT_INITIAL_PAGE_SIZE;
+  @Input()
+  disableTopPaginator = false;
 
   @Output()
   sortRows = new EventEmitter<Partial<MatSort>>();
@@ -51,7 +55,7 @@ export class TableComponent implements OnInit, OnChanges {
   @ViewChild(MatSort) matSort: MatSort;
 
   columnsToDisplay: string[] = [];
-  currentPageSize = Tables.DEFAULT_INITIAL_PAGE_SIZE;
+
   selectedVersion: ProjectVersionDTO | undefined;
 
   constructor(private moneyPipe: MoneyPipe,

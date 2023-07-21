@@ -39,6 +39,8 @@ export class PartnerReportListComponent implements OnInit {
 
   tableConfiguration: TableConfiguration;
 
+  defaultPageSize = 10;
+
   constructor(public partnerReportListStoreService: PartnerReportListStoreService) {}
 
   ngOnInit() {
@@ -138,5 +140,4 @@ export class PartnerReportListComponent implements OnInit {
       ]
     });
   }
-
 }

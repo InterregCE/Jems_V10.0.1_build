@@ -44,9 +44,11 @@ export class CallListStore {
   }
 
   private publishedCallPage(): Observable<PageCallDTO> {
+    const defaultPageSize = Tables.DEFAULT_PAGE_OPTIONS.find(el => el === 5) ?? Tables.DEFAULT_INITIAL_PAGE_SIZE;
+
     return combineLatest([
       this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
-      this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
+      this.newPageSize$.pipe(startWith(defaultPageSize)),
       this.newSort$.pipe(
         startWith(Tables.DEFAULT_INITIAL_SORT),
         map(sort => sort?.direction ? sort : Tables.DEFAULT_INITIAL_SORT),

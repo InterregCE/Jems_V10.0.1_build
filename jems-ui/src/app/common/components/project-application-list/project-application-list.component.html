@@ -68,6 +68,8 @@
                 [rows]="page.content"
                 [totalElements]="page?.totalElements"
                 [pageIndex]="listStore.newPageIndex$ | async"
+                [currentPageSize]="defaultPageSize"
+                [disableTopPaginator]="true"
                 (newPageIndex)="listStore.newPageIndex$.next($event)"
                 (newPageSize)="listStore.newPageSize$.next($event)"
                 (sortRows)="listStore.newSort$.next($event)">

@@ -40,10 +40,12 @@ export class ProjectApplicationListStore {
   }
 
   private page(filterByOwner: boolean): Observable<PageOutputProjectSimple> {
+    const defaultPageSize = Tables.DEFAULT_PAGE_OPTIONS.find(el => el === 10) ?? Tables.DEFAULT_INITIAL_PAGE_SIZE;
+
     return combineLatest([
       this.filter$,
       this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
-      this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
+      this.newPageSize$.pipe(startWith(defaultPageSize)),
       this.newSort$.pipe(
         startWith(Tables.DEFAULT_INITIAL_SORT),
         map(sort => sort?.direction ? sort : Tables.DEFAULT_INITIAL_SORT)

@@ -25,6 +25,8 @@ export class CallListComponent implements OnInit {
   @Input()
   publishedCallsOnly: boolean;
 
+  defaultPageSize = 5;
+
   data$: Observable<{
     page: PageCallDTO;
     tableConfiguration: TableConfiguration;

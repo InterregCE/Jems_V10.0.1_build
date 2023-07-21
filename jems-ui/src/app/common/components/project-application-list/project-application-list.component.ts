@@ -25,6 +25,8 @@ export class ProjectApplicationListComponent {
   @Input()
   filterByOwner: false;
 
+  defaultPageSize = 10;
+
   tableConfiguration: TableConfiguration = new TableConfiguration({
     routerLink: '/app/project/detail',
     isTableClickable: true,

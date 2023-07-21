@@ -21,7 +21,7 @@ export class PartnerReportListStoreService {
   }
 
   private partnerReportListPage(): Observable<PageProjectPartnerReportSummaryDTO> {
-    const defaultPageSize = Tables.DEFAULT_PAGE_OPTIONS.find(el => el === 25) ?? Tables.DEFAULT_INITIAL_PAGE_SIZE;
+    const defaultPageSize = Tables.DEFAULT_PAGE_OPTIONS.find(el => el === 10) ?? Tables.DEFAULT_INITIAL_PAGE_SIZE;
 
     return combineLatest([
       this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
