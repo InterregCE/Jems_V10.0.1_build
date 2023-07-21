@@ -11,6 +11,7 @@ import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeUnitCostPersistence
+import io.cloudflight.jems.server.programme.service.costoption.model.PaymentClaim
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -61,6 +62,7 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
             costPerUnit = BigDecimal.ONE,
             isOneCostCategory = false,
             categories = setOf(BudgetCategory.EquipmentCosts, BudgetCategory.TravelAndAccommodationCosts),
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
 
         private val unitCostNew = ProgrammeUnitCost(
@@ -72,6 +74,7 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
             costPerUnit = BigDecimal.TEN,
             isOneCostCategory = false,
             categories = setOf(BudgetCategory.EquipmentCosts, BudgetCategory.TravelAndAccommodationCosts),
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
 
         val oldStaffCost = BudgetStaffCostEntry(

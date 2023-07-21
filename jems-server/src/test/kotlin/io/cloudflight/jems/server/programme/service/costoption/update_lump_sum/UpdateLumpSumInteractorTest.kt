@@ -14,6 +14,7 @@ import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
+import io.cloudflight.jems.server.programme.service.costoption.model.PaymentClaim
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.info.isSetupLocked.IsProgrammeSetupLockedInteractor
 import io.mockk.clearMocks
@@ -41,7 +42,8 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
         splittingAllowed = true,
         phase = Implementation,
         categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
-        fastTrack = false
+        fastTrack = false,
+        paymentClaim = PaymentClaim.IncurredByBeneficiaries
     )
 
     @MockK
@@ -81,7 +83,8 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
             splittingAllowed = true,
             phase = null,
             categories = setOf(OfficeAndAdministrationCosts),
-            fastTrack = true
+            fastTrack = true,
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
         val ex = assertThrows<LumpSumIsInvalid> { updateLumpSum.updateLumpSum(wrongLumpSum) }
         assertThat(ex.formErrors).containsExactlyInAnyOrderEntriesOf(mapOf(
@@ -103,7 +106,8 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
             splittingAllowed = true,
             phase = Implementation,
             categories = setOf(OfficeAndAdministrationCosts, StaffCosts ),
-            fastTrack = true
+            fastTrack = true,
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
         assertThrows<UpdateLumpSumWhenProgrammeSetupRestricted> { updateLumpSum.updateLumpSum(wrongLumpSum) }
     }
@@ -160,7 +164,8 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
             splittingAllowed = true,
             phase = Implementation,
             categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
-            fastTrack = false
+            fastTrack = false,
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
         val auditSlot = slot<AuditCandidate>()
         every { auditService.logEvent(capture(auditSlot)) } answers {}
@@ -180,7 +185,8 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
             cost = BigDecimal.ONE,
             splittingAllowed = true,
             phase = Implementation,
-            fastTrack = false
+            fastTrack = false,
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
 
         assertThrows<LumpSumIsInvalid>("when updating id cannot be invalid") {
@@ -200,7 +206,8 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
             splittingAllowed = true,
             phase = Implementation,
             categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
-            fastTrack = false
+            fastTrack = false,
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
         every { persistence.updateLumpSum(any()) } throws ResourceNotFoundException("programmeLumpSum")
 
@@ -223,7 +230,8 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
             splittingAllowed = true,
             phase = Implementation,
             categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
-            fastTrack = false
+            fastTrack = false,
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
         val auditSlot = slot<AuditCandidate>()
         every { auditService.logEvent(capture(auditSlot)) } answers {}

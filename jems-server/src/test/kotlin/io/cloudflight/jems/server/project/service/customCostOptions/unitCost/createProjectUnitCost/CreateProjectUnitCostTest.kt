@@ -14,6 +14,7 @@ import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeUnitCostPersistence
+import io.cloudflight.jems.server.programme.service.costoption.model.PaymentClaim
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -61,6 +62,7 @@ internal class CreateProjectUnitCostTest : UnitTest() {
             costPerUnit = BigDecimal.ONE,
             isOneCostCategory = false,
             categories = setOf(BudgetCategory.StaffCosts, BudgetCategory.OfficeAndAdministrationCosts),
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
 
         private val costOptionsAllowed = CallCostOption(

@@ -71,7 +71,8 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditFormComponent imple
     allowSplitting: ['', Validators.required],
     isFastTrack: ['', Validators.required],
     phase: ['', Validators.required],
-    categories: ['', Validators.required]
+    categories: ['', Validators.required],
+    paymentClaim: [ProgrammeLumpSumDTO.PaymentClaimEnum.IncurredByBeneficiaries]
   });
   costErrors = {
     required: ProgrammeLumpSumDetailComponent.LUMP_SUM_OUT_OF_RANGE_ERROR,
@@ -91,6 +92,13 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditFormComponent imple
     ProgrammeLumpSumDTO.CategoriesEnum.InfrastructureCosts
   ];
   validNumberOfSelections = false;
+
+  availablePaymentClaims = [
+    ProgrammeLumpSumDTO.PaymentClaimEnum.IncurredByBeneficiaries,
+    ProgrammeLumpSumDTO.PaymentClaimEnum.BasedOnSco,
+    ProgrammeLumpSumDTO.PaymentClaimEnum.FinancingNotBasedOnSco,
+    ProgrammeLumpSumDTO.PaymentClaimEnum.Other
+  ]
 
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
@@ -129,6 +137,7 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditFormComponent imple
     this.lumpSumForm.controls.name.setValue(this.lumpSum.name);
     this.lumpSumForm.controls.description.setValue(this.lumpSum.description);
     this.lumpSumForm.controls.cost.setValue(this.lumpSum.cost);
+    this.lumpSumForm.controls.paymentClaim.setValue(this.lumpSum.paymentClaim)
     this.previousSplitting = this.lumpSum.splittingAllowed ? 'Yes' : 'No';
     this.isFastTrack = this.lumpSum.fastTrack ? 'Yes' : 'No';
     this.previousPhase = this.lumpSum.phase;
@@ -163,7 +172,8 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditFormComponent imple
           splittingAllowed: this.previousSplitting === 'Yes',
           fastTrack: this.isFastTrack === 'Yes',
           phase: this.getCorrectPhase(this.previousPhase),
-          categories: this.selection.selected
+          categories: this.selection.selected,
+          paymentClaim: this.lumpSumForm.controls.paymentClaim.value
         } as ProgrammeLumpSumDTO);
       } else {
         this.updateLumpSum.emit({
@@ -174,7 +184,8 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditFormComponent imple
           splittingAllowed: this.previousSplitting === 'Yes',
           fastTrack: this.isFastTrack === 'Yes',
           phase: this.getCorrectPhase(this.previousPhase),
-          categories: this.selection.selected
+          categories: this.selection.selected,
+          paymentClaim: this.lumpSumForm.controls.paymentClaim.value
         });
       }
     });

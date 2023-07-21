@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumBudgetCategoryEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
+import io.cloudflight.jems.server.programme.service.costoption.model.PaymentClaim
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.mockk.MockKAnnotations
 import io.mockk.every
@@ -82,7 +83,8 @@ class ProgrammeLumpSumPersistenceTest {
             splittingAllowed = testLumpSum.splittingAllowed,
             phase = testLumpSum.phase,
             categories = setOf(categoryStaff.category, categoryOffice.category),
-            fastTrack = false
+            fastTrack = false,
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
     }
 
@@ -142,7 +144,8 @@ class ProgrammeLumpSumPersistenceTest {
             splittingAllowed = false,
             phase = ProgrammeLumpSumPhase.Closure,
             categories = setOf(ExternalCosts, EquipmentCosts),
-            fastTrack = false
+            fastTrack = false,
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
         every { repository.existsById(testLumpSum.id) } returns true
         val translations = combineLumpSumTranslatedValues(toBeUpdated.id, toBeUpdated.name, toBeUpdated.description)
@@ -157,7 +160,8 @@ class ProgrammeLumpSumPersistenceTest {
             splittingAllowed = false,
             phase = ProgrammeLumpSumPhase.Closure,
             categories = setOf(ExternalCosts, EquipmentCosts),
-            fastTrack = false
+            fastTrack = false,
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         ))
     }
 
@@ -173,7 +177,8 @@ class ProgrammeLumpSumPersistenceTest {
             splittingAllowed = false,
             phase = ProgrammeLumpSumPhase.Closure,
             categories = setOf(ExternalCosts, EquipmentCosts),
-            fastTrack = false
+            fastTrack = false,
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
 
         assertThrows<ResourceNotFoundException> { programmeLumpSumPersistence.updateLumpSum(toBeUpdated) }

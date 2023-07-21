@@ -24,6 +24,7 @@ import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldSetting
 import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
+import io.cloudflight.jems.server.programme.service.costoption.model.PaymentClaim
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
@@ -119,10 +120,10 @@ internal class UpdateCoFinancingInteractorTest {
                 ),
             ),
             lumpSums = listOf(
-                ProgrammeLumpSum(splittingAllowed = true, fastTrack = false),
+                ProgrammeLumpSum(splittingAllowed = true, fastTrack = false, paymentClaim = PaymentClaim.IncurredByBeneficiaries),
             ),
             unitCosts = listOf(
-                ProgrammeUnitCost(projectId = null, isOneCostCategory = true),
+                ProgrammeUnitCost(projectId = null, isOneCostCategory = true, paymentClaim = PaymentClaim.IncurredByBeneficiaries),
             ),
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,
@@ -176,10 +177,10 @@ internal class UpdateCoFinancingInteractorTest {
                 ),
             ),
             lumpSums = listOf(
-                ProgrammeLumpSum(splittingAllowed = true, fastTrack = false),
+                ProgrammeLumpSum(splittingAllowed = true, fastTrack = false, paymentClaim = PaymentClaim.IncurredByBeneficiaries),
             ),
             unitCosts = listOf(
-                ProgrammeUnitCost(projectId = null, isOneCostCategory = true),
+                ProgrammeUnitCost(projectId = null, isOneCostCategory = true, paymentClaim = PaymentClaim.IncurredByBeneficiaries),
             ),
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,
@@ -229,10 +230,10 @@ internal class UpdateCoFinancingInteractorTest {
                 ),
             ),
             lumpSums = listOf(
-                ProgrammeLumpSum(splittingAllowed = true, fastTrack = false),
+                ProgrammeLumpSum(splittingAllowed = true, fastTrack = false, paymentClaim = PaymentClaim.IncurredByBeneficiaries),
             ),
             unitCosts = listOf(
-                ProgrammeUnitCost(projectId = null, isOneCostCategory = true),
+                ProgrammeUnitCost(projectId = null, isOneCostCategory = true, paymentClaim = PaymentClaim.IncurredByBeneficiaries),
             ),
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,

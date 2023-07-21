@@ -24,6 +24,7 @@ import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.call.service.update_application_form_field_configuration.UpdateApplicationFormFieldConfigurationsException
 import io.cloudflight.jems.server.call.service.update_application_form_field_configuration.UpdateApplicationFormFieldConfigurationsInteractor
+import io.cloudflight.jems.server.programme.service.costoption.model.PaymentClaim
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
@@ -78,10 +79,10 @@ class ApplicationFormConfigurationControllerTest : UnitTest() {
                 ),
             ),
             lumpSums = listOf(
-                ProgrammeLumpSum(splittingAllowed = true, fastTrack = false),
+                ProgrammeLumpSum(splittingAllowed = true, fastTrack = false, paymentClaim = PaymentClaim.IncurredByBeneficiaries),
             ),
             unitCosts = listOf(
-                ProgrammeUnitCost(projectId = null, isOneCostCategory = true),
+                ProgrammeUnitCost(projectId = null, isOneCostCategory = true, paymentClaim = PaymentClaim.IncurredByBeneficiaries),
             ),
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,

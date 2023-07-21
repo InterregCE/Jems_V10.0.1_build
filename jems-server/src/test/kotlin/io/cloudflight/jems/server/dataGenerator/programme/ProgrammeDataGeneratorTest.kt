@@ -5,10 +5,7 @@ import io.cloudflight.jems.api.programme.ProgrammeStrategyApi
 import io.cloudflight.jems.api.programme.ResultIndicatorApi
 import io.cloudflight.jems.api.programme.costoption.ProgrammeLumpSumApi
 import io.cloudflight.jems.api.programme.costoption.ProgrammeUnitCostApi
-import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
-import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumDTO
-import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase
-import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeUnitCostDTO
+import io.cloudflight.jems.api.programme.dto.costoption.*
 import io.cloudflight.jems.api.programme.dto.indicator.OutputIndicatorCreateRequestDTO
 import io.cloudflight.jems.api.programme.dto.indicator.ResultIndicatorCreateRequestDTO
 import io.cloudflight.jems.api.programme.dto.language.ProgrammeLanguageDTO
@@ -137,7 +134,8 @@ class ProgrammeDataGeneratorTest(@LocalServerPort private val port: Int) : DataG
                         BudgetCategory.ExternalCosts,
                         BudgetCategory.StaffCosts
                     ),
-                    fastTrack = false
+                    fastTrack = false,
+                    paymentClaim = PaymentClaimDTO.IncurredByBeneficiaries
                 )
             )
         )
@@ -162,7 +160,8 @@ class ProgrammeDataGeneratorTest(@LocalServerPort private val port: Int) : DataG
                     costPerUnitForeignCurrency = null,
                     foreignCurrencyCode = null,
                     oneCostCategory = false,
-                    categories = setOf(BudgetCategory.StaffCosts, BudgetCategory.ExternalCosts)
+                    categories = setOf(BudgetCategory.StaffCosts, BudgetCategory.ExternalCosts),
+                    paymentClaim = PaymentClaimDTO.IncurredByBeneficiaries
                 )
             )
         )

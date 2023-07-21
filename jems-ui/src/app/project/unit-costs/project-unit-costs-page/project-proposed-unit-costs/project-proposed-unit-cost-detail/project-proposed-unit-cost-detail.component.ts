@@ -24,6 +24,7 @@ import {
 import { RoutingService } from '@common/services/routing.service';
 import { Alert } from '@common/components/forms/alert';
 import {BehaviorSubject, combineLatest} from 'rxjs';
+import PaymentClaimEnum = ProgrammeUnitCostDTO.PaymentClaimEnum;
 
 @UntilDestroy()
 @Component({
@@ -192,7 +193,8 @@ export class ProjectProposedUnitCostDetailComponent implements OnInit {
         foreignCurrencyCode: this.projectUnitCostForm?.controls?.foreignCurrencyCode.value,
         oneCostCategory: this.projectUnitCostForm?.controls?.isOneCostCategory?.value,
         categories: this.projectUnitCostForm?.controls?.isOneCostCategory?.value ? this.selectionSingle.selected : this.selectionMultiple.selected,
-        justification: this.projectUnitCostForm?.controls?.justification.value
+        justification: this.projectUnitCostForm?.controls?.justification.value,
+        paymentClaim: PaymentClaimEnum.IncurredByBeneficiaries
       } as ProgrammeUnitCostDTO);
     } else {
       const updateValue = {
@@ -205,7 +207,8 @@ export class ProjectProposedUnitCostDetailComponent implements OnInit {
         foreignCurrencyCode: this.projectUnitCostForm?.controls?.foreignCurrencyCode.value,
         oneCostCategory: this.projectUnitCostForm?.controls?.isOneCostCategory?.value,
         categories: this.projectUnitCostForm?.controls?.isOneCostCategory?.value ? this.selectionSingle.selected : this.selectionMultiple.selected,
-        justification: this.projectUnitCostForm?.controls?.justification.value
+        justification: this.projectUnitCostForm?.controls?.justification.value,
+        paymentClaim: PaymentClaimEnum.IncurredByBeneficiaries
       } as ProgrammeUnitCostDTO;
 
       if (this.isCategorySelectionDifferent()) {

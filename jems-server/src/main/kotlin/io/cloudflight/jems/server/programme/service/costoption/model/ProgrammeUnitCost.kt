@@ -15,7 +15,8 @@ data class ProgrammeUnitCost(
     val costPerUnitForeignCurrency: BigDecimal? = null,
     val foreignCurrencyCode: String? = null,
     val isOneCostCategory: Boolean,
-    val categories: Set<BudgetCategory> = emptySet()
+    val categories: Set<BudgetCategory> = emptySet(),
+    val paymentClaim: PaymentClaim
 ): Comparable<ProgrammeUnitCost> {
 
     override fun compareTo(other: ProgrammeUnitCost) = when {

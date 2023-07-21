@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.programme.controller.costoption
 
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.EquipmentCosts
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.TravelAndAccommodationCosts
+import io.cloudflight.jems.api.programme.dto.costoption.PaymentClaimDTO
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeUnitCostDTO
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeUnitCostListDTO
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
@@ -9,6 +10,7 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.programme.service.costoption.create_unit_cost.CreateUnitCostInteractor
 import io.cloudflight.jems.server.programme.service.costoption.deleteUnitCost.DeleteUnitCostInteractor
 import io.cloudflight.jems.server.programme.service.costoption.get_unit_cost.GetUnitCostInteractor
+import io.cloudflight.jems.server.programme.service.costoption.model.PaymentClaim
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.programme.service.costoption.update_unit_cost.UpdateUnitCostInteractor
 import io.mockk.every
@@ -36,6 +38,7 @@ class ProgrammeUnitCostControllerTest {
             costPerUnit = BigDecimal.ONE,
             isOneCostCategory = false,
             categories = setOf(EquipmentCosts, TravelAndAccommodationCosts),
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
 
         private val expectedUnitCostDTO = ProgrammeUnitCostDTO(
@@ -47,6 +50,7 @@ class ProgrammeUnitCostControllerTest {
             costPerUnit = BigDecimal.ONE,
             oneCostCategory = false,
             categories = setOf(EquipmentCosts, TravelAndAccommodationCosts),
+            paymentClaim = PaymentClaimDTO.IncurredByBeneficiaries
         )
 
         private val expectedUnitCostListDTO = ProgrammeUnitCostListDTO(

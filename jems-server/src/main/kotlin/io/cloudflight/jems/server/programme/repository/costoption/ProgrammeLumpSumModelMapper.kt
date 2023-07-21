@@ -16,7 +16,8 @@ fun ProgrammeLumpSumEntity.toModel() = ProgrammeLumpSum(
     splittingAllowed = splittingAllowed,
     fastTrack = isFastTrack,
     phase = phase,
-    categories = categories.mapTo(HashSet()) { it.category }
+    categories = categories.mapTo(HashSet()) { it.category },
+    paymentClaim = paymentClaim
 )
 
 fun Iterable<ProgrammeLumpSumEntity>.toModel() = map { it.toModel() }
@@ -28,7 +29,8 @@ fun ProgrammeLumpSum.toEntity() = ProgrammeLumpSumEntity(
     splittingAllowed = splittingAllowed,
     isFastTrack = fastTrack,
     phase = phase!!,
-    categories = if (id == 0L) mutableSetOf() else categories.toEntity(id)
+    categories = if (id == 0L) mutableSetOf() else categories.toEntity(id),
+    paymentClaim = paymentClaim
 )
 
 fun Collection<BudgetCategory>.toEntity(programmeLumpSumId: Long) = mapTo(HashSet()) {

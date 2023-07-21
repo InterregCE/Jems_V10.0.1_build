@@ -133,6 +133,17 @@
             </p>
         </div>
     </div>
+    <br>
+    <p>
+        {{'unit.cost.form.field.payment.claims.title' | translate}}
+    </p>
+    <mat-form-field>
+        <mat-select formControlName="paymentClaim">
+            <mat-option *ngFor="let paymentClaim of availablePaymentClaims" [value]="paymentClaim">
+                {{('unit.cost.form.field.payment.claims.option.'+paymentClaim) | translate}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
     <br><br>
 
     <div jemsMultiColumnRow *ngIf="formState === FormState.EDIT">

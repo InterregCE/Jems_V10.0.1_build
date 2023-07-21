@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
+import io.cloudflight.jems.server.programme.service.costoption.model.PaymentClaim
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.info.isSetupLocked.IsProgrammeSetupLockedInteractor
 import io.mockk.MockKAnnotations
@@ -28,7 +29,8 @@ class DeleteLumpSumInteractorTest {
             id = lumpSumId,
             name = setOf(InputTranslation(SystemLanguage.EN, "LumpSum")),
             fastTrack = false,
-            splittingAllowed = false
+            splittingAllowed = false,
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
     }
 

@@ -33,6 +33,7 @@ import io.cloudflight.jems.server.programme.entity.ProgrammeStrategyEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
+import io.cloudflight.jems.server.programme.service.costoption.model.PaymentClaim
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
@@ -360,7 +361,8 @@ private val defaultLumpSums = listOf(
         splittingAllowed = true,
         phase = ProgrammeLumpSumPhase.Closure,
         categories = setOf(BudgetCategory.InfrastructureCosts),
-        fastTrack = false
+        fastTrack = false,
+        paymentClaim = PaymentClaim.IncurredByBeneficiaries
     )
 )
 
@@ -372,7 +374,8 @@ private val defaultUnitCosts = listOf(
         isOneCostCategory = true,
         categories = setOf(BudgetCategory.InfrastructureCosts),
         costPerUnitForeignCurrency = BigDecimal.ZERO,
-        foreignCurrencyCode = null
+        foreignCurrencyCode = null,
+        paymentClaim = PaymentClaim.IncurredByBeneficiaries
     )
 )
 

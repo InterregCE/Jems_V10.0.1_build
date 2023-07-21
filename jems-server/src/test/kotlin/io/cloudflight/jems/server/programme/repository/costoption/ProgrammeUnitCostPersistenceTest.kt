@@ -10,6 +10,7 @@ import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostBudgetCategoryEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
+import io.cloudflight.jems.server.programme.service.costoption.model.PaymentClaim
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.mockk.MockKAnnotations
 import io.mockk.every
@@ -86,6 +87,7 @@ class ProgrammeUnitCostPersistenceTest {
             foreignCurrencyCode = null,
             isOneCostCategory = false,
             categories = setOf(categoryEquipment.category, categoryTravel.category),
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
     }
 
@@ -152,6 +154,7 @@ class ProgrammeUnitCostPersistenceTest {
             costPerUnit = BigDecimal.TEN,
             isOneCostCategory = false,
             categories = setOf(ExternalCosts, EquipmentCosts),
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
         every { repository.existsById(testUnitCost.id) } returns true
         val translations = combineUnitCostTranslatedValues(
@@ -169,6 +172,7 @@ class ProgrammeUnitCostPersistenceTest {
             costPerUnit = BigDecimal.TEN,
             isOneCostCategory = false,
             categories = setOf(ExternalCosts, EquipmentCosts),
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         ))
     }
 
@@ -184,6 +188,7 @@ class ProgrammeUnitCostPersistenceTest {
             costPerUnit = BigDecimal.TEN,
             isOneCostCategory = false,
             categories = setOf(ExternalCosts, EquipmentCosts),
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
 
         assertThrows<ResourceNotFoundException> { programmeUnitCostPersistence.updateUnitCost(toBeUpdated) }

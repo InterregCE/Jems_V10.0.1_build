@@ -14,4 +14,5 @@ data class ProgrammeLumpSum(
     val fastTrack: Boolean,
     val phase: ProgrammeLumpSumPhase? = null,
     val categories: Set<BudgetCategory> = emptySet(),
+    val paymentClaim: PaymentClaim
 )
