@@ -19,16 +19,13 @@ class ProjectReportCoFinancingEntity(
     @JoinColumn(name = "programme_fund_id")
     val programmeFund: ProgrammeFundEntity?,
 
-    @field:NotNull
-    val percentage: BigDecimal,
+    @field:NotNull val total: BigDecimal,
+    @field:NotNull var current: BigDecimal,
+    @field:NotNull val previouslyReported: BigDecimal,
 
-    @field:NotNull
-    val total: BigDecimal,
-    @field:NotNull
-    var current: BigDecimal,
-    @field:NotNull
-    val previouslyReported: BigDecimal,
-    @field:NotNull
-    val previouslyPaid: BigDecimal,
+    @field:NotNull var currentVerified: BigDecimal,
+    @field:NotNull val previouslyVerified: BigDecimal,
+
+    @field:NotNull val previouslyPaid: BigDecimal,
 
 )

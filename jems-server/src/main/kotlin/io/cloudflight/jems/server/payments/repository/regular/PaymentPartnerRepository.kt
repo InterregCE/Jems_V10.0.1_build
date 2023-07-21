@@ -26,4 +26,12 @@ interface PaymentPartnerRepository: JpaRepository<PaymentPartnerEntity, Long> {
     """)
     fun getPaymentCumulative(partnerId: Long): List<Pair<Long, BigDecimal>>
 
+    @Query("""
+        SELECT new kotlin.Pair(pp.payment.fund.id, COALESCE(SUM(pp.amountApprovedPerPartner), 0))
+        FROM #{#entityName} pp
+        WHERE pp.payment.project.id = :projectId
+        GROUP BY pp.payment.fund.id
+    """)
+    fun getPaymentCumulativeForProject(projectId: Long): List<Pair<Long, BigDecimal>>
+
 }

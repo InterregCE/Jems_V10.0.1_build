@@ -6,10 +6,15 @@ import java.math.BigDecimal
 data class CertificateCoFinancingBreakdownLine(
     val fundId: Long? = null,
     override val totalEligibleBudget: BigDecimal,
+
     override val previouslyReported: BigDecimal,
-    val previouslyPaid: BigDecimal,
     override var currentReport: BigDecimal,
+
+    val previouslyVerified: BigDecimal,
+    var currentVerified: BigDecimal,
+
     override var totalReportedSoFar: BigDecimal = BigDecimal.ZERO,
     override var totalReportedSoFarPercentage: BigDecimal = BigDecimal.ZERO,
     override var remainingBudget: BigDecimal = BigDecimal.ZERO,
+    val previouslyPaid: BigDecimal,
 ) : BreakdownLine

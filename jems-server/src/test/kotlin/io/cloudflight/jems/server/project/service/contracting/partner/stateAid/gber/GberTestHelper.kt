@@ -200,7 +200,11 @@ val partnerFunds = listOf(
     ProjectPartnerBudgetPerFund(
         partner = partnerSummary,
         totalEligibleBudget = BigDecimal.TEN,
-        budgetPerFund = getPartnerFunds()
+        budgetPerFund = getPartnerFunds(),
+        publicContribution = BigDecimal.ZERO,
+        autoPublicContribution = BigDecimal.ZERO,
+        privateContribution = BigDecimal.ZERO,
+        totalPartnerContribution = BigDecimal.ZERO,
     ),
 )
 

@@ -22,6 +22,17 @@ interface ProjectReportCoFinancingRepository :
         WHERE report.id.report.id IN :reportIds
         GROUP BY report.programmeFund.id
     """)
-    fun findCumulativeForReportIds(reportIds: Set<Long>): List<ProjectReportCumulativeFund>
+    fun findCumulativeCurrentForReportIds(reportIds: Set<Long>): List<ProjectReportCumulativeFund>
+
+    @Query("""
+        SELECT new io.cloudflight.jems.server.project.repository.report.project.coFinancing.ProjectReportCumulativeFund(
+            report.programmeFund.id,
+            COALESCE(SUM(report.currentVerified), 0)
+        )
+        FROM #{#entityName} report
+        WHERE report.id.report.id IN :reportIds
+        GROUP BY report.programmeFund.id
+    """)
+    fun findCumulativeVerifiedForReportIds(reportIds: Set<Long>): List<ProjectReportCumulativeFund>
 
 }

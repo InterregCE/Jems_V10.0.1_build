@@ -33,6 +33,22 @@ fun ReportProjectCertificateCoFinancingEntity.toModel(
         privateContribution = privateContributionPreviouslyReported,
         sum = sumPreviouslyReported,
     ),
+    currentVerified = ReportCertificateCoFinancingColumn(
+        funds = coFinancing.associateBy({ it.programmeFund?.id }, { it.currentVerified }),
+        partnerContribution = partnerContributionCurrentVerified,
+        publicContribution = publicContributionCurrentVerified,
+        automaticPublicContribution = automaticPublicContributionCurrentVerified,
+        privateContribution = privateContributionCurrentVerified,
+        sum = sumCurrentVerified,
+    ),
+    previouslyVerified = ReportCertificateCoFinancingColumn(
+        funds = coFinancing.associateBy({ it.programmeFund?.id }, { it.previouslyVerified }),
+        partnerContribution = partnerContributionPreviouslyVerified,
+        publicContribution = publicContributionPreviouslyVerified,
+        automaticPublicContribution = automaticPublicContributionPreviouslyVerified,
+        privateContribution = privateContributionPreviouslyVerified,
+        sum = sumPreviouslyVerified,
+    ),
     previouslyPaid = ReportCertificateCoFinancingColumn(
         funds = coFinancing.associateBy({ it.programmeFund?.id }, { it.previouslyPaid }),
         partnerContribution = BigDecimal.ZERO,
