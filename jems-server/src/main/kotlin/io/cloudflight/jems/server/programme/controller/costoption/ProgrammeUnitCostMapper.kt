@@ -1,7 +1,9 @@
 package io.cloudflight.jems.server.programme.controller.costoption
 
+import io.cloudflight.jems.api.programme.dto.costoption.PaymentClaimDTO
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeUnitCostDTO
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeUnitCostListDTO
+import io.cloudflight.jems.server.programme.service.costoption.model.PaymentClaim
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 
 fun ProgrammeUnitCost.toDto() = ProgrammeUnitCostDTO(
@@ -15,7 +17,8 @@ fun ProgrammeUnitCost.toDto() = ProgrammeUnitCostDTO(
     costPerUnitForeignCurrency = costPerUnitForeignCurrency,
     foreignCurrencyCode = foreignCurrencyCode,
     oneCostCategory = isOneCostCategory,
-    categories = categories
+    categories = categories,
+    paymentClaim = PaymentClaimDTO.valueOf(paymentClaim.name)
 )
 
 fun Iterable<ProgrammeUnitCost>.toDto() = sorted().map {
@@ -41,5 +44,6 @@ fun ProgrammeUnitCostDTO.toModel() = ProgrammeUnitCost(
     costPerUnitForeignCurrency = costPerUnitForeignCurrency,
     foreignCurrencyCode = foreignCurrencyCode,
     isOneCostCategory = oneCostCategory,
-    categories = categories
+    categories = categories,
+    paymentClaim = PaymentClaim.valueOf(paymentClaim.name)
 )

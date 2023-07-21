@@ -1,12 +1,12 @@
 package io.cloudflight.jems.server.programme.entity.costoption
 
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase
+import io.cloudflight.jems.server.programme.service.costoption.model.PaymentClaim
 import java.math.BigDecimal
 import javax.persistence.CascadeType
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
-import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
@@ -52,4 +52,8 @@ data class ProgrammeLumpSumEntity(
 
     @OneToMany(mappedBy = "programmeLumpSumId", cascade = [CascadeType.ALL], orphanRemoval = true)
     var categories: MutableSet<ProgrammeLumpSumBudgetCategoryEntity> = mutableSetOf(),
+
+    @field:NotNull
+    @Enumerated(EnumType.STRING)
+    var paymentClaim: PaymentClaim = PaymentClaim.IncurredByBeneficiaries
 )

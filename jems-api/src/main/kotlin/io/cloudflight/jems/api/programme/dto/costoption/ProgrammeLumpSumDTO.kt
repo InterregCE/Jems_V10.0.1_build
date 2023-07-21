@@ -12,5 +12,6 @@ data class ProgrammeLumpSumDTO(
     val splittingAllowed: Boolean,
     val fastTrack: Boolean,
     val phase: ProgrammeLumpSumPhase? = null,
-    val categories: Set<BudgetCategory> = emptySet()
+    val categories: Set<BudgetCategory> = emptySet(),
+    val paymentClaim: PaymentClaimDTO
 )

@@ -101,6 +101,7 @@ import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.ProgrammeDataEntity
 import io.cloudflight.jems.server.programme.repository.ProgrammeDataRepository
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
+import io.cloudflight.jems.server.programme.service.costoption.model.PaymentClaim
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
@@ -662,7 +663,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             splittingAllowed = true,
             phase = ProgrammeLumpSumPhase.Preparation,
             categories = setOf(BudgetCategory.StaffCosts),
-            fastTrack = false
+            fastTrack = false,
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
         private val projectDefinedUnitCost = ProgrammeUnitCost(
             id = 51L,
@@ -676,6 +678,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             foreignCurrencyCode = "CZK",
             isOneCostCategory = true,
             categories = setOf(BudgetCategory.ExternalCosts),
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
         private val projectDefinedUnitCostData = ProgrammeUnitCostListData(
             id = 51L,

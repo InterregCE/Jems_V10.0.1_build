@@ -6,6 +6,7 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeUnitCostPersistence
+import io.cloudflight.jems.server.programme.service.costoption.model.PaymentClaim
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.mockk.MockKAnnotations
 import io.mockk.every
@@ -31,6 +32,7 @@ class GetUnitCostInteractorTest {
             costPerUnit = BigDecimal.ONE,
             isOneCostCategory = false,
             categories = setOf(StaffCosts, OfficeAndAdministrationCosts),
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
 
     }

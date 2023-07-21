@@ -9,6 +9,7 @@ import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostE
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostTranslEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostTranslId
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeUnitCostRepository
+import io.cloudflight.jems.server.programme.service.costoption.model.PaymentClaim
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
@@ -79,6 +80,7 @@ internal class ProjectUnitCostPersistenceProviderTest : UnitTest() {
             foreignCurrencyCode = "HUF",
             isOneCostCategory = false,
             categories = mutableSetOf(BudgetCategory.StaffCosts, BudgetCategory.TravelAndAccommodationCosts),
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
     }
 

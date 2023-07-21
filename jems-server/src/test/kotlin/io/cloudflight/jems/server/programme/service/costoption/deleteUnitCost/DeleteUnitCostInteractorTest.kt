@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeUnitCostPersistence
+import io.cloudflight.jems.server.programme.service.costoption.model.PaymentClaim
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.programme.service.info.isSetupLocked.IsProgrammeSetupLockedInteractor
 import io.mockk.MockKAnnotations
@@ -27,7 +28,8 @@ class DeleteUnitCostInteractorTest {
             id = 1L,
             projectId = 2L,
             name = setOf(InputTranslation(SystemLanguage.EN, "UnitCost")),
-            isOneCostCategory = true
+            isOneCostCategory = true,
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
     }
 

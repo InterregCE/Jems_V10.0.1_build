@@ -1,7 +1,9 @@
 package io.cloudflight.jems.server.programme.controller.costoption
 
+import io.cloudflight.jems.api.programme.dto.costoption.PaymentClaimDTO
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumDTO
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumListDTO
+import io.cloudflight.jems.server.programme.service.costoption.model.PaymentClaim
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 
 fun ProgrammeLumpSum.toDto() = ProgrammeLumpSumDTO(
@@ -12,7 +14,8 @@ fun ProgrammeLumpSum.toDto() = ProgrammeLumpSumDTO(
     splittingAllowed = splittingAllowed,
     fastTrack = fastTrack,
     phase = phase,
-    categories = categories
+    categories = categories,
+    paymentClaim = PaymentClaimDTO.valueOf(paymentClaim.name)
 )
 
 fun Iterable<ProgrammeLumpSum>.toDto() = map {
@@ -32,5 +35,6 @@ fun ProgrammeLumpSumDTO.toModel() = ProgrammeLumpSum(
     splittingAllowed = splittingAllowed,
     fastTrack = fastTrack,
     phase = phase,
-    categories = categories
+    categories = categories,
+    paymentClaim = PaymentClaim.valueOf(paymentClaim.name)
 )

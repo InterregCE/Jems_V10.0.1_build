@@ -1,11 +1,13 @@
 package io.cloudflight.jems.server.project.controller.budget
 
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
+import io.cloudflight.jems.api.programme.dto.costoption.PaymentClaimDTO
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeUnitCostDTO
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeUnitCostListDTO
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.programme.service.costoption.model.PaymentClaim
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.project.service.customCostOptions.unitCost.createProjectUnitCost.CreateProjectUnitCostInteractor
 import io.cloudflight.jems.server.project.service.customCostOptions.unitCost.deleteProjectUnitCost.DeleteProjectUnitCostInteractor
@@ -35,6 +37,7 @@ internal class ProjectCostOptionControllerTest : UnitTest() {
             foreignCurrencyCode = "PLN",
             isOneCostCategory = false,
             categories = setOf(BudgetCategory.OfficeAndAdministrationCosts, BudgetCategory.StaffCosts),
+            paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
 
         private val unitCostDto = ProgrammeUnitCostDTO(
@@ -48,6 +51,7 @@ internal class ProjectCostOptionControllerTest : UnitTest() {
             foreignCurrencyCode = "PLN",
             oneCostCategory = false,
             categories = setOf(BudgetCategory.OfficeAndAdministrationCosts, BudgetCategory.StaffCosts),
+            paymentClaim = PaymentClaimDTO.IncurredByBeneficiaries
         )
 
         private val unitCostListDto = ProgrammeUnitCostListDTO(

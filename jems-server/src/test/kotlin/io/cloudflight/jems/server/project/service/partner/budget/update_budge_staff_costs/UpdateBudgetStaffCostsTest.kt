@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.partner.budget.update_budge_s
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.exception.I18nValidationException
+import io.cloudflight.jems.server.programme.service.costoption.model.PaymentClaim
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.customCostOptions.ProjectUnitCostPersistence
@@ -42,7 +43,12 @@ internal class UpdateBudgetStaffCostsTest : UnitTest() {
     private val budgetStaffCostEntries = budgetStaffCostEntries(listBudgetEntriesIds, validBudgetPeriods)
     private val budgetStaffCostEntriesWithInvalidPeriods =
         budgetStaffCostEntries(listBudgetEntriesIds, invalidBudgetPeriods)
-    private val projectUnitCost = ProgrammeUnitCost(id = unitCostId, projectId = null, isOneCostCategory = true)
+    private val projectUnitCost = ProgrammeUnitCost(
+        id = unitCostId,
+        projectId = null,
+        isOneCostCategory = true,
+        paymentClaim = PaymentClaim.IncurredByBeneficiaries
+    )
 
     @MockK
     lateinit var persistence: ProjectPartnerBudgetCostsUpdatePersistence
