@@ -42,7 +42,7 @@ class UploadFileToProjectPartnerReport(
 
             return reportFilePersistence.addAttachmentToPartnerReport(
                 file = file.getFileMetadata(projectId, partnerId, location, type = this, securityService.getUserIdOrThrow()),
-            )
+            ).toSimple()
         }
     }
 }

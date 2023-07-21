@@ -40,6 +40,7 @@ class ProjectPartnerReportFilePersistenceProvider(
         activity.attachment.deleteIfPresent()
 
         return persistFileAndUpdateLink(file = file) { activity.attachment = it }
+            .toSimple()
     }
 
     @Transactional
@@ -51,6 +52,7 @@ class ProjectPartnerReportFilePersistenceProvider(
         deliverable.attachment.deleteIfPresent()
 
         return persistFileAndUpdateLink(file = file) { deliverable.attachment = it }
+            .toSimple()
     }
 
     @Transactional
@@ -62,6 +64,7 @@ class ProjectPartnerReportFilePersistenceProvider(
         output.attachment.deleteIfPresent()
 
         return persistFileAndUpdateLink(file = file) { output.attachment = it }
+            .toSimple()
     }
 
     @Transactional
@@ -73,6 +76,7 @@ class ProjectPartnerReportFilePersistenceProvider(
         contribution.attachment.deleteIfPresent()
 
         return persistFileAndUpdateLink(file = file) { contribution.attachment = it }
+            .toSimple()
     }
 
     @Transactional
@@ -84,6 +88,7 @@ class ProjectPartnerReportFilePersistenceProvider(
         expenditure.attachment.deleteIfPresent()
 
         return persistFileAndUpdateLink(file = file) { expenditure.attachment = it }
+            .toSimple()
     }
 
     @Transactional
@@ -102,7 +107,7 @@ class ProjectPartnerReportFilePersistenceProvider(
                     file = it,
                 )
             )
-        }
+        }.toSimple()
     }
 
     @Transactional
@@ -121,7 +126,7 @@ class ProjectPartnerReportFilePersistenceProvider(
                     file = it,
                 )
             )
-        }
+        }.toSimple()
     }
 
     @Transactional

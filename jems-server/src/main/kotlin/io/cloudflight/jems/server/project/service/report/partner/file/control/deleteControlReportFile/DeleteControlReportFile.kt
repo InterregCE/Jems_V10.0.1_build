@@ -29,14 +29,14 @@ class DeleteControlReportFile(
     override fun delete(partnerId: Long, reportId: Long, fileId: Long) {
         authorization.validateChangeToFileAllowed(partnerId = partnerId, reportId = reportId, fileId, true)
         val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
-        val file = filePersistence.getFile(fileId, projectId)
+        val file = filePersistence.getFile(projectId = projectId, fileId) ?: throw FileNotFound()
 
         filePersistence.deleteFile(partnerId = partnerId, fileId = fileId).also {
             auditPublisher.publishEvent(
                 ProjectFileChangeEvent(
                     action = FileChangeAction.Delete,
                     projectSummary = projectPersistence.getProjectSummary(projectId),
-                    file = file!!,
+                    file = file,
                     overrideAuthorEmail = securityService.currentUser?.user?.email
                 )
             )

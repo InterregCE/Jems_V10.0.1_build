@@ -33,8 +33,11 @@ class GlobalProjectNotificationService(
     override fun sendNotifications(type: NotificationType, variables: Map<NotificationVariable, Any>) {
         validateVariables(variables, type)
         when {
-            type.isProjectNotification() || type.isProjectReportNotification() -> sendProjectNotification(type, variables)
-            type.isPartnerReportNotification() -> sendPartnerReportNotification(type, variables)
+            type.isProjectNotification()
+                    || type.isProjectReportNotification()
+                    || type.isProjectFileNotification() -> sendProjectNotification(type, variables)
+            type.isPartnerReportNotification()
+                    || type.isPartnerReportFileNotification() -> sendPartnerReportNotification(type, variables)
             else -> Unit
         }
     }
@@ -84,11 +87,11 @@ class GlobalProjectNotificationService(
 
     private fun validateVariables(variables: Map<NotificationVariable, Any>, type: NotificationType) {
         val minimumNeeded = when {
-            type.isProjectStatusNotification() -> NotificationVariable.projectNotificationVariables
-            type.isProjectFileActionNotification() -> NotificationVariable.projectFileActionNotificationVariables
+            type.isProjectNotification() -> NotificationVariable.projectNotificationVariables
             type.isProjectReportNotification() -> NotificationVariable.projectReportNotificationVariables
-            type.isPartnerReportStatusNotification() -> NotificationVariable.partnerReportNotificationVariables
-            type.isPartnerReportFileActionNotification() -> NotificationVariable.partnerReportFileActionNotificationVariables
+            type.isPartnerReportNotification() -> NotificationVariable.partnerReportNotificationVariables
+            type.isProjectFileNotification() -> NotificationVariable.projectFileNotificationVariables
+            type.isPartnerReportFileNotification() -> NotificationVariable.partnerReportFileNotificationVariables
             else -> emptySet()
         }
 

@@ -41,7 +41,7 @@ interface JemsFilePersistence {
 
     fun getFile(partnerId: Long, pathPrefix: String, fileId: Long): JemsFile?
 
-    fun getFile(fileId: Long, projectId: Long): JemsFile?
+    fun getFile(projectId: Long, fileId: Long): JemsFile?
 
     fun downloadFile(partnerId: Long, fileId: Long): Pair<String, ByteArray>?
 

@@ -2,7 +2,6 @@ package io.cloudflight.jems.server.notification.handler
 
 import io.cloudflight.jems.server.common.file.service.model.JemsFile
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
-import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationVariable
 import io.cloudflight.jems.server.notification.inApp.service.project.GlobalProjectNotificationServiceInteractor
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
@@ -32,15 +31,12 @@ data class ProjectFileNotificationEventListener(
     fun sendNotifications(event: ProjectFileChangeEvent) {
         val type = event.type()
         if (type != null)
-            notificationProjectService.sendNotifications(
-                type = type,
-                variables = event.projectFileVariables(type),
-            )
+            notificationProjectService.sendNotifications(type = type, variables = event.projectFileVariables())
     }
 
-    private fun ProjectFileChangeEvent.type() = file.type.toNotificationType(action)
+    private fun ProjectFileChangeEvent.type() = action.toNotificationType(file.type)
 
-    private fun ProjectFileChangeEvent.projectFileVariables(notificationType: NotificationType): Map<NotificationVariable, Any> {
+    private fun ProjectFileChangeEvent.projectFileVariables(): Map<NotificationVariable, Any> {
         val variables = mutableMapOf(
             NotificationVariable.ProjectId to projectSummary.id,
             NotificationVariable.ProjectIdentifier to projectSummary.customIdentifier,
@@ -49,9 +45,8 @@ data class ProjectFileNotificationEventListener(
             NotificationVariable.FileName to file.name,
         )
 
-        val fileType = getPartnerReportFileType(notificationType)
-        val reportId = if (fileType != null && file.type.isSubFolderOf(fileType))
-            fileType.getItsIdFrom(path = file.indexedPath) else null
+        val partnerReportParentNode = file.type.getPartnerReportParentNodeIfPresent()
+        val reportId = partnerReportParentNode?.getItsIdFrom(path = file.indexedPath)
 
         if (reportId != null) {
             with (reportPersistence.getPartnerReportByIdUnsecured(reportId)) {
@@ -69,11 +64,11 @@ data class ProjectFileNotificationEventListener(
         return variables
     }
 
-    private fun getPartnerReportFileType(type: NotificationType): JemsFileType?  {
-        return if (type.isPartnerReportFileActionNotification())
-            JemsFileType.PartnerControlReport
-        else
-            null
-    }
+    private fun JemsFileType.getPartnerReportParentNodeIfPresent(): JemsFileType? =
+        when {
+            isSubFolderOf(JemsFileType.PartnerReport) -> JemsFileType.PartnerReport
+            isSubFolderOf(JemsFileType.PartnerControlReport) -> JemsFileType.PartnerControlReport
+            else -> null
+        }
 
 }

@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.report.partner.file.uploadFil
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
+import io.cloudflight.jems.server.common.file.service.model.JemsFile
 import io.cloudflight.jems.server.common.file.service.model.JemsFileCreate
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
@@ -55,7 +56,9 @@ class UploadFileToProjectPartnerReportTest : UnitTest() {
         every { partnerPersistence.getProjectIdForPartnerId(45L) } returns PROJECT_ID
         every { filePersistence.existsFile(expectedPath, "test.xlsx") } returns false
         val fileToAdd = slot<JemsFileCreate>()
-        val mockResult = mockk<JemsFileMetadata>()
+        val mockResult = mockk<JemsFile>()
+        val mockResultSimple = mockk<JemsFileMetadata>()
+        every { mockResult.toSimple() } returns mockResultSimple
         every { securityService.getUserIdOrThrow() } returns USER_ID
         every { reportFilePersistence.addAttachmentToPartnerReport(capture(fileToAdd)) } returns mockResult
 
@@ -64,7 +67,7 @@ class UploadFileToProjectPartnerReportTest : UnitTest() {
             name = "test.xlsx",
             size = 8L,
         )
-        assertThat(interactor.uploadToReport(45L, 900L, file)).isEqualTo(mockResult)
+        assertThat(interactor.uploadToReport(45L, 900L, file)).isEqualTo(mockResultSimple)
 
         assertThat(fileToAdd.captured).isEqualTo(
             JemsFileCreate(

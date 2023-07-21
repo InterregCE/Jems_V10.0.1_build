@@ -27,6 +27,7 @@ class ProjectReportFilePersistenceProvider(
         activity.attachment.deleteIfPresent()
 
         return persistFileAndUpdateLink(file = file) { activity.attachment = it }
+            .toSimple()
     }
 
     @Transactional
@@ -35,6 +36,7 @@ class ProjectReportFilePersistenceProvider(
         deliverable.attachment.deleteIfPresent()
 
         return persistFileAndUpdateLink(file = file) { deliverable.attachment = it }
+            .toSimple()
     }
 
     @Transactional
@@ -43,6 +45,7 @@ class ProjectReportFilePersistenceProvider(
         output.attachment.deleteIfPresent()
 
         return persistFileAndUpdateLink(file = file) { output.attachment = it }
+            .toSimple()
     }
 
     @Transactional
@@ -54,6 +57,7 @@ class ProjectReportFilePersistenceProvider(
         projectResult.attachment.deleteIfPresent()
 
         return persistFileAndUpdateLink(file = file) { projectResult.attachment = it }
+            .toSimple()
     }
 
     private fun persistFileAndUpdateLink(file: JemsFileCreate, additionalStep: (JemsFileMetadataEntity) -> Unit) =

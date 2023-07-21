@@ -49,14 +49,15 @@ enum class NotificationVariable(val variable: String) {
             ProjectReportNumber,
         )
 
-        val projectFileNotificationVariables = setOf(
+        val projectFileNotificationVariables = projectNotificationVariables union setOf(
             FileUsername,
             FileName,
         )
 
-        val projectFileActionNotificationVariables = projectNotificationVariables union projectFileNotificationVariables
-
-        val partnerReportFileActionNotificationVariables = partnerReportNotificationVariables union projectFileNotificationVariables
+        val partnerReportFileNotificationVariables = partnerReportNotificationVariables union setOf(
+            FileUsername,
+            FileName,
+        )
 
     }
 

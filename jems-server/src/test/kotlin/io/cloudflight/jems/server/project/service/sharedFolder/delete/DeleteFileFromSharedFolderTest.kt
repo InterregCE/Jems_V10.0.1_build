@@ -76,7 +76,7 @@ class DeleteFileFromSharedFolderTest : UnitTest() {
     fun delete() {
         every { filePersistence.existsFile(JemsFileType.SharedFolder, FILE_ID) } returns true
         every { filePersistence.deleteFile(JemsFileType.SharedFolder, FILE_ID) } returns Unit
-        every { filePersistence.getFile(FILE_ID, PROJECT_ID) } returns dummyFile
+        every { filePersistence.getFile(PROJECT_ID, FILE_ID) } returns dummyFile
         every { projectPersistence.getProjectSummary(PROJECT_ID) } answers { projectSummary }
         every { securityService.currentUser!!.user.email } returns "test@email.com"
         every { eventPublisher.publishEvent(ofType(ProjectFileChangeEvent::class)) } returns Unit
@@ -90,7 +90,7 @@ class DeleteFileFromSharedFolderTest : UnitTest() {
 
     @Test
     fun deleteFileNotFound() {
-        every { filePersistence.getFile(FILE_ID, PROJECT_ID) } throws FileNotFound()
+        every { filePersistence.getFile(PROJECT_ID, FILE_ID) } throws FileNotFound()
         assertThrows<FileNotFound> { interactor.delete(PROJECT_ID, FILE_ID) }
     }
 }

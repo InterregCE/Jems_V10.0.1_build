@@ -13,16 +13,18 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRo
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
-import io.mockk.clearAllMocks
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.slot
 import io.mockk.verify
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.EnumSource
 import java.time.ZonedDateTime
 
@@ -68,20 +70,107 @@ class ProjectFileNotificationEventListenerTest: UnitTest() {
             partnerRole = ProjectPartnerRole.LEAD_PARTNER,
             partnerId = PARTNER_ID
         )
+
+        private fun report(reportId: Long) = ProjectPartnerReportSubmissionSummary(
+            id = reportId,
+            reportNumber = 4,
+            status = ReportStatus.Draft,
+            version = "1.0",
+            firstSubmission = ZonedDateTime.now(),
+            controlEnd = ZonedDateTime.now(),
+            createdAt = ZonedDateTime.now(),
+            projectIdentifier = "PROJ_01",
+            projectAcronym = "PROJ acr",
+            partnerAbbreviation = "LP-6",
+            partnerNumber = 6,
+            partnerRole = ProjectPartnerRole.LEAD_PARTNER,
+            partnerId = 1357L,
+        )
+
+        private val project: ProjectSummary = mockk<ProjectSummary>().also {
+            every { it.id } returns 45L
+            every { it.customIdentifier } returns "custom identifier 45"
+            every { it.acronym } returns "project acronym 45"
+        }
+
+        private fun file(type: JemsFileType, indexedPath: String): JemsFile = mockk<JemsFile>().also {
+            every { it.name } returns "attachment.txt"
+            every { it.type } returns type
+            every { it.author.email } returns "author@email"
+            every { it.indexedPath } returns indexedPath
+        }
     }
 
     @MockK
-    lateinit var notificationProjectService: GlobalProjectNotificationServiceInteractor
+    private lateinit var notificationProjectService: GlobalProjectNotificationServiceInteractor
 
     @MockK
-    lateinit var reportPersistence: ProjectPartnerReportPersistence
+    private lateinit var reportPersistence: ProjectPartnerReportPersistence
 
     @InjectMockKs
-    lateinit var listener: ProjectFileNotificationEventListener
+    private lateinit var listener: ProjectFileNotificationEventListener
 
     @BeforeEach
     internal fun reset() {
-        clearAllMocks()
+        clearMocks(notificationProjectService, reportPersistence)
+    }
+
+    @ParameterizedTest(name = "sendNotifications - {0}, {1}")
+    @CsvSource(value = [
+        "ControlDocument,Upload,1544,ControlCommunicationFileUpload,Project/017442/Report/Partner/009679/PartnerControlReport/001544/ControlDocument/",
+        "ControlCertificate,Delete,1620,ControlCommunicationFileDelete,Project/017596/Report/Partner/009784/PartnerControlReport/001620/ControlCertificate/",
+        "ControlReport,Upload,1556,ControlCommunicationFileUpload,Project/017442/Report/Partner/009679/PartnerControlReport/001556/ControlReport/",
+        "SharedFolder,Upload,,SharedFolderFileUpload,Project/017376/SharedFolder/",
+        "SharedFolder,Delete,,SharedFolderFileDelete,Project/017376/SharedFolder/",
+    ])
+    fun sendNotifications(type: JemsFileType, action: FileChangeAction, reportId: Long?, expectedType: NotificationType, path: String) {
+        if (reportId != null)
+            every { reportPersistence.getPartnerReportByIdUnsecured(reportId) } returns report(reportId)
+
+        val slotType = slot<NotificationType>()
+        val slotVariable = slot<Map<NotificationVariable, Any>>()
+        every { notificationProjectService.sendNotifications(capture(slotType), capture(slotVariable)) } answers { }
+
+        listener.sendNotifications(
+            ProjectFileChangeEvent(
+                action = action,
+                projectSummary = project,
+                file = file(type, path),
+                overrideAuthorEmail = if (action == FileChangeAction.Delete) "override-email" else null,
+            )
+        )
+
+        assertThat(slotType.captured).isEqualTo(expectedType)
+
+        val expectedVariables = mutableMapOf<NotificationVariable, Any>(
+            NotificationVariable.ProjectId to 45L,
+            NotificationVariable.ProjectIdentifier to "custom identifier 45",
+            NotificationVariable.ProjectAcronym to "project acronym 45",
+            NotificationVariable.FileUsername to if (action == FileChangeAction.Delete) "override-email" else "author@email",
+            NotificationVariable.FileName to "attachment.txt",
+        )
+        if (reportId != null)
+            expectedVariables.putAll(mapOf(
+                NotificationVariable.PartnerId to 1357L,
+                NotificationVariable.PartnerRole to ProjectPartnerRole.LEAD_PARTNER,
+                NotificationVariable.PartnerNumber to 6,
+                NotificationVariable.PartnerAbbreviation to "LP-6",
+                NotificationVariable.PartnerReportId to reportId,
+                NotificationVariable.PartnerReportNumber to 4,
+            ))
+
+        assertThat(slotVariable.captured).containsExactlyEntriesOf(expectedVariables)
+    }
+
+    @ParameterizedTest(name = "do not send notification for wrong file type - {0}")
+    @EnumSource(value = JemsFileType::class, names = ["ControlDocument", "ControlCertificate", "ControlReport", "SharedFolder"], mode = EnumSource.Mode.EXCLUDE)
+    fun `do not send notification for wrong file type`(type: JemsFileType) {
+        val file = mockk<JemsFile>()
+        every { file.type } returns type
+        listener.sendNotifications(ProjectFileChangeEvent(FileChangeAction.Upload, mockk(), file))
+        listener.sendNotifications(ProjectFileChangeEvent(FileChangeAction.Delete, mockk(), file))
+
+        verify(exactly = 0) { notificationProjectService.sendNotifications(any(), any()) }
     }
 
     @ParameterizedTest(name = "Share folder file notification - {0}")
@@ -100,7 +189,7 @@ class ProjectFileNotificationEventListenerTest: UnitTest() {
         )
 
         verify(exactly = 1) { notificationProjectService.sendNotifications(type, any()) }
-        assertThat(slotVariable.captured).contains(
+        assertThat(slotVariable.captured).containsExactly(
             Assertions.entry(NotificationVariable.ProjectId, PROJECT_ID),
             Assertions.entry(NotificationVariable.ProjectIdentifier, "01"),
             Assertions.entry(NotificationVariable.ProjectAcronym, "project acronym"),
@@ -127,7 +216,7 @@ class ProjectFileNotificationEventListenerTest: UnitTest() {
         )
 
         verify(exactly = 1) { notificationProjectService.sendNotifications(type, any()) }
-        assertThat(slotVariable.captured).contains(
+        assertThat(slotVariable.captured).containsExactly(
             Assertions.entry(NotificationVariable.ProjectId, PROJECT_ID),
             Assertions.entry(NotificationVariable.ProjectIdentifier, "01"),
             Assertions.entry(NotificationVariable.ProjectAcronym, "project acronym"),

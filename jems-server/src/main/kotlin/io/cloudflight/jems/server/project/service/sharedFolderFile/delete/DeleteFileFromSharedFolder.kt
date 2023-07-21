@@ -24,7 +24,7 @@ class DeleteFileFromSharedFolder(
     @Transactional
     @ExceptionWrapper(DeleteFileFromSharedFolderException::class)
     override fun delete(projectId: Long, fileId: Long) {
-        val file = filePersistence.getFile(fileId, projectId) ?: throw FileNotFound()
+        val file = filePersistence.getFile(projectId = projectId, fileId) ?: throw FileNotFound()
 
         filePersistence.deleteFile(type = JemsFileType.SharedFolder, fileId = fileId).also {
             auditPublisher.publishEvent(

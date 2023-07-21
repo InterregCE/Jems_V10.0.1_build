@@ -3,8 +3,8 @@ package io.cloudflight.jems.server.common.file.service
 import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.common.file.minio.MinioStorage
 import io.cloudflight.jems.server.common.file.repository.JemsFileMetadataRepository
+import io.cloudflight.jems.server.common.file.service.model.JemsFile
 import io.cloudflight.jems.server.common.file.service.model.JemsFileCreate
-import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.stereotype.Repository
@@ -32,7 +32,7 @@ class JemsSystemFileService(
     override fun persistFileAndPerformAction(
         file: JemsFileCreate,
         additionalStep: (JemsFileMetadataEntity) -> Unit,
-    ): JemsFileMetadata {
+    ): JemsFile {
         validateType(file.type, allowedFileTypes)
         return super.persistFileAndPerformAction(file, additionalStep)
     }

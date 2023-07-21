@@ -21,8 +21,6 @@ enum class NotificationType {
     ProjectModificationSubmitted,
     ProjectModificationApproved,
     ProjectModificationRejected,
-    SharedFolderFileUpload,
-    SharedFolderFileDelete,
 
     // Partner Report
     PartnerReportSubmitted,
@@ -30,18 +28,22 @@ enum class NotificationType {
     PartnerReportControlOngoing,
     PartnerReportCertified,
     PartnerReportReOpenCertified,
-    ControlCommunicationFileUpload,
-    ControlCommunicationFileDelete,
 
     // Project Report
     ProjectReportSubmitted,
     ProjectReportVerificationOngoing,
-    ProjectReportVerificationFinalized;
+    ProjectReportVerificationFinalized,
+
+    // Project File
+    SharedFolderFileUpload,
+    SharedFolderFileDelete,
+    ControlCommunicationFileUpload,
+    ControlCommunicationFileDelete;
 
 
     companion object {
 
-        val projectStatusNotifications = sortedSetOf(
+        val projectNotifications = setOf(
             ProjectSubmittedStep1,
             ProjectSubmitted,
             ProjectApprovedStep1,
@@ -63,14 +65,7 @@ enum class NotificationType {
             ProjectModificationRejected,
         )
 
-        val projectFileActionNotifications = sortedSetOf(
-            SharedFolderFileUpload,
-            SharedFolderFileDelete
-        )
-
-        val projectNotifications = projectStatusNotifications union projectFileActionNotifications
-
-        val partnerReportStatusNotifications  = sortedSetOf(
+        val partnerReportNotifications  = setOf(
             PartnerReportSubmitted,
             PartnerReportReOpen,
             PartnerReportControlOngoing,
@@ -78,39 +73,26 @@ enum class NotificationType {
             PartnerReportReOpenCertified,
         )
 
-        val partnerReportFileActionNotifications = sortedSetOf(
-            ControlCommunicationFileUpload,
-            ControlCommunicationFileDelete
-        )
-
-        val partnerReportNotifications = partnerReportStatusNotifications union partnerReportFileActionNotifications
-
-        val projectReportNotifications = sortedSetOf(
+        val projectReportNotifications = setOf(
             ProjectReportSubmitted,
             ProjectReportVerificationOngoing,
             ProjectReportVerificationFinalized
         )
 
+        val projectFileSharedFolderNotifications = setOf(SharedFolderFileUpload, SharedFolderFileDelete)
+        val projectFileControlCommunicationNotifications = setOf(ControlCommunicationFileUpload, ControlCommunicationFileDelete)
+
     }
 
     fun isProjectNotification() = this in projectNotifications
 
-    fun isNotProjectNotification() = !isProjectNotification()
-
     fun isPartnerReportNotification() = this in partnerReportNotifications
-
-    fun isNotPartnerReportNotification() = !isPartnerReportNotification()
 
     fun isProjectReportNotification() = this in projectReportNotifications
 
-    fun isNotProjectReportNotification() = !isProjectReportNotification()
 
-    fun isProjectStatusNotification() = this in projectStatusNotifications
+    fun isProjectFileNotification() = this in projectFileSharedFolderNotifications
 
-    fun isProjectFileActionNotification() = this in projectFileActionNotifications
-
-    fun isPartnerReportStatusNotification() = this in partnerReportStatusNotifications
-
-    fun isPartnerReportFileActionNotification() = this in partnerReportFileActionNotifications
+    fun isPartnerReportFileNotification() = this in projectFileControlCommunicationNotifications
 
 }

@@ -11,4 +11,10 @@ data class JemsFile(
     val size: Long,
     var description: String,
     val indexedPath: String,
-)
+) {
+    fun toSimple() = JemsFileMetadata(
+        id = id,
+        name = name,
+        uploaded = uploaded,
+    )
+}

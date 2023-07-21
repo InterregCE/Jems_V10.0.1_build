@@ -85,7 +85,7 @@ class DeleteControlReportFileTest : UnitTest() {
         every { authorization.validateChangeToFileAllowed(PARTNER_ID, reportId, fileId, any()) } answers { }
         every { filePersistence.deleteFile(PARTNER_ID, fileId) } answers { }
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID) } answers { PROJECT_ID }
-        every { filePersistence.getFile(fileId, PROJECT_ID) } answers { dummyFile }
+        every { filePersistence.getFile(PROJECT_ID, fileId) } answers { dummyFile }
         every { projectPersistence.getProjectSummary(PROJECT_ID) } answers { projectSummary }
         every { securityService.currentUser!!.user.email } returns "test@email.com"
         every { auditPublisher.publishEvent(ofType(ProjectFileChangeEvent::class)) } returns Unit

@@ -4,9 +4,11 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.model.CurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
+import io.cloudflight.jems.server.common.file.service.model.JemsFile
 import io.cloudflight.jems.server.common.file.service.model.JemsFileCreate
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
+import io.cloudflight.jems.server.notification.handler.FileChangeAction
 import io.cloudflight.jems.server.notification.handler.ProjectFileChangeEvent
 import io.cloudflight.jems.server.payments.controller.PaymentAdvanceAttachmentControllerTest
 import io.cloudflight.jems.server.project.service.ProjectPersistence
@@ -72,6 +74,17 @@ class UploadFileToControlReportTest : UnitTest() {
             status = ApplicationStatus.CONTRACTED
         )
 
+        private val jemsFile = JemsFile(
+            id = 904L,
+            name = "test.xlsx",
+            type = JemsFileType.ControlReport,
+            uploaded = ZonedDateTime.now(),
+            author = mockk(),
+            size = 4L,
+            description = "desc",
+            indexedPath = "indexed/path",
+        )
+
         private val fileMetadata = JemsFileMetadata(
             id = 904L,
             name = "test.xlsx",
@@ -130,7 +143,7 @@ class UploadFileToControlReportTest : UnitTest() {
         every { eventPublisher.publishEvent(ofType(ProjectFileChangeEvent::class)) } returns Unit
 
         val fileToAdd = slot<JemsFileCreate>()
-        every { reportFilePersistence.addAttachmentToPartnerReport(capture(fileToAdd)) } returns fileMetadata
+        every { reportFilePersistence.addAttachmentToPartnerReport(capture(fileToAdd)) } returns jemsFile
 
         val file = ProjectFile(
             stream = content,
@@ -138,7 +151,8 @@ class UploadFileToControlReportTest : UnitTest() {
             size = 20L,
         )
         val changeEventSlot = slot<ProjectFileChangeEvent>()
-        assertThat(interactor.uploadToControlReport(PARTNER_ID, reportId, file)).isEqualTo(fileMetadata)
+        val uploadedFile = interactor.uploadToControlReport(PARTNER_ID, reportId, file)
+        assertThat(uploadedFile).isEqualTo(fileMetadata.copy(uploaded = uploadedFile.uploaded))
         verify(exactly = 1) { eventPublisher.publishEvent(capture(changeEventSlot)) }
 
         assertThat(fileToAdd.captured).isEqualTo(
@@ -152,6 +166,10 @@ class UploadFileToControlReportTest : UnitTest() {
                 content = content,
                 userId = USER_ID,
             )
+        )
+
+        assertThat(changeEventSlot.captured).isEqualTo(
+            ProjectFileChangeEvent(FileChangeAction.Upload, projectSummary, jemsFile)
         )
     }
 
@@ -208,7 +226,7 @@ class UploadFileToControlReportTest : UnitTest() {
             partnerReportSubmissionSummary(status)
 
         val fileToAdd = slot<JemsFileCreate>()
-        val mockResult = mockk<JemsFileMetadata>()
+        val mockResult = mockk<JemsFile>()
         every { reportFilePersistence.addAttachmentToPartnerReport(capture(fileToAdd)) } returns mockResult
 
         val file = ProjectFile(

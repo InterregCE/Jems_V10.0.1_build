@@ -35,6 +35,7 @@ class ProjectPartnerReportControlFilePersistenceProvider(
         certificate.signedFile.deleteIfPresent()
 
         return persistFileAndCreateLink(file = file) { certificate.signedFile = it }
+            .toSimple()
     }
 
     @Transactional

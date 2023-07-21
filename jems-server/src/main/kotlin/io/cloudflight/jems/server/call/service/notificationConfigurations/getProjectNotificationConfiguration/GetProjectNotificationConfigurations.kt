@@ -17,7 +17,10 @@ class GetProjectNotificationConfigurations(
     override fun get(callId: Long): List<ProjectNotificationConfiguration> {
         val savedNotifications = persistence.getProjectNotificationConfigurations(callId).associateBy { it.id }
 
-        return NotificationType.projectNotifications.map {
+        val projectNotifications = NotificationType.projectNotifications.sorted().toMutableList()
+        projectNotifications.addAll(NotificationType.projectFileSharedFolderNotifications.sorted())
+
+        return projectNotifications.map {
             savedNotifications.getOrDefault(it, getDefaultProjectNotificationConfiguration(it))
         }
     }

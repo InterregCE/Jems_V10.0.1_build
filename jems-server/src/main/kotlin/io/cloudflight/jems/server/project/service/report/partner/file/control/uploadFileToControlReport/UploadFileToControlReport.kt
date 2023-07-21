@@ -5,7 +5,6 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
-import io.cloudflight.jems.server.common.file.service.toModel
 import io.cloudflight.jems.server.notification.handler.FileChangeAction
 import io.cloudflight.jems.server.notification.handler.ProjectFileChangeEvent
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerControlReportFile
@@ -57,11 +56,10 @@ class UploadFileToControlReport(
                     ProjectFileChangeEvent(
                         action = FileChangeAction.Upload,
                         projectSummary = projectPersistence.getProjectSummary(projectId),
-                        file = it.toModel(fileMetadata),
-                        overrideAuthorEmail = securityService.currentUser?.user?.email
+                        file = it,
                     )
                 )
-            }
+            }.toSimple()
         }
     }
 }
