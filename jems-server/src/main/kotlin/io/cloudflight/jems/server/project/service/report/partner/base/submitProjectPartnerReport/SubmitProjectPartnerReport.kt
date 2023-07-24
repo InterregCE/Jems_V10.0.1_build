@@ -24,7 +24,7 @@ import io.cloudflight.jems.server.project.service.report.partner.contribution.ex
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.ProjectPartnerReportExpenditureVerificationPersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.fillCurrencyRates
-import io.cloudflight.jems.server.project.service.report.partner.expenditure.withoutParked
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.toChanges
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportLumpSumPersistence
@@ -150,7 +150,7 @@ class SubmitProjectPartnerReport(
         return reportExpenditureVerificationPersistence.updateExpenditureCurrencyRatesAndClearVerification(
             partnerId = partnerId,
             reportId = reportId,
-            newRates = expenditures.fillCurrencyRates(rates).withoutParked(),
+            newRates = expenditures.fillCurrencyRates(rates).toChanges(),
         )
     }
 
