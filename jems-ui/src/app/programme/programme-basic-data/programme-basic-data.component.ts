@@ -17,6 +17,7 @@ import {ProgrammeEditableStateStore} from '../programme-page/services/programme-
 import {ProgrammePageSidenavService} from '../programme-page/services/programme-page-sidenav.service';
 import {FormState} from '@common/components/forms/form-state';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {Router} from "@angular/router";
 
 @UntilDestroy()
 @Component({
@@ -126,7 +127,8 @@ export class ProgrammeBasicDataComponent extends ViewEditFormComponent implement
               protected translationService: TranslateService,
               public programmeEditableStateStore: ProgrammeEditableStateStore,
               private programmeDataService: ProgrammeDataService,
-              private programmePageSidenavService: ProgrammePageSidenavService
+              private programmePageSidenavService: ProgrammePageSidenavService,
+              private router: Router
   ) {
     super(changeDetectorRef, translationService);
 
@@ -151,6 +153,17 @@ export class ProgrammeBasicDataComponent extends ViewEditFormComponent implement
 
   ngOnInit(): void {
     super.ngOnInit();
+    combineLatest([
+      this.programmeEditableStateStore.hasViewPermission$,
+      this.programmeEditableStateStore.hasEditPermission$,
+    ]).pipe(
+      tap(([hasView, hasEdit]) => {
+        if(!hasView && !hasEdit){
+          this.router.navigate(['app/programme/export']);
+        }
+      }),
+      untilDestroyed(this)
+    ).subscribe()
     this.projectIdExample$ = combineLatest([
       this.programmeForm.controls.projectIdProgrammeAbbreviation.valueChanges.pipe(startWith('')),
       this.programmeForm.controls.projectIdUseCallId.valueChanges.pipe(startWith(true)),
