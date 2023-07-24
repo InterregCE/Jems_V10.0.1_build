@@ -146,7 +146,7 @@ export class ProjectApplicationListComponent implements OnInit {
         {
           displayedColumn: 'project.table.column.name.related',
           customCellTemplate: this.callNameCell,
-          sortProperty: 'callName'
+          sortProperty: 'callId'
         }
       ]
     });
