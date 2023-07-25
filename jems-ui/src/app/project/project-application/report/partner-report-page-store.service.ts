@@ -71,6 +71,7 @@ export class PartnerReportPageStore {
   deletePartnerReport(reportId: number) {
     return this.partnerId$
       .pipe(
+        take(1),
         switchMap((partnerId) => this.projectPartnerReportService.deleteProjectPartnerReport(partnerId as number, reportId)),
         tap(() => {
           Log.info('Partner report deleted');
