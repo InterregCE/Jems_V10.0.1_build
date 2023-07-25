@@ -58,7 +58,7 @@ interface ReportProjectPartnerExpenditureCoFinancingRepository :
     @Query("""
         SELECT new kotlin.Pair(
             coFin.reportEntity.projectReport.id,
-            coFin.sumTotalEligibleAfterControl
+            COALESCE(SUM(coFin.sumTotalEligibleAfterControl), 0)
         )
         FROM #{#entityName} coFin
         WHERE coFin.reportEntity.projectReport.id IN :projectReportIds
