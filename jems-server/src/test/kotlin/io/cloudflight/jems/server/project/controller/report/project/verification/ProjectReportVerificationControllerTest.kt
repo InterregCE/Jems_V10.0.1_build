@@ -12,9 +12,9 @@ import io.cloudflight.jems.server.project.service.report.project.verification.up
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import java.time.LocalDate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import java.time.LocalDate
 
 class ProjectReportVerificationControllerTest: UnitTest() {
 
@@ -25,7 +25,6 @@ class ProjectReportVerificationControllerTest: UnitTest() {
         private val TODAY = LocalDate.now()
         private val YESTERDAY = LocalDate.now().minusDays(1)
 
-
         private val verificationConclusion =  ProjectReportVerificationConclusion(
             startDate = YESTERDAY,
             conclusionJS = "js",
@@ -33,7 +32,6 @@ class ProjectReportVerificationControllerTest: UnitTest() {
             verificationFollowUp = "none"
 
         )
-
 
         private val clarifications = listOf(
             ProjectReportVerificationClarification(
@@ -54,7 +52,6 @@ class ProjectReportVerificationControllerTest: UnitTest() {
 
     }
 
-
     @MockK
     lateinit var getProjectReportVerificationConclusion: GetProjectReportVerificationConclusionInteractor
 
@@ -69,8 +66,6 @@ class ProjectReportVerificationControllerTest: UnitTest() {
 
     @InjectMockKs
     lateinit var controller: ProjectReportVerificationController
-
-
 
     @Test
     fun getReportVerificationConclusion() {

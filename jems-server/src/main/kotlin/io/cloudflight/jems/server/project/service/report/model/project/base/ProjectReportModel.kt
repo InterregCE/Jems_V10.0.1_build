@@ -28,7 +28,7 @@ data class ProjectReportModel(
 
     val createdAt: ZonedDateTime,
     val firstSubmission: ZonedDateTime?,
-    val verificationDate: ZonedDateTime?,
+    val verificationDate: LocalDate?,
 
     val verificationEndDate: ZonedDateTime?,
     val amountRequested: BigDecimal?,

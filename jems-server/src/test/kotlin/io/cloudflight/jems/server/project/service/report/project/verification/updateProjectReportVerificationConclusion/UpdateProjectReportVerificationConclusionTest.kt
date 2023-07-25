@@ -50,7 +50,7 @@ class UpdateProjectReportVerificationConclusionTest : UnitTest() {
     lateinit var interactor: UpdateProjectReportVerificationConclusion
 
     @ParameterizedTest(name = "updateVerificationConclusion")
-    @EnumSource(value = ProjectReportStatus::class, names = ["InVerification", "Finalized"], mode = EnumSource.Mode.INCLUDE)
+    @EnumSource(value = ProjectReportStatus::class, names = ["InVerification"], mode = EnumSource.Mode.INCLUDE)
     fun updateVerificationConclusion(status: ProjectReportStatus) {
         every { reportPersistence.getReportById(PROJECT_ID, REPORT_ID) } returns UpdateProjectReportVerificationClarificationTest.report(REPORT_ID, status)
         every {
@@ -81,7 +81,7 @@ class UpdateProjectReportVerificationConclusionTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "updateVerificationConclusion - wrong status (status {0})")
-    @EnumSource(value = ProjectReportStatus::class, names = ["InVerification", "Finalized"], mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = ProjectReportStatus::class, names = ["InVerification"], mode = EnumSource.Mode.EXCLUDE)
     fun `update conclusion - incorrect status should throw exception`(status: ProjectReportStatus) {
         every {
             reportPersistence.getReportById(
@@ -100,7 +100,7 @@ class UpdateProjectReportVerificationConclusionTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "updateVerificationConclusion")
-    @EnumSource(value = ProjectReportStatus::class, names = ["InVerification", "Finalized"], mode = EnumSource.Mode.INCLUDE)
+    @EnumSource(value = ProjectReportStatus::class, names = ["InVerification"], mode = EnumSource.Mode.INCLUDE)
     fun `update conclusion - invalid input should throw exception`(status: ProjectReportStatus) {
         every {
             reportPersistence.getReportById(

@@ -32,7 +32,7 @@ class ProjectReportVerificationPersistenceProvider(
         projectReportVerificationConclusion: ProjectReportVerificationConclusion
     ): ProjectReportVerificationConclusion {
         return projectReportRepository.getByIdAndProjectId(id = reportId, projectId = projectId).apply {
-            this.startDate = projectReportVerificationConclusion.startDate
+            this.verificationDate = projectReportVerificationConclusion.startDate
             this.verificationConclusionJs = projectReportVerificationConclusion.conclusionJS
             this.verificationConclusionMa = projectReportVerificationConclusion.conclusionMA
             this.verificationFollowup = projectReportVerificationConclusion.verificationFollowUp

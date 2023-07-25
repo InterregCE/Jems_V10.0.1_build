@@ -147,10 +147,8 @@ class ProjectReportDataProviderImplTest : UnitTest() {
     @MockK
     private lateinit var reportCertificateInvestmentCalculatorService: GetReportCertificateInvestmentCalculatorService
 
-
     @InjectMockKs
     lateinit var dataProvider: ProjectReportDataProviderImpl
-
 
     companion object {
         private const val PROJECT_ID = 1L
@@ -222,7 +220,7 @@ class ProjectReportDataProviderImplTest : UnitTest() {
             leadPartnerNameInEnglish = "Lead Partner EN",
             createdAt = createdAt,
             firstSubmission = firstSubmission,
-            verificationDate = verificationDate,
+            verificationDate = verificationDate.toLocalDate(),
             totalEligibleAfterVerification = BigDecimal.ZERO,
             amountRequested = BigDecimal.ZERO,
             verificationEndDate = verificationDate
@@ -246,7 +244,7 @@ class ProjectReportDataProviderImplTest : UnitTest() {
             leadPartnerNameInEnglish = "Lead Partner EN",
             createdAt = createdAt,
             firstSubmission = firstSubmission,
-            verificationDate = verificationDate
+            verificationDate = verificationDate.toLocalDate()
         )
 
         //        Identification

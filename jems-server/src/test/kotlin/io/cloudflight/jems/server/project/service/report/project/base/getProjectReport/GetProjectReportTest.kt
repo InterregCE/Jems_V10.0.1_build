@@ -13,12 +13,12 @@ import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 internal class GetProjectReportTest : UnitTest() {
 
@@ -48,7 +48,7 @@ internal class GetProjectReportTest : UnitTest() {
             leadPartnerNameInEnglish = "LP english",
             createdAt = NOW,
             firstSubmission = WEEK_AGO,
-            verificationDate = NEXT_MONTH,
+            verificationDate = NEXT_MONTH.toLocalDate(),
             verificationEndDate = NEXT_MONTH,
             amountRequested = BigDecimal.ZERO,
             totalEligibleAfterVerification = BigDecimal.ZERO
@@ -74,7 +74,7 @@ internal class GetProjectReportTest : UnitTest() {
             leadPartnerNameInEnglish = "LP english",
             createdAt = NOW,
             firstSubmission = WEEK_AGO,
-            verificationDate = NEXT_MONTH,
+            verificationDate = NEXT_MONTH.toLocalDate(),
         )
 
         val expectedReportSummary = ProjectReportSummary(
@@ -89,7 +89,7 @@ internal class GetProjectReportTest : UnitTest() {
             reportingDate = MONTH_AGO,
             createdAt = NOW,
             firstSubmission = WEEK_AGO,
-            verificationDate = NEXT_MONTH,
+            verificationDate = NEXT_MONTH.toLocalDate(),
             deletable = false,
             verificationEndDate = NEXT_MONTH,
             amountRequested = BigDecimal.ONE,

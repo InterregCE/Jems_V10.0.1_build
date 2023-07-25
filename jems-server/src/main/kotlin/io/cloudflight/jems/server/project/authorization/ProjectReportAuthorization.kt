@@ -21,7 +21,7 @@ annotation class CanEditProjectReportNotSpecific
 annotation class CanRetrieveProjectReport
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectReportAuthorization.canStartReportVerification(#projectId, #reportId)")
+@PreAuthorize("@projectReportAuthorization.canStartReportVerification(#projectId)")
 annotation class CanStartProjectReportVerification
 
 @Retention(AnnotationRetention.RUNTIME)

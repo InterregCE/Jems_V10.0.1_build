@@ -23,12 +23,12 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
 import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.time.LocalDate
-import java.time.ZonedDateTime
 
 internal class UpdateProjectReportTest : UnitTest() {
 
@@ -75,7 +75,7 @@ internal class UpdateProjectReportTest : UnitTest() {
             leadPartnerNameInEnglish = "en",
             createdAt = NOW,
             firstSubmission = WEEK_AGO,
-            verificationDate = NEXT_MONTH,
+            verificationDate = NEXT_MONTH.toLocalDate(),
             verificationEndDate = NEXT_MONTH,
             amountRequested = BigDecimal.ZERO,
             totalEligibleAfterVerification = BigDecimal.ZERO
@@ -101,7 +101,7 @@ internal class UpdateProjectReportTest : UnitTest() {
             leadPartnerNameInEnglish = "en",
             createdAt = NOW,
             firstSubmission = WEEK_AGO,
-            verificationDate = NEXT_MONTH,
+            verificationDate = NEXT_MONTH.toLocalDate(),
         )
     }
 
@@ -113,7 +113,6 @@ internal class UpdateProjectReportTest : UnitTest() {
     private lateinit var deadlinePersistence: ContractingReportingPersistence
     @MockK
     private lateinit var certificatePersistence: ProjectReportCertificatePersistence
-
 
     @InjectMockKs
     lateinit var interactor: UpdateProjectReport

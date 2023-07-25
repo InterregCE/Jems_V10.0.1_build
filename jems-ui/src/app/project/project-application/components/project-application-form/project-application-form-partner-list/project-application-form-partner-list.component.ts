@@ -10,11 +10,7 @@ import {
 } from '@angular/core';
 import {MatSort} from '@angular/material/sort';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
-import {
-  PageProjectBudgetPartnerSummaryDTO,
-  ProjectCallSettingsDTO,
-  ProjectStatusDTO
-} from '@cat/api';
+import {PageProjectBudgetPartnerSummaryDTO, ProjectCallSettingsDTO, ProjectStatusDTO} from '@cat/api';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {Forms} from '@common/utils/forms';
 import {filter, map, take, tap} from 'rxjs/operators';
@@ -26,8 +22,10 @@ import {ColumnWidth} from '@common/components/table/model/column-width';
 import {ProjectUtil} from '@project/common/project-util';
 import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
+import {
+  ProjectStore
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
-import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 
 @Component({
   selector: 'jems-project-application-form-partner-list',
@@ -166,7 +164,7 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
       region: projectPartnerBudgetSummary.partnerSummary.region,
       sortNumber: projectPartnerBudgetSummary.partnerSummary.sortNumber,
       totalBudget: projectPartnerBudgetSummary.totalBudget,
-      projectEditable: projectEditable
+      projectEditable
     }));
   }
 

@@ -15,6 +15,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.just
 import io.mockk.slot
+import java.time.LocalDate
 import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -27,7 +28,7 @@ class ProjectReportVerificationPersistenceProviderTest : UnitTest() {
         private const val REPORT_ID = 19L
 
         private val LAST_WEEK = ZonedDateTime.now().minusWeeks(1)
-        private val YESTERDAY = ZonedDateTime.now().minusDays(1)
+        private val YESTERDAY = LocalDate.now().minusDays(1)
         private val TODAY = ZonedDateTime.now()
 
         private fun reportEntity(id: Long, projectId: Long, deadline: ProjectContractingReportingEntity? = null) =
@@ -37,12 +38,12 @@ class ProjectReportVerificationPersistenceProviderTest : UnitTest() {
                 number = 1,
                 status = ProjectReportStatus.InVerification,
                 applicationFormVersion = "4.0",
-                startDate = YESTERDAY.toLocalDate(),
+                startDate = YESTERDAY,
                 endDate = null,
 
                 type = ContractingDeadlineType.Both,
                 deadline = deadline,
-                reportingDate = YESTERDAY.toLocalDate().minusDays(1),
+                reportingDate = YESTERDAY.minusDays(1),
                 periodNumber = 4,
                 projectIdentifier = "projectIdentifier",
                 projectAcronym = "projectAcronym",
@@ -51,7 +52,7 @@ class ProjectReportVerificationPersistenceProviderTest : UnitTest() {
 
                 createdAt = LAST_WEEK,
                 firstSubmission = LAST_WEEK.plusDays(1),
-                verificationDate = YESTERDAY.plusHours(2),
+                verificationDate = YESTERDAY.plusDays(2),
                 verificationEndDate = null,
                 verificationConclusionJs = null,
                 verificationConclusionMa = null,
@@ -70,16 +71,16 @@ class ProjectReportVerificationPersistenceProviderTest : UnitTest() {
                 id = 1L,
                 number = 1,
                 projectReport = reportEntity(REPORT_ID, PROJECT_ID),
-                requestDate = YESTERDAY.toLocalDate(),
-                answerDate = YESTERDAY.toLocalDate(),
+                requestDate = YESTERDAY,
+                answerDate = YESTERDAY,
                 comment = "first"
             ),
             ProjectReportVerificationClarificationEntity(
                 id = 2L,
                 number = 2,
                 projectReport = reportEntity(REPORT_ID, PROJECT_ID),
-                requestDate = YESTERDAY.toLocalDate(),
-                answerDate = YESTERDAY.toLocalDate(),
+                requestDate = YESTERDAY,
+                answerDate = YESTERDAY,
                 comment = "second"
             )
         )
@@ -128,15 +129,15 @@ class ProjectReportVerificationPersistenceProviderTest : UnitTest() {
                 ProjectReportVerificationClarification(
                     id = 1L,
                     number = 1,
-                    requestDate = YESTERDAY.toLocalDate(),
-                    answerDate = YESTERDAY.toLocalDate(),
+                    requestDate = YESTERDAY,
+                    answerDate = YESTERDAY,
                     comment = "first"
                 ),
                 ProjectReportVerificationClarification(
                     id = 2L,
                     number = 2,
-                    requestDate = YESTERDAY.toLocalDate(),
-                    answerDate = YESTERDAY.toLocalDate(),
+                    requestDate = YESTERDAY,
+                    answerDate = YESTERDAY,
                     comment = "second"
                 )
             )
@@ -150,15 +151,15 @@ class ProjectReportVerificationPersistenceProviderTest : UnitTest() {
             ProjectReportVerificationClarification(
                 id = 1L,
                 number = 1,
-                requestDate = YESTERDAY.toLocalDate(),
-                answerDate = YESTERDAY.toLocalDate(),
+                requestDate = YESTERDAY,
+                answerDate = YESTERDAY,
                 comment = "first"
             ),
             ProjectReportVerificationClarification(
                 id = 0L,
                 number = 0,
-                requestDate = YESTERDAY.toLocalDate(),
-                answerDate = YESTERDAY.toLocalDate(),
+                requestDate = YESTERDAY,
+                answerDate = YESTERDAY,
                 comment = "third"
             )
         )
@@ -182,7 +183,7 @@ class ProjectReportVerificationPersistenceProviderTest : UnitTest() {
                 projectReport = reportEntity(REPORT_ID, PROJECT_ID),
                 number = 2,
                 requestDate = LAST_WEEK.toLocalDate(),
-                answerDate = YESTERDAY.toLocalDate(),
+                answerDate = YESTERDAY,
                 comment = "third"
             )
         )
@@ -191,8 +192,8 @@ class ProjectReportVerificationPersistenceProviderTest : UnitTest() {
                 id = 1L,
                 projectReport = reportEntity(REPORT_ID, PROJECT_ID),
                 number = 1,
-                requestDate = YESTERDAY.toLocalDate(),
-                answerDate = YESTERDAY.toLocalDate(),
+                requestDate = YESTERDAY,
+                answerDate = YESTERDAY,
                 comment = "first"
             ),
             ProjectReportVerificationClarificationEntity(
@@ -200,7 +201,7 @@ class ProjectReportVerificationPersistenceProviderTest : UnitTest() {
                 projectReport = reportEntity(REPORT_ID, PROJECT_ID),
                 number = 2,
                 requestDate = LAST_WEEK.toLocalDate(),
-                answerDate = YESTERDAY.toLocalDate(),
+                answerDate = YESTERDAY,
                 comment = "third"
             )
         )
@@ -215,15 +216,15 @@ class ProjectReportVerificationPersistenceProviderTest : UnitTest() {
             ProjectReportVerificationClarification(
                 id = 1L,
                 number = 1,
-                requestDate = YESTERDAY.toLocalDate(),
-                answerDate = YESTERDAY.toLocalDate(),
+                requestDate = YESTERDAY,
+                answerDate = YESTERDAY,
                 comment = "first"
             ),
             ProjectReportVerificationClarification(
                 id = 3L,
                 number = 2,
                 requestDate = LAST_WEEK.toLocalDate(),
-                answerDate = YESTERDAY.toLocalDate(),
+                answerDate = YESTERDAY,
                 comment = "third"
             )
 
