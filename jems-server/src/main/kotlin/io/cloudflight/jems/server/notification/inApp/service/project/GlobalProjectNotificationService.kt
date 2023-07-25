@@ -66,14 +66,11 @@ class GlobalProjectNotificationService(
         sendInAppAndEmails(notificationConfig, emailsToNotify, variables)
     }
 
-    private fun getNotificationConfiguration(type: NotificationType, projectId: Long): ProjectNotificationConfiguration? {
-        return if (type.isProjectNotification() || type.isPartnerReportNotification() || type.isProjectReportNotification()) {
-            callNotificationConfigPersistence.getActiveNotificationOfType(
-                callId = projectPersistence.getCallIdOfProject(projectId),
-                type = type
-            )
-        } else null
-    }
+    private fun getNotificationConfiguration(type: NotificationType, projectId: Long): ProjectNotificationConfiguration? =
+        callNotificationConfigPersistence.getActiveNotificationOfType(
+            callId = projectPersistence.getCallIdOfProject(projectId),
+            type = type,
+        )
 
     private fun sendInAppAndEmails(
         config: ProjectNotificationConfiguration,
