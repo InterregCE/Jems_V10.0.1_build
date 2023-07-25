@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "0c24edb5-8dc3-4b32-9351-fbdc0818f6f4",
+		"_postman_id": "36e0428e-5c72-4582-9901-61144d046a9b",
 		"name": "ems-rest-test",
 		"description": "Check JEMS application for common use-cases",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
@@ -1016,7 +1016,7 @@
 					"response": []
 				},
 				{
-					"name": "[IF] not exists, then enable some programme fund Copy",
+					"name": "[IF] not exists, then enable some programme fund",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -1183,7 +1183,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": \"{{programmeLumpSumId}}\",\r\n    \"name\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"[API test] splittable\"\r\n        }\r\n    ],\r\n    \"cost\": 10000,\r\n    \"splittingAllowed\": true,\r\n    \"phase\": \"Preparation\",\r\n    \"categories\": [\"StaffCosts\", \"OfficeAndAdministrationCosts\"]\r\n}\r\n",
+							"raw": "{\r\n    \"id\": \"{{programmeLumpSumId}}\",\r\n    \"name\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"[API test] splittable\"\r\n        }\r\n    ],\r\n    \"cost\": 10000,\r\n    \"splittingAllowed\": true,\r\n    \"phase\": \"Preparation\",\r\n    \"categories\": [\"StaffCosts\", \"OfficeAndAdministrationCosts\"],\r\n    \"paymentClaim\": \"BasedOnSco\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1301,7 +1301,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": \"{{programmeUnitCostId}}\",\r\n    \"name\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"[API test] 1-category\"\r\n        }\r\n    ],\r\n    \"description\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{inputLanguage}} 1-category description \"\r\n        }\r\n    ],\r\n    \"type\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"type translated to {{inputLanguage}}\"\r\n        }\r\n    ],\r\n    \"costPerUnit\": 498.26,\r\n    \"oneCostCategory\": true,\r\n    \"categories\": [\"EquipmentCosts\"]\r\n}\r\n",
+							"raw": "{\r\n    \"id\": \"{{programmeUnitCostId}}\",\r\n    \"name\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"[API test] 1-category\"\r\n        }\r\n    ],\r\n    \"description\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{inputLanguage}} 1-category description \"\r\n        }\r\n    ],\r\n    \"type\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"type translated to {{inputLanguage}}\"\r\n        }\r\n    ],\r\n    \"costPerUnit\": 498.26,\r\n    \"oneCostCategory\": true,\r\n    \"categories\": [\"EquipmentCosts\"],\r\n    \"paymentClaim\": \"FinancingNotBasedOnSco\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
