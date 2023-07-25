@@ -60,6 +60,10 @@ class ProjectReportFilePersistenceProvider(
             .toSimple()
     }
 
+    @Transactional
+    override fun addAttachmentToProjectReport(file: JemsFileCreate): JemsFileMetadata =
+        fileService.persistFile(file).toSimple()
+
     private fun persistFileAndUpdateLink(file: JemsFileCreate, additionalStep: (JemsFileMetadataEntity) -> Unit) =
         fileService.persistFileAndPerformAction(file = file, additionalStep = additionalStep)
 

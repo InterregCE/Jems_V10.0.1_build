@@ -1,19 +1,19 @@
 package io.cloudflight.jems.server.project.service.report.project.verification.updateProjectReportVerificationClarification
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.project.repository.report.project.verification.ProjectReportVerificationPersistenceProvider
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.model.project.verification.ProjectReportVerificationClarification
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.project.verification.ProjectReportVerificationPersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
-import java.time.LocalDate
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.testcontainers.shaded.org.apache.commons.lang.RandomStringUtils
+import java.time.LocalDate
 
 class UpdateProjectReportVerificationClarificationTest: UnitTest() {
 
@@ -65,7 +65,7 @@ class UpdateProjectReportVerificationClarificationTest: UnitTest() {
     }
 
     @MockK
-    private lateinit var projectReportVerificationPersistenceProvider: ProjectReportVerificationPersistenceProvider
+    private lateinit var verificationPersistence: ProjectReportVerificationPersistence
 
     @MockK
     lateinit var reportPersistence: ProjectReportPersistence
@@ -100,9 +100,9 @@ class UpdateProjectReportVerificationClarificationTest: UnitTest() {
             ),
         )
 
-        every { projectReportVerificationPersistenceProvider.getVerificationClarifications(REPORT_ID) } returns clarifications
+        every { verificationPersistence.getVerificationClarifications(REPORT_ID) } returns clarifications
 
-        every { projectReportVerificationPersistenceProvider.updateVerificationClarifications(
+        every { verificationPersistence.updateVerificationClarifications(
             projectId = PROJECT_ID,
             reportId = REPORT_ID,
             clarifications = any()

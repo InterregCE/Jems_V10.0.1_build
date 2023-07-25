@@ -10,6 +10,8 @@ enum class ProjectReportStatus {
 
     fun isOpen() = !isClosed()
 
+    fun isFinalized() = setOf(Finalized).contains(this)
+
     fun verificationNotStartedYet() = this !in VERIFICATION_STATUSES
 
     companion object {

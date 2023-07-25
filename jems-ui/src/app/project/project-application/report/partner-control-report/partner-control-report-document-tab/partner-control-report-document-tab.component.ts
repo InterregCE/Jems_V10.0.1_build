@@ -137,7 +137,7 @@ export class PartnerControlReportDocumentTabComponent {
     );
   };
 
-  deleteCallback = (file: FileListItem): Observable<void> => {
+  deleteCallback = (file: FileListItem): Observable<any> => {
     return combineLatest([
       this.controlReportFileStore.partnerId$,
       this.controlReportFileStore.reportId$,

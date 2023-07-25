@@ -1,12 +1,7 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of, Subject} from 'rxjs';
-import {
-  PageJemsFileDTO,
-  PaymentAdvanceAttachmentService,
-  JemsFileMetadataDTO,
-  UserRoleDTO
-} from '@cat/api';
-import {catchError, distinctUntilChanged, map, startWith, switchMap, take, tap} from 'rxjs/operators';
+import {JemsFileMetadataDTO, PageJemsFileDTO, PaymentAdvanceAttachmentService, UserRoleDTO} from '@cat/api';
+import {catchError, distinctUntilChanged, finalize, map, startWith, switchMap, take, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {v4 as uuid} from 'uuid';
 import {FileListItem} from '@common/components/file-list/file-list-item';
@@ -85,7 +80,7 @@ export class AdvancePaymentAttachmentsStore {
           ),
           tap(() => this.filesChanged$.next()),
           tap(() => this.error$.next(null)),
-          tap(() => this.routingService.confirmLeaveMap.delete(serviceId)),
+          finalize(() => this.routingService.confirmLeaveMap.delete(serviceId)),
           catchError(error => {
             this.error$.next(error.error);
             return of({} as JemsFileMetadataDTO);

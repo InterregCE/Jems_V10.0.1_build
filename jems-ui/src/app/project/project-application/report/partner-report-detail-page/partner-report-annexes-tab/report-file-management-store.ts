@@ -1,37 +1,22 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {
+  JemsFileMetadataDTO,
   PageJemsFileDTO,
   ProjectPartnerReportDTO,
   ProjectPartnerReportService,
   ProjectPartnerReportSummaryDTO,
-  JemsFileMetadataDTO,
   ProjectReportFileSearchRequestDTO,
   SettingsService
 } from '@cat/api';
-import {
-  catchError,
-  distinctUntilChanged,
-  filter,
-  finalize,
-  map,
-  startWith,
-  switchMap,
-  take,
-  tap,
-  withLatestFrom
-} from 'rxjs/operators';
+import {catchError, distinctUntilChanged, filter, finalize, map, startWith, switchMap, take, tap, withLatestFrom} from 'rxjs/operators';
 import {MatSort} from '@angular/material/sort';
 import {Tables} from '@common/utils/tables';
 import {CategoryInfo, CategoryNode} from '@project/common/components/category-tree/categoryModels';
 import {APIError} from '@common/models/APIError';
 import {DownloadService} from '@common/services/download.service';
-import {
-  PartnerReportDetailPageStore
-} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
-import {
-  ReportFileCategoryTypeEnum
-} from '@project/project-application/report/partner-report-detail-page/partner-report-annexes-tab/report-file-category-type';
+import {PartnerReportDetailPageStore} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
+import {ReportFileCategoryTypeEnum} from '@project/project-application/report/partner-report-detail-page/partner-report-annexes-tab/report-file-category-type';
 import {FileManagementStore} from '@project/common/components/file-management/file-management-store';
 import {RoutingService} from '@common/services/routing.service';
 import {v4 as uuid} from 'uuid';
@@ -94,11 +79,11 @@ export class ReportFileManagementStore {
         switchMap(([category, reportId, partnerId]) => this.projectPartnerReportService.uploadReportFileForm(file, Number(partnerId), reportId)),
         tap(() => this.reportFilesChanged$.next()),
         tap(() => this.error$.next(null)),
+        finalize(() => this.routingService.confirmLeaveMap.delete(serviceId)),
         catchError(error => {
           this.error$.next(error.error);
           return of({} as JemsFileMetadataDTO);
         }),
-        finalize(() => this.routingService.confirmLeaveMap.delete(serviceId))
       );
   }
 

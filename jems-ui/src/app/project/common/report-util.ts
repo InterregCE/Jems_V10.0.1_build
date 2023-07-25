@@ -74,7 +74,10 @@ export class ReportUtil {
   }
 
   static isProjectReportAfterVerificationStarted(status: ProjectReportSummaryDTO.StatusEnum): boolean {
-    return status === ProjectReportSummaryDTO.StatusEnum.InVerification
-      || status === ProjectReportSummaryDTO.StatusEnum.Finalized;
+    return [ProjectReportSummaryDTO.StatusEnum.InVerification, ProjectReportSummaryDTO.StatusEnum.Finalized].includes(status);
+  }
+
+  static isProjectReportVerificationOngoing(status: ProjectReportSummaryDTO.StatusEnum): boolean {
+    return [ProjectReportSummaryDTO.StatusEnum.InVerification].includes(status);
   }
 }

@@ -1,11 +1,11 @@
 package io.cloudflight.jems.server.project.service.report.project.verification.getProjectReportVerificationConclusion
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.project.repository.report.project.verification.ProjectReportVerificationPersistenceProvider
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.model.project.verification.ProjectReportVerificationConclusion
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.project.verification.ProjectReportVerificationPersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -38,7 +38,7 @@ class GetProjectReportVerificationConclusionTest: UnitTest() {
     }
 
     @MockK
-    lateinit var projectReportVerificationPersistenceProvider: ProjectReportVerificationPersistenceProvider
+    lateinit var verificationPersistence: ProjectReportVerificationPersistence
 
     @MockK
     lateinit var reportPersistence: ProjectReportPersistence
@@ -51,7 +51,7 @@ class GetProjectReportVerificationConclusionTest: UnitTest() {
     fun getVerificationConclusion() {
         every { reportPersistence.getReportById(PROJECT_ID, REPORT_ID) } returns report(REPORT_ID, ProjectReportStatus.InVerification)
         every {
-            projectReportVerificationPersistenceProvider.getProjectReportVerificationConclusion(
+            verificationPersistence.getProjectReportVerificationConclusion(
                 projectId = PROJECT_ID,
                 reportId = REPORT_ID
             )

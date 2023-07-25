@@ -100,11 +100,11 @@ export class SharedFolderPageStore {
       switchMap(([projectId]) => this.sharedFolderService.uploadFileToSharedFolderForm(file, projectId)),
       tap(() => this.filesChanged$.next()),
       tap(() => this.error$.next(null)),
+      finalize(() => this.routingService.confirmLeaveMap.delete(serviceId)),
       catchError(error => {
         this.error$.next(error.error);
         return of({} as JemsFileMetadataDTO);
       }),
-      finalize(() => this.routingService.confirmLeaveMap.delete(serviceId))
     );
   }
 

@@ -36,6 +36,9 @@ class JemsProjectFileService(
             JemsFileType.DeliverableProjectReport,
             JemsFileType.OutputProjectReport,
 
+            // Project Report Verification
+            JemsFileType.VerificationDocument,
+
             // Partner Report
             JemsFileType.PartnerReport,
             JemsFileType.Activity,

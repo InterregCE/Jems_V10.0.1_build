@@ -84,7 +84,7 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
             deactivated = false
         )
 
-        val jesmFileCreate = JemsFileCreate(
+        val jemsFileCreate = JemsFileCreate(
             projectId = 4L,
             partnerId = null,
             name = "file-name",
@@ -128,12 +128,16 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
 
     @MockK
     private lateinit var workPlanActivityRepository: ProjectReportWorkPackageActivityRepository
+
     @MockK
     private lateinit var workPlanActivityDeliverableRepository: ProjectReportWorkPackageActivityDeliverableRepository
+
     @MockK
     private lateinit var workPlanOutputRepository: ProjectReportWorkPackageOutputRepository
+
     @MockK
     private lateinit var projectResultRepository: ProjectReportProjectResultRepository
+
     @MockK
     private lateinit var fileService: JemsProjectFileService
 
@@ -194,13 +198,24 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
     fun updateProjectResultAttachment() {
         val reportId = 5L
         val resultNumber = 7
+        val newFileMetadata = JemsFileMetadata(9L, jemsFileCreate.name, ZonedDateTime.now())
 
         every { projectResultRepository.findByProjectReportIdAndResultNumber(reportId, resultNumber) } returns projectResultEntity
         every { fileService.delete(eq(projectResultEntity.attachment!!)) } returns Unit
-        every { fileService.persistFileAndPerformAction(eq(jesmFileCreate), any()) } returns dummyResult
+        every { fileService.persistFileAndPerformAction(eq(jemsFileCreate), any()) } returns mockk<JemsFile> { every { toSimple() } returns newFileMetadata }
 
-        assertThat(persistence.updateProjectResultAttachment(reportId, resultNumber, jesmFileCreate))
-            .isEqualTo(dummyResultSimple)
+        assertThat(persistence.updateProjectResultAttachment(reportId, resultNumber, jemsFileCreate))
+            .isEqualTo(newFileMetadata)
+    }
+
+    @Test()
+    fun addAttachmentToProjectReport() {
+        val newFileMetadata = JemsFileMetadata(11L, jemsFileCreate.name, ZonedDateTime.now())
+
+        every { fileService.persistFile(eq(jemsFileCreate)) } returns mockk<JemsFile> { every { toSimple() } returns newFileMetadata }
+
+        assertThat(persistence.addAttachmentToProjectReport(jemsFileCreate))
+            .isEqualTo(newFileMetadata)
     }
 
     private fun mockFileDeletion(
