@@ -25,8 +25,10 @@ export class ProjectApplicationListComponent implements OnInit {
 
   @Input()
   filterByOwner: false;
-
-  defaultPageSize = 10;
+  @Input()
+  currentPageSize = 25;
+  @Input()
+  disableTopPaginator = false;
 
   @ViewChild('callNameCell', {static: true})
   callNameCell: TemplateRef<any>;

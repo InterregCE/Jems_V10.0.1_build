@@ -8,7 +8,7 @@
                 [rows]="data.page.content"
                 [totalElements]="data.page?.totalElements"
                 [pageIndex]="partnerReportListStoreService.newPageIndex$ | async"
-                [currentPageSize]="defaultPageSize"
+                [currentPageSize]="currentPageSize"
                 [disableTopPaginator]="true"
                 (newPageIndex)="partnerReportListStoreService.newPageIndex$.next($event)"
                 (newPageSize)="partnerReportListStoreService.newPageSize$.next($event)"
