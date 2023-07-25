@@ -26,7 +26,7 @@ class ExportChecklistInstance(
     @ExceptionWrapper(ExportChecklistInstanceException::class)
     override fun export(relatedToId: Long, checklistId: Long, exportLanguage: SystemLanguage, pluginKey: String?): ExportResult {
         if (!checklistInstancePersistence.existsByIdAndRelatedToId(id = checklistId, relatedToId = relatedToId))
-            throw ExportChecklistInstanceExceptionNotFound()
+            throw ExportChecklistInstanceNotFoundException()
 
         return jemsPluginRegistry.get(ChecklistExportPlugin::class, pluginKey ?: DEFAULT_CHECKLIST_EXPORT_PLUGIN).export(
             projectId = relatedToId,

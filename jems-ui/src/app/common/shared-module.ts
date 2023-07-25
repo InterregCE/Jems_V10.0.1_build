@@ -105,6 +105,9 @@ import {PartnerReportListComponent} from '@common/components/partner-report-list
 import {
   PartnerReportStatusComponent
 } from '@project/project-application/report/partner-report-status/partner-report-status.component';
+import {
+  VerificationChecklistInstanceListComponent
+} from '@common/components/checklist/verification-checklist-instance-list/verification-checklist-instance-list.component';
 
 const modules = [
   CommonModule,
@@ -188,7 +191,8 @@ const declarations = [
   FileOperationsActionCellComponent,
   FileListTableWithFileLinkingComponent,
   PartnerReportListComponent,
-  PartnerReportStatusComponent
+  PartnerReportStatusComponent,
+  VerificationChecklistInstanceListComponent
 ];
 
 const providers = [

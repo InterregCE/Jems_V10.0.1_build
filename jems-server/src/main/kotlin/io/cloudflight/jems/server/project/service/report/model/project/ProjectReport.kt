@@ -28,4 +28,5 @@ data class ProjectReport(
     val createdAt: ZonedDateTime,
     val firstSubmission: ZonedDateTime?,
     val verificationDate: LocalDate?,
+    val verificationEndDate: ZonedDateTime?,
 )

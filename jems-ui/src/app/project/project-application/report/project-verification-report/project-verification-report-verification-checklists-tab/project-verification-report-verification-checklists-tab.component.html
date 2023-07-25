@@ -1,0 +1,13 @@
+<jems-form *ngIf="data$ | async as data">
+  <div jemsFormLayout>
+    <ng-container>
+      <h3 class="mt-3">{{'project.application.project.report.tab.verificationChecklists' | translate}}</h3>
+      <p>{{'project.application.project.report.tab.verificationChecklists.intro' | translate}}</p>
+      <jems-verification-checklist-instance-list [relatedType]="ChecklistType.VERIFICATION"
+                                            [relatedId]="data.projectVerificationReport.id"
+                                            [verificationReportVerificationFinalizedDate]="(verificationReport$ | async)?.verificationEndDate"
+                                            jemsNoWidthLimit>
+      </jems-verification-checklist-instance-list>
+    </ng-container>
+  </div>
+</jems-form>

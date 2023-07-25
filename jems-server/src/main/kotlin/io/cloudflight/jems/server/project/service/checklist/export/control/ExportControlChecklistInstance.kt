@@ -9,7 +9,7 @@ import io.cloudflight.jems.server.plugin.JemsPluginRegistry
 import io.cloudflight.jems.server.project.authorization.CanViewPartnerControlReport
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
 import io.cloudflight.jems.server.project.service.checklist.export.ExportChecklistInstanceException
-import io.cloudflight.jems.server.project.service.checklist.export.ExportChecklistInstanceExceptionNotFound
+import io.cloudflight.jems.server.project.service.checklist.export.ExportChecklistInstanceNotFoundException
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -30,7 +30,7 @@ class ExportControlChecklistInstance(
     @ExceptionWrapper(ExportChecklistInstanceException::class)
     override fun export(partnerId: Long, reportId: Long, checklistId: Long, exportLanguage: SystemLanguage, pluginKey: String?): ExportResult {
         if (!checklistInstancePersistence.existsByIdAndRelatedToId(id = checklistId, relatedToId = reportId))
-            throw ExportChecklistInstanceExceptionNotFound()
+            throw ExportChecklistInstanceNotFoundException()
 
         return jemsPluginRegistry.get(ChecklistExportPlugin::class, pluginKey ?: DEFAULT_CONTROL_CHECKLIST_EXPORT_PLUGIN).export(
             projectId = partnerPersistence.getProjectIdForPartnerId(partnerId),
