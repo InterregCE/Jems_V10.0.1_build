@@ -47,7 +47,8 @@ internal class ProjectReportAnnexesControllerTest : UnitTest() {
         uploaded = YESTERDAY,
         author = UserSimple(45L, email = "admin@cloudflight.io", name = "Admin", surname = "Big"),
         size = 47889L,
-        description = "desc"
+        description = "desc",
+        indexedPath = ""
     )
 
     private val jemsFileDTO = JemsFileDTO(

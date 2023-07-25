@@ -4,8 +4,8 @@ import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.common.file.minio.MinioStorage
 import io.cloudflight.jems.server.common.file.repository.JemsFileMetadataRepository
+import io.cloudflight.jems.server.common.file.service.model.JemsFile
 import io.cloudflight.jems.server.common.file.service.model.JemsFileCreate
-import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.report.partner.toModel
@@ -71,14 +71,14 @@ class JemsProjectFileService(
     override fun persistFileAndPerformAction(
         file: JemsFileCreate,
         additionalStep: (JemsFileMetadataEntity) -> Unit,
-    ): JemsFileMetadata {
+    ): JemsFile {
         validateType(file.type, allowedFileTypes)
         val fileMeta = super.persistFileAndPerformAction(file, additionalStep)
 
         val projectRelated = projectRepository.getById(file.projectId!!).toSummaryModel()
         auditPublisher.publishEvent(
             projectFileUploadSuccess(
-                context = this, fileMeta = fileMeta,
+                context = this, fileMeta = fileMeta.toSimple(),
                 location = file.getDefaultMinioFullPath(), type = file.type, projectSummary = projectRelated
             )
         )

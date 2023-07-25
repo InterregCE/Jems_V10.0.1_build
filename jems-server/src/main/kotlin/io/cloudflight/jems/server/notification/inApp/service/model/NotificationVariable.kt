@@ -19,7 +19,10 @@ enum class NotificationVariable(val variable: String) {
     PartnerReportNumber("partnerReportNumber"),
 
     ProjectReportId("projectReportId"),
-    ProjectReportNumber("projectReportNumber");
+    ProjectReportNumber("projectReportNumber"),
+
+    FileUsername("fileUsername"),
+    FileName("fileName");
 
     /**
      * These are the minimum amount of variables that we need
@@ -45,6 +48,17 @@ enum class NotificationVariable(val variable: String) {
             ProjectReportId,
             ProjectReportNumber,
         )
+
+        val projectFileNotificationVariables = projectNotificationVariables union setOf(
+            FileUsername,
+            FileName,
+        )
+
+        val partnerReportFileNotificationVariables = partnerReportNotificationVariables union setOf(
+            FileUsername,
+            FileName,
+        )
+
     }
 
 }

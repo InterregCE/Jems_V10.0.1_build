@@ -32,12 +32,18 @@ enum class NotificationType {
     // Project Report
     ProjectReportSubmitted,
     ProjectReportVerificationOngoing,
-    ProjectReportVerificationFinalized;
+    ProjectReportVerificationFinalized,
+
+    // Project File
+    SharedFolderFileUpload,
+    SharedFolderFileDelete,
+    ControlCommunicationFileUpload,
+    ControlCommunicationFileDelete;
 
 
     companion object {
 
-        val projectNotifications = sortedSetOf(
+        val projectNotifications = setOf(
             ProjectSubmittedStep1,
             ProjectSubmitted,
             ProjectApprovedStep1,
@@ -56,34 +62,37 @@ enum class NotificationType {
             ProjectInModification,
             ProjectModificationSubmitted,
             ProjectModificationApproved,
-            ProjectModificationRejected
+            ProjectModificationRejected,
         )
 
-        val partnerReportNotifications = sortedSetOf(
+        val partnerReportNotifications  = setOf(
             PartnerReportSubmitted,
             PartnerReportReOpen,
             PartnerReportControlOngoing,
             PartnerReportCertified,
-            PartnerReportReOpenCertified
+            PartnerReportReOpenCertified,
         )
 
-        val projectReportNotifications = sortedSetOf(
+        val projectReportNotifications = setOf(
             ProjectReportSubmitted,
             ProjectReportVerificationOngoing,
             ProjectReportVerificationFinalized
         )
+
+        val projectFileSharedFolderNotifications = setOf(SharedFolderFileUpload, SharedFolderFileDelete)
+        val projectFileControlCommunicationNotifications = setOf(ControlCommunicationFileUpload, ControlCommunicationFileDelete)
+
     }
 
     fun isProjectNotification() = this in projectNotifications
 
-    fun isNotProjectNotification() = !isProjectNotification()
-
     fun isPartnerReportNotification() = this in partnerReportNotifications
-
-    fun isNotPartnerReportNotification() = !isPartnerReportNotification()
 
     fun isProjectReportNotification() = this in projectReportNotifications
 
-    fun isNotProjectReportNotification() = !isProjectReportNotification()
+
+    fun isProjectFileNotification() = this in projectFileSharedFolderNotifications
+
+    fun isPartnerReportFileNotification() = this in projectFileControlCommunicationNotifications
 
 }

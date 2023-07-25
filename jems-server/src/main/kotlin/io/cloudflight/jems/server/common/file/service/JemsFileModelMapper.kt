@@ -36,7 +36,8 @@ fun JemsFileMetadataEntity.toFullModel() = JemsFile(
     uploaded = uploaded,
     author = user.toModel(),
     size = size,
-    description = description
+    description = description,
+    indexedPath = path,
 )
 
 fun UserEntity.toModel() = UserSimple(

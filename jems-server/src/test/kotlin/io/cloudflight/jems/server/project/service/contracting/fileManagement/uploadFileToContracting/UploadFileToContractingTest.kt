@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
+import io.cloudflight.jems.server.common.file.service.model.JemsFile
 import io.cloudflight.jems.server.common.file.service.model.JemsFileCreate
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
@@ -115,12 +116,14 @@ internal class UploadFileToContractingTest : UnitTest() {
         expectedType: JemsFileType,
         expectedPartnerId: Long? = null,
     ) {
-        val result = mockk<JemsFileMetadata>()
+        val mockResult = mockk<JemsFile>()
+        val mockResultSimple = mockk<JemsFileMetadata>()
+        every { mockResult.toSimple() } returns mockResultSimple
 
         val fileSlot = slot<JemsFileCreate>()
-        every { fileRepository.persistFile(capture(fileSlot)) } returns result
+        every { fileRepository.persistFile(capture(fileSlot)) } returns mockResult
 
-        assertThat(testFunction.invoke()).isEqualTo(result)
+        assertThat(testFunction.invoke()).isEqualTo(mockResultSimple)
 
         with(fileSlot.captured) {
             assertThat(projectId).isEqualTo(PROJECT_ID)

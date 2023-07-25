@@ -76,7 +76,8 @@ class ProjectPartnerReportControlFilePersistenceProviderTest : UnitTest() {
                     surname = "Jon"
                 ),
                 size = 2L,
-                description = "some description"
+                description = "some description",
+                indexedPath = "some path"
             ),
             signedFile = null
         )

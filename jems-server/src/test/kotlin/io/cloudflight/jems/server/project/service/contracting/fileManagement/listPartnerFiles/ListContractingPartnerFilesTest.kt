@@ -33,7 +33,8 @@ internal class ListContractingPartnerFilesTest : UnitTest() {
             uploaded = ZonedDateTime.of(2020,1,30,15,10,10,10, ZoneId.systemDefault()),
             author = UserSimple(45L, "dummy@email", name = "Dummy", surname = "Surname"),
             size = 6281245L,
-            description = "Description"
+            description = "Description",
+            indexedPath = ""
         )
     }
 

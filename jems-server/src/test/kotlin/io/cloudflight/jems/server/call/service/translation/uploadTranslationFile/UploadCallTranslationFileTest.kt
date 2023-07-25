@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.call.service.model.translation.CallTranslationFile
 import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.file.service.JemsSystemFileService
+import io.cloudflight.jems.server.common.file.service.model.JemsFile
 import io.cloudflight.jems.server.common.file.service.model.JemsFileCreate
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
@@ -75,7 +76,9 @@ class UploadCallTranslationFileTest : UnitTest() {
 
     private fun uploadTest(filePath: String) {
         val toSave = slot<JemsFileCreate>()
-        val mockResult = mockk<JemsFileMetadata>()
+        val mockResult = mockk<JemsFile>()
+        val mockResultSimple = mockk<JemsFileMetadata>()
+        every { mockResult.toSimple() } returns mockResultSimple
         every { securityService.getUserIdOrThrow() } returns 7965L
         every { fileService.persistFile(capture(toSave)) } returns mockResult
 
@@ -86,7 +89,7 @@ class UploadCallTranslationFileTest : UnitTest() {
         every { file.stream } returns javaClass.classLoader.getResourceAsStream(filePath)!!
 
         assertThat(interactor.upload(7L, SystemLanguage.NO, file)).isEqualTo(
-            CallTranslationFile(SystemLanguage.NO, mockResult, null)
+            CallTranslationFile(SystemLanguage.NO, mockResultSimple, null)
         )
         verify(exactly = 1) { messageSource.clearCache() }
 

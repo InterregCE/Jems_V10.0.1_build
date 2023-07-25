@@ -101,6 +101,10 @@ class JemsFilePersistenceProvider(
         )?.toFullModel()
 
     @Transactional(readOnly = true)
+    override fun getFile(projectId: Long, fileId: Long): JemsFile? =
+        projectFileMetadataRepository.findByProjectIdAndId(projectId, fileId)?.toFullModel()
+
+    @Transactional(readOnly = true)
     override fun downloadFile(partnerId: Long, fileId: Long) =
         projectFileMetadataRepository.findByPartnerIdAndId(partnerId = partnerId, fileId = fileId)?.download()
 
@@ -139,6 +143,7 @@ class JemsFilePersistenceProvider(
     @Transactional(readOnly = true)
     override fun getFileType(fileId: Long, projectId: Long): JemsFileType? =
         projectFileMetadataRepository.findByProjectIdAndId(projectId, fileId)?.type
+
 
     @Transactional(readOnly = true)
     override fun getFileTypeByPartnerId(fileId: Long, partnerId: Long): JemsFileType =

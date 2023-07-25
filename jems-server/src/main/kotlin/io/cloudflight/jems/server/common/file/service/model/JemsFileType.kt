@@ -76,4 +76,18 @@ enum class JemsFileType(
 
     private fun Long.toFixedLength() = this.toString().padStart(6, '0')
 
+    fun getItsIdFrom(path: String): Long? {
+        if (!needsId)
+            return null
+
+        return Regex("$name/(\\d+)").find(path)!!.groups.get(1)!!.value.toLong()
+    }
+
+    fun isSubFolderOf(subPath: JemsFileType): Boolean {
+        if (parent == null)
+            return false
+
+        return parent == subPath || parent.isSubFolderOf(subPath)
+    }
+
 }

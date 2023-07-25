@@ -8,10 +8,12 @@ import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.common.file.minio.MinioStorage
 import io.cloudflight.jems.server.common.file.repository.JemsFileMetadataRepository
+import io.cloudflight.jems.server.common.file.service.model.JemsFile
 import io.cloudflight.jems.server.common.file.service.model.JemsFileCreate
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType.PaymentAdvanceAttachment
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType.PaymentAttachment
+import io.cloudflight.jems.server.common.file.service.model.UserSimple
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -67,6 +69,17 @@ class JemsProjectFileRepositoryTest : UnitTest() {
 
             return p
         }
+
+        private fun expectedFile(type: JemsFileType) = JemsFile(
+            id = 0L,
+            name = "new_file.txt",
+            type = type,
+            uploaded = ZonedDateTime.now(),
+            author = UserSimple(9678L, email = "email", name = "name-user", surname = "surname-user"),
+            size = 45L,
+            description = "",
+            indexedPath = "/our/indexed/path/",
+        )
     }
 
     @MockK
@@ -124,6 +137,10 @@ class JemsProjectFileRepositoryTest : UnitTest() {
         every { minioStorage.saveFile(any(), any(), any(), any(), true) } returns Unit
 
         val userEntity = mockk<UserEntity>()
+        every { userEntity.id } returns USER_ID
+        every { userEntity.email } returns "email"
+        every { userEntity.name } returns "name-user"
+        every { userEntity.surname } returns "surname-user"
         every { userRepository.getById(USER_ID) } returns userEntity
 
         val slotFileEntity = slot<JemsFileMetadataEntity>()
@@ -135,7 +152,8 @@ class JemsProjectFileRepositoryTest : UnitTest() {
 
         val file = file(type = type)
         var additionalStepInvoked = false
-        service.persistFileAndPerformAction(file) { additionalStepInvoked = true }
+        val result = service.persistFileAndPerformAction(file) { additionalStepInvoked = true }
+        assertThat(result).isEqualTo(expectedFile(type).copy(uploaded = slotFileEntity.captured.uploaded))
 
         verify(exactly = 1) { minioStorage.saveFile(expectedBucket, "/our/indexed/path/new_file.txt", any(), any(), true) }
 
