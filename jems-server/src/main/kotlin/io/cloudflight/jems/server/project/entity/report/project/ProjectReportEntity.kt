@@ -4,7 +4,6 @@ import io.cloudflight.jems.server.project.entity.contracting.reporting.ProjectCo
 import io.cloudflight.jems.server.project.entity.report.project.identification.ProjectReportIdentificationTranslEntity
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
-import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
 import javax.persistence.CascadeType
@@ -73,7 +72,7 @@ class ProjectReportEntity(
 
     var firstSubmission: ZonedDateTime?,
 
-    var verificationDate: ZonedDateTime?,
+    var verificationDate: LocalDate?,
 
     var verificationEndDate: ZonedDateTime?,
 

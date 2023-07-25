@@ -35,15 +35,17 @@ class UpdateProjectReportVerificationConclusion(
     }
 
     private fun validateConclusion(conclusion: ProjectReportVerificationConclusion) {
-        if (conclusion.conclusionJS?.length!! > 5000 ||
-            conclusion.conclusionMA?.length!! > 5000 ||
-            conclusion.verificationFollowUp?.length!! > 5000) {
+        val conclusionJsLength = conclusion.conclusionJS?.length ?: 0
+        val conclusionMaLength = conclusion.conclusionMA?.length ?: 0
+        val verificationFollowUpLength = conclusion.verificationFollowUp?.length ?: 0
+
+        if (conclusionJsLength > 5000 || conclusionMaLength > 5000 || verificationFollowUpLength > 5000) {
             throw ReportVerificationInvalidInputException()
         }
     }
 
     private fun validateReportStatus(report: ProjectReportModel) {
-        if (report.status != ProjectReportStatus.InVerification && report.status != ProjectReportStatus.Finalized) {
+        if (report.status != ProjectReportStatus.InVerification) {
             throw ReportVerificationStatusNotValidException()
         }
     }

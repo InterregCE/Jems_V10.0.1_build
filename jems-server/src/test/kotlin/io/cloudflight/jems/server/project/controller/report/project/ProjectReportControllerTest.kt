@@ -32,6 +32,8 @@ import io.mockk.slot
 import io.mockk.verify
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -41,7 +43,7 @@ import org.springframework.data.domain.Pageable
 
 internal class ProjectReportControllerTest : UnitTest() {
 
-    private val YESTERDAY = ZonedDateTime.now().minusDays(1)
+    private val YESTERDAY = LocalDateTime.now().minusDays(1)
     private val WEEK_AGO = LocalDate.now().minusWeeks(1)
     private val TOMORROW = LocalDate.now().plusDays(1)
     private val MONTH_AGO = ZonedDateTime.now().minusMonths(1)
@@ -65,7 +67,7 @@ internal class ProjectReportControllerTest : UnitTest() {
         leadPartnerNameInEnglish = "name EN",
         createdAt = YEAR_AGO,
         firstSubmission = MONTH_AGO,
-        verificationDate = YESTERDAY,
+        verificationDate = YESTERDAY.toLocalDate(),
     )
 
     private val expectedReport = ProjectReportDTO(
@@ -86,7 +88,7 @@ internal class ProjectReportControllerTest : UnitTest() {
         leadPartnerNameInEnglish = "name EN",
         createdAt = YEAR_AGO,
         firstSubmission = MONTH_AGO,
-        verificationDate = YESTERDAY,
+        verificationDate = YESTERDAY.toLocalDate(),
     )
 
     private val reportSummary = ProjectReportSummary(
@@ -101,9 +103,9 @@ internal class ProjectReportControllerTest : UnitTest() {
         reportingDate = null,
         createdAt = YEAR_AGO,
         firstSubmission = MONTH_AGO,
-        verificationDate = YESTERDAY,
+        verificationDate = YESTERDAY.toLocalDate(),
         deletable = false,
-        verificationEndDate = YESTERDAY,
+        verificationEndDate = ZonedDateTime.of(YESTERDAY, ZoneId.systemDefault()),
         amountRequested = BigDecimal.ZERO,
         totalEligibleAfterVerification = BigDecimal.ZERO,
         verificationConclusionJS = null,
@@ -123,9 +125,9 @@ internal class ProjectReportControllerTest : UnitTest() {
         reportingDate = null,
         createdAt = YEAR_AGO,
         firstSubmission = MONTH_AGO,
-        verificationDate = YESTERDAY,
+        verificationDate = YESTERDAY.toLocalDate(),
         deletable = false,
-        verificationEndDate = YESTERDAY,
+        verificationEndDate = ZonedDateTime.of(YESTERDAY, ZoneId.systemDefault()),
         amountRequested = BigDecimal.ZERO,
         totalEligibleAfterVerification = BigDecimal.ZERO,
         verificationConclusionJS = null,

@@ -18,7 +18,7 @@ data class ProjectReportSummary(
     val reportingDate: LocalDate?,
     val createdAt: ZonedDateTime,
     val firstSubmission: ZonedDateTime?,
-    val verificationDate: ZonedDateTime?,
+    val verificationDate: LocalDate?,
     val verificationEndDate: ZonedDateTime?,
     var deletable: Boolean,
     var amountRequested: BigDecimal?,

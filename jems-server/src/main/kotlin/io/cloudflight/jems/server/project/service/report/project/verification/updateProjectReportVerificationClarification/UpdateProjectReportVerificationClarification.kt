@@ -44,7 +44,7 @@ class UpdateProjectReportVerificationClarification(
     }
 
     private fun validateClarification(clarification: ProjectReportVerificationClarification) {
-        if (clarification.comment.length > 3000)
+        if (clarification.comment.isNotEmpty() && clarification.comment.length > 3000)
             throw ReportVerificationInvalidInputException()
     }
 

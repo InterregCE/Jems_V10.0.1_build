@@ -18,7 +18,7 @@ data class ProjectReportSummaryDTO(
     val reportingDate: LocalDate?,
     val createdAt: ZonedDateTime,
     val firstSubmission: ZonedDateTime?,
-    val verificationDate: ZonedDateTime?,
+    val verificationDate: LocalDate?,
     val verificationEndDate: ZonedDateTime?,
     val deletable: Boolean,
     val amountRequested: BigDecimal?,

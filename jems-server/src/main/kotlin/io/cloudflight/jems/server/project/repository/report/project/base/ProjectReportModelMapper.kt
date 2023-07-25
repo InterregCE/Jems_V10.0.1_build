@@ -11,9 +11,7 @@ import io.cloudflight.jems.server.project.entity.report.project.financialOvervie
 import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateCostCategoryEntity
 import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateLumpSumEntity
 import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateUnitCostEntity
-import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
-import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedFund
@@ -22,35 +20,6 @@ import io.cloudflight.jems.server.project.service.report.model.project.base.crea
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.costCategory.ReportCertificateCostCategory
 import io.cloudflight.jems.server.project.service.report.model.project.verification.ProjectReportVerificationConclusion
 import java.math.BigDecimal.ZERO
-
-
-fun ProjectReportEntity.toModelSummary(
-    periodResolver: (Int) -> ProjectPeriod?,
-) = ProjectReportSummary(
-    id = id,
-    reportNumber = number,
-    status = status,
-    linkedFormVersion = applicationFormVersion,
-    startDate = startDate,
-    endDate = endDate,
-
-    type = deadline?.type ?: type,
-    periodDetail = (deadline?.periodNumber ?: periodNumber)?.let { periodResolver.invoke(it) },
-    reportingDate = deadline?.deadline ?: reportingDate,
-
-    createdAt = createdAt,
-    firstSubmission = firstSubmission,
-    verificationDate = verificationDate,
-    deletable = false,
-    verificationEndDate = verificationEndDate,
-    totalEligibleAfterVerification = null,
-    amountRequested = null,
-
-    verificationConclusionJS = verificationConclusionJs,
-    verificationConclusionMA = verificationConclusionMa,
-    verificationFollowup = verificationFollowup,
-
-)
 
 fun ProjectReportEntity.toModel() = ProjectReportModel(
     id = id,
@@ -187,7 +156,6 @@ fun PreviouslyProjectReportedCoFinancing.toProjectReportEntity(
     )
 }
 
-
 fun List<PreviouslyProjectReportedFund>.toProjectReportEntity(
     reportEntity: ProjectReportEntity,
     programmeFundResolver: (Long) -> ProgrammeFundEntity,
@@ -270,9 +238,8 @@ fun ProjectReportUnitCostBase.toEntity(
     previouslyReported = previouslyReported,
 )
 
-
 fun ProjectReportEntity.toVerificationConclusion() = ProjectReportVerificationConclusion(
-    startDate = startDate,
+    startDate = verificationDate,
     conclusionJS = verificationConclusionJs,
     conclusionMA = verificationConclusionMa,
     verificationFollowUp = verificationFollowup

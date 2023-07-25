@@ -163,7 +163,7 @@ class ProjectReportPersistenceProvider(
         projectReportRepository.getByIdAndProjectId(id = reportId, projectId = projectId)
             .apply {
                 status = ProjectReportStatus.InVerification
-                verificationDate = ZonedDateTime.now()
+                verificationDate = LocalDate.now()
             }.toSubmissionSummary()
 
     @Transactional

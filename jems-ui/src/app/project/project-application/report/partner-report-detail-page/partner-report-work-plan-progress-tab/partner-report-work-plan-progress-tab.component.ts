@@ -4,7 +4,7 @@ import {FormService} from '@common/components/section/form/form.service';
 import {
   ProjectApplicationFormSidenavService
 } from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
-import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
+import {combineLatest, Observable} from 'rxjs';
 import {
   ProjectPartnerReportWorkPackageActivityDeliverableDTO,
   ProjectPartnerReportWorkPackageActivityDTO,
@@ -38,8 +38,8 @@ export class PartnerReportWorkPlanProgressTabComponent {
 
   constants = PartnerReportWorkplanConstants;
   data$: Observable<{
-    workPackages: ProjectPartnerReportWorkPackageDTO[],
-    isReportEditable: boolean,
+    workPackages: ProjectPartnerReportWorkPackageDTO[];
+    isReportEditable: boolean;
   }>;
   isUploadDone = false;
 
