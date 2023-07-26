@@ -98,7 +98,7 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditFormComponent imple
     ProgrammeLumpSumDTO.PaymentClaimEnum.BasedOnSco,
     ProgrammeLumpSumDTO.PaymentClaimEnum.FinancingNotBasedOnSco,
     ProgrammeLumpSumDTO.PaymentClaimEnum.Other
-  ]
+  ];
 
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
@@ -137,7 +137,7 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditFormComponent imple
     this.lumpSumForm.controls.name.setValue(this.lumpSum.name);
     this.lumpSumForm.controls.description.setValue(this.lumpSum.description);
     this.lumpSumForm.controls.cost.setValue(this.lumpSum.cost);
-    this.lumpSumForm.controls.paymentClaim.setValue(this.lumpSum.paymentClaim)
+    this.lumpSumForm.controls.paymentClaim.setValue(this.lumpSum.paymentClaim);
     this.previousSplitting = this.lumpSum.splittingAllowed ? 'Yes' : 'No';
     this.isFastTrack = this.lumpSum.fastTrack ? 'Yes' : 'No';
     this.previousPhase = this.lumpSum.phase;

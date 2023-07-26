@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.project.base.createProjectReport
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.project.authorization.CanEditProjectReportNotSpecific
+import io.cloudflight.jems.server.project.authorization.CanCreateProjectReport
 import io.cloudflight.jems.server.project.service.ProjectDescriptionPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
@@ -61,7 +61,7 @@ class CreateProjectReport(
         private val emptyPrinciples = ProjectHorizontalPrinciples(null, null, null)
     }
 
-    @CanEditProjectReportNotSpecific
+    @CanCreateProjectReport
     @Transactional
     @ExceptionWrapper(CreateProjectReportException::class)
     override fun createReportFor(projectId: Long, data: ProjectReportUpdate): ProjectReport {

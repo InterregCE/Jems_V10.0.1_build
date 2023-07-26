@@ -13,6 +13,8 @@ enum class UserRolePermissionDTO(val key: String) {
 
     ProjectCreatorSharedFolderView("ProjectCreatorSharedFolderView"),
     ProjectCreatorSharedFolderEdit("ProjectCreatorSharedFolderEdit"),
+
+    ProjectCreatorReportingProjectCreate("ProjectCreatorReportingProjectCreate"),
     // endregion Creator
 
     // region Monitor

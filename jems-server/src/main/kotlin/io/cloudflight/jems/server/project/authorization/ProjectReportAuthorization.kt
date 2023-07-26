@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component
 annotation class CanEditProjectReport
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectReportAuthorization.canEditReportNotSpecific(#projectId)")
-annotation class CanEditProjectReportNotSpecific
+@PreAuthorize("@projectReportAuthorization.canCreateProjectReport(#projectId)")
+annotation class  CanCreateProjectReport
 
 @Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("@projectReportAuthorization.canViewReport(#projectId)")
@@ -47,6 +47,16 @@ class ProjectReportAuthorization(
         val canCreatorEdit = isActiveUserIdEqualToOneOf(project.getUserIdsWithEditLevel())
 
         return canMonitorEdit || canCreatorEdit
+    }
+
+    fun canCreateProjectReport(projectId: Long): Boolean {
+        val project = projectPersistence.getApplicantAndStatusById(projectId)
+
+        val canMonitorEdit = hasPermission(UserRolePermission.ProjectReportingProjectEdit, projectId)
+        val canCreatorEdit = isActiveUserIdEqualToOneOf(project.getUserIdsWithEditLevel())
+
+        return canMonitorEdit ||
+                (canCreatorEdit && hasPermission(UserRolePermission.ProjectCreatorReportingProjectCreate))
     }
 
     fun canViewReport(projectId: Long): Boolean {

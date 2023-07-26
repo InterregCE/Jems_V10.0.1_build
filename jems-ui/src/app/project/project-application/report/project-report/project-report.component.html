@@ -6,7 +6,7 @@
         [isVersionedData]="false">
 
     <h3>{{'project.application.project.report.title' | translate}}</h3>
-    <ng-container *ngIf="pageStore.userCanEditReport$ | async">
+    <ng-container *ngIf="pageStore.userCanCreateReport$ | async">
         <p class="mb-3">
             <a jemsText mat-raised-button [color]="'primary'" [routerLink]="'/app/project/detail/' + projectId + '/projectReports/create'"
                aria-label="add">

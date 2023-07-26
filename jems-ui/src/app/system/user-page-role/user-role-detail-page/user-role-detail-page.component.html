@@ -91,6 +91,20 @@
                                                     </span>
                                                 </mat-button-toggle>
                                             </mat-button-toggle-group>
+                                            <span *ngIf="node.mode === PermissionMode.TOGGLE_EDIT" class="slide-toggle-wrapper">
+                                                {{ 'common.permission.hide' | translate}}
+                                                <mat-slide-toggle color="primary"
+                                                                  [disabled]="node.disabled || !data.isUpdateAllowed"
+                                                                  (click)="$event.stopPropagation()"
+                                                                  (change)="changeStateOfToggle(node.form)"
+                                                                  [checked]="state(node.form)?.value === PermissionState.EDIT">
+                                                </mat-slide-toggle>
+                                                {{ 'common.permission.active' | translate}}
+                                                <jems-context-info *ngIf="infoMessage(node.form)?.value"
+                                                                   infoText="{{infoMessage(node.form)?.value | translate}}"
+                                                                   infoPosition="right">
+                                                </jems-context-info>
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
