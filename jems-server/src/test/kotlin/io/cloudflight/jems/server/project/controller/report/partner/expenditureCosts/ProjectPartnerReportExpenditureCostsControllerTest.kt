@@ -85,6 +85,7 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
         attachment = JemsFileMetadata(500L, "file.txt", UPLOADED),
         parkingMetadata = ExpenditureParkingMetadata(
             reportOfOriginId = 14L,
+            reportProjectOfOriginId = null,
             reportOfOriginNumber = 2,
             originalExpenditureNumber = 9
         ),

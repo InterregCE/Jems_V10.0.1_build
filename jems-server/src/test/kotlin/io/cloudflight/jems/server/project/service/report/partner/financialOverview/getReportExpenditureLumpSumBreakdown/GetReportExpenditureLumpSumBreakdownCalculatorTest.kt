@@ -293,6 +293,7 @@ internal class GetReportExpenditureLumpSumBreakdownCalculatorTest : UnitTest() {
                 expenditureWithLumpSum.copy(
                     parkingMetadata = ExpenditureParkingMetadata(
                         reportOfOriginId = 70L,
+                        reportProjectOfOriginId = null,
                         reportOfOriginNumber = 5,
                         originalExpenditureNumber = 3
                     )

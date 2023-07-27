@@ -45,7 +45,9 @@ fun ProjectReportEntity.toModel() = ProjectReportModel(
     verificationDate = verificationDate,
     verificationEndDate = verificationEndDate,
     amountRequested = null,
-    totalEligibleAfterVerification = null
+    totalEligibleAfterVerification = null,
+    riskBasedVerification = riskBasedVerification,
+    riskBasedVerificationDescription = riskBasedVerificationDescription
 )
 
 fun Pair<ProjectReportEntity, ReportProjectCertificateCoFinancingEntity?>.toModel() = ProjectReportModel(
@@ -73,6 +75,8 @@ fun Pair<ProjectReportEntity, ReportProjectCertificateCoFinancingEntity?>.toMode
     verificationEndDate = first.verificationEndDate,
     amountRequested = second?.sumCurrent,
     totalEligibleAfterVerification = null,
+    riskBasedVerification = first.riskBasedVerification,
+    riskBasedVerificationDescription = first.riskBasedVerificationDescription
 )
 
 fun ProjectReportModel.toEntity(
@@ -103,6 +107,8 @@ fun ProjectReportModel.toEntity(
     verificationConclusionJs = null,
     verificationConclusionMa = null,
     verificationFollowup = null,
+    riskBasedVerification = riskBasedVerification,
+    riskBasedVerificationDescription = riskBasedVerificationDescription
 )
 
 fun ProjectReportEntity.toSubmissionSummary() =

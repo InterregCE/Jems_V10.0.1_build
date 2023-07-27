@@ -77,6 +77,7 @@ internal class DeleteParkedExpenditureTest : UnitTest() {
         val reportId = 470L
         val expenditure = ExpenditureParkingMetadata(
             reportOfOriginId = 348L,
+            reportProjectOfOriginId = null,
             reportOfOriginNumber = 1,
             originalExpenditureNumber = 2
         )

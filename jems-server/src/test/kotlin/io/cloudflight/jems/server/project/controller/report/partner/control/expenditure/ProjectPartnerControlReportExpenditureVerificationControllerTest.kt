@@ -61,6 +61,7 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
         parkedOn = null,
         parkingMetadata = ExpenditureParkingMetadata(
             reportOfOriginId = 70L,
+            reportProjectOfOriginId = null,
             reportOfOriginNumber = 5,
             originalExpenditureNumber = 3
         ),
@@ -100,6 +101,7 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
         parkedOn = null,
         parkingMetadata = ExpenditureParkingMetadata(
             reportOfOriginId = 72L,
+            reportProjectOfOriginId = null,
             reportOfOriginNumber = 4,
             originalExpenditureNumber = 3
         ),

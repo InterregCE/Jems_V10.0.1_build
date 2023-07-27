@@ -75,6 +75,7 @@ internal class ReIncludeParkedExpenditureTest : UnitTest() {
         every { mockedResult.parkingMetadata } returns
             ExpenditureParkingMetadata(
                 reportOfOriginId = 75L,
+                reportProjectOfOriginId = null,
                 reportOfOriginNumber = 10,
                 originalExpenditureNumber = 11
             )
@@ -126,7 +127,7 @@ internal class ReIncludeParkedExpenditureTest : UnitTest() {
         val newExpenditure = mockk<ProjectPartnerReportExpenditureCost>()
         every { newExpenditure.id } returns 945L
         every { newExpenditure.parkingMetadata } returns
-            ExpenditureParkingMetadata(reportOfOriginId = 77L, reportOfOriginNumber = 3, originalExpenditureNumber = 4)
+            ExpenditureParkingMetadata(reportOfOriginId = 77L, reportProjectOfOriginId = null, reportOfOriginNumber = 3, originalExpenditureNumber = 4)
         every { reportExpenditurePersistence.reIncludeParkedExpenditure(5L, 50L, 500L) } returns newExpenditure
         every { reportParkedExpenditurePersistence.unParkExpenditures(setOf(500L)) } answers { }
         every { partnerPersistence.getProjectIdForPartnerId(5L) } returns 55L

@@ -12,7 +12,6 @@ import io.cloudflight.jems.server.project.entity.report.project.financialOvervie
 import io.cloudflight.jems.server.project.repository.contracting.reporting.ProjectContractingReportingRepository
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.project.identification.ProjectReportSpendingProfileRepository
-import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportDeadline
@@ -92,6 +91,21 @@ class ProjectReportPersistenceProvider(
         report.type = deadline.type
         report.periodNumber = deadline.periodNumber
         report.reportingDate = deadline.reportingDate
+
+        return report.toModel()
+    }
+
+    @Transactional
+    override fun updateReportExpenditureVerification(
+        projectId: Long,
+        reportId: Long,
+        riskBasedVerification: Boolean,
+        riskBasedVerificationDescription: String?
+    ): ProjectReportModel {
+        val report = projectReportRepository.getByIdAndProjectId(reportId, projectId = projectId)
+
+        report.riskBasedVerification = riskBasedVerification
+        report.riskBasedVerificationDescription = riskBasedVerificationDescription
 
         return report.toModel()
     }
@@ -187,6 +201,10 @@ class ProjectReportPersistenceProvider(
 
         return OrderSpecifier(if (orderBy.isAscending) Order.ASC else Order.DESC, dfg)
     }
+
+    @Transactional(readOnly = true)
+    override fun getProjectIdForProjectReportId(projectReportId: Long) =
+        projectReportRepository.getById(projectReportId).projectId
 
 }
 

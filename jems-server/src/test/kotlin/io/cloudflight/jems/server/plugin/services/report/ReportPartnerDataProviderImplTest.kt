@@ -358,6 +358,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
             attachment = JemsFileMetadata(47L, "file.xlsx", DATE_TIME_1),
             parkingMetadata = ExpenditureParkingMetadata(
                 reportOfOriginId = 75L,
+                reportProjectOfOriginId = null,
                 reportOfOriginNumber = 4,
                 originalExpenditureNumber = 3
             ),

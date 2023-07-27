@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.entity.report.control.expenditure
 
 import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportExpenditureCostEntity
+import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
 import java.time.ZonedDateTime
 import javax.persistence.Entity
 import javax.persistence.Id
@@ -26,6 +27,10 @@ class PartnerReportParkedExpenditureEntity(
     @JoinColumn(name = "report_of_origin_id")
     @field:NotNull
     val reportOfOrigin: ProjectPartnerReportEntity,
+
+    @ManyToOne
+    @JoinColumn(name = "report_project_of_origin_id")
+    val reportProjectOfOrigin: ProjectReportEntity?,
 
     @field:NotNull
     val originalNumber: Int,

@@ -100,9 +100,9 @@ internal class CreateProjectReportTest : UnitTest() {
             return mock
         }
 
-        private fun currentLatestReport(number: Int): ProjectReportModel {
+        private fun currentLatestReport(): ProjectReportModel {
             val mock = mockk<ProjectReportModel>()
-            every { mock.reportNumber } returns number
+            every { mock.reportNumber } returns 7
             return mock
         }
 
@@ -162,7 +162,9 @@ internal class CreateProjectReportTest : UnitTest() {
                 verificationDate = null,
                 verificationEndDate = null,
                 amountRequested = BigDecimal.ZERO,
-                totalEligibleAfterVerification = BigDecimal.ZERO
+                totalEligibleAfterVerification = BigDecimal.ZERO,
+                riskBasedVerification = false,
+                riskBasedVerificationDescription = null
         )
 
         private fun expectedProjectReport(projectId: Long) = ProjectReport(
@@ -426,14 +428,16 @@ internal class CreateProjectReportTest : UnitTest() {
                 verificationDate = null,
                 verificationEndDate = null,
                 amountRequested = BigDecimal.ZERO,
-                totalEligibleAfterVerification = BigDecimal.ZERO
-            ),
-            reportBudget = ProjectReportBudget(
-                coFinancing = PreviouslyProjectReportedCoFinancing(
-                    fundsSorted = listOf(
-                        PreviouslyProjectReportedFund(
-                            fundId = 410L,
-                            total = BigDecimal.valueOf(1500),
+                totalEligibleAfterVerification = BigDecimal.ZERO,
+                riskBasedVerification = false,
+                riskBasedVerificationDescription = null
+                ),
+                reportBudget = ProjectReportBudget(
+                        coFinancing = PreviouslyProjectReportedCoFinancing(
+                                fundsSorted = listOf(
+                                        PreviouslyProjectReportedFund(
+                                                fundId = 410L,
+                                                total = BigDecimal.valueOf(1500),
                             previouslyReported = BigDecimal.valueOf(256),
                             previouslyVerified = BigDecimal.valueOf(104),
                             previouslyPaid = BigDecimal.valueOf(512),
@@ -715,7 +719,7 @@ internal class CreateProjectReportTest : UnitTest() {
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns "version"
         every { projectPersistence.getProject(projectId, "version") } returns project(projectId, status)
         every { projectPersistence.getProjectPeriods(projectId, "version") } returns listOf(ProjectPeriod(4, 17, 22))
-        every { reportPersistence.getCurrentLatestReportFor(projectId) } returns currentLatestReport(7)
+        every { reportPersistence.getCurrentLatestReportFor(projectId) } returns currentLatestReport()
         every { projectPartnerPersistence.findTop50ByProjectId(projectId, "version") } returns listOf(leadPartner())
         every { projectDescriptionPersistence.getBenefits(projectId, "version") } returns projectRelevanceBenefits()
         val reports = listOf(

@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.repository.report.partner.control.exp
 import io.cloudflight.jems.server.project.entity.report.control.expenditure.PartnerReportParkedExpenditureEntity
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.partner.expenditure.ProjectPartnerReportExpenditureRepository
+import io.cloudflight.jems.server.project.repository.report.project.base.ProjectReportRepository
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.control.expenditure.ParkExpenditureData
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
@@ -15,6 +16,7 @@ class PartnerReportParkedExpenditurePersistenceProvider(
     private val reportRepository: ProjectPartnerReportRepository,
     private val reportExpenditureRepository: ProjectPartnerReportExpenditureRepository,
     private val reportParkedExpenditureRepository: PartnerReportParkedExpenditureRepository,
+    private val projectReportRepository: ProjectReportRepository
 ) : PartnerReportParkedExpenditurePersistence {
 
     @Transactional(readOnly = true)
@@ -29,6 +31,7 @@ class PartnerReportParkedExpenditurePersistenceProvider(
             it.parkedFromExpenditureId,
             ExpenditureParkingMetadata(
                 reportOfOriginId = it.reportOfOrigin.id,
+                reportProjectOfOriginId = it.reportProjectOfOrigin?.id,
                 reportOfOriginNumber = it.reportOfOrigin.number,
                 originalExpenditureNumber = it.originalNumber
             )
@@ -41,6 +44,7 @@ class PartnerReportParkedExpenditurePersistenceProvider(
                 parkedFromExpenditureId = it.expenditureId,
                 parkedFrom = reportExpenditureRepository.getById(it.expenditureId),
                 reportOfOrigin = reportRepository.getById(it.originalReportId),
+                reportProjectOfOrigin = it.originalProjectReportId?.let { id -> projectReportRepository.getById(id) },
                 originalNumber = it.originalNumber,
                 parkedOn = it.parkedOn
             )

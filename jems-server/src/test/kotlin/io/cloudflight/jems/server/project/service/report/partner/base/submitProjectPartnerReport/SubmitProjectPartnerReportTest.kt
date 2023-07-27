@@ -137,6 +137,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             attachment = null,
             parkingMetadata = ExpenditureParkingMetadata(
                 reportOfOriginId = 70L,
+                reportProjectOfOriginId = null,
                 reportOfOriginNumber = 5,
                 originalExpenditureNumber = 3
             ),
@@ -390,7 +391,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         } returns listOf(
             expenditure1.copy(currencyConversionRate = BigDecimal.valueOf(254855, 4), declaredAmountAfterSubmission = BigDecimal.valueOf(999L, 2)),
             expenditure2.copy(
-                currencyConversionRate = BigDecimal.valueOf(77895, 4), 
+                currencyConversionRate = BigDecimal.valueOf(77895, 4),
                 declaredAmountAfterSubmission = BigDecimal.valueOf(623L, 2)
                 ), // re-included
             expenditure3.copy(currencyConversionRate = BigDecimal.ONE, declaredAmountAfterSubmission = BigDecimal.valueOf(165, 1)),

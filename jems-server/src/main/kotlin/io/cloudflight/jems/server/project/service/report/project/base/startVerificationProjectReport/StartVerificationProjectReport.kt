@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.ProjectRe
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.projectReportStartedVerification
+import io.cloudflight.jems.server.project.service.report.project.verification.expenditure.ProjectReportVerificationExpenditurePersistence
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional
 class StartVerificationProjectReport(
     private val reportPersistence: ProjectReportPersistence,
     private val auditPublisher: ApplicationEventPublisher,
+    private val projectReportExpenditureVerificationPersistence: ProjectReportVerificationExpenditurePersistence
 ) : StartVerificationProjectReportInteractor {
 
     @CanStartProjectReportVerification
@@ -23,6 +25,8 @@ class StartVerificationProjectReport(
     override fun startVerification(projectId: Long, reportId: Long): ProjectReportStatus {
         val report = reportPersistence.getReportById(projectId = projectId, reportId = reportId)
         validateReportIsSubmitted(report)
+
+        projectReportExpenditureVerificationPersistence.initiateEmptyVerificationForProjectReport(reportId)
 
         return reportPersistence.startVerificationOnReportById(
             projectId = projectId,

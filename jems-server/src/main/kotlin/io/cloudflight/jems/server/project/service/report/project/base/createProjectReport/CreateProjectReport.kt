@@ -173,7 +173,9 @@ class CreateProjectReport(
         verificationDate = null,
         verificationEndDate = null,
         amountRequested = BigDecimal.ZERO,
-        totalEligibleAfterVerification = BigDecimal.ZERO
+        totalEligibleAfterVerification = BigDecimal.ZERO,
+        riskBasedVerification = false,
+        riskBasedVerificationDescription = null
     )
 
     private fun List<ProjectResult>.toCreateModel(

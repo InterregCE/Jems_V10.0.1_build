@@ -9,6 +9,8 @@ import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPa
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
+import io.cloudflight.jems.server.project.service.report.model.project.verification.expenditure.ProjectPartnerReportExpenditureItem
+import io.cloudflight.jems.server.project.service.report.model.project.verification.expenditure.ProjectReportVerificationExpenditureLine
 
 fun projectReportCreated(
     context: Any,
@@ -59,7 +61,8 @@ fun projectReportSubmitted(
             .description("[${report.projectIdentifier}]: Project report PR.${report.reportNumber} submitted, certificates included: " +
                 certificates.joinToString(separator = ", ", transform = {
                     "${if (it.partnerRole == ProjectPartnerRole.LEAD_PARTNER) "LP" else "PP"}${it.partnerNumber}-R.${it.reportNumber}"
-                }))
+                })
+            )
             .build()
     )
 
@@ -74,8 +77,10 @@ fun controlCertificateCreated(
         customIdentifier = report.identification.projectIdentifier,
         acronym = report.identification.projectAcronym
     ).entityRelatedId(entityRelatedId = report.id)
-        .description("A control certificate was generated for partner report R.${report.reportNumber} of partner " +
-                "${if (report.identification.partnerRole.isLead) "LP" else "PP"}${report.identification.partnerNumber}")
+        .description(
+            "A control certificate was generated for partner report R.${report.reportNumber} of partner " +
+                "${if (report.identification.partnerRole.isLead) "LP" else "PP"}${report.identification.partnerNumber}"
+        )
         .build()
 )
 
@@ -90,8 +95,10 @@ fun controlReportCreated(
         customIdentifier = report.identification.projectIdentifier,
         acronym = report.identification.projectAcronym
     ).entityRelatedId(entityRelatedId = report.id)
-        .description("A control report was generated for partner report R.${report.reportNumber} of partner " +
-            "${if (report.identification.partnerRole.isLead) "LP" else "PP"}${report.identification.partnerNumber}")
+        .description(
+            "A control report was generated for partner report R.${report.reportNumber} of partner " +
+                "${if (report.identification.partnerRole.isLead) "LP" else "PP"}${report.identification.partnerNumber}"
+        )
         .build()
 )
 
@@ -109,9 +116,11 @@ fun projectReportStartedVerification(
                 acronym = report.projectAcronym,
             )
             .entityRelatedId(entityRelatedId = report.id)
-            .description("[" +
+            .description(
+                "[" +
                     report.projectIdentifier +
-                    "] Project report R.${report.reportNumber} verification started")
+                    "] Project report R.${report.reportNumber} verification started"
+            )
             .build()
     )
 
@@ -119,6 +128,7 @@ fun projectReportFinalizedVerification(
     context: Any,
     projectId: Long,
     report: ProjectReportSubmissionSummary,
+    parkedExpenditures: List<ProjectReportVerificationExpenditureLine>
 ): AuditCandidateEvent =
     AuditCandidateEvent(
         context = context,
@@ -129,8 +139,32 @@ fun projectReportFinalizedVerification(
                 acronym = report.projectAcronym,
             )
             .entityRelatedId(entityRelatedId = report.id)
-            .description("[" +
+            .description(
+                "[" +
                     report.projectIdentifier +
-                    "] Project report R.${report.reportNumber} verification was finalised") // todo add the rest of the message when the expenditures are merged
+                    "] Project report R.${report.reportNumber} verification was finalised and following expenditure items were parked:  ${
+                        getParkedExpendituresDescription(
+                            parkedExpenditures
+                        )
+                    }"
+            )
             .build()
     )
+
+private fun getParkedExpendituresDescription(parkedExpenditure: List<ProjectReportVerificationExpenditureLine>): String {
+    val expenditureString = StringBuilder()
+    parkedExpenditure.forEach {
+        expenditureString.append("[${getPartnerName(it.expenditure)}] - item [${getReportNumber(it.expenditure)}], ")
+    }
+
+    return expenditureString.toString()
+}
+
+private fun getPartnerName(expenditure: ProjectPartnerReportExpenditureItem): String =
+    if (expenditure.partnerRole == ProjectPartnerRole.LEAD_PARTNER) {
+        "LP" + expenditure.partnerNumber
+    } else "PP" + expenditure.partnerNumber
+
+private fun getReportNumber(expenditureLine: ProjectPartnerReportExpenditureItem): String =
+    "R${expenditureLine.partnerReportNumber}.${expenditureLine.number}"
+

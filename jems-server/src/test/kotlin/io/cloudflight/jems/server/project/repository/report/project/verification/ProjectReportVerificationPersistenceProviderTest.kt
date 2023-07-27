@@ -56,7 +56,9 @@ class ProjectReportVerificationPersistenceProviderTest : UnitTest() {
                 verificationEndDate = null,
                 verificationConclusionJs = null,
                 verificationConclusionMa = null,
-                verificationFollowup = null
+                verificationFollowup = null,
+                riskBasedVerification = false,
+                riskBasedVerificationDescription = "Risk based description"
             )
 
         private val verificationConclusion = ProjectReportVerificationConclusion(

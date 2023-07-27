@@ -142,6 +142,7 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
                 parkedOn = null,
                 parkingMetadata = ExpenditureParkingMetadata(
                     reportOfOriginId = 600L,
+                    reportProjectOfOriginId = null,
                     reportOfOriginNumber = 601,
                     originalExpenditureNumber = 12
                 ),
@@ -375,6 +376,7 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
                     declaredAmountAfterSubmission = BigDecimal.valueOf(3680L),
                     parkingMetadata = ExpenditureParkingMetadata(
                         reportOfOriginId = 55L,
+                        reportProjectOfOriginId = null,
                         reportOfOriginNumber = 16,
                         originalExpenditureNumber = 12
                     ),
