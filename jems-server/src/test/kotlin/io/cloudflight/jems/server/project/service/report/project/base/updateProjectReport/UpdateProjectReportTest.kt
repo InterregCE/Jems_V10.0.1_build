@@ -104,6 +104,7 @@ internal class UpdateProjectReportTest : UnitTest() {
             createdAt = NOW,
             firstSubmission = WEEK_AGO,
             verificationDate = NEXT_MONTH.toLocalDate(),
+            verificationEndDate = NEXT_MONTH
         )
     }
 

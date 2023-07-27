@@ -14,7 +14,7 @@ class ExportChecklistInstanceException(cause: Throwable): ApplicationException(
     i18nMessage = I18nMessage("$EXPORT_CHECKLIST_INSTANCE_ERROR_KEY_PREFIX.failed"), cause = cause
 )
 
-class ExportChecklistInstanceExceptionNotFound : ApplicationNotFoundException(
+class ExportChecklistInstanceNotFoundException : ApplicationNotFoundException(
     code = "$EXPORT_CHECKLIST_INSTANCE_ERROR_CODE_PREFIX-002",
     i18nMessage = I18nMessage("$EXPORT_CHECKLIST_INSTANCE_ERROR_KEY_PREFIX.detail.not.found"),
 )

@@ -29,6 +29,7 @@ fun ProjectReportModel.toServiceModel(
     createdAt = createdAt,
     firstSubmission = firstSubmission,
     verificationDate = verificationDate,
+    verificationEndDate = verificationEndDate
 )
 
 fun ProjectReportModel.toServiceSummaryModel(

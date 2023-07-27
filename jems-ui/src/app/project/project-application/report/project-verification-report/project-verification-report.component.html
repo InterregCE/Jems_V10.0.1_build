@@ -26,6 +26,13 @@
             </span>
         </a>
 
+        <a *ngIf="data.allTabsVisible" [active]="activeTab('verificationChecklistsTab')" mat-tab-link
+           (click)="routeTo('verificationChecklistsTab')">
+            <span jemsText maxWidth="230">
+                {{'project.application.project.verification.work.tab.verificationChecklists' | translate}}
+            </span>
+        </a>
+
         <a *ngIf="data.allTabsVisible" [active]="activeTab('finalise')" mat-tab-link (click)="routeTo('finalise')">
             <span jemsText maxWidth="230">
                 {{ 'project.application.project.verification.work.tab.finalise' | translate }}

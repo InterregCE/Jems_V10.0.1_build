@@ -4,6 +4,7 @@
   <CurrentIssues>
     <ID>ComplexCondition:CallValidator.kt$CallValidator$call.is2StepProcedureEnabled() &amp;&amp; (call.endDateStep1 == null || call.endDateStep1!!.isBefore(call.startDate) || call.endDateStep1!!.isAfter(call.endDate))</ID>
     <ID>ComplexCondition:DeleteControlChecklistInstance.kt$DeleteControlChecklistInstance$report.status.controlNotStartedYet() || isChecklistCreatedAfterControl(checklistToBeDeleted, report.controlEnd) || checklistToBeDeleted.status == ChecklistInstanceStatus.FINISHED || (securityService.currentUser?.user?.id != checklistToBeDeleted.creatorId)</ID>
+    <ID>ComplexCondition:DeleteVerificationChecklistInstance.kt$DeleteVerificationChecklistInstance$report.status.verificationNotStartedYet() || isChecklistCreatedAfterVerification(checklistToBeDeleted, report.verificationEndDate) || checklistToBeDeleted.status == ChecklistInstanceStatus.FINISHED || (securityService.currentUser?.user?.id != checklistToBeDeleted.creatorId)</ID>
     <ID>ComplexCondition:GetChecklistInstanceDetail.kt$GetChecklistInstanceDetail$checklistDetail.relatedToId != relatedToId || (isNotAllowedToUpdate(relatedToId, checklistDetail) &amp;&amp; (isNotVisible(checklistDetail) || canNotViewChecklist(relatedToId)))</ID>
     <ID>ComplexCondition:PartnerBudgetPerFundCalculator.kt$PartnerBudgetPerFundCalculator$toDivide == BigDecimal.ZERO || divisor == BigDecimal.ZERO || toDivide == BigDecimal(BigInteger("0"), 2) || divisor == BigDecimal(BigInteger("0"), 2)</ID>
     <ID>ComplexCondition:ProgrammeUnitCostValidation.kt$costPerUnit == null || costPerUnit &lt;= BigDecimal.ZERO || costPerUnit &gt; MAX_COST || costPerUnit.scale() &gt; 2</ID>
@@ -16,6 +17,8 @@
     <ID>ComplexCondition:UpdateControlChecklistInstance.kt$UpdateControlChecklistInstance$report.status.controlNotStartedYet() || isChecklistCreatedAfterControl(existing, report.controlEnd) || existing.status != checklist.status || (securityService.currentUser?.user?.id != existing.creatorId)</ID>
     <ID>ComplexCondition:UpdateControlChecklistInstance.kt$UpdateControlChecklistInstance$report.status.controlNotStartedYet() || isChecklistCreatedAfterControl(existing, report.controlEnd) || statusNotChanged || isFinishedNotByAuthor</ID>
     <ID>ComplexCondition:UpdateLumpSum.kt$UpdateLumpSum$existingLumpSum.cost?.compareTo(updatedLumpSum.cost) != 0 || existingLumpSum.splittingAllowed != updatedLumpSum.splittingAllowed || existingLumpSum.phase != updatedLumpSum.phase || existingLumpSum.categories != updatedLumpSum.categories</ID>
+    <ID>ComplexCondition:UpdateVerificationChecklistInstance.kt$UpdateVerificationChecklistInstance$report.status.verificationNotStartedYet() || isChecklistCreatedAfterVerification(existing, report.verificationEndDate) || existing.status != checklist.status || (securityService.currentUser?.user?.id != existing.creatorId)</ID>
+    <ID>ComplexCondition:UpdateVerificationChecklistInstance.kt$UpdateVerificationChecklistInstance$report.status.verificationNotStartedYet() || isChecklistCreatedAfterVerification(existing, report.verificationEndDate) || statusNotChanged || isFinishedNotByAuthor</ID>
     <ID>ComplexCondition:UploadProjectFile.kt$UploadProjectFile$fileTypeCategory.type == ProjectFileCategoryType.ALL || fileTypeCategory.type == ProjectFileCategoryType.PARTNER &amp;&amp; fileTypeCategory.id == null || fileTypeCategory.type == ProjectFileCategoryType.INVESTMENT &amp;&amp; fileTypeCategory.id == null</ID>
     <ID>ComplexMethod:ApplicationStateFactory.kt$ApplicationStateFactory$fun getInstance(projectSummary: ProjectSummary)</ID>
     <ID>ComplexMethod:ApplicationStatus.kt$ApplicationStatus$fun isInStep2()</ID>
@@ -62,6 +65,7 @@
     <ID>MaxLineLength:ApprovedApplicationWithConditionsStateTest.kt$ApprovedApplicationWithConditionsStateTest$every { projectWorkflowPersistence.updateProjectFundingDecision(PROJECT_ID, USER_ID, ApplicationStatus.NOT_APPROVED, any()) } returns ApplicationStatus.NOT_APPROVED</ID>
     <ID>MaxLineLength:BudgetCostCalculatorTest.kt$BudgetCostCalculatorTest$fun</ID>
     <ID>MaxLineLength:CallEntityMapper.kt$CallEntityMapper$abstract fun map(applicationFormFieldConfigurationEntities: MutableSet&lt;ApplicationFormFieldConfigurationEntity&gt;): MutableSet&lt;ApplicationFormFieldConfiguration&gt;</ID>
+    <ID>MaxLineLength:ChecklistAuditFactory.kt$description = "Checklist ${checklist.id} type ${checklist.type} name ${checklist.name} for project report R.${reportId} changed status from '$oldStatus' to '${checklist.status}'"</ID>
     <ID>MaxLineLength:CreateOutputIndicator.kt$CreateOutputIndicator$resultIndicatorPersistence.getResultIndicator(outputIndicator.resultIndicatorId).programmeObjectivePolicy != outputIndicator.programmeObjectivePolicy</ID>
     <ID>MaxLineLength:CreateOutputIndicatorTest.kt$CreateOutputIndicatorTest$fun</ID>
     <ID>MaxLineLength:ExceptionWrapperAspectTest.kt$ExceptionWrapperAspectTest$fun</ID>

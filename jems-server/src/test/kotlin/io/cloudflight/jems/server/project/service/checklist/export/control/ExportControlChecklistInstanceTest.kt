@@ -7,8 +7,7 @@ import io.cloudflight.jems.plugin.contract.models.common.SystemLanguageData
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.plugin.JemsPluginRegistry
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
-import io.cloudflight.jems.server.project.service.checklist.export.ExportChecklistInstanceExceptionNotFound
-import io.cloudflight.jems.server.project.service.checklist.export.ExportChecklistInstanceTest
+import io.cloudflight.jems.server.project.service.checklist.export.ExportChecklistInstanceNotFoundException
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -60,7 +59,7 @@ class ExportControlChecklistInstanceTest : UnitTest() {
     @Test
     fun exportNotFound() {
         every { checklistInstancePersistence.existsByIdAndRelatedToId(id = CHECKLIST_ID, relatedToId = 2L) } returns false
-        assertThrows<ExportChecklistInstanceExceptionNotFound> { exportChecklistInstance.export(1L, 2L, CHECKLIST_ID, SystemLanguage.EN) }
+        assertThrows<ExportChecklistInstanceNotFoundException> { exportChecklistInstance.export(1L, 2L, CHECKLIST_ID, SystemLanguage.EN) }
     }
 
 }

@@ -265,6 +265,12 @@ import {
 import {
   ProjectVerificationReportFinalizeTabComponent
 } from '@project/project-application/report/project-verification-report/project-verification-report-finalize-tab/project-verification-report-finalize-tab.component';
+import {
+  ProjectVerificationReportVerificationChecklistsTabComponent
+} from '@project/project-application/report/project-verification-report/project-verification-report-verification-checklists-tab/project-verification-report-verification-checklists-tab.component';
+import {
+  ProjectVerificationReportVerificationChecklistPageComponent
+} from '@project/project-application/report/project-verification-report/project-verification-report-verification-checklists-tab/project-verification-report-verification-checklist-page/project-verification-report-verification-checklist-page.component';
 
 export const routes: Routes = [
   {
@@ -470,6 +476,15 @@ export const routes: Routes = [
                           {
                             path: 'document',
                             component: ProjectVerificationReportDocumentTabComponent,
+                          },
+                          {
+                            path: 'verificationChecklistsTab',
+                            component: ProjectVerificationReportVerificationChecklistsTabComponent,
+                          },
+                          {
+                            path: 'verificationChecklistsTab/checklist/:checklistId',
+                            component: ProjectVerificationReportVerificationChecklistPageComponent,
+                            data: {breadcrumb: 'checklists.instance.title'},
                           },
                           {
                             path: 'finalise',

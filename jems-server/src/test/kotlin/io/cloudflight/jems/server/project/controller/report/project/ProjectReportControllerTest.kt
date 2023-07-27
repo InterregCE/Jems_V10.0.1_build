@@ -48,6 +48,7 @@ internal class ProjectReportControllerTest : UnitTest() {
     private val TOMORROW = LocalDate.now().plusDays(1)
     private val MONTH_AGO = ZonedDateTime.now().minusMonths(1)
     private val YEAR_AGO = ZonedDateTime.now().minusYears(1)
+    private val TODAY = ZonedDateTime.now()
 
     private val report = ProjectReport(
         id = 52L,
@@ -68,6 +69,7 @@ internal class ProjectReportControllerTest : UnitTest() {
         createdAt = YEAR_AGO,
         firstSubmission = MONTH_AGO,
         verificationDate = YESTERDAY.toLocalDate(),
+        verificationEndDate = TODAY
     )
 
     private val expectedReport = ProjectReportDTO(
@@ -89,6 +91,7 @@ internal class ProjectReportControllerTest : UnitTest() {
         createdAt = YEAR_AGO,
         firstSubmission = MONTH_AGO,
         verificationDate = YESTERDAY.toLocalDate(),
+        verificationEndDate = TODAY,
     )
 
     private val reportSummary = ProjectReportSummary(

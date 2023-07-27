@@ -1,4 +1,4 @@
-import {ProjectPartnerReportDTO, ProjectReportSummaryDTO} from '@cat/api';
+import {ProjectPartnerReportDTO, ProjectReportDTO, ProjectReportSummaryDTO} from '@cat/api';
 
 export class ReportUtil {
 
@@ -28,6 +28,12 @@ export class ReportUtil {
       ProjectPartnerReportDTO.StatusEnum.InControl,
       ProjectPartnerReportDTO.StatusEnum.ReOpenInControlLimited,
       ProjectPartnerReportDTO.StatusEnum.ReOpenInControlLast
+    ].includes(status);
+  }
+
+  static isVerificationReportOpen(status: ProjectReportDTO.StatusEnum): boolean {
+    return [
+      ProjectReportDTO.StatusEnum.InVerification,
     ].includes(status);
   }
 
