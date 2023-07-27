@@ -113,7 +113,7 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditFormComponent impl
     ProgrammeUnitCostDTO.PaymentClaimEnum.BasedOnSco,
     ProgrammeUnitCostDTO.PaymentClaimEnum.FinancingNotBasedOnSco,
     ProgrammeUnitCostDTO.PaymentClaimEnum.Other
-  ]
+  ];
   validNumberOfSelections = false;
 
   constructor(private formBuilder: FormBuilder,

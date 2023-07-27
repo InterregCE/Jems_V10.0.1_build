@@ -20,6 +20,7 @@ import {
 export class ProjectReportPageStore {
 
   projectReports$: Observable<PageProjectReportSummaryDTO>;
+  userCanCreateReport$: Observable<boolean>;
   userCanViewReport$: Observable<boolean>;
   userCanEditReport$: Observable<boolean>;
   userCanViewVerification$: Observable<boolean>;
@@ -37,6 +38,7 @@ export class ProjectReportPageStore {
               private projectUserCollaboratorService: ProjectUserCollaboratorService,
               private permissionService: PermissionService) {
     this.projectReports$ = this.projectReports();
+    this.userCanCreateReport$ = this.userCanCreateReports();
     this.userCanViewReport$ = this.userCanViewReports();
     this.userCanEditReport$ = this.userCanEditReports();
     this.userCanViewVerification$ = this.userCanViewVerification();
@@ -91,6 +93,20 @@ export class ProjectReportPageStore {
         map((level: string) => level),
         shareReplay(1)
       );
+  }
+
+  private userCanCreateReports(): Observable<boolean> {
+    return combineLatest([
+      this.projectReportLevel(),
+      this.permissionService.hasPermission(PermissionsEnum.ProjectCreatorReportingProjectCreate),
+      this.permissionService.hasPermission(PermissionsEnum.ProjectReportingProjectEdit),
+    ])
+        .pipe(
+            map(([level, creatorCanCreateReport, monitorCanEdit]) => {
+              const creatorCanEdit = level === 'EDIT' || level === 'MANAGE';
+              return (creatorCanEdit && creatorCanCreateReport) || monitorCanEdit;
+            })
+        );
   }
 
   private userCanEditReports(): Observable<boolean> {

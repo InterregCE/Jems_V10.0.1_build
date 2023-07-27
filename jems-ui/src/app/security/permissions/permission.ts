@@ -74,6 +74,12 @@ export class Permission {
           state: PermissionState.EDIT,
         },
         {
+          name: 'project.application.project.reports.title.create.report',
+          mode: PermissionMode.TOGGLE_EDIT,
+          editPermissions: [PermissionsEnum.ProjectCreatorReportingProjectCreate],
+          infoMessage: 'permission.inspect.reporting.project.create'
+        },
+        {
           name: 'project.application.partner.reports.title',
           mode: PermissionMode.HIDDEN_VIEW_EDIT,
           viewPermissions: [],
