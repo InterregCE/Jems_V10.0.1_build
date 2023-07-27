@@ -12,9 +12,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {filter, take, takeUntil, tap} from 'rxjs/operators';
 import {FormState} from '@common/components/forms/form-state';
-import {
-  ProgrammeLumpSumDTO
-} from '@cat/api';
+import {ProgrammeLumpSumDTO} from '@cat/api';
 import {SelectionModel} from '@angular/cdk/collections';
 import {NumberService} from '@common/services/number.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';

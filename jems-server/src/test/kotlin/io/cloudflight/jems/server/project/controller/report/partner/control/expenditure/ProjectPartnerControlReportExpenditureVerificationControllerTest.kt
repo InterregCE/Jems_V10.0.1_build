@@ -17,11 +17,11 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.slot
-import org.assertj.core.api.Assertions
-import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
+import org.assertj.core.api.Assertions
+import org.junit.jupiter.api.Test
 
 class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTest() {
     private val PARTNER_ID = 11L
@@ -189,7 +189,7 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
     private val toUpdateDto = ProjectPartnerControlReportExpenditureVerificationUpdateDTO(
         id = 754,
         partOfSample = true,
-        certifiedAmount = BigDecimal.valueOf(1),
+        deductedAmount = BigDecimal.ZERO,
         typologyOfErrorId = 1,
         verificationComment = "test",
         parked = false
@@ -198,7 +198,7 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
     private val toUpdate = ProjectPartnerReportExpenditureVerificationUpdate(
         id = 754,
         partOfSample = true,
-        certifiedAmount = BigDecimal.valueOf(1),
+        deductedAmount = BigDecimal.ZERO,
         typologyOfErrorId = 1,
         verificationComment = "test",
         parked = false
