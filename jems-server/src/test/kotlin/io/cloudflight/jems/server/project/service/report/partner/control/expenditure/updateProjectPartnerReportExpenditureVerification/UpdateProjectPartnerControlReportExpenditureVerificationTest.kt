@@ -22,14 +22,14 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
+import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.math.BigDecimal
-import java.time.LocalDate
-import java.time.ZonedDateTime
 
 internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : UnitTest() {
 
@@ -114,8 +114,8 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
     private val expectedUpdateWithoutParking = ExpenditureVerificationUpdate(
         id = 14L,
         partOfSample = true,
-        certifiedAmount = BigDecimal.ZERO,
-        deductedAmount = BigDecimal.ONE,
+        certifiedAmount = BigDecimal.ONE,
+        deductedAmount = BigDecimal.ZERO,
         typologyOfErrorId = existingError.id,
         verificationComment = "new comment",
         parked = false
@@ -134,7 +134,7 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
     private val expectedUpdateWithDeduction = ExpenditureVerificationUpdate(
         id = 14L,
         partOfSample = true,
-        certifiedAmount = BigDecimal.valueOf(-199),
+        certifiedAmount = BigDecimal.valueOf(500),
         deductedAmount = BigDecimal.valueOf(200),
         typologyOfErrorId = existingError.id,
         verificationComment = "deduction included",
@@ -144,18 +144,17 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
     private val expectedUpdateWithoutSampled = ExpenditureVerificationUpdate(
         id = 14L,
         partOfSample = true,
-        certifiedAmount = BigDecimal.valueOf(50),
+        certifiedAmount = BigDecimal.valueOf(1),
         typologyOfErrorId = existingError.id,
         verificationComment = "deduction included",
         parked = false,
-        deductedAmount = BigDecimal.valueOf(-49),
+        deductedAmount = BigDecimal.valueOf(0),
     )
-
 
     private val expenditureUpdateValidWithoutParking = ProjectPartnerReportExpenditureVerificationUpdate(
         id = 14L,
         partOfSample = true,
-        certifiedAmount = BigDecimal.ZERO,
+        deductedAmount = BigDecimal.ZERO,
         typologyOfErrorId = existingError.id,
         verificationComment = "new comment",
         parked = false
@@ -164,7 +163,7 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
     private val expenditureUpdateValidWithParking = ProjectPartnerReportExpenditureVerificationUpdate(
         id = 14L,
         partOfSample = true,
-        certifiedAmount = BigDecimal.ZERO,
+        deductedAmount = BigDecimal.ZERO,
         typologyOfErrorId = null,
         verificationComment = "parked expenditure",
         parked = true
@@ -173,7 +172,7 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
     private val expenditureUpdateValidWithDeduction = ProjectPartnerReportExpenditureVerificationUpdate(
         id = 14L,
         partOfSample = true,
-        certifiedAmount = BigDecimal.valueOf(-199),
+        deductedAmount = BigDecimal.valueOf(200),
         typologyOfErrorId = existingError.id,
         verificationComment = "deduction included",
         parked = false
@@ -182,7 +181,7 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
     private val expenditureUpdateInvalid = ProjectPartnerReportExpenditureVerificationUpdate(
         id = 1L,
         partOfSample = true,
-        certifiedAmount = BigDecimal.valueOf(5, 1),
+        deductedAmount = BigDecimal.ONE, // required to result an invalid TypologyError
         typologyOfErrorId = null,
         verificationComment = null,
         parked = false
@@ -191,7 +190,7 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
     private val expenditureUpdateWithoutSampled = ProjectPartnerReportExpenditureVerificationUpdate(
         id = 14L,
         partOfSample = false,
-        certifiedAmount = BigDecimal.valueOf(50),
+        deductedAmount = BigDecimal.ZERO,
         typologyOfErrorId = existingError.id,
         verificationComment = "deduction included",
         parked = false
@@ -264,7 +263,7 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
     @Test
     fun `updatePartnerReportExpenditureVerification - with deduction`() {
         every { reportExpenditurePersistence.getPartnerControlReportExpenditureVerification(partnerId = 17L, reportId = 55L) } returns
-                listOf(verification.copy())
+                listOf(verification.copy(declaredAmountAfterSubmission = BigDecimal.valueOf(700)))
         every { typologyPersistence.getAllTypologyErrors() } returns listOf(existingError)
 
         val slotToUpdate = slot<List<ExpenditureVerificationUpdate>>()
@@ -355,7 +354,7 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
         assertThat(updatePartnerReportExpenditureVerification.updatePartnerReportExpenditureVerification(
             partnerId = 19L,
             reportId = 54L,
-            listOf(expenditureUpdateValidWithParking.copy(parked = false, certifiedAmount = BigDecimal.ONE)),
+            listOf(expenditureUpdateValidWithParking.copy(parked = false, deductedAmount = BigDecimal.ZERO)),
         )).containsExactly(verificationUnParked)
         assertThat(slotToUpdate.captured).containsExactly(expectedUpdateWithParking.copy(parked = false, certifiedAmount = BigDecimal.ONE))
         assertTrue(slotToUpdate.captured.first().partOfSample)
@@ -366,9 +365,20 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
 
     @Test
     fun `updatePartnerReportExpenditureVerification - topology error`() {
+        val partnerReport = mockk<ProjectPartnerReport>()
+        every { reportPersistence.getPartnerReportById(partnerId = 11L , reportId = 4L) } returns partnerReport
+        every { partnerReport.status } returns ReportStatus.InControl
+        every { partnerReport.lastControlReopening } returns null
+
         every { reportExpenditurePersistence.getPartnerControlReportExpenditureVerification(partnerId = 11L, reportId = 4L) } returns
             listOf(verification.copy(id = 1L))
         every { typologyPersistence.getAllTypologyErrors() } returns emptyList()
+        every { reportParkedExpenditurePersistence.parkExpenditures(emptyList()) } answers { }
+        every { reportParkedExpenditurePersistence.unParkExpenditures(emptyList()) } answers { }
+
+        val slotToUpdate = slot<List<ExpenditureVerificationUpdate>>()
+        every { reportExpenditurePersistence.updatePartnerControlReportExpenditureVerification(partnerId = 11L, reportId = 4L, capture(slotToUpdate)) } returns
+                emptyList()
 
         assertThrows<TypologyOfErrorMissing> {
             updatePartnerReportExpenditureVerification
@@ -390,12 +400,14 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
         every { reportParkedExpenditurePersistence.parkExpenditures(emptyList()) } answers { }
         every { reportParkedExpenditurePersistence.unParkExpenditures(emptyList()) } answers { }
 
-        every {
-            reportExpenditurePersistence.updatePartnerControlReportExpenditureVerification(partnerId = 17L, reportId = 55, listOf(expectedUpdateWithoutSampled))
-        } returns listOf(verificationToBeUpdated)
+        val slotToUpdate = slot<List<ExpenditureVerificationUpdate>>()
+        every { reportExpenditurePersistence.updatePartnerControlReportExpenditureVerification(partnerId = 17L, reportId = 55, capture(slotToUpdate)) } returns
+                listOf(verificationToBeUpdated)
 
         assertTrue(updatePartnerReportExpenditureVerification
             .updatePartnerReportExpenditureVerification(partnerId = 17L, reportId = 55, listOf(expenditureUpdateWithoutSampled))
             .first().partOfSample)
+
+        assertThat(slotToUpdate.captured).containsExactly(expectedUpdateWithoutSampled)
     }
 }

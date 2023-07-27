@@ -11,10 +11,10 @@ import io.cloudflight.jems.server.project.service.report.model.partner.expenditu
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.PartnerReportParkedExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.ProjectPartnerReportExpenditureVerificationPersistence
-import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 import java.time.ZonedDateTime
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UpdateProjectPartnerControlReportExpenditureVerification(
@@ -114,9 +114,9 @@ class UpdateProjectPartnerControlReportExpenditureVerification(
     ): List<ProjectPartnerReportExpenditureVerification> = map {
         it.apply {
             if (newValues.containsKey(it.id)) {
-                certifiedAmount = newValues[it.id]!!.certifiedAmount
-                deductedAmount = if (newValues[it.id]!!.parked) BigDecimal.ZERO else
-                    (declaredAmountAfterSubmission ?: BigDecimal.ZERO).minus(certifiedAmount)
+                deductedAmount = newValues[it.id]!!.deductedAmount
+                certifiedAmount = if (newValues[it.id]!!.parked) BigDecimal.ZERO else
+                    (declaredAmountAfterSubmission ?: BigDecimal.ZERO).minus(deductedAmount)
                 partOfSample = it.partOfSampleLocked || deductedAmount.compareTo(BigDecimal.ZERO) != 0 ||
                     newValues[it.id]!!.parked || newValues[it.id]!!.partOfSample
                 typologyOfErrorId = with(newValues[it.id]!!.typologyOfErrorId) {
