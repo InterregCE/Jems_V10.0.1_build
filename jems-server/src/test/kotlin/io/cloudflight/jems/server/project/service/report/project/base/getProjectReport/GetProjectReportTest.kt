@@ -51,7 +51,9 @@ internal class GetProjectReportTest : UnitTest() {
             verificationDate = NEXT_MONTH.toLocalDate(),
             verificationEndDate = NEXT_MONTH,
             amountRequested = BigDecimal.ZERO,
-            totalEligibleAfterVerification = BigDecimal.ZERO
+            totalEligibleAfterVerification = BigDecimal.ZERO,
+            riskBasedVerification = false,
+            riskBasedVerificationDescription = "Description"
         )
 
         val period = ProjectPeriod(7, 13, 14)

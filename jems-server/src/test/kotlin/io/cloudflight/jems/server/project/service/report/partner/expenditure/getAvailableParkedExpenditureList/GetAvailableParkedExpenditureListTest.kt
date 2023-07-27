@@ -36,6 +36,7 @@ internal class GetAvailableParkedExpenditureListTest : UnitTest() {
     companion object {
         private val parkingMetadata = ExpenditureParkingMetadata(
             reportOfOriginId = 75L,
+            reportProjectOfOriginId = null,
             reportOfOriginNumber = 4,
             originalExpenditureNumber = 3
         )

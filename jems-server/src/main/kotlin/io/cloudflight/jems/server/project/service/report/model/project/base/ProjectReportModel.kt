@@ -32,5 +32,8 @@ data class ProjectReportModel(
 
     val verificationEndDate: ZonedDateTime?,
     val amountRequested: BigDecimal?,
-    val totalEligibleAfterVerification: BigDecimal?
+    val totalEligibleAfterVerification: BigDecimal?,
+
+    val riskBasedVerification: Boolean,
+    val riskBasedVerificationDescription: String?
 )

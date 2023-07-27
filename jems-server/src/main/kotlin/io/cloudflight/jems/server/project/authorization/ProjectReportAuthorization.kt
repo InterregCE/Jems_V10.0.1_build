@@ -25,13 +25,6 @@ annotation class CanRetrieveProjectReport
 annotation class CanStartProjectReportVerification
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectReportAuthorization.canViewReportVerification(#projectId)")
-annotation class CanViewReportVerification
-@Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectReportAuthorization.canEditReportVerification(#projectId)")
-annotation class CanEditReportVerification
-
-@Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("@projectReportAuthorization.canFinalizeReportVerification(#projectId)")
 annotation class CanFinalizeProjectReportVerification
 

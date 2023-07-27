@@ -74,7 +74,9 @@ internal class ProjectReportIdentificationPersistenceProviderTest: UnitTest() {
             verificationEndDate = null,
             verificationConclusionJs = null,
             verificationConclusionMa = null,
-            verificationFollowup = null
+            verificationFollowup = null,
+            riskBasedVerification = false,
+            riskBasedVerificationDescription = "Description"
         )
 
         private val identificationUpdate = ProjectReportIdentificationUpdate(

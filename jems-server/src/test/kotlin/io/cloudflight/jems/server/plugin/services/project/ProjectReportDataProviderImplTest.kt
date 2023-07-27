@@ -223,7 +223,9 @@ class ProjectReportDataProviderImplTest : UnitTest() {
             verificationDate = verificationDate.toLocalDate(),
             totalEligibleAfterVerification = BigDecimal.ZERO,
             amountRequested = BigDecimal.ZERO,
-            verificationEndDate = verificationDate
+            verificationEndDate = verificationDate,
+            riskBasedVerification = false,
+            riskBasedVerificationDescription = "Description"
         )
 
         private val expectedReportData = ProjectReportData(

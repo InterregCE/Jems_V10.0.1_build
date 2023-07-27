@@ -69,7 +69,9 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
 
             verificationConclusionJs = null,
             verificationConclusionMa = null,
-            verificationFollowup = null
+            verificationFollowup = null,
+            riskBasedVerification = false,
+            riskBasedVerificationDescription = "RISK BASED DESCRIPTION"
         )
 
         private fun reportProjectCertificateCoFinancingEntity(): ReportProjectCertificateCoFinancingEntity? {
@@ -101,7 +103,9 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
             verificationDate = null,
             verificationEndDate = null,
             amountRequested = BigDecimal.ONE,
-            totalEligibleAfterVerification = null
+            totalEligibleAfterVerification = null,
+            riskBasedVerification = false,
+            riskBasedVerificationDescription = "RISK BASED DESCRIPTION"
         )
 
         private fun report(id: Long, projectId: Long) = ProjectReportModel(
@@ -127,7 +131,9 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
             verificationDate = null,
             verificationEndDate = null,
             amountRequested = null,
-            totalEligibleAfterVerification = null
+            totalEligibleAfterVerification = null,
+            riskBasedVerification = false,
+            riskBasedVerificationDescription = "RISK BASED DESCRIPTION"
         )
 
         fun report(id: Long, status: ProjectReportStatus, deadlineType: ContractingDeadlineType?, reportType: ContractingDeadlineType?): ProjectReportEntity {
@@ -210,7 +216,7 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
         val result = mockk<QueryResults<Tuple>>()
         every { result.total } returns 1
         every { result.results } returns listOf(tuple)
-        every { query.fetchResults() } returns result
+        every { query.  fetchResults() } returns result
 
         assertThat(persistence.listReports(projectId, Pageable.ofSize(1))).containsExactly(reportForListing(42L, projectId))
     }

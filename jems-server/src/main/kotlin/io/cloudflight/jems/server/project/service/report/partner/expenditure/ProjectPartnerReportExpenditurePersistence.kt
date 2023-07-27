@@ -16,6 +16,8 @@ interface ProjectPartnerReportExpenditurePersistence {
 
     fun getPartnerReportExpenditureCosts(ids: Set<Long>, pageable: Pageable): Page<ProjectPartnerReportParkedExpenditure>
 
+    fun getPartnerReportExpenditureCostsByProjectReportId(projectReportId: Long): List<ProjectPartnerReportExpenditureCost>
+
     fun updatePartnerReportExpenditureCosts(
         partnerId: Long,
         reportId: Long,

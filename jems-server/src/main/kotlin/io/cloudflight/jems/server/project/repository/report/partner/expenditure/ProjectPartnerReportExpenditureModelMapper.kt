@@ -66,6 +66,7 @@ fun PartnerReportExpenditureCostEntity.getParkingMetadata(): ExpenditureParkingM
     if (unParkedFrom != null && reportOfOrigin != null && originalNumber != null)
         return ExpenditureParkingMetadata(
             reportOfOriginId = reportOfOrigin!!.id,
+            reportProjectOfOriginId = null, //TODO update later to fill in data to display in partner report
             reportOfOriginNumber = reportOfOrigin!!.number,
             originalExpenditureNumber = originalNumber!!
         )

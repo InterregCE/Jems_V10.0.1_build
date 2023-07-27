@@ -1,13 +1,20 @@
 package io.cloudflight.jems.server.project.service.report.project.base.startVerificationProjectReport
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
+import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.notification.handler.ProjectReportStatusChanged
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.project.verification.expenditure.ProjectReportVerificationExpenditurePersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -22,11 +29,16 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
+import java.math.BigDecimal
+import java.time.LocalDate
 
 internal class StartVerificationProjectReportTest : UnitTest() {
 
     companion object {
         private const val PROJECT_ID = 256L
+        private val DATE_TIME_1 = ZonedDateTime.now()
+        private val DATE_1 = LocalDate.now()
+        private val DATE_2 = LocalDate.now()
 
         private val mockedResult = ProjectReportSubmissionSummary(
             id = 37L,
@@ -40,6 +52,39 @@ internal class StartVerificationProjectReportTest : UnitTest() {
             projectAcronym = "acronym",
             projectId = PROJECT_ID,
         )
+
+        private val expenditure = ProjectPartnerReportExpenditureCost(
+            id = 770L,
+            number = 1,
+            lumpSumId = null,
+            unitCostId = null,
+            costCategory = ReportBudgetCategory.OfficeAndAdministrationCosts,
+            gdpr = false,
+            investmentId = 49L,
+            contractId = 28L,
+            internalReferenceNumber = "irn",
+            invoiceNumber = "invoice",
+            invoiceDate = DATE_1,
+            dateOfPayment = DATE_2,
+            description = setOf(InputTranslation(SystemLanguage.EN, "desc EN")),
+            comment = setOf(InputTranslation(SystemLanguage.EN, "comment EN")),
+            totalValueInvoice = BigDecimal.ONE,
+            vat = BigDecimal.ZERO,
+            numberOfUnits = BigDecimal.valueOf(77),
+            pricePerUnit = BigDecimal.valueOf(44),
+            declaredAmount = BigDecimal.TEN,
+            currencyCode = "GBP",
+            currencyConversionRate = BigDecimal.valueOf(0.84),
+            declaredAmountAfterSubmission = BigDecimal.valueOf(8.4),
+            attachment = JemsFileMetadata(47L, "file.xlsx", DATE_TIME_1),
+            parkingMetadata = ExpenditureParkingMetadata(
+                reportOfOriginId = 75L,
+                reportProjectOfOriginId = null,
+                reportOfOriginNumber = 4,
+                originalExpenditureNumber = 3
+            ),
+        )
+
     }
 
     @MockK
@@ -47,6 +92,9 @@ internal class StartVerificationProjectReportTest : UnitTest() {
 
     @MockK
     lateinit var auditPublisher: ApplicationEventPublisher
+
+    @MockK
+    lateinit var projectReportExpenditureVerificationPersistence: ProjectReportVerificationExpenditurePersistence
 
     @InjectMockKs
     lateinit var interactor: StartVerificationProjectReport
@@ -64,6 +112,7 @@ internal class StartVerificationProjectReportTest : UnitTest() {
         every { reportPersistence.getReportById(PROJECT_ID, 37L) } returns report
 
         every { reportPersistence.startVerificationOnReportById(any(), any()) } returns mockedResult
+        every { projectReportExpenditureVerificationPersistence.initiateEmptyVerificationForProjectReport(any()) } returns Unit
 
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit

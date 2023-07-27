@@ -17,9 +17,7 @@ class ProjectReportVerificationController(
     private val updateProjectReportVerificationConclusion: UpdateProjectReportVerificationConclusionInteractor,
     private val getProjectReportVerificationClarification: GetProjectReportVerificationClarificationInteractor,
     private val updateProjectReportVerificationClarification: UpdateProjectReportVerificationClarificationInteractor,
-
-    ): ProjectReportVerificationApi {
-
+): ProjectReportVerificationApi {
 
     override fun getReportVerificationConclusion(
         projectId: Long, reportId: Long
@@ -53,4 +51,5 @@ class ProjectReportVerificationController(
         reportId = reportId,
         clarifications = clarifications.map { it.toModel() }
     ).map { it.toDto() }
+
 }

@@ -97,6 +97,7 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
         parkedOn = null,
         parkingMetadata = ExpenditureParkingMetadata(
             reportOfOriginId = 14L,
+            reportProjectOfOriginId = null,
             reportOfOriginNumber = 2,
             originalExpenditureNumber = 9
         ),
@@ -317,7 +318,7 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
 
         val parkedOn = parkedItems.captured.toList().get(0).parkedOn
         assertThat(parkedItems.captured).containsExactly(
-            ParkExpenditureData(expenditureId=14L, originalReportId=14L, originalNumber=9, parkedOn = parkedOn)
+            ParkExpenditureData(expenditureId=14L, originalReportId=14L, originalProjectReportId = null, originalNumber=9, parkedOn = parkedOn)
         )
         assertThat(unParkedIds.captured).isEmpty()
     }
@@ -329,6 +330,7 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
                 parked = true,
                 parkingMetadata = ExpenditureParkingMetadata(
                     reportOfOriginId = 54L,
+                    reportProjectOfOriginId = null,
                     reportOfOriginNumber = 4,
                     originalExpenditureNumber = 1
                 ),

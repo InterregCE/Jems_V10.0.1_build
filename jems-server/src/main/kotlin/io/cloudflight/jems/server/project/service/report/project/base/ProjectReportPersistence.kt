@@ -28,6 +28,13 @@ interface ProjectReportPersistence {
         deadline: ProjectReportDeadline,
     ): ProjectReportModel
 
+    fun updateReportExpenditureVerification(
+        projectId: Long,
+        reportId: Long,
+        riskBasedVerification: Boolean,
+        riskBasedVerificationDescription: String?
+    ): ProjectReportModel
+
     fun getCurrentSpendingProfile(reportId: Long): Map<Long, BigDecimal>
 
     fun updateSpendingProfile(reportId: Long, currentValuesByPartnerId: Map<Long, BigDecimal>)
@@ -54,4 +61,7 @@ interface ProjectReportPersistence {
     ): ProjectReportSubmissionSummary
 
     fun finalizeVerificationOnReportById(projectId: Long, reportId: Long): ProjectReportSubmissionSummary
+
+    fun getProjectIdForProjectReportId(projectReportId: Long): Long
+
 }

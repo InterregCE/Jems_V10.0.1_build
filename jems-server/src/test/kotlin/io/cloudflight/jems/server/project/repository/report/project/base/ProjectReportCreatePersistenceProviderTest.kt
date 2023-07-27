@@ -120,7 +120,9 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
             verificationDate = null,
             verificationEndDate = null,
             amountRequested = null,
-            totalEligibleAfterVerification = null
+            totalEligibleAfterVerification = null,
+            riskBasedVerification = false,
+            riskBasedVerificationDescription = "Description"
         )
 
         private fun workPackages() = listOf(
