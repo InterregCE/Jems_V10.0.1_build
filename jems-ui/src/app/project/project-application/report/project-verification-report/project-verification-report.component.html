@@ -20,6 +20,12 @@
     </jems-alert>
 
     <nav mat-tab-nav-bar>
+        <a *ngIf="isFinance(data.projectReport.type)" [active]="activeTab('expenditure')" mat-tab-link (click)="routeTo('expenditure')">
+            <span jemsText maxWidth="230">
+                {{ 'project.application.project.verification.work.tab.expenditure' | translate }}
+            </span>
+        </a>
+
         <a [active]="activeTab('document')" mat-tab-link (click)="routeTo('document')">
             <span jemsText maxWidth="230">
                 {{ 'project.application.project.verification.work.tab.document' | translate }}

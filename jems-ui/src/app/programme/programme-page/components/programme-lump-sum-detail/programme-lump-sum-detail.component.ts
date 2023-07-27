@@ -16,11 +16,11 @@ import {
   ProgrammeLumpSumDTO
 } from '@cat/api';
 import {SelectionModel} from '@angular/cdk/collections';
-import {NumberService} from '../../../../common/services/number.service';
+import {NumberService} from '@common/services/number.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
 import {TranslateService} from '@ngx-translate/core';
-import {Forms} from '../../../../common/utils/forms';
+import {Forms} from '@common/utils/forms';
 import {combineLatest} from 'rxjs';
 import {ActivatedRoute} from '@angular/router';
 

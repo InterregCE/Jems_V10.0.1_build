@@ -32,6 +32,7 @@ import {FileListTableConstants} from '@common/components/file-list/file-list-tab
 })
 export class PartnerActionsCellComponent implements ControlValueAccessor {
   acceptedFilesTypes = AcceptedFileTypesConstants.acceptedFilesTypes;
+  @Input()
   fileMetadata: JemsFileMetadataDTO;
   isUploadInProgress = false;
   anonymizedName = FileListTableConstants.SENSITIVE_FILE_NAME_MASK;

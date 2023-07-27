@@ -178,7 +178,6 @@ class ProjectReportVerificationExpenditurePersistenceTest : UnitTest() {
                 partOfVerificationSample = false,
                 deductedByJs = BigDecimal.valueOf(100),
                 deductedByMa = BigDecimal.valueOf(200),
-                amountAfterVerification = BigDecimal.valueOf(300),
                 typologyOfErrorId = null,
                 parked = false,
                 verificationComment = "JS/MA VERIFICATION COMMENT"
@@ -396,7 +395,7 @@ class ProjectReportVerificationExpenditurePersistenceTest : UnitTest() {
                 partOfVerificationSample = false,
                 deductedByJs = BigDecimal.valueOf(100),
                 deductedByMa = BigDecimal.valueOf(200),
-                amountAfterVerification = BigDecimal.valueOf(300),
+                amountAfterVerification = BigDecimal.valueOf(200),
                 typologyOfErrorId = null,
                 parked = false,
                 verificationComment = "JS/MA VERIFICATION COMMENT"

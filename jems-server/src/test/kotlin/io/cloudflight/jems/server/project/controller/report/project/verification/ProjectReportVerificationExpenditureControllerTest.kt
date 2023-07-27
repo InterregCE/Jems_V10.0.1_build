@@ -332,7 +332,6 @@ class ProjectReportVerificationExpenditureControllerTest: UnitTest() {
                 partOfVerificationSample = false,
                 deductedByJs = BigDecimal.valueOf(100),
                 deductedByMa = BigDecimal.valueOf(200),
-                amountAfterVerification = BigDecimal.valueOf(300),
                 typologyOfErrorId = TYPOLOGY_OF_ERROR_ID,
                 parked = false,
                 verificationComment = "VERIFICATION COMM"
@@ -345,7 +344,6 @@ class ProjectReportVerificationExpenditureControllerTest: UnitTest() {
                 partOfVerificationSample = false,
                 deductedByJs = BigDecimal.valueOf(100),
                 deductedByMa = BigDecimal.valueOf(200),
-                amountAfterVerification = BigDecimal.valueOf(300),
                 typologyOfErrorId = TYPOLOGY_OF_ERROR_ID,
                 parked = false,
                 verificationComment = "VERIFICATION COMM"

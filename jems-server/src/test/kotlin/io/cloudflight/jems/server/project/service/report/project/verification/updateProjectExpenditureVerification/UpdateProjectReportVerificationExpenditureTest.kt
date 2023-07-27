@@ -8,7 +8,6 @@ import io.cloudflight.jems.server.programme.service.typologyerrors.ProgrammeTypo
 import io.cloudflight.jems.server.programme.service.typologyerrors.model.TypologyErrors
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
-import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.investments.ExpenditureInvestmentBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumBreakdownLine
@@ -195,7 +194,6 @@ class UpdateProjectReportVerificationExpenditureTest : UnitTest() {
                 partOfVerificationSample = false,
                 deductedByJs = BigDecimal.valueOf(150),
                 deductedByMa = BigDecimal.valueOf(250),
-                amountAfterVerification = BigDecimal.valueOf(100),
                 typologyOfErrorId = TYPOLOGY_OF_ERROR_ID,
                 parked = false,
                 verificationComment = "NEW VERIFICATION COMM"

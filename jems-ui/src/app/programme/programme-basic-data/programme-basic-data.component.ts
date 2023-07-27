@@ -17,7 +17,7 @@ import {ProgrammeEditableStateStore} from '../programme-page/services/programme-
 import {ProgrammePageSidenavService} from '../programme-page/services/programme-page-sidenav.service';
 import {FormState} from '@common/components/forms/form-state';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {Router} from "@angular/router";
+import {Router} from '@angular/router';
 
 @UntilDestroy()
 @Component({
@@ -163,7 +163,7 @@ export class ProgrammeBasicDataComponent extends ViewEditFormComponent implement
         }
       }),
       untilDestroyed(this)
-    ).subscribe()
+    ).subscribe();
     this.projectIdExample$ = combineLatest([
       this.programmeForm.controls.projectIdProgrammeAbbreviation.valueChanges.pipe(startWith('')),
       this.programmeForm.controls.projectIdUseCallId.valueChanges.pipe(startWith(true)),
