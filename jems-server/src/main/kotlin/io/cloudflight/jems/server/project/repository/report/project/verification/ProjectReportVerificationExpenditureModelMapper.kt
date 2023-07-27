@@ -13,14 +13,8 @@ import io.cloudflight.jems.server.project.repository.report.partner.procurement.
 import io.cloudflight.jems.server.project.repository.report.partner.toModel
 import io.cloudflight.jems.server.project.service.report.model.project.verification.expenditure.ProjectPartnerReportExpenditureItem
 import io.cloudflight.jems.server.project.service.report.model.project.verification.expenditure.ProjectReportVerificationExpenditureLine
-import io.cloudflight.jems.server.project.service.report.model.project.verification.expenditure.ProjectReportVerificationExpenditureLineUpdate
 import io.cloudflight.jems.server.project.service.report.model.project.verification.expenditure.ProjectReportVerificationRiskBased
 import java.math.BigDecimal
-
-fun List<ProjectReportVerificationExpenditureLineUpdate>.toEntities(
-    expenditureResolver: (Long) -> PartnerReportExpenditureCostEntity
-) =
-    map { it.toEntity(expenditureResolver.invoke(it.expenditureId)) }
 
 fun Collection<ProjectReportVerificationExpenditureEntity>.toExtendedModel(procurementsById: Map<Long, ProjectPartnerReportProcurementEntity>) =
     map {
@@ -36,24 +30,12 @@ fun PartnerReportExpenditureCostEntity.toEmptyVerificationEntity() =
         partOfVerificationSample = false,
         deductedByJs = BigDecimal.ZERO,
         deductedByMa = BigDecimal.ZERO,
-        amountAfterVerification = BigDecimal.ZERO,
+        amountAfterVerification = this.certifiedAmount,
         typologyOfErrorId = null,
         parked = false,
         verificationComment = null
     )
 
-fun ProjectReportVerificationExpenditureLineUpdate.toEntity(
-    expenditureEntity: PartnerReportExpenditureCostEntity,
-) = ProjectReportVerificationExpenditureEntity(
-    expenditure = expenditureEntity,
-    partOfVerificationSample = partOfVerificationSample,
-    deductedByJs = deductedByJs,
-    deductedByMa = deductedByMa,
-    amountAfterVerification = amountAfterVerification,
-    typologyOfErrorId = typologyOfErrorId,
-    parked = parked,
-    verificationComment = verificationComment
-)
 
 fun List<ProjectReportVerificationExpenditureEntity>.toModels(
     procurementsById: Map<Long, ProjectPartnerReportProcurementEntity>,

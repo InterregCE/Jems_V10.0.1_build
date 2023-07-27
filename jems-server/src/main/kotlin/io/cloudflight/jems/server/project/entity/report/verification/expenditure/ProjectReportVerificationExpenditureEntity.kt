@@ -5,17 +5,17 @@ import java.math.BigDecimal
 import javax.persistence.Entity
 import javax.persistence.Id
 import javax.persistence.JoinColumn
+import javax.persistence.ManyToOne
 import javax.persistence.MapsId
-import javax.persistence.OneToOne
 import javax.validation.constraints.NotNull
 
 @Entity(name = "report_project_verification_expenditure")
 class ProjectReportVerificationExpenditureEntity(
 
     @Id
-    val expenditureId: Long = 0L,
+    val expenditureId: Long,
 
-    @OneToOne
+    @ManyToOne
     @MapsId
     @JoinColumn(name = "expenditure_id")
     @field:NotNull

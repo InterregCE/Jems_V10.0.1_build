@@ -32,7 +32,7 @@ export class ProjectReportDetailPageStore {
   private updatedReport$ = new Subject<ProjectReportDTO>();
 
   constructor(private routingService: RoutingService,
-              public projectReportPageStore: ProjectReportPageStore,
+              private projectReportPageStore: ProjectReportPageStore,
               private projectReportService: ProjectReportService,
               public projectStore: ProjectStore) {
     this.projectReportId$ = this.projectReportId();

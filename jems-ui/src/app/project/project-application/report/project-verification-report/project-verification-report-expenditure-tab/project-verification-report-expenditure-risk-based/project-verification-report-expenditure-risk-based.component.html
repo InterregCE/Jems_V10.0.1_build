@@ -1,0 +1,42 @@
+<jems-form (save)="save()"
+           (discard)="resetForm(riskBasedVerification)">
+
+    <h3>{{'project.application.project.verification.work.tab.expenditure' | translate}}</h3>
+    <p>{{'project.application.project.verification.work.tab.expenditure.info' | translate}}</p>
+
+    <h4>{{'project.application.project.verification.work.tab.expenditure.risk' | translate}}</h4>
+
+    <form jemsFormLayout [formGroup]="form">
+        <div>
+            <mat-button-toggle-group [formControlName]="FORM_CONTROL.riskBasedVerification">
+                <mat-button-toggle [value]="true">{{'common.yes' | translate}}</mat-button-toggle>
+                <mat-button-toggle [value]="false">{{'common.no' | translate}}</mat-button-toggle>
+            </mat-button-toggle-group>
+        </div>
+
+        <div>
+            <p class="mt-3">{{'project.application.project.verification.work.tab.expenditure.risk.info' | translate}}</p>
+
+            <mat-form-field jemsFormFieldWidth="full">
+                <mat-label>{{'common.textarea.enter.text' | translate}}</mat-label>
+                <textarea matInput disabled
+                          #autosize="cdkTextareaAutosize"
+                          [formControlName]="FORM_CONTROL.riskBasedVerificationDescription"
+                          [matTooltip]="samplingMethodology.value"
+                          [cdkTextareaAutosize]
+                          [cdkAutosizeMinRows]="4"
+                          [cdkAutosizeMaxRows]="7"
+                          #samplingMethodology>
+                    </textarea>
+                <mat-hint [jemsHintFor]="samplingMethodology">
+                    <jems-text-hint [currentLength]="samplingMethodology.value.length" [maxLength]="5000"></jems-text-hint>
+                </mat-hint>
+                <mat-error>
+                    <jems-form-field-errors
+                            [errors]="form?.get(FORM_CONTROL.riskBasedVerificationDescription)?.errors">
+                    </jems-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+        </div>
+    </form>
+</jems-form>

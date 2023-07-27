@@ -59,4 +59,8 @@ export class ProjectVerificationReportComponent {
       queryParamsHandling: 'merge'
     });
   }
+
+  isFinance(type: ProjectReportDTO.TypeEnum) {
+    return [ProjectReportDTO.TypeEnum.Finance, ProjectReportDTO.TypeEnum.Both].includes(type);
+  }
 }

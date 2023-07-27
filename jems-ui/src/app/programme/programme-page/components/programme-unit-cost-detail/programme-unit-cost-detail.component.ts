@@ -11,11 +11,11 @@ import {ViewEditFormComponent} from '@common/components/forms/view-edit-form.com
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {FormState} from '@common/components/forms/form-state';
-import {Forms} from '../../../../common/utils/forms';
+import {Forms} from '@common/utils/forms';
 import {filter, take, takeUntil, tap} from 'rxjs/operators';
 import {CurrencyDTO, ProgrammeUnitCostDTO} from '@cat/api';
 import {SelectionModel} from '@angular/cdk/collections';
-import {NumberService} from '../../../../common/services/number.service';
+import {NumberService} from '@common/services/number.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
 import {TranslateService} from '@ngx-translate/core';

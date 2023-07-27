@@ -536,6 +536,8 @@ import {
 import {StartVerificationReportComponent} from '@project/project-application/report/start-verification-report/start-verification-report.component';
 import { ProjectVerificationReportFinalizeTabComponent } from './project-application/report/project-verification-report/project-verification-report-finalize-tab/project-verification-report-finalize-tab.component';
 import { ProjectVerificationReportFinalizeClarificationRequestListComponent } from './project-application/report/project-verification-report/project-verification-report-finalize-tab/project-verification-report-finalize-clarification-request-list/project-verification-report-finalize-clarification-request-list.component';
+import { ProjectVerificationReportExpenditureTabComponent } from './project-application/report/project-verification-report/project-verification-report-expenditure-tab/project-verification-report-expenditure-tab.component';
+import { ProjectVerificationReportExpenditureRiskBasedComponent } from './project-application/report/project-verification-report/project-verification-report-expenditure-tab/project-verification-report-expenditure-risk-based/project-verification-report-expenditure-risk-based.component';
 import { ProjectVerificationReportVerificationChecklistsTabComponent } from './project-application/report/project-verification-report/project-verification-report-verification-checklists-tab/project-verification-report-verification-checklists-tab.component';
 import { ProjectVerificationReportVerificationChecklistPageComponent } from './project-application/report/project-verification-report/project-verification-report-verification-checklists-tab/project-verification-report-verification-checklist-page/project-verification-report-verification-checklist-page.component';
 
@@ -731,6 +733,8 @@ import { ProjectVerificationReportVerificationChecklistPageComponent } from './p
     ProjectVerificationReportFinalizeClarificationRequestListComponent,
     ProjectVerificationReportVerificationChecklistsTabComponent,
     ProjectVerificationReportVerificationChecklistPageComponent,
+    ProjectVerificationReportExpenditureTabComponent,
+    ProjectVerificationReportExpenditureRiskBasedComponent,
   ],
   imports: [
     SharedModule,

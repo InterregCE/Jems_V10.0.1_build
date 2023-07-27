@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Observable, of, Subject} from 'rxjs';
 import {shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
-import {Log} from '../../../common/utils/log';
+import {Log} from '@common/utils/log';
 import {ProgrammeDataService, ProjectStatusDTO, UserRoleCreateDTO} from '@cat/api';
 import {PermissionService} from '../../../security/permissions/permission.service';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
@@ -57,7 +57,7 @@ export class ProgrammeEditableStateStore {
     return this.permissionService.hasPermission(PermissionsEnum.ProgrammeSetupRetrieve)
       .pipe(
         shareReplay(1)
-      )
+      );
   }
 
   private hasUserEditPermission(): Observable<boolean> {

@@ -85,7 +85,7 @@ class ProjectReportVerificationExpenditurePersistenceProvider(
             .content.associateBy { it.id }
 
         expenditureVerification.forEach {
-            existingEntities.getValue(it.expenditureId).updateWith(it)
+            existingEntities.getValue(it.expenditureId).updateWith(it, existingEntities[it.expenditureId]!!)
         }
 
         return existingEntities.values.toExtendedModel(procurementsById)
@@ -105,13 +105,21 @@ class ProjectReportVerificationExpenditurePersistenceProvider(
         return savedProjectReport.toRiskBasedModel()
     }
 
-    private fun ProjectReportVerificationExpenditureEntity.updateWith(newData: ProjectReportVerificationExpenditureLineUpdate) {
+    private fun ProjectReportVerificationExpenditureEntity.updateWith(
+        newData: ProjectReportVerificationExpenditureLineUpdate,
+        savedData: ProjectReportVerificationExpenditureEntity
+    ) {
         deductedByJs = newData.deductedByJs
         deductedByMa = newData.deductedByMa
-        amountAfterVerification = newData.amountAfterVerification
+        amountAfterVerification = computeAmountAfterVerification(newData, savedData)
         partOfVerificationSample = newData.partOfVerificationSample
         typologyOfErrorId = newData.typologyOfErrorId
         parked = newData.parked
         verificationComment = newData.verificationComment
     }
+
+    private fun computeAmountAfterVerification(
+        newData: ProjectReportVerificationExpenditureLineUpdate,
+        savedData: ProjectReportVerificationExpenditureEntity
+    ) = savedData.expenditure.certifiedAmount.minus(newData.deductedByMa).minus(newData.deductedByJs)
 }
