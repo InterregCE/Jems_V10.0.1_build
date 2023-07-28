@@ -20,7 +20,7 @@ class ExportVerificationChecklistInstance(
 ) : ExportVerificationChecklistInstanceInteractor {
 
     companion object {
-        private const val DEFAULT_CONTROL_CHECKLIST_EXPORT_PLUGIN = "standard-checklist-export-plugin"
+        private const val DEFAULT_VERIFICATION_CHECKLIST_EXPORT_PLUGIN = "standard-checklist-export-plugin"
     }
 
     @CanViewReportVerification
@@ -30,7 +30,7 @@ class ExportVerificationChecklistInstance(
         if (!checklistInstancePersistence.existsByIdAndRelatedToId(id = checklistId, relatedToId = reportId))
             throw ExportChecklistInstanceNotFoundException()
 
-        return jemsPluginRegistry.get(ChecklistExportPlugin::class, pluginKey ?: DEFAULT_CONTROL_CHECKLIST_EXPORT_PLUGIN).export(
+        return jemsPluginRegistry.get(ChecklistExportPlugin::class, pluginKey ?: DEFAULT_VERIFICATION_CHECKLIST_EXPORT_PLUGIN).export(
             projectId = projectId,
             checklistId = checklistId,
             exportLanguage = SystemLanguageData.valueOf(exportLanguage.toString())
