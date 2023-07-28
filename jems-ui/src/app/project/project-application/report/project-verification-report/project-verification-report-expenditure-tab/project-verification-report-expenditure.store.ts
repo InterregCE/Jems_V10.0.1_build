@@ -13,8 +13,11 @@ import {
   ProjectReportVerificationRiskBasedDTO,
   TypologyErrorsDTO
 } from '@cat/api';
-import {map, shareReplay, switchMap, tap} from 'rxjs/operators';
+import {filter, map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {DownloadService} from '@common/services/download.service';
+import {
+  ProjectVerificationReportStore
+} from "@project/project-application/report/project-verification-report/project-verification-report-store.service";
 
 @Injectable({providedIn: 'root'})
 export class ProjectVerificationReportExpenditureStore {
@@ -35,10 +38,11 @@ export class ProjectVerificationReportExpenditureStore {
     private expenditureVerificationService: ProjectReportVerificationExpenditureVerificationService,
     private typologyOfErrorService: ProgrammeTypologyOfErrorsService,
     private downloadService: DownloadService,
+    private projectVerificationReportStore: ProjectVerificationReportStore
   ) {
     this.projectId$ = this.projectStore.projectId$;
-    this.reportId$ = this.projectReportStore.projectReportId$.pipe(map(Number));
-    this.isEditable$ = this.projectReportPageStore.userCanEditVerification$;
+    this.reportId$ = this.projectReportStore.projectReportId$.pipe(filter(Boolean), map(Number));
+    this.isEditable$ = this.projectVerificationReportStore.projectReportVerificationEditable$;
     this.riskBasedVerification$ = this.riskBasedVerification();
     this.aggregatedExpenditures$ = this.aggregatedExpenditures();
     this.typologyOfErrors$ = this.typologyOfErrorService.getTypologyErrors();

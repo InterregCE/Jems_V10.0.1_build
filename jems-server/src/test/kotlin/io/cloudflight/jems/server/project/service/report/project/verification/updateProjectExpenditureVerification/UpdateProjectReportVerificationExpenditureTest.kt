@@ -4,6 +4,8 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
+import io.cloudflight.jems.server.common.validator.AppInputValidationException
+import io.cloudflight.jems.server.common.validator.GeneralValidatorDefaultImpl
 import io.cloudflight.jems.server.programme.service.typologyerrors.ProgrammeTypologyErrorsPersistence
 import io.cloudflight.jems.server.programme.service.typologyerrors.model.TypologyErrors
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
@@ -24,6 +26,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
@@ -188,7 +191,7 @@ class UpdateProjectReportVerificationExpenditureTest : UnitTest() {
             verificationComment = "NEW VERIFICATION COMM"
         )
 
-        val expendituresToUpdate = listOf(
+        fun expendituresToUpdate(verificationComment: String) = listOf(
             ProjectReportVerificationExpenditureLineUpdate(
                 expenditureId = EXPENDITURE_ID,
                 partOfVerificationSample = false,
@@ -196,7 +199,7 @@ class UpdateProjectReportVerificationExpenditureTest : UnitTest() {
                 deductedByMa = BigDecimal.valueOf(250),
                 typologyOfErrorId = TYPOLOGY_OF_ERROR_ID,
                 parked = false,
-                verificationComment = "NEW VERIFICATION COMM"
+                verificationComment = verificationComment
             )
         )
 
@@ -210,6 +213,9 @@ class UpdateProjectReportVerificationExpenditureTest : UnitTest() {
 
     @MockK
     lateinit var typologyPersistence: ProgrammeTypologyErrorsPersistence
+
+    @InjectMockKs
+    lateinit var generalValidator: GeneralValidatorDefaultImpl
 
     @InjectMockKs
     lateinit var updateProjectReportVerificationExpenditure: UpdateProjectReportVerificationExpenditure
@@ -236,10 +242,34 @@ class UpdateProjectReportVerificationExpenditureTest : UnitTest() {
         assertThat(
             updateProjectReportVerificationExpenditure.updateExpenditureVerification(
                 PROJECT_REPORT_ID,
-                expendituresToUpdate
+                expendituresToUpdate("NEW COMMENT VERIFICATION")
             )
         ).isEqualTo(
             listOf(expectedExpenditureLine)
         )
+    }
+
+    @Test
+    fun `should throw AppInputValidationException when verification comment length is not valid`() {
+        every {
+            projectReportExpenditureVerificationPersistence.getProjectReportExpenditureVerification(
+                PROJECT_REPORT_ID
+            )
+        } returns listOf(expenditureLine)
+        every {
+            projectReportExpenditureVerificationPersistence.updateProjectReportExpenditureVerification(
+                PROJECT_REPORT_ID,
+                any()
+            )
+        } returns listOf(expectedExpenditureLine)
+        every { partnerReportParkedExpenditurePersistence.parkExpenditures(any()) } returns Unit
+        every { partnerReportParkedExpenditurePersistence.unParkExpenditures(any()) } returns Unit
+
+        every { typologyPersistence.getAllTypologyErrors() } returns listOf(TypologyErrors(PROJECT_ID, "Typology 1"))
+
+        assertThrows<AppInputValidationException> {
+            updateProjectReportVerificationExpenditure.updateExpenditureVerification(PROJECT_REPORT_ID, expendituresToUpdate("a".repeat(1001)))
+        }
+
     }
 }

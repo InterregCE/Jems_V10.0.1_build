@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.project.verification.expenditure.updateProjectReportVerificationExpenditure
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.authorization.CanEditProjectReportVerificationByReportId
 import io.cloudflight.jems.server.project.service.report.model.partner.control.expenditure.ParkExpenditureData
 import io.cloudflight.jems.server.project.service.report.model.project.verification.expenditure.ProjectReportVerificationExpenditureLine
@@ -15,6 +16,7 @@ import java.time.ZonedDateTime
 class UpdateProjectReportVerificationExpenditure(
     private val projectReportExpenditureVerificationPersistence: ProjectReportVerificationExpenditurePersistence,
     private val partnerReportParkedExpenditurePersistence: PartnerReportParkedExpenditurePersistence,
+    private val generalValidator: GeneralValidatorService
 ): UpdateProjectReportVerificationExpenditureInteractor {
 
     @CanEditProjectReportVerificationByReportId
@@ -24,6 +26,8 @@ class UpdateProjectReportVerificationExpenditure(
         projectReportId: Long,
         expenditureVerificationUpdate: List<ProjectReportVerificationExpenditureLineUpdate>
     ): List<ProjectReportVerificationExpenditureLine> {
+
+        validateVerificationCommentLength(expenditureVerificationUpdate)
 
         val existingExpenditures = projectReportExpenditureVerificationPersistence
             .getProjectReportExpenditureVerification(projectReportId)
@@ -62,10 +66,10 @@ class UpdateProjectReportVerificationExpenditure(
     }
 
     private fun Collection<ProjectReportVerificationExpenditureLine>.getParkedIds() =
-        filter { it.parked }.map { it.expenditure.id!! }
+        filter { it.parked }.map { it.expenditure.id }
 
     private fun Collection<ProjectReportVerificationExpenditureLine>.getNotParkedIds() =
-        filter { !it.parked }.map { it.expenditure.id!! }
+        filter { !it.parked }.map { it.expenditure.id }
 
     private fun Collection<ProjectReportVerificationExpenditureLine>.toParkData(projectReportId: Long) = map {
         ParkExpenditureData(
@@ -75,6 +79,14 @@ class UpdateProjectReportVerificationExpenditure(
             originalProjectReportId = it.expenditure.parkingMetadata?.reportProjectOfOriginId ?: projectReportId,
             originalNumber = it.expenditure.parkingMetadata?.originalExpenditureNumber ?: it.expenditure.number,
             parkedOn = ZonedDateTime.now()
+        )
+    }
+
+    private fun validateVerificationCommentLength(expenditureVerificationList: List<ProjectReportVerificationExpenditureLineUpdate>) {
+        generalValidator.throwIfAnyIsInvalid(
+            *expenditureVerificationList.mapIndexed { index, it ->
+                generalValidator.maxLength(it.verificationComment, 1000, "verificationComment[$index]")
+            }.toTypedArray(),
         )
     }
 }

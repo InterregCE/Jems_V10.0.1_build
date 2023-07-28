@@ -20,12 +20,13 @@ import {
   ProjectReportVerificationRiskBasedDTO,
   TypologyErrorsDTO
 } from '@cat/api';
-import {
-  PartnerReportExpendituresStore
-} from '@project/project-application/report/partner-report-detail-page/partner-report-expenditures-tab/partner-report-expenditures-store.service';
 import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 import {CustomTranslatePipe} from '@common/pipe/custom-translate-pipe';
 import {TranslateByInputLanguagePipe} from '@common/pipe/translate-by-input-language.pipe';
+import {
+  ProjectReportPageStore
+} from '@project/project-application/report/project-report/project-report-page-store.service';
+import {Alert} from '@common/components/forms/alert';
 
 @Component({
   selector: 'jems-project-verification-report-expenditure-tab',
@@ -35,6 +36,7 @@ import {TranslateByInputLanguagePipe} from '@common/pipe/translate-by-input-lang
 })
 export class ProjectVerificationReportExpenditureTabComponent {
 
+  Alert = Alert;
   PartnerRole = ProjectPartnerReportExpenditureItemDTO.PartnerRoleEnum;
   constants = ProjectVerificationReportExpenditureConstants;
   EXPENDITURE_CONTROL = ProjectVerificationReportExpenditureConstants.EXPENDITURE_FORM_CONTROL_NAMES.expenditure;
@@ -90,12 +92,12 @@ export class ProjectVerificationReportExpenditureTabComponent {
     riskBasedVerification: ProjectReportVerificationRiskBasedDTO;
     aggregatedExpenditures: ProjectReportVerificationExpenditureLineDTO[];
     typologyOfErrors: TypologyErrorsDTO[];
+    isEditable: boolean;
   }>;
-
 
   constructor(
     private expenditureStore: ProjectVerificationReportExpenditureStore,
-    private partnerReportExpendituresStore: PartnerReportExpendituresStore,
+    private reportPageStore: ProjectReportPageStore,
     private formBuilder: FormBuilder,
     private formService: FormService,
     private customTranslatePipe: CustomTranslatePipe,
@@ -108,12 +110,14 @@ export class ProjectVerificationReportExpenditureTabComponent {
       this.expenditureStore.riskBasedVerification$,
       this.expenditureStore.aggregatedExpenditures$,
       this.expenditureStore.typologyOfErrors$,
+      this.expenditureStore.isEditable$
     ]).pipe(
-      map(([projectId, riskBasedVerification, aggregatedExpenditures, typologyOfErrors]) => ({
+      map(([projectId, riskBasedVerification, aggregatedExpenditures, typologyOfErrors, isEditable]) => ({
         projectId,
         riskBasedVerification,
         aggregatedExpenditures,
         typologyOfErrors,
+        isEditable
       })),
       tap(data => this.resetForm(data.aggregatedExpenditures)),
     );
@@ -159,6 +163,7 @@ export class ProjectVerificationReportExpenditureTabComponent {
       .forEach(expenditureLine => this.expenditureLines.push(expenditureLine));
 
     this.tableData = [...this.expenditureLines.controls];
+    this.formService.resetEditable();
   }
 
   private setColumnWidths() {
@@ -212,7 +217,7 @@ export class ProjectVerificationReportExpenditureTabComponent {
       .pipe(
         take(1),
         tap(savedExpenditureVerification => this.patchExpenditureVerification(savedExpenditureVerification)),
-        tap(() => this.formService.setSuccess('project.application.project.verification.work.tab.expenditure.risk.form.save.success')),
+        tap(() => this.formService.setSuccess('project.application.project.verification.tab.expenditure.risk.form.save.success')),
         catchError(err => this.formService.setError(err)),
       ).subscribe();
   }
@@ -260,7 +265,7 @@ export class ProjectVerificationReportExpenditureTabComponent {
       deductedAmount: this.formBuilder.control(expenditureLine.deductedAmount),
       typologyOfErrorId: this.formBuilder.control(expenditureLine.typologyOfErrorId),
       parked: this.formBuilder.control(expenditureLine.parked),
-      verificationComment: this.formBuilder.control(expenditureLine.verificationComment),
+      verificationComment: this.formBuilder.control(expenditureLine.verificationComment, Validators.maxLength(this.constants.MAX_LENGTH_VERIFY_COMMENT)),
       parkingMetadata: this.formBuilder.control(expenditureLine.parkingMetadata),
     });
   }
@@ -275,7 +280,7 @@ export class ProjectVerificationReportExpenditureTabComponent {
       typologyOfErrorId: this.formBuilder.control(verificationExpenditure.typologyOfErrorId),
       parked: this.formBuilder.control(verificationExpenditure.parked),
       parkingMetadata: this.formBuilder.control(verificationExpenditure.parkingMetadata),
-      verificationComment: this.formBuilder.control(verificationExpenditure.verificationComment),
+      verificationComment: this.formBuilder.control(verificationExpenditure.verificationComment, Validators.maxLength(this.constants.MAX_LENGTH_VERIFY_COMMENT)),
     });
   }
 
@@ -316,7 +321,7 @@ export class ProjectVerificationReportExpenditureTabComponent {
     const PERIOD_CLOSURE = 255;
 
     const lumpSum = this.expenditureItem(item, this.EXPENDITURE_CONTROL.lumpSum) as ExpenditureLumpSumBreakdownLineDTO;
-    const unitCost = this.expenditureItem(item, this.EXPENDITURE_CONTROL.unitCost) ;
+    const unitCost = this.expenditureItem(item, this.EXPENDITURE_CONTROL.unitCost);
 
     if (unitCost) {
       const prefix = unitCost.projectDefined ? 'E.2.1_' : '';
@@ -372,10 +377,21 @@ export class ProjectVerificationReportExpenditureTabComponent {
   }
 
   parkedChange(item: FormControl, event: MatSlideToggleChange) {
+    const deductedByJsControl = this.verification(item)?.get(this.VERIFICATION_CONTROL.deductedByJs);
+    const deductedByMaControl = this.verification(item)?.get(this.VERIFICATION_CONTROL.deductedByMa);
+
     if (event.source.checked) {
-      this.verification(item)?.get(this.VERIFICATION_CONTROL.deductedByJs)?.setValue(0);
-      this.verification(item)?.get(this.VERIFICATION_CONTROL.deductedByMa)?.setValue(0);
+      deductedByJsControl?.setValue(0);
+      deductedByMaControl?.setValue(0);
+
+      deductedByJsControl?.disable();
+      deductedByMaControl?.disable();
+
       this.setAndDisablePartOfSample(item);
+
+    } else {
+      deductedByJsControl?.enable();
+      deductedByMaControl?.enable();
     }
     this.deductedChanged(item);
   }
@@ -402,8 +418,17 @@ export class ProjectVerificationReportExpenditureTabComponent {
       : this.customTranslatePipe.transform('common.not.applicable.option') as string);
   }
 
+  getTooltipForParkedExpenditures(item: AbstractControl): String {
+    if (this.expenditureItem(item, this.EXPENDITURE_CONTROL.parked)) {
+      return this.customTranslatePipe.transform('project.application.project.verification.tab.expenditure.table.disabled.fields.hover.message');
+    } else {return '';}
+  }
   getParkedByControlOrJsMa(item: AbstractControl): boolean {
     return this.expenditureItem(item, this.EXPENDITURE_CONTROL.parked) || this.verificationItem(item, this.VERIFICATION_CONTROL.parked);
+  }
+
+  isExpenditureParkedOrFormDisabled(item: AbstractControl, isFormEditable: boolean): boolean {
+    return this.getParkedByControlOrJsMa(item) || !isFormEditable;
   }
 
   private setAndDisablePartOfSample(item: FormControl) {
