@@ -348,10 +348,9 @@
                 <mat-label>{{'common.textarea.enter.text' | translate}}</mat-label>
                 <textarea [formControlName]="constants.FORM_CONTROL_NAMES.riskBasedVerificationDescription" matInput
                       #autosize="cdkTextareaAutosize"
-                      [matTooltip]="samplingMethodology.value"
                       [cdkTextareaAutosize]
                       [cdkAutosizeMinRows]="4"
-                      [cdkAutosizeMaxRows]="7"
+                      [cdkAutosizeMaxRows]="16"
                       #samplingMethodology>
                 </textarea>
                 <mat-hint [jemsHintFor]="samplingMethodology">
