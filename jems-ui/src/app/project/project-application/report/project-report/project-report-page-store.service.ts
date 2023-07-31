@@ -1,20 +1,21 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {
-  PageProjectReportSummaryDTO, ProjectReportDTO,
-  ProjectReportService, ProjectReportUpdateDTO,
-  ProjectUserCollaboratorService, UserRoleDTO
+  PageProjectReportSummaryDTO,
+  ProjectReportDTO,
+  ProjectReportService,
+  ProjectReportUpdateDTO,
+  ProjectUserCollaboratorService,
+  UserRoleDTO
 } from '@cat/api';
 import {Tables} from '@common/utils/tables';
 import {RoutingService} from '@common/services/routing.service';
 import {PermissionService} from '../../../../security/permissions/permission.service';
 import {filter, map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
-import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {MatSort} from '@angular/material/sort';
-import {
-  ProjectStore
-} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Injectable({providedIn: 'root'})
 export class ProjectReportPageStore {
@@ -136,15 +137,16 @@ export class ProjectReportPageStore {
       this.permissionService.hasPermission(PermissionsEnum.ProjectReportingVerificationProjectView),
       this.permissionService.hasPermission(PermissionsEnum.ProjectReportingVerificationProjectEdit),
     ]).pipe(
-      map(([level, canView, canEdit]) => level === 'MANAGE' || canView || canEdit)
+      map(([level, canView, canEdit]) => level === 'VIEW' || level === 'EDIT' || level === 'MANAGE' || canView || canEdit)
     );
   }
 
   private userCanEditVerification(): Observable<boolean> {
     return combineLatest([
+      this.projectReportLevel(),
       this.permissionService.hasPermission(PermissionsEnum.ProjectReportingVerificationProjectEdit),
     ]).pipe(
-      map(([canEdit]) => canEdit)
+      map(([level, canEdit]) => level === 'EDIT' || level === 'MANAGE' || canEdit)
     );
   }
 

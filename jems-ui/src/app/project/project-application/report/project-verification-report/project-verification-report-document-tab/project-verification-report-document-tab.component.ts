@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
+import {combineLatest, Observable, Subject} from 'rxjs';
 import {FileListItem} from '@common/components/file-list/file-list-item';
 import {CategoryInfo, CategoryNode} from '@project/common/components/category-tree/categoryModels';
 import {finalize, map, take, tap} from 'rxjs/operators';
@@ -36,7 +36,6 @@ export class ProjectVerificationReportDocumentTabComponent {
   categories: CategoryNode;
   selectedCategory: CategoryInfo;
 
-  data2$ = new BehaviorSubject(true);
   data$: Observable<{
     attachments: FileListItem[];
     canEdit: boolean;
