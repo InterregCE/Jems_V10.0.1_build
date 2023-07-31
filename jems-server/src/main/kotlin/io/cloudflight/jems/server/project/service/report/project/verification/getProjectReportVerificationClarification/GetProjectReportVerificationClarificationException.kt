@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.common.exception.ApplicationUnprocessableExcep
 
 private const val GET_CLARIFICATION_VERIFICATION_PROJECT_REPORT_ERROR_CODE_PREFIX = "S-GCLVPR"
 private const val GET_CLARIFICATION_VERIFICATION_REPORT_ERROR_KEY_PREFIX = "use.case.get.clarification.verification.project.report"
+
 class GetProjectReportVerificationClarificationException(cause: Throwable): ApplicationException(
     code = GET_CLARIFICATION_VERIFICATION_PROJECT_REPORT_ERROR_CODE_PREFIX,
     i18nMessage = I18nMessage("$GET_CLARIFICATION_VERIFICATION_REPORT_ERROR_KEY_PREFIX.failed"),

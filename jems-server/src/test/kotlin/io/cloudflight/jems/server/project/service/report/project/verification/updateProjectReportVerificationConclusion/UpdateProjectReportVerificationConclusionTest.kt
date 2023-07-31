@@ -1,22 +1,22 @@
 package io.cloudflight.jems.server.project.service.report.project.verification.updateProjectReportVerificationConclusion
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.project.repository.report.project.verification.ProjectReportVerificationPersistenceProvider
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.model.project.verification.ProjectReportVerificationConclusion
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.project.verification.ProjectReportVerificationPersistence
 import io.cloudflight.jems.server.project.service.report.project.verification.updateProjectReportVerificationClarification.UpdateProjectReportVerificationClarificationTest
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
-import java.time.LocalDate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.testcontainers.shaded.org.apache.commons.lang.RandomStringUtils
+import java.time.LocalDate
 
 class UpdateProjectReportVerificationConclusionTest : UnitTest() {
 
@@ -41,7 +41,7 @@ class UpdateProjectReportVerificationConclusionTest : UnitTest() {
     }
 
     @MockK
-    lateinit var projectReportVerificationPersistenceProvider: ProjectReportVerificationPersistenceProvider
+    lateinit var verificationPersistence: ProjectReportVerificationPersistence
 
     @MockK
     lateinit var reportPersistence: ProjectReportPersistence
@@ -54,7 +54,7 @@ class UpdateProjectReportVerificationConclusionTest : UnitTest() {
     fun updateVerificationConclusion(status: ProjectReportStatus) {
         every { reportPersistence.getReportById(PROJECT_ID, REPORT_ID) } returns UpdateProjectReportVerificationClarificationTest.report(REPORT_ID, status)
         every {
-            projectReportVerificationPersistenceProvider.updateProjectReportVerificationConclusion(
+            verificationPersistence.updateProjectReportVerificationConclusion(
                 projectId = PROJECT_ID,
                 reportId = REPORT_ID,
                 projectReportVerificationConclusion = any()

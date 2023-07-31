@@ -16,6 +16,8 @@ enum class JemsFileTypeDTO {
               ActivityProjectReport,
                 DeliverableProjectReport,
               OutputProjectReport,
+        ProjectReportVerification,
+          VerificationDocument,
         Partner,
           PartnerReport,
 

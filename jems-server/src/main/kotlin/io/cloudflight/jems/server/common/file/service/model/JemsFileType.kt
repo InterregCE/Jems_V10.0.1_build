@@ -21,6 +21,9 @@ enum class JemsFileType(
                 DeliverableProjectReport(ActivityProjectReport, true),
               OutputProjectReport(WorkPackageProjectReport, true),
 
+          ProjectReportVerification(ProjectReport, false),
+            VerificationDocument(ProjectReportVerification, false),
+
         Partner(Report, true),
           PartnerReport(Partner, true),
 

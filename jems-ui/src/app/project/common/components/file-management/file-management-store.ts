@@ -11,23 +11,17 @@ import {
   SettingsService,
   UserRoleDTO
 } from '@cat/api';
-import {
-  ProjectStore
-} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {catchError, finalize, map, startWith, switchMap, take, tap, withLatestFrom} from 'rxjs/operators';
 import {MatSort} from '@angular/material/sort';
 import {Tables} from '@common/utils/tables';
 import {CategoryInfo, CategoryNode} from '@project/common/components/category-tree/categoryModels';
 import {FileCategoryTypeEnum} from '@project/common/components/file-management/file-category-type';
 import {APIError} from '@common/models/APIError';
-import {
-  InvestmentSummary
-} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
+import {InvestmentSummary} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
 import {PermissionService} from '../../../../security/permissions/permission.service';
 import {I18nMessage} from '@common/models/I18nMessage';
-import {
-  ProjectPartnerStore
-} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
+import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {DownloadService} from '@common/services/download.service';
@@ -37,6 +31,7 @@ import {ProjectUtil} from '@project/common/project-util';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
+import { Page } from '@cat/api';
 
 @Injectable({
   providedIn: 'root'
@@ -109,11 +104,11 @@ export class FileManagementStore {
         switchMap(([category, projectId]) => this.projectFileService.uploadFileForm(file, (category as any)?.type, projectId, (category as any)?.id)),
         tap(() => this.filesChanged$.next()),
         tap(() => this.error$.next(null)),
+        finalize(() => this.routingService.confirmLeaveMap.delete(serviceId)),
         catchError(error => {
           this.error$.next(error.error);
           return of({} as ProjectFileMetadataDTO);
         }),
-        finalize(() => this.routingService.confirmLeaveMap.delete(serviceId))
       );
   }
 
@@ -193,7 +188,7 @@ export class FileManagementStore {
         switchMap(([category, projectId, pageIndex, pageSize, sort]) =>
           this.projectFileService.listProjectFiles(projectId, (category as any)?.type, (category as any)?.id, pageIndex, pageSize, sort)
         ),
-        tap(page => {
+        tap((page: Page) => {
           if (page.totalPages > 0 && page.number >= page.totalPages) {
             this.newPageIndex$.next(page.totalPages - 1);
           }

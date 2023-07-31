@@ -2,17 +2,17 @@ package io.cloudflight.jems.server.project.service.report.project.verification.u
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanEditReportVerification
-import io.cloudflight.jems.server.project.repository.report.project.verification.ProjectReportVerificationPersistenceProvider
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.model.project.verification.ProjectReportVerificationConclusion
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.project.verification.ProjectReportVerificationPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UpdateProjectReportVerificationConclusion(
-    private val projectReportVerificationPersistenceProvider: ProjectReportVerificationPersistenceProvider,
+    private val verificationPersistence: ProjectReportVerificationPersistence,
     private val reportPersistence: ProjectReportPersistence,
 ): UpdateProjectReportVerificationConclusionInteractor {
 
@@ -27,7 +27,7 @@ class UpdateProjectReportVerificationConclusion(
         val report = reportPersistence.getReportById(projectId = projectId, reportId = reportId)
         validateReportStatus(report)
         validateConclusion(conclusion)
-        return projectReportVerificationPersistenceProvider.updateProjectReportVerificationConclusion(
+        return verificationPersistence.updateProjectReportVerificationConclusion(
             projectId = projectId,
             reportId = reportId,
             projectReportVerificationConclusion = conclusion

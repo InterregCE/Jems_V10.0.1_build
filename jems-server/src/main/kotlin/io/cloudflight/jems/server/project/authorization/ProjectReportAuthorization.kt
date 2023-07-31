@@ -75,10 +75,21 @@ class ProjectReportAuthorization(
     fun canFinalizeReportVerification(projectId: Long): Boolean =
         hasPermission(UserRolePermission.ProjectReportingVerificationFinalize, projectId)
 
-    fun canEditReportVerification(projectId: Long): Boolean =
-        hasPermission(UserRolePermission.ProjectReportingVerificationProjectEdit, projectId)
+    fun canEditReportVerification(projectId: Long): Boolean {
+        val project = projectPersistence.getApplicantAndStatusById(projectId)
 
-    fun canViewReportVerification(projectId: Long): Boolean =
-        hasPermission(UserRolePermission.ProjectReportingVerificationProjectView, projectId)
+        val canMonitorEdit = hasPermission(UserRolePermission.ProjectReportingVerificationProjectEdit, projectId)
+        val canCreatorEdit = isActiveUserIdEqualToOneOf(project.getUserIdsWithEditLevel())
 
+        return canViewReport(projectId) && (canMonitorEdit || canCreatorEdit)
+    }
+
+    fun canViewReportVerification(projectId: Long): Boolean {
+        val project = projectPersistence.getApplicantAndStatusById(projectId)
+
+        val canMonitorView = hasPermission(UserRolePermission.ProjectReportingVerificationProjectView, projectId)
+        val canCreatorView = isActiveUserIdEqualToOneOf(project.getUserIdsWithViewLevel())
+
+        return canViewReport(projectId) && (canMonitorView || canCreatorView)
+    }
 }

@@ -13,4 +13,6 @@ interface ProjectReportFilePersistence {
 
     fun updateProjectResultAttachment(reportId: Long, resultNumber: Int, file: JemsFileCreate): JemsFileMetadata
 
+    fun addAttachmentToProjectReport(file: JemsFileCreate): JemsFileMetadata
+
 }
