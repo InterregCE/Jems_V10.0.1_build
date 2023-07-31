@@ -63,9 +63,20 @@ class UpdateProjectPartnerReportExpenditure(
                 .mapTo(HashSet()) { it.id },
             defaultCurrency = report.identification.currency,
         )
+
+        val oldExpenditures = reportExpenditurePersistence.getPartnerReportExpenditureCosts(partnerId, reportId = reportId)
+        val expenditureIdsNotAllowedToChangeToSCO = oldExpenditures
+            .filter { (it.parkingMetadata !== null && it.costCategory !== ReportBudgetCategory.Multiple) }.map { it.id }
+
+        val newExpendituresIdsWithMultipleBudgetCategoryAfterChange = expenditureCosts
+            .filter { it.costCategory === ReportBudgetCategory.Multiple }.map { it.id }
+
+        if (newExpendituresIdsWithMultipleBudgetCategoryAfterChange.any {it in expenditureIdsNotAllowedToChangeToSCO}) {
+            throw SCOCannotBeSelectedInsteadOfRealCost()
+        }
+
         val newValues = expenditureCosts.map { it.toValidItem(validationData) }.groupBy { it.id }
-        val oldValues = reportExpenditurePersistence.getPartnerReportExpenditureCosts(partnerId, reportId = reportId)
-            .map { it.asOld() }.associateBy { it.id }
+        val oldValues = oldExpenditures.map { it.asOld() }.associateBy { it.id }
 
         val canEditSensitivenessFlag  = sensitiveDataAuthorization.isCurrentUserCollaboratorWithSensitiveFor(partnerId)
         val canEditPartnerSensitiveData = canEditSensitivenessFlag || hasGlobalMonitorEdit()

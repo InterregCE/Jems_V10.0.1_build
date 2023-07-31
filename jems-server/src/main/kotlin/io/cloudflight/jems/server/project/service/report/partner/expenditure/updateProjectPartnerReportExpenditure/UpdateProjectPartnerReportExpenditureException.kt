@@ -47,3 +47,8 @@ class DeletionNotAllowedAnymore: ApplicationUnprocessableException(
     code = "$UPDATE_PROJECT_PARTNER_REPORT_EC_ERROR_CODE_PREFIX-006",
     i18nMessage = I18nMessage("$UPDATE_PROJECT_PARTNER_REPORT_EC_ERROR_KEY_PREFIX.deletion.of.expenditure.is.not.allowed.anymore"),
 )
+
+class SCOCannotBeSelectedInsteadOfRealCost: ApplicationUnprocessableException(
+    code = "$UPDATE_PROJECT_PARTNER_REPORT_EC_ERROR_CODE_PREFIX-007",
+    i18nMessage = I18nMessage("$UPDATE_PROJECT_PARTNER_REPORT_EC_ERROR_KEY_PREFIX.sco.cannot.be.selected.instead.of.real.cost"),
+)

@@ -110,6 +110,8 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   Alert = Alert;
   ReportUtil = ReportUtil;
 
+  isExpenditureReIncluded:Map<number, boolean>;
+
   constructor(public pageStore: PartnerReportExpendituresStore,
               protected changeDetectorRef: ChangeDetectorRef,
               private formBuilder: FormBuilder,
@@ -290,6 +292,10 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       if (control.get('reportOfOriginNumber')?.value || this.currentReport.status === this.StatusEnum.ReOpenSubmittedLast || this.currentReport.status === this.StatusEnum.ReOpenInControlLast) {
         control.get('currencyCode')?.disable();
       }
+
+      if (control.get("costCategory")?.value && this.isExpenditureReIncluded.get(control.get("id")?.value)) {
+        control.get("costOptions")?.disable();
+      }
     }
   }
 
@@ -320,6 +326,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   resetForm(partnerReportExpenditures: ProjectPartnerReportExpenditureCostDTO[], isGDPRCompliant: boolean , isMonitorUser: boolean, isReportEditable: boolean): void {
     this.availableCurrenciesPerRow = [];
     this.items.clear();
+    this.isExpenditureReIncluded = new Map();
     partnerReportExpenditures.forEach(partnerReportExpenditure => this.addExpenditure(partnerReportExpenditure));
     this.tableData = [...this.items.controls];
     this.formService.setEditable(isReportEditable && ReportUtil.isReopenedPartnerReportLast(this.currentReport.status) || this.currentReport.status === this.StatusEnum.Draft);
@@ -565,8 +572,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
         : this.getConversionRateByCode(reportExpenditureCost.currencyCode || '', reportExpenditureCost);
       const costOption = this.getUnitCostOrLumpSumObject(reportExpenditureCost);
       this.availableCurrenciesPerRow.push(this.getAvailableCurrenciesByType(this.getUnitCostType(reportExpenditureCost), costOption));
-
-      this.items.push(this.formBuilder.group(
+      const item = this.formBuilder.group(
         {
           id: this.formBuilder.control(reportExpenditureCost.id),
           number: this.formBuilder.control(reportExpenditureCost.number),
@@ -594,8 +600,9 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
           currencyConversionRate: this.formBuilder.control(conversionRate),
           declaredAmountInEur: this.formBuilder.control(this.getAmountInEur(conversionRate, reportExpenditureCost.declaredAmount || 0)),
           attachment: this.formBuilder.control(reportExpenditureCost.attachment, []),
-        })
-      );
+        });
+      this.items.push(item);
+      this.isExpenditureReIncluded.set(reportExpenditureCost.id, isParked);
   }
 
   private formToReportExpenditures(): ProjectPartnerReportExpenditureCostDTO[] {
