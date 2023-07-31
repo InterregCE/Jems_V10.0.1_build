@@ -1,18 +1,15 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {FormService} from '@common/components/section/form/form.service';
-import {
-  ProgrammeChecklistDetailDTO,
-  ProjectReportDTO,
-} from '@cat/api';
+import {ProgrammeChecklistDetailDTO, ProjectReportDTO,} from '@cat/api';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {APIError} from '@common/models/APIError';
 import {map} from 'rxjs/operators';
 import {
-  ProjectReportPageStore
-} from '@project/project-application/report/project-report/project-report-page-store.service';
-import {
   ProjectReportDetailPageStore
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-detail-page-store.service';
+import {
+  ProjectVerificationReportStore
+} from "@project/project-application/report/project-verification-report/project-verification-report-store.service";
 
 @Component({
   selector: 'jems-project-verification-report-verification-checklists-tab',
@@ -36,9 +33,9 @@ export class ProjectVerificationReportVerificationChecklistsTabComponent {
 
   constructor(
     public store: ProjectReportDetailPageStore,
-    private reportPageStore: ProjectReportPageStore,
+    private projectVerificationReportStore: ProjectVerificationReportStore
   ) {
-    this.verificationReportEditable$ = this.reportPageStore.userCanEditVerification$;
+    this.verificationReportEditable$ = this.projectVerificationReportStore.projectReportVerificationEditable$;
     this.verificationReport$ = this.store.projectReport$;
     this.data$ = store.projectReport$.pipe(
       map((projectVerificationReport) => ({projectVerificationReport}))

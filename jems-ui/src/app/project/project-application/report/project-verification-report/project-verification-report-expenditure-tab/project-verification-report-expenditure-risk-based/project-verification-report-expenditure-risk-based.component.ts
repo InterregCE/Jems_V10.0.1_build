@@ -3,7 +3,7 @@ import {FormService} from '@common/components/section/form/form.service';
 import {
   ProjectVerificationReportExpenditureConstants
 } from '@project/project-application/report/project-verification-report/project-verification-report-expenditure-tab/project-verification-report-expenditure.constants';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ProjectReportVerificationRiskBasedDTO} from '@cat/api';
 import {
   ProjectVerificationReportExpenditureStore
@@ -19,6 +19,7 @@ import {catchError, take, tap} from 'rxjs/operators';
 export class ProjectVerificationReportExpenditureRiskBasedComponent implements OnInit {
 
   FORM_CONTROL = ProjectVerificationReportExpenditureConstants.RISK_BASED_FORM_CONTROL_NAMES;
+  MAX_LENGTH_RISK_BASED_COMMENT = 5000;
 
   @Input()
   riskBasedVerification: ProjectReportVerificationRiskBasedDTO;
@@ -40,7 +41,7 @@ export class ProjectVerificationReportExpenditureRiskBasedComponent implements O
   initForm() {
     this.form = this.formBuilder.group({
       riskBasedVerification: this.formBuilder.control(false),
-      riskBasedVerificationDescription: this.formBuilder.control(''),
+      riskBasedVerificationDescription: this.formBuilder.control('', Validators.maxLength(this.MAX_LENGTH_RISK_BASED_COMMENT)),
     });
 
     this.formService.init(this.form, this.expenditureVerificationStore.isEditable$);
@@ -60,7 +61,7 @@ export class ProjectVerificationReportExpenditureRiskBasedComponent implements O
     this.expenditureVerificationStore.updateRiskBasedVerification(updateRiskBasedVerificationDTO)
       .pipe(
         take(1),
-        tap(() => this.formService.setSuccess('project.application.project.verification.work.tab.expenditure.risk.form.save.success')),
+        tap(() => this.formService.setSuccess('project.application.project.verification.tab.expenditure.risk.form.save.success')),
         catchError(err => this.formService.setError(err)),
       ).subscribe();
   }
