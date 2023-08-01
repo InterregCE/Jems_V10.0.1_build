@@ -216,6 +216,9 @@ context('Partner reports tests', () => {
                 cy.contains('The work package activities were saved successfully')
                   .should('be.visible');
 
+                cy.contains('mat-panel-title', 'Work package 1')
+                  .click();
+
                 // upload file to activity
                 cy.get('div.activity-container > jems-multi-language-container input').eq(0)
                   .scrollIntoView()
