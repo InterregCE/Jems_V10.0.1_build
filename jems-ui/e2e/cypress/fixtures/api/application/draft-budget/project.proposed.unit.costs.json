@@ -41,7 +41,8 @@
         "translation": "API generated justification and calculation EN",
         "language": "EN"
       }
-    ]
+    ],
+    "paymentClaim": "IncurredByBeneficiaries"
   },
   {
     "cypressReferenceUnit": "projectProposedMulti",
@@ -89,6 +90,7 @@
         "translation": "API generated justification and calculation EN",
         "language": "EN"
       }
-    ]
+    ],
+    "paymentClaim": "IncurredByBeneficiaries"
   }
 ]
