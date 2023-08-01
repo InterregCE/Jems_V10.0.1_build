@@ -218,6 +218,7 @@ export class Permission {
               name: 'project.application.partner.reports.checklist.after.control',
               mode: PermissionMode.TOGGLE_EDIT,
               editPermissions: [PermissionsEnum.ProjectReportingChecklistAfterControl],
+              infoMessage: 'project.application.partner.reports.checklist.after.control.tooltip'
             },
             {
               name: 'project.application.partner.reports.control.reopen',

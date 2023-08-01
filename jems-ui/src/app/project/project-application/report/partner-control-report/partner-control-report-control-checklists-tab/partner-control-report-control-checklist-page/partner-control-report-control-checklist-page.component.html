@@ -8,7 +8,7 @@
             [minScore]="data.checklist.minScore"
             [maxScore]="data.checklist.maxScore"
             [allowsDecimalScore]="data.checklist.allowsDecimalScore"
-            [editable]="data.editable"
+            [editable]="data.canEditChecklist"
             (save)="save(data.checklist)">
 
         <div id="status" class="mb-3">
@@ -26,18 +26,17 @@
         </div>
 
         <h2 class="mb-2">{{data.checklist.name}}</h2>
-
-        <jems-pending-button *ngIf="data.editable"
+        <jems-pending-button *ngIf="data.canEditChecklist"
                              class="mr-2" type="secondary"
                              [confirm]="confirmFinish"
-                             (clicked)="updateStatus(data.checklist.id,Status.FINISHED)"
+                             (clicked)="updateStatus(data.checklist.id, Status.FINISHED)"
                              [disabled]="saveDiscardMenuIsActive()"
                              [matTooltip]="'checklists.instance.button.info' | translate"
                              [matTooltipDisabled]="!saveDiscardMenuIsActive()">
             {{'checklists.instance.confirm.finish.title' | translate}}
         </jems-pending-button>
         <jems-pending-button
-                *ngIf="data.checklist.status === Status.FINISHED && (userCanEditControlChecklists$ | async) && data.isAfterControlChecklist"
+                *ngIf="data.canReturnChecklist"
                 class="mr-2" type="secondary"
                 [confirm]="confirmReturnToInitiator"
                 (clicked)="updateStatus(data.checklist.id, Status.DRAFT)">
