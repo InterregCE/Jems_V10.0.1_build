@@ -1,3 +1,5 @@
+<jems-project-verification-report-finalize-clarification-request-list jemsNoWidthLimit class="my-3 block"></jems-project-verification-report-finalize-clarification-request-list>
+
 <jems-form *ngIf="data$ | async as data" [formGroup]="overviewForm"
            (discard)="resetForm(data.conclusions)"
            (save)="saveForm(data.projectId, data.reportId)">
@@ -12,8 +14,6 @@
       <mat-datepicker-toggle matSuffix [for]="startDate"></mat-datepicker-toggle>
       <mat-datepicker #startDate></mat-datepicker>
     </mat-form-field>
-
-    <jems-project-verification-report-finalize-clarification-request-list jemsNoWidthLimit></jems-project-verification-report-finalize-clarification-request-list>
 
     <h3>{{'project.application.project.verification.work.tab.finalise.js.title' | translate}}</h3>
     <p>{{'project.application.project.verification.work.tab.finalise.js.subtitle' | translate}}</p>
