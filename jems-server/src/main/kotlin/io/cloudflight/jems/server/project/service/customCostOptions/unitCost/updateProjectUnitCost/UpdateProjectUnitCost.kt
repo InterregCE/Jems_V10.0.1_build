@@ -8,14 +8,11 @@ import io.cloudflight.jems.server.programme.service.costoption.getStaticValidati
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.programme.service.costoption.validateUpdateUnitCost
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectFormOnlyBeforeContracted
-import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.customCostOptions.ProjectUnitCostPersistence
-import io.cloudflight.jems.server.project.service.customCostOptions.unitCost.projectUnitCostChanged
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsUpdatePersistence
 import io.cloudflight.jems.server.project.service.partner.budget.truncate
-import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
@@ -24,8 +21,6 @@ import java.math.BigDecimal
 class UpdateProjectUnitCost(
     private val programmeUnitCostPersistence: ProgrammeUnitCostPersistence,
     private val projectUnitCostPersistence: ProjectUnitCostPersistence,
-    private val projectPersistence: ProjectPersistence,
-    private val auditPublisher: ApplicationEventPublisher,
     private val generalValidator: GeneralValidatorService,
     private val partnerPersistence: PartnerPersistence,
     private val projectPartnerBudgetCostsPersistence: ProjectPartnerBudgetCostsPersistence,
@@ -49,11 +44,7 @@ class UpdateProjectUnitCost(
             updateUnitCostUsages(unitCost, deselectedCategories, coverageTypeChanged)
         }
 
-        return programmeUnitCostPersistence.updateUnitCost(unitCost).also {
-            auditPublisher.publishEvent(
-                projectUnitCostChanged(this, it, projectPersistence.getProjectSummary(projectId))
-            )
-        }
+        return programmeUnitCostPersistence.updateUnitCost(unitCost)
     }
 
     private fun ProgrammeUnitCost.validateInputFields() {

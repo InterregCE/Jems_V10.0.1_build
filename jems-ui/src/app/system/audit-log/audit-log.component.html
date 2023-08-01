@@ -71,5 +71,5 @@
 </ng-template>
 
 <ng-template #descriptionCell let-audit>
-    <span [innerHTML]="getDescription(audit.description)"></span>
+    <span class="description-overflow" [innerHTML]="getDescription(audit.description)"></span>
 </ng-template>

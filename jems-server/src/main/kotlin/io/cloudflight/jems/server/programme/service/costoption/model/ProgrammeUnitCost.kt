@@ -27,4 +27,37 @@ data class ProgrammeUnitCost(
 
     fun isMultipleCategoryUnitCost() = !isOneCostCategory
 
+    fun getDiff(old: ProgrammeUnitCost? = null): Map<String, Pair<Any?, Any?>> {
+        val changes = mutableMapOf<String, Pair<Any?, Any?>>()
+
+        if (name != (old?.name ?: emptySet<InputTranslation>()))
+            changes["name"] = Pair(old?.name, name)
+
+        if (description != (old?.description ?: emptySet<InputTranslation>()))
+            changes["description"] = Pair(old?.description, description)
+
+        if (type != (old?.type ?: emptySet<InputTranslation>()))
+            changes["type"] = Pair(old?.type, type)
+
+        if (justification != (old?.justification ?: emptySet<InputTranslation>()))
+            changes["justification"] = Pair(old?.justification, justification)
+
+        if ((costPerUnit?: BigDecimal.ZERO).compareTo(old?.costPerUnit ?: BigDecimal.ZERO) != 0)
+            changes["costPerUnit"] = Pair(old?.costPerUnit, costPerUnit)
+
+        if ((costPerUnitForeignCurrency?: BigDecimal.ZERO).compareTo(old?.costPerUnitForeignCurrency ?: BigDecimal.ZERO) != 0)
+            changes["costPerUnitForeignCurrency"] = Pair(old?.costPerUnitForeignCurrency, costPerUnitForeignCurrency)
+
+        if (foreignCurrencyCode != old?.foreignCurrencyCode)
+            changes["foreignCurrencyCode"] = Pair(old?.foreignCurrencyCode, foreignCurrencyCode)
+
+        if (isOneCostCategory != old?.isOneCostCategory)
+            changes["isOneCostCategory"] = Pair(old?.isOneCostCategory, isOneCostCategory)
+
+        if (categories != (old?.categories ?: emptySet<BudgetCategory>()))
+            changes["categories"] = Pair(old?.categories ?: "", categories)
+
+        return changes
+    }
+
 }

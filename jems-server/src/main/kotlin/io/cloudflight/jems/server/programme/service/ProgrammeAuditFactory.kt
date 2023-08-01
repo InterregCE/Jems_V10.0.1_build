@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.common.audit.fromOldToNewChanges
 import io.cloudflight.jems.server.nuts.service.NutsIdentifier
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistDetail
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
@@ -88,7 +89,14 @@ fun programmeTypologyErrorsChanged(context: Any, errors: List<TypologyErrors>): 
 
 fun programmeStateAidsChanged(context: Any, stateAids: List<ProgrammeStateAid>): AuditCandidateEvent {
     val stateAidsAsString = stateAids.asSequence()
-        .map { fund -> fund.name.toString()}.joinToString(",\n")
+        .map { fund -> "[id=${fund.id}, " +
+            "name=${fund.name}, " +
+            "measure=${fund.measure}, " +
+            "abbreviatedName=${fund.abbreviatedName}, " +
+            "schemeNumber=${fund.schemeNumber ?: ""}, " +
+            "maxIntensity=${fund.maxIntensity}, " +
+            "threshold=${fund.threshold}]"
+        }.joinToString(",\n")
 
     return AuditCandidateEvent(context, AuditBuilder(AuditAction.PROGRAMME_STATE_AID_CHANGED)
         .description("Programme State aid was set to:\n$stateAidsAsString")
@@ -134,13 +142,25 @@ fun lumpSumDeleted(context: Any, lumpSum: ProgrammeLumpSum): AuditCandidateEvent
         .build()
     )
 
-fun unitCostChangedAudit(context: Any, unitCost: ProgrammeUnitCost): AuditCandidateEvent =
-    AuditCandidateEvent(
+fun lumpSumChangedAudit(context: Any, lumpSum: ProgrammeLumpSum, oldLumpSum: ProgrammeLumpSum): AuditCandidateEvent {
+    val changes = lumpSum.getDiff(old = oldLumpSum).fromOldToNewChanges()
+    return AuditCandidateEvent(
         context = context,
-        auditCandidate = AuditBuilder(AuditAction.PROGRAMME_UNIT_COST_CHANGED)
-            .description("Programme unit cost (id=${unitCost.id}) '${unitCost.name}' has been changed")
+        auditCandidate = AuditBuilder(AuditAction.PROGRAMME_LUMP_SUM_CHANGED)
+            .description("Programme lump sum (id=${lumpSum.id}) '${lumpSum.name}' has been changed: $changes")
             .build()
     )
+}
+
+fun unitCostChangedAudit(context: Any, unitCost: ProgrammeUnitCost, oldUnitCost: ProgrammeUnitCost): AuditCandidateEvent {
+    val changes = unitCost.getDiff(old = oldUnitCost).fromOldToNewChanges()
+    return AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.PROGRAMME_UNIT_COST_CHANGED)
+            .description("Programme unit cost (id=${unitCost.id}) '${unitCost.name}' has been changed: $changes")
+            .build()
+    )
+}
 
 fun unitCostDeleted(context: Any, unitCost: ProgrammeUnitCost): AuditCandidateEvent =
     AuditCandidateEvent(
@@ -156,6 +176,7 @@ fun checklistCreated(context: Any, checklist: ProgrammeChecklistDetail): AuditCa
         auditCandidate = AuditCandidate(
             action = AuditAction.CHECKLIST_IS_CREATED,
             description = "[" + checklist.type + "]" +
+                " [" + checklist.id + "]" +
                 " [" + checklist.name + "]" + " created"
         )
     )

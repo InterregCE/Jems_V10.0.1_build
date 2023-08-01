@@ -75,6 +75,7 @@ enum class AuditAction {
     // package USER
     USER_ADDED,
     USER_REGISTERED,
+    NEW_USER_CONFIRMED,
     USER_DATA_CHANGED,
     PASSWORD_CHANGED,
     ROLE_PRIVILEGES_CHANGED,

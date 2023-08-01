@@ -137,8 +137,10 @@ internal class UpdateStateAidInteractorTest : UnitTest() {
             assertThat(this.auditCandidate.action).isEqualTo(AuditAction.PROGRAMME_STATE_AID_CHANGED)
             assertThat(this.auditCandidate.description).isEqualTo(
                 "Programme State aid was set to:\n" +
-                    "[EN=already existing EN name],\n" +
-                    "[EN=new EN name]"
+                    "[id=14, name=[EN=already existing EN name], measure=OTHER_1, abbreviatedName=[EN=already existing EN abbName], " +
+                    "schemeNumber=already existing Sch, maxIntensity=50, threshold=30],\n" +
+                    "[id=30, name=[EN=new EN name], measure=OTHER_2, abbreviatedName=[EN=new EN abbName], " +
+                    "schemeNumber=new Sch, maxIntensity=50, threshold=30]"
             )
         }
     }

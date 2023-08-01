@@ -34,7 +34,7 @@ class UpdateUnitCost(
         checkIfUnitCostCanBeUpdated(existingUnitCost = existingUnitCost, updatedUnitCost = unitCost)
 
         return persistence.updateUnitCost(unitCost).also {
-            auditPublisher.publishEvent(unitCostChangedAudit(this, it))
+            auditPublisher.publishEvent(unitCostChangedAudit(this, it, existingUnitCost))
         }
     }
 
