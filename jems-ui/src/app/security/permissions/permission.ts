@@ -72,6 +72,7 @@ export class Permission {
           editPermissions: [],
           disabled: true,
           state: PermissionState.EDIT,
+          editTooltip: 'permission.create.project.reporting'
         },
         {
           name: 'project.application.project.reports.title.create.report',
