@@ -8,6 +8,7 @@ import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase.Im
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
@@ -28,6 +29,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.springframework.context.ApplicationEventPublisher
 import java.math.BigDecimal
 
 internal class UpdateLumpSumInteractorTest : UnitTest() {
@@ -52,8 +54,8 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
     @MockK
     lateinit var isProgrammeSetupLocked: IsProgrammeSetupLockedInteractor
 
-    @RelaxedMockK
-    lateinit var auditService: AuditService
+    @MockK
+    lateinit var auditPublisher: ApplicationEventPublisher
 
     @RelaxedMockK
     lateinit var generalValidator: GeneralValidatorService
@@ -167,12 +169,12 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
             fastTrack = false,
             paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
-        val auditSlot = slot<AuditCandidate>()
-        every { auditService.logEvent(capture(auditSlot)) } answers {}
+        val auditSlot = slot<AuditCandidateEvent>()
+        every { auditPublisher.publishEvent(capture(auditSlot)) } answers { }
         assertThat(updateLumpSum.updateLumpSum(lumpSum)).isEqualTo(lumpSum.copy())
-        assertThat(auditSlot.captured).isEqualTo(AuditCandidate(
+        assertThat(auditSlot.captured.auditCandidate).isEqualTo(AuditCandidate(
             action = AuditAction.PROGRAMME_LUMP_SUM_CHANGED,
-            description = "Programme lump sum (id=4) '[EN=LS1]' has been changed"
+            description = "Programme lump sum (id=4) '[EN=LS1]' has been changed: (no-change)"
         ))
     }
 
@@ -233,12 +235,21 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
             fastTrack = false,
             paymentClaim = PaymentClaim.IncurredByBeneficiaries
         )
-        val auditSlot = slot<AuditCandidate>()
-        every { auditService.logEvent(capture(auditSlot)) } answers {}
+        val auditSlot = slot<AuditCandidateEvent>()
+        every { auditPublisher.publishEvent(capture(auditSlot)) } answers { }
         assertThat(updateLumpSum.updateLumpSum(lumpSum)).isEqualTo(lumpSum.copy())
-        assertThat(auditSlot.captured).isEqualTo(AuditCandidate(
+        assertThat(auditSlot.captured.auditCandidate).isEqualTo(AuditCandidate(
             action = AuditAction.PROGRAMME_LUMP_SUM_CHANGED,
-            description = "Programme lump sum (id=4) '[EN=LS1 changed]' has been changed"
+            description = "Programme lump sum (id=4) '[EN=LS1 changed]' has been changed: name changed from [\n" +
+                "  EN=LS1\n" +
+                "] to [\n" +
+                "  EN=LS1 changed\n" +
+                "],\n" +
+                "description changed from [\n" +
+                "  EN=test lump sum 1\n" +
+                "] to [\n" +
+                "  EN=test lump sum 1 changed\n" +
+                "]"
         ))
     }
 

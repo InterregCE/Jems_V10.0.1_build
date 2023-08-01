@@ -1,9 +1,5 @@
 package io.cloudflight.jems.server.programme.service.costoption.update_lump_sum
 
-import io.cloudflight.jems.api.audit.dto.AuditAction
-import io.cloudflight.jems.server.audit.service.AuditBuilder
-import io.cloudflight.jems.server.audit.service.AuditCandidate
-import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
@@ -11,6 +7,8 @@ import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumP
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.validateUpdateLumpSum
 import io.cloudflight.jems.server.programme.service.info.isSetupLocked.IsProgrammeSetupLockedInteractor
+import io.cloudflight.jems.server.programme.service.lumpSumChangedAudit
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -18,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional
 class UpdateLumpSum(
     private val persistence: ProgrammeLumpSumPersistence,
     private val isProgrammeSetupLocked: IsProgrammeSetupLockedInteractor,
-    private val audit: AuditService,
+    private val auditPublisher: ApplicationEventPublisher,
     private val generalValidator: GeneralValidatorService,
 ) : UpdateLumpSumInteractor {
 
@@ -40,16 +38,10 @@ class UpdateLumpSum(
         if (isProgrammeSetupLocked.isFastTrackLumpSumReadyForPayment(lumpSum.id)) {
             fastTrackLumpSumUpdateRestrictionsAfterReadyForPayment(lumpSum)
         }
-        val saved = persistence.updateLumpSum(lumpSum)
 
-        lumpSumChangedAudit(saved).logWith(audit)
-        return saved
-    }
-
-    private fun lumpSumChangedAudit(lumpSum: ProgrammeLumpSum): AuditCandidate {
-        return AuditBuilder(AuditAction.PROGRAMME_LUMP_SUM_CHANGED)
-            .description("Programme lump sum (id=${lumpSum.id}) '${lumpSum.name}' has been changed")
-            .build()
+        return persistence.updateLumpSum(lumpSum).also {
+            auditPublisher.publishEvent(lumpSumChangedAudit(this, it, existingLumpSum))
+        }
     }
 
     private fun lumpSumUpdateRestrictions(existingLumpSum: ProgrammeLumpSum, updatedLumpSum: ProgrammeLumpSum) {

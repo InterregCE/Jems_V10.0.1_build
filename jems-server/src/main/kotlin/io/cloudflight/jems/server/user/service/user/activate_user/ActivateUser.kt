@@ -7,6 +7,8 @@ import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.model.UserChange
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.UserWithPassword
+import io.cloudflight.jems.server.user.service.user.userActivated
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime
@@ -16,7 +18,8 @@ import java.util.UUID
 @Service
 class ActivateUser(
     private val userConfirmationPersistence: UserConfirmationPersistence,
-    private val userPersistence: UserPersistence
+    private val userPersistence: UserPersistence,
+    private val eventPublisher: ApplicationEventPublisher
 ) : ActivateUserInteractor {
 
     @Transactional
@@ -43,7 +46,7 @@ class ActivateUser(
                 confirmed = true
             )
         )
-
+        eventPublisher.publishEvent(userActivated(user.id, user.email))
         return true
     }
 

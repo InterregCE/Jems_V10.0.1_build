@@ -113,10 +113,20 @@ class UpdateUnitCostInteractorTest : UnitTest() {
         )
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
+        every { isProgrammeSetupLocked.isLocked() } returns true
+        every { hasProjectsInStatus.programmeHasProjectsInStatus(ApplicationStatusDTO.CONTRACTED) } returns true
+
         assertThat(updateUnitCost.updateUnitCost(unitCost)).isEqualTo(unitCost.copy())
         assertThat(auditSlot.captured.auditCandidate).isEqualTo(AuditCandidate(
             action = AuditAction.PROGRAMME_UNIT_COST_CHANGED,
-            description = "Programme unit cost (id=4) '[EN=UC1]' has been changed"
+            description = "Programme unit cost (id=4) '[EN=UC1]' has been changed: name changed from [\n" +
+                "  EN= \n" +
+                "] to [\n" +
+                "  EN=UC1\n" +
+                "],\n" +
+                "type changed from [] to [\n" +
+                "  EN=test type 1\n" +
+                "]"
         ))
     }
 
@@ -174,7 +184,16 @@ class UpdateUnitCostInteractorTest : UnitTest() {
         assertThat(updateUnitCost.updateUnitCost(unitCost)).isEqualTo(unitCost.copy())
         assertThat(auditSlot.captured.auditCandidate).isEqualTo(AuditCandidate(
             action = AuditAction.PROGRAMME_UNIT_COST_CHANGED,
-            description = "Programme unit cost (id=4) '[EN=UC1 changed]' has been changed"
+            description = "Programme unit cost (id=4) '[EN=UC1 changed]' has been changed: name changed from [\n" +
+                "  EN= \n" +
+                "] to [\n" +
+                "  EN=UC1 changed\n" +
+                "],\n" +
+                "description changed from [\n" +
+                "  EN=test unit cost 1\n" +
+                "] to [\n" +
+                "  EN=test unit cost 1 changed\n" +
+                "]"
         ))
     }
 

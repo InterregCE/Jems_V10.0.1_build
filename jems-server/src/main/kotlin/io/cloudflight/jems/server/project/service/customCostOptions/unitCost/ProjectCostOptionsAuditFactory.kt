@@ -16,12 +16,3 @@ fun projectUnitCostCreated(context: Any, unitCost: ProgrammeUnitCost, project: P
             .build()
     )
 
-fun projectUnitCostChanged(context: Any, unitCost: ProgrammeUnitCost, project: ProjectSummary) =
-    AuditCandidateEvent(
-        context = context,
-        auditCandidate = AuditBuilder(AuditAction.PROGRAMME_UNIT_COST_CHANGED)
-            .project(project)
-            .entityRelatedId(project.id)
-            .description("Project unit cost (id=${unitCost.id}) '${unitCost.name}' has been changed")
-            .build()
-    )

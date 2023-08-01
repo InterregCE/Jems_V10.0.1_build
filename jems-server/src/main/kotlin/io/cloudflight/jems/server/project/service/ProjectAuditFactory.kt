@@ -64,20 +64,6 @@ fun unsuccessfulProjectSubmission(
     )
 
 
-fun projectVersionSnapshotCreated(
-    context: Any, projectSummary: ProjectSummary, projectVersion: ProjectVersionSummary
-): AuditCandidateEvent =
-    AuditCandidateEvent(
-        context = context,
-        auditCandidate = AuditBuilder(AuditAction.APPLICATION_SNAPSHOT_CREATED)
-            .project(projectSummary)
-            .description(
-                "Project application snapshot \"V.${projectVersion.version}\" has been created by ${projectVersion.user.email} " +
-                        projectVersion.createdAt.toLocalDateTime().withNano(0)
-                            .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-            ).build()
-    )
-
 fun projectVersionRecorded(
     context: Any,
     projectSummary: ProjectSummary,
