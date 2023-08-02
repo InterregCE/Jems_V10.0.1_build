@@ -17,17 +17,26 @@ import {
 import {
     AdvancePaymentsDetailPageComponent
 } from './advance-payments-page/advance-payments-detail-page/advance-payments-detail-page.component';
-
-import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
 import {
     AdvancePaymentsAttachmentsComponent
 } from './advance-payments-page/advance-payments-detail-page/advance-payments-attachments/advance-payments-attachments.component';
+import {PaymentsPageSidenavService} from './payments-page-sidenav.service';
+import {PaymentsToEcPageComponent} from './payments-to-ec/payments-to-ec-page.component';
+import {
+  PaymentsToEcDetailPageComponent
+} from './payments-to-ec/payments-to-ec-detail-page/payments-to-ec-detail-page.component';
+import {
+  PaymentToEcSummaryTabComponent
+} from './payments-to-ec/payments-to-ec-detail-page/summary-tab/payment-to-ec-summary-tab.component';
 
 @NgModule({
     declarations: [
         PaymentsPageComponent,
         PaymentsToProjectPageComponent,
         AdvancePaymentsPageComponent,
+        PaymentsToEcPageComponent,
+        PaymentsToEcDetailPageComponent,
+        PaymentToEcSummaryTabComponent,
         PaymentsToProjectDetailPageComponent,
         PaymentsToProjectAttachmentsComponent,
         AdvancePaymentsDetailPageComponent,
@@ -38,7 +47,8 @@ import {
         RouterModule.forChild(paymentsRoutes),
     ],
     providers: [
-        PaymentsToProjectDetailBreadcrumbResolver
+        PaymentsToProjectDetailBreadcrumbResolver,
+        PaymentsPageSidenavService
     ]
 })
 export class PaymentsModule {

@@ -24,7 +24,7 @@ import {
 } from '@project/project-application/contracting/contract-reporting/contract-reporting.store';
 import {MatSelectChange} from '@angular/material/select/select';
 import {Alert} from '@common/components/forms/alert';
-import {CallStore} from "../../../../../../call/services/call-store.service";
+import {CallStore} from '../../../../../../call/services/call-store.service';
 
 @Component({
   selector: 'jems-project-report-identification-tab',

@@ -17,7 +17,7 @@ import {filter, map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {DownloadService} from '@common/services/download.service';
 import {
   ProjectVerificationReportStore
-} from "@project/project-application/report/project-verification-report/project-verification-report-store.service";
+} from '@project/project-application/report/project-verification-report/project-verification-report-store.service';
 
 @Injectable({providedIn: 'root'})
 export class ProjectVerificationReportExpenditureStore {

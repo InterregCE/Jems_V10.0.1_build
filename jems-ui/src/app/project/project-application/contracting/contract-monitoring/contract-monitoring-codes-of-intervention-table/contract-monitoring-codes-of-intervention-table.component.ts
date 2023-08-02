@@ -224,7 +224,7 @@ export class ContractMonitoringCodesOfInterventionTableComponent implements OnCh
       if(!this.getCodesForDimension(this.dimensionControl?.value)){
         return null;
       } else {
-        return Validators.required(control)
+        return Validators.required(control);
       }
     };
   }

@@ -8,9 +8,9 @@ interface ParkedByI {
 }
 
 const ParkedByEnum = {
-  'JSMA': {icon: 'person_search', label: 'project.application.partner.report.expenditures.tab.cost.parked.by.jsma', class: 'parkedBy-JSMA'} as ParkedByI,
-  'CONTROL': {icon: 'supervised_user_circle', label: 'project.application.partner.report.expenditures.tab.cost.parked.by.control', class: 'parkedBy-CONTROL'} as ParkedByI,
-}
+  JSMA: {icon: 'person_search', label: 'project.application.partner.report.expenditures.tab.cost.parked.by.jsma', class: 'parkedBy-JSMA'} as ParkedByI,
+  CONTROL: {icon: 'supervised_user_circle', label: 'project.application.partner.report.expenditures.tab.cost.parked.by.control', class: 'parkedBy-CONTROL'} as ParkedByI,
+};
 
 @Component({
   selector: 'jems-expenditure-item-parked-by-chip',

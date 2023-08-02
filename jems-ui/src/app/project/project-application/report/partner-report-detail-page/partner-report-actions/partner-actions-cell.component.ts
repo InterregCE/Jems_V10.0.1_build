@@ -16,8 +16,8 @@ import {AcceptedFileTypesConstants} from '@project/common/components/file-manage
 import {DatePipe} from '@angular/common';
 import {CustomTranslatePipe} from '@common/pipe/custom-translate-pipe';
 import {FileListTableConstants} from '@common/components/file-list/file-list-table/file-list-table-constants';
-import {FormService} from "@common/components/section/form/form.service";
-import {ReportFileManagementStore} from "@project/project-application/report/partner-report-detail-page/partner-report-annexes-tab/report-file-management-store";
+import {FormService} from '@common/components/section/form/form.service';
+import {ReportFileManagementStore} from '@project/project-application/report/partner-report-detail-page/partner-report-annexes-tab/report-file-management-store';
 
 @Component({
   selector: 'jems-partner-actions-cell',
@@ -56,7 +56,7 @@ export class PartnerActionsCellComponent implements ControlValueAccessor {
   @Output()
   delete = new EventEmitter<number>();
 
-  maximumAllowedFileSizeInMB : number;
+  maximumAllowedFileSizeInMB: number;
 
   constructor(private changeDetectorRef: ChangeDetectorRef,
               private dialog: MatDialog,
