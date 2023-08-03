@@ -254,7 +254,10 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     control.get('numberOfUnits')?.disable();
     control.get('pricePerUnit')?.disable();
     control.get('declaredAmount')?.enable();
-    control.get('currencyCode')?.enable();
+    if(this.hasPartnerCurrencySetToEur())
+      control.get('currencyCode')?.disable();
+    else
+      control.get('currencyCode')?.enable();
     control.get('currencyConversionRate')?.enable();
     control.get('declaredAmountInEur')?.enable();
     control.get('investmentId')?.enable();

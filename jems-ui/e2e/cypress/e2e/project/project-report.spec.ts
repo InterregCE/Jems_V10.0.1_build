@@ -136,7 +136,10 @@ context('Project report tests', () => {
           cy.contains('button', 'Run pre-submission check').should('be.enabled').click();
           cy.contains('0 Issue(s)').should('be.visible');
           cy.contains('button', 'Submit project report').should('be.enabled').click();
+
+          cy.intercept(`/api/project/report/byProjectId/${applicationId}/byReportId/${reportId}/submit`).as('submitProjectReport')
           cy.contains('button', 'Confirm').click();
+          cy.wait('@submitProjectReport')
 
           cy.visit(`app/project/detail/${applicationId}/projectReports`, {failOnStatusCode: false});
           cy.contains('mat-row', 'PR.1').should('be.visible');

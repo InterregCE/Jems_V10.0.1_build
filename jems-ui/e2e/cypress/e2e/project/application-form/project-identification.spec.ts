@@ -26,7 +26,7 @@ context('Project identification tests', () => {
     cy.contains('jems-breadcrumb', call.generalCallSettings.name).should('exist');
     cy.contains('Apply').click();
 
-    application.details.acronym = `${faker.hacker.adjective()} ${faker.hacker.noun()}`;
+    application.details.acronym = `${faker.hacker.adjective()} ${faker.hacker.noun()}`.substring(0,24);
     cy.wrap(application.details.acronym).as('applicationAcronym')
     cy.get('input[name="acronym"]').type(`${application.details.acronym}`);
 
@@ -51,7 +51,7 @@ context('Project identification tests', () => {
 
       cy.contains('.link', 'A - Project identification').should('be.visible').click();
 
-      application.identification.acronym = `${faker.hacker.adjective()} ${faker.hacker.noun()}`;
+      application.identification.acronym = `${faker.hacker.adjective()} ${faker.hacker.noun()}`.substring(0,24);
 
       cy.contains('div', 'Project acronym').find('input').clear().type(application.identification.acronym);
 

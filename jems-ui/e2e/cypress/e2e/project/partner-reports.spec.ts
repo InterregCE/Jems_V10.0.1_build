@@ -276,9 +276,13 @@ context('Partner reports tests', () => {
                     .click();
                 })
 
+                cy.intercept(`/api/project/report/partner/byPartnerId/${partnerId2}/byReportId/${reportId}`).as('deleteFileFromActivity')
+
                 cy.contains('button', 'Confirm')
                   .should('be.visible')
                   .click();
+
+                cy.wait('@deleteFileFromActivity')
 
                 cy.get('div.activity-container > jems-multi-language-container input').eq(0)
                   .scrollIntoView()
@@ -478,8 +482,12 @@ context('Partner reports tests', () => {
                       cy.get('[label="file.table.column.name.description"] textarea')
                         .type('Description test for the attachment');
 
+                      cy.intercept(/api\/project\/report\/partner\/byPartnerId\/[0-9]+\/byReportId\/[0-9]+\/[0-9]+\/description/).as('updateReportFileDescription')
+
                       cy.contains('button', 'Save')
                         .click();
+
+                      cy.wait('@updateReportFileDescription')
 
                       cy.contains('File description for \'fileToUpload.txt\' has been updated.')
                         .should('be.visible');
@@ -713,8 +721,12 @@ context('Partner reports tests', () => {
                       cy.get('[label="file.table.column.name.description"] textarea')
                         .type('Description test for the attachment');
 
+                      cy.intercept(/api\/project\/report\/partner\/byPartnerId\/[0-9]+\/byReportId\/[0-9]+\/[0-9]+\/description/).as('updateReportFileDescription')
+
                       cy.contains('button', 'Save')
                         .click();
+
+                      cy.wait('@updateReportFileDescription')
 
                       cy.contains('File description for \'fileToUpload.txt\' has been updated.')
                         .scrollIntoView()
@@ -2299,7 +2311,9 @@ context('Partner reports tests', () => {
     cy.contains('mat-option', 'Staff costs').click();
     cy.get('mat-row').last().find('.mat-column-declaredAmount').scrollIntoView().click();
     cy.get('mat-row').last().find('.mat-column-declaredAmount').find('input').scrollIntoView().type(declaredAmountFormatted);
+    cy.intercept(/api\/project\/report\/partner\/identification\/byPartnerId\/[0-9]+\/byReportId\/[0-9]+/).as('getPartner')
     cy.contains('Save changes').click();
+    cy.wait('@getPartner')
   }
 
   function createLumpSumAsExpenditure() {
@@ -2307,7 +2321,9 @@ context('Partner reports tests', () => {
     cy.contains('add expenditure').click();
     cy.get('mat-row').last().find('.mat-column-costOptions').click();
     cy.contains('mat-option', 'Implementation Lump sum DE - Period 1').click();
+    cy.intercept(/api\/project\/report\/partner\/identification\/byPartnerId\/[0-9]+\/byReportId\/[0-9]+/).as('getPartner')
     cy.contains('Save changes').click();
+    cy.wait('@getPartner')
   }
 
   function createUnitCostsAsExpenditures() {
@@ -2318,7 +2334,9 @@ context('Partner reports tests', () => {
     cy.contains('add expenditure').click();
     cy.get('mat-row').last().find('.mat-column-costOptions').click();
     cy.contains('mat-option', 'Unit cost single - External DE').click();
+    cy.intercept(/api\/project\/report\/partner\/identification\/byPartnerId\/[0-9]+\/byReportId\/[0-9]+/).as('getPartner')
     cy.contains('Save changes').click();
+    cy.wait('@getPartner')
   }
 
   function submitPartnerReport() {

@@ -35,7 +35,9 @@ context('Project privileges tests', () => {
         cy.loginByRequest(user.applicantUser.email);
         cy.visit(`app/project/detail/${applicationId}/privileges`, {failOnStatusCode: false});
         cy.get('jems-application-form-privileges-expansion-panel').then(applicationFormUsers => {
+          cy.intercept(`/api/projectUserCollaborator/${applicationId}`).as('getProjectUserCollaborator')
           cy.wrap(applicationFormUsers).find('mat-icon:contains("delete")').last().click();
+          cy.wait('@getProjectUserCollaborator')
           cy.wrap(applicationFormUsers).contains('Save changes').click();
 
           cy.get('div.jems-alert-success').should('contain', 'Project collaborators were saved successfully');
