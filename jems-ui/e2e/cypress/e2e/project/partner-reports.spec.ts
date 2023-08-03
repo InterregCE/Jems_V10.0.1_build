@@ -276,7 +276,7 @@ context('Partner reports tests', () => {
                     .click();
                 })
 
-                cy.intercept(`/api/project/report/partner/byPartnerId/${partnerId2}/byReportId/${reportId}`).as('deleteFileFromActivity')
+                cy.intercept(/api\/project\/report\/partner\/byPartnerId\/[0-9]+\/byReportId\/[0-9]+\/[0-9]+/).as('deleteFileFromActivity')
 
                 cy.contains('button', 'Confirm')
                   .should('be.visible')
