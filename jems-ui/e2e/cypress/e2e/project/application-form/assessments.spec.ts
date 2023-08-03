@@ -161,7 +161,9 @@ context('Assessments & decision tests', () => {
     cy.loginByRequest(user.applicantUser.email);
     cy.createSubmittedApplication(application).then(applicationId => {
       cy.loginByRequest(user.programmeUser.email);
+      cy.intercept(`/api/checklist/instance/mine/${applicationId}/APPLICATION_FORM_ASSESSMENT`).as('getApplicationFormAssessment')
       cy.visit(`/app/project/detail/${applicationId}/assessmentAndDecision`, {failOnStatusCode: false});
+      cy.wait('@getApplicationFormAssessment')
       cy.contains('mat-select', 'Select checklist template').click();
       cy.get('mat-option:first-of-type').click();
       cy.contains('start new assessment').click();
