@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {
   PreConditionCheckResultDTO,
-  ProjectPartnerReportSummaryDTO,
   ProjectReportDTO,
   ProjectReportService,
   ProjectReportSummaryDTO,
@@ -14,6 +13,9 @@ import {Log} from '@common/utils/log';
 import {ProjectPaths} from '@project/common/project-util';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {ProjectReportPageStore} from '@project/project-application/report/project-report/project-report-page-store.service';
+import {
+  PartnerReportDetailPageStore
+} from "@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service";
 
 @Injectable({providedIn: 'root'})
 export class ProjectReportDetailPageStore {
@@ -24,6 +26,7 @@ export class ProjectReportDetailPageStore {
   reportStatus$: Observable<ProjectReportSummaryDTO.StatusEnum>;
   reportEditable$: Observable<boolean>;
   reportVersion$ = new ReplaySubject<string | undefined>(1);
+  canUserAccessCall$: Observable<boolean>;
 
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
@@ -34,11 +37,13 @@ export class ProjectReportDetailPageStore {
   constructor(private routingService: RoutingService,
               private projectReportPageStore: ProjectReportPageStore,
               private projectReportService: ProjectReportService,
+              private partnerReportDetailPageStore: PartnerReportDetailPageStore,
               public projectStore: ProjectStore) {
     this.projectReportId$ = this.projectReportId();
     this.projectReport$ = this.projectReport();
     this.reportStatus$ = this.reportStatus();
     this.reportEditable$ = this.reportEditable();
+    this.canUserAccessCall$ = partnerReportDetailPageStore.canUserAccessCall$;
   }
 
   private projectReportId(): Observable<any> {
