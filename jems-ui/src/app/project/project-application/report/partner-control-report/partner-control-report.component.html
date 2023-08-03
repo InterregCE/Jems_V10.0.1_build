@@ -26,7 +26,7 @@
             {{'project.application.partner.reports.control.reopen' | translate}}
         </jems-pending-button>
         <jems-context-info
-                *ngIf="data.report.projectReportId" class="tooltip" infoPosition="right"
+                *ngIf="data.report.projectReportId && data.hasReopenPermission" class="tooltip" infoPosition="right"
                 infoText="{{ 'common.certificate.is.included.tooltip' | translate : { id: data.report.projectReportNumber } }}">
         </jems-context-info>
     </div>
