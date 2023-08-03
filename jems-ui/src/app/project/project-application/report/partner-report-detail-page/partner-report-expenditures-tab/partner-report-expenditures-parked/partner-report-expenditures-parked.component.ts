@@ -1,13 +1,13 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Forms } from '@common/utils/forms';
-import { MatDialog } from '@angular/material/dialog';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {Forms} from '@common/utils/forms';
+import {MatDialog} from '@angular/material/dialog';
 import {
   PartnerReportExpendituresStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-expenditures-tab/partner-report-expenditures-store.service';
-import { ProjectPartnerReportParkedExpenditureDTO } from '@cat/api';
-import { Observable } from 'rxjs';
-import { filter, switchMap, take } from 'rxjs/operators';
+import {ProjectPartnerReportParkedExpenditureDTO} from '@cat/api';
+import {Observable} from 'rxjs';
+import {filter, switchMap, take} from 'rxjs/operators';
 
 @UntilDestroy()
 @Component({

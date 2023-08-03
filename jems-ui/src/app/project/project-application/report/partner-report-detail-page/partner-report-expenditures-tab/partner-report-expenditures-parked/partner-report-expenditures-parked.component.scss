@@ -23,6 +23,7 @@
 .mat-column-costOptions {
   padding-left: 1rem;
 }
+.mat-column-parkedBy,
 .mat-column-costCategory,
 .mat-column-investmentId,
 .mat-column-contractId,
@@ -45,6 +46,10 @@
 }
 .mat-column-uploadFunction {
   padding-right: 1rem;
+}
+
+.mat-column-parkedBy {
+  min-width: 6rem;
 }
 
 .mat-column-costOptions {

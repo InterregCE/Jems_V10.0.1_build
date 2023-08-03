@@ -31,8 +31,8 @@ class PartnerReportParkedExpenditurePersistenceProvider(
             it.parkedFromExpenditureId,
             ExpenditureParkingMetadata(
                 reportOfOriginId = it.reportOfOrigin.id,
-                reportProjectOfOriginId = it.reportProjectOfOrigin?.id,
                 reportOfOriginNumber = it.reportOfOrigin.number,
+                reportProjectOfOriginId = it.reportProjectOfOrigin?.id,
                 originalExpenditureNumber = it.originalNumber
             )
         ) }.toMap()

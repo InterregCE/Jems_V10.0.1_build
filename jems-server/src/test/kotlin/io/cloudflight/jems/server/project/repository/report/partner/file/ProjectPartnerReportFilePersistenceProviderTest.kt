@@ -123,6 +123,7 @@ class ProjectPartnerReportFilePersistenceProviderTest : UnitTest() {
             unParkedFrom = null,
             reportOfOrigin = null,
             originalNumber = null,
+            reportProjectOfOrigin = null,
             partOfSampleLocked = false
         )
 

@@ -134,6 +134,7 @@ class ProjectReportVerificationExpenditurePersistenceTest : UnitTest() {
             parked = false,
             unParkedFrom = null,
             reportOfOrigin = null,
+            reportProjectOfOrigin = null,
             originalNumber = 1,
             partOfSampleLocked = false
         )
@@ -168,6 +169,7 @@ class ProjectReportVerificationExpenditurePersistenceTest : UnitTest() {
             parked = true,
             unParkedFrom = firstExpenditure,
             reportOfOrigin = partnerReport,
+            reportProjectOfOrigin = null,
             originalNumber = 1,
             partOfSampleLocked = false,
         )

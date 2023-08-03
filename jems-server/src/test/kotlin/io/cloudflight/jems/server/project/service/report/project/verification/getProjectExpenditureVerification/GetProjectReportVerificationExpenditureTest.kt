@@ -6,7 +6,6 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
-import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.investments.ExpenditureInvestmentBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumBreakdownLine
@@ -39,8 +38,8 @@ class GetProjectReportVerificationExpenditureTest: UnitTest() {
 
         private val parkingMetadata = ExpenditureParkingMetadata(
             reportOfOriginId = 70L,
-            reportProjectOfOriginId = null,
             reportOfOriginNumber = 5,
+            reportProjectOfOriginId = null,
             originalExpenditureNumber = 3
         )
 

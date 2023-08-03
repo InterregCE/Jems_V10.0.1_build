@@ -26,7 +26,6 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
-import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -34,6 +33,7 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
+import java.time.ZonedDateTime
 
 internal class ReIncludeParkedExpenditureTest : UnitTest() {
 
@@ -75,8 +75,8 @@ internal class ReIncludeParkedExpenditureTest : UnitTest() {
         every { mockedResult.parkingMetadata } returns
             ExpenditureParkingMetadata(
                 reportOfOriginId = 75L,
-                reportProjectOfOriginId = null,
                 reportOfOriginNumber = 10,
+                reportProjectOfOriginId = null,
                 originalExpenditureNumber = 11
             )
         every { reportExpenditurePersistence.reIncludeParkedExpenditure(4L, 40L, 400L) } returns mockedResult
@@ -127,7 +127,7 @@ internal class ReIncludeParkedExpenditureTest : UnitTest() {
         val newExpenditure = mockk<ProjectPartnerReportExpenditureCost>()
         every { newExpenditure.id } returns 945L
         every { newExpenditure.parkingMetadata } returns
-            ExpenditureParkingMetadata(reportOfOriginId = 77L, reportProjectOfOriginId = null, reportOfOriginNumber = 3, originalExpenditureNumber = 4)
+            ExpenditureParkingMetadata(reportOfOriginId = 77L, reportOfOriginNumber = 3, reportProjectOfOriginId = null, originalExpenditureNumber = 4)
         every { reportExpenditurePersistence.reIncludeParkedExpenditure(5L, 50L, 500L) } returns newExpenditure
         every { reportParkedExpenditurePersistence.unParkExpenditures(setOf(500L)) } answers { }
         every { partnerPersistence.getProjectIdForPartnerId(5L) } returns 55L

@@ -1,0 +1,19 @@
+:host {
+  min-width: 10rem;
+}
+mat-chip {
+  min-height: 1.75rem;
+  padding-left: .25rem;
+  margin: 0 .25rem !important;
+  pointer-events: none;
+  color: var(--font-color-primary);
+  font-weight: 600;
+}
+
+.parkedBy-JSMA {
+  background-color: var(--status-draft) !important;
+}
+
+.parkedBy-CONTROL {
+  background-color: var(--status-submitted) !important;
+}

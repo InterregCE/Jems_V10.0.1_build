@@ -47,8 +47,8 @@ class UpdateProjectReportVerificationExpenditureTest : UnitTest() {
 
         private val parkingMetadata = ExpenditureParkingMetadata(
             reportOfOriginId = 70L,
-            reportProjectOfOriginId = null,
             reportOfOriginNumber = 5,
+            reportProjectOfOriginId = null,
             originalExpenditureNumber = 3
         )
 

@@ -265,8 +265,8 @@ class GetReportExpenditureInvestmentsBreakdownCalculatorTest : UnitTest() {
                 expenditureWithInvestment.copy(
                 parkingMetadata = ExpenditureParkingMetadata(
                     reportOfOriginId = 70L,
-                    reportProjectOfOriginId = null,
                     reportOfOriginNumber = 5,
+                    reportProjectOfOriginId = null,
                     originalExpenditureNumber = 3
                 ),
                 currencyConversionRate = BigDecimal.valueOf(175, 2)

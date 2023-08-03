@@ -153,8 +153,8 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
 
         private val parkingMetadata = ExpenditureParkingMetadata(
             reportOfOriginId = 70L,
-            reportProjectOfOriginId = PROJECT_REPORT_ID,
             reportOfOriginNumber = 5,
+            reportProjectOfOriginId = PROJECT_REPORT_ID,
             originalExpenditureNumber = 3
         )
 

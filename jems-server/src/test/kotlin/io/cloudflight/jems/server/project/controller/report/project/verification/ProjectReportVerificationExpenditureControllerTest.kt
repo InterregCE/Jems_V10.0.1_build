@@ -58,13 +58,14 @@ class ProjectReportVerificationExpenditureControllerTest: UnitTest() {
         private val parkingMetadataDTO = ExpenditureParkingMetadataDTO(
             reportOfOriginId = 70L,
             reportOfOriginNumber = 5,
+            reportProjectOfOriginId = 20,
             originalExpenditureNumber = 3
         )
 
         private val parkingMetadata = ExpenditureParkingMetadata(
             reportOfOriginId = 70L,
-            reportProjectOfOriginId = PROJECT_REPORT_ID,
             reportOfOriginNumber = 5,
+            reportProjectOfOriginId = PROJECT_REPORT_ID,
             originalExpenditureNumber = 3
         )
 

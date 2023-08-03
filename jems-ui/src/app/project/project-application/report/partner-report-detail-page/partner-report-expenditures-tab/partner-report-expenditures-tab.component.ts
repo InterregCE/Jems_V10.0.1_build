@@ -38,12 +38,10 @@ import {TranslateByInputLanguagePipe} from '@common/pipe/translate-by-input-lang
 import {SecurityService} from 'src/app/security/security.service';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
-import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {Alert} from '@common/components/forms/alert';
-import {
-  ProjectStore
-} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {ReportUtil} from '@project/common/report-util';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @UntilDestroy()
 @Component({
@@ -158,7 +156,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
           columnsToDisplay: this.getColumnsToDisplay(investments, editable, lumpSums.length > 0 || unitCosts.length > 0),
           withConfigs: this.getTableConfig(investments, editable, lumpSums.length > 0 || unitCosts.length > 0)
         })
-      )
+      ),
     );
     this.pageStore.currentReport$.pipe(untilDestroyed(this)).subscribe(report => this.currentReport = report);
     this.pageStore.currencies$.pipe(untilDestroyed(this)).subscribe(currencies=> this.currencies = currencies);
@@ -481,6 +479,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     const columnsToDisplay = [
       'costItemID',
       'costGDPR',
+      'parkedBy',
       'costCategory',
       'contractId',
       'internalReferenceNumber',
@@ -504,7 +503,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       columnsToDisplay.splice(3, 0, 'investmentId');
     }
     if (isCostOptionsAvailable) {
-      columnsToDisplay.splice(2, 0, 'costOptions');
+      columnsToDisplay.splice(3, 0, 'costOptions');
       columnsToDisplay.splice(12, 0, 'numberOfUnits');
       columnsToDisplay.splice(13, 0, 'pricePerUnit');
     }
@@ -515,6 +514,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     const tableConfig: TableConfig[] = [{minInRem: 3, maxInRem: 3}]; // id
 
     tableConfig.push({minInRem: 1, maxInRem: 1}); // cost GDPR
+    tableConfig.push({minInRem: 6, maxInRem: 6}); // parked by
 
     if (isCostOptionsAvailable) {
       tableConfig.push({minInRem: 11, maxInRem: 16}); // cost options
@@ -579,6 +579,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
         {
           id: this.formBuilder.control(reportExpenditureCost.id),
           number: this.formBuilder.control(reportExpenditureCost.number),
+          parkingMetadata: this.formBuilder.control(reportExpenditureCost.parkingMetadata),
           reportOfOriginNumber: this.formBuilder.control(reportExpenditureCost.parkingMetadata?.reportOfOriginNumber),
           originalExpenditureNumber: this.formBuilder.control(reportExpenditureCost.parkingMetadata?.originalExpenditureNumber),
           costOptions: this.formBuilder.control(costOption),

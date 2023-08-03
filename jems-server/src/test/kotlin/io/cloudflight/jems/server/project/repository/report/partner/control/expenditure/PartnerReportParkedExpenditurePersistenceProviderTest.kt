@@ -26,10 +26,13 @@ class PartnerReportParkedExpenditurePersistenceProviderTest : UnitTest() {
 
     @MockK
     private lateinit var reportRepository: ProjectPartnerReportRepository
+
     @MockK
     private lateinit var reportExpenditureRepository: ProjectPartnerReportExpenditureRepository
+
     @MockK
     private lateinit var reportParkedExpenditureRepository: PartnerReportParkedExpenditureRepository
+
     @MockK
     private lateinit var projectReportRepository: ProjectReportRepository
 
@@ -49,7 +52,7 @@ class PartnerReportParkedExpenditurePersistenceProviderTest : UnitTest() {
         every { originalReport.id } returns 40L
         every { originalReport.number } returns 401
 
-        every { originalProjectReport.id } returns 401L
+        every { originalProjectReport.id } returns 43L
         every { originalProjectReport.number } returns 21
 
 
@@ -61,15 +64,24 @@ class PartnerReportParkedExpenditurePersistenceProviderTest : UnitTest() {
             21,
             parkedOn = dateTime
         )
-        every { reportParkedExpenditureRepository
-            .findAllByParkedFromPartnerReportPartnerIdAndParkedFromPartnerReportStatus(
-                partnerId = 12L,
-                status = ReportStatus.Certified,
-            )
+        every {
+            reportParkedExpenditureRepository
+                .findAllByParkedFromPartnerReportPartnerIdAndParkedFromPartnerReportStatus(
+                    partnerId = 12L,
+                    status = ReportStatus.Certified,
+                )
         } returns listOf(expenditure)
 
-        assertThat(persistence.getParkedExpendituresByIdForPartner(partnerId = 12L, ReportStatus.Certified))
-            .containsExactlyEntriesOf(mapOf(5499L to ExpenditureParkingMetadata(40L, 401, originalExpenditureNumber = 21, reportOfOriginNumber = 401)))
+        assertThat(persistence.getParkedExpendituresByIdForPartner(partnerId = 12L, ReportStatus.Certified)).containsExactlyEntriesOf(
+            mapOf(
+                5499L to ExpenditureParkingMetadata(
+                    reportOfOriginId = 40L,
+                    reportOfOriginNumber = 401,
+                    reportProjectOfOriginId = 43L,
+                    originalExpenditureNumber = 21
+                )
+            )
+        )
     }
 
     @Test

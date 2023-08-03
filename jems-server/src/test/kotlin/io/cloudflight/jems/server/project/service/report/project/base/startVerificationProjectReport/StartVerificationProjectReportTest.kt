@@ -22,7 +22,6 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
-import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
@@ -31,6 +30,7 @@ import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.ZonedDateTime
 
 internal class StartVerificationProjectReportTest : UnitTest() {
 
@@ -79,8 +79,8 @@ internal class StartVerificationProjectReportTest : UnitTest() {
             attachment = JemsFileMetadata(47L, "file.xlsx", DATE_TIME_1),
             parkingMetadata = ExpenditureParkingMetadata(
                 reportOfOriginId = 75L,
-                reportProjectOfOriginId = null,
                 reportOfOriginNumber = 4,
+                reportProjectOfOriginId = null,
                 originalExpenditureNumber = 3
             ),
         )

@@ -128,6 +128,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
             unParkedFrom = unParkedFrom,
             reportOfOrigin = if (unParkedFrom == null) null else report,
             originalNumber = if (unParkedFrom == null) null else 14,
+            reportProjectOfOrigin = null,
             partOfSampleLocked = false
         ).apply {
             translatedValues.add(
@@ -183,8 +184,8 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
                     contractId = PROCUREMENT_ID,
                     parkingMetadata = ExpenditureParkingMetadata(
                         reportOfOriginId = 80L,
-                        reportProjectOfOriginId = null,
                         reportOfOriginNumber = 81,
+                        reportProjectOfOriginId = null,
                         originalExpenditureNumber = 14
                     )
                 ),
@@ -228,8 +229,8 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
             attachment = null,
             parkingMetadata = ExpenditureParkingMetadata(
                 reportOfOriginId = 75L,
-                reportProjectOfOriginId = null,
                 reportOfOriginNumber = 4,
+                reportProjectOfOriginId = null,
                 originalExpenditureNumber = 8
             ),
         )
@@ -412,7 +413,8 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
             unParkedFrom = unParkedFrom,
             reportOfOrigin = reportOfOrigin,
             originalNumber = if (reportOfOrigin == null) null else 42,
-            partOfSampleLocked = false
+            reportProjectOfOrigin = null,
+            partOfSampleLocked = false,
         )
 
         private fun parkedFromExpected() = ProjectPartnerReportExpenditureCost(
@@ -441,8 +443,8 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
             attachment = null,
             parkingMetadata = ExpenditureParkingMetadata(
                 reportOfOriginId = 11L,
-                reportProjectOfOriginId = null,
                 reportOfOriginNumber = 111,
+                reportProjectOfOriginId = null,
                 originalExpenditureNumber = 4
             ),
         )
@@ -515,9 +517,9 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
                         contractId = PROCUREMENT_ID,
                         parkingMetadata = ExpenditureParkingMetadata(
                             reportOfOriginId = 60L,
+                            reportOfOriginNumber = 61,
                             reportProjectOfOriginId = null,
-                            61,
-                            14
+                            originalExpenditureNumber = 14
                         )
                     )
             )
@@ -772,9 +774,9 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
                 .copy(
                     parkingMetadata = ExpenditureParkingMetadata(
                         reportOfOriginId = 75L,
+                        reportOfOriginNumber = 4,
                         reportProjectOfOriginId = null,
-                        4,
-                        14
+                        originalExpenditureNumber = 14
                     )
                 ),
             dummyExpectedExpenditure(id = EXPENDITURE_TO_UPDATE, LUMP_SUM_ID, UNIT_COST_ID, INVESTMENT_ID, 2)
@@ -956,9 +958,9 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
                     investmentId = 7100L,
                     parkingMetadata = ExpenditureParkingMetadata(
                         reportOfOriginId = 2L,
+                        reportOfOriginNumber = 21,
                         reportProjectOfOriginId = null,
-                        21,
-                        4
+                        originalExpenditureNumber = 4
                     ),
                 )
             )
@@ -1008,9 +1010,9 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
                     investmentId = null,
                     parkingMetadata = ExpenditureParkingMetadata(
                         reportOfOriginId = 2L,
+                        reportOfOriginNumber = 21,
                         reportProjectOfOriginId = null,
-                        21,
-                        4
+                        originalExpenditureNumber = 4
                     ),
                 )
             )

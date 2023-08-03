@@ -1,11 +1,4 @@
-import {
-  AfterViewChecked,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
+import {AfterViewChecked, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild,} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {catchError, map, take, tap} from 'rxjs/operators';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -25,16 +18,10 @@ import {
   TypologyErrorsDTO,
   UserRoleDTO
 } from '@cat/api';
-import {
-  InvestmentSummary
-} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
+import {InvestmentSummary} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
 import {CurrencyCodesEnum} from '@common/services/currency.store';
-import {
-  PartnerFileManagementStore
-} from '@project/project-application/report/partner-report-detail-page/partner-file-management-store';
-import {
-  PartnerReportDetailPageStore
-} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
+import {PartnerFileManagementStore} from '@project/project-application/report/partner-report-detail-page/partner-file-management-store';
+import {PartnerReportDetailPageStore} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 import {RoutingService} from '@common/services/routing.service';
 import {CustomTranslatePipe} from '@common/pipe/custom-translate-pipe';
 import {TranslateByInputLanguagePipe} from '@common/pipe/translate-by-input-language.pipe';
@@ -49,12 +36,8 @@ import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 import {MatTable} from '@angular/material/table';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
-import {
-  ProjectStore
-} from '@project/project-application/containers/project-application-detail/services/project-store.service';
-import {
-  PartnerControlReportStore
-} from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {PartnerControlReportStore} from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @UntilDestroy()
@@ -265,6 +248,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
     const columnsToDisplayFirstPart = [
       'costItemID',
       'costGDPR',
+      'parkedBy',
       'costCategory',
     ];
 
@@ -295,7 +279,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
     }
 
     if (isCostOptionsAvailable) {
-      columnsToDisplay.splice(2, 0, 'costOptions');
+      columnsToDisplay.splice(3, 0, 'costOptions');
       columnsToDisplay.splice(12, 0, 'numberOfUnits');
       columnsToDisplay.splice(13, 0, 'pricePerUnit');
     }
@@ -316,6 +300,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
     this.columnsWidthsToDisplay = [{minInRem: 2.5, maxInRem: 2.5}];
 
     this.columnsWidthsToDisplay.push({minInRem: 1, maxInRem: 1}); // cost GDPR
+    this.columnsWidthsToDisplay.push({minInRem: 6, maxInRem: 6}); // parked by
 
     if (isCostOptionsAvailable) {
       this.columnsWidthsToDisplay.push({minInRem: 11, maxInRem: 11}); // cost options
@@ -384,6 +369,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
           ? reportExpenditureControl.parkingMetadata.originalExpenditureNumber
           : reportExpenditureControl.number
         ),
+        parkingMetadata: this.formBuilder.control(reportExpenditureControl.parkingMetadata),
         reportOfOriginNumber: this.formBuilder.control(reportExpenditureControl.parkingMetadata?.reportOfOriginNumber),
         originalExpenditureNumber: this.formBuilder.control(reportExpenditureControl.parkingMetadata?.originalExpenditureNumber),
         costOptions: this.formBuilder.control(costOption),
