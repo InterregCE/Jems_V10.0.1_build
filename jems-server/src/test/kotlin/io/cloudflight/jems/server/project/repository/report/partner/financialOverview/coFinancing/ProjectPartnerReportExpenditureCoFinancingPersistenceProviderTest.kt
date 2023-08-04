@@ -375,15 +375,4 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProviderTest : UnitTe
         assertThat(coFinEntity.sumTotalEligibleAfterControl).isEqualByComparingTo(BigDecimal.valueOf(100L))
     }
 
-    @Test
-    fun getReportCurrentSum() {
-        val coFin = mockk<ReportProjectPartnerExpenditureCoFinancingEntity>()
-        every { coFin.sumCurrent } returns BigDecimal.valueOf(64789, 2)
-
-        every { expenditureCoFinancingRepository
-            .findFirstByReportEntityPartnerIdAndReportEntityId(PARTNER_ID, reportId = 15L)
-        } returns coFin
-        assertThat(persistence.getReportCurrentSum(PARTNER_ID, reportId = 15L)).isEqualTo(BigDecimal.valueOf(64789, 2))
-    }
-
 }

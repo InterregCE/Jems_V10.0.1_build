@@ -23,6 +23,9 @@ annotation class CanViewReportVerification
 @Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("@projectReportVerificationAuthorization.canEditProjectReportVerification(#projectId)")
 annotation class CanEditReportVerification
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@projectReportVerificationAuthorization.canViewReportVerificationOverview(#projectId)")
+annotation class CanViewReportVerificationOverview
 
 @Component
 class ProjectReportVerificationAuthorization(
@@ -53,6 +56,13 @@ class ProjectReportVerificationAuthorization(
         val canCreatorEdit = isActiveUserIdEqualToOneOf(project.getUserIdsWithEditLevel())
 
         return canMonitorEdit || canCreatorEdit
+    }
+
+    fun canViewReportVerificationOverview(projectId:Long): Boolean{
+        val project = projectPersistence.getApplicantAndStatusById(projectId)
+        val canCreatorView = isActiveUserIdEqualToOneOf(project.getUserIdsWithViewLevel())
+        val canMonitorView = hasPermission(UserRolePermission.ProjectReportingProjectView, projectId)
+        return canCreatorView || canMonitorView
     }
 
     private fun Long.toProjectId() = projectReportPersistence.getProjectIdForProjectReportId(this)

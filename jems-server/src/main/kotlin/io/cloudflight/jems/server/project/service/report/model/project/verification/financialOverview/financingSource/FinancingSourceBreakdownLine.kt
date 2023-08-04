@@ -5,12 +5,12 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRo
 import java.math.BigDecimal
 
 data class FinancingSourceBreakdownLine(
-    val partnerReportId: Long,
-    val partnerReportNumber: Int,
+    val partnerReportId: Long?,
+    val partnerReportNumber: Int?,
 
-    val partnerId: Long,
-    val partnerRole: ProjectPartnerRole,
-    val partnerNumber: Int,
+    val partnerId: Long?,
+    val partnerRole: ProjectPartnerRole?,
+    val partnerNumber: Int?,
 
     val fundsSorted: List<Pair<ProgrammeFund, BigDecimal>>,
 
@@ -21,5 +21,5 @@ data class FinancingSourceBreakdownLine(
 
     val total: BigDecimal,
 
-    val split: List<FinancingSourceBreakdownSplitLine>,
+    var split: List<FinancingSourceBreakdownSplitLine>,
 )

@@ -7,6 +7,8 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.notification.handler.ProjectReportStatusChanged
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
@@ -21,12 +23,17 @@ import io.cloudflight.jems.server.project.service.report.model.project.ProjectRe
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.model.project.verification.expenditure.ProjectPartnerReportExpenditureItem
 import io.cloudflight.jems.server.project.service.report.model.project.verification.expenditure.ProjectReportVerificationExpenditureLine
+import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.FinancingSourceBreakdownLine
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.project.verification.expenditure.ProjectReportVerificationExpenditurePersistence
+import io.cloudflight.jems.server.project.service.report.project.verification.financialOverview.ProjectReportFinancialOverviewPersistence
+import io.cloudflight.jems.server.project.service.report.project.verification.financialOverview.getFinancingSourceBreakdown.getPartnerReportFinancialData.GetPartnerReportFinancialData
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
@@ -206,6 +213,35 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
                 parked = true,
                 verificationComment = "VERIFICATION COMM"
             )
+
+        val ERDF = ProgrammeFund(
+            id = 1L, type = ProgrammeFundType.ERDF, selected = true,
+            abbreviation = setOf(
+                InputTranslation(
+                    SystemLanguage.EN, "EN ERDF"
+                ),
+                InputTranslation(SystemLanguage.SK, "SK ERDF")
+            ),
+            description = setOf(
+                InputTranslation(SystemLanguage.EN, "EN desc"),
+                InputTranslation(SystemLanguage.SK, "SK desc")
+            )
+        )
+
+        val financialData = FinancingSourceBreakdownLine(
+            partnerReportId = 23L,
+            partnerReportNumber = 2,
+            partnerId = PARTNER_ID,
+            partnerRole = ProjectPartnerRole.LEAD_PARTNER,
+            partnerNumber = 1,
+            fundsSorted = listOf(Pair(ERDF, BigDecimal.ZERO)),
+            partnerContribution = BigDecimal.ZERO,
+            publicContribution = BigDecimal.ZERO,
+            automaticPublicContribution = BigDecimal.ZERO,
+            privateContribution = BigDecimal.ZERO,
+            total = BigDecimal.ZERO,
+            split = emptyList()
+        )
     }
 
     @MockK
@@ -216,6 +252,15 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
 
     @MockK
     lateinit var expenditureVerificationPersistence: ProjectReportVerificationExpenditurePersistence
+
+    @RelaxedMockK
+    lateinit var projectReportCertificateCoFinancingPersistence: ProjectReportCertificateCoFinancingPersistence
+
+    @RelaxedMockK
+    lateinit var getPartnerReportFinancialData: GetPartnerReportFinancialData
+
+    @RelaxedMockK
+    lateinit var projectReportFinancialOverviewPersistence: ProjectReportFinancialOverviewPersistence
 
     @InjectMockKs
     lateinit var interactor: FinalizeVerificationProjectReport
@@ -242,6 +287,17 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
                 reportId
             )
         } returns reportSubmissionSummary
+
+
+        every { expenditureVerificationPersistence.getProjectReportExpenditureVerification(reportId) } returns listOf(aggregatedExpenditures)
+        every { projectReportCertificateCoFinancingPersistence.getAvailableFunds(reportId) } returns listOf(ERDF)
+        every { getPartnerReportFinancialData.retrievePartnerReportFinancialData(reportId) } returns mockk()
+
+
+        every { projectReportFinancialOverviewPersistence.storeOverviewPerFund(PROJECT_REPORT_ID, any()) } returns listOf(financialData)
+        every { projectReportCertificateCoFinancingPersistence.updateAfterVerificationValues(PROJECT_ID, PROJECT_REPORT_ID, any()) } returns Unit
+
+
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
         every { auditPublisher.publishEvent(ofType(ProjectReportStatusChanged::class)) } returns Unit

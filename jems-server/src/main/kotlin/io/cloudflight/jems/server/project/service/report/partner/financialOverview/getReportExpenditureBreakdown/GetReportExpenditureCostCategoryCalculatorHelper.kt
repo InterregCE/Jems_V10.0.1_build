@@ -20,6 +20,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.expenditu
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ExpenditureCostCategoryBreakdown
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ExpenditureCostCategoryBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ReportExpenditureCostCategory
+import io.cloudflight.jems.server.project.service.report.model.project.verification.expenditure.ProjectPartnerReportExpenditureItem
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.fillCurrencyRates
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -181,6 +182,11 @@ private fun ReportBudgetCategory.translateCostCategory(): BudgetCostCategory {
 fun ExpenditureCost.getCategory(): BudgetCostCategory =
     when {
         lumpSumId != null -> LumpSum
+        else -> costCategory.translateCostCategory()
+    }
+fun ProjectPartnerReportExpenditureItem.getCategory(): BudgetCostCategory =
+    when {
+        lumpSum != null -> LumpSum
         else -> costCategory.translateCostCategory()
     }
 
