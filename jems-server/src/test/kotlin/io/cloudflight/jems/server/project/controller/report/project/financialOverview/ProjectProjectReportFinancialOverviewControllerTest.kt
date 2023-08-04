@@ -1,5 +1,8 @@
 package io.cloudflight.jems.server.project.controller.report.project.financialOverview
 
+import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundTypeDTO
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.BudgetCostsCalculationResultFullDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.CertificateCoFinancingBreakdownDTO
@@ -12,9 +15,15 @@ import io.cloudflight.jems.api.project.dto.report.project.financialOverview.Cert
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.CertificateLumpSumBreakdownLineDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.CertificateUnitCostBreakdownDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.CertificateUnitCostBreakdownLineDTO
+import io.cloudflight.jems.api.project.dto.report.project.financialOverview.FinancingSourceBreakdownDTO
+import io.cloudflight.jems.api.project.dto.report.project.financialOverview.FinancingSourceBreakdownLineDTO
+import io.cloudflight.jems.api.project.dto.report.project.financialOverview.FinancingSourceBreakdownSplitLineDTO
+import io.cloudflight.jems.api.project.dto.report.project.financialOverview.FinancingSourceFundDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.PerPartnerCostCategoryBreakdownDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.PerPartnerCostCategoryBreakdownLineDTO
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.CertificateCoFinancingBreakdown
@@ -29,13 +38,18 @@ import io.cloudflight.jems.server.project.service.report.model.project.financial
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.perPartner.PerPartnerCostCategoryBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.unitCost.CertificateUnitCostBreakdown
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.unitCost.CertificateUnitCostBreakdownLine
+import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.FinancingSourceBreakdown
+import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.FinancingSourceBreakdownLine
+import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.FinancingSourceBreakdownSplitLine
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCertificateInvestmentsBreakdownInteractor.GetReportCertificateInvestmentsBreakdownInteractor
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCoFinancingBreakdown.GetReportCertificateCoFinancingBreakdownInteractor
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportCostCategoryBreakdown.GetReportCertificateCostCategoryBreakdownInteractor
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportLumpSumBreakdown.GetReportCertificateLumpSumBreakdownInteractor
-import io.cloudflight.jems.server.project.service.report.project.financialOverview.perPartner.GetPerPartnerCostCategoryBreakdownInteractor
-import io.mockk.clearMocks
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.getReportUnitCostBreakdown.GetReportCertificateUnitCostsBreakdownInteractor
+import io.cloudflight.jems.server.project.service.report.project.financialOverview.perPartner.GetPerPartnerCostCategoryBreakdownInteractor
+import io.cloudflight.jems.server.project.service.report.project.verification.financialOverview.getFinancingSourceBreakdown.GetProjectReportFinancingSourceBreakdownInteractor
+import io.cloudflight.jems.server.toScaledBigDecimal
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -388,6 +402,115 @@ class ProjectProjectReportFinancialOverviewControllerTest : UnitTest() {
             investments = listOf(expectedDummyInvestmentLine),
             total = expectedDummyInvestmentLine,
         )
+
+
+        val ERDF = ProgrammeFund(
+            id = 1L, type = ProgrammeFundType.ERDF, selected = true,
+            abbreviation = setOf(
+                InputTranslation(
+                    SystemLanguage.EN, "EN ERDF"
+                ),
+                InputTranslation(SystemLanguage.SK, "SK ERDF")
+            ),
+            description = setOf(
+                InputTranslation(SystemLanguage.EN, "EN desc"),
+                InputTranslation(SystemLanguage.SK, "SK desc")
+            )
+        )
+        val NDCI = ProgrammeFund(id = 5L, type = ProgrammeFundType.NDICI, selected = true,
+            abbreviation = setOf(
+                InputTranslation(
+                    SystemLanguage.EN, "EN NDCI"
+                ),
+                InputTranslation(SystemLanguage.SK, "SK NDCI")
+            ),
+            description = setOf(
+                InputTranslation(SystemLanguage.EN, "EN desc"),
+                InputTranslation(SystemLanguage.SK, "SK desc")
+            ))
+        val IPA_III = ProgrammeFund(id = 4L, type = ProgrammeFundType.IPA_III, selected = true,
+            abbreviation = setOf(
+                InputTranslation(
+                    SystemLanguage.EN, "EN IPA_III"
+                ),
+                InputTranslation(SystemLanguage.SK, "SK IPA_III")
+            ),
+            description = setOf(
+                InputTranslation(SystemLanguage.EN, "EN desc"),
+                InputTranslation(SystemLanguage.SK, "SK desc")
+            ))
+
+        private val fundsSorted = listOf(
+            Pair(ERDF, 74999.97.toScaledBigDecimal()),
+            Pair(NDCI, 24999.99.toScaledBigDecimal()),
+            Pair(IPA_III, 6249.99.toScaledBigDecimal())
+        )
+
+        private val splits = listOf(
+            FinancingSourceBreakdownSplitLine(
+                fundId = 1L,
+                value = 74999.97.toScaledBigDecimal(),
+                partnerContribution = 13235.30.toScaledBigDecimal(),
+                publicContribution = 8196.86.toScaledBigDecimal(),
+                automaticPublicContribution = 4191.69.toScaledBigDecimal(),
+                privateContribution = 846.72.toScaledBigDecimal(),
+                total = 88235.27.toScaledBigDecimal()
+            ),
+            FinancingSourceBreakdownSplitLine(
+                fundId = 5L,
+                value = 24999.99.toScaledBigDecimal(),
+                partnerContribution = 4411.77.toScaledBigDecimal(),
+                publicContribution = 2732.28.toScaledBigDecimal(),
+                automaticPublicContribution = 1397.23.toScaledBigDecimal(),
+                privateContribution = 282.24.toScaledBigDecimal(),
+                total = 29411.76.toScaledBigDecimal()
+            ),
+            FinancingSourceBreakdownSplitLine(
+                fundId = 4L,
+                value = 6249.99.toScaledBigDecimal(),
+                partnerContribution = 1102.94.toScaledBigDecimal(),
+                publicContribution = 683.07.toScaledBigDecimal(),
+                automaticPublicContribution = 349.30.toScaledBigDecimal(),
+                privateContribution = 70.56.toScaledBigDecimal(),
+                total = 7352.93.toScaledBigDecimal()
+            ),
+        )
+
+        private val financingSource = FinancingSourceBreakdownLine(
+            partnerReportId = 1L,
+            partnerReportNumber = 1,
+            partnerId = 1L,
+            partnerRole = ProjectPartnerRole.LEAD_PARTNER,
+            partnerNumber = 1,
+            fundsSorted = fundsSorted,
+            partnerContribution = 18750.01.toScaledBigDecimal(),
+            publicContribution = 11612.22.toScaledBigDecimal(),
+            automaticPublicContribution = 5938.24.toScaledBigDecimal(),
+            privateContribution = 1199.52.toScaledBigDecimal(),
+            total = 124999.96.toScaledBigDecimal(),
+            split = splits
+        )
+
+        private val financingSourcesTotal = FinancingSourceBreakdownLine(
+            partnerReportId = null,
+            partnerReportNumber = null,
+            partnerId = null,
+            partnerRole = null,
+            partnerNumber = null,
+            fundsSorted = fundsSorted,
+            partnerContribution = 18750.01.toScaledBigDecimal(),
+            publicContribution = 11612.22.toScaledBigDecimal(),
+            automaticPublicContribution = 5938.24.toScaledBigDecimal(),
+            privateContribution = 1199.52.toScaledBigDecimal(),
+            total = 124999.96.toScaledBigDecimal(),
+            split = emptyList()
+        )
+
+        private val financingSourceBreakdown = FinancingSourceBreakdown(
+            sources = listOf(financingSource),
+            total = financingSourcesTotal
+        )
+
     }
 
     @MockK
@@ -407,6 +530,9 @@ class ProjectProjectReportFinancialOverviewControllerTest : UnitTest() {
 
     @MockK
     private lateinit var getReportCertificateInvestmentsBreakdown: GetReportCertificateInvestmentsBreakdownInteractor
+
+    @MockK
+    private lateinit var getProjectReportFinancingSourceBreakdown: GetProjectReportFinancingSourceBreakdownInteractor
 
     @InjectMockKs
     private lateinit var controller: ProjectReportFinancialOverviewController
@@ -468,6 +594,99 @@ class ProjectProjectReportFinancialOverviewControllerTest : UnitTest() {
             dummyInvestment
         assertThat(controller.getInvestmentsBreakdown(projectId = PROJECT_ID, reportId = REPORT_ID))
             .isEqualTo(expectedDummyInvestment)
+    }
+
+    @Test
+    fun getFinancingSourceBreakdown() {
+        val funds = listOf(
+            FinancingSourceFundDTO(
+                id = 1L,
+                type = ProgrammeFundTypeDTO.ERDF,
+                abbreviation = ERDF.abbreviation,
+                amount = 74999.97.toScaledBigDecimal()
+            ),
+            FinancingSourceFundDTO(
+                id = 5L,
+                type = ProgrammeFundTypeDTO.NDICI,
+                abbreviation = NDCI.abbreviation,
+                amount = 24999.99.toScaledBigDecimal()
+            ),
+            FinancingSourceFundDTO(
+                id = 4L,
+                type = ProgrammeFundTypeDTO.IPA_III,
+                abbreviation = IPA_III.abbreviation,
+                amount = 6249.99.toScaledBigDecimal()
+            )
+        )
+
+        val splits = listOf(
+            FinancingSourceBreakdownSplitLineDTO(
+                fundId = 1L,
+                value = 74999.97.toScaledBigDecimal(),
+                partnerContribution = 13235.30.toScaledBigDecimal(),
+                publicContribution = 8196.86.toScaledBigDecimal(),
+                automaticPublicContribution = 4191.69.toScaledBigDecimal(),
+                privateContribution = 846.72.toScaledBigDecimal(),
+                total = 88235.27.toScaledBigDecimal()
+            ),
+            FinancingSourceBreakdownSplitLineDTO(
+                fundId = 5L,
+                value = 24999.99.toScaledBigDecimal(),
+                partnerContribution = 4411.77.toScaledBigDecimal(),
+                publicContribution = 2732.28.toScaledBigDecimal(),
+                automaticPublicContribution = 1397.23.toScaledBigDecimal(),
+                privateContribution = 282.24.toScaledBigDecimal(),
+                total = 29411.76.toScaledBigDecimal()
+            ),
+            FinancingSourceBreakdownSplitLineDTO(
+                fundId = 4L,
+                value = 6249.99.toScaledBigDecimal(),
+                partnerContribution = 1102.94.toScaledBigDecimal(),
+                publicContribution = 683.07.toScaledBigDecimal(),
+                automaticPublicContribution = 349.30.toScaledBigDecimal(),
+                privateContribution = 70.56.toScaledBigDecimal(),
+                total = 7352.93.toScaledBigDecimal(),
+            )
+        )
+
+        val financingSourceLine = FinancingSourceBreakdownLineDTO(
+            partnerReportId = 1L,
+            partnerReportNumber = 1,
+            partnerId = 1L,
+            partnerRole = ProjectPartnerRoleDTO.LEAD_PARTNER,
+            partnerNumber = 1,
+            fundsSorted = funds,
+            partnerContribution = 18750.01.toScaledBigDecimal(),
+            publicContribution = 11612.22.toScaledBigDecimal(),
+            automaticPublicContribution = 5938.24.toScaledBigDecimal(),
+            privateContribution = 1199.52.toScaledBigDecimal(),
+            total = 124999.96.toScaledBigDecimal(),
+            split = splits
+        )
+
+        val financingSourcesTotal = FinancingSourceBreakdownLineDTO(
+            partnerReportId = null,
+            partnerReportNumber = null,
+            partnerId = null,
+            partnerRole = null,
+            partnerNumber = null,
+            fundsSorted = funds,
+            partnerContribution = 18750.01.toScaledBigDecimal(),
+            publicContribution = 11612.22.toScaledBigDecimal(),
+            automaticPublicContribution = 5938.24.toScaledBigDecimal(),
+            privateContribution = 1199.52.toScaledBigDecimal(),
+            total = 124999.96.toScaledBigDecimal(),
+            split = emptyList()
+        )
+
+        val expected = FinancingSourceBreakdownDTO(
+            sources = listOf(financingSourceLine),
+            total = financingSourcesTotal
+        )
+
+        every { getProjectReportFinancingSourceBreakdown.get(projectId = PROJECT_ID, reportId = REPORT_ID) } returns financingSourceBreakdown
+        assertThat(controller.getFinancingSourceBreakdown(projectId = PROJECT_ID, reportId = REPORT_ID))
+            .isEqualTo(expected)
     }
 
 }

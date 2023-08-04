@@ -136,12 +136,6 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProvider(
             }
     }
 
-    @Transactional(readOnly = true)
-    override fun getReportCurrentSum(partnerId: Long, reportId: Long) =
-        expenditureCoFinancingRepository
-            .findFirstByReportEntityPartnerIdAndReportEntityId(partnerId = partnerId, reportId = reportId)
-            .sumCurrent
-
 
     @Transactional(readOnly = true)
     override fun getCoFinancingTotalEligible(reportIds: Set<Long>): ReportCertificateCoFinancingColumn =

@@ -22,6 +22,22 @@ class GetReportExpenditureCoFinancingBreakdownCalculator(
     private val reportContributionPersistence: ProjectPartnerReportContributionPersistence,
 ) {
 
+    companion object {
+        fun split(
+            toSplit: BigDecimal,
+            contributions: ProjectPartnerReportContributionOverview,
+            funds: List<ProjectPartnerCoFinancing>,
+            total: BigDecimal,
+        ): ReportExpenditureCoFinancingColumn =
+            getCurrentFrom(
+                contributions.generateCoFinCalculationInputData(
+                    totalEligibleBudget = total,
+                    currentValueToSplit = toSplit,
+                    funds = funds,
+                )
+            )
+    }
+
     @Transactional(readOnly = true)
     fun get(partnerId: Long, reportId: Long): ExpenditureCoFinancingBreakdown {
         val report = reportPersistence.getPartnerReportById(partnerId = partnerId, reportId)
@@ -54,19 +70,5 @@ class GetReportExpenditureCoFinancingBreakdownCalculator(
 
         return coFinancing.fillInOverviewFields()
     }
-
-    private fun split(
-        toSplit: BigDecimal,
-        contributions: ProjectPartnerReportContributionOverview,
-        funds: List<ProjectPartnerCoFinancing>,
-        total: BigDecimal,
-    ): ReportExpenditureCoFinancingColumn =
-        getCurrentFrom(
-            contributions.generateCoFinCalculationInputData(
-                totalEligibleBudget = total,
-                currentValueToSplit = toSplit,
-                funds = funds,
-            )
-        )
 
 }

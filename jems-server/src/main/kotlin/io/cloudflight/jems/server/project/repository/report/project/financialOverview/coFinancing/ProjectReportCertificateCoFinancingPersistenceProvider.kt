@@ -1,5 +1,7 @@
 package io.cloudflight.jems.server.project.repository.report.project.financialOverview.coFinancing
 
+import io.cloudflight.jems.server.programme.repository.fund.toModel
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.repository.report.project.ProjectReportCoFinancingRepository
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancingColumn
@@ -14,6 +16,11 @@ class ProjectReportCertificateCoFinancingPersistenceProvider(
     private val certificateCoFinancingRepository: ReportProjectCertificateCoFinancingRepository,
     private val projectReportCoFinancingRepository: ProjectReportCoFinancingRepository,
 ) : ProjectReportCertificateCoFinancingPersistence {
+
+    @Transactional(readOnly = true)
+    override fun getAvailableFunds(reportId: Long): List<ProgrammeFund> =
+        projectReportCoFinancingRepository.findAllByIdReportIdOrderByIdFundSortNumber(reportId)
+            .mapNotNull { it.programmeFund?.toModel() }
 
     @Transactional(readOnly = true)
     override fun getCoFinancing(projectId: Long, reportId: Long): ReportCertificateCoFinancing =
@@ -72,6 +79,27 @@ class ProjectReportCertificateCoFinancingPersistenceProvider(
                 automaticPublicContributionCurrent = currentlyReported.automaticPublicContribution
                 privateContributionCurrent = currentlyReported.privateContribution
                 sumCurrent = currentlyReported.sum
+            }
+    }
+
+    @Transactional
+    override fun updateAfterVerificationValues(
+        projectId: Long,
+        reportId: Long,
+        afterVerification: ReportCertificateCoFinancingColumn,
+    ) {
+        projectReportCoFinancingRepository.findAllByIdReportIdOrderByIdFundSortNumber(reportId)
+            .forEachIndexed { index, coFin ->
+                coFin.currentVerified = afterVerification.funds.getOrDefault(coFin.programmeFund?.id, BigDecimal.ZERO)
+            }
+
+        certificateCoFinancingRepository
+            .findFirstByReportEntityProjectIdAndReportEntityId(projectId = projectId, reportId = reportId).apply {
+                partnerContributionCurrentVerified = afterVerification.partnerContribution
+                publicContributionCurrentVerified = afterVerification.publicContribution
+                automaticPublicContributionCurrentVerified = afterVerification.automaticPublicContribution
+                privateContributionCurrentVerified = afterVerification.privateContribution
+                sumCurrentVerified = afterVerification.sum
             }
     }
 
