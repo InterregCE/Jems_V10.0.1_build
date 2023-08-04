@@ -389,7 +389,10 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
 
         } returns listOf(
             expenditure1.copy(currencyConversionRate = BigDecimal.valueOf(254855, 4), declaredAmountAfterSubmission = BigDecimal.valueOf(999L, 2)),
-            expenditure2 /* untouched, because re-included */,
+            expenditure2.copy(
+                currencyConversionRate = BigDecimal.valueOf(77895, 4), 
+                declaredAmountAfterSubmission = BigDecimal.valueOf(623L, 2)
+                ), // re-included
             expenditure3.copy(currencyConversionRate = BigDecimal.ONE, declaredAmountAfterSubmission = BigDecimal.valueOf(165, 1)),
         )
 
@@ -414,6 +417,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         assertThat(auditSlot.captured.auditCandidate.description).isEqualTo("[FG01_654] [PP1] Partner report R.4 submitted [Contains sensitive data]")
         assertThat(slotRates.captured).containsExactly(
             ProjectPartnerReportExpenditureCurrencyRateChange(630L, BigDecimal.valueOf(254855L, 4), BigDecimal.valueOf(999L, 2)),
+            ProjectPartnerReportExpenditureCurrencyRateChange(631L, BigDecimal.valueOf(77895L, 4), BigDecimal.valueOf(623L, 2)),
             ProjectPartnerReportExpenditureCurrencyRateChange(632L, BigDecimal.ONE, BigDecimal.valueOf(1650L, 2)),
         )
         assertThat(expenditureCcSlot.captured).isEqualTo(expectedPersistedExpenditureCostCategory)

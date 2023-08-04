@@ -20,10 +20,8 @@ fun List<ProjectPartnerReportExpenditureCost>.fillCurrencyRates(rates: Map<Strin
     }
 }
 
-fun List<ProjectPartnerReportExpenditureCost>.withoutParked() =
-    filter { it.parkingMetadata == null }
-        .map { ProjectPartnerReportExpenditureCurrencyRateChange(it.id!!, it.currencyConversionRate, it.declaredAmountAfterSubmission) }
-
+fun List<ProjectPartnerReportExpenditureCost>.toChanges() =
+    map { ProjectPartnerReportExpenditureCurrencyRateChange(it.id!!, it.currencyConversionRate, it.declaredAmountAfterSubmission) }
 
 fun List<ProjectPartnerReportExpenditureCost>.reNumberButSkipReIncluded(): List<ProjectPartnerReportExpenditureCost> {
     var skippedReIncluded = 0

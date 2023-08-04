@@ -14,23 +14,17 @@ import {
   ProjectPartnerReportSummaryDTO,
   ProjectPartnerService,
   ProjectPartnerUserCollaboratorService,
-  UserRoleDTO,
   UserSimpleDTO,
 } from '@cat/api';
 import {RoutingService} from '@common/services/routing.service';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
-import {
-  ProjectStore
-} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {catchError, map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {ProjectPaths} from '@project/common/project-util';
 import {Log} from '@common/utils/log';
-import {
-  PartnerReportDetailPageStore
-} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
+import {PartnerReportDetailPageStore} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 import {PermissionService} from '../../../../security/permissions/permission.service';
 import {ReportUtil} from '@project/common/report-util';
-import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Injectable({providedIn: 'root'})
 export class PartnerControlReportStore {
@@ -38,7 +32,6 @@ export class PartnerControlReportStore {
   partnerControlReport$: Observable<ProjectPartnerControlReportDTO>;
   controlReportEditable$: Observable<boolean>;
   controlReportCertifiedReOpened$: Observable<boolean>;
-  checklistInControlReportEditable$: Observable<boolean>;
   controlReportFinalized$: Observable<boolean>;
   partner$: Observable<ProjectPartnerDetailDTO>;
   controlInstitutionUsers$: Observable<UserSimpleDTO[]>;
@@ -98,7 +91,6 @@ export class PartnerControlReportStore {
     this.partnerControlReport$ = this.partnerControlReport();
     this.controlReportEditable$ = this.controlReportEditable();
     this.controlReportCertifiedReOpened$ = this.controlReportCertifiedReOpened();
-    this.checklistInControlReportEditable$ = this.checklistInControlReportEditable();
     this.controlReportFinalized$ = this.controlReportFinalized();
     this.partner$ = this.partner();
     this.partnerId$ = this.partnerId();
@@ -117,29 +109,15 @@ export class PartnerControlReportStore {
       );
   }
 
-    private checklistInControlReportEditable(): Observable<boolean> {
-        return combineLatest([
-            this.reportPageStore.institutionUserCanViewControlReports$,
-            this.partnerReportDetailPageStore.reportStatus$,
-            this.permissionService.hasPermission(PermissionsEnum.ProjectReportingChecklistAfterControl)
-        ])
-            .pipe(
-                map(([canView, status, canEditChecklistsAfterControl]) =>
-                    canView
-                    && status === ProjectPartnerReportSummaryDTO.StatusEnum.Certified
-                    && canEditChecklistsAfterControl)
-            );
-    }
-
   private controlReportFinalized(): Observable<boolean> {
     return this.partnerReportDetailPageStore.reportStatus$.pipe(
-            map(status => status === ProjectPartnerReportSummaryDTO.StatusEnum.Certified)
-        );
+      map(status => status === ProjectPartnerReportSummaryDTO.StatusEnum.Certified)
+    );
   }
 
   private controlReportCertifiedReOpened(): Observable<boolean> {
     return this.partnerReportDetailPageStore.reportStatus$.pipe(
-        map(status => status === ProjectPartnerReportSummaryDTO.StatusEnum.ReOpenCertified)
+      map(status => status === ProjectPartnerReportSummaryDTO.StatusEnum.ReOpenCertified)
     );
   }
 
@@ -247,12 +225,12 @@ export class PartnerControlReportStore {
 
   private partnerId(): Observable<number> {
     return this.routingService.routeParameterChanges(PartnerReportPageStore.PARTNER_REPORT_DETAIL_PATH, 'partnerId')
-        .pipe(map(id => Number(id)));
+      .pipe(map(id => Number(id)));
   }
 
   private reportId(): Observable<number> {
     return this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')
-        .pipe(map(id => Number(id)));
+      .pipe(map(id => Number(id)));
   }
 
   private partnerControlReportOverview(): Observable<ControlOverviewDTO> {
@@ -267,10 +245,10 @@ export class PartnerControlReportStore {
 
   reopenControlReport(partnerId: number, reportId: number): Observable<ProjectPartnerReportSummaryDTO.StatusEnum> {
     return this.projectPartnerReportService.reOpenControlPartnerReport(partnerId, reportId)
-        .pipe(
-            map(status => status as ProjectPartnerReportSummaryDTO.StatusEnum),
-            tap(status => this.updatedReportStatus$.next(status)),
-            tap(status => Log.info('Changed status for control report', reportId, status))
-        );
+      .pipe(
+        map(status => status as ProjectPartnerReportSummaryDTO.StatusEnum),
+        tap(status => this.updatedReportStatus$.next(status)),
+        tap(status => Log.info('Changed status for control report', reportId, status))
+      );
   }
 }

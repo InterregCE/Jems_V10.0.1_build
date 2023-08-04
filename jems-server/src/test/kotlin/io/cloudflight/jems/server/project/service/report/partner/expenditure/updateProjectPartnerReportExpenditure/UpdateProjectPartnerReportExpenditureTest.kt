@@ -468,6 +468,43 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
         assertThrows<ReportAlreadyClosed> { interactor.updatePartnerReportExpenditureCosts(PARTNER_ID, reportId, emptyList()) }
     }
 
+    @ParameterizedTest(name = "updatePartnerReportExpenditureCosts not allowed to change regular to an SCO - {0}")
+    @EnumSource(value = ReportStatus::class, names = ["Draft", "ReOpenSubmittedLast", "ReOpenInControlLast"])
+    fun `updatePartnerReportExpenditureCosts - change to SCO throws`(status: ReportStatus) {
+        val reportId = 512L
+
+        mockGenericData(reportId, status)
+        every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, reportId) } returns listOf(
+            expenditureDummy.copy(
+                gdpr = false,
+                costCategory = ReportBudgetCategory.StaffCosts,
+                number = 1,
+                parkingMetadata = ExpenditureParkingMetadata(
+                    reportOfOriginId = 388L,
+                    reportOfOriginNumber = 2,
+                    originalExpenditureNumber = 2
+                )
+            ),
+        )
+
+        val newValues = listOf(
+            expenditureDummy.copy(
+                gdpr = false,
+                costCategory = ReportBudgetCategory.Multiple,
+                number = 1,
+                parkingMetadata = ExpenditureParkingMetadata(
+                    reportOfOriginId = 388L,
+                    reportOfOriginNumber = 2,
+                    originalExpenditureNumber = 2
+                )
+            ),
+        )
+
+        assertThrows<SCOCannotBeSelectedInsteadOfRealCost> { interactor.updatePartnerReportExpenditureCosts(PARTNER_ID, reportId, newValues) }
+
+    }
+
+
     private fun mockGenericData(reportId: Long, status: ReportStatus): ProjectPartnerReport {
         val report = report(reportId, status)
 
