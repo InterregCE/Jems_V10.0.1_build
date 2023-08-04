@@ -540,6 +540,12 @@ import { ProjectVerificationReportExpenditureTabComponent } from './project-appl
 import { ProjectVerificationReportExpenditureRiskBasedComponent } from './project-application/report/project-verification-report/project-verification-report-expenditure-tab/project-verification-report-expenditure-risk-based/project-verification-report-expenditure-risk-based.component';
 import { ProjectVerificationReportVerificationChecklistsTabComponent } from './project-application/report/project-verification-report/project-verification-report-verification-checklists-tab/project-verification-report-verification-checklists-tab.component';
 import { ProjectVerificationReportVerificationChecklistPageComponent } from './project-application/report/project-verification-report/project-verification-report-verification-checklists-tab/project-verification-report-verification-checklist-page/project-verification-report-verification-checklist-page.component';
+import {
+  ProjectVerificationReportOverviewTabComponent
+} from '@project/project-application/report/project-verification-report/project-verification-report-overview-tab/project-verification-report-overview-tab.component';
+import {
+  VerificationReportTotalEligiblePerSourcesComponent
+} from '@project/project-application/report/project-verification-report/project-verification-report-overview-tab/verification-report-total-eligible-per-sources/verification-report-total-eligible-per-sources.component';
 
 @NgModule({
   declarations: [
@@ -735,6 +741,8 @@ import { ProjectVerificationReportVerificationChecklistPageComponent } from './p
     ProjectVerificationReportVerificationChecklistPageComponent,
     ProjectVerificationReportExpenditureTabComponent,
     ProjectVerificationReportExpenditureRiskBasedComponent,
+    ProjectVerificationReportOverviewTabComponent,
+    VerificationReportTotalEligiblePerSourcesComponent
   ],
   imports: [
     SharedModule,
