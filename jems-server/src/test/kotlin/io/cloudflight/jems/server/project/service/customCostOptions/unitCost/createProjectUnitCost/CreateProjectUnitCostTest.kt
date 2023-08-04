@@ -1,12 +1,10 @@
 package io.cloudflight.jems.server.project.service.customCostOptions.unitCost.createProjectUnitCost
 
-import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.CallCostOption
@@ -16,7 +14,6 @@ import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeUnitCostPersistence
 import io.cloudflight.jems.server.programme.service.costoption.model.PaymentClaim
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
-import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.customCostOptions.ProjectUnitCostPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
@@ -24,33 +21,15 @@ import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.slot
-import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.springframework.context.ApplicationEventPublisher
 import java.math.BigDecimal
 
 internal class CreateProjectUnitCostTest : UnitTest() {
 
     companion object {
-
-        private fun projectSummary(id: Long) = ProjectSummary(
-            id = id,
-            customIdentifier = "CUST_ID",
-            callId = 1L,
-            callName = "",
-            acronym = "PROJ_ACR",
-            status = ApplicationStatus.DRAFT,
-        )
-
-        private fun auditProject(id: Long) = AuditProject(
-            id = id.toString(),
-            customIdentifier = "CUST_ID",
-            name = "PROJ_ACR",
-        )
 
         private val createUnitCost = ProgrammeUnitCost(
             id = 0L,
@@ -82,10 +61,7 @@ internal class CreateProjectUnitCostTest : UnitTest() {
     lateinit var programmeUnitCostPersistence: ProgrammeUnitCostPersistence
     @MockK
     lateinit var projectUnitCostPersistence: ProjectUnitCostPersistence
-    @MockK
-    lateinit var projectPersistence: ProjectPersistence
-    @MockK
-    lateinit var auditPublisher: ApplicationEventPublisher
+
     @MockK
     lateinit var generalValidator: GeneralValidatorService
 
@@ -94,7 +70,7 @@ internal class CreateProjectUnitCostTest : UnitTest() {
 
     @BeforeEach
     fun resetMocks() {
-        clearMocks(programmeUnitCostPersistence, projectUnitCostPersistence, projectPersistence, auditPublisher, generalValidator)
+        clearMocks(programmeUnitCostPersistence, projectUnitCostPersistence, generalValidator)
 
         every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isEmpty() }) } returns Unit
         every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isNotEmpty() }) } throws
@@ -108,17 +84,9 @@ internal class CreateProjectUnitCostTest : UnitTest() {
         every { callPersistence.getCallCostOptionForProject(projectId) } returns costOptionsAllowed
         every { projectUnitCostPersistence.getCount(projectId) } returns 4L
         every { programmeUnitCostPersistence.createUnitCost(any()) } returnsArgument 0
-        every { projectPersistence.getProjectSummary(projectId) } returns projectSummary(projectId)
-
-        val auditSlot = slot<AuditCandidateEvent>()
-        every { auditPublisher.publishEvent(capture(auditSlot)) } answers { }
 
         assertThat(interactor.createProjectUnitCost(projectId, createUnitCost))
             .isEqualTo(createUnitCost.copy(projectId = projectId))
-
-        verify(exactly = 1) { auditPublisher.publishEvent(any()) }
-        assertThat(auditSlot.captured.auditCandidate.action).isEqualTo(AuditAction.PROGRAMME_UNIT_COST_ADDED)
-        assertThat(auditSlot.captured.auditCandidate.project).isEqualTo(auditProject(projectId))
     }
 
     @Test

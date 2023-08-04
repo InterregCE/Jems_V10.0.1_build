@@ -57,6 +57,9 @@ data class ProgrammeUnitCost(
         if (categories != (old?.categories ?: emptySet<BudgetCategory>()))
             changes["categories"] = Pair(old?.categories ?: "", categories)
 
+        if (paymentClaim != old?.paymentClaim)
+            changes["paymentClaim"] = Pair(old?.paymentClaim, paymentClaim)
+
         return changes
     }
 

@@ -75,8 +75,7 @@ fun projectVersionRecorded(
         auditCandidate = AuditBuilder(AuditAction.APPLICATION_VERSION_RECORDED)
             .project(projectSummary)
             .description(
-                "New project version \"V.$version\" is recorded by user: $userEmail on " +
-                        ZonedDateTime.now().withNano(0).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                "New project version \"V.$version\" is recorded by user: $userEmail"
             ).build()
     )
 
