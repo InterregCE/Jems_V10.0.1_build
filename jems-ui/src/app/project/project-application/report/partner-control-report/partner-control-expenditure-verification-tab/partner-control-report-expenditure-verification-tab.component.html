@@ -1,4 +1,4 @@
-<div *ngIf="data$ | async as data">
+*ngIf="data.expendituresCosts[i].contractId<div *ngIf="data$ | async as data">
     <jems-form (save)="updateReportExpendituresControl()"
                (discard)="refreshListOfExpenditures()">
 
@@ -125,12 +125,13 @@
                                 <span *ngIf="!data.expendituresCosts[i].contractId">
                                     {{getContractName(data.contractIDs, data.expendituresCosts[i].contractId)}}
                                 </span>
-                                <a *ngIf="data.expendituresCosts[i].contractId"
-                                   [routerLink]="'/app/project/detail/' + data.projectId + '/reporting/' + data.partnerId + '/reports/' + currentReport.id + '/procurements/' + data.expendituresCosts[i].contractId">
-                                   <span [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}">
+                                <span *ngIf="data.expendituresCosts[i].contractId"
+                                      [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}">
+                                    <a
+                                        [routerLink]="'/app/project/detail/' + data.projectId + '/reporting/' + data.partnerId + '/reports/' + currentReport.id + '/procurements/' + data.expendituresCosts[i].contractId">
                                         {{getContractName(data.contractIDs, data.expendituresCosts[i].contractId)}}
-                                   </span>
-                                </a>
+                                    </a>
+                                </span>
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
