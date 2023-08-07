@@ -33,7 +33,7 @@ class CreateProgrammeChecklist(
             auditPublisher.publishEvent(
                 checklistCreated(
                     context = this,
-                    checklist = programmeChecklist
+                    checklist = it
                 )
             )
         }

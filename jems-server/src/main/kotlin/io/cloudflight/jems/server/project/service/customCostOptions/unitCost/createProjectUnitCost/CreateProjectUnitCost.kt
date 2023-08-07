@@ -8,10 +8,7 @@ import io.cloudflight.jems.server.programme.service.costoption.getStaticValidati
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.programme.service.costoption.validateCreateUnitCost
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectForm
-import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.customCostOptions.ProjectUnitCostPersistence
-import io.cloudflight.jems.server.project.service.customCostOptions.unitCost.projectUnitCostCreated
-import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -20,8 +17,6 @@ class CreateProjectUnitCost(
     private val callPersistence: CallPersistence,
     private val programmeUnitCostPersistence: ProgrammeUnitCostPersistence,
     private val projectUnitCostPersistence: ProjectUnitCostPersistence,
-    private val projectPersistence: ProjectPersistence,
-    private val auditPublisher: ApplicationEventPublisher,
     private val generalValidator: GeneralValidatorService,
 ) : CreateProjectUnitCostInteractor {
 
@@ -41,11 +36,7 @@ class CreateProjectUnitCost(
         )
 
         unitCost.projectId = projectId
-        return programmeUnitCostPersistence.createUnitCost(unitCost).also {
-            auditPublisher.publishEvent(
-                projectUnitCostCreated(this, it, projectPersistence.getProjectSummary(projectId))
-            )
-        }
+        return programmeUnitCostPersistence.createUnitCost(unitCost)
     }
 
     private fun ProgrammeUnitCost.validateInputFields() {
