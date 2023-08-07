@@ -39,6 +39,13 @@
             </span>
         </a>
 
+        <a *ngIf="data.allTabsVisible" [active]="activeTab('overview')" mat-tab-link
+           (click)="routeTo('overview')">
+            <span jemsText maxWidth="230">
+                {{'project.application.project.verification.work.tab.overview' | translate}}
+            </span>
+        </a>
+
         <a *ngIf="data.allTabsVisible" [active]="activeTab('finalise')" mat-tab-link (click)="routeTo('finalise')">
             <span jemsText maxWidth="230">
                 {{ 'project.application.project.verification.work.tab.finalise' | translate }}

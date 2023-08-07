@@ -274,6 +274,9 @@ import {
 import {
   ProjectVerificationReportExpenditureTabComponent
 } from '@project/project-application/report/project-verification-report/project-verification-report-expenditure-tab/project-verification-report-expenditure-tab.component';
+import {
+  ProjectVerificationReportOverviewTabComponent
+} from '@project/project-application/report/project-verification-report/project-verification-report-overview-tab/project-verification-report-overview-tab.component';
 
 export const routes: Routes = [
   {
@@ -488,6 +491,10 @@ export const routes: Routes = [
                             path: 'verificationChecklistsTab/checklist/:checklistId',
                             component: ProjectVerificationReportVerificationChecklistPageComponent,
                             data: {breadcrumb: 'checklists.instance.title'},
+                          },
+                          {
+                            path: 'overview',
+                            component: ProjectVerificationReportOverviewTabComponent,
                           },
                           {
                             path: 'finalise',
