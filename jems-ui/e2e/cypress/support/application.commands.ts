@@ -79,6 +79,8 @@ declare global {
       updateContractMonitoring(applicationId: number, contractMonitoring: {});
 
       createReportingDeadlines(applicationId: number, reportingDeadlines: any[]);
+
+      findInputContaining(selectorForInput, textToFind: string)
     }
   }
 }
@@ -340,6 +342,10 @@ Cypress.Commands.add('updateContractMonitoring', (applicationId: number, contrac
 
 Cypress.Commands.add('createReportingDeadlines', (applicationId: number, reportingDeadlines: any[]) => {
   createReportingDeadlines(applicationId, reportingDeadlines);
+});
+
+Cypress.Commands.add('findInputContaining', (selectorForInput, textToFind: string) => {
+  findInputContaining(selectorForInput, textToFind);
 });
 
 function createApplication(applicationDetails) {
@@ -629,6 +635,14 @@ function createAssociatedOrganisation(applicationId, associatedOrganisation) {
       cy.wrap(response.body.id).as('associatedOrganisation');
     });
   });
+}
+
+function findInputContaining(selectorForInput, textToFind) {
+  return cy.wrap(selectorForInput)
+    .find(`input`)
+    .filter((_, el) => {
+      return (el as HTMLInputElement).value === textToFind
+    })
 }
 
 export {}
