@@ -16,6 +16,10 @@
                   [ngTemplateOutlet]="saveError"
                   [ngTemplateOutletContext]="{$implicit: error}">
     </ng-container>
+    <ng-container *ngIf="formService.fileSizeOverLimitError$ | async as error"
+                  [ngTemplateOutlet]="fileSizeOverLimitError"
+                  [ngTemplateOutletContext]="{$implicit: error}">
+    </ng-container>
 </mat-card>
 
 <ng-template #saveDiscard>
@@ -54,6 +58,18 @@
             <div class="message jems-alert jems-alert-danger">
                 <mat-icon></mat-icon>
                 <jems-api-error-content [error]="error"></jems-api-error-content>
+            </div>
+        </div>
+        <ng-container *ngTemplateOutlet="saveDiscard"></ng-container>
+    </mat-card-footer>
+</ng-template>
+
+<ng-template #fileSizeOverLimitError let-error>
+    <mat-card-footer [@slideInOut] class="footer">
+        <div class="message-wrapper">
+            <div class="message jems-alert jems-alert-danger">
+                <mat-icon></mat-icon>
+                <span>{{'project.file.size.over.limit' | translate}} {{error}} MB</span>
             </div>
         </div>
         <ng-container *ngTemplateOutlet="saveDiscard"></ng-container>
