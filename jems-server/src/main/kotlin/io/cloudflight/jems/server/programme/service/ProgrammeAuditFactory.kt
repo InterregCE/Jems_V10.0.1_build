@@ -175,8 +175,8 @@ fun checklistCreated(context: Any, checklist: ProgrammeChecklistDetail): AuditCa
         context = context,
         auditCandidate = AuditCandidate(
             action = AuditAction.CHECKLIST_IS_CREATED,
-            description = "[" + checklist.type + "]" +
-                " [" + checklist.id + "]" +
+            description = "[" + checklist.id + "]" +
+                " [" + checklist.type + "]" +
                 " [" + checklist.name + "]" + " created"
         )
     )
