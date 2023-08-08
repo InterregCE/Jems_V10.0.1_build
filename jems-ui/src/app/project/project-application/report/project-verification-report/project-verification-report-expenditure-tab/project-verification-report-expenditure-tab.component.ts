@@ -23,9 +23,7 @@ import {
 import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 import {CustomTranslatePipe} from '@common/pipe/custom-translate-pipe';
 import {TranslateByInputLanguagePipe} from '@common/pipe/translate-by-input-language.pipe';
-import {
-  ProjectReportPageStore
-} from '@project/project-application/report/project-report/project-report-page-store.service';
+import {ProjectReportPageStore} from '@project/project-application/report/project-report/project-report-page-store.service';
 import {Alert} from '@common/components/forms/alert';
 
 @Component({
@@ -47,6 +45,7 @@ export class ProjectVerificationReportExpenditureTabComponent {
     'report',
     'costItemID',
     'costGDPR',
+    'parkedBy',
     'costOption',
     'costCategory',
     'investment',
@@ -168,10 +167,11 @@ export class ProjectVerificationReportExpenditureTabComponent {
 
   private setColumnWidths() {
     this.columnWidthsToDisplay = [
-      {minInRem: 2.5, maxInRem: 2.5}, // partner;
-      {minInRem: 2.5, maxInRem: 2.5}, // report;
+      {minInRem: 2.5, maxInRem: 2.5}, // partner
+      {minInRem: 2.5, maxInRem: 2.5}, // report
       {minInRem: 2.5, maxInRem: 2.5}, // id;
       {minInRem: 1, maxInRem: 1},     // gdpr
+      {minInRem: 6, maxInRem: 6},     // parked by
       {minInRem: 11, maxInRem: 11},   // cost option
       {minInRem: 11, maxInRem: 11},   // cost category
       {minInRem: 8, maxInRem: 8},     // investment

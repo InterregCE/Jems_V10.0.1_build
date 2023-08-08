@@ -13,7 +13,7 @@
 
     <ng-container matColumnDef="costGDPR" sticky>
         <mat-header-cell *matHeaderCellDef>
-            <div class ="custom-icon gdpr">
+            <div class="custom-icon gdpr">
                 <mat-icon>privacy_tip</mat-icon>
             </div>
         </mat-header-cell>
@@ -24,6 +24,15 @@
             </mat-checkbox>
         </mat-cell>
         <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="parkedBy" >
+        <mat-header-cell *matHeaderCellDef>
+            <span jemsText maxLines="2">{{'project.application.partner.report.expenditures.tab.cost.parked.by' | translate}}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let exp">
+            <jems-expenditure-item-parked-by-chip [parkingMetadata]="exp.expenditure.parkingMetadata"></jems-expenditure-item-parked-by-chip>
+        </mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="costOptions">
@@ -54,7 +63,8 @@
         </mat-header-cell>
         <mat-cell *matCellDef="let exp">
             <mat-icon color="accent" class="mr-1" *ngIf="exp.investment && !exp.investment.entityStillAvailable"
-                      matTooltip="{{ 'Investment cannot be resolved' | translate }}">warning_amber</mat-icon>
+                      matTooltip="{{ 'Investment cannot be resolved' | translate }}">warning_amber
+            </mat-icon>
             <span *ngIf="exp.investment" [class.grayed-out]="!exp.investment.entityStillAvailable">{{ exp.investmentName }}</span>
             <span *ngIf="!exp.investment">{{ 'common.not.applicable.option' | translate }}</span>
         </mat-cell>

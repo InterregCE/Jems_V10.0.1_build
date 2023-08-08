@@ -36,8 +36,8 @@ internal class GetAvailableParkedExpenditureListTest : UnitTest() {
     companion object {
         private val parkingMetadata = ExpenditureParkingMetadata(
             reportOfOriginId = 75L,
-            reportProjectOfOriginId = null,
             reportOfOriginNumber = 4,
+            reportProjectOfOriginId = null,
             originalExpenditureNumber = 3
         )
         private val uploadTime = ZonedDateTime.now()

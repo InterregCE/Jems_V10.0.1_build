@@ -22,14 +22,14 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
-import java.math.BigDecimal
-import java.time.LocalDate
-import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.ZonedDateTime
 
 internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : UnitTest() {
 
@@ -97,8 +97,8 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
         parkedOn = null,
         parkingMetadata = ExpenditureParkingMetadata(
             reportOfOriginId = 14L,
-            reportProjectOfOriginId = null,
             reportOfOriginNumber = 2,
+            reportProjectOfOriginId = null,
             originalExpenditureNumber = 9
         ),
         partOfSampleLocked = false
@@ -329,8 +329,8 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
                 parked = true,
                 parkingMetadata = ExpenditureParkingMetadata(
                     reportOfOriginId = 54L,
-                    reportProjectOfOriginId = null,
                     reportOfOriginNumber = 4,
+                    reportProjectOfOriginId = null,
                     originalExpenditureNumber = 1
                 ),
             ))

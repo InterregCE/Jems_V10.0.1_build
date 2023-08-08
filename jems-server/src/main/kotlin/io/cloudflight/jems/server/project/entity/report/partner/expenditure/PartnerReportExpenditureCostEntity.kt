@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.entity.report.partner.expenditure
 
 import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
+import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -89,6 +90,10 @@ class PartnerReportExpenditureCostEntity(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "report_of_origin_id")
     val reportOfOrigin: ProjectPartnerReportEntity?,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "report_project_of_origin_id")
+    val reportProjectOfOrigin: ProjectReportEntity?,
 
     val originalNumber: Int?,
 

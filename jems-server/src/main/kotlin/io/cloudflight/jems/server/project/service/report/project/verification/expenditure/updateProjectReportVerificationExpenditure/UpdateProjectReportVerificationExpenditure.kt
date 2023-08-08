@@ -49,8 +49,8 @@ class UpdateProjectReportVerificationExpenditure(
 
     private fun updateParkedItems(
         projectReportId: Long,
-        parkedOldIds: List<Long>,
-        unparkedOldIds: List<Long>,
+        parkedOldIds: Set<Long>,
+        unparkedOldIds: Set<Long>,
         newVerifications: Collection<ProjectReportVerificationExpenditureLine>,
     ) {
         val parkedNew = newVerifications.getParkedIds()
@@ -66,10 +66,10 @@ class UpdateProjectReportVerificationExpenditure(
     }
 
     private fun Collection<ProjectReportVerificationExpenditureLine>.getParkedIds() =
-        filter { it.parked }.map { it.expenditure.id }
+        filter { it.parked }.map { it.expenditure.id }.toSet()
 
     private fun Collection<ProjectReportVerificationExpenditureLine>.getNotParkedIds() =
-        filter { !it.parked }.map { it.expenditure.id }
+        filter { !it.parked }.map { it.expenditure.id }.toSet()
 
     private fun Collection<ProjectReportVerificationExpenditureLine>.toParkData(projectReportId: Long) = map {
         ParkExpenditureData(

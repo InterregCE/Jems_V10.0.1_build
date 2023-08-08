@@ -66,8 +66,8 @@ fun PartnerReportExpenditureCostEntity.getParkingMetadata(): ExpenditureParkingM
     if (unParkedFrom != null && reportOfOrigin != null && originalNumber != null)
         return ExpenditureParkingMetadata(
             reportOfOriginId = reportOfOrigin!!.id,
-            reportProjectOfOriginId = null, //TODO update later to fill in data to display in partner report
             reportOfOriginNumber = reportOfOrigin!!.number,
+            reportProjectOfOriginId = reportProjectOfOrigin?.id,
             originalExpenditureNumber = originalNumber!!
         )
     return null
@@ -112,6 +112,7 @@ fun ProjectPartnerReportExpenditureCost.toNewEntity(
         verificationComment = null,
         unParkedFrom = null,
         reportOfOrigin = null,
+        reportProjectOfOrigin = null,
         originalNumber = null,
     ).apply {
         translatedValues.addTranslation(this, comment, description)
@@ -160,6 +161,7 @@ fun PartnerReportParkedExpenditureEntity.clone(
         verificationComment = null,
         unParkedFrom = parkedFrom,
         reportOfOrigin = parkedFrom.reportOfOrigin ?: parkedFrom.partnerReport,
+        reportProjectOfOrigin = reportProjectOfOrigin,
         originalNumber = originalNumber,
     ).apply {
         translatedValues.addTranslation(this, comment, description)

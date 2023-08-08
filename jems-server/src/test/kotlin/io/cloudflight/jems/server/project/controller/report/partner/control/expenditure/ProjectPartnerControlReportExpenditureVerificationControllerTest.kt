@@ -17,11 +17,11 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.slot
+import org.assertj.core.api.Assertions
+import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
-import org.assertj.core.api.Assertions
-import org.junit.jupiter.api.Test
 
 class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTest() {
     private val PARTNER_ID = 11L
@@ -61,8 +61,8 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
         parkedOn = null,
         parkingMetadata = ExpenditureParkingMetadata(
             reportOfOriginId = 70L,
-            reportProjectOfOriginId = null,
             reportOfOriginNumber = 5,
+            reportProjectOfOriginId = null,
             originalExpenditureNumber = 3
         ),
         partOfSampleLocked = false
@@ -101,8 +101,8 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
         parkedOn = null,
         parkingMetadata = ExpenditureParkingMetadata(
             reportOfOriginId = 72L,
-            reportProjectOfOriginId = null,
             reportOfOriginNumber = 4,
+            reportProjectOfOriginId = null,
             originalExpenditureNumber = 3
         ),
         partOfSampleLocked = false
@@ -142,6 +142,7 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
         parkingMetadata = ExpenditureParkingMetadataDTO(
             reportOfOriginId = 70L,
             reportOfOriginNumber = 5,
+            reportProjectOfOriginId = null,
             originalExpenditureNumber = 3
         ),
         partOfSampleLocked = false
@@ -181,6 +182,7 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
         parkingMetadata = ExpenditureParkingMetadataDTO(
             reportOfOriginId = 72L,
             reportOfOriginNumber = 4,
+            reportProjectOfOriginId = null,
             originalExpenditureNumber = 3
         ),
         partOfSampleLocked = false

@@ -25,13 +25,13 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
-import java.math.BigDecimal
-import java.time.LocalDate
-import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.ZonedDateTime
 
 class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitTest() {
     companion object {
@@ -96,6 +96,7 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
             parked = false,
             unParkedFrom = unParkedFrom,
             reportOfOrigin = report,
+            reportProjectOfOrigin = null,
             originalNumber = 12,
             partOfSampleLocked = false
         ).apply {
@@ -142,8 +143,8 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
                 parkedOn = null,
                 parkingMetadata = ExpenditureParkingMetadata(
                     reportOfOriginId = 600L,
-                    reportProjectOfOriginId = null,
                     reportOfOriginNumber = 601,
+                    reportProjectOfOriginId = null,
                     originalExpenditureNumber = 12
                 ),
                 partOfSampleLocked = false
@@ -376,8 +377,8 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
                     declaredAmountAfterSubmission = BigDecimal.valueOf(3680L),
                     parkingMetadata = ExpenditureParkingMetadata(
                         reportOfOriginId = 55L,
-                        reportProjectOfOriginId = null,
                         reportOfOriginNumber = 16,
+                        reportProjectOfOriginId = null,
                         originalExpenditureNumber = 12
                     ),
                 ),
