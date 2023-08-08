@@ -7,6 +7,9 @@
            (save)="onSubmit(data.projectId, data.reportId)"
            (discard)="resetForm(data.clarifications, !(data.hideFinalizeSection && (data.finalizationAllowed || data.canEdit)))">
   <form jemsFormLayout [formGroup]="clarificationForm">
+    <h3>{{'project.application.project.verification.work.tab.finalise.main.title' | translate}}</h3>
+    <p>{{'project.application.project.verification.work.tab.finalise.table.description' | translate}}</p>
+
     <h3>{{'project.application.project.verification.work.tab.finalise.table.title' | translate}}</h3>
     <mat-table *ngIf="tableData.length > 0"
                id="clarifications-table"
