@@ -16,6 +16,8 @@ import {AcceptedFileTypesConstants} from '@project/common/components/file-manage
 import {DatePipe} from '@angular/common';
 import {CustomTranslatePipe} from '@common/pipe/custom-translate-pipe';
 import {FileListTableConstants} from '@common/components/file-list/file-list-table/file-list-table-constants';
+import {FormService} from "@common/components/section/form/form.service";
+import {ReportFileManagementStore} from "@project/project-application/report/partner-report-detail-page/partner-report-annexes-tab/report-file-management-store";
 
 @Component({
   selector: 'jems-partner-actions-cell',
@@ -53,10 +55,16 @@ export class PartnerActionsCellComponent implements ControlValueAccessor {
   @Output()
   delete = new EventEmitter<number>();
 
+  maximumAllowedFileSizeInMB : number;
+
   constructor(private changeDetectorRef: ChangeDetectorRef,
               private dialog: MatDialog,
               private datePipe: DatePipe,
-              private translatePipe: CustomTranslatePipe) {
+              private translatePipe: CustomTranslatePipe,
+              private formService: FormService,
+              private fileManagementStore: ReportFileManagementStore
+              ) {
+    this.fileManagementStore.getMaximumAllowedFileSize().pipe(tap(value => this.maximumAllowedFileSizeInMB = value)).subscribe();
   }
 
   onChange = (value: any) => {
@@ -83,7 +91,11 @@ ${this.translatePipe
       .transform(this.fileMetadata.uploaded, 'MM/dd/yyyy')}`;
   }
 
-  uploadFile(event: Event) {
+  uploadFile(event: any) {
+    if (this.formService.checkFileSizeError(event?.target?.files[0].size, this.maximumAllowedFileSizeInMB)) {
+      return;
+    }
+
     this.isUploadInProgress = false;
     if (this.fileMetadata?.name) {
       Forms.confirm(this.dialog, {
@@ -97,13 +109,13 @@ ${this.translatePipe
         filter(yes => yes),
         tap(() => {
             this.isUploadInProgress = true;
-            this.upload.emit(event);
+            this.upload.emit(event?.target);
           }
         )
       ).subscribe();
     } else {
       this.isUploadInProgress = true;
-      this.upload.emit(event);
+      this.upload.emit(event?.target);
     }
   }
 

@@ -1,4 +1,4 @@
-<input hidden #selectFile (change)="uploadFile($event?.target)" onclick="this.value=null;"
+<input hidden #selectFile (change)="uploadFile($event)" onclick="this.value=null;"
        type="file" [accept]="acceptedFilesTypes">
 <jems-pending-button *ngIf="isReportEditable" (clicked)="selectFile.click()"
                      [pending]="isUploadInProgress"

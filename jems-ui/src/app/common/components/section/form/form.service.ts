@@ -25,10 +25,14 @@ export class FormService {
   success$ = new Subject<I18nLabel | string | null>();
   pending$ = new BehaviorSubject<boolean>(false);
   error$ = new Subject<APIError | null>();
+  fileSizeOverLimitError$ = new BehaviorSubject<number | null>(null);
   reset$ = this.resetSubject.asObservable();
   showMenu$ = new BehaviorSubject<boolean>(true);
 
-  constructor(private routingService: RoutingService, private translateService: TranslateService) {
+  constructor(
+    private routingService: RoutingService,
+    private translateService: TranslateService,
+    ) {
   }
 
   init(form: FormGroup | FormArray, editable$?: Observable<boolean>): void {
@@ -71,9 +75,18 @@ export class FormService {
     throw httpError;
   }
 
+  checkFileSizeError(size: number, maximumAllowedFileSizeInMB: number): boolean {
+      if (size > maximumAllowedFileSizeInMB * 1024 * 1024) {
+          this.fileSizeOverLimitError$.next(maximumAllowedFileSizeInMB);
+          return true;
+      }
+      return false;
+  }
+
   setSuccess(message: I18nLabel | string | null): void {
     this.success$.next(message);
     this.error$.next(null);
+    this.fileSizeOverLimitError$.next(null);
     this.pending$.next(false);
     if (message) {
       setTimeout(() => this.success$.next(null), 3000);
