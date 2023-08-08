@@ -93,10 +93,8 @@ export class ProjectVerificationReportDocumentTabComponent {
       this.fileSizeOverLimitError$,
       this.fileStore.error$,
       this.maximumAllowedFileSizeInMB,
-      file => this.fileStore.uploadFile(file).pipe(
-        finalize(() => this.isUploadInProgress = false),
-      ),
-    );
+      file => this.fileStore.uploadFile(file),
+    ).add(() => this.isUploadInProgress = false);
   }
 
   downloadFile(file: FileListItem): void {

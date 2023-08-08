@@ -80,9 +80,8 @@ export class ProjectReportAnnexesTableComponent {
             this.fileSizeOverLimitError$,
             this.projectReportFileStore.error$,
             this.maximumAllowedFileSizeInMB,
-            file => this.projectReportFileStore.uploadFile(file).pipe(
-                finalize(() => this.isUploadInProgress = false)),
-        );
+            file => this.projectReportFileStore.uploadFile(file),
+        ).add(() => this.isUploadInProgress = false);
     }
 
     downloadFile(file: FileListItem): void {

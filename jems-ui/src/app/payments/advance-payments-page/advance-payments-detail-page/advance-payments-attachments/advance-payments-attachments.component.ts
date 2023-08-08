@@ -92,8 +92,8 @@ export class AdvancePaymentsAttachmentsComponent implements OnChanges {
       this.fileSizeOverLimitError$,
       this.advancePaymentAttachmentsStore.error$,
       this.maximumAllowedFileSizeInMB,
-      file => this.advancePaymentAttachmentsStore.uploadPaymentFile(file).pipe(finalize(() => this.isUploadInProgress = false)),
-    );
+      file => this.advancePaymentAttachmentsStore.uploadPaymentFile(file),
+    ).add(() => this.isUploadInProgress = false);
   }
 
   downloadFile(file: FileListItem): void {
