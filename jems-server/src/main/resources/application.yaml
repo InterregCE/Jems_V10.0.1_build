@@ -42,6 +42,9 @@ spring:
     pathmatch:
       # needed for resolving /swagger-ui.html
       matching-strategy: ant_path_matcher
+  security:
+    # needed for security context propagation for @async methods
+    strategy: MODE_INHERITABLETHREADLOCAL
 
 audit-service:
   enabled: "${AUDIT_ENABLED:true}"
