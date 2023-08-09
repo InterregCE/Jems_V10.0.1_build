@@ -117,6 +117,8 @@ ${this.translatePipe
       this.isUploadInProgress = true;
       this.upload.emit(event?.target);
     }
+
+    this.formService.setSuccess(null);
   }
 
   deleteFile(id: number) {
