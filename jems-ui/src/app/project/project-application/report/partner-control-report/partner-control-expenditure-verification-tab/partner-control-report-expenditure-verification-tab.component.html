@@ -443,8 +443,9 @@
                             <mat-header-cell class="left-separator" *matHeaderCellDef>{{'project.application.partner.report.control.expenditure.table.header.park.item' | translate}}</mat-header-cell>
                             <mat-cell class="justify-start left-separator" *matCellDef="let control;let expenditureIndex=index" [formGroupName]="expenditureIndex" >
                                 <mat-slide-toggle color="primary"
-                                                  (change)="parkedChange(expenditureIndex, $event)"
-                                                  [formControlName]="constants.FORM_CONTROL_NAMES.parked">
+                                                  [formControlName]="constants.FORM_CONTROL_NAMES.parked"
+                                                  [disabled]="isParkedBeforeReopen(items.controls[expenditureIndex].get(constants.FORM_CONTROL_NAMES.parkedOn)?.value, lastControlReportCertified)"
+                                                  (change)="parkedChange(expenditureIndex, $event)">
                                 </mat-slide-toggle>
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>

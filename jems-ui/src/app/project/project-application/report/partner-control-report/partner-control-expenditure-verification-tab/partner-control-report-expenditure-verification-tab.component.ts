@@ -59,6 +59,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
   currencies: CurrencyDTO[];
   currentReport: ProjectPartnerReportDTO;
   isFormEditable: boolean;
+  lastControlReportCertified: Date;
   data$: Observable<{
     expendituresCosts: ProjectPartnerReportExpenditureCostDTO[];
     costCategories: string[];
@@ -131,6 +132,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
       untilDestroyed(this)
     ).subscribe();
     this.pageStore.currencies$.pipe(untilDestroyed(this)).subscribe(currencies => this.currencies = currencies);
+    this.reportControlStore.partnerControlReport$.pipe(tap(partnerControlReport => this.lastControlReportCertified = partnerControlReport.reportControlEnd));
 
     this.dataAsObservable();
   }
@@ -400,6 +402,10 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
 
   private getDeductedAmount(reportExpenditureControl: ProjectPartnerControlReportExpenditureVerificationDTO) {
     return reportExpenditureControl.parked ? 0 : reportExpenditureControl.deductedAmount || reportExpenditureControl.declaredAmountAfterSubmission - this.getCertifiedAmount(reportExpenditureControl);
+  }
+
+  isParkedBeforeReopen(parkedOn: Date, lastControlReopenCertified: Date) {
+      return parkedOn ? parkedOn < lastControlReopenCertified : false;
   }
 
   private formToReportExpenditures(): ProjectPartnerControlReportExpenditureVerificationUpdateDTO[] {
