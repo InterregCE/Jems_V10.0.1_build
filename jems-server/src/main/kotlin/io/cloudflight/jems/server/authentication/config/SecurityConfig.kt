@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.env.Environment
 import org.springframework.core.env.Profiles
+import org.springframework.core.task.AsyncTaskExecutor
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.BeanIds
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
@@ -16,7 +17,7 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.password.PasswordEncoder
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository
+import org.springframework.security.task.DelegatingSecurityContextAsyncTaskExecutor
 import org.springframework.security.web.header.writers.HstsHeaderWriter
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter.ReferrerPolicy
@@ -112,4 +113,13 @@ class SecurityConfig(
         source.registerCorsConfiguration("/**", configuration)
         return source
     }
+
+    /**
+     * needed for security context propagation for @async methods
+     */
+    @Bean
+    fun taskExecutor(taskExecutor: AsyncTaskExecutor): DelegatingSecurityContextAsyncTaskExecutor {
+        return DelegatingSecurityContextAsyncTaskExecutor(taskExecutor)
+    }
+
 }
