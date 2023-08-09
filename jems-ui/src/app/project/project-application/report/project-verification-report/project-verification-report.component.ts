@@ -4,7 +4,7 @@ import {APIError} from '@common/models/APIError';
 import {ActivatedRoute} from '@angular/router';
 import {RoutingService} from '@common/services/routing.service';
 import {map} from 'rxjs/operators';
-import {ProjectReportDTO} from '@cat/api';
+import {ProjectReportDTO, UserRoleDTO} from '@cat/api';
 import {
   ProjectReportDetailPageStore
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-detail-page-store.service';
@@ -12,6 +12,9 @@ import {Alert} from '@common/components/forms/alert';
 import {
   ProjectReportPageStore
 } from '@project/project-application/report/project-report/project-report-page-store.service';
+import {
+  ProjectVerificationReportStore
+} from '@project/project-application/report/project-verification-report/project-verification-report-store.service';
 
 @Component({
   selector: 'jems-project-verification-report',
@@ -23,7 +26,8 @@ export class ProjectVerificationReportComponent {
   Alert = Alert;
   data$: Observable<{
     projectReport: ProjectReportDTO;
-    allTabsVisible: boolean;
+    isVisibleForMonitoringUser: boolean;
+    isVisibleForApplicantUser: boolean;
   }>;
   error$ = new BehaviorSubject<APIError | null>(null);
 
@@ -32,15 +36,17 @@ export class ProjectVerificationReportComponent {
     private router: RoutingService,
     private projectReportDetailStore: ProjectReportDetailPageStore,
     private reportPageStore: ProjectReportPageStore,
+    private projectVerificationReportStore: ProjectVerificationReportStore,
   ) {
     this.data$ = combineLatest([
       this.projectReportDetailStore.projectReport$,
-      this.reportPageStore.userCanEditVerification$,
-      this.reportPageStore.userCanViewVerification$,
+      this.projectVerificationReportStore.hasMonitoringUserView$,
+      this.projectVerificationReportStore.hasProjectOwnerOrCollaboratorView$
     ]).pipe(
-      map(([projectReport, canEdit, canView]) => ({
+      map(([projectReport, hasMonitoringUserView, hasProjectOwnerOrCollaboratorView]) => ({
         projectReport,
-        allTabsVisible: canEdit || canView
+        isVisibleForMonitoringUser: hasMonitoringUserView,
+        isVisibleForApplicantUser: hasProjectOwnerOrCollaboratorView
       }))
     );
   }

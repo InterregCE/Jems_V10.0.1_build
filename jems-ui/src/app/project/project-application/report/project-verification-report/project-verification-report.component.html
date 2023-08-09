@@ -20,33 +20,33 @@
     </jems-alert>
 
     <nav mat-tab-nav-bar>
-        <a *ngIf="isFinance(data.projectReport.type)" [active]="activeTab('expenditure')" mat-tab-link (click)="routeTo('expenditure')">
+        <a *ngIf="data.isVisibleForMonitoringUser && isFinance(data.projectReport.type)" [active]="activeTab('expenditure')" mat-tab-link (click)="routeTo('expenditure')">
             <span jemsText maxWidth="230">
                 {{ 'project.application.project.verification.tab.expenditure' | translate }}
             </span>
         </a>
 
-        <a [active]="activeTab('document')" mat-tab-link (click)="routeTo('document')">
+        <a *ngIf="data.isVisibleForMonitoringUser || data.isVisibleForApplicantUser" [active]="activeTab('document')" mat-tab-link (click)="routeTo('document')">
             <span jemsText maxWidth="230">
                 {{ 'project.application.project.verification.work.tab.document' | translate }}
             </span>
         </a>
 
-        <a *ngIf="data.allTabsVisible" [active]="activeTab('verificationChecklistsTab')" mat-tab-link
+        <a *ngIf="data.isVisibleForMonitoringUser" [active]="activeTab('verificationChecklistsTab')" mat-tab-link
            (click)="routeTo('verificationChecklistsTab')">
             <span jemsText maxWidth="230">
                 {{'project.application.project.verification.work.tab.verificationChecklists' | translate}}
             </span>
         </a>
 
-        <a *ngIf="data.allTabsVisible" [active]="activeTab('overview')" mat-tab-link
+        <a *ngIf="data.isVisibleForMonitoringUser || data.isVisibleForApplicantUser" [active]="activeTab('overview')" mat-tab-link
            (click)="routeTo('overview')">
             <span jemsText maxWidth="230">
                 {{'project.application.project.verification.work.tab.overview' | translate}}
             </span>
         </a>
 
-        <a *ngIf="data.allTabsVisible" [active]="activeTab('finalise')" mat-tab-link (click)="routeTo('finalise')">
+        <a *ngIf="data.isVisibleForMonitoringUser" [active]="activeTab('finalise')" mat-tab-link (click)="routeTo('finalise')">
             <span jemsText maxWidth="230">
                 {{ 'project.application.project.verification.work.tab.finalise' | translate }}
             </span>
