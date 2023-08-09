@@ -72,9 +72,8 @@ export class SharedFolderPageComponent {
       this.fileSizeOverLimitError$,
       this.pageStore.error$,
       this.maximumAllowedFileSizeInMB,
-      file => this.pageStore.uploadFile(file)
-        .pipe(finalize(() => this.isUploadInProgress = false)),
-    );
+      file => this.pageStore.uploadFile(file),
+    ).add(() => this.isUploadInProgress = false);
   }
 
   downloadFile(file: FileListItem): void {

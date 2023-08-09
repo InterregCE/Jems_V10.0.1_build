@@ -102,10 +102,8 @@ export class ReportAnnexesTableComponent {
       this.fileSizeOverLimitError$,
       this.fileManagementStore.error$,
       this.maximumAllowedFileSizeInMB,
-      file => this.fileManagementStore.uploadFile(file).pipe(
-        finalize(() => this.isUploadInProgress = false)
-      ),
-    );
+      file => this.fileManagementStore.uploadFile(file),
+    ).add(() => this.isUploadInProgress = false);
   }
 
   downloadFile(file: FileListItem): void {
