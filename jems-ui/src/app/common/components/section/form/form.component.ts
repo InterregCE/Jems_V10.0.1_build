@@ -4,6 +4,7 @@ import {animate, style, transition, trigger} from '@angular/animations';
 import {combineLatest} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.data';
+import {Alert} from "@common/components/forms/alert";
 
 @Component({
   selector: 'jems-form',
@@ -24,7 +25,6 @@ import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confir
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FormComponent {
-
   @Input()
   confirmSave: ConfirmDialogData;
 
@@ -49,4 +49,5 @@ export class FormComponent {
     this.formService.setDirty(false);
     this.save.emit();
   }
+  Alert = Alert;
 }
