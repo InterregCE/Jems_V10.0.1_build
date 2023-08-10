@@ -256,7 +256,7 @@ context('Control report tests', () => {
     });
   });
 
-  it.only("TB-1083 Control report checklist instantiation after control work is finalized", () => {
+  it("TB-1083 Control report checklist instantiation after control work is finalized", () => {
     cy.fixture('project/application-form/control-reports/TB-1083.json').then(testData => {
       cy.loginByRequest(user.applicantUser.email);
         cy.createContractedApplication(application, user.programmeUser.email).then(function (applicationId) {
