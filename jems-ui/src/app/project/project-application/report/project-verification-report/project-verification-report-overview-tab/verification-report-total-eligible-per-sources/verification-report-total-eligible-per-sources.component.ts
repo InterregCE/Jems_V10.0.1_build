@@ -4,7 +4,7 @@ import {FormService} from '@common/components/section/form/form.service';
 import {MatTableDataSource} from '@angular/material/table';
 import {
   FinancingSourceBreakdownDTO,
-  FinancingSourceBreakdownLineDTO, FinancingSourceFundDTO
+  FinancingSourceBreakdownLineDTO, FinancingSourceFundDTO, InputTranslation
 } from '@cat/api';
 
 @UntilDestroy()
@@ -53,6 +53,7 @@ export class VerificationReportTotalEligiblePerSourcesComponent implements OnCha
             isSplit: true,
             splitFundValue: split.value,
             splitFundId: split.fundId,
+            splitFundAbbreviation: this.funds.find(fund => fund.id === split.fundId)?.abbreviation,
             partnerContribution: split.partnerContribution,
             publicContribution: split.publicContribution,
             automaticPublicContribution: split.automaticPublicContribution,
@@ -74,4 +75,5 @@ interface FinancingSourceBreakdownLine extends FinancingSourceBreakdownLineDTO {
   fundValues: Map<number, number>;
   splitFundValue: number | undefined;
   splitFundId: number | undefined;
+  splitFundAbbreviation: InputTranslation[];
 }

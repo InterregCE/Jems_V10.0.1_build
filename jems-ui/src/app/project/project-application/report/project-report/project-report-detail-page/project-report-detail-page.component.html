@@ -8,7 +8,7 @@
             <span class="status-label">Status</span>
             <span class="ml-2"><jems-project-report-status [status]="projectReport.status" [longVersion]="false"></jems-project-report-status></span>
 
-            <jems-start-verification-report showStart="true"
+            <jems-start-verification-report *ngIf="projectReportPageStore.userCanViewVerification$ | async" showStart="true"
                                             [reportId]="projectReport.id"
                                             [reportStatus]="projectReport.status"
                                             (onError)="showErrorMessage($event)">

@@ -40,6 +40,7 @@ export class ProjectReportComponent {
     projectReports: PageProjectReportSummaryDTO;
     canEditReports: boolean;
     totalElements: number;
+    viewVerification: boolean;
   }>;
 
   constructor(
@@ -55,13 +56,20 @@ export class ProjectReportComponent {
   ) {
     this.data$ = combineLatest([
       pageStore.projectReports$,
-      pageStore.userCanEditReport$
+      pageStore.userCanEditReport$,
+      pageStore.userCanViewVerification$
     ]).pipe(
-      tap(([projectReports, _]) => this.dataSource.data = projectReports.content),
-      map(([projectReports, isEditable]) => ({
+      tap(([projectReports, _, viewVerification]) => {
+        if (!viewVerification) {
+          this.displayedColumns = this.displayedColumns.filter(column => column !== 'verification');
+        }
+        this.dataSource.data = projectReports.content;
+      }),
+      map(([projectReports, isEditable, viewVerification]) => ({
         projectReports,
         canEditReports: isEditable,
-        totalElements: projectReports.totalElements
+        totalElements: projectReports.totalElements,
+        viewVerification
       })),
     );
   }

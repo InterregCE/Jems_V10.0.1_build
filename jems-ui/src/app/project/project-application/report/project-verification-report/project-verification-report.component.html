@@ -26,7 +26,7 @@
             </span>
         </a>
 
-        <a *ngIf="data.isVisibleForMonitoringUser || data.isVisibleForApplicantUser" [active]="activeTab('document')" mat-tab-link (click)="routeTo('document')">
+        <a *ngIf="data.isVisibleForMonitoringUser || data.isVisibleForManagerUser" [active]="activeTab('document')" mat-tab-link (click)="routeTo('document')">
             <span jemsText maxWidth="230">
                 {{ 'project.application.project.verification.work.tab.document' | translate }}
             </span>
@@ -39,7 +39,7 @@
             </span>
         </a>
 
-        <a *ngIf="data.isVisibleForMonitoringUser || data.isVisibleForApplicantUser" [active]="activeTab('overview')" mat-tab-link
+        <a *ngIf="data.isVisibleForMonitoringUser || (data.isVisibleForManagerUser && data.projectReport.status === StatusEnum.Finalized)" [active]="activeTab('overview')" mat-tab-link
            (click)="routeTo('overview')">
             <span jemsText maxWidth="230">
                 {{'project.application.project.verification.work.tab.overview' | translate}}

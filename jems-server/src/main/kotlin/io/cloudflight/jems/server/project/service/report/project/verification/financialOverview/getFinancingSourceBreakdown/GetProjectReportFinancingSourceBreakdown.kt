@@ -4,14 +4,15 @@ import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanViewReportVerificationOverview
 import io.cloudflight.jems.server.project.service.ProjectPersistence
-import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
+import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.FinancingSourceBreakdown
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.project.verification.expenditure.ProjectReportVerificationExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.project.verification.financialOverview.ProjectReportFinancialOverviewPersistence
 import io.cloudflight.jems.server.project.service.report.project.verification.financialOverview.getFinancingSourceBreakdown.getPartnerReportFinancialData.GetPartnerReportFinancialData
+import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -24,17 +25,15 @@ class GetProjectReportFinancingSourceBreakdown(
     private val projectReportFinancialOverviewPersistence: ProjectReportFinancialOverviewPersistence,
     private val getPartnerReportFinancialData: GetPartnerReportFinancialData,
     private val securityService: SecurityService,
-    private val projectPersistence: ProjectPersistence,
 ) : GetProjectReportFinancingSourceBreakdownInteractor {
 
     @CanViewReportVerificationOverview
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetProjectReportFinancingSourceBreakdownException::class)
     override fun get(projectId: Long, reportId: Long): FinancingSourceBreakdown {
-        val project = projectPersistence.getApplicantAndStatusById(projectId)
-        val report = projectReportPersistence.getReportById(projectId = projectId, reportId)
 
-        if (canCreatorView(project) && !report.status.isFinalized()) {
+        val report = projectReportPersistence.getReportById(projectId = projectId, reportId)
+        if (hasRestrictedViewForOngoingVerification(report)) {
             throw AccessDeniedException("Denied")
         }
 
@@ -61,8 +60,9 @@ class GetProjectReportFinancingSourceBreakdown(
         )
     }
 
-    private fun canCreatorView(project: ProjectApplicantAndStatus): Boolean {
-        return project.getUserIdsWithViewLevel().contains(securityService.getUserIdOrThrow())
+    private fun hasRestrictedViewForOngoingVerification(report: ProjectReportModel): Boolean {
+        val hasGlobalProjectVerificationView = securityService.currentUser?.hasPermission(UserRolePermission.ProjectReportingProjectView)
+        return !report.status.isFinalized() && hasGlobalProjectVerificationView == false
     }
 
 }

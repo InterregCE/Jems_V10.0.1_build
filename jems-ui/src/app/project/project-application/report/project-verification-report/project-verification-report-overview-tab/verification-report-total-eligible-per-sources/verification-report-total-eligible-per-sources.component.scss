@@ -8,18 +8,30 @@ mat-table {
 }
 
 .mat-column-partner {
-  flex: 0 0 5%;
+  flex: 0 0 10%;
   padding-left: 1rem;
-  min-width: 3.5rem;
+  min-width: 5rem;
+}
+
+.fund-column{
+  min-width: 5rem;
 }
 
 .mat-column-partnerContribution,
 .mat-column-publicContribution,
 .mat-column-automaticPublicContribution,
 .mat-column-privateContribution,
-.mat-column-total,
-.fund-column{
+.mat-column-total{
   min-width: 6rem;
+}
+
+.sub-row-indent {
+  padding-left: .25rem;
+}
+
+.border {
+  border-bottom: 1px solid var(--table-border-color) !important;
+  border-top: 1px solid var(--table-border-color) !important;
 }
 
 

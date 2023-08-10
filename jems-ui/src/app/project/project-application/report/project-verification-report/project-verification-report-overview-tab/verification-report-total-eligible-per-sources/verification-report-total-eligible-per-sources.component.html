@@ -17,6 +17,7 @@
         </mat-header-cell>
         <mat-cell *matCellDef="let line" class="text-left">
             <mat-icon *ngIf="line.isSplit" class="sub-row-indent">subdirectory_arrow_right</mat-icon>
+            <span *ngIf="line.isSplit">{{line.splitFundAbbreviation| translateBySystemLanguage | async}}</span>
             <span *ngIf="!line.isSplit && line.partnerRole === 'LEAD_PARTNER'"> {{'common.label.project.partner.role.shortcut.LEAD_PARTNER' | translate:{partner: line.partnerNumber} }}</span>
             <span *ngIf="!line.isSplit && line.partnerRole !== 'LEAD_PARTNER'"> {{'common.label.project.partner.role.shortcut.PARTNER' | translate:{partner: line.partnerNumber} }} </span>
         </mat-cell>
@@ -102,7 +103,7 @@
     </ng-container>
 
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns" [class.border]="!row.isSplit"></mat-row>
     <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
 
 </mat-table>
