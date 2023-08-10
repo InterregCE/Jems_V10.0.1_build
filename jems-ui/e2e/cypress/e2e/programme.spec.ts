@@ -284,6 +284,33 @@ context('Programme management tests', () => {
       });
     });
 
+    it('TB-1086 Programme Typology of error can be added', () => {
+      cy.visit('/app/programme/typologyErrors', {failOnStatusCode: false});
+
+      cy.contains('button', 'Edit').click();
+      cy.contains('mat-icon', 'add').click();
+      cy.get('input').last().type('Typology of error test');
+      cy.contains('button', 'Save changes').click();
+
+      cy.get('input').last().should('have.value', 'Typology of error test');
+      cy.get('jems-alert').should('contain.text', 'Typology of errors saved successfully');
+    });
+
+    it("TB-1087 Programme Typology of error can be deleted", () => {
+      cy.fixture('programme/TB-1087.json').then((typology) => {
+        cy.createTypologyOfErrors(typology);
+
+        cy.visit('/app/programme/typologyErrors', {failOnStatusCode: false});
+
+        cy.contains('Edit').click();
+        cy.get('mat-form-field').last().parent().find('div button').click();
+        cy.contains('button', 'Save changes').click();
+
+        cy.get('input').last().should('not.have.value',  typology['description']);
+        cy.get('jems-alert').should('contain.text', 'Typology of errors saved successfully');
+      });
+    });
+
     it('TB-530 Programme Legal status can be configured', () => {
 
       cy.visit('/app/programme', {failOnStatusCode: false});
