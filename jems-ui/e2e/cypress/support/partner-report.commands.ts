@@ -178,14 +178,11 @@ Cypress.Commands.add('addSubcontractorToProcurement', (partnerId: number, report
 
 function assignUnitCostIds(partnerId, reportId, partnerReportExpenditures) {
   partnerReportExpenditures.forEach(expenditure => {
-    if (expenditure.cypressReferenceUnit && expenditure.cypressReferenceUnit !== 'shouldHaveLumpSum') {
-      cy.get(`@${expenditure.cypressReferenceUnit}`)
-        .then(unitCostId => {
-          cy.getUnitCostsByPartnerAndReportIds(partnerId, reportId)
-            .then(unitCosts => unitCosts.forEach(unitCost => {
-              if (unitCost.unitCostProgrammeId === unitCostId) expenditure.unitCostId = unitCost.id;
-            }));
-        });
+    if (expenditure.cypressReferenceUnit === 'shouldHaveUnitCost') {
+      cy.getUnitCostsByPartnerAndReportIds(partnerId, reportId)
+        .then(unitCosts => unitCosts.forEach(unitCost => {
+          if (unitCost.unitCostProgrammeId === expenditure.unitCostId) expenditure.unitCostId = unitCost.id;
+        }));
     }
   })
 }

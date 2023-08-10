@@ -1,13 +1,15 @@
 import {faker} from '@faker-js/faker';
 import user from '../../fixtures/users.json';
-import partner from '../../fixtures/api/application/partner/partner.json';
 import call from "../../fixtures/api/call/1.step.call.json";
-import approvalInfo from "../../fixtures/api/application/modification/approval.info.json";
 import {loginByRequest} from "../../support/login.commands";
 import application from "../../fixtures/api/application/application.json";
 import partnerReportIdentification from "../../fixtures/api/partnerReport/partnerReportIdentification.json";
 import partnerReportExpenditures from "../../fixtures/api/partnerReport/partnerReportExpenditures.json";
 import partnerParkedExpenditures from "../../fixtures/api/partnerReport/partnerParkedExpenditures.json";
+import controllerUser from "../../fixtures/api/users/controllerUser.json";
+import controllerRole from "../../fixtures/api/roles/controllerRole.json";
+import approvalInfo from "../../fixtures/api/application/modification/approval.info.json";
+import partner from '../../fixtures/api/application/partner/partner.json';
 
 const costCategories = [
   'Travel and accommodation',
@@ -1338,93 +1340,437 @@ context('Partner reports tests', () => {
     });
   });
 
+  it('TB-1012 Partner report - parked display in overviews', function () {
+    cy.fixture('project/reporting/TB-1012.json').then(testData => {
+      cy.loginByRequest(user.programmeUser.email);
+      call.preSubmissionCheckSettings.reportPartnerCheckPluginKey = 'report-partner-check-off';
+      call.preSubmissionCheckSettings.controlReportPartnerCheckPluginKey = 'control-report-partner-check-off';
+      cy.createCall(call).then(callId => {
+        application.details.projectCallId = callId;
+        cy.publishCall(callId);
+
+        cy.loginByRequest(user.applicantUser.email);
+
+        cy.createContractedApplication(application, user.programmeUser.email).then(applicationId => {
+          const partnerId = this[application.partners[0].details.abbreviation];
+          cy.assignPartnerCollaborators(applicationId, partnerId, testData.partnerCollaborator);
+          cy.addPartnerReport(partnerId).then(reportId => {
+            cy.updatePartnerReportExpenditures(partnerId, reportId, testData.expenditures);
+            cy.runPreSubmissionPartnerReportCheck(partnerId, reportId);
+            cy.submitPartnerReport(partnerId, reportId);
+
+            //Group order 1
+            cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/financialOverview`, {failOnStatusCode: false});
+            //check expenditure summary table
+            cy.get('jems-partner-breakdown-co-financing').contains('ERDF').parent().should('contain', '2.980,43');
+            cy.get('jems-partner-breakdown-co-financing').contains('ERDF').parent().should('contain', 'parked 0,00');
+            cy.get('jems-partner-breakdown-co-financing').contains('ERDF').parent().should('contain', 're-included 0,00');
+            cy.get('jems-partner-breakdown-co-financing').contains('Other fund EN').parent().should('contain', '728,21');
+            cy.get('jems-partner-breakdown-co-financing').contains('Other fund EN').parent().should('contain', 'parked 0,00');
+            cy.get('jems-partner-breakdown-co-financing').contains('Other fund EN').parent().should('contain', 're-included 0,00');
+            cy.get('jems-partner-breakdown-co-financing').contains('Partner contribution').parent().should('contain', '1.258,75');
+            cy.get('jems-partner-breakdown-co-financing').contains('Partner contribution').parent().should('contain', 'parked 0,00');
+            cy.get('jems-partner-breakdown-co-financing').contains('Partner contribution').parent().should('contain', 're-included 0,00');
+            cy.get('jems-partner-breakdown-co-financing').contains('of which Public contribution').parent().should('contain', '460,62');
+            cy.get('jems-partner-breakdown-co-financing').contains('of which Public contribution').parent().should('contain', 'parked 0,00');
+            cy.get('jems-partner-breakdown-co-financing').contains('of which Public contribution').parent().should('contain', 're-included 0,00');
+            cy.get('jems-partner-breakdown-co-financing').contains('of which Automatic public contribution').parent().should('contain', '534,54');
+            cy.get('jems-partner-breakdown-co-financing').contains('of which Automatic public contribution').parent().should('contain', 'parked 0,00');
+            cy.get('jems-partner-breakdown-co-financing').contains('of which Automatic public contribution').parent().should('contain', 're-included 0,00');
+            cy.get('jems-partner-breakdown-co-financing').contains('of which Private contribution').parent().should('contain', '263,57');
+            cy.get('jems-partner-breakdown-co-financing').contains('of which Private contribution').parent().should('contain', 'parked 0,00');
+            cy.get('jems-partner-breakdown-co-financing').contains('of which Private contribution').parent().should('contain', 're-included 0,00');
+
+            //check expenditure breakdown per cost category table
+            cy.get('jems-partner-breakdown-cost-category').contains('Staff costs').parent().should('contain', '435,56');
+            cy.get('jems-partner-breakdown-cost-category').contains('Staff costs').parent().should('contain', 'parked 0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Staff costs').parent().should('contain', 're-included 0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Office and administrative costs').parent().should('contain', '43,55');
+            cy.get('jems-partner-breakdown-cost-category').contains('Office and administrative costs').parent().should('contain', 'parked 0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Office and administrative costs').parent().should('contain', 're-included 0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Travel and accommodation').parent().should('contain', '200,16');
+            cy.get('jems-partner-breakdown-cost-category').contains('Travel and accommodation').parent().should('contain', 'parked 0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Travel and accommodation').parent().should('contain', 're-included 0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('External expertise and services').parent().should('contain', '187,33');
+            cy.get('jems-partner-breakdown-cost-category').contains('External expertise and services').parent().should('contain', 'parked 0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('External expertise and services').parent().should('contain', 're-included 0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Equipment').parent().should('contain', '555,55');
+            cy.get('jems-partner-breakdown-cost-category').contains('Equipment').parent().should('contain', 'parked 0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Equipment').parent().should('contain', 're-included 0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Infrastructure and works').parent().should('contain', '1.234,80');
+            cy.get('jems-partner-breakdown-cost-category').contains('Infrastructure and works').parent().should('contain', 'parked 0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Infrastructure and works').parent().should('contain', 're-included 0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Lump sum').parent().should('contain', '2.000,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Lump sum').parent().should('contain', 'parked 0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Lump sum').parent().should('contain', 're-included 0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Unit Costs').parent().should('contain', '310,44');
+            cy.get('jems-partner-breakdown-cost-category').contains('Unit Costs').parent().should('contain', 'parked 0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Unit Costs').parent().should('contain', 're-included 0,00');
+
+            //check expenditure breakdown per lump sum
+            cy.get('jems-partner-breakdown-lump-sum').contains('Implementation Lump sum DE').parent().parent().parent().should('contain', '2.000,00');
+            cy.get('jems-partner-breakdown-lump-sum').contains('Implementation Lump sum DE').parent().parent().parent().should('contain', 'parked 0,00');
+            cy.get('jems-partner-breakdown-lump-sum').contains('Implementation Lump sum DE').parent().parent().parent().should('contain', 're-included 0,00');
+
+            //check expenditure breakdown per unit cost
+            cy.get('jems-partner-breakdown-unit-cost').contains('Unit cost multi - all DE').parent().parent().should('contain', '310,44');
+            cy.get('jems-partner-breakdown-unit-cost').contains('Unit cost multi - all DE').parent().parent().should('contain', 'parked 0,00');
+            cy.get('jems-partner-breakdown-unit-cost').contains('Unit cost multi - all DE').parent().parent().should('contain', 're-included 0,00');
+
+
+            //Group Order 2
+            cy.loginByRequest(user.admin.email);
+            cy.createTypologyOfErrors(testData.typologyOfErrors)
+            testData.controllerRole.name = `controllerRole_${faker.random.alphaNumeric(5)}`;
+            testData.controllerUserEdit.email = faker.internet.email();
+            cy.createRole(testData.controllerRole).then(roleId => {
+              testData.controllerUserEdit.userRoleId = roleId;
+              cy.createUser(testData.controllerUserEdit);;
+              testData.controllerInstitution.name = `${faker.word.adjective()} ${faker.word.noun()}`;
+              testData.controllerInstitution.institutionUsers[0].userEmail = testData.controllerUserEdit.email;
+              cy.createInstitution(testData.controllerInstitution).then(institutionId => {
+                testData.controllerAssignment.assignmentsToAdd[0].partnerId = partnerId;
+                testData.controllerAssignment.assignmentsToAdd[0].institutionId = institutionId;
+                cy.assignInstitution(testData.controllerAssignment);
+              });
+            });
+            cy.assignPartnerCollaborators(applicationId, partnerId, testData.partnerCollaborator);
+
+            cy.loginByRequest(testData.controllerUserEdit.email);
+            cy.startControlWork(partnerId, reportId);
+            cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/controlReport/expenditureVerificationTab`, {failOnStatusCode: false});
+
+            // add deductions
+            cy.get('mat-row').eq(1).children().eq(22).within((column) => {
+              cy.wrap(column).get('input').type('10,00');
+            });
+            cy.get('mat-row').eq(1).children().eq(24).within((column) => {
+              cy.wrap(column).get('mat-select').click();
+            });
+            cy.contains('mat-option span', 'Typology of Error').first().click();
+
+            cy.get('mat-row').eq(2).children().eq(22).within((column) => {
+              cy.wrap(column).get('input').type('10,00');
+            });
+            cy.get('mat-row').eq(2).children().eq(24).within((column) => {
+              cy.wrap(column).get('mat-select').click();
+            });
+            cy.contains('mat-option span', 'Typology of Error').first().click();
+
+            cy.get('mat-row').eq(3).children().eq(22).within((column) => {
+              cy.wrap(column).get('input').type('10,00');
+            });
+            cy.get('mat-row').eq(3).children().eq(24).within((column) => {
+              cy.wrap(column).get('mat-select').click();
+            });
+            cy.contains('mat-option span', 'Typology of Error').first().click();
+
+            cy.get('mat-row').eq(5).children().eq(22).within((column) => {
+              cy.wrap(column).get('input').type('10,00');
+            });
+            cy.get('mat-row').eq(5).children().eq(24).within((column) => {
+              cy.wrap(column).get('mat-select').click();
+            });
+            cy.contains('mat-option span', 'Typology of Error').first().click();
+
+            //park items
+            cy.get('mat-row').eq(0).children().eq(25).within((column) => {
+              cy.wrap(column).get('mat-slide-toggle').click();
+            });
+            cy.get('mat-row').eq(4).children().eq(25).within((column) => {
+              cy.wrap(column).get('mat-slide-toggle').click();
+            });
+            cy.get('button').contains('Save changes').click();
+
+            cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/controlReport/overviewAndFinalizeTab`, {failOnStatusCode: false});
+            cy.contains('Run pre-submission check').scrollIntoView();
+            cy.contains('Run pre-submission check').click();
+            cy.contains('button', 'Finalize control').click();
+            cy.contains('Confirm').should('be.visible').click();
+            cy.contains('Certified').should('be.visible');
+            cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/financialOverview`, {failOnStatusCode: false});
+
+            //check total eligible after report values for co-fin breakdown
+            cy.get('jems-partner-breakdown-co-financing').contains('ERDF').parent().should('contain', '1.605,96');
+            cy.get('jems-partner-breakdown-co-financing').contains('Other fund EN').parent().should('contain', '392,38');
+            cy.get('jems-partner-breakdown-co-financing').contains('Partner contribution').parent().should('contain', '678,26');
+            cy.get('jems-partner-breakdown-co-financing').contains('of which Public contribution').parent().should('contain', '248,19');
+            cy.get('jems-partner-breakdown-co-financing').contains('of which Automatic public contribution').parent().should('contain', '288,03');
+            cy.get('jems-partner-breakdown-co-financing').contains('of which Private contribution').parent().should('contain', '142,02');
+
+            //check total eligible after report values for cost category breakdown
+            cy.get('jems-partner-breakdown-cost-category').contains('Staff costs').parent().should('contain', '389,53');
+            cy.get('jems-partner-breakdown-cost-category').contains('Office and administrative costs').parent().should('contain', '38,95');
+            cy.get('jems-partner-breakdown-cost-category').contains('Travel and accommodation').parent().should('contain', '0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('External expertise and services').parent().should('contain', '177,33');
+            cy.get('jems-partner-breakdown-cost-category').contains('Equipment').parent().should('contain', '545,55');
+            cy.get('jems-partner-breakdown-cost-category').contains('Infrastructure and works').parent().should('contain', '1.224,80');
+            cy.get('jems-partner-breakdown-cost-category').contains('Other costs').parent().should('contain', '0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Lump sum').parent().should('contain', '0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Unit Costs').parent().should('contain', '300,44');
+
+            //check total eligible after report values for breakdown per lump sum
+            cy.get('jems-partner-breakdown-lump-sum').contains('Implementation Lump sum DE').parent().parent().parent().should('contain', '0,00');
+
+            //check total eligible after report values for per unit cost
+            cy.get('jems-partner-breakdown-unit-cost').contains('Unit cost multi - all DE').parent().parent().should('contain', '300,44');
+          });
+
+          //Group Order 3
+          cy.loginByRequest(user.applicantUser.email);
+          cy.addPartnerReport(partnerId).then(reportId => {
+            cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/expenditures`, {failOnStatusCode: false});
+            cy.get('mat-row').eq(0).children().eq(21).within((column) => {
+              cy.wrap(column).get('button').contains('sync').click();
+            });
+            cy.contains('Confirm').should('be.visible').click();
+            cy.get('mat-row').eq(1).children().eq(21).within((column) => {
+              cy.wrap(column).get('button').contains('sync').click();
+            });
+            cy.contains('Confirm').should('be.visible').click();
+
+            cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/financialOverview`, {failOnStatusCode: false});
+            //check expenditure summary table
+            cy.get('jems-partner-breakdown-co-financing').contains('ERDF').parent().should('contain', '2.980,43');
+            cy.get('jems-partner-breakdown-co-financing').contains('ERDF').parent().should('contain', '1.346,51');
+            cy.get('jems-partner-breakdown-co-financing').contains('ERDF').parent().should('contain', 'parked 1.346,51');
+            cy.get('jems-partner-breakdown-co-financing').contains('ERDF').parent().should('contain', 're-included 1.346,51');
+            cy.get('jems-partner-breakdown-co-financing').contains('Other fund EN').parent().should('contain', '728,21');
+            cy.get('jems-partner-breakdown-co-financing').contains('Other fund EN').parent().should('contain', '328,99');
+            cy.get('jems-partner-breakdown-co-financing').contains('Other fund EN').parent().should('contain', 'parked 328,99');
+            cy.get('jems-partner-breakdown-co-financing').contains('Other fund EN').parent().should('contain', 're-included 328,99');
+            cy.get('jems-partner-breakdown-co-financing').contains('Partner contribution').parent().should('contain', '1.258,75');
+            cy.get('jems-partner-breakdown-co-financing').contains('Partner contribution').parent().should('contain', '568,69');
+            cy.get('jems-partner-breakdown-co-financing').contains('Partner contribution').parent().should('contain', 'parked 568,69');
+            cy.get('jems-partner-breakdown-co-financing').contains('Partner contribution').parent().should('contain', 're-included 568,69');
+            cy.get('jems-partner-breakdown-co-financing').contains('of which Public contribution').parent().should('contain', '460,62');
+            cy.get('jems-partner-breakdown-co-financing').contains('of which Public contribution').parent().should('contain', '208,10');
+            cy.get('jems-partner-breakdown-co-financing').contains('of which Public contribution').parent().should('contain', 'parked 208,10');
+            cy.get('jems-partner-breakdown-co-financing').contains('of which Public contribution').parent().should('contain', 're-included 208,10');
+            cy.get('jems-partner-breakdown-co-financing').contains('of which Automatic public contribution').parent().should('contain', '534,54');
+            cy.get('jems-partner-breakdown-co-financing').contains('of which Automatic public contribution').parent().should('contain', '241,49');
+            cy.get('jems-partner-breakdown-co-financing').contains('of which Automatic public contribution').parent().should('contain', 'parked 241,49');
+            cy.get('jems-partner-breakdown-co-financing').contains('of which Automatic public contribution').parent().should('contain', 're-included 241,49');
+            cy.get('jems-partner-breakdown-co-financing').contains('of which Private contribution').parent().should('contain', '263,57');
+            cy.get('jems-partner-breakdown-co-financing').contains('of which Private contribution').parent().should('contain', '119,07');
+            cy.get('jems-partner-breakdown-co-financing').contains('of which Private contribution').parent().should('contain', 'parked 119,07');
+            cy.get('jems-partner-breakdown-co-financing').contains('of which Private contribution').parent().should('contain', 're-included 119,07');
+
+            //check expenditure breakdown per cost category table
+            cy.get('jems-partner-breakdown-cost-category').contains('Staff costs').parent().should('contain', '435,56');
+            cy.get('jems-partner-breakdown-cost-category').contains('Staff costs').parent().should('contain', '40,03');
+            cy.get('jems-partner-breakdown-cost-category').contains('Staff costs').parent().should('contain', 'parked 40,03');
+            cy.get('jems-partner-breakdown-cost-category').contains('Staff costs').parent().should('contain', 're-included 40,03');
+            cy.get('jems-partner-breakdown-cost-category').contains('Office and administrative costs').parent().should('contain', '43,55');
+            cy.get('jems-partner-breakdown-cost-category').contains('Office and administrative costs').parent().should('contain', '4,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Office and administrative costs').parent().should('contain', 'parked 4,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Office and administrative costs').parent().should('contain', 're-included 4,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Travel and accommodation').parent().should('contain', '200,16');
+            cy.get('jems-partner-breakdown-cost-category').contains('Travel and accommodation').parent().should('contain', '200,16');
+            cy.get('jems-partner-breakdown-cost-category').contains('Travel and accommodation').parent().should('contain', 'parked 200,16');
+            cy.get('jems-partner-breakdown-cost-category').contains('Travel and accommodation').parent().should('contain', 're-included 200,16');
+            cy.get('jems-partner-breakdown-cost-category').contains('External expertise and services').parent().should('contain', '187,33');
+            cy.get('jems-partner-breakdown-cost-category').contains('External expertise and services').parent().should('contain', '0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('External expertise and services').parent().should('contain', 'parked 0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('External expertise and services').parent().should('contain', 're-included 0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Equipment').parent().should('contain', '555,55');
+            cy.get('jems-partner-breakdown-cost-category').contains('Equipment').parent().should('contain', '0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Equipment').parent().should('contain', 'parked 0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Equipment').parent().should('contain', 're-included 0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Infrastructure and works').parent().should('contain', '1.234,80');
+            cy.get('jems-partner-breakdown-cost-category').contains('Infrastructure and works').parent().should('contain', '0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Infrastructure and works').parent().should('contain', 'parked 0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Infrastructure and works').parent().should('contain', 're-included 0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Lump sum').parent().should('contain', '2.000,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Lump sum').parent().should('contain', 'parked 2.000,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Lump sum').parent().should('contain', 're-included 2.000,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Unit Costs').parent().should('contain', '310,44');
+            cy.get('jems-partner-breakdown-cost-category').contains('Unit Costs').parent().should('contain', '0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Unit Costs').parent().should('contain', 'parked 0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Unit Costs').parent().should('contain', 're-included 0,00');
+
+            //check expenditure breakdown per lump sum
+            cy.get('jems-partner-breakdown-lump-sum').contains('Implementation Lump sum DE').parent().parent().parent().should('contain', '2.000,00');
+            cy.get('jems-partner-breakdown-lump-sum').contains('Implementation Lump sum DE').parent().parent().parent().should('contain', 'parked 2.000,00');
+            cy.get('jems-partner-breakdown-lump-sum').contains('Implementation Lump sum DE').parent().parent().parent().should('contain', 're-included 2.000,00');
+
+            //check expenditure breakdown per unit cost
+            cy.get('jems-partner-breakdown-unit-cost').contains('Unit cost multi - all DE').parent().parent().should('contain', '310,44');
+            cy.get('jems-partner-breakdown-unit-cost').contains('Unit cost multi - all DE').parent().parent().should('contain', '0,00');
+            cy.get('jems-partner-breakdown-unit-cost').contains('Unit cost multi - all DE').parent().parent().should('contain', 'parked 0,00');
+            cy.get('jems-partner-breakdown-unit-cost').contains('Unit cost multi - all DE').parent().parent().should('contain', 're-included 0,00');
+
+            //Group Order 4
+            cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/expenditures`, {failOnStatusCode: false});
+            cy.get('mat-row').eq(0).children().eq(16).within((column) => {
+              cy.wrap(column).scrollIntoView().click();
+              cy.wrap(column).get('input').type('210,16');
+            });
+            cy.get('button').contains('Save changes').click();
+
+            cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/financialOverview`, {failOnStatusCode: false});
+            //check expenditure summary table
+            cy.get('jems-partner-breakdown-co-financing').contains('ERDF').parent().should('contain', '2.980,43');
+            cy.get('jems-partner-breakdown-co-financing').contains('ERDF').parent().should('contain', '1.353,83');
+            cy.get('jems-partner-breakdown-co-financing').contains('ERDF').parent().should('contain', 'parked 1.346,51');
+            cy.get('jems-partner-breakdown-co-financing').contains('ERDF').parent().should('contain', 're-included 1.353,83');
+            cy.get('jems-partner-breakdown-co-financing').contains('Other fund EN').parent().should('contain', '728,21');
+            cy.get('jems-partner-breakdown-co-financing').contains('Other fund EN').parent().should('contain', '330,78');
+            cy.get('jems-partner-breakdown-co-financing').contains('Other fund EN').parent().should('contain', 'parked 328,99');
+            cy.get('jems-partner-breakdown-co-financing').contains('Other fund EN').parent().should('contain', 're-included 330,78');
+            cy.get('jems-partner-breakdown-co-financing').contains('Partner contribution').parent().should('contain', '1.258,75');
+            cy.get('jems-partner-breakdown-co-financing').contains('Partner contribution').parent().should('contain', '571,78');
+            cy.get('jems-partner-breakdown-co-financing').contains('Partner contribution').parent().should('contain', 'parked 568,69');
+            cy.get('jems-partner-breakdown-co-financing').contains('Partner contribution').parent().should('contain', 're-included 571,78');
+            cy.get('jems-partner-breakdown-co-financing').contains('of which Public contribution').parent().should('contain', '460,62');
+            cy.get('jems-partner-breakdown-co-financing').contains('of which Public contribution').parent().should('contain', '209,23');
+            cy.get('jems-partner-breakdown-co-financing').contains('of which Public contribution').parent().should('contain', 'parked 208,10');
+            cy.get('jems-partner-breakdown-co-financing').contains('of which Public contribution').parent().should('contain', 're-included 209,23');
+            cy.get('jems-partner-breakdown-co-financing').contains('of which Automatic public contribution').parent().should('contain', '534,54');
+            cy.get('jems-partner-breakdown-co-financing').contains('of which Automatic public contribution').parent().should('contain', '242,81');
+            cy.get('jems-partner-breakdown-co-financing').contains('of which Automatic public contribution').parent().should('contain', 'parked 241,49');
+            cy.get('jems-partner-breakdown-co-financing').contains('of which Automatic public contribution').parent().should('contain', 're-included 242,81');
+            cy.get('jems-partner-breakdown-co-financing').contains('of which Private contribution').parent().should('contain', '263,57');
+            cy.get('jems-partner-breakdown-co-financing').contains('of which Private contribution').parent().should('contain', '119,72');
+            cy.get('jems-partner-breakdown-co-financing').contains('of which Private contribution').parent().should('contain', 'parked 119,07');
+            cy.get('jems-partner-breakdown-co-financing').contains('of which Private contribution').parent().should('contain', 're-included 119,72');
+
+            //check expenditure breakdown per cost category table
+            cy.get('jems-partner-breakdown-cost-category').contains('Staff costs').parent().should('contain', '435,56');
+            cy.get('jems-partner-breakdown-cost-category').contains('Staff costs').parent().should('contain', '42,03');
+            cy.get('jems-partner-breakdown-cost-category').contains('Staff costs').parent().should('contain', 'parked 40,03');
+            cy.get('jems-partner-breakdown-cost-category').contains('Staff costs').parent().should('contain', 're-included 42,03');
+            cy.get('jems-partner-breakdown-cost-category').contains('Office and administrative costs').parent().should('contain', '43,55');
+            cy.get('jems-partner-breakdown-cost-category').contains('Office and administrative costs').parent().should('contain', '4,20');
+            cy.get('jems-partner-breakdown-cost-category').contains('Office and administrative costs').parent().should('contain', 'parked 4,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Office and administrative costs').parent().should('contain', 're-included 4,20');
+            cy.get('jems-partner-breakdown-cost-category').contains('Travel and accommodation').parent().should('contain', '200,16');
+            cy.get('jems-partner-breakdown-cost-category').contains('Travel and accommodation').parent().should('contain', '210,16');
+            cy.get('jems-partner-breakdown-cost-category').contains('Travel and accommodation').parent().should('contain', 'parked 200,16');
+            cy.get('jems-partner-breakdown-cost-category').contains('Travel and accommodation').parent().should('contain', 're-included 210,16');
+            cy.get('jems-partner-breakdown-cost-category').contains('External expertise and services').parent().should('contain', '187,33');
+            cy.get('jems-partner-breakdown-cost-category').contains('External expertise and services').parent().should('contain', '0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('External expertise and services').parent().should('contain', 'parked 0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('External expertise and services').parent().should('contain', 're-included 0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Equipment').parent().should('contain', '555,55');
+            cy.get('jems-partner-breakdown-cost-category').contains('Equipment').parent().should('contain', '0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Equipment').parent().should('contain', 'parked 0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Equipment').parent().should('contain', 're-included 0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Infrastructure and works').parent().should('contain', '1.234,80');
+            cy.get('jems-partner-breakdown-cost-category').contains('Infrastructure and works').parent().should('contain', '0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Infrastructure and works').parent().should('contain', 'parked 0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Infrastructure and works').parent().should('contain', 're-included 0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Lump sum').parent().should('contain', '2.000,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Lump sum').parent().should('contain', 'parked 2.000,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Lump sum').parent().should('contain', 're-included 2.000,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Unit Costs').parent().should('contain', '310,44');
+            cy.get('jems-partner-breakdown-cost-category').contains('Unit Costs').parent().should('contain', '0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Unit Costs').parent().should('contain', 'parked 0,00');
+            cy.get('jems-partner-breakdown-cost-category').contains('Unit Costs').parent().should('contain', 're-included 0,00');
+
+            //check expenditure breakdown per lump sum
+            cy.get('jems-partner-breakdown-lump-sum').contains('Implementation Lump sum DE').parent().parent().parent().should('contain', '2.000,00');
+            cy.get('jems-partner-breakdown-lump-sum').contains('Implementation Lump sum DE').parent().parent().parent().should('contain', 'parked 2.000,00');
+            cy.get('jems-partner-breakdown-lump-sum').contains('Implementation Lump sum DE').parent().parent().parent().should('contain', 're-included 2.000,00');
+
+            //check expenditure breakdown per unit cost
+            cy.get('jems-partner-breakdown-unit-cost').contains('Unit cost multi - all DE').parent().parent().should('contain', '310,44');
+            cy.get('jems-partner-breakdown-unit-cost').contains('Unit cost multi - all DE').parent().parent().should('contain', '0,00');
+            cy.get('jems-partner-breakdown-unit-cost').contains('Unit cost multi - all DE').parent().parent().should('contain', 'parked 0,00');
+            cy.get('jems-partner-breakdown-unit-cost').contains('Unit cost multi - all DE').parent().parent().should('contain', 're-included 0,00');
+          });
+        });
+      });
+    });
+  });
+
   //region TB-744 METHODS
   function verifyIdentification(applicationId, partnerId1, reportId) {
-      cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId1}/reports/${reportId}/identification`, {failOnStatusCode: false});
-      cy.get('input[name="startDate"]').should('be.disabled');
-      cy.get('input[name="endDate"]').should('be.disabled');
-      cy.get('mat-select').should('have.class', 'mat-select-disabled');
+    cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId1}/reports/${reportId}/identification`, {failOnStatusCode: false});
+    cy.get('input[name="startDate"]').should('be.disabled');
+    cy.get('input[name="endDate"]').should('be.disabled');
+    cy.get('mat-select').should('have.class', 'mat-select-disabled');
   }
 
   function verifyWorkplan(applicationId, partnerId1, reportId) {
-      cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId1}/reports/${reportId}/workplan`, {failOnStatusCode: false});
-      cy.contains('mat-panel-title', 'Work package 1').click();
+    cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId1}/reports/${reportId}/workplan`, {failOnStatusCode: false});
+    cy.contains('mat-panel-title', 'Work package 1').click();
 
-      cy.get('input[type="checkbox"]').each(cb => {
-          cy.wrap(cb).should('be.disabled');
-      });
+    cy.get('input[type="checkbox"]').each(cb => {
+      cy.wrap(cb).should('be.disabled');
+    });
 
-      cy.contains('div', 'A 1.1').parent().within(() => {
-          cy.get('jems-partner-actions-cell').within((e) => {
-              cy.contains('mat-icon', 'file_download').should('exist');
-              expect(e).to.not.contain('cancel');
-          });
+    cy.contains('div', 'A 1.1').parent().within(() => {
+      cy.get('jems-partner-actions-cell').within((e) => {
+        cy.contains('mat-icon', 'file_download').should('exist');
+        expect(e).to.not.contain('cancel');
       });
+    });
   }
 
   function verifyProcurements(applicationId, partnerId1, reportId) {
-      cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId1}/reports/${reportId}/procurements`, {failOnStatusCode: false});
+    cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId1}/reports/${reportId}/procurements`, {failOnStatusCode: false});
 
-      cy.contains('PP - Rather important procurement').click();
+    cy.contains('PP - Rather important procurement').click();
 
-      cy.get('jems-partner-procurement-identification input[name="reportNumber"]')
-          .should('be.disabled');
+    cy.get('jems-partner-procurement-identification input[name="reportNumber"]')
+      .should('be.disabled');
 
-      cy.get('jems-partner-procurement-identification input[name="contractName"]')
-          .should('be.disabled');
+    cy.get('jems-partner-procurement-identification input[name="contractName"]')
+      .should('be.disabled');
 
-      cy.get('jems-partner-procurement-identification input[name="referenceNumber"]')
-          .should('be.disabled');
+    cy.get('jems-partner-procurement-identification input[name="referenceNumber"]')
+      .should('be.disabled');
 
-      cy.get('jems-partner-procurement-identification input[name="contractDate"]')
-          .should('be.disabled');
+    cy.get('jems-partner-procurement-identification input[name="contractDate"]')
+      .should('be.disabled');
 
-      cy.get('jems-partner-procurement-identification input[name="contractType"]')
-          .should('be.disabled');
+    cy.get('jems-partner-procurement-identification input[name="contractType"]')
+      .should('be.disabled');
 
-      cy.get('jems-partner-procurement-identification input[name="contractAmount"]')
-          .should('be.disabled');
+    cy.get('jems-partner-procurement-identification input[name="contractAmount"]')
+      .should('be.disabled');
 
-      cy.get('mat-select[formcontrolname="currencyCode"]')
-          .should('have.class', 'mat-select-disabled');
+    cy.get('mat-select[formcontrolname="currencyCode"]')
+      .should('have.class', 'mat-select-disabled');
 
-      cy.get('jems-partner-procurement-identification input[name="supplierName"]')
-          .should('be.disabled');
+    cy.get('jems-partner-procurement-identification input[name="supplierName"]')
+      .should('be.disabled');
 
-      cy.get('jems-partner-procurement-identification input[name="vatNumber"]')
-          .should('be.disabled');
+    cy.get('jems-partner-procurement-identification input[name="vatNumber"]')
+      .should('be.disabled');
 
-      cy.get('[label="project.application.partner.report.procurements.table.comment"] textarea')
-          .should('be.disabled');
+    cy.get('[label="project.application.partner.report.procurements.table.comment"] textarea')
+      .should('be.disabled');
   }
 
   function verifyExpendituresCheckbox(applicationId, partnerId, reportId) {
-      cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/expenditures`, {failOnStatusCode: false});
-      cy.get('input[type="checkbox"]').each(cb => {
-          cy.wrap(cb).should('be.disabled');
-      });
+    cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/expenditures`, {failOnStatusCode: false});
+    cy.get('input[type="checkbox"]').each(cb => {
+      cy.wrap(cb).should('be.disabled');
+    });
   }
 
   function verifyContributions(applicationId, partnerId, reportId) {
-      cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/contribution`, {failOnStatusCode: false});
-      cy.get('input[type="decimal"]').each(input => {
-          cy.wrap(input).should('be.disabled');
-      });
+    cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/contribution`, {failOnStatusCode: false});
+    cy.get('input[type="decimal"]').each(input => {
+      cy.wrap(input).should('be.disabled');
+    });
   }
 
   function verifyAnnexesEditable(applicationId, partnerId, reportId) {
-      cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/annexes`, {failOnStatusCode: false});
-      cy.contains('mat-card', 'Report annexes').within(() => {
-          cy.contains('button', 'Upload file').should('not.exist');
-      });
+    cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/annexes`, {failOnStatusCode: false});
+    cy.contains('mat-card', 'Report annexes').within(() => {
+      cy.contains('button', 'Upload file').should('not.exist');
+    });
   }
 
   function verifyReportExport(applicationId, partnerId, reportId) {
-      cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/export`, {failOnStatusCode: false});
-      cy.contains('div', 'Export Plugin').find('mat-select').click();
-      cy.contains('mat-option', 'Partner Report (Example) export').should('be.visible');
-      cy.contains('mat-option', 'Partner Report budget (Example) export').click();
-      cy.contains('button', 'Export').should('be.enabled');
+    cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/export`, {failOnStatusCode: false});
+    cy.contains('div', 'Export Plugin').find('mat-select').click();
+    cy.contains('mat-option', 'Partner Report (Example) export').should('be.visible');
+    cy.contains('mat-option', 'Partner Report budget (Example) export').click();
+    cy.contains('button', 'Export').should('be.enabled');
   }
 
   // endregion
@@ -1472,7 +1818,6 @@ context('Partner reports tests', () => {
           });
       });
   }
-
 
 
   function updatePartnerReportDetails(partnerId, reportId, partnerProcurement) {
