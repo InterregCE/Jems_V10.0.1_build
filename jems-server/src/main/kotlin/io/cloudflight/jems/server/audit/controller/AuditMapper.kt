@@ -45,7 +45,7 @@ fun AuditSearchRequestDTO?.toModel(pageable: Pageable) =
             userEmail = AuditFilter(values = userEmails.filterNotNullTo(HashSet())),
             action = AuditFilter(values = actions.map { it?.name }.filterNotNullTo(HashSet())),
             projectId = AuditFilter(values = projectIds.filterNotNullTo(HashSet())),
-            timeFrom = timeFrom?.withSecond(0)?.withNano(0),
+            timeFrom = timeFrom?.withSecond(0)?.minusNanos(1),
             timeTo = timeTo?.withSecond(0)?.plusMinutes(1)?.minusNanos(1),
             pageable = pageable,
         )
