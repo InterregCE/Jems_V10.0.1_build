@@ -9,6 +9,8 @@ declare global {
       addProgrammeFund(fund);
 
       createLumpSum(lumpSum);
+
+      createTypologyOfErrors(description);
     }
   }
 }
@@ -52,6 +54,16 @@ Cypress.Commands.add('createLumpSum', (lumpSum) => {
     body: lumpSum
   }).then(response => {
     cy.wrap(response.body.id).as('lumpSumId');
+  });
+});
+
+Cypress.Commands.add('createTypologyOfErrors', (typology) => {
+  cy.request({
+    method: 'PUT',
+    url: 'api/programmeTypologyErrors',
+    body: typology
+  }).then(response => {
+    cy.wrap(response.body.id).as('typologyOfErrorId');
   });
 });
 
