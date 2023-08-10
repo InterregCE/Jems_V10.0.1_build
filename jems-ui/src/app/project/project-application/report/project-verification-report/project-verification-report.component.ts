@@ -4,7 +4,7 @@ import {APIError} from '@common/models/APIError';
 import {ActivatedRoute} from '@angular/router';
 import {RoutingService} from '@common/services/routing.service';
 import {map} from 'rxjs/operators';
-import {ProjectReportDTO, UserRoleDTO} from '@cat/api';
+import {ProjectReportDTO} from '@cat/api';
 import {
   ProjectReportDetailPageStore
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-detail-page-store.service';
@@ -27,9 +27,10 @@ export class ProjectVerificationReportComponent {
   data$: Observable<{
     projectReport: ProjectReportDTO;
     isVisibleForMonitoringUser: boolean;
-    isVisibleForApplicantUser: boolean;
+    isVisibleForManagerUser: boolean;
   }>;
   error$ = new BehaviorSubject<APIError | null>(null);
+  StatusEnum = ProjectReportDTO.StatusEnum;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -41,12 +42,12 @@ export class ProjectVerificationReportComponent {
     this.data$ = combineLatest([
       this.projectReportDetailStore.projectReport$,
       this.projectVerificationReportStore.hasMonitoringUserView$,
-      this.projectVerificationReportStore.hasProjectOwnerOrCollaboratorView$
+      this.projectVerificationReportStore.hasProjectManagerView$
     ]).pipe(
-      map(([projectReport, hasMonitoringUserView, hasProjectOwnerOrCollaboratorView]) => ({
+      map(([projectReport, hasMonitoringUserView, hasProjectManagerView]) => ({
         projectReport,
         isVisibleForMonitoringUser: hasMonitoringUserView,
-        isVisibleForApplicantUser: hasProjectOwnerOrCollaboratorView
+        isVisibleForManagerUser: hasProjectManagerView
       }))
     );
   }

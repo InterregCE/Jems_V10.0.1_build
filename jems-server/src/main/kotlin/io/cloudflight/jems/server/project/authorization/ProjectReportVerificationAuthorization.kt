@@ -60,8 +60,8 @@ class ProjectReportVerificationAuthorization(
 
     fun canViewReportVerificationOverview(projectId:Long): Boolean{
         val project = projectPersistence.getApplicantAndStatusById(projectId)
-        val canCreatorView = isActiveUserIdEqualToOneOf(project.getUserIdsWithViewLevel())
-        val canMonitorView = hasPermission(UserRolePermission.ProjectReportingProjectView, projectId)
+        val canCreatorView = isActiveUserIdEqualToOneOf(project.getUserIdsWithManageLevel())
+        val canMonitorView = hasPermission(UserRolePermission.ProjectReportingVerificationProjectView, projectId)
         return canCreatorView || canMonitorView
     }
 

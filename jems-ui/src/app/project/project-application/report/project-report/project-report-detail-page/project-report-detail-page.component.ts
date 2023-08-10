@@ -11,6 +11,9 @@ import {ProjectReportDTO} from '@cat/api';
 import {Alert} from '@common/components/forms/alert';
 import {BehaviorSubject, Observable, of} from 'rxjs';
 import {APIError} from '@common/models/APIError';
+import {
+  ProjectReportPageStore
+} from '@project/project-application/report/project-report/project-report-page-store.service';
 
 @Component({
   selector: 'jems-project-report-detail-page',
@@ -27,7 +30,8 @@ export class ProjectReportDetailPageComponent {
   constructor(private activatedRoute: ActivatedRoute,
               public pageStore: ProjectReportDetailPageStore,
               private router: RoutingService,
-              private projectSidenavService: ProjectApplicationFormSidenavService,) { }
+              private projectSidenavService: ProjectApplicationFormSidenavService,
+              public projectReportPageStore: ProjectReportPageStore) { }
 
   activeTab(route: string): boolean {
     return this.router.url?.includes(route);

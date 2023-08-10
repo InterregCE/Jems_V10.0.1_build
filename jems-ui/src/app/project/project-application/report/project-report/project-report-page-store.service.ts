@@ -133,20 +133,22 @@ export class ProjectReportPageStore {
 
   private userCanViewVerification(): Observable<boolean> {
     return combineLatest([
-      this.projectReportLevel(),
+      this.projectStore.userIsProjectOwner$,
+      this.projectStore.userIsPartnerCollaborator$,
       this.permissionService.hasPermission(PermissionsEnum.ProjectReportingVerificationProjectView),
       this.permissionService.hasPermission(PermissionsEnum.ProjectReportingVerificationProjectEdit),
     ]).pipe(
-      map(([level, canView, canEdit]) => level === 'VIEW' || level === 'EDIT' || level === 'MANAGE' || canView || canEdit)
+      map(([isProjectOwner, isPartnerCollaborator, canView, canEdit]) => (isProjectOwner && !isPartnerCollaborator) || canView || canEdit)
     );
   }
 
   private userCanEditVerification(): Observable<boolean> {
     return combineLatest([
-      this.projectReportLevel(),
+      this.projectStore.userIsProjectOwnerOrEditCollaborator$,
+      this.projectStore.userIsPartnerCollaborator$,
       this.permissionService.hasPermission(PermissionsEnum.ProjectReportingVerificationProjectEdit),
     ]).pipe(
-      map(([level, canEdit]) => level === 'EDIT' || level === 'MANAGE' || canEdit)
+      map(([isProjectOwnerOrEditCollaborator, isPartnerCollaborator, canEdit]) => (isProjectOwnerOrEditCollaborator && !isPartnerCollaborator) || canEdit)
     );
   }
 

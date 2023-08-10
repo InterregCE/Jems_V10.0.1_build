@@ -141,7 +141,7 @@
                 </mat-cell>
             </ng-container>
 
-            <ng-container matColumnDef="verification">
+            <ng-container *ngIf="data.viewVerification" matColumnDef="verification">
                 <mat-header-cell *matHeaderCellDef class="text-left">
                     <span jemsText maxLines="2">{{ 'project.application.project.report.table.verification' | translate }}</span>
                 </mat-header-cell>
