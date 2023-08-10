@@ -8,6 +8,18 @@
     <ng-container *ngIf="showSaveDiscard$ | async"
                   [ngTemplateOutlet]="saveDiscard">
     </ng-container>
+    <ng-container *ngIf="formService.success$ | async as success"
+                  [ngTemplateOutlet]="saveSuccess"
+                  [ngTemplateOutletContext]="{$implicit: success}">
+    </ng-container>
+    <ng-container *ngIf="formService.error$ | async as error"
+                  [ngTemplateOutlet]="saveError"
+                  [ngTemplateOutletContext]="{$implicit: error}">
+    </ng-container>
+    <ng-container *ngIf="formService.fileSizeOverLimitError$ | async as error"
+                  [ngTemplateOutlet]="fileSizeOverLimitError"
+                  [ngTemplateOutletContext]="{$implicit: error}">
+    </ng-container>
 </mat-card>
 
 <ng-template #saveDiscard>
@@ -28,19 +40,38 @@
     </mat-card-footer>
 </ng-template>
 
-<jems-alert *ngIf="formService.success$ | async as success"
-            [show]="!!formService.success$"
-            [type]="Alert.SUCCESS">
-    <span *ngIf="success.i18nKey">{{success.i18nKey | translate : success.i18nArguments}}</span>
-    <span *ngIf="!success.i18nKey">{{success | translate}}</span>
-</jems-alert>
-<jems-alert *ngIf="formService.error$ | async as error"
-            [show]="!!error"
-            [type]="Alert.ERROR">
-    <jems-api-error-content [error]="error"></jems-api-error-content>
-</jems-alert>
-<jems-alert *ngIf="formService.fileSizeOverLimitError$ | async as error"
-            [show]="!!error"
-            [type]="Alert.ERROR">
-    <p>{{'project.file.size.over.limit' | translate}} {{error}} MB</p>
-</jems-alert>
+<ng-template #saveSuccess let-message>
+    <mat-card-footer [@slideInOut] class="footer">
+        <div class="message-wrapper">
+            <div class="message jems-alert jems-alert-success">
+                <mat-icon></mat-icon>
+                <span *ngIf="message.i18nKey">{{message.i18nKey | translate : message.i18nArguments}}</span>
+                <span *ngIf="!message.i18nKey">{{message | translate}}</span>
+            </div>
+        </div>
+    </mat-card-footer>
+</ng-template>
+
+<ng-template #saveError let-error>
+    <mat-card-footer [@slideInOut] class="footer">
+        <div class="message-wrapper">
+            <div class="message jems-alert jems-alert-danger">
+                <mat-icon></mat-icon>
+                <jems-api-error-content [error]="error"></jems-api-error-content>
+            </div>
+        </div>
+        <ng-container *ngTemplateOutlet="saveDiscard"></ng-container>
+    </mat-card-footer>
+</ng-template>
+
+<ng-template #fileSizeOverLimitError let-error>
+    <mat-card-footer [@slideInOut] class="footer">
+        <div class="message-wrapper">
+            <div class="message jems-alert jems-alert-danger">
+                <mat-icon></mat-icon>
+                <span>{{'project.file.size.over.limit' | translate}} {{error}} MB</span>
+            </div>
+        </div>
+        <ng-container *ngTemplateOutlet="saveDiscard"></ng-container>
+    </mat-card-footer>
+</ng-template>
