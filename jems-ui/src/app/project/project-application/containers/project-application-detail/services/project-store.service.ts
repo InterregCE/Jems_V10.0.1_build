@@ -23,7 +23,7 @@ import {
   UserRoleCreateDTO,
   WorkPackageActivitySummaryDTO
 } from '@cat/api';
-import {filter, map, mergeMap, shareReplay, startWith, switchMap, tap, withLatestFrom} from 'rxjs/operators';
+import {filter, map, mergeMap, shareReplay, startWith, switchMap, take, tap, withLatestFrom} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
 import {BudgetCostCategoryEnum} from '@project/model/lump-sums/BudgetCostCategoryEnum';
@@ -101,6 +101,7 @@ export class ProjectStore {
   private projectAcronym$ = new ReplaySubject<string>(1);
   private updatedProjectData$ = new Subject<void>();
   private updatedProjectForm$ = new Subject<ProjectDetailFormDTO>();
+  private projectCallSettingsSubject$ = new ReplaySubject<ProjectCallSettingsDTO>(1);
 
   constructor(private projectService: ProjectService,
               private router: RoutingService,
@@ -122,7 +123,8 @@ export class ProjectStore {
     this.projectStatus$ = ProjectStore.projectStatus(this.project$);
     this.projectCallType$ = ProjectStore.projectCallType(this.project$);
     this.currentVersionOfProjectStatus$ = ProjectStore.projectStatus(this.currentVersionOfProject$);
-    this.projectCallSettings$ = this.projectCallSettings();
+    this.projectCallSettings();
+    this.projectCallSettings$ = this.projectCallSettingsSubject$.asObservable().pipe(shareReplay(1));
     this.currentVersionOfProjectTitle$ = this.currentVersionOfProject$
       .pipe(
         map(project => `${project.customIdentifier} – ${project.acronym}`)
@@ -290,11 +292,15 @@ export class ProjectStore {
       );
   }
 
-  private projectCallSettings(): Observable<ProjectCallSettingsDTO> {
-    return this.projectId$
+  private projectCallSettings(): void {
+    this.projectId$
       .pipe(
-        switchMap(projectId => this.projectService.getProjectCallSettingsById(projectId))
-      );
+        filter(projectId => projectId !== 0),
+        switchMap(projectId => this.projectService.getProjectCallSettingsById(projectId)),
+        take(1),
+        tap(value => this.projectCallSettingsSubject$.next(value)),
+        tap(value => Log.info('Fetched Project call settings:', this, value))
+      ).subscribe();
   }
 
   private allowedBudgetCategories(): Observable<AllowedBudgetCategories> {

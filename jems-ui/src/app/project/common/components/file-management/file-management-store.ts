@@ -12,7 +12,7 @@ import {
   UserRoleDTO
 } from '@cat/api';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
-import {catchError, finalize, map, startWith, switchMap, take, tap, withLatestFrom} from 'rxjs/operators';
+import {catchError, finalize, map, shareReplay, startWith, switchMap, take, tap, withLatestFrom} from 'rxjs/operators';
 import {MatSort} from '@angular/material/sort';
 import {Tables} from '@common/utils/tables';
 import {CategoryInfo, CategoryNode} from '@project/common/components/category-tree/categoryModels';
@@ -32,6 +32,7 @@ import {ProjectVersionStore} from '@project/common/services/project-version-stor
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
 import { Page } from '@cat/api';
+import {Log} from "@common/utils/log";
 
 @Injectable({
   providedIn: 'root'
@@ -42,6 +43,7 @@ export class FileManagementStore {
   fileCategories$: Observable<CategoryNode>;
   selectedCategory$ = new ReplaySubject<CategoryInfo | undefined>(1);
   selectedCategoryPath$: Observable<I18nMessage[]>;
+  maxFileSize$ = new ReplaySubject<number>(1);
 
   userIsProjectOwnerOrEditCollaborator$: Observable<boolean>;
 
@@ -87,6 +89,7 @@ export class FileManagementStore {
     this.canReadFiles$ = this.canReadFiles();
     this.selectedCategoryPath$ = this.selectedCategoryPath();
     this.fileList$ = this.fileList();
+    this.getMaximumAllowedFileSize();
   }
 
   setSection(section: CategoryInfo): void {
@@ -349,8 +352,12 @@ export class FileManagementStore {
     return section.type !== FileCategoryTypeEnum.ASSESSMENT && canReadApplicationFile;
   }
 
-  getMaximumAllowedFileSize(): Observable<number> {
-    return this.settingsService.getMaximumAllowedFileSize();
+  getMaximumAllowedFileSize(): void {
+    this.settingsService.getMaximumAllowedFileSize().pipe(
+      take(1),
+      tap(value => this.maxFileSize$.next(value)),
+      tap(value => Log.info('Fetched max file size:', this, value))
+    ).subscribe();
   }
 
   changeFilter(section: CategoryInfo): void {

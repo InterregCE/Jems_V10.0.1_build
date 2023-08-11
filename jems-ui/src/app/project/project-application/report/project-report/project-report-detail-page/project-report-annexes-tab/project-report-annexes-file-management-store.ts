@@ -13,7 +13,18 @@ import {FileListTableConstants} from '@common/components/file-list/file-list-tab
 import {APIError} from '@common/models/APIError';
 import {DownloadService} from '@common/services/download.service';
 import {RoutingService} from '@common/services/routing.service';
-import {catchError, distinctUntilChanged, filter, finalize, map, startWith, switchMap, take, tap} from 'rxjs/operators';
+import {
+    catchError,
+    distinctUntilChanged,
+    filter,
+    finalize,
+    map,
+    shareReplay,
+    startWith,
+    switchMap,
+    take,
+    tap
+} from 'rxjs/operators';
 import {v4 as uuid} from 'uuid';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {CategoryInfo, CategoryNode} from '@project/common/components/category-tree/categoryModels';
@@ -71,7 +82,7 @@ export class ProjectReportAnnexesFileManagementStore {
     }
 
     getMaximumAllowedFileSize(): Observable<number> {
-        return this.settingsService.getMaximumAllowedFileSize();
+        return this.fileManagementStore.maxFileSize$.asObservable();
     }
 
     changeFilter(section: CategoryInfo): void {

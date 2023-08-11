@@ -4,7 +4,18 @@ import {BehaviorSubject, combineLatest, Observable, of, Subject} from 'rxjs';
 import {JemsFileMetadataDTO, PageJemsFileDTO, ProjectSharedFolderFileService, SettingsService, UserRoleCreateDTO} from '@cat/api';
 import {Tables} from '@common/utils/tables';
 import {APIError} from '@common/models/APIError';
-import {catchError, distinctUntilChanged, filter, finalize, map, startWith, switchMap, take, tap} from 'rxjs/operators';
+import {
+  catchError,
+  distinctUntilChanged,
+  filter,
+  finalize,
+  map,
+  shareReplay,
+  startWith,
+  switchMap,
+  take,
+  tap
+} from 'rxjs/operators';
 import {v4 as uuid} from 'uuid';
 import {DownloadService} from '@common/services/download.service';
 import {RoutingService} from '@common/services/routing.service';
@@ -12,6 +23,7 @@ import {MatSort} from '@angular/material/sort';
 import {FileListTableConstants} from '@common/components/file-list/file-list-table/file-list-table-constants';
 import {PermissionService} from '../../../security/permissions/permission.service';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
+import {FileManagementStore} from "@project/common/components/file-management/file-management-store";
 
 @Injectable()
 export class SharedFolderPageStore {
@@ -34,6 +46,7 @@ export class SharedFolderPageStore {
               private readonly downloadService: DownloadService,
               private readonly routingService: RoutingService,
               private readonly settingsService: SettingsService,
+              private readonly fileManagementStore: FileManagementStore,
               private readonly permissionService: PermissionService) {
     this.projectId$ = this.projectStore.projectId$;
     this.fileList$ = this.fileList();
@@ -141,6 +154,6 @@ export class SharedFolderPageStore {
   }
 
   getMaximumAllowedFileSize(): Observable<number> {
-    return this.settingsService.getMaximumAllowedFileSize();
+    return this.fileManagementStore.maxFileSize$.asObservable();
   }
 }

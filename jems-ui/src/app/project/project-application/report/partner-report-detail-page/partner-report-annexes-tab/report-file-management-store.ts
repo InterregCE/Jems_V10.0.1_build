@@ -9,7 +9,19 @@ import {
   ProjectReportFileSearchRequestDTO,
   SettingsService
 } from '@cat/api';
-import {catchError, distinctUntilChanged, filter, finalize, map, startWith, switchMap, take, tap, withLatestFrom} from 'rxjs/operators';
+import {
+  catchError,
+  distinctUntilChanged,
+  filter,
+  finalize,
+  map,
+  shareReplay,
+  startWith,
+  switchMap,
+  take,
+  tap,
+  withLatestFrom
+} from 'rxjs/operators';
 import {MatSort} from '@angular/material/sort';
 import {Tables} from '@common/utils/tables';
 import {CategoryInfo, CategoryNode} from '@project/common/components/category-tree/categoryModels';
@@ -224,7 +236,7 @@ export class ReportFileManagementStore {
   }
 
   getMaximumAllowedFileSize(): Observable<number> {
-    return this.settingsService.getMaximumAllowedFileSize();
+    return this.fileManagementStore.maxFileSize$.asObservable();
   }
 
   private getTreeNodeFromCategory(category: CategoryInfo): ProjectReportFileSearchRequestDTO.TreeNodeEnum {
