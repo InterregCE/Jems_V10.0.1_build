@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.service.checklist.delete.verification
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
-import io.cloudflight.jems.server.project.authorization.CanEditReportVerification
+import io.cloudflight.jems.server.project.authorization.CanEditReportVerificationPrivileged
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
 import io.cloudflight.jems.server.project.service.checklist.isChecklistCreatedAfterVerification
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
@@ -21,7 +21,7 @@ class DeleteVerificationChecklistInstance(
     private val securityService: SecurityService
 ) : DeleteVerificationChecklistInstanceInteractor {
 
-    @CanEditReportVerification
+    @CanEditReportVerificationPrivileged
     @Transactional
     @ExceptionWrapper(DeleteVerificationChecklistInstanceException::class)
     override fun deleteById(projectId: Long, reportId: Long, checklistId: Long) {

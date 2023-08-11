@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.service.report.project.verification.e
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
-import io.cloudflight.jems.server.project.authorization.CanEditProjectReportVerificationByReportId
+import io.cloudflight.jems.server.project.authorization.CanEditReportVerificationPrivilegedByReportId
 import io.cloudflight.jems.server.project.service.report.model.partner.control.expenditure.ParkExpenditureData
 import io.cloudflight.jems.server.project.service.report.model.project.verification.expenditure.ProjectReportVerificationExpenditureLine
 import io.cloudflight.jems.server.project.service.report.model.project.verification.expenditure.ProjectReportVerificationExpenditureLineUpdate
@@ -19,7 +19,7 @@ class UpdateProjectReportVerificationExpenditure(
     private val generalValidator: GeneralValidatorService
 ): UpdateProjectReportVerificationExpenditureInteractor {
 
-    @CanEditProjectReportVerificationByReportId
+    @CanEditReportVerificationPrivilegedByReportId
     @Transactional
     @ExceptionWrapper(UpdateProjectReportVerificationExpenditureException::class)
     override fun updateExpenditureVerification(

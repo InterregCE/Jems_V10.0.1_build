@@ -5,7 +5,7 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
-import io.cloudflight.jems.server.project.authorization.CanEditReportVerification
+import io.cloudflight.jems.server.project.authorization.CanEditReportVerificationCommunication
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.file.uploadProjectFile.isFileTypeInvalid
 import io.cloudflight.jems.server.project.service.report.project.file.ProjectReportFilePersistence
@@ -19,7 +19,7 @@ class UploadProjectReportVerificationFile(
     private val securityService: SecurityService,
 ) : UploadProjectReportVerificationFileInteractor {
 
-    @CanEditReportVerification
+    @CanEditReportVerificationCommunication
     @Transactional
     @ExceptionWrapper(UploadProjectReportVerificationFileException::class)
     override fun upload(projectId: Long, reportId: Long, file: ProjectFile): JemsFileMetadata {

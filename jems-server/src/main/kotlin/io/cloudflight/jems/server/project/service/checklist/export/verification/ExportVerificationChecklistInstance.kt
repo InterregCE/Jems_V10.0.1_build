@@ -6,7 +6,7 @@ import io.cloudflight.jems.plugin.contract.export.checklist.ChecklistExportPlugi
 import io.cloudflight.jems.plugin.contract.models.common.SystemLanguageData
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.plugin.JemsPluginRegistry
-import io.cloudflight.jems.server.project.authorization.CanViewReportVerification
+import io.cloudflight.jems.server.project.authorization.CanViewReportVerificationPrivileged
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
 import io.cloudflight.jems.server.project.service.checklist.export.ExportChecklistInstanceException
 import io.cloudflight.jems.server.project.service.checklist.export.ExportChecklistInstanceNotFoundException
@@ -23,7 +23,7 @@ class ExportVerificationChecklistInstance(
         private const val DEFAULT_VERIFICATION_CHECKLIST_EXPORT_PLUGIN = "standard-checklist-export-plugin"
     }
 
-    @CanViewReportVerification
+    @CanViewReportVerificationPrivileged
     @Transactional(readOnly = true)
     @ExceptionWrapper(ExportChecklistInstanceException::class)
     override fun export(projectId: Long, reportId: Long, checklistId: Long, exportLanguage: SystemLanguage, pluginKey: String?): ExportResult {

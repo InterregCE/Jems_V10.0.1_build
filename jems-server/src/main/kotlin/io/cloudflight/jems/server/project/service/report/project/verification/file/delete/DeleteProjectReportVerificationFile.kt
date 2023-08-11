@@ -2,9 +2,8 @@ package io.cloudflight.jems.server.project.service.report.project.verification.f
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
-import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType.VerificationDocument
-import io.cloudflight.jems.server.project.authorization.CanEditReportVerification
+import io.cloudflight.jems.server.project.authorization.CanEditReportVerificationCommunication
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -13,7 +12,7 @@ class DeleteProjectReportVerificationFile(
     private val filePersistence: JemsFilePersistence,
 ) : DeleteProjectReportVerificationFileInteractor {
 
-    @CanEditReportVerification
+    @CanEditReportVerificationCommunication
     @Transactional
     @ExceptionWrapper(DeleteProjectReportVerificationFileException::class)
     override fun delete(projectId: Long, reportId: Long, fileId: Long) {

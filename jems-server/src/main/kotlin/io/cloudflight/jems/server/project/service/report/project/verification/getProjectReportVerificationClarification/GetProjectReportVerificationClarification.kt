@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.project.verification.getProjectReportVerificationClarification
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.project.authorization.CanViewReportVerification
+import io.cloudflight.jems.server.project.authorization.CanViewReportVerificationPrivileged
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus.Finalized
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus.InVerification
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
@@ -17,7 +17,7 @@ class GetProjectReportVerificationClarification(
     private val reportPersistence: ProjectReportPersistence,
 ) : GetProjectReportVerificationClarificationInteractor {
 
-    @CanViewReportVerification
+    @CanViewReportVerificationPrivileged
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetProjectReportVerificationClarificationException::class)
     override fun getClarifications(projectId: Long, reportId: Long): List<ProjectReportVerificationClarification> {

@@ -4,7 +4,7 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.file.service.model.JemsFile
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType.VerificationDocument
-import io.cloudflight.jems.server.project.authorization.CanViewReportVerification
+import io.cloudflight.jems.server.project.authorization.CanViewReportVerificationCommunication
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -17,7 +17,7 @@ class ListProjectReportVerificationFile(
     private val projectReportPersistence: ProjectReportPersistence,
 ) : ListProjectReportVerificationFileInteractor {
 
-    @CanViewReportVerification
+    @CanViewReportVerificationCommunication
     @Transactional(readOnly = true)
     @ExceptionWrapper(ListProjectReportVerificationFileException::class)
     override fun list(projectId: Long, reportId: Long, pageable: Pageable): Page<JemsFile> {
