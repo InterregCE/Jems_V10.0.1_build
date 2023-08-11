@@ -80,7 +80,7 @@ export class ProgrammeTypologyErrorsListComponent extends ViewEditFormComponent 
   addControl(typologyErrors?: TypologyErrorsDTO): void {
     this.typologyErrorsForm.push(this.formBuilder.group({
       id: [typologyErrors?.id],
-      description: [typologyErrors?.description || [], Validators.maxLength(500)],
+      description: [typologyErrors?.description || "", Validators.maxLength(500)],
     }));
   }
 
