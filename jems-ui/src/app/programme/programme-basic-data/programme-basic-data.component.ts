@@ -162,7 +162,7 @@ export class ProgrammeBasicDataComponent extends ViewEditFormComponent implement
           this.router.navigate(['app/programme/export']);
         }
       }),
-      untilDestroyed(this)
+      take(1)
     ).subscribe();
     this.projectIdExample$ = combineLatest([
       this.programmeForm.controls.projectIdProgrammeAbbreviation.valueChanges.pipe(startWith('')),
