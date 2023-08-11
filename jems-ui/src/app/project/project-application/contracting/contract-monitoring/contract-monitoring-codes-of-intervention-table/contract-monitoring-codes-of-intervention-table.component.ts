@@ -137,7 +137,7 @@ export class ContractMonitoringCodesOfInterventionTableComponent implements OnCh
       const projectBudgetAmountShareControl = this.dimensionCodesFormItems.at(controlIndex).get('projectBudgetAmountShare');
       projectBudgetAmountShareControl?.setValidators([Validators.required, this.dimensionCodeAmountValidator()]);
       projectBudgetAmountShareControl?.updateValueAndValidity();
-      dimensionCodeControl?.setValidators([Validators.required, this.dimensionCodeAlreadySelected(), this.hasDimensionCodesSet()]);
+      dimensionCodeControl?.setValidators([this.isDimensionCodeRequired(), this.dimensionCodeAlreadySelected(), this.hasDimensionCodesSet()]);
       dimensionCodeControl?.updateValueAndValidity();
     }
   }
@@ -215,6 +215,16 @@ export class ContractMonitoringCodesOfInterventionTableComponent implements OnCh
         return {dimensionCodesNotSet: true} as any;
       } else {
         return null;
+      }
+    };
+  }
+
+  private isDimensionCodeRequired(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if(!this.getCodesForDimension(this.dimensionControl?.value)){
+        return null;
+      } else {
+        return Validators.required(control)
       }
     };
   }
