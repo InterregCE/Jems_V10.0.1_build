@@ -46,6 +46,7 @@ export class PartnerActionsCellComponent implements ControlValueAccessor {
   set isUploadDone(value: boolean){
     if (value) {
       this.isUploadInProgress = false;
+      this.formService.setSuccess(null);
     }
   }
   @Output()
