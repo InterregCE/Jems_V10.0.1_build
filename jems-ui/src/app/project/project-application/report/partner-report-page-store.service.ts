@@ -62,6 +62,7 @@ export class PartnerReportPageStore {
   createPartnerReport(): Observable<ProjectPartnerReportSummaryDTO> {
     return this.partnerId$
       .pipe(
+        take(1),
         switchMap((partnerId) => this.projectPartnerReportService.createProjectPartnerReport(partnerId as any)),
         tap(() => this.refreshReports$.next()),
         tap(created => Log.info('Created partnerReport:', this, created)),
