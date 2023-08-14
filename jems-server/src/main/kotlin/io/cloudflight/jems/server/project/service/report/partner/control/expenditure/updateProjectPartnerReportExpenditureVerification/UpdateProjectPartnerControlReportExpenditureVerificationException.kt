@@ -39,3 +39,11 @@ class UnParkNotAllowedForPreviouslyCertifiedExpendituresException : ApplicationU
         i18nKey = "$UPDATE_PROJECT_PARTNER_CONTROL_REPORT_EV_ERROR_KEY_PREFIX.unpark.not.allowed"
     )
 )
+
+class UnParkNotAllowedForPreviouslyReincludedExpendituresException(reportId: Int, invalidIds: Iterable<Long>) : ApplicationUnprocessableException(
+    code = "$UPDATE_PROJECT_PARTNER_CONTROL_REPORT_EV_ERROR_CODE_PREFIX-004",
+    i18nMessage = I18nMessage(
+        i18nKey = "$UPDATE_PROJECT_PARTNER_CONTROL_REPORT_EV_ERROR_KEY_PREFIX.unpark.reincluded.not.allowed",
+        i18nArguments = mapOf("invalidIds" to invalidIds.joinToString { "R${reportId}.${it}" })
+    )
+)

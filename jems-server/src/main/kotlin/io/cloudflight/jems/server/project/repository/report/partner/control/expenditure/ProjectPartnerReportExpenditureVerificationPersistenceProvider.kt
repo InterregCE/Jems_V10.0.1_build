@@ -33,6 +33,17 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProvider(
         )
     }
 
+    @Transactional(readOnly = true)
+    override fun getParkedExpenditureIds(partnerId: Long, reportId: Long): List<Long> {
+        val controlReportExpenditureVerificationIds = reportExpenditureRepository.findTop150ByPartnerReportIdAndPartnerReportPartnerIdOrderById(
+            partnerId = partnerId,
+            reportId = reportId,
+        ).mapTo(HashSet()) { it.id }
+
+        return reportExpenditureParkedRepository.findAllByParkedFromExpenditureIdIn(controlReportExpenditureVerificationIds)
+            .map { it.parkedFromExpenditureId }
+    }
+
     @Transactional
     override fun updatePartnerControlReportExpenditureVerification(
         partnerId: Long,

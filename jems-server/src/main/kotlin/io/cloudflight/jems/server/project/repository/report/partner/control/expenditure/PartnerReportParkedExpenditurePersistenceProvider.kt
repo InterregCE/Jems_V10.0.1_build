@@ -20,6 +20,10 @@ class PartnerReportParkedExpenditurePersistenceProvider(
 ) : PartnerReportParkedExpenditurePersistence {
 
     @Transactional(readOnly = true)
+    override fun getParkedExpenditureIds(reportId: Long) =
+        reportParkedExpenditureRepository.getAvailableParkedExpenditureIdsFromPartnerReport(reportId)
+
+    @Transactional(readOnly = true)
     override fun getParkedExpendituresByIdForPartner(
         partnerId: Long,
         onlyAllowedStatusOfOrigin: ReportStatus,

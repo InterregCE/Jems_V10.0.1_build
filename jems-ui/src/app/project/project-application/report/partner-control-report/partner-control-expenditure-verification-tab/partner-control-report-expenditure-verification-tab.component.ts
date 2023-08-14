@@ -175,10 +175,10 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
     }
   }
 
-  resetForm(partnerReportExpenditures: ProjectPartnerControlReportExpenditureVerificationDTO[], controlReport: ProjectPartnerControlReportDTO): void {
+  resetForm(partnerReportExpenditures: ProjectPartnerControlReportExpenditureVerificationDTO[], controlReport: ProjectPartnerControlReportDTO, unparkable: number[]): void {
     this.availableCurrenciesPerRow = [];
     this.items.clear();
-    partnerReportExpenditures.forEach((partnerReportExpenditure, expenditureIndex) => this.addExpenditure(partnerReportExpenditure, expenditureIndex));
+    partnerReportExpenditures.forEach((partnerReportExpenditure, expenditureIndex) => this.addExpenditure(partnerReportExpenditure, expenditureIndex, unparkable.includes(partnerReportExpenditure.id)));
     this.tableData = [...this.items.controls];
     this.formService.setEditable(this.isFormEditable);
 
@@ -222,6 +222,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
       this.pageStore.costCategories$,
       this.pageStore.investmentsSummary$,
       this.pageStore.contractIDs$,
+      this.pageStore.unparkable$,
       this.reportCosts$,
       this.permissionService.hasPermission(PermissionsEnum.ProjectReportingView),
       this.partnerReportPageStore.userCanViewGdpr$,
@@ -229,12 +230,13 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
       this.partnerReportDetailPageStore.partnerId$,
       this.reportControlStore.partnerControlReport$
     ]).pipe(
-      map(([typologyOfErrors, expendituresCosts, costCategories, investmentsSummary, contractIDs, reportCosts, isMonitorUser, isGdprCompliant, projectId, partnerId, controlReport]: any) => ({
+      map(([typologyOfErrors, expendituresCosts, costCategories, investmentsSummary, contractIDs, unparkable, reportCosts, isMonitorUser, isGdprCompliant, projectId, partnerId, controlReport]: any) => ({
           typologyOfErrors,
           expendituresCosts,
           costCategories,
           investmentsSummary,
           contractIDs,
+          unparkable,
           isMonitorUser,
           isGdprCompliant,
           projectId,
@@ -243,7 +245,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
           controlReport
           })
       ),
-      tap(data => this.resetForm(data.expendituresCosts, data.controlReport)),
+      tap(data => this.resetForm(data.expendituresCosts, data.controlReport, data.unparkable)),
       tap(data => this.contractIDs = data.contractIDs),
       tap(data => this.investmentsSummary = data.investmentsSummary),
     );
@@ -366,7 +368,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
     return reportExpenditureCost.lumpSumId ? 'lumpSum' : 'unitCost';
   }
 
-  private addExpenditure(reportExpenditureControl: ProjectPartnerControlReportExpenditureVerificationDTO, expenditureIndex: number): void {
+  private addExpenditure(reportExpenditureControl: ProjectPartnerControlReportExpenditureVerificationDTO, expenditureIndex: number, unparkable: boolean): void {
     const costOption = this.getUnitCostOrLumpSumObject(reportExpenditureControl);
     this.availableCurrenciesPerRow.push(this.getAvailableCurrenciesByType(this.getUnitCostType(reportExpenditureControl), costOption));
     this.items.push(this.formBuilder.group(
@@ -392,6 +394,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
         typologyOfErrorId: this.formBuilder.control(reportExpenditureControl.typologyOfErrorId || null),
         parked: this.formBuilder.control(reportExpenditureControl.parked),
         parkedOn: this.formBuilder.control(reportExpenditureControl.parkedOn != null ? reportExpenditureControl.parkedOn : null),
+        unparkable: this.formBuilder.control(unparkable || !reportExpenditureControl.parked),
         verificationComment: this.formBuilder.control(reportExpenditureControl.verificationComment, [Validators.maxLength(1000)]),
       })
     );
@@ -409,8 +412,12 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
     return reportExpenditureControl.parked ? 0 : reportExpenditureControl.deductedAmount || reportExpenditureControl.declaredAmountAfterSubmission - this.getCertifiedAmount(reportExpenditureControl);
   }
 
-  isParkedBeforeReopen(parkedOn: Date, lastControlReopenCertified: Date) {
+  private isParkedBeforeReopen(parkedOn: Date, lastControlReopenCertified: Date) {
       return parkedOn ? parkedOn < lastControlReopenCertified : false;
+  }
+
+  unparkLocked(parkedOn: Date, lastControlReopenCertified: Date, unparkable: Boolean) {
+      return this.isParkedBeforeReopen(parkedOn, lastControlReopenCertified) || !unparkable;
   }
 
   private formToReportExpenditures(): ProjectPartnerControlReportExpenditureVerificationUpdateDTO[] {

@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.expenditu
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerificationUpdate
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.getProjectPartnerReportExpenditureVerification.GetProjectPartnerControlReportExpenditureVerificationInteractor
+import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.getProjectPartnerReportParkedExpenditureIds.GetProjectPartnerControlReportParkedExpendituresInteractor
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.updateProjectPartnerReportExpenditureVerification.UpdateProjectPartnerControlReportExpenditureVerificationInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -210,6 +211,9 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
     private lateinit var getReportExpenditureVerification: GetProjectPartnerControlReportExpenditureVerificationInteractor
 
     @MockK
+    private lateinit var getControlReportParkedIds: GetProjectPartnerControlReportParkedExpendituresInteractor
+
+    @MockK
     private lateinit var updateReportExpenditureVerification: UpdateProjectPartnerControlReportExpenditureVerificationInteractor
 
     @InjectMockKs
@@ -244,5 +248,24 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
         ).containsExactly(reportExpenditureVerificationDtoUpdated)
 
         Assertions.assertThat(slotData.captured).containsExactly(toUpdate)
+    }
+
+    @Test
+    fun getParkedExpenditureIds() {
+        val reportParkedIdsVerification = listOf(1L, 3L, 4L, 5L, 8L)
+
+        every {
+            getControlReportParkedIds.getParkedExpenditureIds(
+                partnerId = PARTNER_ID,
+                reportId = 17L
+            )
+        } returns reportParkedIdsVerification
+
+        Assertions.assertThat(
+            controller.getParkedExpenditureIds(
+                partnerId = PARTNER_ID,
+                reportId = 17L
+            )
+        ).isEqualTo(reportParkedIdsVerification)
     }
 }

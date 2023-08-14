@@ -17,7 +17,7 @@ import {
 } from '@cat/api';
 
 import {PartnerReportDetailPageStore} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
-import {filter, map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
+import {filter, map, shareReplay, startWith, switchMap, take, tap} from 'rxjs/operators';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {AllowedBudgetCategories} from '@project/model/allowed-budget-category';
 import {BudgetOptions} from '@project/model/budget/budget-options';
@@ -49,6 +49,7 @@ export class PartnerControlReportFileExpenditureVerificationStore {
   reportUnitCosts$: Observable<ProjectPartnerReportUnitCostDTO[]>;
   reportExpenditureControl$: Observable<ProjectPartnerControlReportExpenditureVerificationDTO[]>;
   typologyOfErrors$: Observable<TypologyErrorsDTO[]>;
+  unparkable$: Observable<number[]>;
   private expenditureControlUpdated$ = new Subject<ProjectPartnerControlReportExpenditureVerificationDTO[]>();
 
   constructor(private partnerReportExpenditureCostsService: ProjectPartnerReportExpenditureCostsService,
@@ -74,6 +75,7 @@ export class PartnerControlReportFileExpenditureVerificationStore {
     this.partnerId$ = this.partnerReportPageStore.partnerId$;
     this.reportLumpSums$ = this.reportLumpSums();
     this.reportUnitCosts$ = this.reportUnitCosts();
+    this.unparkable$ = this.unparkable();
   }
 
   updateExpendituresControl(expendituresControl: ProjectPartnerControlReportExpenditureVerificationUpdateDTO[]): Observable<ProjectPartnerControlReportExpenditureVerificationDTO[]> {
@@ -205,5 +207,20 @@ export class PartnerControlReportFileExpenditureVerificationStore {
     );
 
     return merge(initialExpenditureControl$, this.expenditureControlUpdated$);
+  }
+
+  private unparkable(): Observable<number[]> {
+    return combineLatest([
+      this.partnerReportDetailPageStore.partnerId$.pipe(map(Number)),
+      this.partnerReportDetailPageStore.partnerReportId$.pipe(filter(Boolean), map(Number)),
+      this.reportExpenditureControl$
+    ]).pipe(
+      take(1),
+      switchMap(([partnerId, reportId, reportExpenditureControl]) =>
+        this.projectPartnerReportExpenditureVerificationService.getParkedExpenditureIds(partnerId, reportId).pipe(
+          map(it => it.concat(reportExpenditureControl.filter(value => !value.parked).map(value => value.id)))
+        ),
+      )
+    );
   }
 }

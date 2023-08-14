@@ -9,6 +9,8 @@ interface ProjectPartnerReportExpenditureVerificationPersistence {
 
     fun getPartnerControlReportExpenditureVerification(partnerId: Long, reportId: Long): List<ProjectPartnerReportExpenditureVerification>
 
+    fun getParkedExpenditureIds(partnerId: Long, reportId: Long) : List<Long>
+
     fun updatePartnerControlReportExpenditureVerification(
         partnerId: Long,
         reportId: Long,
