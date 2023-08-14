@@ -41,5 +41,5 @@ class ProjectReportVerificationExpenditureController(
         reportId: Long,
         riskBasedData: ProjectReportVerificationRiskBasedDTO
     ): ProjectReportVerificationRiskBasedDTO =
-        updateProjectReportVerificationExpenditure.updateExpenditureVerificationRiskBased(projectId, reportId, riskBasedData.toModel()).toDto()
+        updateProjectReportVerificationExpenditure.updateExpenditureVerificationRiskBased(reportId, riskBasedData.toModel()).toDto()
 }

@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.service.report.project.base.finalizeV
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.notification.handler.ProjectReportStatusChanged
-import io.cloudflight.jems.server.project.authorization.CanFinalizeProjectReportVerification
+import io.cloudflight.jems.server.project.authorization.CanFinalizeReportVerification
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancingColumn
@@ -30,10 +30,10 @@ class FinalizeVerificationProjectReport(
 ) : FinalizeVerificationProjectReportInteractor {
 
     @Transactional
-    @CanFinalizeProjectReportVerification
+    @CanFinalizeReportVerification
     @ExceptionWrapper(FinalizeVerificationProjectReportException::class)
     override fun finalizeVerification(projectId: Long, reportId: Long): ProjectReportStatus {
-        val report = reportPersistence.getReportById(projectId = projectId, reportId = reportId)
+        val report = reportPersistence.getReportByIdUnSecured(reportId = reportId)
         validateReportIsInVerification(report)
         val parkedExpenditures = expenditureVerificationPersistence.getParkedProjectReportExpenditureVerification(reportId)
 
@@ -44,14 +44,14 @@ class FinalizeVerificationProjectReport(
         )
 
         projectReportFinancialOverviewPersistence.storeOverviewPerFund(reportId, toStore = financialData)
-        projectReportCertificateCoFinancingPersistence.updateAfterVerificationValues(projectId, reportId, financialData.sumUp().totalLineToColumn())
+        projectReportCertificateCoFinancingPersistence.updateAfterVerificationValues(report.projectId, reportId, financialData.sumUp().totalLineToColumn())
 
-        return reportPersistence.finalizeVerificationOnReportById(projectId = projectId, reportId = reportId).also {
+        return reportPersistence.finalizeVerificationOnReportById(projectId = report.projectId, reportId = reportId).also {
             auditPublisher.publishEvent(ProjectReportStatusChanged(this, it))
             auditPublisher.publishEvent(
                 projectReportFinalizedVerification(
                     context = this,
-                    projectId = projectId,
+                    projectId = report.projectId,
                     report = it,
                     parkedExpenditures
                 )

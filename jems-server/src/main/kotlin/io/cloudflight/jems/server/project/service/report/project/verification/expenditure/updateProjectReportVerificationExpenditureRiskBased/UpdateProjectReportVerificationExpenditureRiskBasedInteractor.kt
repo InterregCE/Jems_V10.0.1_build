@@ -4,8 +4,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.verificat
 
 interface UpdateProjectReportVerificationExpenditureRiskBasedInteractor {
     fun updateExpenditureVerificationRiskBased(
-        projectId: Long,
-        projectReportId: Long,
-        riskBasedData: ProjectReportVerificationRiskBased
+        reportId: Long,
+        riskBasedData: ProjectReportVerificationRiskBased,
     ): ProjectReportVerificationRiskBased
 }

@@ -69,6 +69,7 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
             val report = mockk<ProjectReportModel>()
             every { report.id } returns 52L
             every { report.status } returns status
+            every { report.projectId } returns PROJECT_ID
             return report
         }
 
@@ -276,7 +277,7 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
         val reportId = 52L
         val report = report(InVerification)
 
-        every { reportPersistence.getReportById(PROJECT_ID, reportId) } returns report
+        every { reportPersistence.getReportByIdUnSecured(reportId) } returns report
         every { expenditureVerificationPersistence.getParkedProjectReportExpenditureVerification(reportId) } returns listOf(
             aggregatedExpenditures
         )
@@ -320,7 +321,7 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
         val reportId = 52L
         val report = report(reportStatus)
 
-        every { reportPersistence.getReportById(PROJECT_ID, reportId) } returns report
+        every { reportPersistence.getReportByIdUnSecured(reportId) } returns report
         assertThrows<ReportVerificationNotStartedException> { interactor.finalizeVerification(PROJECT_ID, reportId) }
 
         verify(exactly = 0) { reportPersistence.finalizeVerificationOnReportById(any(), any()) }

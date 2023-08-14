@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.service.report.project.verification.updateProjectExpenditureVerification
+package io.cloudflight.jems.server.project.service.report.project.verification.expenditure.updateProjectReportVerificationExpenditure
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
@@ -15,18 +15,23 @@ import io.cloudflight.jems.server.project.service.report.model.partner.financial
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.unitCost.ExpenditureUnitCostBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurement
+import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
+import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.model.project.verification.expenditure.ProjectPartnerReportExpenditureItem
 import io.cloudflight.jems.server.project.service.report.model.project.verification.expenditure.ProjectReportVerificationExpenditureLine
 import io.cloudflight.jems.server.project.service.report.model.project.verification.expenditure.ProjectReportVerificationExpenditureLineUpdate
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.PartnerReportParkedExpenditurePersistence
+import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.verification.expenditure.ProjectReportVerificationExpenditurePersistence
-import io.cloudflight.jems.server.project.service.report.project.verification.expenditure.updateProjectReportVerificationExpenditure.UpdateProjectReportVerificationExpenditure
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
@@ -206,6 +211,9 @@ class UpdateProjectReportVerificationExpenditureTest : UnitTest() {
     }
 
     @MockK
+    private lateinit var reportPersistence: ProjectReportPersistence
+
+    @MockK
     lateinit var projectReportExpenditureVerificationPersistence: ProjectReportVerificationExpenditurePersistence
 
     @MockK
@@ -220,8 +228,12 @@ class UpdateProjectReportVerificationExpenditureTest : UnitTest() {
     @InjectMockKs
     lateinit var updateProjectReportVerificationExpenditure: UpdateProjectReportVerificationExpenditure
 
-    @Test
-    fun updateExpenditureVerification() {
+    @ParameterizedTest(name = "updateExpenditureVerification - {0}")
+    @EnumSource(value = ProjectReportStatus::class, names = ["InVerification"])
+    fun updateExpenditureVerification(status: ProjectReportStatus) {
+        val report = mockk<ProjectReportModel>()
+        every { report.status } returns status
+        every { reportPersistence.getReportByIdUnSecured(PROJECT_REPORT_ID) } returns report
 
         every {
             projectReportExpenditureVerificationPersistence.getProjectReportExpenditureVerification(
@@ -249,8 +261,27 @@ class UpdateProjectReportVerificationExpenditureTest : UnitTest() {
         )
     }
 
+    @ParameterizedTest(name = "updateExpenditureVerification - wrong status {0}")
+    @EnumSource(value = ProjectReportStatus::class, names = ["InVerification"], mode = EnumSource.Mode.EXCLUDE)
+    fun `updateExpenditureVerification - wrong status`(status: ProjectReportStatus) {
+        val report = mockk<ProjectReportModel>()
+        every { report.status } returns status
+        every { reportPersistence.getReportByIdUnSecured(PROJECT_REPORT_ID) } returns report
+
+        assertThrows<VerificationNotOpen> {
+            updateProjectReportVerificationExpenditure.updateExpenditureVerification(
+                PROJECT_REPORT_ID,
+                expendituresToUpdate("NEW COMMENT VERIFICATION"),
+            )
+        }
+    }
+
     @Test
     fun `should throw AppInputValidationException when verification comment length is not valid`() {
+        val report = mockk<ProjectReportModel>()
+        every { report.status } returns ProjectReportStatus.InVerification
+        every { reportPersistence.getReportByIdUnSecured(PROJECT_REPORT_ID) } returns report
+
         every {
             projectReportExpenditureVerificationPersistence.getProjectReportExpenditureVerification(
                 PROJECT_REPORT_ID

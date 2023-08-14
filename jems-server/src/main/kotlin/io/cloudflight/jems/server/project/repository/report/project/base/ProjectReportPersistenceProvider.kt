@@ -75,6 +75,10 @@ class ProjectReportPersistenceProvider(
     override fun getReportById(projectId: Long, reportId: Long): ProjectReportModel =
         projectReportRepository.getByIdAndProjectId(reportId, projectId = projectId).toModel()
 
+    @Transactional(readOnly = true)
+    override fun getReportByIdUnSecured(reportId: Long): ProjectReportModel =
+        projectReportRepository.getById(reportId).toModel()
+
     @Transactional
     override fun updateReport(
         projectId: Long,
@@ -201,10 +205,6 @@ class ProjectReportPersistenceProvider(
 
         return OrderSpecifier(if (orderBy.isAscending) Order.ASC else Order.DESC, dfg)
     }
-
-    @Transactional(readOnly = true)
-    override fun getProjectIdForProjectReportId(projectReportId: Long) =
-        projectReportRepository.getById(projectReportId).projectId
 
 }
 

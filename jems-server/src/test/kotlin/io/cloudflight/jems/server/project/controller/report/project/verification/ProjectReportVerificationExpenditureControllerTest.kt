@@ -450,7 +450,6 @@ class ProjectReportVerificationExpenditureControllerTest: UnitTest() {
     fun updateProjectReportExpenditureVerificationRiskBasedTest() {
         every {
             updateExpenditureVerificationRiskBasedInteractor.updateExpenditureVerificationRiskBased(
-                PROJECT_ID,
                 PROJECT_REPORT_ID,
                 riskBasedData
             )

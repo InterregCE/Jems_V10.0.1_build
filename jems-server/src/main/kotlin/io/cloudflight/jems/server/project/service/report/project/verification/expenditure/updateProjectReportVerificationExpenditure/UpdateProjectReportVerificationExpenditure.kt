@@ -2,11 +2,12 @@ package io.cloudflight.jems.server.project.service.report.project.verification.e
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
-import io.cloudflight.jems.server.project.authorization.CanEditReportVerificationPrivilegedByReportId
+import io.cloudflight.jems.server.project.authorization.CanEditReportVerificationExpenditure
 import io.cloudflight.jems.server.project.service.report.model.partner.control.expenditure.ParkExpenditureData
 import io.cloudflight.jems.server.project.service.report.model.project.verification.expenditure.ProjectReportVerificationExpenditureLine
 import io.cloudflight.jems.server.project.service.report.model.project.verification.expenditure.ProjectReportVerificationExpenditureLineUpdate
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.PartnerReportParkedExpenditurePersistence
+import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.verification.expenditure.ProjectReportVerificationExpenditurePersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -14,32 +15,36 @@ import java.time.ZonedDateTime
 
 @Service
 class UpdateProjectReportVerificationExpenditure(
+    private val reportPersistence: ProjectReportPersistence,
     private val projectReportExpenditureVerificationPersistence: ProjectReportVerificationExpenditurePersistence,
     private val partnerReportParkedExpenditurePersistence: PartnerReportParkedExpenditurePersistence,
     private val generalValidator: GeneralValidatorService
 ): UpdateProjectReportVerificationExpenditureInteractor {
 
-    @CanEditReportVerificationPrivilegedByReportId
+    @CanEditReportVerificationExpenditure
     @Transactional
     @ExceptionWrapper(UpdateProjectReportVerificationExpenditureException::class)
     override fun updateExpenditureVerification(
-        projectReportId: Long,
-        expenditureVerificationUpdate: List<ProjectReportVerificationExpenditureLineUpdate>
+        reportId: Long,
+        expenditureVerificationUpdate: List<ProjectReportVerificationExpenditureLineUpdate>,
     ): List<ProjectReportVerificationExpenditureLine> {
+        val report = reportPersistence.getReportByIdUnSecured(reportId)
+        if (report.status.verificationNotStartedYet() || report.status.isFinalized())
+            throw VerificationNotOpen()
 
         validateVerificationCommentLength(expenditureVerificationUpdate)
 
         val existingExpenditures = projectReportExpenditureVerificationPersistence
-            .getProjectReportExpenditureVerification(projectReportId)
+            .getProjectReportExpenditureVerification(reportId)
 
         val parkedOldIds = existingExpenditures.getParkedIds()
         val unparkedOldIds = existingExpenditures.getNotParkedIds()
 
         return projectReportExpenditureVerificationPersistence.updateProjectReportExpenditureVerification(
-            projectReportId = projectReportId, expenditureVerificationUpdate
+            projectReportId = reportId, expenditureVerificationUpdate
         ).also {
             updateParkedItems(
-                projectReportId = projectReportId,
+                projectReportId = reportId,
                 parkedOldIds = parkedOldIds,
                 unparkedOldIds = unparkedOldIds,
                 newVerifications = it

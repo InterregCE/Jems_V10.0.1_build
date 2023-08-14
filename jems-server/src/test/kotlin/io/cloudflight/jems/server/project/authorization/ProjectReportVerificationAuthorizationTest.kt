@@ -3,13 +3,12 @@ package io.cloudflight.jems.server.project.authorization
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.model.CurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.project.service.ProjectPersistence
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
+import io.cloudflight.jems.server.project.service.projectuser.UserProjectCollaboratorPersistence
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
+import io.cloudflight.jems.server.user.service.model.assignment.CollaboratorAssignedToProject
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -17,8 +16,9 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
+import org.junit.jupiter.params.provider.EnumSource
 import org.junit.jupiter.params.provider.ValueSource
 
 internal class ProjectReportVerificationAuthorizationTest: UnitTest() {
@@ -27,153 +27,132 @@ internal class ProjectReportVerificationAuthorizationTest: UnitTest() {
         private const val REPORT_ID = 80L
         private const val PROJECT_ID = 90L
 
-        private fun projectApplicantAndStatus(viewIds: Set<Long> = setOf(), editIds: Set<Long> = setOf()): ProjectApplicantAndStatus {
-            return ProjectApplicantAndStatus(
-                PROJECT_ID,
-                applicantId = 2698L,
-                projectStatus = ApplicationStatus.CONTRACTED,
-                collaboratorManageIds = emptySet(),
-                collaboratorEditIds = editIds,
-                collaboratorViewIds = viewIds,
-            )
+        private fun report(status: ProjectReportStatus?, projectId: Long): ProjectReportModel {
+            val report = mockk<ProjectReportModel>()
+            if (status != null)
+                every { report.status } returns status
+            every { report.projectId } returns projectId
+            return report
         }
+        private fun collaborator(userId: Long): CollaboratorAssignedToProject {
+            val collaborator = mockk<CollaboratorAssignedToProject>()
+            every { collaborator.userId } returns userId
+            return collaborator
+        }
+
     }
 
-    @MockK
-    private lateinit var securityService: SecurityService
+    @MockK private lateinit var projectReportPersistence: ProjectReportPersistence
+    @MockK private lateinit var userProjectCollaboratorPersistence: UserProjectCollaboratorPersistence
+    @MockK private lateinit var securityService: SecurityService
 
-    @MockK
-    private lateinit var projectPersistence: ProjectPersistence
+    @MockK private lateinit var currentUser: CurrentUser
 
-    @MockK
-    private lateinit var projectReportPersistence: ProjectReportPersistence
-
-    @MockK
-    private lateinit var authorizationUtilService: AuthorizationUtilService
-
-    @MockK
-    private lateinit var currentUser: CurrentUser
-
-    @InjectMockKs
-    private lateinit var reportVerificationAuthorization: ProjectReportVerificationAuthorization
+    @InjectMockKs private lateinit var authorization: ProjectReportVerificationAuthorization
 
     @BeforeEach
     fun resetMocks() {
-        clearMocks(securityService, projectPersistence, projectReportPersistence, authorizationUtilService, currentUser)
+        clearMocks(projectReportPersistence, userProjectCollaboratorPersistence, securityService, currentUser)
     }
 
-    @ParameterizedTest(name = "can monitor user access overview with privilege {0}")
+    @ParameterizedTest(name = "monitor user with-without privilege can access overview {0}")
     @ValueSource(booleans = [true, false])
-    fun `monitor user with privilege can access overview`(hasPrivilege: Boolean) {
+    fun `monitor user with-without privilege can access overview`(hasPrivilege: Boolean) {
         every { securityService.currentUser } returns currentUser
-        every { securityService.getUserIdOrThrow() } returns 99L
-        every { currentUser.user } returns mockk()
+        every { securityService.getUserIdOrThrow() } returns 70L + if (hasPrivilege) 0 else 1
         every { currentUser.user.assignedProjects } returns setOf(PROJECT_ID)
         every { currentUser.hasPermission(UserRolePermission.ProjectReportingVerificationProjectView) } returns hasPrivilege
 
-        val projectReport = mockk<ProjectReportModel> {
-            every { status } returns ProjectReportStatus.InVerification
-        }
-        every { projectReportPersistence.getReportById(PROJECT_ID, REPORT_ID) } returns projectReport
-        every { projectPersistence.getApplicantAndStatusById(PROJECT_ID) } returns projectApplicantAndStatus()
-        every { authorizationUtilService.userIsPartnerCollaboratorForProject(99L, PROJECT_ID)} returns false
-        assertThat(reportVerificationAuthorization.canViewReportVerificationOverview(PROJECT_ID, REPORT_ID)).isEqualTo(hasPrivilege)
+        every { projectReportPersistence.getReportByIdUnSecured(REPORT_ID) } returns report(null, PROJECT_ID)
+        every { userProjectCollaboratorPersistence.getUserIdsForProject(PROJECT_ID) } returns emptyList()
+        assertThat(authorization.canViewReportVerificationFinance(REPORT_ID)).isEqualTo(hasPrivilege)
     }
 
-    @ParameterizedTest(name = "can project collaborator user access overview - is partner collaborator {0}")
-    @ValueSource(booleans = [true, false])
-    fun `project collaborator user can see overview`(isPartnerCollaborator: Boolean) {
+    @ParameterizedTest(name = "creator user can access when finalized {0}")
+    @EnumSource(value = ProjectReportStatus::class, names = ["Finalized"])
+    fun `creator user can access when finalized`(status: ProjectReportStatus) {
+        val userId = 80L + status.ordinal
         every { securityService.currentUser } returns currentUser
-        every { securityService.getUserIdOrThrow() } returns 99L
-        every { currentUser.user } returns mockk()
-        every { currentUser.user.assignedProjects } returns setOf()
+        every { securityService.getUserIdOrThrow() } returns userId
         every { currentUser.hasPermission(UserRolePermission.ProjectReportingVerificationProjectView) } returns false
 
-        val projectReport = mockk<ProjectReportModel> {
-            every { status } returns ProjectReportStatus.Finalized
-        }
-        every { projectReportPersistence.getReportById(PROJECT_ID, REPORT_ID) } returns projectReport
-        every { projectPersistence.getApplicantAndStatusById(PROJECT_ID) } returns projectApplicantAndStatus(viewIds = setOf(99L))
-        every { authorizationUtilService.userIsPartnerCollaboratorForProject(99L, PROJECT_ID)} returns isPartnerCollaborator
-        assertThat(reportVerificationAuthorization.canViewReportVerificationOverview(PROJECT_ID, REPORT_ID)).isNotEqualTo(isPartnerCollaborator)
+        every { projectReportPersistence.getReportByIdUnSecured(REPORT_ID) } returns report(status, PROJECT_ID)
+        every { userProjectCollaboratorPersistence.getUserIdsForProject(PROJECT_ID) } returns listOf(collaborator(userId))
+        assertThat(authorization.canViewReportVerificationFinance(REPORT_ID)).isTrue()
     }
 
-    @ParameterizedTest(name = "can monitor user access communication {0}")
-    @ValueSource(booleans = [true, false])
-    fun `monitor user with privilege can access communication`(hasPrivilege: Boolean) {
+    @ParameterizedTest(name = "creator user can-not access when not-finalized {0}")
+    @EnumSource(value = ProjectReportStatus::class, names = ["Finalized"], mode = EnumSource.Mode.EXCLUDE)
+    fun `creator user can-not access when not-finalized`(status: ProjectReportStatus) {
+        val userId = 90L + status.ordinal
         every { securityService.currentUser } returns currentUser
-        every { securityService.getUserIdOrThrow() } returns 99L
-        every { currentUser.user } returns mockk()
+        every { securityService.getUserIdOrThrow() } returns userId
+        every { currentUser.user.assignedProjects } returns setOf(PROJECT_ID)
+        every { currentUser.hasPermission(UserRolePermission.ProjectReportingVerificationProjectView) } returns false
+
+        every { projectReportPersistence.getReportByIdUnSecured(REPORT_ID) } returns report(status, PROJECT_ID)
+        every { userProjectCollaboratorPersistence.getUserIdsForProject(PROJECT_ID) } returns listOf(collaborator(userId))
+        assertThat(authorization.canViewReportVerificationFinance(REPORT_ID)).isFalse()
+    }
+
+    @ParameterizedTest(name = "hasPermissionForProjectReportId {0}")
+    @ValueSource(booleans = [true, false])
+    fun hasPermissionForProjectReportId(hasPrivilege: Boolean) {
+        every { securityService.currentUser } returns currentUser
         every { currentUser.user.assignedProjects } returns setOf(PROJECT_ID)
         every { currentUser.hasPermission(UserRolePermission.ProjectReportingVerificationProjectView) } returns hasPrivilege
+        every { projectReportPersistence.getReportByIdUnSecured(REPORT_ID) } returns report(null, PROJECT_ID)
 
-        every { projectPersistence.getApplicantAndStatusById(PROJECT_ID) } returns projectApplicantAndStatus()
-        every { authorizationUtilService.userIsPartnerCollaboratorForProject(99L, PROJECT_ID)} returns false
-        assertThat(reportVerificationAuthorization.canViewReportVerificationCommunication(PROJECT_ID)).isEqualTo(hasPrivilege)
+        assertThat(authorization.hasPermissionForProjectReportId(UserRolePermission.ProjectReportingVerificationProjectView, REPORT_ID))
+            .isEqualTo(hasPrivilege)
     }
 
-    @ParameterizedTest(name = "can project collaborator user access communication - is partner collaborator {0}")
-    @ValueSource(booleans = [true, false])
-    fun `project collaborator user can access communication`(isPartnerCollaborator: Boolean) {
+    @ParameterizedTest(name = "canInteractWithVerificationDocuments - monitor {0} - {1}")
+    @CsvSource(value = [
+        "false,ProjectReportingVerificationProjectView,true",
+        "true,ProjectReportingVerificationProjectEdit,true",
+        "false,ProjectReportingVerificationProjectView,false",
+        "true,ProjectReportingVerificationProjectEdit,false",
+    ])
+    fun `canInteractWithVerificationDocuments - monitor`(isEdit: Boolean, perm: UserRolePermission, hasPrivilege: Boolean) {
+        val userId = 110L
         every { securityService.currentUser } returns currentUser
-        every { securityService.getUserIdOrThrow() } returns 99L
-        every { currentUser.user } returns mockk()
-        every { currentUser.user.assignedProjects } returns setOf()
-        every { currentUser.hasPermission(UserRolePermission.ProjectReportingVerificationProjectView) } returns false
-
-        every { projectPersistence.getApplicantAndStatusById(PROJECT_ID) } returns projectApplicantAndStatus(viewIds = setOf(99L))
-        every { authorizationUtilService.userIsPartnerCollaboratorForProject(99L, PROJECT_ID)} returns isPartnerCollaborator
-        assertThat(reportVerificationAuthorization.canViewReportVerificationCommunication(PROJECT_ID)).isNotEqualTo(isPartnerCollaborator)
-    }
-
-    @ParameterizedTest(name = "can monitor user access communication {0}")
-    @ValueSource(booleans = [true, false])
-    fun `monitor user with privilege can edit communication`(hasPrivilege: Boolean) {
-        every { securityService.currentUser } returns currentUser
-        every { securityService.getUserIdOrThrow() } returns 99L
-        every { currentUser.user } returns mockk()
+        every { securityService.getUserIdOrThrow() } returns userId
         every { currentUser.user.assignedProjects } returns setOf(PROJECT_ID)
-        every { currentUser.hasPermission(UserRolePermission.ProjectReportingVerificationProjectEdit) } returns hasPrivilege
+        every { currentUser.hasPermission(perm) } returns hasPrivilege
 
-        every { projectPersistence.getApplicantAndStatusById(PROJECT_ID) } returns projectApplicantAndStatus()
-        every { authorizationUtilService.userIsPartnerCollaboratorForProject(99L, PROJECT_ID)} returns false
-        assertThat(reportVerificationAuthorization.canEditReportVerificationCommunication(PROJECT_ID)).isEqualTo(hasPrivilege)
+        every { userProjectCollaboratorPersistence.getUserIdsForProject(PROJECT_ID) } returns emptyList()
+        assertThat(authorization.canInteractWithVerificationDocuments(PROJECT_ID, isEdit)).isEqualTo(hasPrivilege)
     }
 
-    @ParameterizedTest(name = "can project collaborator user access communication - is partner collaborator {0}")
+    @ParameterizedTest(name = "canInteractWithVerificationDocuments - creator {0}")
     @ValueSource(booleans = [true, false])
-    fun `project collaborator user can edit communication`(isPartnerCollaborator: Boolean) {
+    fun `canInteractWithVerificationDocuments - creator`(isEdit: Boolean) {
+        val userId = 120L
         every { securityService.currentUser } returns currentUser
-        every { securityService.getUserIdOrThrow() } returns 99L
-        every { currentUser.user } returns mockk()
-        every { currentUser.user.assignedProjects } returns setOf()
+        every { securityService.getUserIdOrThrow() } returns userId
+        every { currentUser.user.assignedProjects } returns emptySet()
+        every { currentUser.hasPermission(UserRolePermission.ProjectReportingVerificationProjectView) } returns false
         every { currentUser.hasPermission(UserRolePermission.ProjectReportingVerificationProjectEdit) } returns false
 
-        every { projectPersistence.getApplicantAndStatusById(PROJECT_ID) } returns projectApplicantAndStatus(editIds = setOf(99L))
-        every { authorizationUtilService.userIsPartnerCollaboratorForProject(99L, PROJECT_ID)} returns isPartnerCollaborator
-        assertThat(reportVerificationAuthorization.canEditReportVerificationCommunication(PROJECT_ID)).isNotEqualTo(isPartnerCollaborator)
+        every { projectReportPersistence.getReportByIdUnSecured(REPORT_ID) } returns report(null, PROJECT_ID)
+        every { userProjectCollaboratorPersistence.getUserIdsForProject(PROJECT_ID) } returns listOf(collaborator(userId))
+        assertThat(authorization.canInteractWithVerificationDocuments(PROJECT_ID, isEdit)).isTrue()
     }
 
-    @Test
-    fun `canViewReportVerificationPrivilegedByReportId`() {
+    @ParameterizedTest(name = "can-NOT-InteractWithVerificationDocuments {0}")
+    @ValueSource(booleans = [true, false])
+    fun `can-NOT-InteractWithVerificationDocuments`(isEdit: Boolean) {
+        val userId = 120L
         every { securityService.currentUser } returns currentUser
-        every { securityService.getUserIdOrThrow() } returns 99L
-        every { currentUser.user } returns mockk()
-        every { currentUser.user.assignedProjects } returns setOf(PROJECT_ID)
-        every { currentUser.hasPermission(UserRolePermission.ProjectReportingVerificationProjectView) } returns true
-        every { projectReportPersistence.getProjectIdForProjectReportId(REPORT_ID) } returns PROJECT_ID
-        assertThat(reportVerificationAuthorization.canViewReportVerificationPrivilegedByReportId(REPORT_ID)).isEqualTo(true)
-    }
+        every { securityService.getUserIdOrThrow() } returns userId
+        every { currentUser.user.assignedProjects } returns emptySet()
+        every { currentUser.hasPermission(UserRolePermission.ProjectReportingVerificationProjectView) } returns false
+        every { currentUser.hasPermission(UserRolePermission.ProjectReportingVerificationProjectEdit) } returns false
 
-    @Test
-    fun `canEditReportVerificationPrivilegedByReportId`() {
-        every { securityService.currentUser } returns currentUser
-        every { securityService.getUserIdOrThrow() } returns 99L
-        every { currentUser.user } returns mockk()
-        every { currentUser.user.assignedProjects } returns setOf(PROJECT_ID)
-        every { currentUser.hasPermission(UserRolePermission.ProjectReportingVerificationProjectEdit) } returns true
-        every { projectReportPersistence.getProjectIdForProjectReportId(REPORT_ID) } returns PROJECT_ID
-        assertThat(reportVerificationAuthorization.canEditReportVerificationPrivilegedByReportId(REPORT_ID)).isEqualTo(true)
+        every { projectReportPersistence.getReportByIdUnSecured(REPORT_ID) } returns report(null, PROJECT_ID)
+        every { userProjectCollaboratorPersistence.getUserIdsForProject(PROJECT_ID) } returns emptyList()
+        assertThat(authorization.canInteractWithVerificationDocuments(PROJECT_ID, isEdit)).isFalse()
     }
 
 }
