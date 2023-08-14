@@ -68,6 +68,9 @@ export class VerificationReportTotalEligiblePerSourcesComponent implements OnCha
 
   dataSource: MatTableDataSource<FinancingSourceBreakdownLine> = new MatTableDataSource([]);
 
+  shouldDisplayBorderBottom(index: number){
+    return !(index == this.dataSource.data.length - 1 || (this.dataSource.data[index].isSplit && this.dataSource.data[index + 1].isSplit));
+  }
 }
 
 interface FinancingSourceBreakdownLine extends FinancingSourceBreakdownLineDTO {

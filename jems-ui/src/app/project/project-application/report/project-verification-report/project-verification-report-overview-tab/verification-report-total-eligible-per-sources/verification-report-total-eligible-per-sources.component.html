@@ -103,7 +103,7 @@
     </ng-container>
 
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumns" [class.border]="!row.isSplit"></mat-row>
+    <mat-row *matRowDef="let i = index; columns: displayedColumns" [class.border-bottom]="shouldDisplayBorderBottom(i)"></mat-row>
     <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
 
 </mat-table>
