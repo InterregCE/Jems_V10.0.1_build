@@ -6,8 +6,8 @@
         <form [formGroup]="workPlanForm" jemsFormLayout>
             <ng-container *ngFor="let workPackage of workPackages.controls; let workPackageIndex = index " [formArrayName]="constants.WORK_PACKAGES.name">
                 <ng-container [formGroupName]="workPackageIndex">
-                    <mat-expansion-panel class="mb-3 mt-3 work-package-panel" [expanded]="false">
-                        <mat-expansion-panel-header>
+                    <mat-expansion-panel class="mb-3 mt-3 work-package-panel" [expanded]="getWorkPackageRowToggleStateAtIndex(workPackageIndex)">
+                        <mat-expansion-panel-header (click)="toggleWorkPackageRowAtIndex(workPackageIndex)">
                             <mat-panel-title>
                                 <span *ngIf="workPackageItem(workPackage, constants.WORK_PACKAGE_DEACTIVATED.name)">
                                     <mat-icon class="vertical-middle" matTooltip="{{ 'project.application.form.partner.table.status.inactive' | translate }}">do_not_disturb</mat-icon>

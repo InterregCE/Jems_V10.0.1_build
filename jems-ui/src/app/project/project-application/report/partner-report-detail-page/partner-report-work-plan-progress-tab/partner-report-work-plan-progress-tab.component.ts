@@ -47,6 +47,8 @@ export class PartnerReportWorkPlanProgressTabComponent {
     workPackages: this.formBuilder.array([])
   });
 
+  toggleStatesOfWorkPackages: boolean[] = [];
+
   constructor(private formBuilder: FormBuilder,
               private formService: FormService,
               private projectSidenavService: ProjectApplicationFormSidenavService,
@@ -262,5 +264,13 @@ export class PartnerReportWorkPlanProgressTabComponent {
         tap(() => this.formService.setSuccess('project.work.package.tab.activities.saved')),
         catchError(err => this.formService.setError(err))
       ).subscribe();
+  }
+
+  toggleWorkPackageRowAtIndex(index: number): void {
+      this.toggleStatesOfWorkPackages[index] = !this.toggleStatesOfWorkPackages[index];
+  }
+
+  getWorkPackageRowToggleStateAtIndex(index: number): boolean {
+      return this.toggleStatesOfWorkPackages[index];
   }
 }
