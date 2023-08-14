@@ -121,7 +121,7 @@ export class ProjectApplicationFilesTableComponent {
       case FileCategoryTypeEnum.APPLICATION:
       case FileCategoryTypeEnum.PARTNER:
       case FileCategoryTypeEnum.INVESTMENT:
-        return (canChangeApplicationFile || isOwner) && fileIsNotLocked && isInModifiableStatus;
+        return (canChangeApplicationFile || isOwner) && isInModifiableStatus;
       default:
         return false;
     }
