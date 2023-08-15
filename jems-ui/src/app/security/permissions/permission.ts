@@ -40,7 +40,9 @@ export class Permission {
     PermissionsEnum.PaymentsRetrieve,
     PermissionsEnum.PaymentsUpdate,
     PermissionsEnum.AdvancePaymentsRetrieve,
-    PermissionsEnum.AdvancePaymentsUpdate
+    PermissionsEnum.AdvancePaymentsUpdate,
+    PermissionsEnum.PaymentsToEcRetrieve,
+    PermissionsEnum.PaymentsToEcUpdate,
   ];
 
   public static readonly MONITORING_PERMISSIONS = [
@@ -528,6 +530,13 @@ export class Permission {
           hideTooltip: 'permission.advance.payments.hide.tooltip',
           viewTooltip: 'permission.advance.payments.view.tooltip',
           editTooltip: 'permission.advance.payments.edit.tooltip',
+        },
+        {
+          name: 'permission.payments.to.ec',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.PaymentsToEcRetrieve],
+          editPermissions: [PermissionsEnum.PaymentsToEcUpdate],
+          editTooltip: 'permission.payments.to.ec.edit.tooltip',
         },
       ],
     },

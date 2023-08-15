@@ -108,7 +108,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   Alert = Alert;
   ReportUtil = ReportUtil;
 
-  isExpenditureReIncluded:Map<number, boolean>;
+  isExpenditureReIncluded: Map<number, boolean>;
 
   constructor(public pageStore: PartnerReportExpendituresStore,
               protected changeDetectorRef: ChangeDetectorRef,
@@ -253,9 +253,9 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     control.get('pricePerUnit')?.disable();
     control.get('declaredAmount')?.enable();
     if(this.hasPartnerCurrencySetToEur())
-      control.get('currencyCode')?.disable();
+      {control.get('currencyCode')?.disable();}
     else
-      control.get('currencyCode')?.enable();
+      {control.get('currencyCode')?.enable();}
     control.get('currencyConversionRate')?.enable();
     control.get('declaredAmountInEur')?.enable();
     control.get('investmentId')?.enable();
@@ -294,8 +294,8 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
         control.get('currencyCode')?.disable();
       }
 
-      if (control.get("costCategory")?.value && this.isExpenditureReIncluded.get(control.get("id")?.value)) {
-        control.get("costOptions")?.disable();
+      if (control.get('costCategory')?.value && this.isExpenditureReIncluded.get(control.get('id')?.value)) {
+        control.get('costOptions')?.disable();
       }
     }
   }

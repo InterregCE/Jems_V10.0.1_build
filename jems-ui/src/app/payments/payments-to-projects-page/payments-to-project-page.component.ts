@@ -7,6 +7,7 @@ import {ColumnWidth} from '@common/components/table/model/column-width';
 import {PaymentsToProjectPageStore} from './payments-to-projects-page.store';
 import {map, startWith, tap} from 'rxjs/operators';
 import {FormBuilder} from '@angular/forms';
+import {PaymentsPageSidenavService} from '../payments-page-sidenav.service';
 
 @Component({
   selector: 'jems-payments-to-projects-page',
@@ -62,6 +63,7 @@ export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
     public paymentToProjectsStore: PaymentsToProjectPageStore,
     private formBuilder: FormBuilder,
     private programmeFundService: ProgrammeFundService,
+    private paymentsPageSidenav: PaymentsPageSidenavService
   ) {
   }
 

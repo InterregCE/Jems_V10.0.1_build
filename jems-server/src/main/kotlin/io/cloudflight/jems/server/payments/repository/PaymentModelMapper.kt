@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.payments.repository
 
 import io.cloudflight.jems.server.call.service.model.IdNamePair
-import io.cloudflight.jems.server.common.entity.toInstant
 import io.cloudflight.jems.server.payments.entity.AdvancePaymentEntity
 import io.cloudflight.jems.server.payments.entity.PaymentEntity
 import io.cloudflight.jems.server.payments.entity.PaymentPartnerEntity
@@ -34,8 +33,6 @@ import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.service.toOutputUser
 import org.springframework.data.domain.Page
 import java.math.BigDecimal
-import java.time.ZoneOffset.UTC
-import java.time.ZonedDateTime
 
 fun List<PaymentEntity>.toListModel(
     getProject: (Long, String?) -> ProjectFull,

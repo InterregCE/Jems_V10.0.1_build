@@ -9,6 +9,7 @@ import {AdvancePaymentsPageStore} from './advance-payments-page.store';
 import {Forms} from '@common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {PaymentsPageSidenavService} from '../payments-page-sidenav.service';
 
 @UntilDestroy()
 @Component({
@@ -48,7 +49,8 @@ export class AdvancePaymentsPageComponent implements OnInit, AfterViewInit {
   tableConfiguration: TableConfiguration;
 
   constructor(public advancePaymentsStore: AdvancePaymentsPageStore,
-              private dialog: MatDialog) { }
+              private dialog: MatDialog,
+              private paymentsPageSidenav: PaymentsPageSidenavService) { }
 
   ngOnInit(): void {
     this.userCanEdit$ = this.advancePaymentsStore.userCanEdit$;

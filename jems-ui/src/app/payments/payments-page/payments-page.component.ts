@@ -1,8 +1,9 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {PermissionService} from '../../security/permissions/permission.service';
-import {Observable} from 'rxjs';
+import {combineLatest, Observable} from 'rxjs';
 import {UserRoleDTO} from '@cat/api';
-import {MatTabChangeEvent} from '@angular/material/tabs';
+import {PaymentsPageSidenavService} from '../payments-page-sidenav.service';
+import {map, tap} from 'rxjs/operators';
 
 @Component({
   selector: 'jems-payments-page',
@@ -11,22 +12,35 @@ import {MatTabChangeEvent} from '@angular/material/tabs';
 })
 export class PaymentsPageComponent{
 
-  PermissionEnum = UserRoleDTO.PermissionsEnum;
-
   userHasAccessToAdvancePayments$: Observable<boolean>;
   userHasAccessToPaymentsToProjects$: Observable<boolean>;
-  static selectedTabIndex = 0;
 
-  constructor(private permissionService: PermissionService) {
+  constructor(private permissionService: PermissionService,
+              private paymentsPageSidenav: PaymentsPageSidenavService
+  ) {
     this.userHasAccessToAdvancePayments$ = this.permissionService.hasPermission(UserRoleDTO.PermissionsEnum.AdvancePaymentsRetrieve);
     this.userHasAccessToPaymentsToProjects$ = this.permissionService.hasPermission(UserRoleDTO.PermissionsEnum.PaymentsRetrieve);
+
+    combineLatest([
+      this.permissionService.hasPermission(UserRoleDTO.PermissionsEnum.PaymentsRetrieve),
+      this.permissionService.hasPermission(UserRoleDTO.PermissionsEnum.AdvancePaymentsRetrieve),
+      this.permissionService.hasPermission(UserRoleDTO.PermissionsEnum.PaymentsToEcRetrieve)
+    ]).pipe(
+      map(([paymentsToProjectRetrieve, advancePaymentsRetrieve, paymentsToEcRetrieve ]) => ({
+          paymentsToProjectRetrieve,
+          advancePaymentsRetrieve,
+          paymentsToEcRetrieve
+      })
+      ),
+      tap(data => this.redirectToAccessiblePaymentPage(data.paymentsToProjectRetrieve, data.advancePaymentsRetrieve, data.paymentsToEcRetrieve))
+    ).subscribe();
   }
 
-  setDefaultTabIndex(selectedIndex: MatTabChangeEvent) {
-    PaymentsPageComponent.selectedTabIndex = selectedIndex.index;
-  }
-
-  get selectedTabIndex() {
-    return PaymentsPageComponent.selectedTabIndex;
+  redirectToAccessiblePaymentPage(paymentToProjectRetrieve: boolean, advancePaymentRetrieve: boolean, paymentsToEcRetrieve: boolean) {
+    if (!paymentToProjectRetrieve && !advancePaymentRetrieve && paymentsToEcRetrieve) {
+      this.paymentsPageSidenav.goToPaymentsToEc();
+    } else if (!paymentToProjectRetrieve) {
+      this.paymentsPageSidenav.goToAdvancePayments();
+    } else {this.paymentsPageSidenav.goToPaymentsToProjects();}
   }
 }

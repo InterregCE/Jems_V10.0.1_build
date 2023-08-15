@@ -21,7 +21,7 @@ import {
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
 import {ReportUtil} from '@project/common/report-util';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
-import {PermissionService} from "../../../../security/permissions/permission.service";
+import {PermissionService} from '../../../../security/permissions/permission.service';
 
 @Injectable({providedIn: 'root'})
 export class PartnerReportDetailPageStore {

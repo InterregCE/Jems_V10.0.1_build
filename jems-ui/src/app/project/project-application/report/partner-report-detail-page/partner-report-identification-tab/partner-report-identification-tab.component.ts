@@ -15,7 +15,7 @@ import {
 import {catchError, filter, map, take, tap} from 'rxjs/operators';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {NumberService} from '@common/services/number.service';
-import {CallStore} from "../../../../../call/services/call-store.service";
+import {CallStore} from '../../../../../call/services/call-store.service';
 
 @Component({
   selector: 'jems-partner-report-identification-tab',

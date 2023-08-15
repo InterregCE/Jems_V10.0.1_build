@@ -4,8 +4,8 @@ import io.cloudflight.jems.api.common.dto.IdNamePairDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentDetailDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentSearchRequestDTO
-import io.cloudflight.jems.api.payments.dto.AdvancePaymentUpdateDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentSettlementDTO
+import io.cloudflight.jems.api.payments.dto.AdvancePaymentUpdateDTO
 import io.cloudflight.jems.api.payments.dto.PaymentDetailDTO
 import io.cloudflight.jems.api.payments.dto.PaymentPartnerDTO
 import io.cloudflight.jems.api.payments.dto.PaymentPartnerInstallmentDTO
@@ -17,8 +17,8 @@ import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.payments.model.advance.AdvancePayment
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSearchRequest
-import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentUpdate
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSettlement
+import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentUpdate
 import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
 import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
