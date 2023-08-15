@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository
 @Repository
 interface AccountingYearRepository : JpaRepository<AccountingYearEntity, Long> {
 
-    override fun findAll(): List<AccountingYearEntity>
+    fun findAllByOrderByYear(): List<AccountingYearEntity>
 
 }

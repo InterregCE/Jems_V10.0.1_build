@@ -4,8 +4,7 @@ import java.time.LocalDate
 
 data class AccountingYearDTO(
     val id: Long,
-    val name: String,
+    val year: Short,
     val startDate: LocalDate,
     val endDate: LocalDate
 )
-

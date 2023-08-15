@@ -7,10 +7,11 @@ import org.springframework.transaction.annotation.Transactional
 
 @Repository
 class AccountingYearPersistenceProvider(
-    private val repository: AccountingYearRepository
+    private val repository: AccountingYearRepository,
 ) : AccountingYearPersistence {
 
     @Transactional(readOnly = true)
     override fun findAll(): List<AccountingYear> =
-        repository.findAll().toModel()
+        repository.findAllByOrderByYear().toModel()
+
 }

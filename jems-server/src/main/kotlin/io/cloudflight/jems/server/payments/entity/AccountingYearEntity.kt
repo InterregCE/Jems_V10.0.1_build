@@ -11,7 +11,7 @@ class AccountingYearEntity(
     val id: Long,
 
     @field:NotNull
-    val name: String,
+    val year: Short,
 
     @field:NotNull
     val startDate: LocalDate,

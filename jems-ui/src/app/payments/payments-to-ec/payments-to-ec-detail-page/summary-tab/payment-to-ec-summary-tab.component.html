@@ -20,7 +20,8 @@
                 <mat-label>{{'payments.to.ec.detail.summary.tab.accounting.year.select.label' | translate}}</mat-label>
                 <mat-select formControlName="accountingYear" required>
                     <mat-option *ngFor="let accountingYear of data.accountingYears" [value]="accountingYear.id" role="option">
-                        <span>{{accountingYear.name}}: {{accountingYear.startDate | localeDate}} - {{accountingYear.endDate | localeDate}}</span>
+                        <span>{{ ('accounting.year.' + accountingYear.year) | translate }}:
+                            {{ accountingYear.startDate | localeDate }} - {{ accountingYear.endDate | localeDate }}</span>
                     </mat-option>
                 </mat-select>
             </mat-form-field>

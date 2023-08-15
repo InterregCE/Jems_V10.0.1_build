@@ -212,7 +212,7 @@ fun paymentApplicationToEcCreated(
             "Payment application to EC number ${paymentApplicationToEc.id} " +
                 "was created for Fund (${paymentApplicationToEc.paymentApplicationsToEcSummary.programmeFund.id}, " +
                 "${paymentApplicationToEc.paymentApplicationsToEcSummary.programmeFund.type}) " +
-                "for accounting year (${paymentApplicationToEc.paymentApplicationsToEcSummary.accountingYear.name}, ${
+                "for accounting year (${paymentApplicationToEc.paymentApplicationsToEcSummary.accountingYear.year}, ${
                     getFormattedDate(
                         paymentApplicationToEc.paymentApplicationsToEcSummary.accountingYear.startDate
                     )
@@ -231,7 +231,7 @@ fun paymentApplicationToEcDeleted(
             "Payment application to EC number ${paymentApplicationToEc.id} " +
                 "created for Fund (${paymentApplicationToEc.paymentApplicationsToEcSummary.programmeFund.id}, " +
                 "${paymentApplicationToEc.paymentApplicationsToEcSummary.programmeFund.type}) " +
-                "for accounting year (${paymentApplicationToEc.paymentApplicationsToEcSummary.accountingYear.name}, ${
+                "for accounting year (${paymentApplicationToEc.paymentApplicationsToEcSummary.accountingYear.year}, ${
                     getFormattedDate(
                         paymentApplicationToEc.paymentApplicationsToEcSummary.accountingYear.startDate
                     )
