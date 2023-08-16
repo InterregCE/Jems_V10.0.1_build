@@ -9,13 +9,17 @@ import {
   CertificateLumpSumBreakdownDTO,
   CertificateUnitCostBreakdownDTO,
   PerPartnerCostCategoryBreakdownDTO,
-  ProjectPartnerReportUnitCostDTO
+  ProjectPartnerReportUnitCostDTO,
+  ProjectReportDTO,
 } from '@cat/api';
 import {map} from 'rxjs/operators';
 import {
   ProjectReportFinancialOverviewStoreService
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-financial-overview-tab/project-report-financial-overview-store.service';
 import CategoryEnum = ProjectPartnerReportUnitCostDTO.CategoryEnum;
+import {
+  ProjectReportDetailPageStore
+} from '@project/project-application/report/project-report/project-report-detail-page/project-report-detail-page-store.service';
 
 @Component({
   selector: 'jems-project-report-financial-overview-tab',
@@ -35,10 +39,12 @@ export class ProjectReportFinancialOverviewTabComponent {
     allowedCostCategories: Map<CategoryEnum | 'LumpSum' | 'UnitCost', boolean>;
     funds: CallFundRateDTO[];
     perPartnerCostCategory: PerPartnerCostCategoryBreakdownDTO;
+    isVerified: boolean;
   }>;
 
   constructor(
     private financialOverviewStore: ProjectReportFinancialOverviewStoreService,
+    private projectReportDetailPageStore: ProjectReportDetailPageStore,
   ) {
     this.data$ = combineLatest([
       financialOverviewStore.perCoFinancing$,
@@ -48,9 +54,10 @@ export class ProjectReportFinancialOverviewTabComponent {
       financialOverviewStore.perInvestment$,
       financialOverviewStore.allowedCostCategories$,
       financialOverviewStore.callFunds$,
-      financialOverviewStore.perPartnerCostCategory$
+      financialOverviewStore.perPartnerCostCategory$,
+      projectReportDetailPageStore.reportStatus$,
     ]).pipe(
-      map(([perCoFinancing, perCostCategory, perLumpSum, perUnitCost, perInvestment, allowedCostCategories, funds, perPartnerCostCategory]: any) => ({
+      map(([perCoFinancing, perCostCategory, perLumpSum, perUnitCost, perInvestment, allowedCostCategories, funds, perPartnerCostCategory, status]: any) => ({
         perCoFinancing,
         perCostCategory,
         perLumpSum,
@@ -58,7 +65,8 @@ export class ProjectReportFinancialOverviewTabComponent {
         perInvestment,
         allowedCostCategories,
         funds,
-        perPartnerCostCategory
+        perPartnerCostCategory,
+        isVerified: status === ProjectReportDTO.StatusEnum.Finalized,
       })),
     );
   }
