@@ -181,7 +181,7 @@ export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
       ]
     });
 
-    this.tableConfiguration.routerLink = `/app/payments`;
+    this.tableConfiguration.routerLink = `/app/payments/paymentsToProjects`;
   }
 
   private transformFiltersToSearchDto(filters: any): PaymentSearchRequestDTO {

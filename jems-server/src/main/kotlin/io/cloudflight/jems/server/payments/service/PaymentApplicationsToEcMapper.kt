@@ -1,39 +1,39 @@
 package io.cloudflight.jems.server.payments.service
 
-import io.cloudflight.jems.api.payments.dto.PaymentApplicationsToEcDTO
-import io.cloudflight.jems.api.payments.dto.PaymentApplicationsToEcDetailDTO
-import io.cloudflight.jems.api.payments.dto.PaymentApplicationsToEcSummaryDTO
-import io.cloudflight.jems.api.payments.dto.PaymentApplicationsToEcUpdateDTO
-import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationsToEc
-import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationsToEcDetail
-import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationsToEcSummary
-import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationsToEcUpdate
+import io.cloudflight.jems.api.payments.dto.PaymentApplicationToEcDTO
+import io.cloudflight.jems.api.payments.dto.PaymentApplicationToEcDetailDTO
+import io.cloudflight.jems.api.payments.dto.PaymentApplicationToEcSummaryDTO
+import io.cloudflight.jems.api.payments.dto.PaymentApplicationToEcUpdateDTO
+import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEc
+import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
+import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummary
+import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcUpdate
 import org.mapstruct.Mapper
 import org.mapstruct.factory.Mappers
 import org.springframework.data.domain.Page
 
 private val mapper = Mappers.getMapper(PaymentApplicationsToEcMapper::class.java)
 
-fun Page<PaymentApplicationsToEc>.toDto() = map { it.toDto() }
-fun PaymentApplicationsToEc.toDto(): PaymentApplicationsToEcDTO = mapper.map(this)
-fun PaymentApplicationsToEcDTO.toModel(): PaymentApplicationsToEc = mapper.map(this)
-fun PaymentApplicationsToEcUpdateDTO.toModel(): PaymentApplicationsToEcUpdate = mapper.map(this)
-fun PaymentApplicationsToEcUpdate.toDto(): PaymentApplicationsToEcUpdateDTO = mapper.map(this)
+fun Page<PaymentApplicationToEc>.toDto() = map { it.toDto() }
+fun PaymentApplicationToEc.toDto(): PaymentApplicationToEcDTO = mapper.map(this)
+fun PaymentApplicationToEcDTO.toModel(): PaymentApplicationToEc = mapper.map(this)
+fun PaymentApplicationToEcUpdateDTO.toModel(): PaymentApplicationToEcUpdate = mapper.map(this)
+fun PaymentApplicationToEcUpdate.toDto(): PaymentApplicationToEcUpdateDTO = mapper.map(this)
 
-fun PaymentApplicationsToEcSummary.toDto(): PaymentApplicationsToEcSummaryDTO = mapper.map(this)
-fun PaymentApplicationsToEcSummaryDTO.toModel(): PaymentApplicationsToEcSummary = mapper.map(this)
+fun PaymentApplicationToEcSummary.toDto(): PaymentApplicationToEcSummaryDTO = mapper.map(this)
+fun PaymentApplicationToEcSummaryDTO.toModel(): PaymentApplicationToEcSummary = mapper.map(this)
 
-fun PaymentApplicationsToEcDetail.toDto(): PaymentApplicationsToEcDetailDTO = mapper.map(this)
-fun PaymentApplicationsToEcDetailDTO.toModel(): PaymentApplicationsToEcDetail = mapper.map(this)
+fun PaymentApplicationToEcDetail.toDto(): PaymentApplicationToEcDetailDTO = mapper.map(this)
+fun PaymentApplicationToEcDetailDTO.toModel(): PaymentApplicationToEcDetail = mapper.map(this)
 
 @Mapper
 interface PaymentApplicationsToEcMapper {
-    fun map(dto: PaymentApplicationsToEcDTO): PaymentApplicationsToEc
-    fun map(model: PaymentApplicationsToEc): PaymentApplicationsToEcDTO
-    fun map(dto: PaymentApplicationsToEcUpdateDTO): PaymentApplicationsToEcUpdate
-    fun map(model: PaymentApplicationsToEcUpdate): PaymentApplicationsToEcUpdateDTO
-    fun map(dto: PaymentApplicationsToEcSummaryDTO): PaymentApplicationsToEcSummary
-    fun map(model: PaymentApplicationsToEcSummary): PaymentApplicationsToEcSummaryDTO
-    fun map(dto: PaymentApplicationsToEcDetailDTO): PaymentApplicationsToEcDetail
-    fun map(model: PaymentApplicationsToEcDetail): PaymentApplicationsToEcDetailDTO
+    fun map(dto: PaymentApplicationToEcDTO): PaymentApplicationToEc
+    fun map(model: PaymentApplicationToEc): PaymentApplicationToEcDTO
+    fun map(dto: PaymentApplicationToEcUpdateDTO): PaymentApplicationToEcUpdate
+    fun map(model: PaymentApplicationToEcUpdate): PaymentApplicationToEcUpdateDTO
+    fun map(dto: PaymentApplicationToEcSummaryDTO): PaymentApplicationToEcSummary
+    fun map(model: PaymentApplicationToEcSummary): PaymentApplicationToEcSummaryDTO
+    fun map(dto: PaymentApplicationToEcDetailDTO): PaymentApplicationToEcDetail
+    fun map(model: PaymentApplicationToEcDetail): PaymentApplicationToEcDetailDTO
 }

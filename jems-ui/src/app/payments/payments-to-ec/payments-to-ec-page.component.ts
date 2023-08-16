@@ -2,7 +2,7 @@ import {AfterViewInit, ChangeDetectionStrategy, Component, OnInit, TemplateRef, 
 import {combineLatest, Observable} from 'rxjs';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
-import {PagePaymentApplicationsToEcDTO} from '@cat/api';
+import {PagePaymentApplicationToEcDTO} from '@cat/api';
 import {ColumnWidth} from '@common/components/table/model/column-width';
 import {filter, map, take, tap} from 'rxjs/operators';
 import {PaymentsToEcPageStore} from './payments-to-ec-page.store';
@@ -31,7 +31,7 @@ export class PaymentsToEcPageComponent implements OnInit, AfterViewInit {
 
   data$: Observable<{
     userCanView: boolean;
-    page: PagePaymentApplicationsToEcDTO;
+    page: PagePaymentApplicationToEcDTO;
     tableConfiguration: TableConfiguration;
   }>;
   userCanEdit$: Observable<boolean>;
