@@ -2,8 +2,7 @@ package io.cloudflight.jems.server.project.service.report.project.verification.f
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.project.authorization.CanViewReportVerificationOverview
-import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.authorization.CanViewReportVerificationFinance
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.FinancingSourceBreakdown
@@ -27,7 +26,7 @@ class GetProjectReportFinancingSourceBreakdown(
     private val securityService: SecurityService,
 ) : GetProjectReportFinancingSourceBreakdownInteractor {
 
-    @CanViewReportVerificationOverview
+    @CanViewReportVerificationFinance
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetProjectReportFinancingSourceBreakdownException::class)
     override fun get(projectId: Long, reportId: Long): FinancingSourceBreakdown {

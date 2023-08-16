@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.service.report.project.verification.f
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
-import io.cloudflight.jems.server.project.authorization.CanViewReportVerification
+import io.cloudflight.jems.server.project.authorization.CanViewReportVerificationCommunication
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -12,7 +12,7 @@ class DownloadProjectReportVerificationFile(
     private val filePersistence: JemsFilePersistence,
 ) : DownloadProjectReportVerificationFileInteractor {
 
-    @CanViewReportVerification
+    @CanViewReportVerificationCommunication
     @Transactional(readOnly = true)
     @ExceptionWrapper(DownloadProjectReportVerificationFileException::class)
     override fun download(projectId: Long, reportId: Long, fileId: Long): Pair<String, ByteArray> {

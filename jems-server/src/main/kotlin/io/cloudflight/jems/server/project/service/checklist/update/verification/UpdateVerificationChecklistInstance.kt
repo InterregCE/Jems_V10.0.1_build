@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.service.checklist.update.verification
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
-import io.cloudflight.jems.server.project.authorization.CanEditReportVerification
+import io.cloudflight.jems.server.project.authorization.CanEditReportVerificationPrivileged
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstanceValidator
 import io.cloudflight.jems.server.project.service.checklist.isChecklistCreatedAfterVerification
@@ -25,7 +25,7 @@ class UpdateVerificationChecklistInstance(
     private val securityService: SecurityService
 ) : UpdateVerificationChecklistInstanceInteractor {
 
-    @CanEditReportVerification
+    @CanEditReportVerificationPrivileged
     @Transactional
     @ExceptionWrapper(UpdateVerificationChecklistInstanceException::class)
     override fun update(projectId: Long, reportId: Long, checklist: ChecklistInstanceDetail): ChecklistInstanceDetail {
@@ -43,7 +43,7 @@ class UpdateVerificationChecklistInstance(
         return persistence.update(checklist)
     }
 
-    @CanEditReportVerification
+    @CanEditReportVerificationPrivileged
     @Transactional
     @ExceptionWrapper(UpdateVerificationChecklistInstanceStatusException::class)
     override fun changeStatus(
@@ -76,7 +76,7 @@ class UpdateVerificationChecklistInstance(
         }
     }
 
-    @CanEditReportVerification
+    @CanEditReportVerificationPrivileged
     @Transactional
     @ExceptionWrapper(UpdateVerificationChecklistInstanceException::class)
     override fun updateDescription(

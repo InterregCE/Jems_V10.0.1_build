@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.service.checklist.create.verification
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.project.authorization.CanEditReportVerification
+import io.cloudflight.jems.server.project.authorization.CanEditReportVerificationPrivileged
 import io.cloudflight.jems.server.project.service.checklist.VerificationChecklistInstancePersistence
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.project.service.checklist.model.CreateChecklistInstanceModel
@@ -17,7 +17,7 @@ class CreateVerificationChecklistInstance(
     private val securityService: SecurityService
 ) : CreateVerificationChecklistInstanceInteractor {
 
-    @CanEditReportVerification
+    @CanEditReportVerificationPrivileged
     @Transactional
     @ExceptionWrapper(CreateVerificationChecklistInstanceException::class)
     override fun create(projectId: Long, reportId: Long, createCheckList: CreateChecklistInstanceModel): ChecklistInstanceDetail {

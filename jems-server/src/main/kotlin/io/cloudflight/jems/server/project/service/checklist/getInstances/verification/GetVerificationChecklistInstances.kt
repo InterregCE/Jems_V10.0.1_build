@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.service.checklist.getInstances.verifi
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
-import io.cloudflight.jems.server.project.authorization.CanViewReportVerification
+import io.cloudflight.jems.server.project.authorization.CanViewReportVerificationPrivileged
 import io.cloudflight.jems.server.project.service.checklist.VerificationChecklistInstancePersistence
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstance
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceSearchRequest
@@ -14,7 +14,7 @@ class GetVerificationChecklistInstances(
     private val persistence: VerificationChecklistInstancePersistence,
 ) : GetVerificationChecklistsInstancesInteractor {
 
-    @CanViewReportVerification
+    @CanViewReportVerificationPrivileged
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetVerificationChecklistInstanceException::class)
     override fun getVerificationChecklistInstances(

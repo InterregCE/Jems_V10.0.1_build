@@ -4,7 +4,6 @@ import io.cloudflight.jems.server.project.service.report.model.project.verificat
 
 interface GetProjectReportVerificationExpenditureInteractor {
 
-    fun getExpenditureVerification(
-        projectReportId: Long
-    ): List<ProjectReportVerificationExpenditureLine>
+    fun getExpenditureVerification(reportId: Long): List<ProjectReportVerificationExpenditureLine>
+
 }

@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.project.verification.updateProjectReportVerificationConclusion
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.project.authorization.CanEditReportVerification
+import io.cloudflight.jems.server.project.authorization.CanEditReportVerificationPrivileged
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.model.project.verification.ProjectReportVerificationConclusion
@@ -16,7 +16,7 @@ class UpdateProjectReportVerificationConclusion(
     private val reportPersistence: ProjectReportPersistence,
 ): UpdateProjectReportVerificationConclusionInteractor {
 
-    @CanEditReportVerification
+    @CanEditReportVerificationPrivileged
     @Transactional
     @ExceptionWrapper(UpdateProjectReportVerificationConclusionException::class)
     override fun updateVerificationConclusion(

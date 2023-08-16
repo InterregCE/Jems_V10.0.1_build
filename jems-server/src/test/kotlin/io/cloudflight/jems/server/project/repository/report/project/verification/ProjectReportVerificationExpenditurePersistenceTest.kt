@@ -33,6 +33,8 @@ import org.springframework.data.domain.PageImpl
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
+import java.util.*
+import kotlin.collections.HashSet
 
 class ProjectReportVerificationExpenditurePersistenceTest : UnitTest() {
 
@@ -432,11 +434,11 @@ class ProjectReportVerificationExpenditurePersistenceTest : UnitTest() {
             riskBasedVerificationDescription = "NEW DESCRIPTION"
         )
 
-        every { projectReportRepository.getByIdAndProjectId(PROJECT_REPORT_ID, PROJECT_ID) } returns projectReportEntity
+        every { projectReportRepository.findById(PROJECT_REPORT_ID) } returns Optional.of(projectReportEntity)
 
         assertThat(
             projectReportVerificationExpenditurePersistenceProvider.updateProjectReportExpenditureVerificationRiskBased(
-                PROJECT_ID, PROJECT_REPORT_ID, riskBasedData = riskBaseToUpdate
+                PROJECT_REPORT_ID, riskBasedData = riskBaseToUpdate
             )
         ).isEqualTo(expectedRiskBased)
     }

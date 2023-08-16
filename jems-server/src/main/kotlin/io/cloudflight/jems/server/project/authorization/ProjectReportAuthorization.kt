@@ -24,10 +24,6 @@ annotation class CanRetrieveProjectReport
 @PreAuthorize("@projectReportAuthorization.canStartReportVerification(#projectId)")
 annotation class CanStartProjectReportVerification
 
-@Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectReportAuthorization.canFinalizeReportVerification(#projectId)")
-annotation class CanFinalizeProjectReportVerification
-
 @Component
 class ProjectReportAuthorization(
     override val securityService: SecurityService,
@@ -71,8 +67,5 @@ class ProjectReportAuthorization(
     fun canStartReportVerification(projectId: Long): Boolean {
         return hasPermission(UserRolePermission.ProjectReportingVerificationProjectEdit, projectId)
     }
-
-    fun canFinalizeReportVerification(projectId: Long): Boolean =
-        hasPermission(UserRolePermission.ProjectReportingVerificationFinalize, projectId)
 
 }

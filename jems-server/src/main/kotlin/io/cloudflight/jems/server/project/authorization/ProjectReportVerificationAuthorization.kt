@@ -2,69 +2,87 @@ package io.cloudflight.jems.server.project.authorization
 
 import io.cloudflight.jems.server.authentication.authorization.Authorization
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.projectuser.UserProjectCollaboratorPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
 
+// expenditure tab:
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectReportVerificationAuthorization.canViewProjectReportVerificationByReportId(#projectReportId)")
-annotation class CanViewProjectReportVerificationByReportId
+@PreAuthorize("@projectReportVerificationAuthorization.hasPermissionForProjectReportId('ProjectReportingVerificationProjectView', #reportId)")
+annotation class CanViewReportVerificationExpenditure
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectReportVerificationAuthorization.canEditProjectReportVerificationByReportId(#projectReportId)")
-annotation class CanEditProjectReportVerificationByReportId
+@PreAuthorize("@projectReportVerificationAuthorization.hasPermissionForProjectReportId('ProjectReportingVerificationProjectEdit', #reportId)")
+annotation class CanEditReportVerificationExpenditure
+
+// document tab:
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@projectReportVerificationAuthorization.canInteractWithVerificationDocuments(#projectId, false)")
+annotation class CanViewReportVerificationCommunication
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectReportVerificationAuthorization.canViewProjectReportVerification(#projectId)")
-annotation class CanViewReportVerification
+@PreAuthorize("@projectReportVerificationAuthorization.canInteractWithVerificationDocuments(#projectId, true)")
+annotation class CanEditReportVerificationCommunication
+
+// financial overview tab:
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@projectReportVerificationAuthorization.canViewReportVerificationFinance(#reportId)")
+annotation class CanViewReportVerificationFinance
+
+// finalize and checklist tabs:
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@projectReportVerificationAuthorization.hasPermissionForProjectReportId('ProjectReportingVerificationFinalize', #reportId)")
+annotation class CanFinalizeReportVerification
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectReportVerificationAuthorization.canEditProjectReportVerification(#projectId)")
-annotation class CanEditReportVerification
+@PreAuthorize("@projectAuthorization.hasPermission('ProjectReportingVerificationProjectView', #projectId)")
+annotation class CanViewReportVerificationPrivileged
+
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectReportVerificationAuthorization.canViewReportVerificationOverview(#projectId)")
-annotation class CanViewReportVerificationOverview
+@PreAuthorize("@projectAuthorization.hasPermission('ProjectReportingVerificationProjectEdit', #projectId)")
+annotation class CanEditReportVerificationPrivileged
 
 @Component
 class ProjectReportVerificationAuthorization(
+    private val projectReportPersistence: ProjectReportPersistence,
+    private val userProjectCollaboratorPersistence: UserProjectCollaboratorPersistence,
     override val securityService: SecurityService,
-    private val projectPersistence: ProjectPersistence,
-    private val projectReportPersistence: ProjectReportPersistence
 ) : Authorization(securityService) {
 
-    fun canViewProjectReportVerificationByReportId(projectReportId: Long) =
-        canViewProjectReportVerification(projectId = projectReportId.toProjectId())
 
-    fun canEditProjectReportVerificationByReportId(projectReportId: Long) =
-        canEditProjectReportVerification(projectId = projectReportId.toProjectId())
+    fun canViewReportVerificationFinance(reportId: Long): Boolean {
+        val report = projectReportPersistence.getReportByIdUnSecured(reportId)
+        val collaboratorIds = userProjectCollaboratorPersistence.getUserIdsForProject(report.projectId)
+            .mapTo(HashSet()) { it.userId }
 
-    fun canViewProjectReportVerification(projectId: Long): Boolean {
-        val project = projectPersistence.getApplicantAndStatusById(projectId)
+        // creator can = only project manager when verification has been already done
+        val canCreatorView = isActiveUserIdEqualToOneOf(collaboratorIds) && report.status.isFinalized()
+        val canMonitorView = hasPermission(UserRolePermission.ProjectReportingVerificationProjectView, report.projectId)
 
-        val canMonitorView = hasPermission(UserRolePermission.ProjectReportingVerificationProjectView, projectId)
-        val canCreatorView = isActiveUserIdEqualToOneOf(project.getUserIdsWithViewLevel())
-
-        return canMonitorView || canCreatorView
-    }
-
-    fun canEditProjectReportVerification(projectId: Long): Boolean {
-        val project = projectPersistence.getApplicantAndStatusById(projectId)
-
-        val canMonitorEdit = hasPermission(UserRolePermission.ProjectReportingVerificationProjectEdit, projectId)
-        val canCreatorEdit = isActiveUserIdEqualToOneOf(project.getUserIdsWithEditLevel())
-
-        return canMonitorEdit || canCreatorEdit
-    }
-
-    fun canViewReportVerificationOverview(projectId:Long): Boolean{
-        val project = projectPersistence.getApplicantAndStatusById(projectId)
-        val canCreatorView = isActiveUserIdEqualToOneOf(project.getUserIdsWithManageLevel())
-        val canMonitorView = hasPermission(UserRolePermission.ProjectReportingVerificationProjectView, projectId)
         return canCreatorView || canMonitorView
     }
 
-    private fun Long.toProjectId() = projectReportPersistence.getProjectIdForProjectReportId(this)
+    fun hasPermissionForProjectReportId(permission: UserRolePermission, reportId: Long) =
+        hasPermissionForProject(permission, reportId.toProjectId())
+
+    fun canInteractWithVerificationDocuments(projectId: Long, isEditRequired: Boolean): Boolean {
+        val collaboratorIds = userProjectCollaboratorPersistence.getUserIdsForProject(projectId)
+            .mapTo(HashSet()) { it.userId }
+
+        val canCreator = isActiveUserIdEqualToOneOf(collaboratorIds)
+        val canMonitor = hasPermission(
+            if (isEditRequired)
+                UserRolePermission.ProjectReportingVerificationProjectEdit
+            else
+                UserRolePermission.ProjectReportingVerificationProjectView,
+            projectId,
+        )
+
+        return canCreator || canMonitor
+    }
+
+    private fun Long.toProjectId() = projectReportPersistence.getReportByIdUnSecured(this).projectId
 
 }

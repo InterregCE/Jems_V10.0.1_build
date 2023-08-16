@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service.report.project.verification.e
 
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.common.exception.ApplicationException
+import io.cloudflight.jems.server.common.exception.ApplicationUnprocessableException
 
 private const val UPDATE_PROJECT_REPORT_VERIFICATION_EXPENDITURE_RISK_BASED_ERROR_CODE_PREFIX = "S-UPRVERB"
 private const val UPDATE_PROJECT_REPORT_VERIFICATION_EXPENDITURE_RISK_BASED_ERROR_KEY_PREFIX =
@@ -11,4 +12,9 @@ class UpdateProjectReportVerificationExpenditureRiskBasedException(cause: Throwa
     code = UPDATE_PROJECT_REPORT_VERIFICATION_EXPENDITURE_RISK_BASED_ERROR_CODE_PREFIX,
     i18nMessage = I18nMessage("$UPDATE_PROJECT_REPORT_VERIFICATION_EXPENDITURE_RISK_BASED_ERROR_KEY_PREFIX.failed"),
     cause = cause,
+)
+
+class VerificationNotOpen : ApplicationUnprocessableException(
+    code = "$UPDATE_PROJECT_REPORT_VERIFICATION_EXPENDITURE_RISK_BASED_ERROR_CODE_PREFIX-001",
+    i18nMessage = I18nMessage("$UPDATE_PROJECT_REPORT_VERIFICATION_EXPENDITURE_RISK_BASED_ERROR_KEY_PREFIX.verification.not.open"),
 )

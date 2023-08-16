@@ -27,8 +27,7 @@ interface ProjectReportVerificationExpenditurePersistence {
     ): List<ProjectReportVerificationExpenditureLine>
 
     fun updateProjectReportExpenditureVerificationRiskBased(
-        projectId: Long,
-        projectReportId: Long,
+        reportId: Long,
         riskBasedData: ProjectReportVerificationRiskBased
     ): ProjectReportVerificationRiskBased
 }

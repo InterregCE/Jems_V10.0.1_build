@@ -93,11 +93,10 @@ class ProjectReportVerificationExpenditurePersistenceProvider(
 
     @Transactional
     override fun updateProjectReportExpenditureVerificationRiskBased(
-        projectId: Long,
-        projectReportId: Long,
+        reportId: Long,
         riskBasedData: ProjectReportVerificationRiskBased
     ): ProjectReportVerificationRiskBased {
-        val savedProjectReport = projectReportRepository.getByIdAndProjectId(projectReportId, projectId)
+        val savedProjectReport = projectReportRepository.findById(reportId).get()
 
         savedProjectReport.riskBasedVerification = riskBasedData.riskBasedVerification
         savedProjectReport.riskBasedVerificationDescription = riskBasedData.riskBasedVerificationDescription

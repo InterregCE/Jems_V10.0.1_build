@@ -5,7 +5,7 @@ import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType.VerificationDocument
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
-import io.cloudflight.jems.server.project.authorization.CanEditReportVerification
+import io.cloudflight.jems.server.project.authorization.CanEditReportVerificationCommunication
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -16,7 +16,7 @@ class UpdateDescriptionProjectReportVerificationFile(
     private val filePersistence: JemsFilePersistence,
 ) : UpdateDescriptionProjectReportVerificationFileInteractor {
 
-    @CanEditReportVerification
+    @CanEditReportVerificationCommunication
     @Transactional
     @ExceptionWrapper(UpdateDescriptionProjectReportVerificationFileException::class)
     override fun updateDescription(projectId: Long, reportId: Long, fileId: Long, description: String) {

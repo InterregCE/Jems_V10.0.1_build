@@ -19,6 +19,7 @@ interface ProjectReportPersistence {
     fun getAllProjectReportsBaseDataByProjectId(projectId: Long): Sequence<ProjectReportBaseData>
 
     fun getReportById(projectId: Long, reportId: Long): ProjectReportModel
+    fun getReportByIdUnSecured(reportId: Long): ProjectReportModel
 
     fun updateReport(
         projectId: Long,
@@ -61,7 +62,5 @@ interface ProjectReportPersistence {
     ): ProjectReportSubmissionSummary
 
     fun finalizeVerificationOnReportById(projectId: Long, reportId: Long): ProjectReportSubmissionSummary
-
-    fun getProjectIdForProjectReportId(projectReportId: Long): Long
 
 }
