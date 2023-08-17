@@ -98,7 +98,7 @@ export class ProjectApplicationFilesTableComponent {
         tap(data => this.dataSource.data = data.files?.content),
       );
 
-    this.fileManagementStore.getMaximumAllowedFileSize().pipe(untilDestroyed(this)).subscribe((maxAllowedSize) => this.maximumAllowedFileSizeInMB = maxAllowedSize);
+    this.fileManagementStore.maxFileSize$.pipe(untilDestroyed(this)).subscribe((maxAllowedSize) => this.maximumAllowedFileSizeInMB = maxAllowedSize);
   }
 
   private static isFileEditable(
