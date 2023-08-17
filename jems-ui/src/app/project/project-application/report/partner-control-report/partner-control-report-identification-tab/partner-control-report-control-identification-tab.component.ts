@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
 import {combineLatest, Observable} from 'rxjs';
 import {
   UserSimpleDTO,
@@ -37,6 +37,7 @@ import VerificationLocationsEnum = ReportOnTheSpotVerificationDTO.VerificationLo
 import GeneralMethodologiesEnum = ReportVerificationDTO.GeneralMethodologiesEnum;
 import {APIError} from '@common/models/APIError';
 import {TranslateService} from '@ngx-translate/core';
+import {MatAutocompleteTrigger} from "@angular/material/autocomplete";
 
 @Component({
   selector: 'jems-partner-control-report-identification-tab',
@@ -106,6 +107,8 @@ export class PartnerControlReportControlIdentificationTabComponent implements On
     ProjectPartnerControlReportDTO.ControllerFormatsEnum.Copy,
     ProjectPartnerControlReportDTO.ControllerFormatsEnum.Electronic
   ];
+
+  @ViewChild(MatAutocompleteTrigger) autocomplete: MatAutocompleteTrigger;
 
   constructor(
     public pageStore: PartnerReportDetailPageStore,
@@ -270,6 +273,14 @@ export class PartnerControlReportControlIdentificationTabComponent implements On
   }
 
   saveIdentification(): void {
+    if(!this.designatedController.get('controllingUserName')?.value){
+      this.selectedControllerUser = undefined;
+      this.autocomplete.closePanel();
+    }
+    if(!this.designatedController.get('controllerReviewerName')?.value){
+      this.selectedReviewerUser = undefined;
+      this.autocomplete.closePanel();
+    }
     const data = {
       controllerFormats: this.form.value.formats,
       type: this.form.value.partnerType,
@@ -322,7 +333,7 @@ export class PartnerControlReportControlIdentificationTabComponent implements On
 
   private isControllingUserNameSelected(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
-      if (this.controllerUsers && !this.getSelectedControllerUser(control.value)) {
+      if (this.controllerUsers && control.value && !this.getSelectedControllerUser(control.value)) {
         return {controllingUserNameNotSelected : true}
       } else {
         return null;
