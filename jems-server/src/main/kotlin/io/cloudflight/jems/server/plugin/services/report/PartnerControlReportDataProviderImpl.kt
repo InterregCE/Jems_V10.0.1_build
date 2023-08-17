@@ -7,8 +7,8 @@ import io.cloudflight.jems.plugin.contract.models.report.partner.control.overvie
 import io.cloudflight.jems.plugin.contract.services.report.PartnerControlReportDataProvider
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportVerification
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.ProjectPartnerReportExpenditureVerificationPersistence
-import io.cloudflight.jems.server.project.service.report.partner.control.overview.getReportControlDeductionOverview.GetReportControlDeductionOverviewService
-import io.cloudflight.jems.server.project.service.report.partner.control.overview.getReportControlOverview.GetReportControlOverviewService
+import io.cloudflight.jems.server.project.service.report.partner.control.overview.getReportControlDeductionOverview.GetReportControlDeductionOverviewCalculator
+import io.cloudflight.jems.server.project.service.report.partner.control.overview.getReportControlOverview.GetReportControlOverviewCalculator
 import io.cloudflight.jems.server.project.service.report.partner.control.overview.getReportControlWorkOverview.GetReportControlWorkOverviewService
 import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportDesignatedControllerPersistence
 import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportVerificationPersistence
@@ -21,10 +21,10 @@ import org.springframework.transaction.annotation.Transactional
 class PartnerControlReportDataProviderImpl(
     private val designatedControllerPersistence: ProjectPartnerReportDesignatedControllerPersistence,
     private val reportVerificationPersistence: ProjectPartnerReportVerificationPersistence,
-    private val reportControlOverviewService: GetReportControlOverviewService,
+    private val reportControlOverviewService: GetReportControlOverviewCalculator,
     private val reportControlWorkOverviewService: GetReportControlWorkOverviewService,
     private val reportExpenditurePersistence: ProjectPartnerReportExpenditureVerificationPersistence,
-    private val reportControlDeductionOverviewService: GetReportControlDeductionOverviewService,
+    private val reportControlDeductionOverviewService: GetReportControlDeductionOverviewCalculator,
     private val userPersistence: UserPersistence,
 ) : PartnerControlReportDataProvider {
 

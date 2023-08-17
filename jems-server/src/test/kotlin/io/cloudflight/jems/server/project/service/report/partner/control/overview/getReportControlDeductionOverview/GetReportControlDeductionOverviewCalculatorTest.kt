@@ -24,7 +24,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import java.math.BigDecimal
 
-class GetReportControlDeductionOverviewServiceTest : UnitTest() {
+class GetReportControlDeductionOverviewCalculatorTest : UnitTest() {
 
 
     companion object {
@@ -236,7 +236,7 @@ class GetReportControlDeductionOverviewServiceTest : UnitTest() {
     lateinit var reportExpenditureCostCategoryPersistence: ProjectPartnerReportExpenditureCostCategoryPersistence
 
     @InjectMockKs
-    lateinit var getReportControlDeductionOverviewService: GetReportControlDeductionOverviewService
+    lateinit var getReportControlDeductionOverviewCalculator: GetReportControlDeductionOverviewCalculator
 
     @ParameterizedTest(name = "get Overview for deductions when flat rates are applied - closed (status {0})")
     @EnumSource(value = ReportStatus::class, names = ["Certified"])
@@ -289,7 +289,7 @@ class GetReportControlDeductionOverviewServiceTest : UnitTest() {
             total = BigDecimal.valueOf(156082L, 2),
         )
 
-        assertThat(getReportControlDeductionOverviewService.get(PARTNER_ID, REPORT_ID)).isEqualTo(
+        assertThat(getReportControlDeductionOverviewCalculator.get(PARTNER_ID, REPORT_ID)).isEqualTo(
             ControlDeductionOverview(
                 deductionRows = expectedDeductionRows,
                 staffCostsFlatRate = 20,
@@ -352,7 +352,7 @@ class GetReportControlDeductionOverviewServiceTest : UnitTest() {
             total = BigDecimal.valueOf(125017L, 2),
         )
 
-        assertThat(getReportControlDeductionOverviewService.get(PARTNER_ID, REPORT_ID)).isEqualTo(
+        assertThat(getReportControlDeductionOverviewCalculator.get(PARTNER_ID, REPORT_ID)).isEqualTo(
             ControlDeductionOverview(
                 deductionRows = expectedDeductionRows,
                 staffCostsFlatRate = 20,

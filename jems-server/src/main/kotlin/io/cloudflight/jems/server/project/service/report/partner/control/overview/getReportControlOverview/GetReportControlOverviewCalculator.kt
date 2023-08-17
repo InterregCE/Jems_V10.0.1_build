@@ -8,13 +8,13 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class GetReportControlOverviewService(
+class GetReportControlOverviewCalculator(
     private val controlOverviewPersistence: ProjectPartnerReportControlOverviewPersistence,
-    private val reportPersistence: ProjectPartnerReportPersistence
-): GetReportControlOverviewInteractor {
+    private val reportPersistence: ProjectPartnerReportPersistence,
+) {
 
     @Transactional(readOnly = true)
-    override fun get(partnerId: Long, reportId: Long): ControlOverview {
+    fun get(partnerId: Long, reportId: Long): ControlOverview {
         val overview = controlOverviewPersistence.getPartnerControlReportOverview(partnerId, reportId)
         val reportStatusAndVersion = reportPersistence.getPartnerReportStatusAndVersion(partnerId, reportId)
 

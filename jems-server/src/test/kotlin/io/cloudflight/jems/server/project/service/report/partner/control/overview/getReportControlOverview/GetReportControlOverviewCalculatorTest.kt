@@ -15,7 +15,7 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
-class GetReportControlOverviewServiceTest: UnitTest() {
+class GetReportControlOverviewCalculatorTest: UnitTest() {
 
     companion object {
         private const val PARTNER_ID = 426L
@@ -90,7 +90,7 @@ class GetReportControlOverviewServiceTest: UnitTest() {
     private lateinit var projectPartnerReportPersistence: ProjectPartnerReportPersistence
 
     @InjectMockKs
-    private lateinit var interactor: GetReportControlOverviewService
+    private lateinit var interactor: GetReportControlOverviewCalculator
 
     @Test
     fun get() {
