@@ -218,18 +218,15 @@ context('Partner reports tests', () => {
                 cy.contains('The work package activities were saved successfully')
                   .should('be.visible');
 
-                cy.contains('mat-panel-title', 'Work package 1')
-                  .click();
-
                 // upload file to activity
                 cy.get('div.activity-container > jems-multi-language-container input').eq(0)
                   .scrollIntoView()
                   .invoke('show')
-                  .selectFile('cypress/fixtures/project/reporting/fileToUpload.txt')
-                  .invoke('hide');
+                  .selectFile('cypress/fixtures/project/reporting/fileToUpload.txt');
 
                 cy.get('div.activity-container > jems-multi-language-container mat-chip-list').eq(0).within(() => {
                   cy.get('mat-chip > span')
+                    .scrollIntoView()
                     .contains('fileToUpload.txt')
                     .should('be.visible');
                 })
@@ -241,14 +238,14 @@ context('Partner reports tests', () => {
                       .eq(1)
                       .scrollIntoView()
                       .invoke('show')
-                      .selectFile('cypress/fixtures/project/reporting/fileToUpload.txt')
-                      .invoke('hide');
+                      .selectFile('cypress/fixtures/project/reporting/fileToUpload.txt');
                   });
                 });
 
                 cy.get('div.activity-container > jems-multi-language-container').eq(1).within(() => {
                   cy.get(`#deliverables-table > div mat-chip-list`).eq(0).within(() => {
                     cy.get('mat-chip > span')
+                      .scrollIntoView()
                       .contains('fileToUpload.txt')
                       .should('be.visible');
                   });
@@ -260,12 +257,12 @@ context('Partner reports tests', () => {
                     .eq(1)
                     .scrollIntoView()
                     .invoke('show')
-                    .selectFile('cypress/fixtures/project/reporting/fileToUpload.txt')
-                    .invoke('hide');
+                    .selectFile('cypress/fixtures/project/reporting/fileToUpload.txt');
                 });
 
                 cy.get('#outputs-table > div mat-chip-list').eq(0).within(() => {
                   cy.get('mat-chip > span')
+                    .scrollIntoView()
                     .contains('fileToUpload.txt')
                     .should('be.visible');
                 })
@@ -296,12 +293,14 @@ context('Partner reports tests', () => {
 
                 cy.get('div.activity-container > jems-multi-language-container mat-chip-list').eq(0).within(() => {
                   cy.get('mat-chip > span')
+                    .scrollIntoView()
                     .contains('fileForUpdate.txt')
                     .should('be.visible');
                 })
 
                 cy.get('div.activity-container > jems-multi-language-container mat-chip-list').eq(0).within(() => {
                   cy.get('mat-chip > span')
+                    .scrollIntoView()
                     .contains('fileToUpload.txt')
                     .should('not.exist');
                 })
@@ -1441,43 +1440,43 @@ context('Partner reports tests', () => {
             cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/controlReport/expenditureVerificationTab`, {failOnStatusCode: false});
 
             // add deductions
-            cy.get('mat-row').eq(1).children().eq(22).within((column) => {
-              cy.wrap(column).get('input').type('10,00');
+            cy.get('mat-row').eq(1).children().eq(23).within((column) => {
+              cy.wrap(column).get('input').type('10,00', {force: true});
             });
-            cy.get('mat-row').eq(1).children().eq(24).within((column) => {
+            cy.get('mat-row').eq(1).children().eq(25).within((column) => {
               cy.wrap(column).get('mat-select').click();
             });
             cy.contains('mat-option span', 'Typology of Error').first().click();
 
-            cy.get('mat-row').eq(2).children().eq(22).within((column) => {
-              cy.wrap(column).get('input').type('10,00');
+            cy.get('mat-row').eq(2).children().eq(23).within((column) => {
+              cy.wrap(column).get('input').type('10,00', {force: true});
             });
-            cy.get('mat-row').eq(2).children().eq(24).within((column) => {
+            cy.get('mat-row').eq(2).children().eq(25).within((column) => {
               cy.wrap(column).get('mat-select').click();
             });
             cy.contains('mat-option span', 'Typology of Error').first().click();
 
-            cy.get('mat-row').eq(3).children().eq(22).within((column) => {
-              cy.wrap(column).get('input').type('10,00');
+            cy.get('mat-row').eq(3).children().eq(23).within((column) => {
+              cy.wrap(column).get('input').type('10,00', {force: true});
             });
-            cy.get('mat-row').eq(3).children().eq(24).within((column) => {
+            cy.get('mat-row').eq(3).children().eq(25).within((column) => {
               cy.wrap(column).get('mat-select').click();
             });
             cy.contains('mat-option span', 'Typology of Error').first().click();
 
-            cy.get('mat-row').eq(5).children().eq(22).within((column) => {
-              cy.wrap(column).get('input').type('10,00');
+            cy.get('mat-row').eq(5).children().eq(23).within((column) => {
+              cy.wrap(column).get('input').type('10,00', {force: true});
             });
-            cy.get('mat-row').eq(5).children().eq(24).within((column) => {
+            cy.get('mat-row').eq(5).children().eq(25).within((column) => {
               cy.wrap(column).get('mat-select').click();
             });
             cy.contains('mat-option span', 'Typology of Error').first().click();
 
             //park items
-            cy.get('mat-row').eq(0).children().eq(25).within((column) => {
+            cy.get('mat-row').eq(0).children().eq(26).within((column) => {
               cy.wrap(column).get('mat-slide-toggle').click();
             });
-            cy.get('mat-row').eq(4).children().eq(25).within((column) => {
+            cy.get('mat-row').eq(4).children().eq(26).within((column) => {
               cy.wrap(column).get('mat-slide-toggle').click();
             });
             cy.get('button').contains('Save changes').click();
@@ -1520,11 +1519,11 @@ context('Partner reports tests', () => {
           cy.loginByRequest(user.applicantUser.email);
           cy.addPartnerReport(partnerId).then(reportId => {
             cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/expenditures`, {failOnStatusCode: false});
-            cy.get('mat-row').eq(0).children().eq(21).within((column) => {
+            cy.get('mat-row').eq(0).children().eq(22).within((column) => {
               cy.wrap(column).get('button').contains('sync').click();
             });
             cy.contains('Confirm').should('be.visible').click();
-            cy.get('mat-row').eq(1).children().eq(21).within((column) => {
+            cy.get('mat-row').eq(1).children().eq(22).within((column) => {
               cy.wrap(column).get('button').contains('sync').click();
             });
             cy.contains('Confirm').should('be.visible').click();
@@ -1602,7 +1601,7 @@ context('Partner reports tests', () => {
 
             //Group Order 4
             cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/expenditures`, {failOnStatusCode: false});
-            cy.get('mat-row').eq(0).children().eq(16).within((column) => {
+            cy.get('mat-row').eq(0).children().eq(17).within((column) => {
               cy.wrap(column).scrollIntoView().click();
               cy.wrap(column).get('input').type('210,16');
             });
