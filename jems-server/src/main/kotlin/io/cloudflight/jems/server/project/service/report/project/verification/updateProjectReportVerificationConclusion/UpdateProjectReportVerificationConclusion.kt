@@ -27,7 +27,7 @@ class UpdateProjectReportVerificationConclusion(
         val report = reportPersistence.getReportById(projectId = projectId, reportId = reportId)
         validateReportStatus(report)
         validateConclusion(conclusion)
-        return verificationPersistence.updateProjectReportVerificationConclusion(
+        return verificationPersistence.updateVerificationConclusion(
             projectId = projectId,
             reportId = reportId,
             projectReportVerificationConclusion = conclusion

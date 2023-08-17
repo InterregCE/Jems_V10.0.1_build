@@ -5,13 +5,12 @@ import io.cloudflight.jems.server.project.service.report.model.project.verificat
 
 interface ProjectReportVerificationPersistence {
 
-
-    fun getProjectReportVerificationConclusion(
+    fun getVerificationConclusion(
         projectId: Long,
         reportId: Long,
     ): ProjectReportVerificationConclusion
 
-    fun updateProjectReportVerificationConclusion(
+    fun updateVerificationConclusion(
         projectId: Long,
         reportId: Long,
         projectReportVerificationConclusion: ProjectReportVerificationConclusion

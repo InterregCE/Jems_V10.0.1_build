@@ -5,12 +5,10 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.BudgetCategoryDTO
+import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportInvestmentDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportLumpSumDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportUnitCostDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.verification.ExpenditureParkingMetadataDTO
-import io.cloudflight.jems.api.project.dto.report.partner.financialOverview.ExpenditureInvestmentBreakdownLineDTO
-import io.cloudflight.jems.api.project.dto.report.partner.financialOverview.ExpenditureLumpSumBreakdownLineDTO
-import io.cloudflight.jems.api.project.dto.report.partner.financialOverview.ExpenditureUnitCostBreakdownLineDTO
 import io.cloudflight.jems.api.project.dto.report.partner.procurement.ProjectPartnerReportProcurementDTO
 import io.cloudflight.jems.api.project.dto.report.project.verification.expenditure.ProjectPartnerReportExpenditureItemDTO
 import io.cloudflight.jems.api.project.dto.report.project.verification.expenditure.ProjectReportVerificationExpenditureLineDTO
@@ -20,12 +18,10 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportInvestment
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportUnitCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
-import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.investments.ExpenditureInvestmentBreakdownLine
-import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumBreakdownLine
-import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.unitCost.ExpenditureUnitCostBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurement
 import io.cloudflight.jems.server.project.service.report.model.project.verification.expenditure.ProjectPartnerReportExpenditureItem
 import io.cloudflight.jems.server.project.service.report.model.project.verification.expenditure.ProjectReportVerificationExpenditureLine
@@ -89,42 +85,23 @@ class ProjectReportVerificationExpenditureControllerTest: UnitTest() {
             name = setOf(InputTranslation(SystemLanguage.EN, "some lump sum 36 (or 945)")),
         )
 
-        private val expectedDummyInvestmentLine = ExpenditureInvestmentBreakdownLineDTO(
-            reportInvestmentId = 845L,
+        private val expectedDummyInvestmentLine = ProjectPartnerReportInvestmentDTO(
+            id = 845L,
             investmentId = 22L,
             investmentNumber = 1,
             workPackageNumber = 2,
             title = setOf(InputTranslation(SystemLanguage.EN, "investment title EN")),
-            totalEligibleBudget = BigDecimal.ONE,
-            previouslyReported = BigDecimal.TEN,
-            currentReport = BigDecimal.ZERO,
-            totalEligibleAfterControl = BigDecimal.ONE,
-            totalReportedSoFar = BigDecimal.ONE,
-            totalReportedSoFarPercentage = BigDecimal.TEN,
-            remainingBudget = BigDecimal.ZERO,
-            previouslyReportedParked = BigDecimal.valueOf(100),
-            currentReportReIncluded = BigDecimal.ZERO,
             deactivated = false,
-            previouslyValidated = BigDecimal.valueOf(7)
         )
 
-        private val dummyInvestmentLine = ExpenditureInvestmentBreakdownLine(
-            reportInvestmentId = 845L,
+        private val dummyInvestmentLine = ProjectPartnerReportInvestment(
+            id = 845L,
             investmentId = 22L,
             investmentNumber = 1,
             workPackageNumber = 2,
             title = setOf(InputTranslation(SystemLanguage.EN, "investment title EN")),
-            totalEligibleBudget = BigDecimal.ONE,
-            previouslyReported = BigDecimal.TEN,
-            currentReport = BigDecimal.ZERO,
-            totalEligibleAfterControl = BigDecimal.ONE,
-            totalReportedSoFar = BigDecimal.ONE,
-            totalReportedSoFarPercentage = BigDecimal.TEN,
-            remainingBudget = BigDecimal.ZERO,
-            previouslyReportedParked = BigDecimal.valueOf(100),
-            currentReportReIncluded = BigDecimal.ZERO,
+            total = BigDecimal.ONE,
             deactivated = false,
-            previouslyValidated = BigDecimal.valueOf(7)
         )
 
         private val expectedDummyLineUnitCost = ProjectPartnerReportUnitCostDTO(

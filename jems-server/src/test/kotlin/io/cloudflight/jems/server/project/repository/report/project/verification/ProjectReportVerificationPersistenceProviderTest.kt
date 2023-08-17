@@ -15,10 +15,10 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.just
 import io.mockk.slot
-import java.time.LocalDate
-import java.time.ZonedDateTime
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import java.time.LocalDate
+import java.time.ZonedDateTime
 
 class ProjectReportVerificationPersistenceProviderTest : UnitTest() {
 
@@ -107,7 +107,7 @@ class ProjectReportVerificationPersistenceProviderTest : UnitTest() {
         } returns reportEntity(REPORT_ID, PROJECT_ID)
 
         assertThat(
-            projectReportVerificationPersistence.updateProjectReportVerificationConclusion(
+            projectReportVerificationPersistence.updateVerificationConclusion(
                 projectId = PROJECT_ID,
                 reportId = REPORT_ID,
                 verificationConclusion

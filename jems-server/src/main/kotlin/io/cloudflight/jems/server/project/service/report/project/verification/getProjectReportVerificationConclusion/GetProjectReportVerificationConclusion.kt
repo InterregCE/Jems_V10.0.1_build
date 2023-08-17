@@ -22,7 +22,7 @@ class GetProjectReportVerificationConclusion(
     override fun getVerificationConclusion(projectId: Long, reportId: Long): ProjectReportVerificationConclusion {
         val report = reportPersistence.getReportById(projectId = projectId, reportId = reportId)
         validateReportStatus(report)
-        return verificationPersistence.getProjectReportVerificationConclusion(
+        return verificationPersistence.getVerificationConclusion(
             projectId = projectId,
             reportId = reportId
         )

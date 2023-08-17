@@ -2,14 +2,15 @@ package io.cloudflight.jems.server.project.repository.report.project.verificatio
 
 import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportExpenditureCostEntity
+import io.cloudflight.jems.server.project.entity.report.partner.expenditure.PartnerReportInvestmentEntity
 import io.cloudflight.jems.server.project.entity.report.partner.procurement.ProjectPartnerReportProcurementEntity
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
 import io.cloudflight.jems.server.project.entity.report.verification.expenditure.ProjectReportVerificationExpenditureEntity
 import io.cloudflight.jems.server.project.repository.report.partner.expenditure.getParkingMetadata
 import io.cloudflight.jems.server.project.repository.report.partner.expenditure.toModel
-import io.cloudflight.jems.server.project.repository.report.partner.financialOverview.investment.toModel
 import io.cloudflight.jems.server.project.repository.report.partner.procurement.toModel
 import io.cloudflight.jems.server.project.repository.report.partner.toModel
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportInvestment
 import io.cloudflight.jems.server.project.service.report.model.project.verification.expenditure.ProjectPartnerReportExpenditureItem
 import io.cloudflight.jems.server.project.service.report.model.project.verification.expenditure.ProjectReportVerificationExpenditureLine
 import io.cloudflight.jems.server.project.service.report.model.project.verification.expenditure.ProjectReportVerificationRiskBased
@@ -112,3 +113,12 @@ fun ProjectReportEntity.toRiskBasedModel() =
         riskBasedVerificationDescription = this.riskBasedVerificationDescription
     )
 
+fun PartnerReportInvestmentEntity.toModel() = ProjectPartnerReportInvestment(
+    id = id,
+    investmentId = investmentId,
+    investmentNumber = investmentNumber,
+    title = translatedValues.extractField { it.title },
+    deactivated = deactivated,
+    workPackageNumber = workPackageNumber,
+    total = total,
+)
