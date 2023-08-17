@@ -21,7 +21,7 @@ class GetReportControlDeductionOverviewTest : UnitTest() {
     }
 
     @MockK
-    lateinit var getReportControlDeductionOverviewService: GetReportControlDeductionOverviewService
+    lateinit var getReportControlDeductionOverviewCalculator: GetReportControlDeductionOverviewCalculator
 
     @InjectMockKs
     lateinit var getReportControlDeductionOverview: GetReportControlDeductionOverview
@@ -58,7 +58,7 @@ class GetReportControlDeductionOverviewTest : UnitTest() {
             otherCosts = BigDecimal.ZERO,
             total = BigDecimal.valueOf(130500, 2)
         )
-      every { getReportControlDeductionOverviewService.get(partnerId = PARTNER_ID, reportId = REPORT_ID) } returns ControlDeductionOverview(
+      every { getReportControlDeductionOverviewCalculator.get(partnerId = PARTNER_ID, reportId = REPORT_ID) } returns ControlDeductionOverview(
           deductionRows = deductionRows,
           staffCostsFlatRate = null,
           officeAndAdministrationFlatRate = 15,

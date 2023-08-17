@@ -28,14 +28,14 @@ internal class GetReportControlOverviewTest: UnitTest() {
     }
 
     @MockK
-    private lateinit var getReportControlOverviewService: GetReportControlOverviewService
+    private lateinit var getReportControlOverviewCalculator: GetReportControlOverviewCalculator
 
     @InjectMockKs
     private lateinit var interactor: GetReportControlOverview
 
     @Test
     fun get() {
-        every { getReportControlOverviewService.get(PARTNER_ID, REPORT_ID) } returns
+        every { getReportControlOverviewCalculator.get(PARTNER_ID, REPORT_ID) } returns
             controlOverview
 
         assertThat(interactor.get(PARTNER_ID, REPORT_ID)).isEqualTo(controlOverview)

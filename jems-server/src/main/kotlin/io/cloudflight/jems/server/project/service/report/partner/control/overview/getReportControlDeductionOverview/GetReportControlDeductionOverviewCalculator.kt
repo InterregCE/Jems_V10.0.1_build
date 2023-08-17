@@ -19,15 +19,15 @@ import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 
 @Service
-class GetReportControlDeductionOverviewService(
+class GetReportControlDeductionOverviewCalculator(
     private val reportPersistence: ProjectPartnerReportPersistence,
     private val typologyOfErrorsPersistence: ProgrammeTypologyErrorsPersistence,
     private val reportExpenditurePersistence: ProjectPartnerReportExpenditureVerificationPersistence,
-    private val reportExpenditureCostCategoryPersistence: ProjectPartnerReportExpenditureCostCategoryPersistence
-): GetReportControlDeductionOverviewInteractor {
+    private val reportExpenditureCostCategoryPersistence: ProjectPartnerReportExpenditureCostCategoryPersistence,
+) {
 
     @Transactional(readOnly = true)
-    override fun get(partnerId: Long, reportId: Long): ControlDeductionOverview {
+    fun get(partnerId: Long, reportId: Long): ControlDeductionOverview {
         val isClosed = reportPersistence.getPartnerReportById(partnerId = partnerId, reportId = reportId).status.isFinalized()
 
         val expenditures = reportExpenditurePersistence.getPartnerControlReportExpenditureVerification(partnerId, reportId)
