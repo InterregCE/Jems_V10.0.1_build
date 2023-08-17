@@ -77,7 +77,7 @@ internal class ChecklistTemplateValidatorTest : UnitTest() {
             checklistTemplateValidator.validateNewChecklist(newCheckList)
         }
 
-        components.addAll(List(100) { index ->
+        components.addAll(List(200) { index ->
             ProgrammeChecklistComponent(
                 id = index.toLong(),
                 type = ProgrammeChecklistComponentType.HEADLINE,

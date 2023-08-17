@@ -35,6 +35,7 @@ export class ProjectReportComponent {
   displayedColumns = ['reportNumber', 'status', 'linkedFormVersion', 'reportingPeriod', 'type', 'createdAt', 'firstSubmission',
     'amountRequested', 'verificationEndDate', 'totalEligible', 'verification', 'delete'];
   dataSource: MatTableDataSource<ProjectReportSummaryDTO> = new MatTableDataSource([]);
+  MAX_PROJECT_REPORTS_ALLOWED = 100
 
   data$: Observable<{
     projectReports: PageProjectReportSummaryDTO;
@@ -105,4 +106,7 @@ export class ProjectReportComponent {
       ).subscribe();
   }
 
+  createProjectReport(): void {
+    this.router.navigate([`/app/project/detail/${this.projectId}/projectReports/create`])
+  }
 }

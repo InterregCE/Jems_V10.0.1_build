@@ -176,7 +176,7 @@ export class ProgrammeStateAidListComponent extends ViewEditFormComponent implem
   }
 
   addStateAidVisible(): boolean {
-    return this.stateAidsForm.length < 20;
+    return this.stateAidsForm.length < 40;
   }
 
   private selectOptionClicked(event: FocusEvent): boolean {

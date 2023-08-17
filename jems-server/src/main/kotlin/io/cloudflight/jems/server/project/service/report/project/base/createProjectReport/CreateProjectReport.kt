@@ -56,7 +56,7 @@ class CreateProjectReport(
 ) : CreateProjectReportInteractor {
 
     companion object {
-        private const val MAX_REPORTS = 25
+        private const val MAX_REPORTS = 100
 
         private val emptyPrinciples = ProjectHorizontalPrinciples(null, null, null)
     }

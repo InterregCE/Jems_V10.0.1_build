@@ -115,7 +115,7 @@ class ProjectPartnerReportProcurementBeneficialPersistenceProviderTest : UnitTes
         val reportId = 114L
 
         every { reportProcurementBeneficialRepository
-            .findTop10ByProcurementIdAndCreatedInReportIdLessThanEqualOrderByCreatedInReportIdAscIdAsc(
+            .findTop30ByProcurementIdAndCreatedInReportIdLessThanEqualOrderByCreatedInReportIdAscIdAsc(
                 procurementId = procurementId,
                 reportId = reportId,
             )
@@ -136,7 +136,7 @@ class ProjectPartnerReportProcurementBeneficialPersistenceProviderTest : UnitTes
         val toDeleteEntity = dummyEntity(procurement, id = 20L, createdIn = reportId)
         val updateEntity = dummyEntity(procurement, id = 25L, createdIn = reportId)
         every { reportProcurementBeneficialRepository
-            .findTop10ByProcurementAndCreatedInReportIdOrderByCreatedInReportIdAscIdAsc(
+            .findTop30ByProcurementAndCreatedInReportIdOrderByCreatedInReportIdAscIdAsc(
                 procurement = procurement,
                 reportId = reportId,
             )
@@ -147,7 +147,7 @@ class ProjectPartnerReportProcurementBeneficialPersistenceProviderTest : UnitTes
         every { reportProcurementBeneficialRepository.save(any()) } returnsArgument 0
 
         every { reportProcurementBeneficialRepository
-            .findTop10ByProcurementIdAndCreatedInReportIdLessThanEqualOrderByCreatedInReportIdAscIdAsc(
+            .findTop30ByProcurementIdAndCreatedInReportIdLessThanEqualOrderByCreatedInReportIdAscIdAsc(
                 procurementId = procurement.id,
                 reportId = reportId,
             )

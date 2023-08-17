@@ -86,7 +86,7 @@ internal class UpdateTypologyErrorsTest : UnitTest()  {
         every { isProgrammeSetupLocked.isLocked() } returns false
         val list: MutableList<TypologyErrors> = mutableListOf()
 
-        for (i in 1..51) {
+        for (i in 1..101) {
             list.add(TypologyErrors(id = i.toLong(), description = "Sample text"))
         }
 

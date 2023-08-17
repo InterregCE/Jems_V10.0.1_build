@@ -18,7 +18,7 @@ class ProjectPartnerReportProcurementBeneficialPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getBeneficialOwnersBeforeAndIncludingReportId(procurementId: Long, reportId: Long) =
         reportProcurementBeneficialRepository
-            .findTop10ByProcurementIdAndCreatedInReportIdLessThanEqualOrderByCreatedInReportIdAscIdAsc(procurementId, reportId = reportId)
+            .findTop30ByProcurementIdAndCreatedInReportIdLessThanEqualOrderByCreatedInReportIdAscIdAsc(procurementId, reportId = reportId)
             .toModel()
 
     @Transactional
@@ -31,7 +31,7 @@ class ProjectPartnerReportProcurementBeneficialPersistenceProvider(
         val procurement = reportProcurementRepository.findByReportEntityPartnerIdAndId(partnerId, procurementId)
 
         val existingById = reportProcurementBeneficialRepository
-            .findTop10ByProcurementAndCreatedInReportIdOrderByCreatedInReportIdAscIdAsc(procurement, reportId).associateBy { it.id }
+            .findTop30ByProcurementAndCreatedInReportIdOrderByCreatedInReportIdAscIdAsc(procurement, reportId).associateBy { it.id }
 
         val toStayIds = owners.filter { it.id > 0 }.mapTo(HashSet()) { it.id }
 
@@ -47,7 +47,7 @@ class ProjectPartnerReportProcurementBeneficialPersistenceProvider(
         }
 
         return reportProcurementBeneficialRepository
-            .findTop10ByProcurementIdAndCreatedInReportIdLessThanEqualOrderByCreatedInReportIdAscIdAsc(procurementId, reportId = reportId)
+            .findTop30ByProcurementIdAndCreatedInReportIdLessThanEqualOrderByCreatedInReportIdAscIdAsc(procurementId, reportId = reportId)
             .toModel()
             .also { procurement.lastChanged = ZonedDateTime.now() }
     }

@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service
 class ChecklistTemplateValidator(private val validator: GeneralValidatorService) {
 
     companion object {
-        const val MAX_NUMBER_OF_CHECKLIST_COMPONENTS = 100
+        const val MAX_NUMBER_OF_CHECKLIST_COMPONENTS = 200
     }
 
     fun validateNewChecklist(model: ProgrammeChecklistDetail) =

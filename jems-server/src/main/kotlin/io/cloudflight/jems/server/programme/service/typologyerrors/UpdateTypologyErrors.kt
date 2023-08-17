@@ -22,7 +22,7 @@ class UpdateTypologyErrors(
 ) : UpdateTypologyErrorsInteractor {
 
     companion object {
-        private const val MAX_ALLOWED_AMOUNT_OF_TYPOLOGY_ERRORS = 50
+        private const val MAX_ALLOWED_AMOUNT_OF_TYPOLOGY_ERRORS = 100
         private const val MAX_DESCRIPTION_LENGTH = 500
     }
 

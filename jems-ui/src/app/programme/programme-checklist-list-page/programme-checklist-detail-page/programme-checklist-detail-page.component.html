@@ -132,7 +132,7 @@
                         </div>
                     </div>
                 </form>
-                <button *ngIf="form.enabled && components.controls.length < 100"
+                <button *ngIf="form.enabled && components.controls.length < 200"
                         jemsText mat-stroked-button class="mt-3"
                         (click)="addComponent(); formService.setDirty(true)">
                     + {{'programme.checklists.detail.component.add' | translate}}
