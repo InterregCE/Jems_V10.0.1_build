@@ -8,7 +8,15 @@ import {
   ProjectPartnerDetailDTO, ReportOnTheSpotVerificationDTO,
   ReportVerificationDTO
 } from '@cat/api';
-import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {
+  AbstractControl,
+  FormArray,
+  FormBuilder,
+  FormGroup,
+  ValidationErrors,
+  ValidatorFn,
+  Validators
+} from '@angular/forms';
 import {
   PartnerReportDetailPageStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
@@ -66,7 +74,7 @@ export class PartnerControlReportControlIdentificationTabComponent implements On
       controlInstitution: this.formBuilder.control(''),
       controlInstitutionId: this.formBuilder.control(''),
       controllingUserId: this.formBuilder.control(''),
-      controllingUserName: this.formBuilder.control(''),
+      controllingUserName: this.formBuilder.control('', [this.isControllingUserNameSelected()]),
       jobTitle: this.formBuilder.control('', [Validators.maxLength(this.constants.JOB_TITLE_MAX_LENGTH)]),
       divisionUnit: this.formBuilder.control('', [Validators.maxLength(this.constants.DIVISION_MAX_LENGTH)]),
       address: this.formBuilder.control('', [Validators.maxLength(this.constants.ADDRESS_MAX_LENGTH)]),
@@ -78,7 +86,7 @@ export class PartnerControlReportControlIdentificationTabComponent implements On
         ])
       ),
       controllerReviewerId: this.formBuilder.control(''),
-      controllerReviewerName: this.formBuilder.control(''),
+      controllerReviewerName: this.formBuilder.control('', [this.isControllingUserNameSelected()]),
       }
     ),
     reportVerification: this.formBuilder.group({
@@ -312,6 +320,16 @@ export class PartnerControlReportControlIdentificationTabComponent implements On
     });
   }
 
+  private isControllingUserNameSelected(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (this.controllerUsers && !this.getSelectedControllerUser(control.value)) {
+        return {controllingUserNameNotSelected : true}
+      } else {
+        return null;
+      }
+    };
+  }
+
   getListOfGeneralMethodologies(verificationData: any): GeneralMethodologiesEnum[] {
     const generalMethodologies: GeneralMethodologiesEnum[] = [];
 
@@ -352,11 +370,17 @@ export class PartnerControlReportControlIdentificationTabComponent implements On
   }
 
   controlUserChanged(selection: string): void {
-    this.selectedControllerUser = this.controllerUsers.find(user => selection === PartnerControlReportControlIdentificationTabComponent.formatControLuser(user));
+    this.selectedControllerUser = this.getSelectedControllerUser(selection);
+    this.designatedController.get('controllingUserName')?.updateValueAndValidity()
   }
 
   reviewerUserChanged(selection: string): void {
-    this.selectedReviewerUser = this.controllerUsers.find(user => selection === PartnerControlReportControlIdentificationTabComponent.formatControLuser(user));
+    this.selectedReviewerUser = this.getSelectedControllerUser(selection);
+    this.designatedController.get('controllerReviewerName')?.updateValueAndValidity()
+  }
+
+  private getSelectedControllerUser(selection: string) {
+    return this.controllerUsers.find(user => selection === PartnerControlReportControlIdentificationTabComponent.formatControLuser(user));
   }
 
   private findByName(value: string, nuts: OutputNuts[]): OutputNuts | undefined {

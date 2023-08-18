@@ -113,6 +113,12 @@
                             {{controlUser}}
                         </mat-option>
                     </mat-autocomplete>
+                    <mat-error>
+                        <jems-form-field-errors
+                                [errors]="this.designatedController?.get(constants.FORM_CONTROL_NAMES.controllingUserName)?.errors"
+                                [messages]="{controllingUserNameNotSelected: 'project.application.partner.control.report.controller.name.not.selected.warning'}">
+                        </jems-form-field-errors>
+                    </mat-error>
                 </mat-form-field>
             </div>
 
@@ -206,6 +212,12 @@
                             {{reviewerUser}}
                         </mat-option>
                     </mat-autocomplete>
+                    <mat-error>
+                        <jems-form-field-errors
+                                [errors]="this.designatedController?.get(constants.FORM_CONTROL_NAMES.controllerReviewerName)?.errors"
+                                [messages]="{controllingUserNameNotSelected: 'project.application.partner.control.report.controller.name.not.selected.warning'}">
+                        </jems-form-field-errors>
+                    </mat-error>
                 </mat-form-field>
             </div>
         </div>
