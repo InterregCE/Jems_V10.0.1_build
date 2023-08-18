@@ -840,7 +840,7 @@ internal class CreateProjectReportTest : UnitTest() {
     @Test
     fun `createReportFor - max amounts of reports reached`() {
         val projectId = 254L
-        every { reportPersistence.countForProject(projectId) } returns 25
+        every { reportPersistence.countForProject(projectId) } returns 100
         assertThrows<MaxAmountOfReportsReachedException> { interactor.createReportFor(projectId, mockk()) }
     }
 

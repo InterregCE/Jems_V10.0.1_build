@@ -131,7 +131,7 @@ internal class UpdateProjectPartnerReportProcurementBeneficialTest : UnitTest() 
         mockProcurement(id = procurementId)
         every { reportPersistence.exists(PARTNER_ID, reportId = reportId) } returns true
 
-        every { reportProcurementBeneficialPersistence.countBeneficialOwnersCreatedBefore(procurementId, reportId = reportId) } returns 10L
+        every { reportProcurementBeneficialPersistence.countBeneficialOwnersCreatedBefore(procurementId, reportId = reportId) } returns 30L
 
         val owners = listOf(changeOwner1)
         assertThrows<MaxAmountOfBeneficialReachedException> { interactor.update(PARTNER_ID, reportId, procurementId, owners) }

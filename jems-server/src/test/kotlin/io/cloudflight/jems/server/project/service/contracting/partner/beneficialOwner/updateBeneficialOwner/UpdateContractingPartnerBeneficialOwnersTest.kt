@@ -95,7 +95,7 @@ internal class UpdateContractingPartnerBeneficialOwnersTest : UnitTest() {
     fun `update - max amount reached`() {
         val owners = mockk<List<ContractingPartnerBeneficialOwner>>()
         every { validator.validatePartnerLock(partnerId) } returns Unit
-        every { owners.size } returns 11
+        every { owners.size } returns 31
         assertThrows<MaxAmountOfBeneficialOwnersReachedException> {
             interactor.updateBeneficialOwners(
                 projectId,

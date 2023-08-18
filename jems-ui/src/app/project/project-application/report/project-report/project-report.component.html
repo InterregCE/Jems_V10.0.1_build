@@ -6,13 +6,16 @@
         [isVersionedData]="false">
 
     <h3>{{'project.application.project.report.title' | translate}}</h3>
-    <ng-container *ngIf="pageStore.userCanCreateReport$ | async">
+    <ng-container *ngIf="(pageStore.userCanCreateReport$ | async)">
         <p class="mb-3">
-            <a jemsText mat-raised-button [color]="'primary'" [routerLink]="'/app/project/detail/' + projectId + '/projectReports/create'"
-               aria-label="add">
+            <button jemsText class="action-button"
+                    color="primary"
+                    mat-raised-button
+                    (click)="createProjectReport()"
+                    [disabled]="data.projectReports.totalElements >= MAX_PROJECT_REPORTS_ALLOWED">
                 <mat-icon>add</mat-icon>
                 {{'project.application.project.report.add' | translate}}
-            </a>
+            </button>
         </p>
     </ng-container>
 
