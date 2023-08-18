@@ -1,6 +1,6 @@
 <ng-container *ngIf="data$ | async as data">
     <jems-form  (discard)="resetForm(data.paymentDetail)"
-               (save)="updatePaymentApplicationToEc()"
+                (save)="updatePaymentApplicationToEc()"
                [formGroup]="summaryForm">
 
         <h3>{{'payments.to.ec.detail.summary.tab.header' | translate}}</h3>

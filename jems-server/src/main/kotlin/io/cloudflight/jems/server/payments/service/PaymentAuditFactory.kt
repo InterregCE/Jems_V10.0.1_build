@@ -7,14 +7,12 @@ import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.common.entity.extractTranslation
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSettlement
-import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationsToEcDetail
+import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
 import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import java.math.RoundingMode
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 fun monitoringFtlsReadyForPayment(
     context: Any,
@@ -204,7 +202,7 @@ fun advancePaymentSettlementDeleted(
 
 fun paymentApplicationToEcCreated(
     context: Any,
-    paymentApplicationToEc: PaymentApplicationsToEcDetail
+    paymentApplicationToEc: PaymentApplicationToEcDetail
 ): AuditCandidateEvent = AuditCandidateEvent(
     context = context,
     auditCandidate = AuditBuilder(AuditAction.PAYMENT_APPLICATION_TO_EC_IS_CREATED)
@@ -213,17 +211,15 @@ fun paymentApplicationToEcCreated(
                 "was created for Fund (${paymentApplicationToEc.paymentApplicationsToEcSummary.programmeFund.id}, " +
                 "${paymentApplicationToEc.paymentApplicationsToEcSummary.programmeFund.type}) " +
                 "for accounting year (${paymentApplicationToEc.paymentApplicationsToEcSummary.accountingYear.year}, ${
-                    getFormattedDate(
                         paymentApplicationToEc.paymentApplicationsToEcSummary.accountingYear.startDate
-                    )
-                } - ${getFormattedDate(paymentApplicationToEc.paymentApplicationsToEcSummary.accountingYear.endDate)})"
+                } - ${paymentApplicationToEc.paymentApplicationsToEcSummary.accountingYear.endDate})"
         )
         .build()
 )
 
 fun paymentApplicationToEcDeleted(
     context: Any,
-    paymentApplicationToEc: PaymentApplicationsToEcDetail
+    paymentApplicationToEc: PaymentApplicationToEcDetail
 ): AuditCandidateEvent = AuditCandidateEvent(
     context = context,
     auditCandidate = AuditBuilder(AuditAction.PAYMENT_APPLICATION_TO_EC_IS_DELETED)
@@ -232,16 +228,11 @@ fun paymentApplicationToEcDeleted(
                 "created for Fund (${paymentApplicationToEc.paymentApplicationsToEcSummary.programmeFund.id}, " +
                 "${paymentApplicationToEc.paymentApplicationsToEcSummary.programmeFund.type}) " +
                 "for accounting year (${paymentApplicationToEc.paymentApplicationsToEcSummary.accountingYear.year}, ${
-                    getFormattedDate(
                         paymentApplicationToEc.paymentApplicationsToEcSummary.accountingYear.startDate
-                    )
-                } - ${getFormattedDate(paymentApplicationToEc.paymentApplicationsToEcSummary.accountingYear.endDate)}) was deleted"
+                } - ${paymentApplicationToEc.paymentApplicationsToEcSummary.accountingYear.endDate}) was deleted"
         )
         .build()
 )
-
-private fun getFormattedDate(date: LocalDate) =
-    date.format(DateTimeFormatter.ofPattern("MM/dd/yyyy"))
 
 private fun getAnswer(state: Boolean): String {
     return if (state) {

@@ -1,9 +1,9 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {Observable} from 'rxjs';
-import {PaymentApplicationsToEcDTO, UserRoleDTO} from '@cat/api';
+import {PaymentApplicationToEcDTO, UserRoleDTO} from '@cat/api';
 import {UntilDestroy} from '@ngneat/until-destroy';
 import {PaymentsToEcDetailPageStore} from './payments-to-ec-detail-page-store.service';
-import PaymentEcStatusEnum = PaymentApplicationsToEcDTO.StatusEnum;
+import PaymentEcStatusEnum = PaymentApplicationToEcDTO.StatusEnum;
 
 @UntilDestroy()
 @Component({

@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {PagePaymentApplicationsToEcDTO, PaymentApplicationsToECService, UserRoleCreateDTO,} from '@cat/api';
+import {PagePaymentApplicationToEcDTO, PaymentApplicationToECService, UserRoleCreateDTO,} from '@cat/api';
 import {PermissionService} from '../../security/permissions/permission.service';
 import {combineLatest, Observable, Subject} from 'rxjs';
 import {map, startWith, switchMap, take, tap} from 'rxjs/operators';
@@ -20,9 +20,9 @@ export class PaymentsToEcPageStore {
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
   newSort$ = new Subject<Partial<MatSort>>();
-  paymentToEcPage$: Observable<PagePaymentApplicationsToEcDTO>;
+  paymentToEcPage$: Observable<PagePaymentApplicationToEcDTO>;
 
-  constructor(private paymentToEcService: PaymentApplicationsToECService,
+  constructor(private paymentToEcService: PaymentApplicationToECService,
               private permissionService: PermissionService,
   ) {
     this.paymentToEcPage$ = this.paymentToEcPage();
@@ -30,7 +30,7 @@ export class PaymentsToEcPageStore {
     this.userCanEdit$ = this.userCanEdit();
   }
 
-  private paymentToEcPage(): Observable<PagePaymentApplicationsToEcDTO> {
+  private paymentToEcPage(): Observable<PagePaymentApplicationToEcDTO> {
     return combineLatest([
       this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
       this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),

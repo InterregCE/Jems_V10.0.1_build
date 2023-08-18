@@ -2,8 +2,8 @@ import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {combineLatest, Observable} from 'rxjs';
 import {
   AccountingYearDTO,
-  PaymentApplicationsToEcDetailDTO,
-  PaymentApplicationsToEcUpdateDTO,
+  PaymentApplicationToEcDetailDTO,
+  PaymentApplicationToEcUpdateDTO,
   ProgrammeFundDTO
 } from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
@@ -34,9 +34,9 @@ export class PaymentToEcSummaryTabComponent implements OnInit {
     programmeFund: this.formBuilder.control(''),
     accountingYear: this.formBuilder.control(''),
   });
-  initialPaymentToEcDetail: PaymentApplicationsToEcDetailDTO;
+  initialPaymentToEcDetail: PaymentApplicationToEcDetailDTO;
   data$: Observable<{
-    paymentDetail: PaymentApplicationsToEcDetailDTO;
+    paymentDetail: PaymentApplicationToEcDetailDTO;
     programmeFunds: ProgrammeFundDTO[];
     accountingYears: AccountingYearDTO[];
   }>;
@@ -71,7 +71,7 @@ export class PaymentToEcSummaryTabComponent implements OnInit {
     this.formService.init(this.summaryForm, this.userCanEdit$);
   }
 
-  resetForm(paymentDetail: PaymentApplicationsToEcDetailDTO) {
+  resetForm(paymentDetail: PaymentApplicationToEcDetailDTO) {
     this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.id)?.setValue(this.paymentId ? this.paymentId : null);
     this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.programmeFund)?.setValue(this.getValueOrEmpty(paymentDetail?.paymentApplicationsToEcSummary?.programmeFund.id));
     this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.accountingYear)?.setValue(this.getValueOrEmpty(paymentDetail?.paymentApplicationsToEcSummary?.accountingYear.id));
@@ -95,13 +95,22 @@ export class PaymentToEcSummaryTabComponent implements OnInit {
   updatePaymentApplicationToEc() {
     const dataToUpdate = this.prepareDataForSave(this.summaryForm.getRawValue());
 
-    this.paymentsToEcDetailPageStoreStore.updatePaymentToEcSummary(dataToUpdate).pipe(
-      take(1),
-      tap(() => this.formService.setSuccess('payments.detail.table.have.success')),
-      tap(data =>  this.redirectToPartnerDetailAfterCreate(dataToUpdate.id === null, data.id)),
-      catchError(err => this.formService.setError(err)),
-      untilDestroyed(this)
-    ).subscribe();
+    if(dataToUpdate.id === null) {
+      this.paymentsToEcDetailPageStoreStore.createPaymentToEc(dataToUpdate).pipe(
+        take(1),
+        tap(() => this.formService.setSuccess('payments.detail.table.have.success')),
+        tap(data =>  this.redirectToPartnerDetailAfterCreate(dataToUpdate.id === null, data.id)),
+        catchError(err => this.formService.setError(err)),
+        untilDestroyed(this)
+      ).subscribe();
+    } else {
+      this.paymentsToEcDetailPageStoreStore.updatePaymentToEcSummary(dataToUpdate).pipe(
+        take(1),
+        tap(() => this.formService.setSuccess('payments.detail.table.have.success')),
+        catchError(err => this.formService.setError(err)),
+        untilDestroyed(this)
+      ).subscribe();
+    }
   }
 
   redirectToPartnerDetailAfterCreate(isCreate: boolean, paymentId: number) {
@@ -113,7 +122,7 @@ export class PaymentToEcSummaryTabComponent implements OnInit {
     }
   }
 
-  prepareDataForSave(data: any): PaymentApplicationsToEcUpdateDTO {
+  prepareDataForSave(data: any): PaymentApplicationToEcUpdateDTO {
     return {
       id: data.id,
       programmeFundId: data.programmeFund,
