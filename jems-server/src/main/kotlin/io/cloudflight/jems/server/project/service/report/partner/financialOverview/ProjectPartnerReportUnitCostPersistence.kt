@@ -11,7 +11,7 @@ interface ProjectPartnerReportUnitCostPersistence {
 
     fun getUnitCostCumulative(reportIds: Set<Long>): Map<Long, ExpenditureUnitCostCurrent>
 
-    fun getValidatedUnitCostCumulative(finalizedReportsIds: Set<Long>): Map<Long, BigDecimal>
+    fun getValidatedUnitCostCumulative(reportIds: Set<Long>): Map<Long, BigDecimal>
 
     fun updateCurrentlyReportedValues(partnerId: Long, reportId: Long, currentlyReported: Map<Long, ExpenditureUnitCostCurrentWithReIncluded>)
 

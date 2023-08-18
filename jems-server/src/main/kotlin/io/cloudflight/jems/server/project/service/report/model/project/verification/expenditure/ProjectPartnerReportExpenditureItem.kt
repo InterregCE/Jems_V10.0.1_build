@@ -4,10 +4,10 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportLumpSum
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportUnitCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.investments.ExpenditureInvestmentBreakdownLine
-import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumBreakdownLine
-import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.unitCost.ExpenditureUnitCostBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurement
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -24,8 +24,8 @@ data class ProjectPartnerReportExpenditureItem(
     val partnerReportId: Long,
     val partnerReportNumber: Int,
 
-    var lumpSum: ExpenditureLumpSumBreakdownLine?,
-    val unitCost: ExpenditureUnitCostBreakdownLine?,
+    var lumpSum: ProjectPartnerReportLumpSum?,
+    val unitCost: ProjectPartnerReportUnitCost?,
     var gdpr: Boolean,
     val costCategory: ReportBudgetCategory,
     val investment: ExpenditureInvestmentBreakdownLine?,

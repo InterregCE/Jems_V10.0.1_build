@@ -1,7 +1,5 @@
 package io.cloudflight.jems.server.project.service.report.partner.control.overview.getReportControlWorkOverview
 
-import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.report.model.partner.control.overview.ControlWorkOverview
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
@@ -31,7 +29,7 @@ class GetReportControlWorkOverviewService(
 
         val controlSample = currentExpenditures.onlySamplingOnes().sum()
 
-        val parkedSum = if (isClosed)
+        val parked = if (isClosed)
             costCategories.currentlyReportedParked.sum
         else
             currentExpenditures.onlyParkedOnes().calculateCurrent(costCategories.options).sum
@@ -41,18 +39,19 @@ class GetReportControlWorkOverviewService(
         else
             currentExpenditures.calculateCertified(costCategories.options).sum
 
-        val currentReportSum = costCategories.currentlyReported.sum
-        val currentReportSumWithoutFlatRates = costCategories.currentlyReported.sumIgnoringFlatRates(costCategories.options)
+        val currentReport = costCategories.currentlyReported.sum
+        val currentReportFlatRates = costCategories.currentlyReported.extractFlatRatesSum(costCategories.options)
+        val currentReportWithoutFlatRates = currentReport.minus(currentReportFlatRates)
 
         return ControlWorkOverview(
-            declaredByPartner = currentReportSum,
-            declaredByPartnerFlatRateSum = costCategories.currentlyReported.flatRatesSum(costCategories.options),
+            declaredByPartner = currentReport,
+            declaredByPartnerFlatRateSum = currentReportFlatRates,
             inControlSample = controlSample,
-            inControlSamplePercentage = controlSample.percentageOf(currentReportSumWithoutFlatRates) ?: BigDecimal.ZERO,
-            parked = parkedSum,
-            deductedByControl = currentReportSum.minus(eligibleAfterControl).minus(parkedSum),
+            inControlSamplePercentage = controlSample.percentageOf(currentReportWithoutFlatRates) ?: BigDecimal.ZERO,
+            parked = parked,
+            deductedByControl = currentReport.minus(eligibleAfterControl).minus(parked),
             eligibleAfterControl = eligibleAfterControl,
-            eligibleAfterControlPercentage = eligibleAfterControl.percentageOf(currentReportSum) ?: BigDecimal.ZERO,
+            eligibleAfterControlPercentage = eligibleAfterControl.percentageOf(currentReport) ?: BigDecimal.ZERO,
         )
     }
 
@@ -61,23 +60,4 @@ class GetReportControlWorkOverviewService(
     private fun Collection<ProjectPartnerReportExpenditureVerification>.onlySamplingOnes() =
         filter { it.partOfSample }.map { it.declaredAmountAfterSubmission }
 
-    private fun BudgetCostsCalculationResultFull.sumIgnoringFlatRates(options: ProjectPartnerBudgetOptions) =
-        sum.minus(this.flatRatesSum(options))
-
-    private fun BudgetCostsCalculationResultFull.flatRatesSum(options: ProjectPartnerBudgetOptions): BigDecimal {
-        var flatRatesSum = BigDecimal.ZERO
-        with(options) {
-            if (hasFlatRateOffice()) { flatRatesSum += office }
-            if (hasFlatRateTravel()) { flatRatesSum += travel }
-            if (hasFlatRateStaff()) { flatRatesSum += staff }
-            if (hasFlatRateOther()) { flatRatesSum += other }
-        }
-        return flatRatesSum
-    }
-
-    private fun ProjectPartnerBudgetOptions.hasFlatRateOffice() =
-        officeAndAdministrationOnDirectCostsFlatRate != null || officeAndAdministrationOnStaffCostsFlatRate != null
-    private fun ProjectPartnerBudgetOptions.hasFlatRateTravel() = travelAndAccommodationOnStaffCostsFlatRate != null
-    private fun ProjectPartnerBudgetOptions.hasFlatRateStaff() = staffCostsFlatRate != null
-    private fun ProjectPartnerBudgetOptions.hasFlatRateOther() = otherCostsOnStaffCostsFlatRate != null
 }

@@ -1,10 +1,12 @@
-package io.cloudflight.jems.server.project.controller.report.project.verification
+package io.cloudflight.jems.server.project.controller.report.project.verification.expenditure
 
 import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.BudgetCategoryDTO
+import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportLumpSumDTO
+import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportUnitCostDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.verification.ExpenditureParkingMetadataDTO
 import io.cloudflight.jems.api.project.dto.report.partner.financialOverview.ExpenditureInvestmentBreakdownLineDTO
 import io.cloudflight.jems.api.project.dto.report.partner.financialOverview.ExpenditureLumpSumBreakdownLineDTO
@@ -16,10 +18,10 @@ import io.cloudflight.jems.api.project.dto.report.project.verification.expenditu
 import io.cloudflight.jems.api.project.dto.report.project.verification.expenditure.ProjectReportVerificationRiskBasedDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
-import io.cloudflight.jems.server.project.controller.report.project.verification.expenditure.ProjectReportVerificationExpenditureController
-import io.cloudflight.jems.server.project.controller.report.project.verification.expenditure.toDto
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportLumpSum
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportUnitCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.investments.ExpenditureInvestmentBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumBreakdownLine
@@ -36,7 +38,7 @@ import io.cloudflight.jems.server.project.service.report.project.verification.ex
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -69,42 +71,22 @@ class ProjectReportVerificationExpenditureControllerTest: UnitTest() {
             originalExpenditureNumber = 3
         )
 
-        private val dummyLineLumpSum = ExpenditureLumpSumBreakdownLine(
-            reportLumpSumId = 36L,
-            lumpSumId = 945L,
-            name = setOf(InputTranslation(SystemLanguage.EN, "some lump sum 36 (or 945)")),
+        private val dummyLineLumpSum = ProjectPartnerReportLumpSum(
+            id = 36L,
+            lumpSumProgrammeId = 945L,
+            fastTrack = false,
+            orderNr = 17,
             period = 4,
-            totalEligibleBudget = BigDecimal.ONE,
-            previouslyReported = BigDecimal.TEN,
-            previouslyPaid = BigDecimal.ONE,
-            currentReport = BigDecimal.ZERO,
-            totalEligibleAfterControl = BigDecimal.ONE,
-            totalReportedSoFar = BigDecimal.ONE,
-            totalReportedSoFarPercentage = BigDecimal.TEN,
-            remainingBudget = BigDecimal.ZERO,
-            previouslyReportedParked = BigDecimal.valueOf(1000),
-            currentReportReIncluded = BigDecimal.valueOf(100),
-            previouslyValidated = BigDecimal.valueOf(6)
-
+            cost = BigDecimal.ONE,
+            name = setOf(InputTranslation(SystemLanguage.EN, "some lump sum 36 (or 945)")),
         )
 
-        private val expectedDummyLineLumpSum = ExpenditureLumpSumBreakdownLineDTO(
-            reportLumpSumId = 36L,
-            lumpSumId = 945L,
-            name = setOf(InputTranslation(SystemLanguage.EN, "some lump sum 36 (or 945)")),
+        private val expectedDummyLineLumpSum = ProjectPartnerReportLumpSumDTO(
+            id = 36L,
+            lumpSumProgrammeId = 945L,
             period = 4,
-            totalEligibleBudget = BigDecimal.ONE,
-            previouslyReported = BigDecimal.TEN,
-            previouslyPaid = BigDecimal.ONE,
-            currentReport = BigDecimal.ZERO,
-            totalEligibleAfterControl = BigDecimal.ONE,
-            totalReportedSoFar = BigDecimal.ONE,
-            totalReportedSoFarPercentage = BigDecimal.TEN,
-            remainingBudget = BigDecimal.ZERO,
-            previouslyReportedParked = BigDecimal.valueOf(1000),
-            currentReportReIncluded = BigDecimal.valueOf(100),
-            previouslyValidated = BigDecimal.valueOf(6)
-
+            cost = BigDecimal.ONE,
+            name = setOf(InputTranslation(SystemLanguage.EN, "some lump sum 36 (or 945)")),
         )
 
         private val expectedDummyInvestmentLine = ExpenditureInvestmentBreakdownLineDTO(
@@ -145,36 +127,26 @@ class ProjectReportVerificationExpenditureControllerTest: UnitTest() {
             previouslyValidated = BigDecimal.valueOf(7)
         )
 
-        private val expectedDummyLineUnitCost = ExpenditureUnitCostBreakdownLineDTO(
-            reportUnitCostId = 44L,
-            unitCostId = 945L,
+        private val expectedDummyLineUnitCost = ProjectPartnerReportUnitCostDTO(
+            id = 44L,
+            unitCostProgrammeId = 945L,
+            projectDefined = false,
+            costPerUnit = BigDecimal.ONE,
+            numberOfUnits = BigDecimal.TEN,
+            total = BigDecimal.TEN,
             name = setOf(InputTranslation(SystemLanguage.EN, "some unit cost 44 (or 945)")),
-            totalEligibleBudget = BigDecimal.ONE,
-            previouslyReported = BigDecimal.TEN,
-            currentReport = BigDecimal.ZERO,
-            totalEligibleAfterControl = BigDecimal.ONE,
-            totalReportedSoFar = BigDecimal.ONE,
-            totalReportedSoFarPercentage = BigDecimal.TEN,
-            remainingBudget = BigDecimal.ZERO,
-            previouslyReportedParked = BigDecimal.ZERO,
-            currentReportReIncluded = BigDecimal.ZERO,
-            previouslyValidated = BigDecimal.valueOf(8)
+            category = BudgetCategoryDTO.ExternalCosts,
         )
 
-        private val dummyLineUnitCost = ExpenditureUnitCostBreakdownLine(
-            reportUnitCostId = 44L,
-            unitCostId = 945L,
+        private val dummyLineUnitCost = ProjectPartnerReportUnitCost(
+            id = 44L,
+            unitCostProgrammeId = 945L,
+            projectDefined = false,
+            costPerUnit = BigDecimal.ONE,
+            numberOfUnits = BigDecimal.TEN,
+            total = BigDecimal.TEN,
             name = setOf(InputTranslation(SystemLanguage.EN, "some unit cost 44 (or 945)")),
-            totalEligibleBudget = BigDecimal.ONE,
-            previouslyReported = BigDecimal.TEN,
-            currentReport = BigDecimal.ZERO,
-            totalEligibleAfterControl = BigDecimal.ONE,
-            totalReportedSoFar = BigDecimal.ONE,
-            totalReportedSoFarPercentage = BigDecimal.TEN,
-            remainingBudget = BigDecimal.ZERO,
-            previouslyReportedParked = BigDecimal.ZERO,
-            currentReportReIncluded = BigDecimal.ZERO,
-            previouslyValidated = BigDecimal.valueOf(8)
+            category = ReportBudgetCategory.ExternalCosts,
         )
 
         private val expectedProcurement = ProjectPartnerReportProcurementDTO(
@@ -403,7 +375,7 @@ class ProjectReportVerificationExpenditureControllerTest: UnitTest() {
             )
         } returns listOf(expenditures)
 
-        assertThat(
+        Assertions.assertThat(
             controller.getProjectReportExpenditureVerification(
                 PROJECT_ID,
                 PROJECT_REPORT_ID
@@ -420,7 +392,7 @@ class ProjectReportVerificationExpenditureControllerTest: UnitTest() {
             )
         } returns listOf(expenditures)
 
-        assertThat(
+        Assertions.assertThat(
             controller.updateProjectReportExpendituresVerification(
                 PROJECT_ID,
                 PROJECT_REPORT_ID,
@@ -438,7 +410,7 @@ class ProjectReportVerificationExpenditureControllerTest: UnitTest() {
             )
         } returns riskBasedData
 
-        assertThat(
+        Assertions.assertThat(
             controller.getProjectReportExpenditureVerificationRiskBased(
                 PROJECT_ID,
                 PROJECT_REPORT_ID
@@ -455,7 +427,7 @@ class ProjectReportVerificationExpenditureControllerTest: UnitTest() {
             )
         } returns riskBasedData
 
-        assertThat(
+        Assertions.assertThat(
             controller.updateProjectReportExpenditureVerificationRiskBased(
                 PROJECT_ID,
                 PROJECT_REPORT_ID,

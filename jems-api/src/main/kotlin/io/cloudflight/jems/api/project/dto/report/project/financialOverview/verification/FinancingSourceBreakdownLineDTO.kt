@@ -1,6 +1,5 @@
-package io.cloudflight.jems.api.project.dto.report.project.financialOverview
+package io.cloudflight.jems.api.project.dto.report.project.financialOverview.verification
 
-import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import java.math.BigDecimal
 

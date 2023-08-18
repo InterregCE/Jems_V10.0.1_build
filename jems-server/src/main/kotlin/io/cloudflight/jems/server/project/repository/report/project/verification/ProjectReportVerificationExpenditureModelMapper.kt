@@ -6,9 +6,8 @@ import io.cloudflight.jems.server.project.entity.report.partner.procurement.Proj
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
 import io.cloudflight.jems.server.project.entity.report.verification.expenditure.ProjectReportVerificationExpenditureEntity
 import io.cloudflight.jems.server.project.repository.report.partner.expenditure.getParkingMetadata
+import io.cloudflight.jems.server.project.repository.report.partner.expenditure.toModel
 import io.cloudflight.jems.server.project.repository.report.partner.financialOverview.investment.toModel
-import io.cloudflight.jems.server.project.repository.report.partner.financialOverview.lumpSum.toModel
-import io.cloudflight.jems.server.project.repository.report.partner.financialOverview.unitCost.toModel
 import io.cloudflight.jems.server.project.repository.report.partner.procurement.toModel
 import io.cloudflight.jems.server.project.repository.report.partner.toModel
 import io.cloudflight.jems.server.project.service.report.model.project.verification.expenditure.ProjectPartnerReportExpenditureItem

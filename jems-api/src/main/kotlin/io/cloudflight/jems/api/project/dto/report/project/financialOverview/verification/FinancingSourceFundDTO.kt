@@ -1,4 +1,4 @@
-package io.cloudflight.jems.api.project.dto.report.project.financialOverview
+package io.cloudflight.jems.api.project.dto.report.project.financialOverview.verification
 
 import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundTypeDTO
 import io.cloudflight.jems.api.project.dto.InputTranslation

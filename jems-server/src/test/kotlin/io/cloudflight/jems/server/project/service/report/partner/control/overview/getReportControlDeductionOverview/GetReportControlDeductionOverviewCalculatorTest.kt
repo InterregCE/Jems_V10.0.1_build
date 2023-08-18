@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.partner.control.overview.getReportControlDeductionOverview
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.programme.service.typologyerrors.ProgrammeTypologyErrorsPersistence
 import io.cloudflight.jems.server.programme.service.typologyerrors.model.TypologyErrors
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
@@ -9,6 +10,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPa
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.control.overview.ControlDeductionOverview
 import io.cloudflight.jems.server.project.service.report.model.partner.control.overview.ControlDeductionOverviewRow
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ReportExpenditureCostCategory
@@ -23,6 +25,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import java.math.BigDecimal
+import java.time.LocalDate
 
 class GetReportControlDeductionOverviewCalculatorTest : UnitTest() {
 
@@ -107,22 +110,41 @@ class GetReportControlDeductionOverviewCalculatorTest : UnitTest() {
             isParked: Boolean,
             costCategory: ReportBudgetCategory,
             typologyOfErrorId: Long?,
-            lumpSumId: Long? = null
-        ): ProjectPartnerReportExpenditureVerification {
-            val expenditure = mockk<ProjectPartnerReportExpenditureVerification>()
-            every { expenditure.id } returns id
-            every { expenditure.parked } returns isParked
-            every { expenditure.partOfSample } returns partOfSample
-            every { expenditure.declaredAmountAfterSubmission } returns declaredAmount
-            every { expenditure.declaredAmount } returns declaredAmount
-            every { expenditure.deductedAmount } returns deductedAmount
-            every { expenditure.certifiedAmount } returns certified
-            every { expenditure.costCategory } returns costCategory
-            every { expenditure.typologyOfErrorId } returns typologyOfErrorId
-            every { expenditure.unitCostId } returns null
-            every { expenditure.lumpSumId } returns lumpSumId
-            return expenditure
-        }
+            lumpSumId: Long? = null,
+        ) = ProjectPartnerReportExpenditureVerification(
+            id = id,
+            number = -1,
+            lumpSumId = lumpSumId,
+            unitCostId = null,
+            costCategory = costCategory,
+            gdpr = false,
+            investmentId = -2L,
+            contractId = -3L,
+            internalReferenceNumber = "internal-1",
+            invoiceNumber = "invoice-1",
+            invoiceDate = mockk(),
+            dateOfPayment = mockk(),
+            description = emptySet(),
+            comment = emptySet(),
+            totalValueInvoice = mockk(),
+            vat = mockk(),
+            numberOfUnits = mockk(),
+            pricePerUnit = mockk(),
+            declaredAmount = declaredAmount,
+            currencyCode = "",
+            currencyConversionRate = mockk(),
+            declaredAmountAfterSubmission = declaredAmount,
+            attachment = mockk(),
+            partOfSample = partOfSample,
+            certifiedAmount = certified,
+            deductedAmount = deductedAmount,
+            typologyOfErrorId = typologyOfErrorId,
+            verificationComment = "comment dummy",
+            parked = isParked,
+            parkedOn = null,
+            parkingMetadata = null,
+            partOfSampleLocked = false,
+        )
 
         private val expenditureList = listOf(
             expenditure(

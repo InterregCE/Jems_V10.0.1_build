@@ -1,0 +1,41 @@
+@use '../../../partner-report-detail-page/partner-report-financial-overview-tab/remove-custom-table-overrides';
+
+.border-cell-right {
+  border-right: .0625rem solid var(--table-border-color);
+}
+
+.mat-column-partner,
+.mat-column-requestedByPartner,
+.mat-column-inVerificationSample,
+.mat-column-inVerificationSamplePercentage,
+.mat-column-parked,
+.mat-column-deductedByJs,
+.mat-column-deductedByMa,
+.mat-column-deducted,
+.mat-column-afterVerification,
+.mat-column-afterVerificationPercentage {
+  padding-left: .5rem;
+}
+
+.mat-column-partnerReport {
+  min-width: 4.5rem;
+}
+.mat-column-partner {
+  min-width: 3.5rem;
+}
+.mat-column-requestedByPartner {
+  min-width: 11rem;
+}
+.mat-column-inVerificationSample,
+.mat-column-parked,
+.mat-column-deductedByJs,
+.mat-column-deductedByMa,
+.mat-column-deducted,
+.mat-column-afterVerification {
+  min-width: 8rem;
+}
+
+.mat-column-inVerificationSamplePercentage,
+.mat-column-afterVerificationPercentage {
+  min-width: 5rem;
+}
