@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.repository.report.project.file
 
 import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
+import io.cloudflight.jems.server.common.file.service.model.JemsFile
 import io.cloudflight.jems.server.common.file.service.model.JemsFileCreate
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.project.repository.report.project.resultPrinciple.ProjectReportProjectResultRepository
@@ -61,8 +62,8 @@ class ProjectReportFilePersistenceProvider(
     }
 
     @Transactional
-    override fun addAttachmentToProjectReport(file: JemsFileCreate): JemsFileMetadata =
-        fileService.persistFile(file).toSimple()
+    override fun addAttachmentToProjectReport(file: JemsFileCreate): JemsFile =
+        fileService.persistFile(file)
 
     private fun persistFileAndUpdateLink(file: JemsFileCreate, additionalStep: (JemsFileMetadataEntity) -> Unit) =
         fileService.persistFileAndPerformAction(file = file, additionalStep = additionalStep)

@@ -5,7 +5,7 @@ import io.cloudflight.jems.server.call.service.model.notificationConfigurations.
 import io.cloudflight.jems.server.call.service.notificationConfigurations.CallNotificationConfigurationsPersistence
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.Companion.partnerReportNotifications
-import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.Companion.projectFileControlCommunicationNotifications
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.Companion.partnerReportFileControlCommunicationNotifications
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -27,7 +27,7 @@ class UpdatePartnerReportNotificationConfigurations(
 
     private fun validateConfiguration(projectNotificationConfigurations: List<ProjectNotificationConfiguration>) {
         val invalidConfigurations = projectNotificationConfigurations
-            .filter { it.id !in (partnerReportNotifications union projectFileControlCommunicationNotifications) }
+            .filter { it.id !in (partnerReportNotifications union partnerReportFileControlCommunicationNotifications) }
 
         if (invalidConfigurations.isNotEmpty())
             throw InvalidNotificationTypeException(invalidConfigurations)

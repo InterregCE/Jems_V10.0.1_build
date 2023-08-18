@@ -163,7 +163,11 @@ class ProjectFileNotificationEventListenerTest: UnitTest() {
     }
 
     @ParameterizedTest(name = "do not send notification for wrong file type - {0}")
-    @EnumSource(value = JemsFileType::class, names = ["ControlDocument", "ControlCertificate", "ControlReport", "SharedFolder"], mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(
+        value = JemsFileType::class,
+        names = ["ControlDocument", "ControlCertificate", "ControlReport", "SharedFolder", "VerificationDocument"],
+        mode = EnumSource.Mode.EXCLUDE
+    )
     fun `do not send notification for wrong file type`(type: JemsFileType) {
         val file = mockk<JemsFile>()
         every { file.type } returns type
@@ -228,6 +232,31 @@ class ProjectFileNotificationEventListenerTest: UnitTest() {
             Assertions.entry(NotificationVariable.PartnerAbbreviation, "LP-1"),
             Assertions.entry(NotificationVariable.PartnerReportId, 99L),
             Assertions.entry(NotificationVariable.PartnerReportNumber, 1),
+        )
+    }
+
+    @ParameterizedTest(name = "Project report verification file notification - {0}")
+    @EnumSource(value = NotificationType::class, names = ["ProjectReportVerificationFileUpload", "ProjectReportVerificationFileDelete"])
+    fun projectReportVerificationFileEventTest(type: NotificationType) {
+        val slotVariable = slot<Map<NotificationVariable, Any>>()
+        every { notificationProjectService.sendNotifications(type, capture(slotVariable)) } answers { }
+        val fileAction = if (type == NotificationType.ProjectReportVerificationFileUpload) FileChangeAction.Upload else FileChangeAction.Delete
+        listener.sendNotifications(
+            ProjectFileChangeEvent(
+                fileAction,
+                summary,
+                dummyFile(JemsFileType.VerificationDocument),
+                overrideAuthorEmail = "test@user.com"
+            )
+        )
+
+        verify(exactly = 1) { notificationProjectService.sendNotifications(type, any()) }
+        assertThat(slotVariable.captured).containsExactly(
+            Assertions.entry(NotificationVariable.ProjectId, PROJECT_ID),
+            Assertions.entry(NotificationVariable.ProjectIdentifier, "01"),
+            Assertions.entry(NotificationVariable.ProjectAcronym, "project acronym"),
+            Assertions.entry(NotificationVariable.FileUsername, "test@user.com"),
+            Assertions.entry(NotificationVariable.FileName, "attachment.pdf"),
         )
     }
 }

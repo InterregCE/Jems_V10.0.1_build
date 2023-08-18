@@ -45,6 +45,24 @@ class GetProjectReportNotificationConfigurationsTest: UnitTest() {
                 sendToProjectPartners = false,
                 sendToProjectAssigned = false,
                 sendToControllers = false,
+            ),
+            ProjectNotificationConfiguration(
+                id = NotificationType.ProjectReportVerificationFileUpload,
+                active = false,
+                sendToManager = false,
+                sendToLeadPartner = false,
+                sendToProjectPartners = false,
+                sendToProjectAssigned = false,
+                sendToControllers = false,
+            ),
+            ProjectNotificationConfiguration(
+                id = NotificationType.ProjectReportVerificationFileDelete,
+                active = false,
+                sendToManager = false,
+                sendToLeadPartner = false,
+                sendToProjectPartners = false,
+                sendToProjectAssigned = false,
+                sendToControllers = false,
             )
         )
     }
@@ -64,6 +82,8 @@ class GetProjectReportNotificationConfigurationsTest: UnitTest() {
             NotificationType.ProjectReportSubmitted,
             NotificationType.ProjectReportVerificationOngoing,
             NotificationType.ProjectReportVerificationFinalized,
+            NotificationType.ProjectReportVerificationFileUpload,
+            NotificationType.ProjectReportVerificationFileDelete
         )
 
         assertThat(notifications).containsAll(expectedProjectReportNotificationConfigurations)

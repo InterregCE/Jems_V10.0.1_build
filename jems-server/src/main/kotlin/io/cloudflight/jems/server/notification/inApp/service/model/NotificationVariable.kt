@@ -35,6 +35,11 @@ enum class NotificationVariable(val variable: String) {
             ProjectAcronym,
         )
 
+        val fileNotificationVariables = setOf(
+            FileUsername,
+            FileName,
+        )
+
         val partnerReportNotificationVariables = projectNotificationVariables union setOf(
             PartnerId,
             PartnerRole,
@@ -49,16 +54,11 @@ enum class NotificationVariable(val variable: String) {
             ProjectReportNumber,
         )
 
-        val projectFileNotificationVariables = projectNotificationVariables union setOf(
-            FileUsername,
-            FileName,
-        )
+        val projectFileNotificationVariables = projectNotificationVariables union fileNotificationVariables
 
-        val partnerReportFileNotificationVariables = partnerReportNotificationVariables union setOf(
-            FileUsername,
-            FileName,
-        )
+        val partnerReportFileNotificationVariables = partnerReportNotificationVariables union fileNotificationVariables
 
+        val projectReportFileNotificationVariables = projectNotificationVariables union fileNotificationVariables
     }
 
 }
