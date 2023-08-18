@@ -19,17 +19,17 @@ export class ProjectVerificationReportStore {
 
   projectReportVerificationEditable$: Observable<boolean>;
   hasMonitoringUserView$: Observable<boolean>;
-  hasProjectManagerView$: Observable<boolean>;
+  hasProjectCollaboratorView$: Observable<boolean>;
 
   constructor(
     public reportDetailPageStore: ProjectReportDetailPageStore,
     private projectReportPageStore: ProjectReportPageStore,
+    private permissionService: PermissionService,
     private projectStore: ProjectStore,
-    private permissionService: PermissionService
   ) {
     this.projectReportVerificationEditable$ = this.projectReportVerificationEditable();
     this.hasMonitoringUserView$ = this.permissionService.hasPermission(PermissionsEnum.ProjectReportingVerificationProjectView);
-    this.hasProjectManagerView$ = this.hasProjectManagerView();
+    this.hasProjectCollaboratorView$ = this.hasProjectCollaboratorView();
   }
 
   projectReportVerificationEditable(): Observable<boolean> {
@@ -42,13 +42,10 @@ export class ProjectVerificationReportStore {
     );
   }
 
-  hasProjectManagerView(): Observable<boolean> {
-    return combineLatest([
-      this.projectStore.userIsProjectOwner$,
-      this.projectStore.userIsPartnerCollaborator$
-    ])
+  hasProjectCollaboratorView(): Observable<boolean>{
+    return this.projectStore.userIsProjectOwner$
       .pipe(
-        map(([userIsProjectOwner, userIsPartnerCollaborator]) => userIsProjectOwner && !userIsPartnerCollaborator),
+        map(hasView => hasView)
       );
   }
 
