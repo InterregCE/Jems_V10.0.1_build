@@ -62,7 +62,8 @@
 </ng-container>
 
 <ng-container *ngIf="(filterByOwner ? listStore.pageFilteredByOwner$ : listStore.page$) | async as page">
-    <p *ngIf="!page.content.length">{{'project.list.empty' | translate}}</p>
+    <p *ngIf="!page.content.length && !isThereAnyActiveFilter()">{{'project.list.empty' | translate}}</p>
+    <p *ngIf="!page.content.length && isThereAnyActiveFilter()">{{'project.list.filtered.empty' | translate}}</p>
     <jems-table *ngIf="page.content.length"
                 [configuration]="tableConfiguration"
                 [rows]="page.content"

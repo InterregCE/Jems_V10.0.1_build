@@ -46,11 +46,11 @@
                                         placeholder="{{'project.application.partner.report.contribution.legal.status' | translate}}"
                                         (selectionChange)="totalsChanged()">
                                 <mat-option
-                                        [value]="PartnerContributionStatus.Public">{{PartnerContributionStatus.Public}}</mat-option>
+                                        [value]="PartnerContributionStatus.Public">{{ 'project.application.partner.report.contribution.legal.status.Public' | translate }}</mat-option>
                                 <mat-option
-                                        [value]="PartnerContributionStatus.Private">{{PartnerContributionStatus.Private}}</mat-option>
+                                        [value]="PartnerContributionStatus.Private">{{ 'project.application.partner.report.contribution.legal.status.Private' | translate }}</mat-option>
                                 <mat-option
-                                        [value]="PartnerContributionStatus.AutomaticPublic">{{PartnerContributionStatus.AutomaticPublic}}</mat-option>
+                                        [value]="PartnerContributionStatus.AutomaticPublic">{{ 'project.application.partner.report.contribution.legal.status.AutomaticPublic' | translate }}</mat-option>
                             </mat-select>
                             <mat-error>
                                 <jems-form-field-errors
