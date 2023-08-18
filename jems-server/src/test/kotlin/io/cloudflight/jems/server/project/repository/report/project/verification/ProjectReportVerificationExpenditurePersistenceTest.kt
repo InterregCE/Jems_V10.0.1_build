@@ -33,8 +33,7 @@ import org.springframework.data.domain.PageImpl
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
-import java.util.*
-import kotlin.collections.HashSet
+import java.util.Optional
 
 class ProjectReportVerificationExpenditurePersistenceTest : UnitTest() {
 
@@ -44,7 +43,8 @@ class ProjectReportVerificationExpenditurePersistenceTest : UnitTest() {
         private const val PARTNER_REPORT_ID = 496L
         private val LAST_WEEK = ZonedDateTime.now().minusWeeks(1)
         private const val FIRST_EXPENDITURE_ID = 1L
-        private const val EXPENDITURE_ID = 2L
+        private const val EXPENDITURE_ID_1 = 2L
+        private const val EXPENDITURE_ID_2 = 3L
         private const val PARTNER_ID = 54L
         val submission = ZonedDateTime.now()
 
@@ -141,8 +141,8 @@ class ProjectReportVerificationExpenditurePersistenceTest : UnitTest() {
             partOfSampleLocked = false
         )
 
-        private fun expenditure(partnerReport: ProjectPartnerReportEntity) = PartnerReportExpenditureCostEntity(
-            id = EXPENDITURE_ID,
+        private fun expenditure(id: Long, partnerReport: ProjectPartnerReportEntity) = PartnerReportExpenditureCostEntity(
+            id = id,
             number = 1,
             partnerReport = partnerReport,
             reportLumpSum = null,
@@ -165,7 +165,7 @@ class ProjectReportVerificationExpenditurePersistenceTest : UnitTest() {
             attachment = null,
             partOfSample = false,
             certifiedAmount = BigDecimal.valueOf(500),
-            deductedAmount = BigDecimal.valueOf(300),
+            deductedAmount = BigDecimal.valueOf(500),
             typologyOfErrorId = null,
             verificationComment = "CONTROL VERIFICATION COMMENT",
             parked = true,
@@ -178,13 +178,22 @@ class ProjectReportVerificationExpenditurePersistenceTest : UnitTest() {
 
         private val expendituresToUpdate = listOf(
             ProjectReportVerificationExpenditureLineUpdate(
-                expenditureId = EXPENDITURE_ID,
+                expenditureId = EXPENDITURE_ID_1,
                 partOfVerificationSample = false,
                 deductedByJs = BigDecimal.valueOf(100),
                 deductedByMa = BigDecimal.valueOf(200),
                 typologyOfErrorId = null,
                 parked = false,
-                verificationComment = "JS/MA VERIFICATION COMMENT"
+                verificationComment = "JS/MA VERIFICATION COMMENT, UNPARKED"
+            ),
+            ProjectReportVerificationExpenditureLineUpdate(
+                expenditureId = EXPENDITURE_ID_2,
+                partOfVerificationSample = false,
+                deductedByJs = BigDecimal.ZERO,
+                deductedByMa = BigDecimal.ZERO,
+                typologyOfErrorId = null,
+                parked = true,
+                verificationComment = "JS/MA VERIFICATION COMMENT, PARKED"
             )
         )
 
@@ -259,11 +268,11 @@ class ProjectReportVerificationExpenditurePersistenceTest : UnitTest() {
         val unParkedFrom = mockk<PartnerReportExpenditureCostEntity>()
         every { unParkedFrom.id } returns 5L
 
-        val expenditure = expenditure(partnerReport)
+        val expenditure = expenditure(EXPENDITURE_ID_1, partnerReport)
 
         val expenditureVerificationEntity = ProjectReportVerificationExpenditureEntity(
             expenditure = expenditure,
-            expenditureId = EXPENDITURE_ID,
+            expenditureId = expenditure.id,
             partOfVerificationSample = false,
             deductedByJs = BigDecimal.valueOf(100),
             deductedByMa = BigDecimal.valueOf(200),
@@ -317,7 +326,7 @@ class ProjectReportVerificationExpenditurePersistenceTest : UnitTest() {
         val unParkedFrom = mockk<PartnerReportExpenditureCostEntity>()
         every { unParkedFrom.id } returns 5L
 
-        every { expenditureRepository.getById(EXPENDITURE_ID) } returns unParkedFrom
+        every { expenditureRepository.getById(EXPENDITURE_ID_1) } returns unParkedFrom
         every { expenditureVerificationRepository.saveAll(any() as List<ProjectReportVerificationExpenditureEntity>) } returnsArgument 0
 
         projectReportVerificationExpenditurePersistenceProvider.initiateEmptyVerificationForProjectReport(
@@ -377,39 +386,61 @@ class ProjectReportVerificationExpenditurePersistenceTest : UnitTest() {
             lastControlReopening = null
         )
 
+        val expenditure1 = expenditure(EXPENDITURE_ID_1, reportEntity)
+        val expenditure2 = expenditure(EXPENDITURE_ID_2, reportEntity)
 
-        val expenditure = expenditure(reportEntity)
+        val expenditureVerificationEntity1 = ProjectReportVerificationExpenditureEntity(
+            expenditure = expenditure1,
+            expenditureId = expenditure2.id,
+            partOfVerificationSample = false,
+            deductedByJs = BigDecimal.valueOf(0),
+            deductedByMa = BigDecimal.valueOf(0),
+            amountAfterVerification = BigDecimal.valueOf(0),
+            typologyOfErrorId = null,
+            parked = true,
+            verificationComment = "JS/MA VERIFICATION COMMENT, PARKED",
+        )
 
-
-        val expenditureVerificationEntity = ProjectReportVerificationExpenditureEntity(
-            expenditure = expenditure,
-            expenditureId = EXPENDITURE_ID,
+        val expenditureVerificationEntity2 = ProjectReportVerificationExpenditureEntity(
+            expenditure = expenditure2,
+            expenditureId = expenditure2.id,
             partOfVerificationSample = false,
             deductedByJs = BigDecimal.valueOf(100),
             deductedByMa = BigDecimal.valueOf(200),
-            amountAfterVerification = BigDecimal.valueOf(100),
+            amountAfterVerification = BigDecimal.valueOf(200),
             typologyOfErrorId = null,
-            parked = true,
-            verificationComment = "JS/MA VERIFICATION COMMENT",
+            parked = false,
+            verificationComment = "JS/MA VERIFICATION COMMENT, UNPARKED",
         )
 
         val expectedExpenditureVerification = listOf(
             ProjectReportVerificationExpenditureLine(
-                expenditure = expenditure.toExpenditurePart(procurementEntity),
+                expenditure = expenditure1.toExpenditurePart(procurementEntity),
                 partOfVerificationSample = false,
                 deductedByJs = BigDecimal.valueOf(100),
                 deductedByMa = BigDecimal.valueOf(200),
                 amountAfterVerification = BigDecimal.valueOf(200),
                 typologyOfErrorId = null,
                 parked = false,
-                verificationComment = "JS/MA VERIFICATION COMMENT"
+                verificationComment = "JS/MA VERIFICATION COMMENT, UNPARKED"
+            ),
+            ProjectReportVerificationExpenditureLine(
+                expenditure = expenditure2.toExpenditurePart(procurementEntity),
+                partOfVerificationSample = false,
+                deductedByJs = BigDecimal.valueOf(0),
+                deductedByMa = BigDecimal.valueOf(0),
+                amountAfterVerification = BigDecimal.valueOf(0),
+                typologyOfErrorId = null,
+                parked = true,
+                verificationComment = "JS/MA VERIFICATION COMMENT, PARKED"
             )
+
         )
 
         every {
             expenditureVerificationRepository
                 .findAllByExpenditurePartnerReportProjectReportId(PROJECT_REPORT_ID)
-        } returns listOf(expenditureVerificationEntity)
+        } returns listOf(expenditureVerificationEntity1, expenditureVerificationEntity2)
 
         assertThat(
             projectReportVerificationExpenditurePersistenceProvider.updateProjectReportExpenditureVerification(

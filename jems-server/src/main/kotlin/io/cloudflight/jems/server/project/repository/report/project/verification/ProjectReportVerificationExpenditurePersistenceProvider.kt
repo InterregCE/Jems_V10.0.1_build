@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.project.service.report.project.verification.ex
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 
 @Repository
 class ProjectReportVerificationExpenditurePersistenceProvider(
@@ -120,5 +121,9 @@ class ProjectReportVerificationExpenditurePersistenceProvider(
     private fun computeAmountAfterVerification(
         newData: ProjectReportVerificationExpenditureLineUpdate,
         savedData: ProjectReportVerificationExpenditureEntity
-    ) = savedData.expenditure.certifiedAmount.minus(newData.deductedByMa).minus(newData.deductedByJs)
+    ): BigDecimal =
+        if (newData.parked) BigDecimal.ZERO
+        else savedData.expenditure.certifiedAmount
+            .minus(newData.deductedByMa)
+            .minus(newData.deductedByJs)
 }
