@@ -3,7 +3,6 @@ package io.cloudflight.jems.server.project.service.report.project.base.getProjec
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
-import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.getProjectReport.GetProjectReportTest.Companion.expectedReportSummary
@@ -13,22 +12,15 @@ import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.mockk
-import java.math.BigDecimal
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import java.math.BigDecimal
 
 internal class GetProjectReportListTest : UnitTest() {
-
-    private fun cumulative() : ReportCertificateCoFinancingColumn {
-        val cumulative = mockk<ReportCertificateCoFinancingColumn>()
-        every { cumulative.sum } returns BigDecimal.ONE
-        return cumulative
-    }
 
     @MockK
     private lateinit var reportPersistence: ProjectReportPersistence
@@ -62,8 +54,8 @@ internal class GetProjectReportListTest : UnitTest() {
         )
 
         assertThat(interactor.findAll(projectId, Pageable.unpaged())).containsExactly(
-            expectedReportSummary.copy(id = 7L, deletable = true),
-            expectedReportSummary.copy(id = 8L, deletable = true, periodDetail = null),
+            expectedReportSummary.copy(id = 7L, deletable = true, totalEligibleAfterVerification = null),
+            expectedReportSummary.copy(id = 8L, deletable = true, periodDetail = null, totalEligibleAfterVerification = null),
         )
     }
 
@@ -76,7 +68,7 @@ internal class GetProjectReportListTest : UnitTest() {
         )
 
         assertThat(interactor.findAll(projectId, Pageable.unpaged()))
-            .containsExactly(expectedReportSummary.copy(id = 7L, deletable = true))
+            .containsExactly(expectedReportSummary.copy(id = 7L, deletable = true, totalEligibleAfterVerification = null))
     }
 
 }

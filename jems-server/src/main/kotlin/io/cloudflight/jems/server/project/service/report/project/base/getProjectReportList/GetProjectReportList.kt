@@ -53,9 +53,13 @@ class GetProjectReportList(
     }
 
     private fun Page<ProjectReportSummary>.removeZeroAmountsFromContentReports() = this.onEach {
-        val amount = it.amountRequested
-        if (amount != null && amount.compareTo(BigDecimal.ZERO) == 0 && !it.type!!.hasFinance())
-            it.amountRequested = null
+        if (it.type?.hasFinance() == true) {
+            return@onEach
+        }
+        it.apply {
+            amountRequested = if (amountRequested?.compareTo(BigDecimal.ZERO) == 0) null else amountRequested
+            totalEligibleAfterVerification = if (totalEligibleAfterVerification?.compareTo(BigDecimal.ZERO) == 0) null else totalEligibleAfterVerification
+        }
     }
 
 }

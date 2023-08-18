@@ -74,7 +74,7 @@ fun Pair<ProjectReportEntity, ReportProjectCertificateCoFinancingEntity?>.toMode
     verificationDate = first.verificationDate,
     verificationEndDate = first.verificationEndDate,
     amountRequested = second?.sumCurrent,
-    totalEligibleAfterVerification = null,
+    totalEligibleAfterVerification = second?.sumCurrentVerified,
     riskBasedVerification = first.riskBasedVerification,
     riskBasedVerificationDescription = first.riskBasedVerificationDescription
 )

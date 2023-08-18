@@ -22,7 +22,7 @@ data class ProjectReportSummary(
     val verificationEndDate: ZonedDateTime?,
     var deletable: Boolean,
     var amountRequested: BigDecimal?,
-    val totalEligibleAfterVerification: BigDecimal?,
+    var totalEligibleAfterVerification: BigDecimal?,
 
     val verificationConclusionJS: String?,
     val verificationConclusionMA: String?,

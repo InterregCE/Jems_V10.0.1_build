@@ -69,6 +69,7 @@
     <ng-container matColumnDef="previouslyVerified">
         <mat-header-cell *matHeaderCellDef class="text-right">
             <span jemsText maxLines="2">{{ 'project.application.project.report.financial.breakdown.previouslyVerified' | translate }}</span>
+            <jems-context-info infoPosition="right" infoText="{{ 'project.application.project.report.financial.breakdown.previouslyVerified.tooltip' | translate}}"></jems-context-info>
         </mat-header-cell>
         <mat-cell *matCellDef="let line" class="text-right">{{ line.previouslyVerified | asMoney }}</mat-cell>
         <mat-footer-cell *matFooterCellDef class="text-right">{{ breakdown.total.previouslyVerified | asMoney }}</mat-footer-cell>

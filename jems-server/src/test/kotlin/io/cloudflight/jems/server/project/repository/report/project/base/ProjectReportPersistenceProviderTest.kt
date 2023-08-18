@@ -25,14 +25,14 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.verify
-import java.math.BigDecimal
-import java.time.LocalDate
-import java.time.ZonedDateTime
-import java.util.stream.Stream
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.Pageable
+import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.ZonedDateTime
+import java.util.stream.Stream
 
 class ProjectReportPersistenceProviderTest : UnitTest() {
 
@@ -77,6 +77,7 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
         private fun reportProjectCertificateCoFinancingEntity(): ReportProjectCertificateCoFinancingEntity? {
             val mocked = mockk<ReportProjectCertificateCoFinancingEntity>()
             every { mocked.sumCurrent } returns BigDecimal.ONE
+            every { mocked.sumCurrentVerified } returns BigDecimal.ONE
             return mocked
         }
 
@@ -103,7 +104,7 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
             verificationDate = null,
             verificationEndDate = null,
             amountRequested = BigDecimal.ONE,
-            totalEligibleAfterVerification = null,
+            totalEligibleAfterVerification = BigDecimal.ONE,
             riskBasedVerification = false,
             riskBasedVerificationDescription = "RISK BASED DESCRIPTION"
         )
