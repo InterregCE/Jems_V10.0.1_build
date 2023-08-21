@@ -13,6 +13,7 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import java.math.RoundingMode
+import java.time.LocalDate
 
 fun monitoringFtlsReadyForPayment(
     context: Any,
@@ -210,9 +211,9 @@ fun paymentApplicationToEcCreated(
             "Payment application to EC number ${paymentApplicationToEc.id} " +
                 "was created for Fund (${paymentApplicationToEc.paymentApplicationsToEcSummary.programmeFund.id}, " +
                 "${paymentApplicationToEc.paymentApplicationsToEcSummary.programmeFund.type}) " +
-                "for accounting year (${paymentApplicationToEc.paymentApplicationsToEcSummary.accountingYear.year}, ${
-                        paymentApplicationToEc.paymentApplicationsToEcSummary.accountingYear.startDate
-                } - ${paymentApplicationToEc.paymentApplicationsToEcSummary.accountingYear.endDate})"
+                "for accounting Year ${computeYearNumber(paymentApplicationToEc.paymentApplicationsToEcSummary.accountingYear.startDate)}: ${
+                    paymentApplicationToEc.paymentApplicationsToEcSummary.accountingYear.startDate
+                } - ${paymentApplicationToEc.paymentApplicationsToEcSummary.accountingYear.endDate}"
         )
         .build()
 )
@@ -227,9 +228,9 @@ fun paymentApplicationToEcDeleted(
             "Payment application to EC number ${paymentApplicationToEc.id} " +
                 "created for Fund (${paymentApplicationToEc.paymentApplicationsToEcSummary.programmeFund.id}, " +
                 "${paymentApplicationToEc.paymentApplicationsToEcSummary.programmeFund.type}) " +
-                "for accounting year (${paymentApplicationToEc.paymentApplicationsToEcSummary.accountingYear.year}, ${
+                "for accounting Year ${computeYearNumber(paymentApplicationToEc.paymentApplicationsToEcSummary.accountingYear.startDate)}: ${
                         paymentApplicationToEc.paymentApplicationsToEcSummary.accountingYear.startDate
-                } - ${paymentApplicationToEc.paymentApplicationsToEcSummary.accountingYear.endDate}) was deleted"
+                } - ${paymentApplicationToEc.paymentApplicationsToEcSummary.accountingYear.endDate} was deleted"
         )
         .build()
 )
@@ -252,6 +253,9 @@ private fun getFundingSourceName(paymentDetail: AdvancePaymentDetail): String {
         else -> ""
     }
 }
+
+private fun computeYearNumber(startingDate: LocalDate) =
+    startingDate.year - 2020
 
 private fun getPartnerName(partnerRole: ProjectPartnerRole, partnerNumber: Int?): String =
     partnerRole.isLead.let {

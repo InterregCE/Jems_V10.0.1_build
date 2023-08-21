@@ -98,7 +98,7 @@ export class PaymentToEcSummaryTabComponent implements OnInit {
     if(dataToUpdate.id === null) {
       this.paymentsToEcDetailPageStoreStore.createPaymentToEc(dataToUpdate).pipe(
         take(1),
-        tap(() => this.formService.setSuccess('payments.detail.table.have.success')),
+        tap(() => this.formService.setSuccess('payments.to.ec.detail.save.success')),
         tap(data =>  this.redirectToPartnerDetailAfterCreate(dataToUpdate.id === null, data.id)),
         catchError(err => this.formService.setError(err)),
         untilDestroyed(this)
@@ -106,7 +106,7 @@ export class PaymentToEcSummaryTabComponent implements OnInit {
     } else {
       this.paymentsToEcDetailPageStoreStore.updatePaymentToEcSummary(dataToUpdate).pipe(
         take(1),
-        tap(() => this.formService.setSuccess('payments.detail.table.have.success')),
+        tap(() => this.formService.setSuccess('payments.to.ec.detail.save.success')),
         catchError(err => this.formService.setError(err)),
         untilDestroyed(this)
       ).subscribe();

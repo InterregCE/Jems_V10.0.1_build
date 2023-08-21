@@ -70,7 +70,6 @@ class DeletePaymentApplicationToEcTest : UnitTest() {
         val slotAudit = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(slotAudit)) } returns Unit
 
-//        verify { service.deleteById(paymentApplicationsToEcId) }
         service.deleteById(paymentApplicationsToEcId)
 
         verify(exactly = 1) { paymentApplicationsToEcPersistence.deleteById(paymentApplicationsToEcId) }
@@ -79,7 +78,7 @@ class DeletePaymentApplicationToEcTest : UnitTest() {
         Assertions.assertThat(slotAudit.captured.auditCandidate).isEqualTo(
             AuditCandidate(
                 action = AuditAction.PAYMENT_APPLICATION_TO_EC_IS_DELETED,
-                description = "Payment application to EC number 1 created for Fund (3, OTHER) for accounting year (2021, 2021-01-01 - 2022-06-30) was deleted"
+                description = "Payment application to EC number 1 created for Fund (3, OTHER) for accounting Year 1: 2021-01-01 - 2022-06-30 was deleted"
             )
         )
     }
