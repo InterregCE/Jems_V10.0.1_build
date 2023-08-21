@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.report.partner.base.getProjec
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
+import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionList
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectPartnerReports
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaboratorPersistence
@@ -28,10 +29,22 @@ class GetProjectReportPartnerList(
     override fun findAllByProjectId(projectId: Long, sort: Sort, version: String?): List<ProjectPartnerSummary> {
         val partners = persistence.findAllByProjectIdForDropdown(projectId, sort, version)
 
+        val allowedPartners = getAllowedPartners(projectId, partners)
+
+        val institutionsByPartnerIds = controllerInstitutionPersistence.getControllerInstitutions(
+            partnerIds = allowedPartners.mapNotNull { it.id }.toSet()
+        )
+
+        return allowedPartners.fillInInstitutions(institutionsByPartnerIds)
+    }
+
+    private fun getAllowedPartners(
+        projectId: Long,
+        partners: List<ProjectPartnerSummary>
+    ): List<ProjectPartnerSummary> {
         if (canThisUserViewReporting(projectId)) {
             return partners
         }
-
         val userId = securityService.getUserIdOrThrow()
 
         val partnerIdsFromCollaborators = findPartnersForCurrentUserInProjectCollaborators(projectId, userId = userId)
@@ -40,18 +53,21 @@ class GetProjectReportPartnerList(
         return partners.onlyThose(allowedIds = (partnerIdsFromCollaborators union partnerIdsFromControllers))
     }
 
-    private fun findPartnersForCurrentUserInProjectCollaborators(projectId: Long, userId: Long): Set<Long> {
-        return partnerCollaboratorPersistence.findPartnersByUserAndProject(userId = userId, projectId)
+    private fun findPartnersForCurrentUserInProjectCollaborators(projectId: Long, userId: Long): Set<Long> =
+        partnerCollaboratorPersistence.findPartnersByUserAndProject(userId = userId, projectId)
             .mapTo(HashSet()) { it.partnerId }
-    }
 
     private fun findPartnersForCurrentUserInControllerInstitutions(projectId: Long, userId: Long) =
         controllerInstitutionPersistence.getRelatedProjectAndPartnerIdsForUser(userId = userId)
             .getOrDefault(projectId, emptySet())
 
     private fun canThisUserViewReporting(projectId: Long) =
-        this.userAuthorization.hasPermissionForProject(UserRolePermission.ProjectReportingView, projectId)
+        userAuthorization.hasPermissionForProject(UserRolePermission.ProjectReportingView, projectId)
 
-    private fun List<ProjectPartnerSummary>.onlyThose(allowedIds: Set<Long>) = filter { it.id in allowedIds }
+    private fun List<ProjectPartnerSummary>.onlyThose(allowedIds: Set<Long>) =
+        filter { it.id in allowedIds }
+
+    private fun List<ProjectPartnerSummary>.fillInInstitutions(institutions: Map<Long, ControllerInstitutionList>) =
+        onEach { it.institutionName = institutions[it.id!!]?.name }
 
 }
