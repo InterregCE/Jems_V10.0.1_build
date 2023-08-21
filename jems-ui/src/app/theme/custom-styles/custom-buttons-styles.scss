@@ -11,11 +11,15 @@
 }
 
 @mixin custom-general-button-styles() {
+
   button:focus {
     outline: 2px solid var(--primary-color);
   }
   button:active {
     outline: none;
+  }
+  mat-cell button { // prevent buttons overflowing their table cells
+    max-width: 100% !important;
   }
   .mat-raised-button:not(.mat-button-disabled) {
     box-shadow: 0.15rem 0.15rem 0.25rem rgba(0, 0, 0, 0.35);
