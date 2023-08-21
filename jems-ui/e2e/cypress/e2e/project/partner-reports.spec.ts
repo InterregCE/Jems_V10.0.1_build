@@ -1017,7 +1017,7 @@ context('Partner reports tests', () => {
                         cy.get('[id=contributions-table]').children().last().within(() => {
                             cy.contains('mat-form-field', 'Source of contribution').type("Lead contribution report 2");
                             cy.contains('mat-select', 'Legal status').click();
-                            cy.root().closest('body').find('mat-option').contains('AutomaticPublic').click();
+                            cy.root().closest('body').find('mat-option').contains('Automatic Public').click();
                             cy.get('input').eq(1).type(formatAmount(firstReportContributionAmounts[4].currentReport));
                         });
 

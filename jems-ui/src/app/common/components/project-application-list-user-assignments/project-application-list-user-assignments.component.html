@@ -41,7 +41,7 @@
 <ng-container *ngIf="data$ | async as data">
     <jems-form (discard)="resetForm(data.rows)" (save)="saveForm()">
         <p *ngIf="!data.rows.length && !isThereAnyActiveFilter()">{{'project.list.empty' | translate}}</p>
-        <p *ngIf="!data.rows.length && isThereAnyActiveFilter()">{{'project.list.filtered.empty' | translate}}</p>
+        <p *ngIf="!data.rows.length && isThereAnyActiveFilter()">{{'common.filters.no.results' | translate}}</p>
         <jems-table *ngIf="data.rows.length"
                     [configuration]="tableConfiguration"
                     [rows]="data.rows"
