@@ -25,6 +25,10 @@ import {CustomTranslatePipe} from '@common/pipe/custom-translate-pipe';
 import {TranslateByInputLanguagePipe} from '@common/pipe/translate-by-input-language.pipe';
 import {ProjectReportPageStore} from '@project/project-application/report/project-report/project-report-page-store.service';
 import {Alert} from '@common/components/forms/alert';
+import {
+  ExpenditureItemParkedByChipComponent,
+  ExpenditureParkedByEnum,
+} from '@project/project-application/report/partner-report-detail-page/partner-report-expenditures-tab/expenditure-parked-by-chip/expenditure-item-parked-by-chip.component';
 
 @Component({
   selector: 'jems-project-verification-report-expenditure-tab',
@@ -427,6 +431,12 @@ export class ProjectVerificationReportExpenditureTabComponent {
     return this.expenditureItem(item, this.EXPENDITURE_CONTROL.parked) || this.verificationItem(item, this.VERIFICATION_CONTROL.parked);
   }
 
+  getParkedBy(item: AbstractControl): ExpenditureParkedByEnum {
+    const parkedByControl = this.expenditureItem(item, this.EXPENDITURE_CONTROL.parked);
+    const parkingMetadata = this.expenditureItem(item, this.EXPENDITURE_CONTROL.parkingMetadata);
+
+    return ExpenditureItemParkedByChipComponent.getParkedBy(parkingMetadata, parkedByControl);
+  }
   isExpenditureParkedOrFormDisabled(item: AbstractControl, isFormEditable: boolean): boolean {
     return this.getParkedByControlOrJsMa(item) || !isFormEditable;
   }

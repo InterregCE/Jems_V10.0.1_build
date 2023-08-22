@@ -1,6 +1,6 @@
-<ng-container *ngIf="parkingMetadata && getParkedBy(parkingMetadata); let parkedBy">
-    <mat-chip [class]="parkedBy.class">
-        <mat-icon>{{parkedBy.icon}}</mat-icon>
-        {{parkedBy.label | translate}}
+<ng-container *ngIf="parkedByValues[parkedBy]; let chip">
+    <mat-chip [class]="chip.class">
+        <mat-icon>{{chip.icon}}</mat-icon>
+        {{chip.label | translate}}
     </mat-chip>
 </ng-container>

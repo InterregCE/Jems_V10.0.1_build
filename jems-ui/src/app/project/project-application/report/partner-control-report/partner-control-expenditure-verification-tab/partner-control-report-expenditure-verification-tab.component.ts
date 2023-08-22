@@ -7,6 +7,7 @@ import {FormService} from '@common/components/section/form/form.service';
 import {combineLatest, Observable, of} from 'rxjs';
 import {
   CurrencyDTO,
+  ExpenditureParkingMetadataDTO,
   IdNamePairDTO,
   ProjectPartnerControlReportDTO,
   ProjectPartnerControlReportExpenditureVerificationDTO,
@@ -38,6 +39,10 @@ import {PermissionService} from '../../../../../security/permissions/permission.
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {PartnerControlReportStore} from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
+import {
+  ExpenditureItemParkedByChipComponent,
+  ExpenditureParkedByEnum,
+} from '../../partner-report-detail-page/partner-report-expenditures-tab/expenditure-parked-by-chip/expenditure-item-parked-by-chip.component';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @UntilDestroy()
@@ -508,5 +513,9 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
     this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.setErrors(null);
     this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.clearValidators();
     this.items.at(expenditureIndex).get(this.constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.updateValueAndValidity();
+  }
+
+  getParkedBy(parkingMetadata: ExpenditureParkingMetadataDTO): ExpenditureParkedByEnum {
+    return ExpenditureItemParkedByChipComponent.getParkedBy(parkingMetadata);
   }
 }
