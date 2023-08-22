@@ -101,7 +101,6 @@ export class FileListTableComponent implements OnChanges, AfterViewInit {
 
   savingDescriptionId$ = new BehaviorSubject<number | null>(null);
   saveDescription() {
-    console.log(this.descriptionForm.value.id)
     this.savingDescriptionId$.next(this.descriptionForm.value.id);
     this.setDescriptionCallback(this.descriptionForm.value)
       .pipe(
@@ -110,7 +109,6 @@ export class FileListTableComponent implements OnChanges, AfterViewInit {
           'file.description.change.message.success',
           { fileName: this.descriptionForm.value.fileName },
         ))),
-        tap(() => this.routingService.confirmLeaveMap.set(`${this.serviceId}`, false)),
         catchError(error => {
           this.showAlert(FileListTableComponent.errorAlert(
             'file.description.change.message.failed',
@@ -118,6 +116,7 @@ export class FileListTableComponent implements OnChanges, AfterViewInit {
           ));
           throw error;
         }),
+        finalize(() => this.routingService.confirmLeaveMap.delete(this.serviceId)),
         finalize(() => this.savingDescriptionId$.next(null)),
         tap(() => this.descriptionForm.reset()),
         tap(() => this.refresh.emit()),
@@ -125,7 +124,7 @@ export class FileListTableComponent implements OnChanges, AfterViewInit {
   }
 
   editDescription(file: FileListItem) {
-    this.routingService.confirmLeaveMap.set(`${this.serviceId}`, true)
+    this.routingService.confirmLeaveMap.set(this.serviceId, true)
     this.descriptionForm.patchValue({
       id: file.id,
       fileName: file.name,
@@ -134,7 +133,7 @@ export class FileListTableComponent implements OnChanges, AfterViewInit {
   }
 
   deleteFile(file: FileListItem) {
-    this.routingService.confirmLeaveMap.set(`${this.serviceId}`, false)
+    this.routingService.confirmLeaveMap.delete(this.serviceId)
     Forms.confirm(
       this.dialog, {
         title: file.name,
