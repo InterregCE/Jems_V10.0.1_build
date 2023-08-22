@@ -35,7 +35,8 @@ class GlobalProjectNotificationService(
         when {
             type.isProjectNotification()
                     || type.isProjectReportNotification()
-                    || type.isProjectFileNotification() -> sendProjectNotification(type, variables)
+                    || type.isProjectFileNotification()
+                    || type.isProjectReportFileNotification() -> sendProjectNotification(type, variables)
             type.isPartnerReportNotification()
                     || type.isPartnerReportFileNotification() -> sendPartnerReportNotification(type, variables)
             else -> Unit
@@ -89,6 +90,7 @@ class GlobalProjectNotificationService(
             type.isPartnerReportNotification() -> NotificationVariable.partnerReportNotificationVariables
             type.isProjectFileNotification() -> NotificationVariable.projectFileNotificationVariables
             type.isPartnerReportFileNotification() -> NotificationVariable.partnerReportFileNotificationVariables
+            type.isProjectReportFileNotification() -> NotificationVariable.projectReportFileNotificationVariables
             else -> emptySet()
         }
 

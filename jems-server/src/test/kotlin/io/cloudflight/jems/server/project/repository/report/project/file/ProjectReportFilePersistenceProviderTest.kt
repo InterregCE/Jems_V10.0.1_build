@@ -210,12 +210,12 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
 
     @Test()
     fun addAttachmentToProjectReport() {
-        val newFileMetadata = JemsFileMetadata(11L, jemsFileCreate.name, ZonedDateTime.now())
+        val fileCreate = fileCreate(type = JemsFileType.VerificationDocument)
 
-        every { fileService.persistFile(eq(jemsFileCreate)) } returns mockk<JemsFile> { every { toSimple() } returns newFileMetadata }
+        every { fileService.persistFile(eq(fileCreate)) } returns dummyResult
 
-        assertThat(persistence.addAttachmentToProjectReport(jemsFileCreate))
-            .isEqualTo(newFileMetadata)
+        assertThat(persistence.addAttachmentToProjectReport(fileCreate))
+            .isEqualTo(dummyResult)
     }
 
     private fun mockFileDeletion(

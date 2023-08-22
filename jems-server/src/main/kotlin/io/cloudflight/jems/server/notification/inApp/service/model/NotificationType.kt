@@ -38,7 +38,9 @@ enum class NotificationType {
     SharedFolderFileUpload,
     SharedFolderFileDelete,
     ControlCommunicationFileUpload,
-    ControlCommunicationFileDelete;
+    ControlCommunicationFileDelete,
+    ProjectReportVerificationFileUpload,
+    ProjectReportVerificationFileDelete;
 
 
     companion object {
@@ -80,8 +82,9 @@ enum class NotificationType {
         )
 
         val projectFileSharedFolderNotifications = setOf(SharedFolderFileUpload, SharedFolderFileDelete)
-        val projectFileControlCommunicationNotifications = setOf(ControlCommunicationFileUpload, ControlCommunicationFileDelete)
+        val partnerReportFileControlCommunicationNotifications = setOf(ControlCommunicationFileUpload, ControlCommunicationFileDelete)
 
+        val projectFileVerificationCommunicationNotifications = setOf(ProjectReportVerificationFileUpload, ProjectReportVerificationFileDelete)
     }
 
     fun isProjectNotification() = this in projectNotifications
@@ -93,6 +96,8 @@ enum class NotificationType {
 
     fun isProjectFileNotification() = this in projectFileSharedFolderNotifications
 
-    fun isPartnerReportFileNotification() = this in projectFileControlCommunicationNotifications
+    fun isPartnerReportFileNotification() = this in partnerReportFileControlCommunicationNotifications
+
+    fun isProjectReportFileNotification() = this in projectFileVerificationCommunicationNotifications
 
 }

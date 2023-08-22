@@ -36,6 +36,8 @@ export class ProjectReportNotificationsSettingsTabComponent {
     NotificationVariable.PROJECT_ACRONYM,
     NotificationVariable.PROJECT_REPORT_ID,
     NotificationVariable.PROJECT_REPORT_NUMBER,
+    NotificationVariable.FILE_USERNAME,
+    NotificationVariable.FILE_NAME
   ];
   constructor(
     private formBuilder: FormBuilder,
