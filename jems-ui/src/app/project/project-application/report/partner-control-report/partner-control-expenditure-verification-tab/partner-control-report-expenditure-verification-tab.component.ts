@@ -277,13 +277,13 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
     columnsToDisplay = columnsToDisplayFirstPart.concat(this.collapsedColumns);
 
     if (investments.length > 0) {
-      columnsToDisplay.splice(3, 0, 'investmentId');
+      columnsToDisplay.splice(4, 0, 'investmentId');
     }
 
     if (isCostOptionsAvailable) {
       columnsToDisplay.splice(3, 0, 'costOptions');
-      columnsToDisplay.splice(12, 0, 'numberOfUnits');
-      columnsToDisplay.splice(13, 0, 'pricePerUnit');
+      columnsToDisplay.splice(13, 0, 'numberOfUnits');
+      columnsToDisplay.splice(14, 0, 'pricePerUnit');
     }
 
     columnsToDisplay = columnsToDisplay.concat(columnsToDisplayLastPart);

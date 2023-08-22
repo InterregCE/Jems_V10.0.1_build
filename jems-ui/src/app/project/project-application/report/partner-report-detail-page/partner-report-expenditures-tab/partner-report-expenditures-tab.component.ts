@@ -500,12 +500,12 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       columnsToDisplay.push('actions');
     }
     if (investments.length > 0) {
-      columnsToDisplay.splice(3, 0, 'investmentId');
+      columnsToDisplay.splice(4, 0, 'investmentId');
     }
     if (isCostOptionsAvailable) {
       columnsToDisplay.splice(3, 0, 'costOptions');
-      columnsToDisplay.splice(12, 0, 'numberOfUnits');
-      columnsToDisplay.splice(13, 0, 'pricePerUnit');
+      columnsToDisplay.splice(13, 0, 'numberOfUnits');
+      columnsToDisplay.splice(14, 0, 'pricePerUnit');
     }
     return columnsToDisplay;
   }
@@ -550,7 +550,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       tableConfig.push({minInRem: 3, maxInRem: 3}); //delete
     }
     if (investments.length > 0) {
-      tableConfig.splice(4, 0, {minInRem: 11});
+      tableConfig.splice(5, 0, {minInRem: 11});
     }
     return tableConfig;
   }
