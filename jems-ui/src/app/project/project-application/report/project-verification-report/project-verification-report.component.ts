@@ -27,7 +27,7 @@ export class ProjectVerificationReportComponent {
   data$: Observable<{
     projectReport: ProjectReportDTO;
     isVisibleForMonitoringUser: boolean;
-    isVisibleForManagerUser: boolean;
+    isVisibleForApplicantUser: boolean;
   }>;
   error$ = new BehaviorSubject<APIError | null>(null);
   StatusEnum = ProjectReportDTO.StatusEnum;
@@ -42,12 +42,12 @@ export class ProjectVerificationReportComponent {
     this.data$ = combineLatest([
       this.projectReportDetailStore.projectReport$,
       this.projectVerificationReportStore.hasMonitoringUserView$,
-      this.projectVerificationReportStore.hasProjectManagerView$
+      this.projectVerificationReportStore.hasProjectCollaboratorView$
     ]).pipe(
-      map(([projectReport, hasMonitoringUserView, hasProjectManagerView]) => ({
+      map(([projectReport, hasMonitoringUserView, hasProjectCollaboratorView]) => ({
         projectReport,
         isVisibleForMonitoringUser: hasMonitoringUserView,
-        isVisibleForManagerUser: hasProjectManagerView
+        isVisibleForApplicantUser: hasProjectCollaboratorView
       }))
     );
   }
