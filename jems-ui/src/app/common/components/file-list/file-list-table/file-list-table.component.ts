@@ -24,6 +24,7 @@ import {BehaviorSubject, Observable} from 'rxjs';
 import {SecurityService} from '../../../../security/security.service';
 import {v4 as uuid} from 'uuid';
 import {FileListTableConstants} from './file-list-table-constants';
+import {RoutingService} from "@common/services/routing.service";
 
 @UntilDestroy()
 @Component({
@@ -33,6 +34,8 @@ import {FileListTableConstants} from './file-list-table-constants';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FileListTableComponent implements OnChanges, AfterViewInit {
+  private serviceId = uuid();
+
   Alert = Alert;
   SENSITIVE_FILE_NAME_MASK = FileListTableConstants.SENSITIVE_FILE_NAME_MASK;
 
@@ -72,6 +75,7 @@ export class FileListTableComponent implements OnChanges, AfterViewInit {
     private formBuilder: FormBuilder,
     private dialog: MatDialog,
     public securityService: SecurityService,
+    private routingService: RoutingService,
   ) {
   }
 
@@ -105,6 +109,7 @@ export class FileListTableComponent implements OnChanges, AfterViewInit {
           'file.description.change.message.success',
           { fileName: this.descriptionForm.value.fileName },
         ))),
+        tap(() => this.routingService.confirmLeaveMap.set(this.serviceId, false)),
         catchError(error => {
           this.showAlert(FileListTableComponent.errorAlert(
             'file.description.change.message.failed',
@@ -124,6 +129,7 @@ export class FileListTableComponent implements OnChanges, AfterViewInit {
       fileName: file.name,
       description: file.description,
     });
+    this.routingService.confirmLeaveMap.set(this.serviceId, true)
   }
 
   deleteFile(file: FileListItem) {
