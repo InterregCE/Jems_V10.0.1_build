@@ -111,7 +111,7 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
         private val project = ProjectFull(
             id = projectId,
             customIdentifier = "identifier",
-            callSettings = dummyCall.toSettingsModel(mutableSetOf(), mutableSetOf()),
+            callSettings = dummyCall.toSettingsModel(mutableSetOf(), mutableSetOf(), false),
             acronym = "acronym",
             applicant = mockk(),
             projectStatus = ProjectStatus(

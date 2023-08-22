@@ -138,6 +138,7 @@ internal class ExecutePreConditionCheckTest : UnitTest() {
             preSubmissionCheckPluginKey = preSubmissionCheckPluginKey,
             firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey,
             costOption = mockk(),
+            jsNotifiable = false
         )
 
     private fun buildProjectSummary(

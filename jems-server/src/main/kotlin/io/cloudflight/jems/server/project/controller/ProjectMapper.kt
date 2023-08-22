@@ -202,6 +202,7 @@ abstract class ProjectMapper {
             stateAids = this.mapToStateAidsDTO(projectCallSettings.stateAids),
             applicationFormFieldConfigurations = projectCallSettings.applicationFormFieldConfigurations.toDto(projectCallSettings.callType),
             costOption = projectCallSettings.costOption.toDto(),
+            jsNotifiable = projectCallSettings.jsNotifiable
         )
     }
 

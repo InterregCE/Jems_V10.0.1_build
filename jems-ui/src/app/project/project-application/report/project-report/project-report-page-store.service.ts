@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {
+  CallNotificationConfigurationService,
   PageProjectReportSummaryDTO,
   ProjectReportDTO,
   ProjectReportService,
@@ -27,6 +28,8 @@ export class ProjectReportPageStore {
   userCanViewVerification$: Observable<boolean>;
   userCanEditVerification$: Observable<boolean>;
   userCanFinalizeVerification$: Observable<boolean>;
+  userHasEditVerificationPrivilege$: Observable<boolean>;
+  isVerificationNotificationEnabledInCallSettings$: Observable<boolean>;
 
   newPageSize$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_SIZE);
   newPageIndex$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_INDEX);
@@ -37,7 +40,8 @@ export class ProjectReportPageStore {
               private projectReportService: ProjectReportService,
               private projectStore: ProjectStore,
               private projectUserCollaboratorService: ProjectUserCollaboratorService,
-              private permissionService: PermissionService) {
+              private permissionService: PermissionService,
+              ) {
     this.projectReports$ = this.projectReports();
     this.userCanCreateReport$ = this.userCanCreateReports();
     this.userCanViewReport$ = this.userCanViewReports();
@@ -45,6 +49,7 @@ export class ProjectReportPageStore {
     this.userCanViewVerification$ = this.userCanViewVerification();
     this.userCanEditVerification$ = this.userCanEditVerification();
     this.userCanFinalizeVerification$ = this.userCanFinalizeVerification();
+    this.userHasEditVerificationPrivilege$ = this.userHasEditVerificationPrivilege();
   }
 
   createProjectReport(identification: ProjectReportUpdateDTO): Observable<ProjectReportDTO> {
@@ -148,6 +153,13 @@ export class ProjectReportPageStore {
     ]).pipe(
       map(([level, hasEditPrivilege]) => level === 'EDIT' || level === 'MANAGE' || hasEditPrivilege)
     );
+  }
+
+  private userHasEditVerificationPrivilege(): Observable<boolean> {
+    return this.permissionService.hasPermission(PermissionsEnum.ProjectReportingVerificationProjectEdit)
+      .pipe(
+        map((canEdit) => canEdit)
+      );
   }
 
   private userCanFinalizeVerification(): Observable<boolean> {

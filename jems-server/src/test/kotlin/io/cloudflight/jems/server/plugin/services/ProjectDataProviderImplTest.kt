@@ -316,6 +316,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 projectDefinedUnitCostAllowed = true,
                 projectDefinedLumpSumAllowed = false,
             ),
+            jsNotifiable = false
         )
         private val legalStatuse = listOf(
             ProgrammeLegalStatus(

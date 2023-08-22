@@ -32,6 +32,7 @@ enum class NotificationType {
     // Project Report
     ProjectReportSubmitted,
     ProjectReportVerificationOngoing,
+    ProjectReportVerificationDoneNotificationSent,
     ProjectReportVerificationFinalized,
 
     // Project File
@@ -78,6 +79,7 @@ enum class NotificationType {
         val projectReportNotifications = setOf(
             ProjectReportSubmitted,
             ProjectReportVerificationOngoing,
+            ProjectReportVerificationDoneNotificationSent,
             ProjectReportVerificationFinalized
         )
 

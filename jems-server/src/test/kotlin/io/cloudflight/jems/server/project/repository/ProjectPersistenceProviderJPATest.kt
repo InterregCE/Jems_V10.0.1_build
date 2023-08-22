@@ -27,7 +27,7 @@ internal class ProjectPersistenceProviderJPATest : JPATest() {
 
 
     @Test
-    @ExpectSelect(24)
+    @ExpectSelect(25)
     @ExpectInsert(0)
     @ExpectUpdate(0)
     @ExpectDelete(0)

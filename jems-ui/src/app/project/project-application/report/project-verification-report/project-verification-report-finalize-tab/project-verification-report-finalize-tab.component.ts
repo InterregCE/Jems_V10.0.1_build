@@ -2,8 +2,9 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {FormService} from '@common/components/section/form/form.service';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {
+  ProjectDetailDTO,
   ProjectReportDTO,
-  ProjectReportVerificationConclusionDTO,
+  ProjectReportVerificationConclusionDTO, ProjectReportVerificationNotificationDTO,
   ProjectReportVerificationService
 } from '@cat/api';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
@@ -20,6 +21,9 @@ import {
 import {
   ProjectVerificationReportFinalizeStore
 } from '@project/project-application/report/project-verification-report/project-verification-report-finalize-tab/project-verification-report-finalize-store.service';
+import {
+  ProjectStore
+} from "@project/project-application/containers/project-application-detail/services/project-store.service";
 
 @Component({
   selector: 'jems-project-verification-report-finalize-tab',
@@ -32,6 +36,7 @@ export class ProjectVerificationReportFinalizeTabComponent {
   Alert = Alert;
   error$ = new BehaviorSubject<APIError | null>(null);
   finalizationLoading = false;
+  sendNotificationLoading = false;
 
   data$: Observable<{
     conclusions: ProjectReportVerificationConclusionDTO;
@@ -41,6 +46,9 @@ export class ProjectVerificationReportFinalizeTabComponent {
     reportFinalised: boolean;
     userCanEdit: boolean;
     userCanView: boolean;
+    userCanSendNotification: boolean;
+    verificationNotification: ProjectReportVerificationNotificationDTO;
+    projectDetail: ProjectDetailDTO;
   }>;
   overviewForm: FormGroup = this.formBuilder.group({
     startDate: [''],
@@ -57,23 +65,30 @@ export class ProjectVerificationReportFinalizeTabComponent {
     private route: ActivatedRoute,
     private reportPageStore: ProjectReportPageStore,
     private projectReportVerificationService: ProjectReportVerificationService,
-    private projectVerificationReportFinalizeStore: ProjectVerificationReportFinalizeStore
+    private projectVerificationReportFinalizeStore: ProjectVerificationReportFinalizeStore,
+    private projectStore: ProjectStore
   ) {
     this.data$ = combineLatest([
       this.projectVerificationReportFinalizeStore.conclusions$,
       this.reportDetailPageStore.projectReport$,
       this.reportPageStore.userCanEditVerification$,
       this.reportPageStore.userCanViewVerification$,
-      this.reportPageStore.userCanFinalizeVerification$
+      this.reportPageStore.userCanFinalizeVerification$,
+      this.reportPageStore.userHasEditVerificationPrivilege$,
+      this.reportDetailPageStore.projectReportVerificationNotification$,
+      this.projectStore.project$
     ]).pipe(
-      map(([conclusions, report, userCanEdit, userCanView, canFinalize]: any) => ({
+      map(([conclusions, report, userCanEdit, userCanView, canFinalize, userHasEditVerificationPrivilege, verificationNotification, projectDetail]: any) => ({
         conclusions,
         reportId: report.id,
         projectId: report.projectId,
         finalizationAllowed: canFinalize,
         reportFinalised: report.status === ProjectReportDTO.StatusEnum.Finalized,
         userCanEdit,
-        userCanView
+        userCanView,
+        userCanSendNotification: userHasEditVerificationPrivilege,
+        verificationNotification,
+        projectDetail
       })),
       tap(() => this.initForm()),
       tap(data => this.resetForm(data.conclusions)),
@@ -139,5 +154,15 @@ export class ProjectVerificationReportFinalizeTabComponent {
 
   private redirectToReportList(): void {
     this.router.navigate(['../../..'], {relativeTo: this.route});
+  }
+
+  sendNotificationDoneByJs(projectId: number, reportId: number) {
+    this.sendNotificationLoading = true;
+    this.reportDetailPageStore.sendNotification(projectId, reportId)
+      .pipe(
+        catchError((error) => this.showErrorMessage(error.error)),
+        finalize(() => this.sendNotificationLoading = false)
+      ).subscribe();
+
   }
 }

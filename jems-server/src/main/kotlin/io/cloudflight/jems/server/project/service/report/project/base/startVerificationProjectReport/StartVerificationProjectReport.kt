@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional
 class StartVerificationProjectReport(
     private val reportPersistence: ProjectReportPersistence,
     private val auditPublisher: ApplicationEventPublisher,
-    private val projectReportExpenditureVerificationPersistence: ProjectReportVerificationExpenditurePersistence
+    private val projectReportExpenditureVerificationPersistence: ProjectReportVerificationExpenditurePersistence,
 ) : StartVerificationProjectReportInteractor {
 
     @CanStartProjectReportVerification

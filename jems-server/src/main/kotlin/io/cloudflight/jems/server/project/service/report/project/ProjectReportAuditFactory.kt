@@ -151,6 +151,28 @@ fun projectReportFinalizedVerification(
             .build()
     )
 
+fun projectReportVerificationDoneByJs(
+    context: Any,
+    projectId: Long,
+    report: ProjectReportModel,
+): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.PROJECT_REPORT_VERIFICATION_BY_JS_DONE_NOTIFICATION_SENT)
+            .project(
+                projectId = projectId,
+                customIdentifier = report.projectIdentifier,
+                acronym = report.projectAcronym,
+            )
+            .entityRelatedId(entityRelatedId = report.id)
+            .description(
+                "[" +
+                    report.projectIdentifier +
+                    "] Project report R.${report.reportNumber} verification by JS is done"
+            )
+            .build()
+    )
+
 private fun getParkedExpendituresDescription(parkedExpenditure: List<ProjectReportVerificationExpenditureLine>): String {
     val expenditureString = StringBuilder()
     parkedExpenditure.forEach {

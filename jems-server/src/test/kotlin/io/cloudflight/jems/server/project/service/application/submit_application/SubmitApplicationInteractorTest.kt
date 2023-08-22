@@ -182,6 +182,7 @@ class SubmitApplicationInteractorTest : UnitTest() {
             preSubmissionCheckPluginKey = preSubmissionCheckPluginKey,
             firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey,
             costOption = mockk(),
+            jsNotifiable = false
         )
 
     private fun buildProjectSummary(

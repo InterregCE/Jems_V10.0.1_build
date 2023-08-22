@@ -53,6 +53,7 @@ val callSettings = ProjectCallSettings(
         projectDefinedUnitCostAllowed = true,
         projectDefinedLumpSumAllowed = false,
     ),
+    jsNotifiable = false
 )
 
 fun projectWithId(id: Long, status: ApplicationStatus = ApplicationStatus.SUBMITTED) = ProjectFull(
