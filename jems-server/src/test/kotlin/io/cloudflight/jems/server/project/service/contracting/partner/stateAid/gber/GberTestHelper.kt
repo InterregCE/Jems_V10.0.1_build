@@ -49,7 +49,7 @@ val expectedEmptyGberSectionModel = ContractingPartnerStateAidGberSection(
     partnerId = PARTNER_ID,
     dateOfGrantingAid = expectedDateOfGrantingAid,
     partnerFunds = getExpectedPartnerFunds(),
-    totalEligibleBudget = BigDecimal.TEN,
+    amountGrantingAid = BigDecimal.TEN,
     naceGroupLevel = NaceGroupLevel.A_01_1,
     aidIntensity = BigDecimal.ZERO,
     locationInAssistedArea = null,
@@ -60,7 +60,7 @@ val expectedGberSection = ContractingPartnerStateAidGberSection(
     partnerId = PARTNER_ID,
     dateOfGrantingAid = expectedDateOfGrantingAid,
     partnerFunds = getExpectedPartnerFunds(),
-    totalEligibleBudget = BigDecimal.TEN,
+    amountGrantingAid = BigDecimal.TEN,
     naceGroupLevel = NaceGroupLevel.A_01_1,
     aidIntensity = BigDecimal.TEN,
     locationInAssistedArea = LocationInAssistedArea.A_AREA,
@@ -71,21 +71,24 @@ val expectedGberSection = ContractingPartnerStateAidGberSection(
 val gberModel = ContractingPartnerStateAidGber(
     aidIntensity = BigDecimal.TEN,
     locationInAssistedArea = LocationInAssistedArea.A_AREA,
-    comment = "Test comment"
+    comment = "Test comment",
+    amountGrantingAid = BigDecimal.TEN
 )
 
 
 val emptyGberModel = ContractingPartnerStateAidGber(
     aidIntensity = BigDecimal.ZERO,
     locationInAssistedArea = null,
-    comment = null
+    comment = null,
+    amountGrantingAid = null
 )
 
 val gberEntity = ProjectContractingPartnerStateAidGberEntity(
     partnerId = PARTNER_ID,
     aidIntensity = BigDecimal.TEN,
     locationInAssistedArea = LocationInAssistedArea.A_AREA,
-    comment = "Test comment"
+    comment = "Test comment",
+    amountGrantingAid = BigDecimal.TEN
 )
 
 

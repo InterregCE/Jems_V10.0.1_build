@@ -85,7 +85,7 @@ internal class ContractingPartnerStateAidControllerTest: UnitTest() {
                     value = BigDecimal.ZERO
                 )
             ),
-            totalEligibleBudget = BigDecimal.TEN,
+            amountGrantingAid = BigDecimal.TEN,
             naceGroupLevel = NaceGroupLevel.A,
             aidIntensity = BigDecimal.ONE,
             locationInAssistedArea = LocationInAssistedArea.A_AREA,
@@ -115,7 +115,7 @@ internal class ContractingPartnerStateAidControllerTest: UnitTest() {
                     value = BigDecimal.ZERO
                 )
             ),
-            totalEligibleBudget = BigDecimal.TEN,
+            amountGrantingAid = BigDecimal.TEN,
             naceGroupLevel = NaceGroupLevelDTO.A,
             aidIntensity = BigDecimal.ONE,
             locationInAssistedArea = LocationInAssistedAreaDTO.A_AREA,
@@ -159,10 +159,9 @@ internal class ContractingPartnerStateAidControllerTest: UnitTest() {
         val deMinimisSectionModel = ContractingPartnerStateAidDeMinimisSection(
             partnerId = PARTNER_ID,
             dateOfGrantingAid = localDateNow,
-            totalEligibleBudget = BigDecimal.TEN,
+            amountGrantingAid = BigDecimal.TEN,
             selfDeclarationSubmissionDate = zonedTimeNow,
             baseForGranting = BaseForGranting.ADDENDUM_SUBSIDY_CONTRACT,
-            aidGrantedByCountryCode = COUNTRY_AT_CODE,
             aidGrantedByCountry = COUNTRY_AT,
             memberStatesGranting = memberStates,
             comment = "Test comment"
@@ -170,10 +169,9 @@ internal class ContractingPartnerStateAidControllerTest: UnitTest() {
         val expectedDeMinimisSection = ContractingPartnerStateAidDeMinimisSectionDTO(
             partnerId = PARTNER_ID,
             dateOfGrantingAid = localDateNow,
-            totalEligibleBudget = BigDecimal.TEN,
+            amountGrantingAid = BigDecimal.TEN,
             selfDeclarationSubmissionDate = zonedTimeNow,
             baseForGranting = BaseForGrantingDTO.ADDENDUM_SUBSIDY_CONTRACT,
-            aidGrantedByCountryCode = COUNTRY_AT_CODE,
             aidGrantedByCountry = COUNTRY_AT,
             memberStatesGranting = memberStatesDTO,
             comment = "Test comment"
@@ -182,16 +180,17 @@ internal class ContractingPartnerStateAidControllerTest: UnitTest() {
         val deMinimisUpdatedDTO = ContractingPartnerStateAidDeMinimisDTO(
             selfDeclarationSubmissionDate = zonedTimeNow,
             baseForGranting = BaseForGrantingDTO.ADDENDUM_SUBSIDY_CONTRACT,
-            aidGrantedByCountryCode = COUNTRY_RO_CODE,
             aidGrantedByCountry = COUNTRY_RO,
             memberStatesGranting = memberStatesDTO,
-            comment = "Test comment updated"
+            comment = "Test comment updated",
+            amountGrantingAid = BigDecimal.TEN
         )
 
         val gberUpdatedDTO = ContractingPartnerStateAidGberDTO(
             aidIntensity = BigDecimal.TEN,
             locationInAssistedArea = LocationInAssistedAreaDTO.NOT_APPLICABLE,
-            comment = "Test comment updated"
+            comment = "Test comment updated",
+            amountGrantingAid = BigDecimal.TEN
         )
 
     }

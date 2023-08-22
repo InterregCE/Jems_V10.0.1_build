@@ -7,6 +7,7 @@ fun ProjectContractingPartnerStateAidGberEntity.toModel() =
     ContractingPartnerStateAidGber(
         aidIntensity = aidIntensity,
         locationInAssistedArea = locationInAssistedArea,
-        comment = comment
+        comment = comment,
+        amountGrantingAid = amountGrantingAid
     )
 

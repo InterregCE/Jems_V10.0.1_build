@@ -5,5 +5,6 @@ import java.math.BigDecimal
 data class ContractingPartnerStateAidGberDTO(
     val aidIntensity: BigDecimal?,
     val locationInAssistedArea: LocationInAssistedAreaDTO?,
-    val comment: String?
+    val comment: String?,
+    val amountGrantingAid: BigDecimal
 )

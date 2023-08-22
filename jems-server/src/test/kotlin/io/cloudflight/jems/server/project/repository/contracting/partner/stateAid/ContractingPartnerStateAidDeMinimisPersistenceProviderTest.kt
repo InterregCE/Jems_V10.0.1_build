@@ -70,9 +70,9 @@ internal class ContractingPartnerStateAidDeMinimisPersistenceProviderTest : Unit
                 selfDeclarationSubmissionDate = CURRENT_DATE,
                 baseForGranting = BaseForGranting.ADDENDUM_SUBSIDY_CONTRACT,
                 aidGrantedByCountry = COUNTRY_AT,
-                aidGrantedByCountryCode = COUNTRY_AT_CODE,
                 memberStatesGranting = memberStateEntities,
-                comment = "Comment test"
+                comment = "Comment test",
+                amountGrantingAid = BigDecimal.TEN
             )
 
 
@@ -80,9 +80,9 @@ internal class ContractingPartnerStateAidDeMinimisPersistenceProviderTest : Unit
             selfDeclarationSubmissionDate = CURRENT_DATE,
             baseForGranting = BaseForGranting.ADDENDUM_SUBSIDY_CONTRACT,
             aidGrantedByCountry = COUNTRY_AT,
-            aidGrantedByCountryCode = COUNTRY_AT_CODE,
             memberStatesGranting = memberStates,
-            comment = "Comment test"
+            comment = "Comment test",
+            amountGrantingAid = BigDecimal.TEN
         )
     }
 
