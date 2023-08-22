@@ -319,7 +319,7 @@
                                                         workPackageNr: workPackage.get(constants.WORK_PACKAGE_NUMBER.name)?.value,
                                                         activityNr: activity.get(constants.ACTIVITY_NUMBER.name)?.value,
                                                         deliverableNr: deliverable.get(constants.DELIVERABLE_NUMBER.name)?.value}"></span>
-                                                    <span [innerText]="activity.get(constants.DELIVERABLE_TITLE.name)?.value | translateByInputLanguage | async"></span>
+                                                    <span [innerText]="deliverable.get(constants.DELIVERABLE_TITLE.name)?.value | translateByInputLanguage | async"></span>
                                                 </h4>
                                             </div>
 
