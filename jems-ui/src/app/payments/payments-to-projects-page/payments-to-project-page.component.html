@@ -78,7 +78,9 @@
         </jems-filter-template>
 
         <ng-container>
+            <p *ngIf="!data.page.content.length && filtersActive">{{'common.filters.no.results' | translate}}</p>
             <jems-table id="paymentToProjectsTable"
+                        *ngIf="data.page.content.length"
                         [configuration]="tableConfiguration"
                         [rows]="data.page.content"
                         [totalElements]="data.page?.totalElements"

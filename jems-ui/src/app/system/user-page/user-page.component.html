@@ -55,7 +55,8 @@
     </jems-filter-template>
 
     <div *ngIf="userPageStore.page$ | async as page">
-        <jems-table
+        <p *ngIf="!page.content.length && isThereAnyActiveFilter()">{{'common.filters.no.results' | translate}}</p>
+        <jems-table *ngIf="page.content.length"
                 (newPageIndex)="userPageStore.newPageIndex$.next($event)"
                 (newPageSize)="userPageStore.newPageSize$.next($event)"
                 (sortRows)="userPageStore.newSort$.next($event)"

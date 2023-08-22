@@ -41,6 +41,7 @@
             </jems-filter-template>
         </ng-container>
 
+        <p *ngIf="!data.rows.length && isThereAnyActiveFilter()">{{'common.filters.no.results' | translate}}</p>
         <jems-table class="overflow-auto" *ngIf="data.rows.length"
                     [configuration]="data.tableConfiguration"
                     [rows]="data.rows"
