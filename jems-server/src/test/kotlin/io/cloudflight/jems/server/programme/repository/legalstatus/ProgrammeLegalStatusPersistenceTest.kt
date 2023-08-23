@@ -12,7 +12,6 @@ import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeL
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -56,16 +55,16 @@ class ProgrammeLegalStatusPersistenceTest : UnitTest() {
     private lateinit var persistence: ProgrammeLegalStatusPersistenceProvider
 
     @Test
-    fun getMax20Statuses() {
-        every { repository.findTop20ByOrderById() } returns listOf(legalStatusEntity)
-        assertThat(persistence.getMax20Statuses()).containsExactly(legalStatus)
+    fun getMax50Statuses() {
+        every { repository.findTop50ByOrderById() } returns listOf(legalStatusEntity)
+        assertThat(persistence.getMax50Statuses()).containsExactly(legalStatus)
     }
 
     @Test
     fun `updateLegalStatuses - everything should be fine`() {
         every { repository.deleteAllByIdInBatch(setOf(14, 15)) } answers { }
         every { repository.saveAll(any<List<ProgrammeLegalStatusEntity>>()) } returnsArgument 0
-        every { repository.findTop20ByOrderById() } returns listOf(legalStatusEntity)
+        every { repository.findTop50ByOrderById() } returns listOf(legalStatusEntity)
 
         assertThat(
             persistence.updateLegalStatuses(

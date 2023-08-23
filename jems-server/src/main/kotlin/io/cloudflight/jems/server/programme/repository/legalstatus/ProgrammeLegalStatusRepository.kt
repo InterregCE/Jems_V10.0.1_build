@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository
 interface ProgrammeLegalStatusRepository : JpaRepository<ProgrammeLegalStatusEntity, Long> {
 
     @EntityGraph(value = "ProgrammeLegalStatusEntity.fetchWithTranslations")
-    fun findTop20ByOrderById(): Iterable<ProgrammeLegalStatusEntity>
+    fun findTop50ByOrderById(): Iterable<ProgrammeLegalStatusEntity>
 
     @EntityGraph(value = "ProgrammeLegalStatusEntity.fetchWithTranslations")
     override fun findAllById(ids: Iterable<Long>): List<ProgrammeLegalStatusEntity>

@@ -21,7 +21,7 @@ class UpdateLegalStatus(
 ) : UpdateLegalStatusInteractor {
 
     companion object {
-        private const val MAX_ALLOWED_AMOUNT_OF_LEGAL_STATUSES = 20L
+        private const val MAX_ALLOWED_AMOUNT_OF_LEGAL_STATUSES = 50L
         private const val MAX_DESCRIPTION_LENGTH = 50
     }
 

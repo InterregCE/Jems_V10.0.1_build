@@ -841,7 +841,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             )
         } returns listOf(partnerBudgetOptions)
         every { coFinancingPersistence.getCoFinancingAndContributions(projectPartner.id) } returns partnerCoFinancing
-        every { programmeLegalStatusPersistence.getMax20Statuses() } returns legalStatuse
+        every { programmeLegalStatusPersistence.getMax50Statuses() } returns legalStatuse
         every { getBudgetCostsPersistence.getBudgetStaffCosts(setOf(projectPartner.id)) } returns listOf(
             BudgetStaffCostEntry(
                 id = 3L,
@@ -1597,7 +1597,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         every { resultPersistence.getResultsForProject(id, null) } returns emptyList()
         every { workPackagePersistence.getWorkPackagesWithAllDataByProjectId(id) } returns emptyList()
         every { projectLumpSumPersistence.getLumpSums(id) } returns emptyList()
-        every { programmeLegalStatusPersistence.getMax20Statuses() } returns legalStatuse
+        every { programmeLegalStatusPersistence.getMax50Statuses() } returns legalStatuse
         // data for tableA4/output-result
         every { workPackagePersistence.getAllOutputsForProjectIdSortedByNumbers(id) } returns emptyList()
         every { listOutputIndicatorsPersistence.getTop250OutputIndicators() } returns emptySet()
