@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.notification.inApp.service.model.NotificationV
 import io.cloudflight.jems.server.notification.inApp.service.project.GlobalProjectNotificationServiceInteractor
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
+import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 
@@ -25,6 +26,7 @@ data class ProjectFileChangeEvent(
 data class ProjectFileNotificationEventListener(
     private val notificationProjectService: GlobalProjectNotificationServiceInteractor,
     private val reportPersistence: ProjectPartnerReportPersistence,
+    private val projectReportPersistence: ProjectReportPersistence
 ) {
 
     @EventListener
@@ -61,6 +63,18 @@ data class ProjectFileNotificationEventListener(
             }
         }
 
+        val projectReportParentNode = file.type.getProjectReportParentNodeIfPresent()
+        val projectReportId = projectReportParentNode?.getItsIdFrom(path = file.indexedPath)
+
+        if(projectReportId != null) {
+           with (projectReportPersistence.getReportByIdUnSecured(projectReportId)) {
+               variables.putAll(mapOf(
+                   NotificationVariable.ProjectReportId to id,
+                   NotificationVariable.ProjectReportNumber to reportNumber
+               ))
+           }
+        }
+
         return variables
     }
 
@@ -71,4 +85,10 @@ data class ProjectFileNotificationEventListener(
             else -> null
         }
 
+    private fun JemsFileType.getProjectReportParentNodeIfPresent(): JemsFileType? =
+        if (isSubFolderOf(JemsFileType.ProjectReport)) {
+            JemsFileType.ProjectReport
+        } else {
+            null
+        }
 }

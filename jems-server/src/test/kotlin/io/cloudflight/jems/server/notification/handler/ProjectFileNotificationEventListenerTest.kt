@@ -8,24 +8,29 @@ import io.cloudflight.jems.server.notification.inApp.service.model.NotificationT
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationVariable
 import io.cloudflight.jems.server.notification.inApp.service.project.GlobalProjectNotificationServiceInteractor
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
+import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
+import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.mockk.clearMocks
 import io.mockk.every
-import io.mockk.slot
-import io.mockk.verify
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
+import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.EnumSource
+import java.time.LocalDate
 import java.time.ZonedDateTime
 
 class ProjectFileNotificationEventListenerTest: UnitTest() {
@@ -34,6 +39,12 @@ class ProjectFileNotificationEventListenerTest: UnitTest() {
         private const val PROJECT_ID = 5L
         private const val PARTNER_ID = 88L
         private const val REPORT_ID = 99L
+        private const val PROJECT_REPORT_NUMBER = 6
+
+        private val LAST_WEEK = ZonedDateTime.now().minusWeeks(1)
+        private val LAST_YEAR = ZonedDateTime.now().minusYears(1)
+        private val YESTERDAY = LocalDate.now().minusDays(1)
+        private val MONTH_AGO = LocalDate.now().minusMonths(1)
 
         private val summary = ProjectSummary(
             id = PROJECT_ID,
@@ -53,6 +64,17 @@ class ProjectFileNotificationEventListenerTest: UnitTest() {
             size = 47889L,
             description = "desc",
             indexedPath = "/PartnerControlReport/000099/"
+        )
+
+        private val projectReportVerificationDummyFile = JemsFile(
+            id = 478L,
+            name = "attachment.pdf",
+            type = JemsFileType.VerificationDocument,
+            uploaded = ZonedDateTime.now(),
+            author = UserSimple(45L, email = "admin@cloudflight.io", name = "Admin", surname = "Big"),
+            size = 47889L,
+            description = "desc",
+            indexedPath = "/ProjectReport/000099/"
         )
 
         private val reportSubmissionSummary = ProjectPartnerReportSubmissionSummary(
@@ -87,6 +109,34 @@ class ProjectFileNotificationEventListenerTest: UnitTest() {
             partnerId = 1357L,
         )
 
+        private fun projectReport(reportId: Long) = ProjectReportModel(
+            id = reportId,
+            reportNumber = PROJECT_REPORT_NUMBER,
+            status = ProjectReportStatus.Draft,
+            linkedFormVersion = "3.0",
+            startDate = YESTERDAY,
+            endDate = MONTH_AGO,
+
+            type = ContractingDeadlineType.Both,
+            deadlineId = 54L,
+            periodNumber = 4,
+            reportingDate = YESTERDAY.minusDays(1),
+            projectId = PROJECT_ID,
+            projectIdentifier = "projectIdentifier",
+            projectAcronym = "projectAcronym",
+            leadPartnerNameInOriginalLanguage = "nameInOriginalLanguage",
+            leadPartnerNameInEnglish = "nameInEnglish",
+
+            createdAt = LAST_WEEK,
+            firstSubmission = LAST_YEAR,
+            verificationDate = null,
+            verificationEndDate = null,
+            amountRequested = null,
+            totalEligibleAfterVerification = null,
+            riskBasedVerification = false,
+            riskBasedVerificationDescription = "Description"
+        )
+
         private val project: ProjectSummary = mockk<ProjectSummary>().also {
             every { it.id } returns 45L
             every { it.customIdentifier } returns "custom identifier 45"
@@ -107,12 +157,15 @@ class ProjectFileNotificationEventListenerTest: UnitTest() {
     @MockK
     private lateinit var reportPersistence: ProjectPartnerReportPersistence
 
+    @MockK
+    private lateinit var projectReportPersistence: ProjectReportPersistence
+
     @InjectMockKs
     private lateinit var listener: ProjectFileNotificationEventListener
 
     @BeforeEach
     internal fun reset() {
-        clearMocks(notificationProjectService, reportPersistence)
+        clearMocks(notificationProjectService, reportPersistence, projectReportPersistence)
     }
 
     @ParameterizedTest(name = "sendNotifications - {0}, {1}")
@@ -122,10 +175,17 @@ class ProjectFileNotificationEventListenerTest: UnitTest() {
         "ControlReport,Upload,1556,ControlCommunicationFileUpload,Project/017442/Report/Partner/009679/PartnerControlReport/001556/ControlReport/",
         "SharedFolder,Upload,,SharedFolderFileUpload,Project/017376/SharedFolder/",
         "SharedFolder,Delete,,SharedFolderFileDelete,Project/017376/SharedFolder/",
+        "VerificationDocument,Upload,8001,ProjectReportVerificationFileUpload,Project/8001/Report/ProjectReport/008001/ProjectReportVerification/VerificationDocument",
+        "VerificationDocument,Delete,8002,ProjectReportVerificationFileDelete,Project/8001/Report/ProjectReport/008002/ProjectReportVerification/VerificationDocument",
     ])
     fun sendNotifications(type: JemsFileType, action: FileChangeAction, reportId: Long?, expectedType: NotificationType, path: String) {
-        if (reportId != null)
-            every { reportPersistence.getPartnerReportByIdUnsecured(reportId) } returns report(reportId)
+        if (reportId != null) {
+            if(type != JemsFileType.VerificationDocument) {
+                every { reportPersistence.getPartnerReportByIdUnsecured(reportId) } returns report(reportId)
+            } else {
+                every { projectReportPersistence.getReportByIdUnSecured(reportId) } returns projectReport(reportId)
+            }
+        }
 
         val slotType = slot<NotificationType>()
         val slotVariable = slot<Map<NotificationVariable, Any>>()
@@ -149,15 +209,25 @@ class ProjectFileNotificationEventListenerTest: UnitTest() {
             NotificationVariable.FileUsername to if (action == FileChangeAction.Delete) "override-email" else "author@email",
             NotificationVariable.FileName to "attachment.txt",
         )
-        if (reportId != null)
-            expectedVariables.putAll(mapOf(
-                NotificationVariable.PartnerId to 1357L,
-                NotificationVariable.PartnerRole to ProjectPartnerRole.LEAD_PARTNER,
-                NotificationVariable.PartnerNumber to 6,
-                NotificationVariable.PartnerAbbreviation to "LP-6",
-                NotificationVariable.PartnerReportId to reportId,
-                NotificationVariable.PartnerReportNumber to 4,
-            ))
+        if (reportId != null) {
+            if (type == JemsFileType.VerificationDocument) {
+                expectedVariables.putAll(
+                    mapOf(
+                        NotificationVariable.ProjectReportId to reportId,
+                        NotificationVariable.ProjectReportNumber to PROJECT_REPORT_NUMBER,
+                    )
+                )
+            } else {
+                expectedVariables.putAll(mapOf(
+                    NotificationVariable.PartnerId to 1357L,
+                    NotificationVariable.PartnerRole to ProjectPartnerRole.LEAD_PARTNER,
+                    NotificationVariable.PartnerNumber to 6,
+                    NotificationVariable.PartnerAbbreviation to "LP-6",
+                    NotificationVariable.PartnerReportId to reportId,
+                    NotificationVariable.PartnerReportNumber to 4,
+                ))
+            }
+        }
 
         assertThat(slotVariable.captured).containsExactlyEntriesOf(expectedVariables)
     }
@@ -240,12 +310,13 @@ class ProjectFileNotificationEventListenerTest: UnitTest() {
     fun projectReportVerificationFileEventTest(type: NotificationType) {
         val slotVariable = slot<Map<NotificationVariable, Any>>()
         every { notificationProjectService.sendNotifications(type, capture(slotVariable)) } answers { }
+        every { projectReportPersistence.getReportByIdUnSecured(REPORT_ID) } answers { projectReport(REPORT_ID) }
         val fileAction = if (type == NotificationType.ProjectReportVerificationFileUpload) FileChangeAction.Upload else FileChangeAction.Delete
         listener.sendNotifications(
             ProjectFileChangeEvent(
                 fileAction,
                 summary,
-                dummyFile(JemsFileType.VerificationDocument),
+                projectReportVerificationDummyFile,
                 overrideAuthorEmail = "test@user.com"
             )
         )
@@ -257,6 +328,8 @@ class ProjectFileNotificationEventListenerTest: UnitTest() {
             Assertions.entry(NotificationVariable.ProjectAcronym, "project acronym"),
             Assertions.entry(NotificationVariable.FileUsername, "test@user.com"),
             Assertions.entry(NotificationVariable.FileName, "attachment.pdf"),
+            Assertions.entry(NotificationVariable.ProjectReportId, 99L),
+            Assertions.entry(NotificationVariable.ProjectReportNumber, 6),
         )
     }
 }

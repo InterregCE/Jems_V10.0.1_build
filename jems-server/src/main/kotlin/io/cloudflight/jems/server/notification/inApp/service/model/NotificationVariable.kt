@@ -58,7 +58,7 @@ enum class NotificationVariable(val variable: String) {
 
         val partnerReportFileNotificationVariables = partnerReportNotificationVariables union fileNotificationVariables
 
-        val projectReportFileNotificationVariables = projectNotificationVariables union fileNotificationVariables
+        val projectReportFileNotificationVariables = projectReportNotificationVariables union fileNotificationVariables
     }
 
 }
