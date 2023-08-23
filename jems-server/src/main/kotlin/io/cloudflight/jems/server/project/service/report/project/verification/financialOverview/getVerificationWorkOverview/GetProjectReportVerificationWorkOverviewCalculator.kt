@@ -36,8 +36,8 @@ class GetProjectReportVerificationWorkOverviewCalculator(
 
             val afterVerification = verifications.calculateVerified(costCategories.options).sum
 
-            val currentReport = costCategories.currentlyReported.sum
-            val currentReportFlatRates = costCategories.currentlyReported.extractFlatRatesSum(costCategories.options)
+            val currentReport = costCategories.totalEligibleAfterControl.sum
+            val currentReportFlatRates = costCategories.totalEligibleAfterControl.extractFlatRatesSum(costCategories.options)
             val currentReportWithoutFlatRates = currentReport.minus(currentReportFlatRates)
 
             return@map VerificationWorkOverviewLine(
