@@ -103,7 +103,7 @@ class ProjectDataProviderImpl(
     override fun getProjectDataForProjectId(projectId: Long, version: String?): ProjectData {
         val project = projectPersistence.getProject(projectId, version)
         val isSpfCall = project.callSettings.callType == CallType.SPF
-        val legalStatuses = programmeLegalStatusPersistence.getMax20Statuses()
+        val legalStatuses = programmeLegalStatusPersistence.getMax50Statuses()
         val lumpSums = projectLumpSumPersistence.getLumpSums(projectId, version)
 
         val partners = partnerPersistence.findTop50ByProjectId(projectId, version)

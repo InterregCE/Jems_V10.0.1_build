@@ -5,7 +5,7 @@ import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeL
 
 interface ProgrammeLegalStatusPersistence {
 
-    fun getMax20Statuses(): List<ProgrammeLegalStatus>
+    fun getMax50Statuses(): List<ProgrammeLegalStatus>
 
     fun updateLegalStatuses(
         toDeleteIds: Set<Long>,
