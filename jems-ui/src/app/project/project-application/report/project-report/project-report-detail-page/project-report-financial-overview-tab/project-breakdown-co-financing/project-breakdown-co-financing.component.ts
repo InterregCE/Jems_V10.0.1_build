@@ -1,9 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
 import {FormService} from '@common/components/section/form/form.service';
-import {
-  CallFundRateDTO,
-  CertificateCoFinancingBreakdownDTO, CertificateCoFinancingBreakdownLineDTO, InputTranslation
-} from '@cat/api';
+import {CallFundRateDTO, CertificateCoFinancingBreakdownDTO, CertificateCoFinancingBreakdownLineDTO, InputTranslation} from '@cat/api';
 import {MatTableDataSource} from '@angular/material/table';
 
 @Component({
@@ -16,7 +13,7 @@ import {MatTableDataSource} from '@angular/material/table';
 export class ProjectBreakdownCoFinancingComponent implements OnChanges {
 
   columnsAvailable = ['type', 'totalEligibleBudget', 'previouslyReported', 'currentReport', 'totalReportedSoFar', 'totalReportedSoFarPercentage', 'remainingBudget', 'previouslyVerified', 'currentVerified', 'previouslyPaid'];
-  verifiedColumns = ['previouslyVerified', 'currentVerified'];
+  verifiedColumns = ['currentVerified'];
   displayedColumns = this.columnsAvailable;
 
   @Input()
