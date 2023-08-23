@@ -4,7 +4,7 @@
         <h2>{{'payments.to.ec.header' | translate}}</h2>
         <p>{{'payments.to.ec.sub.header' | translate}}</p>
 
-        <div class="add-payment-to-ec-button">
+        <div class="add-payment-to-ec-button" hidden="true"><!--Will be enabled in V9: MP2-3852-->
             <button *ngIf="userCanEdit$ | async"
                     mat-stroked-button color="primary"
                     [routerLink]="'/app/payments/paymentApplicationsToEc/create'">
