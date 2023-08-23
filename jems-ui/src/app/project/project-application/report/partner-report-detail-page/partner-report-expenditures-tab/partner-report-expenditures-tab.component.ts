@@ -15,6 +15,7 @@ import {
 import {MatSelectChange} from '@angular/material/select/select';
 import {
   CurrencyDTO,
+  ExpenditureParkingMetadataDTO,
   IdNamePairDTO,
   ProjectPartnerReportDTO,
   ProjectPartnerReportExpenditureCostDTO,
@@ -41,6 +42,7 @@ import {PartnerReportPageStore} from '@project/project-application/report/partne
 import {Alert} from '@common/components/forms/alert';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {ReportUtil} from '@project/common/report-util';
+import {ExpenditureItemParkedByChipComponent, ExpenditureParkedByEnum} from './expenditure-parked-by-chip/expenditure-item-parked-by-chip.component';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @UntilDestroy()
@@ -159,7 +161,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       ),
     );
     this.pageStore.currentReport$.pipe(untilDestroyed(this)).subscribe(report => this.currentReport = report);
-    this.pageStore.currencies$.pipe(untilDestroyed(this)).subscribe(currencies=> this.currencies = currencies);
+    this.pageStore.currencies$.pipe(untilDestroyed(this)).subscribe(currencies => this.currencies = currencies);
 
     this.dataAsObservable();
   }
@@ -197,7 +199,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     } else {
       if (change.value['type'] === 'lumpSum') {
         this.lumpSumHasValue = true;
-        this.availableCurrenciesPerRow[index] =  this.getAvailableCurrenciesByType('lumpSum');
+        this.availableCurrenciesPerRow[index] = this.getAvailableCurrenciesByType('lumpSum');
         control.patchValue({costCategory: this.CostCategoryEnum.Multiple});
         control.patchValue({numberOfUnits: 1});
         control.patchValue({pricePerUnit: this.availableLumpSums.filter(lumpSum => lumpSum.id === change.value['id'])[0].cost});
@@ -232,11 +234,14 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   }
 
   getAvailableCurrenciesByType(type: string | null, unitCost?: any) {
-    switch(type) {
-      case 'lumpSum': return this.currencies.filter((currency) => currency.code === CurrencyCodesEnum.EUR);
-      case 'unitCost': return this.currencies.filter((currency) => currency.code === CurrencyCodesEnum.EUR
-        || currency.code === this.availableUnitCosts.filter(el => (el.id === unitCost?.value?.id || el.id === unitCost?.id) )[0].foreignCurrencyCode);
-      default: return this.currencies;
+    switch (type) {
+      case 'lumpSum':
+        return this.currencies.filter((currency) => currency.code === CurrencyCodesEnum.EUR);
+      case 'unitCost':
+        return this.currencies.filter((currency) => currency.code === CurrencyCodesEnum.EUR
+          || currency.code === this.availableUnitCosts.filter(el => (el.id === unitCost?.value?.id || el.id === unitCost?.id))[0].foreignCurrencyCode);
+      default:
+        return this.currencies;
     }
   }
 
@@ -252,10 +257,11 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     control.get('numberOfUnits')?.disable();
     control.get('pricePerUnit')?.disable();
     control.get('declaredAmount')?.enable();
-    if(this.hasPartnerCurrencySetToEur())
-      {control.get('currencyCode')?.disable();}
-    else
-      {control.get('currencyCode')?.enable();}
+    if (this.hasPartnerCurrencySetToEur()) {
+      control.get('currencyCode')?.disable();
+    } else {
+      control.get('currencyCode')?.enable();
+    }
     control.get('currencyConversionRate')?.enable();
     control.get('declaredAmountInEur')?.enable();
     control.get('investmentId')?.enable();
@@ -270,16 +276,15 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   }
 
   getUnitCostCurrency(unitCost: ProjectPartnerReportUnitCostDTO): string {
-    return  this.hasPartnerCurrencySetToEur() ? CurrencyCodesEnum.EUR : unitCost.foreignCurrencyCode ? '' : CurrencyCodesEnum.EUR;
+    return this.hasPartnerCurrencySetToEur() ? CurrencyCodesEnum.EUR : unitCost.foreignCurrencyCode ? '' : CurrencyCodesEnum.EUR;
   }
 
   disableFieldSpecificOnReset(control: FormGroup, index: number, isGDPRCompliant: boolean, isMonitorUser: boolean): void {
     if (!isMonitorUser && (control.get('costGDPR')?.value === true && !isGDPRCompliant)) {
       control.disable();
-    }
-    else {
+    } else {
       if (this.isStaffCostsSelectedForCostCategoryRow(control) ||
-          this.isTravelAndAccommodationSelectedForCostCategoryRow(control)) {
+        this.isTravelAndAccommodationSelectedForCostCategoryRow(control)) {
         control.get('investmentId')?.disable();
       }
       if (this.isStaffCostsSelectedForCostCategoryRow(control)) {
@@ -324,7 +329,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       === BudgetCostCategoryEnum.TRAVEL_AND_ACCOMMODATION_COSTS;
   }
 
-  resetForm(partnerReportExpenditures: ProjectPartnerReportExpenditureCostDTO[], isGDPRCompliant: boolean , isMonitorUser: boolean, isReportEditable: boolean): void {
+  resetForm(partnerReportExpenditures: ProjectPartnerReportExpenditureCostDTO[], isGDPRCompliant: boolean, isMonitorUser: boolean, isReportEditable: boolean): void {
     this.availableCurrenciesPerRow = [];
     this.items.clear();
     this.isExpenditureReIncluded = new Map();
@@ -457,16 +462,16 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
               && (exp.investment ? exp.investment.entityStillAvailable : true),
             contractName: (exp.expenditure.contractId ? contractIDs.find((c: IdNamePairDTO) => c.id === exp.expenditure.contractId)?.name : undefined)
           })),
-        isGDPRCompliant: isCurrentUserGDPRCompliant,
-        canEdit,
-        isMonitorUser,
-        isReportEditable,
-        partnerId,
-        partnerReportId,
-        projectId,
-        isReopenedLast: ReportUtil.isReopenedPartnerReportLast(currentReport.status),
-        isReopenedLimited: ReportUtil.isReopenedPartnerReportLimited(currentReport.status)
-      })
+          isGDPRCompliant: isCurrentUserGDPRCompliant,
+          canEdit,
+          isMonitorUser,
+          isReportEditable,
+          partnerId,
+          partnerReportId,
+          projectId,
+          isReopenedLast: ReportUtil.isReopenedPartnerReportLast(currentReport.status),
+          isReopenedLimited: ReportUtil.isReopenedPartnerReportLimited(currentReport.status)
+        })
       ),
       tap(data => this.resetForm(data.expendituresCosts, data.isGDPRCompliant, data.isMonitorUser, data.isReportEditable)),
       tap(data => this.contractIDs = data.contractIDs),
@@ -538,15 +543,15 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       );
     }
 
-     tableConfig.push(
+    tableConfig.push(
       {minInRem: 8, maxInRem: 8},   // declared amount
       {minInRem: 5, maxInRem: 5},   // currency
       {minInRem: 5, maxInRem: 5},   // conversion rate
       {minInRem: 8, maxInRem: 8},   // declared amount in EUR
       {minInRem: 13, maxInRem: 16}  //attachment
-     );
+    );
 
-    if(isEditable){
+    if (isEditable) {
       tableConfig.push({minInRem: 3, maxInRem: 3}); //delete
     }
     if (investments.length > 0) {
@@ -557,60 +562,60 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
 
   private getUnitCostOrLumpSumObject(reportExpenditureCost: ProjectPartnerReportExpenditureCostDTO): ProjectPartnerReportUnitCostDTO | ProjectPartnerReportLumpSumDTO | undefined {
     return (reportExpenditureCost.lumpSumId !== null ?
-     this.availableLumpSums.find(lumpSum => lumpSum.id === reportExpenditureCost.lumpSumId) :
+      this.availableLumpSums.find(lumpSum => lumpSum.id === reportExpenditureCost.lumpSumId) :
       this.availableUnitCosts.find(unitCost => unitCost.id === reportExpenditureCost.unitCostId));
   }
 
   getUnitCostType(reportExpenditureCost: ProjectPartnerReportExpenditureCostDTO) {
-    if(!reportExpenditureCost.lumpSumId && !reportExpenditureCost.unitCostId) {
+    if (!reportExpenditureCost.lumpSumId && !reportExpenditureCost.unitCostId) {
       return '';
     }
     return reportExpenditureCost.lumpSumId ? 'lumpSum' : 'unitCost';
   }
 
   private addExpenditure(reportExpenditureCost: ProjectPartnerReportExpenditureCostDTO): void {
-      const isParked = !!reportExpenditureCost.parkingMetadata;
-      const conversionRate = isParked
-        ? reportExpenditureCost.currencyConversionRate
-        : this.getConversionRateByCode(reportExpenditureCost.currencyCode || '', reportExpenditureCost);
-      const costOption = this.getUnitCostOrLumpSumObject(reportExpenditureCost);
-      this.availableCurrenciesPerRow.push(this.getAvailableCurrenciesByType(this.getUnitCostType(reportExpenditureCost), costOption));
-      const item = this.formBuilder.group(
-        {
-          id: this.formBuilder.control(reportExpenditureCost.id),
-          number: this.formBuilder.control(reportExpenditureCost.number),
-          parkingMetadata: this.formBuilder.control(reportExpenditureCost.parkingMetadata),
-          reportOfOriginNumber: this.formBuilder.control(reportExpenditureCost.parkingMetadata?.reportOfOriginNumber),
-          originalExpenditureNumber: this.formBuilder.control(reportExpenditureCost.parkingMetadata?.originalExpenditureNumber),
-          costOptions: this.formBuilder.control(costOption),
-          costCategory: this.formBuilder.control(reportExpenditureCost.costCategory),
-          costGDPR: this.formBuilder.control(reportExpenditureCost.gdpr),
-          investmentId: this.formBuilder.control(reportExpenditureCost.investmentId),
-          contractId: this.formBuilder.control(reportExpenditureCost.contractId),
-          internalReferenceNumber: this.formBuilder.control(reportExpenditureCost.internalReferenceNumber,
-            Validators.maxLength(30)),
-          invoiceNumber: this.formBuilder.control(reportExpenditureCost.invoiceNumber,
-            Validators.maxLength(30)),
-          invoiceDate: this.formBuilder.control(reportExpenditureCost.invoiceDate),
-          dateOfPayment: this.formBuilder.control(reportExpenditureCost.dateOfPayment),
-          description: this.formBuilder.control(reportExpenditureCost.description),
-          comment: this.formBuilder.control(reportExpenditureCost.comment),
-          totalValueInvoice: this.formBuilder.control(reportExpenditureCost.totalValueInvoice),
-          vat: this.formBuilder.control(reportExpenditureCost.vat),
-          numberOfUnits: this.formBuilder.control(reportExpenditureCost.numberOfUnits),
-          pricePerUnit: this.formBuilder.control(reportExpenditureCost.pricePerUnit),
-          declaredAmount: this.formBuilder.control(reportExpenditureCost.declaredAmount),
-          currencyCode: this.formBuilder.control(reportExpenditureCost.currencyCode),
-          currencyConversionRate: this.formBuilder.control(conversionRate),
-          declaredAmountInEur: this.formBuilder.control(this.getAmountInEur(conversionRate, reportExpenditureCost.declaredAmount || 0)),
-          attachment: this.formBuilder.control(reportExpenditureCost.attachment, []),
-        });
-      this.items.push(item);
-      this.isExpenditureReIncluded.set(reportExpenditureCost.id, isParked);
+    const isParked = !!reportExpenditureCost.parkingMetadata;
+    const conversionRate = isParked
+      ? reportExpenditureCost.currencyConversionRate
+      : this.getConversionRateByCode(reportExpenditureCost.currencyCode || '', reportExpenditureCost);
+    const costOption = this.getUnitCostOrLumpSumObject(reportExpenditureCost);
+    this.availableCurrenciesPerRow.push(this.getAvailableCurrenciesByType(this.getUnitCostType(reportExpenditureCost), costOption));
+    const item = this.formBuilder.group(
+      {
+        id: this.formBuilder.control(reportExpenditureCost.id),
+        number: this.formBuilder.control(reportExpenditureCost.number),
+        parkingMetadata: this.formBuilder.control(reportExpenditureCost.parkingMetadata),
+        reportOfOriginNumber: this.formBuilder.control(reportExpenditureCost.parkingMetadata?.reportOfOriginNumber),
+        originalExpenditureNumber: this.formBuilder.control(reportExpenditureCost.parkingMetadata?.originalExpenditureNumber),
+        costOptions: this.formBuilder.control(costOption),
+        costCategory: this.formBuilder.control(reportExpenditureCost.costCategory),
+        costGDPR: this.formBuilder.control(reportExpenditureCost.gdpr),
+        investmentId: this.formBuilder.control(reportExpenditureCost.investmentId),
+        contractId: this.formBuilder.control(reportExpenditureCost.contractId),
+        internalReferenceNumber: this.formBuilder.control(reportExpenditureCost.internalReferenceNumber,
+          Validators.maxLength(30)),
+        invoiceNumber: this.formBuilder.control(reportExpenditureCost.invoiceNumber,
+          Validators.maxLength(30)),
+        invoiceDate: this.formBuilder.control(reportExpenditureCost.invoiceDate),
+        dateOfPayment: this.formBuilder.control(reportExpenditureCost.dateOfPayment),
+        description: this.formBuilder.control(reportExpenditureCost.description),
+        comment: this.formBuilder.control(reportExpenditureCost.comment),
+        totalValueInvoice: this.formBuilder.control(reportExpenditureCost.totalValueInvoice),
+        vat: this.formBuilder.control(reportExpenditureCost.vat),
+        numberOfUnits: this.formBuilder.control(reportExpenditureCost.numberOfUnits),
+        pricePerUnit: this.formBuilder.control(reportExpenditureCost.pricePerUnit),
+        declaredAmount: this.formBuilder.control(reportExpenditureCost.declaredAmount),
+        currencyCode: this.formBuilder.control(reportExpenditureCost.currencyCode),
+        currencyConversionRate: this.formBuilder.control(conversionRate),
+        declaredAmountInEur: this.formBuilder.control(this.getAmountInEur(conversionRate, reportExpenditureCost.declaredAmount || 0)),
+        attachment: this.formBuilder.control(reportExpenditureCost.attachment, []),
+      });
+    this.items.push(item);
+    this.isExpenditureReIncluded.set(reportExpenditureCost.id, isParked);
   }
 
   private formToReportExpenditures(): ProjectPartnerReportExpenditureCostDTO[] {
-   return this.items.controls.map((formGroup: FormGroup) => ({
+    return this.items.controls.map((formGroup: FormGroup) => ({
       costCategory: [formGroup.value?.costCategory, Validators.required],
       internalReferenceNumber: [formGroup.getRawValue()?.internalReferenceNumber, Validators.maxLength(30)],
       invoiceNumber: [formGroup.getRawValue()?.invoiceNumber, Validators.maxLength(30)],
@@ -618,7 +623,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       lumpSumId: formGroup.getRawValue()?.costOptions?.type === 'lumpSum' ? formGroup.getRawValue()?.costOptions.id : null,
       unitCostId: formGroup.getRawValue()?.costOptions?.type === 'unitCost' ? formGroup.getRawValue()?.costOptions.id : null,
       gdpr: formGroup.getRawValue()?.costGDPR
-     }));
+    }));
   }
 
   get items(): FormArray {
@@ -640,14 +645,14 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
 
   updateConversionRate(expenditureIndex: number, newValue: MatSelectChange) {
     const declaredAmountInLocalCurrency = this.items.at(expenditureIndex).get('declaredAmount')?.value;
-    const newConversionRate =  this.getConversionRateByCode(newValue.value);
+    const newConversionRate = this.getConversionRateByCode(newValue.value);
 
     this.items.at(expenditureIndex).get('currencyConversionRate')?.setValue(newConversionRate);
     this.items.at(expenditureIndex).get('declaredAmountInEur')?.setValue(this.getAmountInEur(newConversionRate, declaredAmountInLocalCurrency));
   }
 
   getConversionRateByCode(currencyCode: string, reportExpenditureCost?: ProjectPartnerReportExpenditureCostDTO): number {
-    if(this.currentReport.status === ProjectPartnerReportDTO.StatusEnum.Submitted && reportExpenditureCost) {
+    if (this.currentReport.status === ProjectPartnerReportDTO.StatusEnum.Submitted && reportExpenditureCost) {
       return reportExpenditureCost.currencyConversionRate;
     }
     return this.currencies.find((currency) => currency.code === currencyCode)?.conversionRate || 0;
@@ -658,14 +663,14 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   }
 
   updateAmountInEur(expenditureIndex: number, declaredAmount: number) {
-    const newConversionRate =  this.getConversionRateByCode(this.items.at(expenditureIndex).get('currencyCode')?.value);
-    const declaredAmountInEur = declaredAmount && newConversionRate ?  NumberService.roundNumber(NumberService.divide(declaredAmount, newConversionRate)) : 0;
+    const newConversionRate = this.getConversionRateByCode(this.items.at(expenditureIndex).get('currencyCode')?.value);
+    const declaredAmountInEur = declaredAmount && newConversionRate ? NumberService.roundNumber(NumberService.divide(declaredAmount, newConversionRate)) : 0;
 
     this.items.at(expenditureIndex).get('declaredAmountInEur')?.setValue(NumberService.roundNumber(declaredAmountInEur));
   }
 
   onUpdateNumberOfUnits(expenditureIndex: number) {
-    const total = NumberService.product([this.items.at(expenditureIndex).get('pricePerUnit')?.value , this.items.at(expenditureIndex).get('numberOfUnits')?.value]);
+    const total = NumberService.product([this.items.at(expenditureIndex).get('pricePerUnit')?.value, this.items.at(expenditureIndex).get('numberOfUnits')?.value]);
     this.items.at(expenditureIndex).get('declaredAmount')?.setValue(NumberService.roundNumber(total));
     this.updateAmountInEur(expenditureIndex, total);
   }
@@ -775,7 +780,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
         postfix = ` - ${this.customTranslatePipe.transform('project.application.form.section.part.e.period.preparation')}`;
       } else if (costOption.period && costOption.period === this.PERIOD_CLOSURE) {
         postfix = ` - ${this.customTranslatePipe.transform('project.application.form.section.part.e.period.preparation')}`;
-      } else if(costOption.period) {
+      } else if (costOption.period) {
         postfix = ` - ${this.customTranslatePipe.transform('project.partner.budget.table.period')} ${costOption.period}`;
       }
       return this.translateByInputLanguagePipe.transform(costOption.name).pipe(map(n => n + postfix));
@@ -787,7 +792,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   }
 
   getAdditionalRowClass(index: number, controlName: string) {
-    if(this.items.at(index).get(controlName)?.disabled
+    if (this.items.at(index).get(controlName)?.disabled
       || (controlName === PartnerReportExpendituresTabConstants.FORM_CONTROL_NAMES.currencyCode
         && this.hasPartnerCurrencySetToEur())
     ) {
@@ -871,7 +876,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       setTimeout(() => {
         this.invoiceDateFormDatePicker.first.open();
       }, PartnerReportExpendituresTabConstants.FOCUS_TIMEOUT);
-    }  else if (column === 'dateOfPayment') {
+    } else if (column === 'dateOfPayment') {
       setTimeout(() => {
         this.dateOfPaymentDateInput.first.nativeElement.focus();
       }, PartnerReportExpendituresTabConstants.FOCUS_TIMEOUT);
@@ -911,14 +916,14 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   }
 
   editAllowed(valueGDPR: boolean, isGDPRCompliant: boolean, canEdit: boolean, isMonitorUser: boolean): boolean {
-     return isMonitorUser || (!valueGDPR && canEdit) || (valueGDPR && isGDPRCompliant);
+    return isMonitorUser || (!valueGDPR && canEdit) || (valueGDPR && isGDPRCompliant);
   }
 
   deleteAllowed(valueGDPR: boolean, isGDPRCompliant: boolean, canEdit: boolean): boolean {
     return (!valueGDPR && canEdit) || (valueGDPR && isGDPRCompliant);
   }
 
-  toggleGDPR(index: number,  control: FormGroup, value: boolean): void {
+  toggleGDPR(index: number, control: FormGroup, value: boolean): void {
     this.items.at(index).get('costGDPR')?.setValue(value);
     control.patchValue({costGDPR: value});
 
@@ -927,5 +932,9 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
 
   formChanged(): void {
     this.formService.setDirty(true);
+  }
+
+  getParkedBy(parkingMetadata: ExpenditureParkingMetadataDTO): ExpenditureParkedByEnum {
+    return ExpenditureItemParkedByChipComponent.getParkedBy(parkingMetadata);
   }
 }

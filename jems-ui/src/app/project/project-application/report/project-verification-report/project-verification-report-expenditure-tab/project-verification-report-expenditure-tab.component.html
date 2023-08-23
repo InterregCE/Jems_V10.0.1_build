@@ -84,7 +84,7 @@
                                         <span jemsText maxLines="2">{{'project.application.partner.report.expenditures.tab.cost.parked.by' | translate}}</span>
                                     </mat-header-cell>
                                     <mat-cell *matCellDef="let item">
-                                        <jems-expenditure-item-parked-by-chip [parkingMetadata]="expenditureItem(item, EXPENDITURE_CONTROL.parkingMetadata)"></jems-expenditure-item-parked-by-chip>
+                                        <jems-expenditure-item-parked-by-chip [parkedBy]="getParkedBy(item)"></jems-expenditure-item-parked-by-chip>
                                     </mat-cell>
                                     <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                                 </ng-container>

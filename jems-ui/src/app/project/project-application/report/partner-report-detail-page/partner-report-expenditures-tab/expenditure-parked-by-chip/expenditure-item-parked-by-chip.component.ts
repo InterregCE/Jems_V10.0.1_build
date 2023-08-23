@@ -1,16 +1,17 @@
 import {Component, Input} from '@angular/core';
 import {ExpenditureParkingMetadataDTO} from '@cat/api';
 
-interface ParkedByI {
+export enum ExpenditureParkedByEnum {
+  NONE = 'NONE',
+  JSMA = 'JSMA',
+  CONTROL = 'CONTROL',
+}
+
+interface ExpenditureParkedByValue {
   icon: string;
   label: string;
   class: string;
 }
-
-const ParkedByEnum = {
-  JSMA: {icon: 'person_search', label: 'project.application.partner.report.expenditures.tab.cost.parked.by.jsma', class: 'parkedBy-JSMA'} as ParkedByI,
-  CONTROL: {icon: 'supervised_user_circle', label: 'project.application.partner.report.expenditures.tab.cost.parked.by.control', class: 'parkedBy-CONTROL'} as ParkedByI,
-};
 
 @Component({
   selector: 'jems-expenditure-item-parked-by-chip',
@@ -20,12 +21,27 @@ const ParkedByEnum = {
 export class ExpenditureItemParkedByChipComponent {
 
   @Input()
-  parkingMetadata: ExpenditureParkingMetadataDTO;
+  parkedBy: ExpenditureParkedByEnum;
 
-  getParkedBy(parkingMetadata: ExpenditureParkingMetadataDTO): ParkedByI {
-    return parkingMetadata?.reportProjectOfOriginId ? ParkedByEnum.JSMA : ParkedByEnum.CONTROL;
+  parkedByValues: Record<ExpenditureParkedByEnum, ExpenditureParkedByValue | undefined> = {
+    NONE: undefined,
+    JSMA: {
+      icon: 'person_search',
+      label: 'project.application.partner.report.expenditures.tab.cost.parked.by.jsma',
+      class: 'parkedBy-JSMA'
+    } as ExpenditureParkedByValue,
+    CONTROL: {
+      icon: 'supervised_user_circle',
+      label: 'project.application.partner.report.expenditures.tab.cost.parked.by.control',
+      class: 'parkedBy-CONTROL'
+    } as ExpenditureParkedByValue,
+  };
+
+  static getParkedBy(parkingMetadata: ExpenditureParkingMetadataDTO, parkedByControl = false): ExpenditureParkedByEnum {
+    if (parkedByControl) return ExpenditureParkedByEnum.CONTROL;
+    if (!parkingMetadata) return ExpenditureParkedByEnum.NONE;
+    return parkingMetadata.reportProjectOfOriginId ? ExpenditureParkedByEnum.JSMA : ExpenditureParkedByEnum.CONTROL;
   }
-
 }
 
 
