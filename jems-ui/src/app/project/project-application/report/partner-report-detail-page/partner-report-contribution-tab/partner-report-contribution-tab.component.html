@@ -60,7 +60,7 @@
                         </mat-form-field>
 
                         <mat-form-field *ngIf="!control.value.createdInThisReport" jemsFormFieldWidth="full">
-                            <input disabled name="legalStatus" matInput [value]="control.value.legalStatus">
+                            <input disabled name="legalStatus" matInput [value]="'project.partner.coFinancing.contribution.legal.status.' + control.value.legalStatus | translate">
                         </mat-form-field>
                     </mat-cell>
                 </ng-container>
