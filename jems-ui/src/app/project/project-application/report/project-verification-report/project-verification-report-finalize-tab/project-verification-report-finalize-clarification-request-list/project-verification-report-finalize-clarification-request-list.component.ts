@@ -36,7 +36,7 @@ export class ProjectVerificationReportFinalizeClarificationRequestListComponent 
     projectId: number;
     reportId: number;
     finalizationAllowed: boolean;
-    hideFinalizeSection: boolean;
+    reportFinalised: boolean;
   }>;
 
   constructor(private formBuilder: FormBuilder,
@@ -60,12 +60,11 @@ export class ProjectVerificationReportFinalizeClarificationRequestListComponent 
             projectId: report.projectId,
             reportId: report.id,
             finalizationAllowed: userCanFinalize,
-            hideFinalizeSection: report.status === ProjectReportDTO.StatusEnum.Finalized,
+            reportFinalised: report.status === ProjectReportDTO.StatusEnum.Finalized,
           })
         ),
-        tap(data => this.initForm(!(data.hideFinalizeSection && (data.finalizationAllowed || data.canEdit)))),
-        tap(data => this.resetForm(data.clarifications, data.canEdit)),
-        tap(data => this.disableForms(data.canEdit, data.finalizationAllowed, data.hideFinalizeSection))
+        tap(data => this.initForm(!data.reportFinalised && data.canEdit)),
+        tap(data => this.resetForm(data.clarifications, (!data.reportFinalised && data.canEdit))),
       );
   }
 
@@ -108,12 +107,6 @@ export class ProjectVerificationReportFinalizeClarificationRequestListComponent 
         catchError(error => this.formService.setError(error)),
       )
       .subscribe();
-  }
-
-  private disableForms(userCanEdit: boolean, finalizationAllowed: boolean, hideFinalizeSection: boolean): void {
-    if (hideFinalizeSection && (finalizationAllowed || userCanEdit)) {
-      this.clarificationForm.disable();
-    }
   }
 
   delete(index: number): void {

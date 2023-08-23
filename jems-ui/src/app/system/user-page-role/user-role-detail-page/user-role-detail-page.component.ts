@@ -197,6 +197,7 @@ export class UserRoleDetailPageComponent {
     this.adaptDependentPermissions();
     this.adaptLimitedControllerInstitutionPermissions();
     this.adaptLimitedControllerInstitutionAssignmentsPermissions();
+    this.adaptFinalizeReportVerificationPermissions();
 
     if (!isUpdateAllowed) {
       this.userRoleForm.disable();
@@ -208,6 +209,7 @@ export class UserRoleDetailPageComponent {
       this.state(permission)?.setValue(value);
       this.adaptLimitedControllerInstitutionPermissions();
       this.adaptLimitedControllerInstitutionAssignmentsPermissions();
+      this.adaptFinalizeReportVerificationPermissions();
       this.formChanged();
     }
   }
@@ -417,6 +419,21 @@ export class UserRoleDetailPageComponent {
       limitAssignmentsPermission.disabled = true;
     } else {
       limitAssignmentsPermission.disabled = false;
+    }
+  }
+
+  private adaptFinalizeReportVerificationPermissions(): void {
+    const verificationPermission = this.treeControlInspect?.dataNodes
+      ?.find(node => node.name === 'project.application.project.verification.work.title') as any;
+    const verificationFinalisationPermission = this.treeControlInspect?.dataNodes
+      ?.find(node => node.name === 'project.application.project.verification.work.finalize.title') as any;
+    const verificationPermissionValue = this.state(verificationPermission.form)?.value;
+
+    if(verificationPermissionValue === PermissionState.HIDDEN || verificationPermissionValue === PermissionState.VIEW) {
+      this.state(verificationFinalisationPermission.form)?.setValue(PermissionState.HIDDEN);
+      verificationFinalisationPermission.disabled = true;
+    } else {
+      verificationFinalisationPermission.disabled = false;
     }
   }
 }
