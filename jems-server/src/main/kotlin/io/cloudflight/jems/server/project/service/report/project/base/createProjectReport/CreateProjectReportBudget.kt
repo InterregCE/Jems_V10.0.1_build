@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.project.base.createProjectReport
 
-import io.cloudflight.jems.server.payments.service.regular.PaymentRegularPersistence
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
+import io.cloudflight.jems.server.payments.service.regular.PaymentRegularPersistence
 import io.cloudflight.jems.server.project.repository.report.project.financialOverview.coFinancing.ProjectReportCertificateCoFinancingPersistenceProvider
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
 import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_funds.GetPartnerBudgetPerFundService
@@ -208,12 +208,20 @@ class CreateProjectReportBudget(
                 previouslyReportedAutoPublic = previouslyReportedAutoPublic.plus(paymentLumpSums.automaticPublicContribution),
                 previouslyReportedPrivate = previouslyReportedPrivate.plus(paymentLumpSums.privateContribution),
                 previouslyReportedSum = previouslyReportedSum.plus(paymentLumpSums.sum),
+
+                previouslyVerifiedPartner = previouslyVerifiedPartner.plus(paymentLumpSums.partnerContribution),
+                previouslyVerifiedPublic = previouslyVerifiedPublic.plus(paymentLumpSums.publicContribution),
+                previouslyVerifiedAutoPublic = previouslyVerifiedAutoPublic.plus(paymentLumpSums.automaticPublicContribution),
+                previouslyVerifiedPrivate = previouslyVerifiedPrivate.plus(paymentLumpSums.privateContribution),
+                previouslyVerifiedSum = previouslyVerifiedSum.plus(paymentLumpSums.sum)
             )
         }
 
         private fun List<PreviouslyProjectReportedFund>.mergeWith(otherFundSums: Map<Long?, BigDecimal>) = map { previouslyReportedFund ->
             previouslyReportedFund.copy(
                 previouslyReported = previouslyReportedFund.previouslyReported
+                    .plus(otherFundSums.getOrDefault(previouslyReportedFund.fundId, ZERO)),
+                previouslyVerified = previouslyReportedFund.previouslyVerified
                     .plus(otherFundSums.getOrDefault(previouslyReportedFund.fundId, ZERO))
             ) }
     }

@@ -22,8 +22,8 @@ import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCos
 import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetTravelAndAccommodationCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetUnitCostEntry
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.PartnerReportInvestmentSummary
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedCoFinancing
@@ -253,14 +253,14 @@ internal class CreateProjectReportBudgetTest : UnitTest() {
                 fundId = fundId,
                 total = BigDecimal.valueOf(12345L),
                 previouslyReported = BigDecimal.valueOf(10_000_032_75L, 2),
-                previouslyVerified = BigDecimal.valueOf(475L, 2),
+                previouslyVerified = BigDecimal.valueOf(10_000_004_75L, 2),
                 previouslyPaid = BigDecimal.valueOf(500_000L),
             ),
             PreviouslyProjectReportedFund(
                 fundId = null,
                 total = BigDecimal.valueOf(999L),
                 previouslyReported = BigDecimal.valueOf(2_047_25L, 2),
-                previouslyVerified = BigDecimal.valueOf(525L, 2),
+                previouslyVerified = BigDecimal.valueOf(2_005_25L, 2),
                 previouslyPaid = BigDecimal.ZERO,
             ),
         ),
@@ -277,11 +277,11 @@ internal class CreateProjectReportBudgetTest : UnitTest() {
         previouslyReportedPrivate = BigDecimal.valueOf(4_000_015_76L, 2),
         previouslyReportedSum = BigDecimal.valueOf(10_002_080_00L, 2),
 
-        previouslyVerifiedPartner = BigDecimal.valueOf(525L, 2),
-        previouslyVerifiedPublic = BigDecimal.valueOf(174L, 2),
-        previouslyVerifiedAutoPublic = BigDecimal.valueOf(175L, 2),
-        previouslyVerifiedPrivate = BigDecimal.valueOf(176L, 2),
-        previouslyVerifiedSum = BigDecimal.valueOf(1000L, 2),
+        previouslyVerifiedPartner = BigDecimal.valueOf(2_005_25L, 2),
+        previouslyVerifiedPublic = BigDecimal.valueOf(2_000_001_74L, 2),
+        previouslyVerifiedAutoPublic = BigDecimal.valueOf(3_000_001_75L, 2),
+        previouslyVerifiedPrivate = BigDecimal.valueOf(4_000_001_76L, 2),
+        previouslyVerifiedSum = BigDecimal.valueOf(1_000_2010_00L, 2),
     )
 
     private val expectedCostCategory = ReportCertificateCostCategory(
