@@ -16844,7 +16844,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "[\r\n    {\r\n        \"id\": {{expenditureId}},\r\n        \"partOfSample\": false,\r\n        \"certifiedAmount\": 0,\r\n        \"typologyOfErrorId\": null,\r\n        \"parked\": true,\r\n        \"verificationComment\": null\r\n    }\r\n]\r\n",
+									"raw": "[\r\n    {\r\n        \"id\": {{expenditureId}},\r\n        \"partOfSample\": false,\r\n        \"deductedAmount\": 0,\r\n        \"typologyOfErrorId\": null,\r\n        \"parked\": true,\r\n        \"verificationComment\": null\r\n    }\r\n]\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -17360,7 +17360,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "[\r\n    {\r\n        \"id\": {{expenditureId}},\r\n        \"partOfSample\": true,\r\n        \"certifiedAmount\": 3475,\r\n        \"typologyOfErrorId\": {{typologyErrorId}},\r\n        \"parked\": false,\r\n        \"verificationComment\": \"{{$randomPhrase}}\"\r\n    }\r\n]\r\n",
+									"raw": "[\r\n    {\r\n        \"id\": {{expenditureId}},\r\n        \"partOfSample\": true,\r\n        \"deductedAmount\": 525,\r\n        \"typologyOfErrorId\": {{typologyErrorId}},\r\n        \"parked\": false,\r\n        \"verificationComment\": \"{{$randomPhrase}}\"\r\n    }\r\n]\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
