@@ -2565,20 +2565,18 @@ context('Partner reports tests', () => {
   }
 
   function verifyPartnerInPartnerDetails(shouldPartnerBeDisplayed) {
-    const displayFlag = shouldPartnerBeDisplayed ? 'be.visible' : 'not.exist';
 
-    cy.get('mat-expansion-panel-header:contains("Partner details")')
-      .next('div')
+    cy.get('mat-expansion-panel:contains("Partner details") div')
       .then((foundElement) => {
         if (shouldPartnerBeDisplayed) {
           cy.wrap(foundElement)
             .find(`li:contains("PP50")`)
             .scrollIntoView()
-            .should(displayFlag)
+            .should('be.visible')
         } else {
           cy.wrap(foundElement)
             .find(`li:contains("PP50")`)
-            .should(displayFlag)
+            .should('not.exist')
         }
       });
   }
