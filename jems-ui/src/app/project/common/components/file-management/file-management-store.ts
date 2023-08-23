@@ -32,7 +32,7 @@ import {ProjectVersionStore} from '@project/common/services/project-version-stor
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
 import { Page } from '@cat/api';
-import {Log} from "@common/utils/log";
+import {Log} from '@common/utils/log';
 
 @Injectable({
   providedIn: 'root'

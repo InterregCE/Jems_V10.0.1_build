@@ -4,10 +4,6 @@
   cursor: pointer;
 }
 
-.mat-column-createdAt, .mat-column-firstSubmission {
-  flex: 0 0 16%;
-}
-
 mat-row, mat-header-row {
   mat-cell, mat-header-cell {
     padding-left: 0.5rem;
@@ -18,32 +14,53 @@ mat-row, mat-header-row {
   }
 }
 
-.mat-column-reportNumber,
 .mat-column-delete {
   min-width: 3rem;
   max-width: 3rem;
 }
-.mat-column-status {
-  min-width: 10rem;
+.mat-column-reportNumber {
+  min-width: 3rem;
+  max-width: 3rem;
+  width: 3rem;
 }
-.mat-column-projectReport,
+.mat-column-status {
+  position: sticky;
+  left: 4rem !important;
+  min-width: 2rem;
+  padding-right: 0.5em;
+  border-right: 1px solid var(--table-border-color);
+}
+.mat-column-projectReport {
+  min-width: 3rem;
+}
 .mat-column-linkedFormVersion {
   min-width: 3rem;
+  max-width: 5rem;
 }
 .mat-column-reportingPeriod {
   min-width: 6.5rem;
 }
 .mat-column-type {
   min-width: 8rem;
+  mat-icon {
+    display: block;
+    font-size: 1.5em;
+    width: fit-content;
+    opacity: 0.4;
+  }
+  span {
+    margin-left: 0.2rem;
+  }
 }
 .mat-column-createdAt,
 .mat-column-firstSubmission,
 .mat-column-verificationEndDate {
   min-width: 5rem;
-  max-width: 10rem;
 }
 .mat-column-amountRequested,
-.mat-column-totalEligible,
+.mat-column-totalEligible {
+  min-width: 7.5rem;
+}
 .mat-column-verification {
-  min-width: 10rem;
+  min-width: 11rem;
 }

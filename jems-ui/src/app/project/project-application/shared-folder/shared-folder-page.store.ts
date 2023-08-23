@@ -23,7 +23,7 @@ import {MatSort} from '@angular/material/sort';
 import {FileListTableConstants} from '@common/components/file-list/file-list-table/file-list-table-constants';
 import {PermissionService} from '../../../security/permissions/permission.service';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
-import {FileManagementStore} from "@project/common/components/file-management/file-management-store";
+import {FileManagementStore} from '@project/common/components/file-management/file-management-store';
 
 @Injectable()
 export class SharedFolderPageStore {

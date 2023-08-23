@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.repository.report.project.base
 import com.querydsl.core.Tuple
 import com.querydsl.core.types.Order
 import com.querydsl.core.types.OrderSpecifier
+import com.querydsl.core.types.dsl.CaseBuilder
 import com.querydsl.jpa.impl.JPAQueryFactory
 import io.cloudflight.jems.plugin.contract.models.report.project.identification.ProjectReportBaseData
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
@@ -198,8 +199,16 @@ class ProjectReportPersistenceProvider(
 
         val specReport = QProjectReportEntity.projectReportEntity
         val dfg = when (orderBy.property) {
-            "periodNumber" -> specReport.periodNumber
             "id" -> specReport.id
+            "periodNumber" -> CaseBuilder().`when`(specReport.deadline.isNotNull)
+                .then(specReport.deadline.periodNumber)
+                .otherwise(specReport.periodNumber)
+            "type" -> CaseBuilder().`when`(specReport.deadline.isNotNull)
+                .then(specReport.deadline.type)
+                .otherwise(specReport.type)
+            "createdAt" -> specReport.createdAt
+            "firstSubmission" -> specReport.firstSubmission
+
             else -> specReport.id
         }
 

@@ -1,13 +1,21 @@
 :host {
-  min-width: 10rem;
+  max-width: 100%;
 }
 mat-chip {
+  max-width: 100%;
   min-height: 1.75rem;
   padding-left: .25rem;
   margin: 0 .25rem !important;
-  pointer-events: none;
+  overflow: hidden;
   color: var(--font-color-primary);
   font-weight: 600;
+  font-size: 1em;
+
+  .chip-label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 .status-Disabled {
   border: 1px solid var(--table-border-color);
