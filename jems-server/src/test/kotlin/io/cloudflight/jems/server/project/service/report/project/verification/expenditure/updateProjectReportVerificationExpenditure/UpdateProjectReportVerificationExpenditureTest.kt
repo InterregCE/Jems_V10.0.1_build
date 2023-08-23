@@ -10,6 +10,8 @@ import io.cloudflight.jems.server.programme.service.typologyerrors.ProgrammeTypo
 import io.cloudflight.jems.server.programme.service.typologyerrors.model.TypologyErrors
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportLumpSum
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportUnitCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.investments.ExpenditureInvestmentBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumBreakdownLine
@@ -58,23 +60,14 @@ class UpdateProjectReportVerificationExpenditureTest : UnitTest() {
         )
 
 
-        private val dummyLineLumpSum = ExpenditureLumpSumBreakdownLine(
-            reportLumpSumId = 36L,
-            lumpSumId = 945L,
-            name = setOf(InputTranslation(SystemLanguage.EN, "some lump sum 36 (or 945)")),
+        private val dummyLineLumpSum = ProjectPartnerReportLumpSum(
+            id = 36L,
+            lumpSumProgrammeId = 945L,
+            fastTrack = false,
+            orderNr = 7,
             period = 4,
-            totalEligibleBudget = BigDecimal.ONE,
-            previouslyReported = BigDecimal.TEN,
-            previouslyPaid = BigDecimal.ONE,
-            currentReport = BigDecimal.ZERO,
-            totalEligibleAfterControl = BigDecimal.ONE,
-            totalReportedSoFar = BigDecimal.ONE,
-            totalReportedSoFarPercentage = BigDecimal.TEN,
-            remainingBudget = BigDecimal.ZERO,
-            previouslyReportedParked = BigDecimal.valueOf(1000),
-            currentReportReIncluded = BigDecimal.valueOf(100),
-            previouslyValidated = BigDecimal.valueOf(6)
-
+            cost = BigDecimal.TEN,
+            name = setOf(InputTranslation(SystemLanguage.EN, "some lump sum 36 (or 945)")),
         )
 
         private val dummyInvestmentLine = ExpenditureInvestmentBreakdownLine(
@@ -97,20 +90,15 @@ class UpdateProjectReportVerificationExpenditureTest : UnitTest() {
         )
 
 
-        private val dummyLineUnitCost = ExpenditureUnitCostBreakdownLine(
-            reportUnitCostId = 44L,
-            unitCostId = 945L,
+        private val dummyLineUnitCost = ProjectPartnerReportUnitCost(
+            id = 44L,
+            unitCostProgrammeId = 945L,
+            projectDefined = false,
+            costPerUnit = BigDecimal.ONE,
+            numberOfUnits = BigDecimal.TEN,
+            total = BigDecimal.TEN,
             name = setOf(InputTranslation(SystemLanguage.EN, "some unit cost 44 (or 945)")),
-            totalEligibleBudget = BigDecimal.ONE,
-            previouslyReported = BigDecimal.TEN,
-            currentReport = BigDecimal.ZERO,
-            totalEligibleAfterControl = BigDecimal.ONE,
-            totalReportedSoFar = BigDecimal.ONE,
-            totalReportedSoFarPercentage = BigDecimal.TEN,
-            remainingBudget = BigDecimal.ZERO,
-            previouslyReportedParked = BigDecimal.ZERO,
-            currentReportReIncluded = BigDecimal.ZERO,
-            previouslyValidated = BigDecimal.valueOf(8)
+            category = ReportBudgetCategory.ExternalCosts,
         )
 
         private val procurement = ProjectPartnerReportProcurement(

@@ -98,18 +98,40 @@ internal class GetReportControlWorkOverviewServiceTest : UnitTest() {
             declaredAmount: BigDecimal?,
             certified: BigDecimal,
             isParked: Boolean
-        ): ProjectPartnerReportExpenditureVerification {
-            val expenditure = mockk<ProjectPartnerReportExpenditureVerification>()
-            every { expenditure.id } returns id
-            every { expenditure.parked } returns isParked
-            every { expenditure.partOfSample } returns partOfSample
-            every { expenditure.declaredAmountAfterSubmission } returns
-                (declaredAmount ?: BigDecimal.valueOf(99999) /* should be ignored */)
-            every { expenditure.certifiedAmount } returns certified
-            every { expenditure.lumpSumId } returns null
-            every { expenditure.costCategory } returns ReportBudgetCategory.StaffCosts
-            return expenditure
-        }
+        ) = ProjectPartnerReportExpenditureVerification(
+            id = id,
+            number = -1,
+            lumpSumId = null,
+            unitCostId = null,
+            costCategory = ReportBudgetCategory.StaffCosts,
+            gdpr = false,
+            investmentId = -2L,
+            contractId = -3L,
+            internalReferenceNumber = "internal-1",
+            invoiceNumber = "invoice-1",
+            invoiceDate = mockk(),
+            dateOfPayment = mockk(),
+            description = emptySet(),
+            comment = emptySet(),
+            totalValueInvoice = mockk(),
+            vat = mockk(),
+            numberOfUnits = mockk(),
+            pricePerUnit = mockk(),
+            declaredAmount = declaredAmount ?: BigDecimal.valueOf(99999),
+            currencyCode = "",
+            currencyConversionRate = mockk(),
+            declaredAmountAfterSubmission = declaredAmount,
+            attachment = mockk(),
+            partOfSample = partOfSample,
+            certifiedAmount = certified,
+            deductedAmount = mockk(),
+            typologyOfErrorId = null,
+            verificationComment = "comment dummy",
+            parked = isParked,
+            parkedOn = null,
+            parkingMetadata = null,
+            partOfSampleLocked = false,
+        )
 
         private val listOfExpenditures = listOf(
             expenditure(

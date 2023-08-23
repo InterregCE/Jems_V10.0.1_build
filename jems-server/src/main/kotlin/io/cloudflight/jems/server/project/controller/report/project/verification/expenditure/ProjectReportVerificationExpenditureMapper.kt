@@ -9,7 +9,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.verificat
 import org.mapstruct.Mapper
 import org.mapstruct.factory.Mappers
 
-val mapper = Mappers.getMapper(ProjectReportVerificationMapper::class.java)
+val mapper = Mappers.getMapper(ProjectReportVerificationExpenditureMapper::class.java)
 
 fun List<ProjectReportVerificationExpenditureLine>.toDto() = map { it.toDto() }
 fun ProjectReportVerificationExpenditureLine.toDto() = mapper.map(this)
@@ -19,7 +19,7 @@ fun ProjectReportVerificationRiskBased.toDto() = mapper.map(this)
 fun ProjectReportVerificationRiskBasedDTO.toModel() = mapper.map(this)
 
 @Mapper
-interface ProjectReportVerificationMapper {
+interface ProjectReportVerificationExpenditureMapper {
     fun map(model: ProjectReportVerificationExpenditureLine): ProjectReportVerificationExpenditureLineDTO
     fun map(dto: ProjectReportVerificationExpenditureLineUpdateDTO): ProjectReportVerificationExpenditureLineUpdate
     fun map(dto: ProjectReportVerificationRiskBasedDTO): ProjectReportVerificationRiskBased

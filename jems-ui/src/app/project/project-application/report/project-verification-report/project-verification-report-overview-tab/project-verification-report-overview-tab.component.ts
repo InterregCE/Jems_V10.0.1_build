@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {FormService} from '@common/components/section/form/form.service';
 import {combineLatest, Observable} from 'rxjs';
 import {
-  FinancingSourceBreakdownDTO,
+  FinancingSourceBreakdownDTO, VerificationWorkOverviewDTO,
 } from '@cat/api';
 import {
   ProjectVerificationReportOverviewTabStoreService
@@ -19,6 +19,7 @@ import {map} from 'rxjs/operators';
 export class ProjectVerificationReportOverviewTabComponent {
 
   data$: Observable<{
+    verificationWorkOverview: VerificationWorkOverviewDTO;
     financingSourceBreakdown: FinancingSourceBreakdownDTO;
   }>;
 
@@ -26,9 +27,11 @@ export class ProjectVerificationReportOverviewTabComponent {
     private projectVerificationReportOverviewTabStoreService: ProjectVerificationReportOverviewTabStoreService
   ) {
     this.data$ = combineLatest([
+      projectVerificationReportOverviewTabStoreService.verificationWorkOverview$,
       projectVerificationReportOverviewTabStoreService.financingSourceBreakdown$,
     ]).pipe(
-      map(([financingSourceBreakdown,]: any) => ({
+      map(([verificationWorkOverview, financingSourceBreakdown]: any) => ({
+        verificationWorkOverview,
         financingSourceBreakdown,
       })),
     );

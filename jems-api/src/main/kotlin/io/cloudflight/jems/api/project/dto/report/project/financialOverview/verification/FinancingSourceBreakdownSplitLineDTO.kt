@@ -1,4 +1,4 @@
-package io.cloudflight.jems.api.project.dto.report.project.financialOverview
+package io.cloudflight.jems.api.project.dto.report.project.financialOverview.verification
 
 import java.math.BigDecimal
 

@@ -1,23 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.partner.control.overview.getReportControlDeductionOverview
 
-import io.cloudflight.jems.server.project.service.budget.calculator.calculateBudget
-import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.report.model.partner.control.overview.ControlDeductionOverviewRow
-import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
-import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.getCategory
 import java.math.BigDecimal
-import java.math.RoundingMode
-
-fun Collection<BigDecimal?>.sum() = sumOf { it ?: BigDecimal.ZERO }
-
-fun Collection<ProjectPartnerReportExpenditureVerification>.calculateTypology(
-    options: ProjectPartnerBudgetOptions
-): BudgetCostsCalculationResultFull {
-    val sums = groupBy { it.getCategory() }
-        .mapValues { it.value.sumOf { v-> v.declaredAmountAfterSubmission ?: BigDecimal.ZERO }.minus(it.value.sumOf { it.certifiedAmount }) }
-    return calculateBudget(options, sums)
-}
 
 private val emptySumUp = ControlDeductionOverviewRow(
     typologyOfErrorId = null,

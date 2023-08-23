@@ -11,9 +11,9 @@ import {
 import {FormService} from '@common/components/section/form/form.service';
 import {
   ExpenditureInvestmentBreakdownLineDTO,
-  ExpenditureLumpSumBreakdownLineDTO,
   ExpenditureParkingMetadataDTO,
   ProjectPartnerReportExpenditureItemDTO,
+  ProjectPartnerReportLumpSumDTO,
   ProjectPartnerReportProcurementDTO,
   ProjectReportVerificationExpenditureLineDTO,
   ProjectReportVerificationExpenditureLineUpdateDTO,
@@ -320,7 +320,7 @@ export class ProjectVerificationReportExpenditureTabComponent {
     const PERIOD_PREPARATION = 0;
     const PERIOD_CLOSURE = 255;
 
-    const lumpSum = this.expenditureItem(item, this.EXPENDITURE_CONTROL.lumpSum) as ExpenditureLumpSumBreakdownLineDTO;
+    const lumpSum = this.expenditureItem(item, this.EXPENDITURE_CONTROL.lumpSum) as ProjectPartnerReportLumpSumDTO;
     const unitCost = this.expenditureItem(item, this.EXPENDITURE_CONTROL.unitCost);
 
     if (unitCost) {

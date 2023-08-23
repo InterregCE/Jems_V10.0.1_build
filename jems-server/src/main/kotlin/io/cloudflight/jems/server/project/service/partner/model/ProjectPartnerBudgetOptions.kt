@@ -14,4 +14,11 @@ data class ProjectPartnerBudgetOptions(
             && staffCostsFlatRate == null
             && travelAndAccommodationOnStaffCostsFlatRate == null
             && otherCostsOnStaffCostsFlatRate == null
+
+    fun hasFlatRateOffice() =
+        officeAndAdministrationOnDirectCostsFlatRate != null || officeAndAdministrationOnStaffCostsFlatRate != null
+    fun hasFlatRateTravel() = travelAndAccommodationOnStaffCostsFlatRate != null
+    fun hasFlatRateStaff() = staffCostsFlatRate != null
+    fun hasFlatRateOther() = otherCostsOnStaffCostsFlatRate != null
+
 }

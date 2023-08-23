@@ -481,6 +481,9 @@ import {
 import {
   ExpenditureItemParkedByChipComponent
 } from '@project/project-application/report/partner-report-detail-page/partner-report-expenditures-tab/expenditure-parked-by-chip/expenditure-item-parked-by-chip.component';
+import {
+  VerificationWorkOverviewComponent
+} from '@project/project-application/report/project-verification-report/project-verification-report-overview-tab/verification-work-overview/verification-work-overview.component';
 
 @NgModule({
   declarations: [
@@ -678,6 +681,7 @@ import {
     ProjectVerificationReportExpenditureRiskBasedComponent,
     ProjectVerificationReportOverviewTabComponent,
     VerificationReportTotalEligiblePerSourcesComponent,
+    VerificationWorkOverviewComponent,
     ExpenditureItemParkedByChipComponent,
   ],
   imports: [

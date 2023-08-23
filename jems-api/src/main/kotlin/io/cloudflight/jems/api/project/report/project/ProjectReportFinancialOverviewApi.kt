@@ -6,7 +6,6 @@ import io.cloudflight.jems.api.project.dto.report.project.financialOverview.Cert
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.PerPartnerCostCategoryBreakdownDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.CertificateLumpSumBreakdownDTO
 import io.cloudflight.jems.api.project.dto.report.project.financialOverview.CertificateUnitCostBreakdownDTO
-import io.cloudflight.jems.api.project.dto.report.project.financialOverview.FinancingSourceBreakdownDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.web.bind.annotation.GetMapping
@@ -60,12 +59,5 @@ interface ProjectReportFinancialOverviewApi {
         @PathVariable projectId: Long,
         @PathVariable reportId: Long,
     ): CertificateInvestmentBreakdownDTO
-
-    @ApiOperation("Returns Project Report Expenditure Verification breakdown into funds and contributions")
-    @GetMapping("${ENDPOINT_API_PROJECT_REPORT_IDENTIFICATION}/financingSourceSplit")
-    fun getFinancingSourceBreakdown(
-        @PathVariable projectId: Long,
-        @PathVariable reportId: Long,
-    ): FinancingSourceBreakdownDTO
 
 }

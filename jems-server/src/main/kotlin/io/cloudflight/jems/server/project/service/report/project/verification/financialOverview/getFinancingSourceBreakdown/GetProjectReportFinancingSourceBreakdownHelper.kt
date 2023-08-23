@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.project.service.report.project.verification.financialOverview.getFinancingSourceBreakdown
 
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
-import io.cloudflight.jems.server.project.service.budget.calculator.calculateBudget
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancingColumn
@@ -11,7 +10,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.verificat
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.PartnerReportFinancialData
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.GetReportExpenditureCoFinancingBreakdownCalculator
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.applyPercentage
-import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.getCategory
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.calculateCostCategoriesFor
 import java.math.BigDecimal
 import java.math.RoundingMode
 
@@ -94,11 +93,8 @@ fun ReportCertificateCoFinancingColumn.toTotalLine(availableFunds: List<Programm
         split = emptyList(),
     )
 
-fun Collection<ProjectReportVerificationExpenditureLine>.calculateAfterVerification(options: ProjectPartnerBudgetOptions): BudgetCostsCalculationResultFull {
-    val sums = groupBy { it.expenditure.getCategory() }
-        .mapValues { it.value.sumOf { verificationExpenditure -> verificationExpenditure.amountAfterVerification } }
-    return calculateBudget(options, sums)
-}
+fun Collection<ProjectReportVerificationExpenditureLine>.calculateAfterVerification(options: ProjectPartnerBudgetOptions): BudgetCostsCalculationResultFull =
+    calculateCostCategoriesFor(options) { it.amountAfterVerification }
 
 fun calculateSourcesAndSplits(
     verification: List<ProjectReportVerificationExpenditureLine>,

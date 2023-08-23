@@ -6,18 +6,19 @@ import io.cloudflight.jems.server.project.service.report.model.partner.expenditu
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 
 
-fun List<PartnerReportUnitCostEntity>.toModel() = map {
+fun List<PartnerReportUnitCostEntity>.toModel() = map { it.toModel() }
+
+fun PartnerReportUnitCostEntity.toModel() =
     ProjectPartnerReportUnitCost(
-        id = it.id,
-        unitCostProgrammeId = it.programmeUnitCost.id,
-        projectDefined = it.programmeUnitCost.projectId != null,
-        costPerUnit = it.programmeUnitCost.costPerUnit,
-        name = it.programmeUnitCost.translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.name) },
-        total = it.total,
-        numberOfUnits = it.numberOfUnits,
-        costPerUnitForeignCurrency = it.programmeUnitCost.costPerUnitForeignCurrency,
-        foreignCurrencyCode = it.programmeUnitCost.foreignCurrencyCode,
-        category = if (it.programmeUnitCost.isOneCostCategory) ReportBudgetCategory.valueOf(it.programmeUnitCost.categories.first().category.name)
+        id = id,
+        unitCostProgrammeId = programmeUnitCost.id,
+        projectDefined = programmeUnitCost.projectId != null,
+        costPerUnit = programmeUnitCost.costPerUnit,
+        name = programmeUnitCost.translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.name) },
+        total = total,
+        numberOfUnits = numberOfUnits,
+        costPerUnitForeignCurrency = programmeUnitCost.costPerUnitForeignCurrency,
+        foreignCurrencyCode = programmeUnitCost.foreignCurrencyCode,
+        category = if (programmeUnitCost.isOneCostCategory) ReportBudgetCategory.valueOf(programmeUnitCost.categories.first().category.name)
         else ReportBudgetCategory.Multiple
     )
-}
