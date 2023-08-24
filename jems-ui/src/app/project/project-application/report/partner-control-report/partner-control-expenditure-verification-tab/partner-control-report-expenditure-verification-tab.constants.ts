@@ -8,6 +8,7 @@ export class PartnerControlReportExpenditureConstants {
   public static MAX_LENGTH_INVOICE = 30;
   public static FOCUS_TIMEOUT = 50;
   public static FORM_CONTROL_NAMES = {
+    id: 'id',
     rowId: 'rowId',
     number: 'number',
     parkingMetadata: 'parkingMetadata',
@@ -42,6 +43,7 @@ export class PartnerControlReportExpenditureConstants {
     typologyOfErrorId: 'typologyOfErrorId',
     parked: 'parked',
     parkedOn: 'parkedOn',
+    unparkable: 'unparkable',
     verificationComment: 'verificationComment',
   };
 

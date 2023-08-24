@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.programme.service.typologyerrors.ProgrammeTypologyErrorsPersistence
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerControlReport
 import io.cloudflight.jems.server.project.repository.report.partner.model.ExpenditureVerificationUpdate
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.control.expenditure.ParkExpenditureData
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
@@ -11,10 +12,10 @@ import io.cloudflight.jems.server.project.service.report.model.partner.expenditu
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.PartnerReportParkedExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.ProjectPartnerReportExpenditureVerificationPersistence
-import java.math.BigDecimal
-import java.time.ZonedDateTime
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
+import java.time.ZonedDateTime
 
 @Service
 class UpdateProjectPartnerControlReportExpenditureVerification(
@@ -74,7 +75,9 @@ class UpdateProjectPartnerControlReportExpenditureVerification(
         val newlyUnParkedExpenditureIds = unParkedNew.minus(unparkedOldIds)
         val unParkedExpenditures = newVerifications.filter { it.id in newlyUnParkedExpenditureIds }
 
-        validateUnParkedCertified(newlyUnParked = unParkedExpenditures, reportId, partnerId)
+        val report = reportPersistence.getPartnerReportById(partnerId = partnerId, reportId = reportId)
+        validateUnParkedCertified(newlyUnParked = unParkedExpenditures, report)
+        validateUnParkedReIncluded(newlyUnParked = unParkedExpenditures, report)
 
         reportParkedExpenditurePersistence.parkExpenditures(
             newVerifications.filter { it.id in newlyParked }.toParkData(reportId)
@@ -154,10 +157,8 @@ class UpdateProjectPartnerControlReportExpenditureVerification(
 
     private fun validateUnParkedCertified(
         newlyUnParked: List<ProjectPartnerReportExpenditureVerification>,
-        reportId: Long,
-        partnerId: Long
+        report: ProjectPartnerReport
     ) {
-        val report = reportPersistence.getPartnerReportById(partnerId = partnerId, reportId = reportId)
         if (report.status == ReportStatus.ReOpenCertified) {
             val hasUnParkedCertified =
                 newlyUnParked.any { (it.parkedOn != null) && it.parkedOn!!.isBefore(report.lastControlReopening) }
@@ -165,6 +166,18 @@ class UpdateProjectPartnerControlReportExpenditureVerification(
             if (hasUnParkedCertified) {
                 throw UnParkNotAllowedForPreviouslyCertifiedExpendituresException()
             }
+        }
+    }
+
+    private fun validateUnParkedReIncluded(
+        newlyUnParked: List<ProjectPartnerReportExpenditureVerification>,
+        report: ProjectPartnerReport,
+    ) {
+        val hasUnParkedReIncluded =
+            newlyUnParked.mapTo(HashSet()) { it.id }.minus(reportParkedExpenditurePersistence.getParkedExpenditureIds(report.id))
+
+        if (hasUnParkedReIncluded.isNotEmpty()) {
+            throw UnParkNotAllowedForPreviouslyReincludedExpendituresException(report.reportNumber, hasUnParkedReIncluded)
         }
     }
 }

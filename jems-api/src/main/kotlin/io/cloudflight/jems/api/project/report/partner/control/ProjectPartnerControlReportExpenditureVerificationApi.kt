@@ -34,4 +34,10 @@ interface ProjectPartnerControlReportExpenditureVerificationApi {
         @RequestBody expenditureVerification: List<ProjectPartnerControlReportExpenditureVerificationUpdateDTO>
     ): List<ProjectPartnerControlReportExpenditureVerificationDTO>
 
+    @ApiOperation("Returns all parked expenditureIds")
+    @GetMapping("$ENDPOINT_API_PARTNER_REPORT_EXPENDITURE_VERIFICATION/parked")
+    fun getParkedExpenditureIds(
+        @PathVariable partnerId: Long,
+        @PathVariable reportId: Long,
+    ): List<Long>
 }

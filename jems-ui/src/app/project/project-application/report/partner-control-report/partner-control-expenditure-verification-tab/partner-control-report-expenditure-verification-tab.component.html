@@ -43,7 +43,7 @@
 
                         <ng-container matColumnDef="costGDPR" sticky>
                             <mat-header-cell *matHeaderCellDef>
-                                <div class ="custom-icon gdpr">
+                                <div class="custom-icon gdpr">
                                     <mat-icon matTooltip="{{'project.application.partner.report.expenditures.tab.cost.checkbox.sensitive.info' | translate}}">
                                         privacy_tip
                                     </mat-icon>
@@ -58,12 +58,13 @@
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
 
-                        <ng-container matColumnDef="parkedBy" >
+                        <ng-container matColumnDef="parkedBy">
                             <mat-header-cell *matHeaderCellDef>
                                 <span jemsText maxLines="2">{{'project.application.partner.report.expenditures.tab.cost.parked.by' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control">
-                                <jems-expenditure-item-parked-by-chip [parkedBy]="getParkedBy(control.get(constants.FORM_CONTROL_NAMES.parkingMetadata).value)"></jems-expenditure-item-parked-by-chip>
+                                <jems-expenditure-item-parked-by-chip
+                                        [parkedBy]="getParkedBy(control.get(constants.FORM_CONTROL_NAMES.parkingMetadata).value)"></jems-expenditure-item-parked-by-chip>
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
@@ -74,7 +75,7 @@
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.cost.lump.sum' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <div  class="custom-wrapper pointer"
+                                <div class="custom-wrapper pointer"
                                      [matTooltip]="getCostOptionsDefinition(control.get(constants.FORM_CONTROL_NAMES.costOptions).value) | async"
                                      [matTooltipClass]="'tooltip'">
                                     <div class="custom-dropdown-text" [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}">
@@ -96,7 +97,8 @@
                                 <div [matTooltip]="('project.application.partner.report.expenditures.cost.category.' + control.get(constants.FORM_CONTROL_NAMES.costCategory).value) | translate"
                                      [matTooltipClass]="'tooltip'"
                                      class="custom-wrapper pointer">
-                                    <div class="custom-dropdown-text cost-category" [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}">
+                                    <div class="custom-dropdown-text cost-category"
+                                         [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}">
                                         {{ ('project.application.partner.report.expenditures.cost.category.' + control.get(constants.FORM_CONTROL_NAMES.costCategory).value) | translate}}
                                     </div>
                                 </div>
@@ -111,8 +113,8 @@
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <div
-                                      class="custom-wrapper pointer"
-                                     [matTooltip]="control.get(constants.FORM_CONTROL_NAMES.investmentId)?.value" [matTooltipClass]="'tooltip'">
+                                        class="custom-wrapper pointer"
+                                        [matTooltip]="control.get(constants.FORM_CONTROL_NAMES.investmentId)?.value" [matTooltipClass]="'tooltip'">
                                     <div class="custom-dropdown-text" [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}">
                                         <span *ngIf="control.get(constants.FORM_CONTROL_NAMES.investmentId)?.value">
                                             {{getInvestmentIdValue(control.get(constants.FORM_CONTROL_NAMES.investmentId)?.value)}}
@@ -138,7 +140,7 @@
                                 <span *ngIf="data.expendituresCosts[i].contractId"
                                       [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}">
                                     <a
-                                        [routerLink]="'/app/project/detail/' + data.projectId + '/reporting/' + data.partnerId + '/reports/' + currentReport.id + '/procurements/' + data.expendituresCosts[i].contractId">
+                                            [routerLink]="'/app/project/detail/' + data.projectId + '/reporting/' + data.partnerId + '/reports/' + currentReport.id + '/procurements/' + data.expendituresCosts[i].contractId">
                                         {{getContractName(data.contractIDs, data.expendituresCosts[i].contractId)}}
                                     </a>
                                 </span>
@@ -233,7 +235,7 @@
                                 </span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <div  class="custom-wrapper"
+                                <div class="custom-wrapper"
                                      [matTooltip]="getLimitedTextInputTooltip(data.expendituresCosts[i].comment[0]?.translation, constants.MAX_LENGTH)"
                                      [matTooltipClass]="'tooltip'">
                                     <div class="custom-text-area" [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}">
@@ -338,7 +340,7 @@
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
 
-                        <ng-container matColumnDef="declaredAmountInEur" >
+                        <ng-container matColumnDef="declaredAmountInEur">
                             <mat-header-cell class="justify-end" *matHeaderCellDef>
                                 <span jemsText maxLines="2">
                                     {{'project.application.partner.report.expenditures.declared.amount.eur' | translate}}
@@ -358,7 +360,7 @@
                         </ng-container>
 
                         <ng-container matColumnDef="uploadFunction">
-                            <mat-header-cell  *matHeaderCellDef>{{'project.application.partner.report.attachments' | translate}}
+                            <mat-header-cell *matHeaderCellDef>{{'project.application.partner.report.attachments' | translate}}
                                 <span>
                                     <mat-icon
                                             matTooltip="{{'project.application.partner.report.expenditures.tab.cost.field.sensitive.info' | translate}}">
@@ -366,7 +368,7 @@
                                     </mat-icon>
                                 </span>
                             </mat-header-cell>
-                            <mat-cell class="justify-start" *matCellDef="let control;let expenditureIndex=index" [formGroupName]="expenditureIndex" >
+                            <mat-cell class="justify-start" *matCellDef="let control;let expenditureIndex=index" [formGroupName]="expenditureIndex">
                                 <jems-partner-actions-cell
                                         *ngIf="control.get('id').value"
                                         [formControlName]="constants.FORM_CONTROL_NAMES.attachment"
@@ -378,10 +380,12 @@
                         </ng-container>
 
                         <ng-container matColumnDef="partOfSample">
-                            <mat-header-cell class="left-separator" *matHeaderCellDef>{{'project.application.partner.report.control.expenditure.table.header.part.of.sample' | translate}}</mat-header-cell>
-                            <mat-cell class="justify-start left-separator" *matCellDef="let control;let expenditureIndex=index" [formGroupName]="expenditureIndex" >
+                            <mat-header-cell class="left-separator"
+                                             *matHeaderCellDef>{{'project.application.partner.report.control.expenditure.table.header.part.of.sample' | translate}}</mat-header-cell>
+                            <mat-cell class="justify-start left-separator" *matCellDef="let control;let expenditureIndex=index"
+                                      [formGroupName]="expenditureIndex">
                                 <mat-slide-toggle color="primary"
-                                                  [disabled] = "control.get(constants.FORM_CONTROL_NAMES.parked).value || control.get(constants.FORM_CONTROL_NAMES.deductedAmount).value !== 0 || control.get(constants.FORM_CONTROL_NAMES.partOfSampleLocked).value"
+                                                  [disabled]="control.get(constants.FORM_CONTROL_NAMES.parked).value || control.get(constants.FORM_CONTROL_NAMES.deductedAmount).value !== 0 || control.get(constants.FORM_CONTROL_NAMES.partOfSampleLocked).value"
                                                   [formControlName]="constants.FORM_CONTROL_NAMES.partOfSample">
                                 </mat-slide-toggle>
                             </mat-cell>
@@ -389,11 +393,12 @@
                         </ng-container>
 
                         <ng-container matColumnDef="deductedAmount">
-                            <mat-header-cell *matHeaderCellDef>{{'project.application.partner.report.control.expenditure.table.header.deducted.amount.eur' | translate}}</mat-header-cell>
-                            <mat-cell class="justify-start" *matCellDef="let control;let expenditureIndex=index" [formGroupName]="expenditureIndex" >
-                                <mat-form-field  jemsFormFieldWidth="full">
+                            <mat-header-cell
+                                    *matHeaderCellDef>{{'project.application.partner.report.control.expenditure.table.header.deducted.amount.eur' | translate}}</mat-header-cell>
+                            <mat-cell class="justify-start" *matCellDef="let control;let expenditureIndex=index" [formGroupName]="expenditureIndex">
+                                <mat-form-field jemsFormFieldWidth="full">
                                     <input [formControlName]="constants.FORM_CONTROL_NAMES.deductedAmount"
-                                           [disabled] = "control.get(constants.FORM_CONTROL_NAMES.parked).value"
+                                           [disabled]="control.get(constants.FORM_CONTROL_NAMES.parked).value"
                                            [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}"
                                            [options]="{min: constants.MIN_VALUE, max: data.expendituresCosts[expenditureIndex].declaredAmountAfterSubmission, allowNegative: true, align: 'right'}"
                                            (keyup)="updateCertifiedAmount(expenditureIndex,
@@ -407,12 +412,13 @@
                         </ng-container>
 
                         <ng-container matColumnDef="certifiedAmount">
-                            <mat-header-cell *matHeaderCellDef>{{'project.application.partner.report.control.expenditure.table.header.certified.amount.eur' | translate}}</mat-header-cell>
-                            <mat-cell class="justify-start" *matCellDef="let control;let expenditureIndex=index" [formGroupName]="expenditureIndex" >
-                                <mat-form-field  jemsFormFieldWidth="full">
+                            <mat-header-cell
+                                    *matHeaderCellDef>{{'project.application.partner.report.control.expenditure.table.header.certified.amount.eur' | translate}}</mat-header-cell>
+                            <mat-cell class="justify-start" *matCellDef="let control;let expenditureIndex=index" [formGroupName]="expenditureIndex">
+                                <mat-form-field jemsFormFieldWidth="full">
                                     <input [formControlName]="constants.FORM_CONTROL_NAMES.certifiedAmount"
                                            [options]="{align: 'right'}"
-                                           [readonly] = "control.get(constants.FORM_CONTROL_NAMES.parked).value"
+                                           [readonly]="control.get(constants.FORM_CONTROL_NAMES.parked).value"
                                            [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}"
                                            currencyMask matInput
                                            type="decimal">
@@ -422,29 +428,34 @@
                         </ng-container>
 
                         <ng-container matColumnDef="typologyOfErrorId">
-                            <mat-header-cell *matHeaderCellDef>{{'project.application.partner.report.control.expenditure.table.header.typology.error.eur' | translate}}</mat-header-cell>
-                            <mat-cell class="justify-start" *matCellDef="let control;let expenditureIndex=index" [formGroupName]="expenditureIndex" >
+                            <mat-header-cell
+                                    *matHeaderCellDef>{{'project.application.partner.report.control.expenditure.table.header.typology.error.eur' | translate}}</mat-header-cell>
+                            <mat-cell class="justify-start" *matCellDef="let control;let expenditureIndex=index" [formGroupName]="expenditureIndex">
                                 <mat-form-field jemsFormFieldWidth="full">
-                                    <mat-select [ngClass]="{'placeholder-required': items.controls[expenditureIndex].get(constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.errors !== null} "
-                                                [formControlName]="constants.FORM_CONTROL_NAMES.typologyOfErrorId" #typologyOfErrorSelect
-                                                [matTooltip]="getTypologyOfErrorsTooltip(data.typologyOfErrors, typologyOfErrorSelect.triggerValue)"
-                                                [placeholder]="'common.not.applicable.option' | translate"
-                                                [disabled] = "control.get(constants.FORM_CONTROL_NAMES.parked).value"
-                                                [value]="null">
-                                       <mat-option [value]="null">{{'common.not.applicable.option' | translate}}</mat-option>
-                                       <mat-option *ngFor="let typologyOfError of data.typologyOfErrors" [value]="typologyOfError.id">{{typologyOfError.description}}</mat-option>
-                                   </mat-select>
-                               </mat-form-field>
+                                    <mat-select
+                                            [ngClass]="{'placeholder-required': items.controls[expenditureIndex].get(constants.FORM_CONTROL_NAMES.typologyOfErrorId)?.errors !== null} "
+                                            [formControlName]="constants.FORM_CONTROL_NAMES.typologyOfErrorId" #typologyOfErrorSelect
+                                            [matTooltip]="getTypologyOfErrorsTooltip(data.typologyOfErrors, typologyOfErrorSelect.triggerValue)"
+                                            [placeholder]="'common.not.applicable.option' | translate"
+                                            [disabled]="control.get(constants.FORM_CONTROL_NAMES.parked).value"
+                                            [value]="null">
+                                        <mat-option [value]="null">{{'common.not.applicable.option' | translate}}</mat-option>
+                                        <mat-option *ngFor="let typologyOfError of data.typologyOfErrors"
+                                                    [value]="typologyOfError.id">{{typologyOfError.description}}</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
 
                         <ng-container matColumnDef="parked">
-                            <mat-header-cell class="left-separator" *matHeaderCellDef>{{'project.application.partner.report.control.expenditure.table.header.park.item' | translate}}</mat-header-cell>
-                            <mat-cell class="justify-start left-separator" *matCellDef="let control;let expenditureIndex=index" [formGroupName]="expenditureIndex" >
+                            <mat-header-cell class="left-separator"
+                                             *matHeaderCellDef>{{'project.application.partner.report.control.expenditure.table.header.park.item' | translate}}</mat-header-cell>
+                            <mat-cell class="justify-start left-separator" *matCellDef="let control;let expenditureIndex=index"
+                                      [formGroupName]="expenditureIndex">
                                 <mat-slide-toggle color="primary"
                                                   [formControlName]="constants.FORM_CONTROL_NAMES.parked"
-                                                  [disabled]="isParkedBeforeReopen(items.controls[expenditureIndex].get(constants.FORM_CONTROL_NAMES.parkedOn)?.value, lastControlReportCertified)"
+                                                  [disabled]="unparkLocked(items.controls[expenditureIndex].get(constants.FORM_CONTROL_NAMES.parkedOn)?.value, lastControlReportCertified, items.controls[expenditureIndex].get(constants.FORM_CONTROL_NAMES.unparkable)?.value)"
                                                   (change)="parkedChange(expenditureIndex, $event)">
                                 </mat-slide-toggle>
                             </mat-cell>
@@ -453,14 +464,15 @@
 
                         <ng-container matColumnDef="verificationComment">
                             <mat-header-cell *matHeaderCellDef>{{'project.application.partner.report.expenditures.tab.comment' | translate}}</mat-header-cell>
-                            <mat-cell class="justify-start" *matCellDef="let control;let expenditureIndex=index" [formGroupName]="expenditureIndex" >
-                               <mat-form-field>
-                                   <input matInput [formControlName]="constants.FORM_CONTROL_NAMES.verificationComment"
-                                                   [matTooltip]="getLimitedTextInputTooltip(items.controls[expenditureIndex].get(constants.FORM_CONTROL_NAMES.verificationComment)?.value, constants.MAX_LENGTH_VERIFY_COMMENT)">
-                                   <mat-error>
-                                       <jems-form-field-errors condensed="true" [errors]="items.controls[expenditureIndex].get(constants.FORM_CONTROL_NAMES.verificationComment)?.errors"></jems-form-field-errors>
-                                   </mat-error>
-                               </mat-form-field>
+                            <mat-cell class="justify-start" *matCellDef="let control;let expenditureIndex=index" [formGroupName]="expenditureIndex">
+                                <mat-form-field>
+                                    <input matInput [formControlName]="constants.FORM_CONTROL_NAMES.verificationComment"
+                                           [matTooltip]="getLimitedTextInputTooltip(items.controls[expenditureIndex].get(constants.FORM_CONTROL_NAMES.verificationComment)?.value, constants.MAX_LENGTH_VERIFY_COMMENT)">
+                                    <mat-error>
+                                        <jems-form-field-errors condensed="true"
+                                                                [errors]="items.controls[expenditureIndex].get(constants.FORM_CONTROL_NAMES.verificationComment)?.errors"></jems-form-field-errors>
+                                    </mat-error>
+                                </mat-form-field>
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>

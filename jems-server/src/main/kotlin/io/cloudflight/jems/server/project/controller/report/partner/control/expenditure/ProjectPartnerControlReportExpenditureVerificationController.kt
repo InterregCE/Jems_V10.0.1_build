@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.project.dto.report.partner.expenditure.verificati
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.verification.ProjectPartnerControlReportExpenditureVerificationUpdateDTO
 import io.cloudflight.jems.api.project.report.partner.control.ProjectPartnerControlReportExpenditureVerificationApi
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.getProjectPartnerReportExpenditureVerification.GetProjectPartnerControlReportExpenditureVerificationInteractor
+import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.getProjectPartnerReportParkedExpenditureIds.GetProjectPartnerControlReportParkedExpendituresInteractor
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.updateProjectPartnerReportExpenditureVerification.UpdateProjectPartnerControlReportExpenditureVerificationInteractor
 import org.springframework.web.bind.annotation.RestController
 
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController
 class ProjectPartnerControlReportExpenditureVerificationController(
     private val getReportExpenditureVerification: GetProjectPartnerControlReportExpenditureVerificationInteractor,
     private val updateReportExpenditureVerification: UpdateProjectPartnerControlReportExpenditureVerificationInteractor,
+    private val getReportControlParkedExpenditureIds: GetProjectPartnerControlReportParkedExpendituresInteractor,
 ) : ProjectPartnerControlReportExpenditureVerificationApi {
 
     override fun getProjectPartnerExpenditureVerification(partnerId: Long, reportId: Long) =
@@ -29,4 +31,10 @@ class ProjectPartnerControlReportExpenditureVerificationController(
             reportId = reportId,
             expenditureVerification = expenditureVerification.toModel()
         ).toDto()
+
+    override fun getParkedExpenditureIds(partnerId: Long, reportId: Long): List<Long> =
+        getReportControlParkedExpenditureIds.getParkedExpenditureIds(
+            partnerId = partnerId,
+            reportId = reportId
+        )
 }

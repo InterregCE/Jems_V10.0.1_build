@@ -122,4 +122,12 @@ class PartnerReportParkedExpenditurePersistenceProviderTest : UnitTest() {
         assertThat(slotDeletedIds.captured).containsExactlyInAnyOrder(4L, 7L, 43L)
     }
 
+    @Test
+    fun getParkedExpenditureIdsByReportId() {
+        every {
+            reportParkedExpenditureRepository.getAvailableParkedExpenditureIdsFromPartnerReport(reportId = 19L)
+        } returns setOf(2, 4, 5, 10)
+
+        assertThat(persistence.getParkedExpenditureIds(reportId = 19L)).containsExactly(2, 4, 5, 10)
+    }
 }
