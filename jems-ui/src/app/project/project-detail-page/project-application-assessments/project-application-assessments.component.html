@@ -12,6 +12,8 @@
             </div>
             <ng-container *ngIf="isAssessmentEditable(decisions?.eligibilityAssessment)">
                 <a *jemsHasPermission="Permissions.ProjectAssessmentEligibilityEnter"
+                   class="text-overflow-ellipsis"
+                   [matTooltip]="'project.assessment.eligibilityCheck.assessment' | translate"
                    mat-stroked-button
                    [routerLink]="['./eligibilityCheck', step]" queryParamsHandling="merge">
                     {{'project.assessment.eligibilityCheck.assessment' | translate}}
@@ -19,6 +21,8 @@
             </ng-container>
             <ng-container *ngIf="!isAssessmentEditable(decisions?.eligibilityAssessment)">
                 <a *jemsHasPermission="Permissions.ProjectAssessmentView"
+                   class="text-overflow-ellipsis"
+                   [matTooltip]="'project.assessment.eligibilityCheck.assessment.view' | translate"
                    [disabled]="!decisions?.eligibilityAssessment"
                    mat-stroked-button
                    [routerLink]="decisions?.eligibilityAssessment ? ['./eligibilityCheck', step] : []" queryParamsHandling="merge">
@@ -35,6 +39,8 @@
             </div>
             <ng-container *ngIf="isAssessmentEditable(decisions?.qualityAssessment)">
                 <a *jemsHasPermission="Permissions.ProjectAssessmentQualityEnter"
+                   class="text-overflow-ellipsis"
+                   [matTooltip]="'project.assessment.qualityCheck.assessment' | translate"
                    mat-stroked-button
                    [disabled]="currentVersionOfProjectStatus.status === stepStatus.ineligible"
                    [routerLink]="currentVersionOfProjectStatus.status !== stepStatus.ineligible ? ['./qualityCheck', step] : []" queryParamsHandling="merge">
@@ -43,6 +49,8 @@
             </ng-container>
             <ng-container *ngIf="!isAssessmentEditable(decisions?.qualityAssessment)">
                 <a *jemsHasPermission="Permissions.ProjectAssessmentView"
+                   class="text-overflow-ellipsis"
+                   [matTooltip]="'project.assessment.qualityCheck.assessment.view' | translate"
                    [disabled]="!decisions?.qualityAssessment"
                    mat-stroked-button
                    [routerLink]="decisions?.qualityAssessment ? ['./qualityCheck', step] : []" queryParamsHandling="merge">

@@ -1486,7 +1486,7 @@ context('Partner reports tests', () => {
             cy.contains('Run pre-submission check').click();
             cy.contains('button', 'Finalize control').click();
             cy.contains('Confirm').should('be.visible').click();
-            cy.contains('Certified').should('be.visible');
+            cy.get('mat-chip > mat-icon').next().contains('Certified');
             cy.visit(`/app/project/detail/${applicationId}/reporting/${partnerId}/reports/${reportId}/financialOverview`, {failOnStatusCode: false});
 
             //check total eligible after report values for co-fin breakdown
@@ -2566,7 +2566,7 @@ context('Partner reports tests', () => {
 
   function verifyPartnerInPartnerDetails(shouldPartnerBeDisplayed) {
 
-    cy.get('mat-expansion-panel:contains("Partner details") div')
+    cy.get('mat-expansion-panel:contains("Partner details") ul')
       .then((foundElement) => {
         if (shouldPartnerBeDisplayed) {
           cy.wrap(foundElement)

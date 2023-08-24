@@ -520,7 +520,7 @@ context('Control report tests', () => {
           cy.get('jems-project-application-pre-condition-check-result').should('be.visible');
           cy.contains('button', 'Finalize control').click();
           cy.contains('Confirm').should('be.visible').click();
-          cy.contains('Certified').should('be.visible');
+          cy.get('mat-chip > mat-icon').next().contains('Certified');
 
           cy.loginByRequest(user.admin.email);
           cy.visit(`app/system/user`, {failOnStatusCode: false});
@@ -617,7 +617,7 @@ context('Control report tests', () => {
           cy.get('jems-project-application-pre-condition-check-result').should('be.visible');
           cy.contains('button', 'Finalize control').click();
           cy.contains('Confirm').should('be.visible').click();
-          cy.contains('Certified').should('be.visible');
+          cy.get('mat-chip > mat-icon').next().contains('Certified');
 
           //change name of institution again to the original
           cy.loginByRequest(user.admin.email);

@@ -35,3 +35,8 @@
 .gdpr-toggle {
   margin-left: -0.5rem;
 }
+
+mat-panel-description, mat-panel-description * {
+  overflow: hidden;
+  max-width: 100%;
+}
