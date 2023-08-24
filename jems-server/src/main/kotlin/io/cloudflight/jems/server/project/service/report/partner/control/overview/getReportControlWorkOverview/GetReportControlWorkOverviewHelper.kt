@@ -2,11 +2,12 @@ package io.cloudflight.jems.server.project.service.report.partner.control.overvi
 
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureCostAfterControl
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.calculateCostCategoriesFor
 import java.math.BigDecimal
 
-fun Collection<ProjectPartnerReportExpenditureVerification>.calculateCertified(
+fun Collection<ExpenditureCostAfterControl>.calculateCertified(
     options: ProjectPartnerBudgetOptions
 ): BudgetCostsCalculationResultFull =
     calculateCostCategoriesFor(options) { it.certifiedAmount }

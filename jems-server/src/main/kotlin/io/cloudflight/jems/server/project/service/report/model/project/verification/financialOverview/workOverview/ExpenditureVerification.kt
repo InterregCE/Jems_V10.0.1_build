@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.workOverview
 
-import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureCostAfterControl
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import java.math.BigDecimal
@@ -14,8 +14,8 @@ data class ExpenditureVerification(
 
     val partOfSample: Boolean,
     val amountAfterVerification: BigDecimal,
-    val certifiedAmount: BigDecimal,
+    override val certifiedAmount: BigDecimal,
     val parked: Boolean,
     val deductedByJs: BigDecimal,
     val deductedByMa: BigDecimal,
-): ExpenditureCost
+): ExpenditureCostAfterControl
