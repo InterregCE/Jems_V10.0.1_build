@@ -6,7 +6,9 @@
         </mat-panel-title>
         <mat-panel-description *ngIf="isAfterApproved$ | async">
             <mat-chip-list aria-label="control institution" [selectable]="false">
-                <mat-chip *ngIf="partner.institutionName">{{ partner.institutionName }}</mat-chip>
+                <mat-chip *ngIf="partner.institutionName" [matTooltip]="partner.institutionName">
+                    <span class="text-overflow-ellipsis">{{ partner.institutionName }}</span>
+                </mat-chip>
                 <mat-chip *ngIf="!partner.institutionName" color="accent" selected>
                     <mat-icon class="mr-2">help</mat-icon>{{ 'project.application.form.section.privileges.no.institution' | translate }}</mat-chip>
             </mat-chip-list>

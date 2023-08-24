@@ -15,7 +15,7 @@ import Permissions = UserRoleDTO.PermissionsEnum;
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationDecisionsComponent implements OnChanges {
-  STATUS = StatusEnum;
+  ProjectStatus = StatusEnum;
   Permissions = Permissions;
 
   @Input()
@@ -74,7 +74,7 @@ export class ProjectApplicationDecisionsComponent implements OnChanges {
   }
 
   isDecisionEditable(projectStatus: ProjectStatusDTO, decision: any): boolean {
-    return !decision && projectStatus.status !== this.STATUS.RETURNEDTOAPPLICANT;
+    return !decision && projectStatus.status !== this.ProjectStatus.RETURNEDTOAPPLICANT;
   }
 
   isPanelVisible(projectStatus: ProjectStatusDTO, callHasTwoSteps: boolean): boolean {
@@ -91,4 +91,9 @@ export class ProjectApplicationDecisionsComponent implements OnChanges {
    return status === StatusEnum.RETURNEDTOAPPLICANT || status === StatusEnum.RETURNEDTOAPPLICANTFORCONDITIONS;
   }
 
+  getCurrentVersionStatusTitle(status: ProjectStatusDTO.StatusEnum) {
+    return [this.ProjectStatus.APPROVEDWITHCONDITIONS, this.ProjectStatus.CONDITIONSSUBMITTED ].includes(status)
+      ? 'project.assessment.fundingDecision.assessment.update'
+      : 'project.assessment.fundingDecision.assessment';
+  }
 }
