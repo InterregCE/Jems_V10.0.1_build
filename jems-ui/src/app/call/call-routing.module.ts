@@ -6,8 +6,12 @@ import {CallNameResolver} from './services/call-name.resolver';
 import {CallBudgetSettingsPageComponent} from './call-budget-settings-page/call-budget-settings-page.component';
 import {CallDetailPageComponent} from './call-detail-page/call-detail-page.component';
 import {UserRoleDTO} from '@cat/api';
-import {ApplicationFormConfigurationPageComponent} from './application-form-configuration-page/application-form-configuration-page.component';
-import {PreSubmissionCheckSettingsPageComponent} from './pre-submission-check-settings-page/pre-submission-check-settings-page.component';
+import {
+  ApplicationFormConfigurationPageComponent
+} from './application-form-configuration-page/application-form-configuration-page.component';
+import {
+  PreSubmissionCheckSettingsPageComponent
+} from './pre-submission-check-settings-page/pre-submission-check-settings-page.component';
 import {NotificationsSettingsComponent} from './notifications-settings/notifications-settings.component';
 import {
   ProjectNotificationsSettingsTabComponent
@@ -32,6 +36,7 @@ export const routes: Routes = [
         component: CallPageComponent,
         canActivate: [PermissionGuard],
         data: {
+          breadcrumb: 'call.list.header',
           permissionsOnly: [UserRoleDTO.PermissionsEnum.CallRetrieve],
         }
       },
