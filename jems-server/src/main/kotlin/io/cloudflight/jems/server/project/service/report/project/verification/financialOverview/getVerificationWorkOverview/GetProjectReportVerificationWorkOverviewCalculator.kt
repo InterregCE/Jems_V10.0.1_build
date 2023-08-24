@@ -6,10 +6,10 @@ import io.cloudflight.jems.server.project.service.report.model.project.verificat
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.workOverview.ExpenditureVerification
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.workOverview.VerificationWorkOverview
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.workOverview.VerificationWorkOverviewLine
+import io.cloudflight.jems.server.project.service.report.partner.control.overview.getReportControlWorkOverview.calculateCertified
 import io.cloudflight.jems.server.project.service.report.partner.control.overview.getReportControlWorkOverview.extractFlatRatesSum
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.calculateCostCategoriesFor
-import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.calculateCurrent
 import io.cloudflight.jems.server.project.service.report.percentageOf
 import io.cloudflight.jems.server.project.service.report.project.verification.expenditure.ProjectReportVerificationExpenditurePersistence
 import org.springframework.stereotype.Service
@@ -25,14 +25,14 @@ class GetProjectReportVerificationWorkOverviewCalculator(
     @Transactional(readOnly = true)
     fun getWorkOverviewPerPartner(reportId: Long): VerificationWorkOverview {
         val expendituresByCertificate = verificationExpenditurePersistence.getProjectReportExpenditureVerification(reportId)
-            .groupBy({ it.toIdentifiers()}, { it.toVerification() })
+            .groupBy({ it.toIdentifiers() }, { it.toVerification() })
 
         val certificates = expendituresByCertificate.map { (identifiers, verifications) ->
             val costCategories = partnerReportExpenditureCostCategoryPersistence
                 .getCostCategories(identifiers.partnerId, reportId = identifiers.partnerReportId)
 
             val verificationSample = verifications.sumOfSamplingOnes()
-            val parked = verifications.onlyParkedOnes().calculateCurrent(costCategories.options).sum
+            val parked = verifications.onlyParkedOnes().calculateCertified(costCategories.options).sum
 
             val afterVerification = verifications.calculateVerified(costCategories.options).sum
 
