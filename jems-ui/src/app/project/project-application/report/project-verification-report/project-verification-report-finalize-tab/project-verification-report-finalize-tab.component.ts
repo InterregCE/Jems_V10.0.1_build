@@ -38,7 +38,7 @@ export class ProjectVerificationReportFinalizeTabComponent {
     reportId: number;
     projectId: number;
     finalizationAllowed: boolean;
-    hideFinalizeSection: boolean;
+    reportFinalised: boolean;
     userCanEdit: boolean;
     userCanView: boolean;
   }>;
@@ -71,13 +71,13 @@ export class ProjectVerificationReportFinalizeTabComponent {
         reportId: report.id,
         projectId: report.projectId,
         finalizationAllowed: canFinalize,
-        hideFinalizeSection: report.status === ProjectReportDTO.StatusEnum.Finalized,
+        reportFinalised: report.status === ProjectReportDTO.StatusEnum.Finalized,
         userCanEdit,
         userCanView
       })),
       tap(() => this.initForm()),
       tap(data => this.resetForm(data.conclusions)),
-      tap(data => this.disableForms(data.userCanEdit, data.finalizationAllowed, data.hideFinalizeSection))
+      tap(data => this.disableForms(data.userCanEdit && !data.reportFinalised))
     );
   }
 
@@ -120,8 +120,8 @@ export class ProjectVerificationReportFinalizeTabComponent {
     this.formService.init(this.overviewForm);
   }
 
-  private disableForms(userCanEdit: boolean, finalizationAllowed: boolean, hideFinalizeSection: boolean): void {
-    if (hideFinalizeSection && (finalizationAllowed || userCanEdit)) {
+  private disableForms(userCanEdit: boolean): void {
+    if (!userCanEdit) {
       this.overviewForm.disable();
     }
   }

@@ -5,7 +5,7 @@
 </jems-alert>
 <jems-form *ngIf="(data$ | async) as data"
            (save)="onSubmit(data.projectId, data.reportId)"
-           (discard)="resetForm(data.clarifications, !(data.hideFinalizeSection && (data.finalizationAllowed || data.canEdit)))">
+           (discard)="resetForm(data.clarifications, !data.reportFinalised && data.canEdit)">
   <form jemsFormLayout [formGroup]="clarificationForm">
     <h3>{{'project.application.project.verification.work.tab.finalise.main.title' | translate}}</h3>
     <p>{{'project.application.project.verification.work.tab.finalise.table.description' | translate}}</p>
@@ -67,7 +67,7 @@
         </mat-cell>
       </ng-container>
 
-      <ng-container *ngIf="!(data.hideFinalizeSection && (data.finalizationAllowed || data.canEdit))" matColumnDef="delete">
+      <ng-container *ngIf="!data.reportFinalised && data.canEdit" matColumnDef="delete">
         <mat-header-cell *matHeaderCellDef>
           <span jemsText>{{'project.application.project.verification.work.tab.finalise.table.column.delete' | translate }}</span>
         </mat-header-cell>
@@ -89,9 +89,9 @@
 
     </mat-table>
 
-    <span *ngIf="tableData.length === 0 && data.hideFinalizeSection">{{'project.application.project.verification.work.tab.finalise.no.clarification' | translate}}</span>
+    <span *ngIf="tableData.length === 0 && data.reportFinalised">{{'project.application.project.verification.work.tab.finalise.no.clarification' | translate}}</span>
 
-    <button *ngIf="!(data.hideFinalizeSection && (data.finalizationAllowed || data.canEdit))"
+    <button *ngIf="!data.reportFinalised && data.canEdit"
             mat-stroked-button type="button" class="mt-2 mb-2"
             (click)="addClarificationData()"
             aria-label="add">

@@ -49,8 +49,8 @@
                                   [maxRows]="5">
         </jems-expandable-textarea>
 
-        <ng-container *ngIf="data.userCanEdit && !data.hideFinalizeSection">
-          <div jemsNoWidthLimit *ngIf="data.finalizationAllowed && !overviewForm.dirty" class="mt-3">
+        <ng-container *ngIf="data.userCanEdit && !data.reportFinalised && data.finalizationAllowed && !overviewForm.dirty">
+          <div jemsNoWidthLimit class="mt-3">
             <jems-pending-button
                 [confirm]="{ title: 'project.application.project.verification.work.tab.finalise.button.confirmation.title', message: 'project.application.project.verification.work.tab.finalise.button.confirmation.message' }"
                 [pending]="finalizationLoading"
