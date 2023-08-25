@@ -7,7 +7,7 @@ import {
   UpdateProjectPartnerReportWorkPackageDTO
 } from '@cat/api';
 import {combineLatest, merge, Observable, Subject} from 'rxjs';
-import {shareReplay, switchMap, take, tap} from 'rxjs/operators';
+import {filter, map, shareReplay, switchMap, take, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {Log} from '@common/utils/log';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
@@ -31,10 +31,10 @@ export class PartnerReportWorkPlanPageStore {
 
   getWorkPackages(): Observable<ProjectPartnerReportWorkPackageDTO[]> {
     const workPackages = combineLatest([
-      this.partnerId$,
-      this.partnerReportPageStore.partnerReportId$,
+      this.partnerId$.pipe(filter(Boolean), map(Number)),
+      this.partnerReportPageStore.partnerReportId$.pipe(filter(Boolean), map(Number)),
     ]).pipe(
-      switchMap(([partnerId, reportId]) => this.projectPartnerReportWorkPlanService.getWorkPlan(Number(partnerId), Number(reportId))),
+      switchMap(([partnerId, reportId]) => this.projectPartnerReportWorkPlanService.getWorkPlan(partnerId, reportId)),
       tap(data => Log.info('Fetched project work packages for report', this, data))
     );
 
