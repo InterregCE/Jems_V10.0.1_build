@@ -11,7 +11,7 @@
 
         <mat-form-field>
             <mat-label>{{'project.application.contract.monitoring.project.de.minimis.granting.amount' | translate}}</mat-label>
-            <input currencyMask type="decimal" formControlName="amountGrantedAid" matInput>
+            <input currencyMask type="decimal" [options]="{min: 0, max: 999999999.99}" formControlName="amountGrantingAid" matInput>
         </mat-form-field>
 
         <mat-form-field class="date">
@@ -37,22 +37,18 @@
             </mat-select>
         </mat-form-field>
 
-        <ng-container *ngIf="nuts">
-            <mat-form-field>
-                <mat-label>{{'project.application.contract.monitoring.project.de.minimis.aid.grant.country' | translate}}</mat-label>
-                <input name="country" formControlName="country" matInput [ngModel]="deMinimis?.aidGrantedByCountry"
-                       [matAutocomplete]="country"
-                       (focusin)="initializeFilters()"
-                       (focusout)="countryUnfocused($event)">
-                <mat-autocomplete #country="matAutocomplete"
-                                  (optionSelected)="countryChanged($event.option?.value)">
-                    <mat-option *ngFor="let region of filteredCountry | async" [value]="region"
-                                class="nuts-text-size">
-                        {{region}}
-                    </mat-option>
-                </mat-autocomplete>
-            </mat-form-field>
-        </ng-container>
+        <mat-form-field [matTooltip]="aidGrantedByCountry.value">
+            <mat-label>{{'project.application.contract.monitoring.project.de.minimis.aid.grant.country' | translate}}</mat-label>
+            <input #aidGrantedByCountry name="country" formControlName="country" matInput [ngModel]="deMinimis?.aidGrantedByCountry">
+            <mat-hint [jemsHintFor]="aidGrantedByCountry" [hide]="deMinimisForm?.controls?.country?.errors !== null">
+                <jems-text-hint [currentLength]="aidGrantedByCountry.value.length" [maxLength]="250"></jems-text-hint>
+            </mat-hint>
+            <mat-error>
+                <jems-form-field-errors
+                        [errors]="deMinimisForm?.controls?.country?.errors">
+                </jems-form-field-errors>
+            </mat-error>
+        </mat-form-field>
 
         <mat-table *ngIf="memberStates.length" jemsNoWidthLimit [dataSource]="tableData"
                    formArrayName="memberStates">

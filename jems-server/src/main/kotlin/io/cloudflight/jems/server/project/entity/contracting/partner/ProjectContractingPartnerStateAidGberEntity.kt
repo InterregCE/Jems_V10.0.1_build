@@ -18,5 +18,7 @@ class ProjectContractingPartnerStateAidGberEntity (
     @Enumerated(EnumType.STRING)
     val locationInAssistedArea: LocationInAssistedArea?,
 
-    val comment: String?
+    val comment: String?,
+
+    val amountGrantingAid: BigDecimal?
 )

@@ -17,9 +17,9 @@ fun ProjectContractingPartnerStateAidMinimisEntity.toModel() = ContractingPartne
     selfDeclarationSubmissionDate = selfDeclarationSubmissionDate,
     baseForGranting = baseForGranting,
     aidGrantedByCountry = aidGrantedByCountry,
-    aidGrantedByCountryCode = aidGrantedByCountryCode,
     memberStatesGranting = memberStatesGranting.toModel(),
     comment = comment,
+    amountGrantingAid = amountGrantingAid
 )
 fun Set<ProjectContractingPartnerStateAidGrantedByMemberStateEntity>.toModel() = mapTo(HashSet()) { it.toModel() }
 fun ProjectContractingPartnerStateAidGrantedByMemberStateEntity.toModel() = mapper.map(this)

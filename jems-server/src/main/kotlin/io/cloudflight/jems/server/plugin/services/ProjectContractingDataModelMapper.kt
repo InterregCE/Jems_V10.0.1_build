@@ -21,6 +21,8 @@ import io.cloudflight.jems.server.project.service.contracting.partner.beneficial
 import io.cloudflight.jems.server.project.service.contracting.partner.documentsLocation.ContractingPartnerDocumentsLocation
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import org.mapstruct.Mapper
+import org.mapstruct.Mapping
+import org.mapstruct.Mappings
 import org.mapstruct.factory.Mappers
 
 private val mapper = Mappers.getMapper(ProjectContractingDataProviderMapper::class.java)
@@ -64,7 +66,13 @@ interface ProjectContractingDataProviderMapper {
 
     fun map(model: ProjectContractingReportingSchedule): ProjectContractingReportingScheduleData
 
+    @Mappings(
+        Mapping(source = "amountGrantingAid", target = "totalEligibleBudget"),
+    )
     fun map(model: ContractingPartnerStateAidGberSection?): ProjectContractingPartnerStateAidGberData?
 
+    @Mappings(
+        Mapping(source = "amountGrantingAid", target = "totalEligibleBudget"),
+    )
     fun map(model: ContractingPartnerStateAidDeMinimisSection?): ProjectContractingPartnerStateAidDeMinimisData?
 }

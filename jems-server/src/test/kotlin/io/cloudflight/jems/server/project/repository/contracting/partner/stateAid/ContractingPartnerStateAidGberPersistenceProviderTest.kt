@@ -24,14 +24,16 @@ internal class ContractingPartnerStateAidGberPersistenceProviderTest: UnitTest()
                 partnerId = PARTNER_ID,
                 aidIntensity = BigDecimal.TEN,
                 locationInAssistedArea = LocationInAssistedArea.A_AREA,
-                comment = "Comment test"
+                comment = "Comment test",
+                amountGrantingAid = BigDecimal.TEN
             )
 
 
         private val gberModel = ContractingPartnerStateAidGber(
             aidIntensity = BigDecimal.TEN,
             locationInAssistedArea = LocationInAssistedArea.A_AREA,
-            comment = "Comment test"
+            comment = "Comment test",
+            amountGrantingAid = BigDecimal.TEN
         )
     }
 

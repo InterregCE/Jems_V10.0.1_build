@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.entity.contracting.partner
 
 import io.cloudflight.jems.server.project.service.contracting.model.partner.stateAid.BaseForGranting
+import java.math.BigDecimal
 import java.time.ZonedDateTime
 import javax.persistence.CascadeType
 import javax.persistence.Column
@@ -23,7 +24,7 @@ class ProjectContractingPartnerStateAidMinimisEntity(
 
     val aidGrantedByCountry: String?,
 
-    val aidGrantedByCountryCode: String?,
+    val amountGrantingAid: BigDecimal?,
 
     @OneToMany(mappedBy = "id.partnerId", cascade = [CascadeType.ALL], orphanRemoval = true)
     val memberStatesGranting: Set<ProjectContractingPartnerStateAidGrantedByMemberStateEntity> = setOf(),
