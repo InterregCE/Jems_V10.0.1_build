@@ -423,7 +423,7 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
         every { auditPublisher.publishEvent(ofType(ProjectReportStatusChanged::class)) } returns Unit
 
-        assertThat(interactor.finalizeVerification(PROJECT_ID, reportId)).isEqualTo(Finalized)
+        assertThat(interactor.finalizeVerification(reportId)).isEqualTo(Finalized)
 
         verify(exactly = 1) { reportPersistence.finalizeVerificationOnReportById(PROJECT_ID, reportId) }
 
@@ -442,7 +442,7 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
         val report = report(reportStatus)
 
         every { reportPersistence.getReportByIdUnSecured(reportId) } returns report
-        assertThrows<ReportVerificationNotStartedException> { interactor.finalizeVerification(PROJECT_ID, reportId) }
+        assertThrows<ReportVerificationNotStartedException> { interactor.finalizeVerification(reportId) }
 
         verify(exactly = 0) { reportPersistence.finalizeVerificationOnReportById(any(), any()) }
         verify(exactly = 0) { auditPublisher.publishEvent(any()) }
@@ -533,7 +533,7 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
         val paymentsToSaveSlot = slot<List<PaymentRegularToCreate>>()
         every { paymentPersistence.saveRegularPayments(reportId, capture(paymentsToSaveSlot)) } returns Unit
 
-        assertThat(interactor.finalizeVerification(PROJECT_ID, reportId)).isEqualTo(Finalized)
+        assertThat(interactor.finalizeVerification(reportId)).isEqualTo(Finalized)
         assertThat(paymentsToSaveSlot.captured).isEqualTo(expectedPaymentsToSave)
 
     }

@@ -13,11 +13,11 @@ import org.springframework.stereotype.Component
 
 // expenditure tab:
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectReportVerificationAuthorization.hasPermissionForProjectReportId('ProjectReportingVerificationProjectView', #reportId)")
+@PreAuthorize("@projectReportVerificationAuthorization.hasMonitorUserPermissionForProjectReportId('ProjectReportingVerificationProjectView', #reportId)")
 annotation class CanViewReportVerificationExpenditure
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectReportVerificationAuthorization.hasPermissionForProjectReportId('ProjectReportingVerificationProjectEdit', #reportId)")
+@PreAuthorize("@projectReportVerificationAuthorization.hasMonitorUserPermissionForProjectReportId('ProjectReportingVerificationProjectEdit', #reportId)")
 annotation class CanEditReportVerificationExpenditure
 
 // document tab:
@@ -36,16 +36,17 @@ annotation class CanViewReportVerificationFinance
 
 // finalize and checklist tabs:
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectReportVerificationAuthorization.hasPermissionForProjectReportId('ProjectReportingVerificationFinalize', #reportId)")
-annotation class CanFinalizeReportVerification
-
-@Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectAuthorization.hasPermission('ProjectReportingVerificationProjectView', #projectId)")
+@PreAuthorize("@projectReportVerificationAuthorization.hasMonitorUserPermissionForProjectId('ProjectReportingVerificationProjectView', #projectId)")
 annotation class CanViewReportVerificationPrivileged
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectAuthorization.hasPermission('ProjectReportingVerificationProjectEdit', #projectId)")
+@PreAuthorize("@projectReportVerificationAuthorization.hasMonitorUserPermissionForProjectId('ProjectReportingVerificationProjectEdit', #projectId)")
 annotation class CanEditReportVerificationPrivileged
+
+// finalize button:
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@projectReportVerificationAuthorization.hasMonitorUserPermissionForProjectReportId('ProjectReportingVerificationFinalize', #reportId)")
+annotation class CanFinalizeReportVerification
 
 @Component
 class ProjectReportVerificationAuthorization(
@@ -72,8 +73,11 @@ class ProjectReportVerificationAuthorization(
         return canApplicantView || canMonitorView || canControllerView
     }
 
-    fun hasPermissionForProjectReportId(permission: UserRolePermission, reportId: Long) =
-        hasPermissionForProject(permission, reportId.toProjectId())
+    fun hasMonitorUserPermissionForProjectReportId(permission: UserRolePermission, reportId: Long): Boolean =
+        hasMonitorUserPermissionForProjectId(permission, reportId.toProjectId())
+
+    fun hasMonitorUserPermissionForProjectId(permission: UserRolePermission, projectId: Long): Boolean =
+        hasPermissionForProject(permission, projectId) || hasControllerPermission(permission, projectId)
 
     fun canEditDocuments(projectId: Long): Boolean {
         val project = projectPersistence.getApplicantAndStatusById(projectId)
@@ -89,13 +93,15 @@ class ProjectReportVerificationAuthorization(
             .getLevelForProjectAndUser(projectId, securityService.getUserIdOrThrow()) != null
         val isPartnerCollaborator = isActiveUserIdEqualToOneOf(partnerCollaboratorPersistence.findUserIdsByProjectId(projectId))
         val isMonitorWithView = hasPermission(UserRolePermission.ProjectReportingVerificationProjectView, projectId)
-        val isControllerWithView = isActiveUserIdEqualToOneOf(controllerInstitutionPersistence.getRelatedUserIdsForProject(projectId))
-            && hasNonProjectAuthority(UserRolePermission.ProjectReportingVerificationProjectView)
+        val isControllerWithView = hasControllerPermission(UserRolePermission.ProjectReportingVerificationProjectView, projectId)
 
         return isProjectCollaborator || isPartnerCollaborator || isMonitorWithView || isControllerWithView
     }
 
-
     private fun Long.toProjectId() = projectReportPersistence.getReportByIdUnSecured(this).projectId
+
+    private fun hasControllerPermission(permission: UserRolePermission, projectId: Long) =
+        isActiveUserIdEqualToOneOf(controllerInstitutionPersistence.getRelatedUserIdsForProject(projectId))
+            && hasNonProjectAuthority(permission)
 
 }

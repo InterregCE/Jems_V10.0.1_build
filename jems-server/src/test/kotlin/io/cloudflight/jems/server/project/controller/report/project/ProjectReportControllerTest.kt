@@ -275,7 +275,7 @@ internal class ProjectReportControllerTest : UnitTest() {
 
     @Test
     fun finalizeVerificationOnProjectReport() {
-        every { finalizeVerificationProjectReport.finalizeVerification(22L, reportId = 6L) } returns ProjectReportStatus.Finalized
+        every { finalizeVerificationProjectReport.finalizeVerification(6L) } returns ProjectReportStatus.Finalized
         assertThat(controller.finalizeVerificationOnProjectReport(22L, reportId = 6L)).isEqualTo(ProjectReportStatusDTO.Finalized)
     }
 }

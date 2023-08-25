@@ -141,15 +141,31 @@ internal class ProjectReportVerificationAuthorizationTest: UnitTest() {
         assertThat(authorization.canViewReportVerificationFinance(REPORT_ID)).isFalse()
     }
 
-    @ParameterizedTest(name = "hasPermissionForProjectReportId {0}")
+    @ParameterizedTest(name = "hasMonitorUserPermissionForProjectReportId {0}")
     @ValueSource(booleans = [true, false])
-    fun hasPermissionForProjectReportId(hasPrivilege: Boolean) {
+    fun hasMonitorUserPermissionForProjectReportId(hasPrivilege: Boolean) {
         every { securityService.currentUser } returns currentUser
+        every { securityService.getUserIdOrThrow() } returns 99L
         every { currentUser.user.assignedProjects } returns setOf(PROJECT_ID)
         every { currentUser.hasPermission(UserRolePermission.ProjectReportingVerificationProjectView) } returns hasPrivilege
         every { projectReportPersistence.getReportByIdUnSecured(REPORT_ID) } returns report(null, PROJECT_ID)
+        every { controllerInstitutionPersistence.getRelatedUserIdsForProject(PROJECT_ID) } returns setOf()
 
-        assertThat(authorization.hasPermissionForProjectReportId(UserRolePermission.ProjectReportingVerificationProjectView, REPORT_ID))
+        assertThat(authorization.hasMonitorUserPermissionForProjectReportId(UserRolePermission.ProjectReportingVerificationProjectView, REPORT_ID))
+            .isEqualTo(hasPrivilege)
+    }
+
+    @ParameterizedTest(name = "hasControllerUserPermissionForProjectId {0}")
+    @ValueSource(booleans = [true, false])
+    fun hasControllerUserPermissionForProjectId(hasPrivilege: Boolean) {
+        every { securityService.currentUser } returns currentUser
+        every { securityService.getUserIdOrThrow() } returns 99L
+        every { currentUser.user.assignedProjects } returns setOf()
+        every { currentUser.hasPermission(UserRolePermission.ProjectRetrieve) } returns true
+        every { currentUser.hasPermission(UserRolePermission.ProjectReportingVerificationProjectView) } returns hasPrivilege
+        every { controllerInstitutionPersistence.getRelatedUserIdsForProject(PROJECT_ID) } returns setOf(99L)
+
+        assertThat(authorization.hasMonitorUserPermissionForProjectId(UserRolePermission.ProjectReportingVerificationProjectView, PROJECT_ID))
             .isEqualTo(hasPrivilege)
     }
 
@@ -270,6 +286,20 @@ internal class ProjectReportVerificationAuthorizationTest: UnitTest() {
             assertThat(authorization.canEditDocuments(PROJECT_ID)).isFalse
         else
             assertThat(authorization.canViewDocuments(PROJECT_ID)).isFalse
+    }
+
+    @ParameterizedTest(name = "canMonitorUserFinalizeVerification {0}")
+    @ValueSource(booleans = [true, false])
+    fun canMonitorUserFinalizeVerification(hasPrivilege: Boolean) {
+        every { securityService.currentUser } returns currentUser
+        every { securityService.getUserIdOrThrow() } returns 99L
+        every { currentUser.user.assignedProjects } returns setOf(PROJECT_ID)
+        every { currentUser.hasPermission(UserRolePermission.ProjectReportingVerificationFinalize) } returns hasPrivilege
+        every { projectReportPersistence.getReportByIdUnSecured(REPORT_ID) } returns report(null, PROJECT_ID)
+        every { controllerInstitutionPersistence.getRelatedUserIdsForProject(PROJECT_ID) } returns setOf(100L)
+
+        assertThat(authorization.hasMonitorUserPermissionForProjectReportId(UserRolePermission.ProjectReportingVerificationFinalize, REPORT_ID))
+            .isEqualTo(hasPrivilege)
     }
 
 }
