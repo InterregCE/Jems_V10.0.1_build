@@ -42,7 +42,7 @@
 
   .header {
     background-color: var(--light-blue-gray);
-    min-width: 12rem;
+    flex: 0 0 12rem;
     background-clip: padding-box;
     text-align: right;
     font-weight: var(--font-weight-strong);
