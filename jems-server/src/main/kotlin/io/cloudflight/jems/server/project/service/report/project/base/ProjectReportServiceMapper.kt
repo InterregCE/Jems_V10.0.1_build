@@ -2,7 +2,6 @@ package io.cloudflight.jems.server.project.service.report.project.base
 
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReport
-import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 
@@ -51,9 +50,10 @@ fun ProjectReportModel.toServiceSummaryModel(
 
     createdAt = createdAt,
     firstSubmission = firstSubmission,
+    lastReSubmission = lastReSubmission,
     verificationDate = verificationDate,
     verificationEndDate = verificationEndDate,
-    deletable = status == ProjectReportStatus.Draft,
+    deletable = status.isOpenInitially(),
     amountRequested = amountRequested,
     totalEligibleAfterVerification = totalEligibleAfterVerification,
 

@@ -28,7 +28,7 @@ class GetReportCertificateUnitCostCalculatorService(
 
         val data = reportCertificateUnitCostPersistence.getUnitCosts(projectId = projectId, reportId = reportId)
 
-        if (report.isOpen()) {
+        if (report.isOpenForNumbersChanges()) {
             val certificates = reportCertificatePersistence.listCertificatesOfProjectReport(reportId)
             val currentUnitCosts = reportUnitCostPersistence.getUnitCostCumulativeAfterControl(certificates.map {it.id}.toSet())
             data.fillInCurrent(current = currentUnitCosts)

@@ -52,6 +52,7 @@ class ProjectReportDataProviderImpl(
     private val reportCertificateInvestmentCalculatorService: GetReportCertificateInvestmentCalculatorService,
 ): ProjectReportDataProvider {
 
+    @Transactional(readOnly = true)
     override fun get(projectId: Long, reportId: Long): ProjectReportData =
         projectReportPersistence.getReportById(projectId, reportId = reportId).let { report ->
             val periods = projectPersistence.getProjectPeriods(report.projectId, report.linkedFormVersion)
@@ -62,21 +63,25 @@ class ProjectReportDataProviderImpl(
     override fun getAllProjectReportsBaseDataByProjectId(projectId: Long): Sequence<ProjectReportBaseData> =
         projectReportPersistence.getAllProjectReportsBaseDataByProjectId(projectId)
 
+    @Transactional(readOnly = true)
     override fun getIdentification(projectId: Long, reportId: Long): ProjectReportIdentificationData =
         this.getIdentificationPersistence.getReportIdentification(projectId, reportId).apply {
             spendingProfiles = getIdentificationService.getProjectReportSpendingProfiles(projectId, reportId)
         }.toDataModel()
 
+    @Transactional(readOnly = true)
     override fun getWorkPlan(projectId: Long, reportId: Long): List<ProjectReportWorkPackageData> =
         this.reportWorkPlanPersistence.getReportWorkPlanById(projectId = projectId, reportId = reportId)
             .toWorkPlanDataModel()
 
+    @Transactional(readOnly = true)
     override fun getProjectResults(projectId: Long, reportId: Long): ProjectReportResultPrincipleData =
         this.projectReportResultPrinciplePersistence.getProjectResultPrinciples(
             projectId = projectId,
             reportId = reportId
         ).toDataModel()
 
+    @Transactional(readOnly = true)
     override fun getPartnerCertificates(projectId: Long, reportId: Long): List<PartnerReportCertificateData> {
         val partnerIds = partnerPersistence.findTop50ByProjectId(projectId).mapTo(HashSet()) { it.id }
         return projectReportCertificatePersistence.listCertificates(
@@ -85,13 +90,16 @@ class ProjectReportDataProviderImpl(
         ).content.toCertificateDataModel()
     }
 
+    @Transactional(readOnly = true)
     override fun getCoFinancingOverview(projectId: Long, reportId: Long): CertificateCoFinancingBreakdownData =
         this.getReportCertificateCoFinancingBreakdownCalculator.get(projectId, reportId).toDataModel()
 
+    @Transactional(readOnly = true)
     override fun getCostCategoryOverview(projectId: Long, reportId: Long): CertificateCostCategoryBreakdownData =
         this.getReportCertificateCostCategoryBreakdownCalculator.getSubmittedOrCalculateCurrent(projectId, reportId)
             .toDataModel()
 
+    @Transactional(readOnly = true)
     override fun getCostCategoryOverviewPerPartner(
         projectId: Long,
         reportId: Long
@@ -105,14 +113,17 @@ class ProjectReportDataProviderImpl(
         ).toDataModel()
     }
 
+    @Transactional(readOnly = true)
     override fun getInvestmentOverview(projectId: Long, reportId: Long): CertificateInvestmentBreakdownData =
         this.reportCertificateInvestmentCalculatorService.getSubmittedOrCalculateCurrent(projectId, reportId)
             .toDataModel()
 
+    @Transactional(readOnly = true)
     override fun getLumpSumOverview(projectId: Long, reportId: Long): CertificateLumpSumBreakdownData =
         this.getReportCertificateLumpSumBreakdownCalculator.getSubmittedOrCalculateCurrent(projectId, reportId)
             .toDataModel()
 
+    @Transactional(readOnly = true)
     override fun getUnitCostOverview(projectId: Long, reportId: Long): CertificateUnitCostBreakdownData =
         this.reportCertificateUnitCostCalculatorService.getSubmittedOrCalculateCurrent(projectId, reportId)
             .toDataModel()

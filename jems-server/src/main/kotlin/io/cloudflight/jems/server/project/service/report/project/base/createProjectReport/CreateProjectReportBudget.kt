@@ -14,7 +14,6 @@ import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerB
 import io.cloudflight.jems.server.project.service.partner.model.BaseBudgetEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.PartnerReportInvestmentSummary
-import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.PreviouslyProjectReportedFund
 import io.cloudflight.jems.server.project.service.report.model.project.base.create.ProjectReportBudget
@@ -59,7 +58,7 @@ class CreateProjectReportBudget(
         submittedReports: Collection<ProjectReportStatusAndType>,
     ): ProjectReportBudget {
         val submittedReportIds = submittedReports.mapTo(HashSet()) { it.id }
-        val finalizedReportIds = submittedReports.filter { it.status == ProjectReportStatus.Finalized }.mapTo(HashSet()) { it.id }
+        val finalizedReportIds = submittedReports.filter { it.status.isFinalized() }.mapTo(HashSet()) { it.id }
 
         val partnerIds = projectBudgetPersistence.getPartnersForProjectId(projectId = projectId, version).map {it.id!!}.toSet()
 

@@ -168,9 +168,6 @@ internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
     }
 
     @MockK
-    lateinit var reportPersistence: ProjectPartnerReportPersistence
-
-    @MockK
     lateinit var reportWpPersistence: ProjectPartnerReportWorkPlanPersistence
 
     @RelaxedMockK
@@ -181,16 +178,11 @@ internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
 
     @BeforeEach
     fun setup() {
-        clearMocks(reportPersistence)
         clearMocks(reportWpPersistence)
     }
 
-    @ParameterizedTest(name = "update {0}")
-    @EnumSource(value = ReportStatus::class,
-        names = ["Draft", "ReOpenSubmittedLast", "ReOpenSubmittedLimited", "ReOpenInControlLast", "ReOpenInControlLimited"])
-    fun update(status: ReportStatus) {
-        every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = 11L) } returns
-            ProjectPartnerReportStatusAndVersion(11L, status, "4.12.0")
+    @Test
+    fun update() {
         every { reportWpPersistence.getPartnerReportWorkPlanById(PARTNER_ID, reportId = 11) } returnsMany listOf(
             listOf(oldWorkPlan),
             listOf(newWorkPlan),
@@ -217,8 +209,6 @@ internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
 
     @Test
     fun `update - no changes`() {
-        every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = 12L) } returns
-            ProjectPartnerReportStatusAndVersion(12L, ReportStatus.Draft, "4.12.0")
         every { reportWpPersistence.getPartnerReportWorkPlanById(PARTNER_ID, reportId = 12) } returnsMany listOf(
             listOf(oldWorkPlan),
             listOf(oldWorkPlan),
@@ -239,12 +229,4 @@ internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
         verify(exactly = 2) { reportWpPersistence.getPartnerReportWorkPlanById(PARTNER_ID, reportId = 12L) }
     }
 
-    @ParameterizedTest(name = "update - wrong status {0}")
-    @EnumSource(value = ReportStatus::class, mode = EnumSource.Mode.EXCLUDE,
-        names = ["Draft", "ReOpenSubmittedLast", "ReOpenSubmittedLimited", "ReOpenInControlLast", "ReOpenInControlLimited"])
-    fun `update - wrong status`(status: ReportStatus) {
-        every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = 0L) } returns
-            ProjectPartnerReportStatusAndVersion(0L, status, "4.12.0")
-        assertThrows<ReportAlreadyClosed> { updateWorkPlan.update(PARTNER_ID, reportId = 0L, emptyList()) }
-    }
 }

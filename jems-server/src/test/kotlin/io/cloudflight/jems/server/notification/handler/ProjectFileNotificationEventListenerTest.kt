@@ -129,10 +129,12 @@ class ProjectFileNotificationEventListenerTest: UnitTest() {
 
             createdAt = LAST_WEEK,
             firstSubmission = LAST_YEAR,
+            lastReSubmission = mockk(),
             verificationDate = null,
             verificationEndDate = null,
             amountRequested = null,
             totalEligibleAfterVerification = null,
+            lastVerificationReOpening = mockk(),
             riskBasedVerification = false,
             riskBasedVerificationDescription = "Description"
         )

@@ -23,12 +23,12 @@ class GetReportCertificateCostCategoryBreakdownCalculator(
      */
     @Transactional(readOnly = true)
     fun getSubmittedOrCalculateCurrent(projectId: Long, reportId: Long): CertificateCostCategoryBreakdown {
-        val reportSatus = reportPersistence.getReportById(projectId = projectId, reportId).status
+        val reportStatus = reportPersistence.getReportById(projectId = projectId, reportId).status
         val data = reportCertificateCostCategoryPersistence.getCostCategories(projectId = projectId, reportId = reportId)
 
         val costCategories = data.toLinesModel()
 
-        if (reportSatus.isOpen()) {
+        if (reportStatus.isOpenForNumbersChanges()) {
             val partnerReportIds = reportCertificatePersistence.listCertificatesOfProjectReport(reportId)
                 .mapTo(HashSet()) { it.id }
 

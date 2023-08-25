@@ -21,11 +21,15 @@ import io.cloudflight.jems.server.notification.inApp.service.model.NotificationT
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.ProjectNotApproved
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.ProjectNotApprovedStep1
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.ProjectReportSubmitted
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.ProjectReportReOpen
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.ProjectReportVerificationReOpen
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.ProjectResubmitted
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.ProjectReturnedForConditions
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.ProjectReturnedToApplicant
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.ProjectSubmitted
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.ProjectSubmittedStep1
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.ProjectReportVerificationOngoing
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType.ProjectReportVerificationFinalized
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus.Certified
@@ -71,8 +75,8 @@ fun ReportStatus.toNotificationType(previousReportStatus: ReportStatus): Notific
     this == ReOpenSubmittedLimited -> PartnerReportReOpen
     this == ReOpenInControlLast -> PartnerReportReOpen
     this == ReOpenInControlLimited -> PartnerReportReOpen
-    this == InControl && previousReportStatus == ReOpenInControlLimited -> PartnerReportSubmitted
     this == InControl && previousReportStatus == ReOpenInControlLast -> PartnerReportSubmitted
+    this == InControl && previousReportStatus == ReOpenInControlLimited -> PartnerReportSubmitted
     this == InControl && previousReportStatus == Submitted -> PartnerReportControlOngoing
     this == Certified -> PartnerReportCertified
     this == ReOpenCertified && previousReportStatus == ReOpenInControlLast -> PartnerReportSubmitted
@@ -83,10 +87,19 @@ fun ReportStatus.toNotificationType(previousReportStatus: ReportStatus): Notific
 
 fun NotificationType?.enforceIsPartnerReportNotification() = if (this != null && isPartnerReportNotification()) this else null
 
-fun ProjectReportStatus.toNotificationType(): NotificationType? = when(this) {
-    ProjectReportStatus.Submitted -> ProjectReportSubmitted
-    ProjectReportStatus.InVerification -> NotificationType.ProjectReportVerificationOngoing
-    ProjectReportStatus.Finalized -> NotificationType.ProjectReportVerificationFinalized
+fun ProjectReportStatus.toNotificationType(previousReportStatus: ProjectReportStatus): NotificationType? = when {
+    this == ProjectReportStatus.Submitted -> ProjectReportSubmitted
+    this == ProjectReportStatus.ReOpenSubmittedLast -> ProjectReportReOpen
+    this == ProjectReportStatus.ReOpenSubmittedLimited -> ProjectReportReOpen
+    this == ProjectReportStatus.VerificationReOpenedLast -> ProjectReportReOpen
+    this == ProjectReportStatus.VerificationReOpenedLimited -> ProjectReportReOpen
+    this == ProjectReportStatus.InVerification && previousReportStatus == ProjectReportStatus.VerificationReOpenedLast -> ProjectReportSubmitted
+    this == ProjectReportStatus.InVerification && previousReportStatus == ProjectReportStatus.VerificationReOpenedLimited -> ProjectReportSubmitted
+    this == ProjectReportStatus.InVerification && previousReportStatus == ProjectReportStatus.Submitted -> ProjectReportVerificationOngoing
+    this == ProjectReportStatus.Finalized -> ProjectReportVerificationFinalized
+    this == ProjectReportStatus.ReOpenFinalized && previousReportStatus == ProjectReportStatus.VerificationReOpenedLast -> ProjectReportSubmitted
+    this == ProjectReportStatus.ReOpenFinalized && previousReportStatus == ProjectReportStatus.VerificationReOpenedLimited -> ProjectReportSubmitted
+    this == ProjectReportStatus.ReOpenFinalized -> ProjectReportVerificationReOpen
     else -> null
 }.enforceIsProjectReportNotification()
 

@@ -22,7 +22,7 @@ class ProjectReportCertificatePersistenceProvider(
 
     @Transactional
     override fun deselectCertificate(projectReportId: Long, certificateId: Long) {
-        val partnerReport = partnerReportRepository.getById(certificateId)
+        val partnerReport = partnerReportRepository.findById(certificateId).get()
         if (partnerReport.projectReport?.id == projectReportId) {
             partnerReport.projectReport = null
         }

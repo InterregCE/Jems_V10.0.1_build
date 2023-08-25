@@ -45,7 +45,7 @@ import org.mapstruct.factory.Mappers
 
 private val mapper = Mappers.getMapper(ProjectReportDataProviderMapper::class.java)
 
-fun ProjectReport.toDataModel() = mapper.map(this)
+fun ProjectReport.toDataModel(): ProjectReportData = mapper.map(this)
 fun ProjectReportIdentification.toDataModel() = mapper.map(this)
 fun List<ProjectReportWorkPackage>.toWorkPlanDataModel() = map { mapper.mapWorkPackage(it) }
 fun ProjectReportResultPrinciple.toDataModel() = mapper.map(this)

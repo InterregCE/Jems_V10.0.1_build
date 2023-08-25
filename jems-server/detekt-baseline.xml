@@ -31,6 +31,7 @@
     <ID>ComplexMethod:ProgrammeUnitCost.kt$ProgrammeUnitCost$fun getDiff(old: ProgrammeUnitCost? = null): Map&lt;String, Pair&lt;Any?, Any?&gt;&gt;</ID>
     <ID>ComplexMethod:ProjectDataModelMapper.kt$PluginDataMapper$fun map(programmeStrategy: ProgrammeStrategy): ProgrammeStrategyData</ID>
     <ID>ComplexMethod:ProjectNotificationHelper.kt$fun ApplicationStatus.toNotificationType(prevStatus: ApplicationStatus): NotificationType?</ID>
+    <ID>ComplexMethod:ProjectNotificationHelper.kt$fun ProjectReportStatus.toNotificationType(previousReportStatus: ProjectReportStatus): NotificationType?</ID>
     <ID>ComplexMethod:ProjectNotificationHelper.kt$fun ReportStatus.toNotificationType(previousReportStatus: ReportStatus): NotificationType?</ID>
     <ID>ComplexMethod:ProjectPartnerEntityMapper.kt$fun ProjectPartnerEntity.copy( projectPartner: ProjectPartner? = null, legalStatusRef: ProgrammeLegalStatusEntity? = null, newAddresses: Set&lt;ProjectPartnerAddress&gt;? = null, newContacts: Set&lt;ProjectPartnerContact&gt;? = null, newMotivation: ProjectPartnerMotivation? = null, newPartnerContributions: List&lt;ProjectPartnerContribution&gt;? = null, ): ProjectPartnerEntity</ID>
     <ID>ComplexMethod:ProjectReportCreateModelMapper.kt$fun List&lt;ProjectReportWorkPackageInvestmentCreate&gt;.toEntity( wp: ProjectReportWorkPackageEntity )</ID>
@@ -641,6 +642,7 @@
     <ID>TooManyFunctions:ProjectPartnerReportPersistenceProvider.kt$ProjectPartnerReportPersistenceProvider : ProjectPartnerReportPersistence</ID>
     <ID>TooManyFunctions:ProjectPartnerRepository.kt$ProjectPartnerRepository : JpaRepository</ID>
     <ID>TooManyFunctions:ProjectReportDataProviderMapper.kt$ProjectReportDataProviderMapper</ID>
+    <ID>TooManyFunctions:ProjectReportPersistence.kt$ProjectReportPersistence</ID>
     <ID>TooManyFunctions:ProjectReportPersistenceProvider.kt$ProjectReportPersistenceProvider : ProjectReportPersistence</ID>
     <ID>TooManyFunctions:UpdateCoFinancingValidation.kt$io.cloudflight.jems.server.project.service.partner.cofinancing.update_cofinancing.UpdateCoFinancingValidation.kt</ID>
     <ID>TooManyFunctions:WorkPackagePersistence.kt$WorkPackagePersistence</ID>
@@ -661,6 +663,7 @@
     <ID>UnusedPrivateMember:ProjectPartnerFactory.kt$ProjectPartnerFactory$author: UserEntity</ID>
     <ID>UnusedPrivateMember:ProjectWorkPackageAuthorizationTest.kt$ProjectWorkPackageAuthorizationTest.Companion$private const val INVESTMENT_ID = 7L</ID>
     <ID>UnusedPrivateMember:ReturnApplicationToApplicantInteractorTest.kt$ReturnApplicationToApplicantInteractorTest$@InjectMockKs private lateinit var handBackToApplicant: HandBackToApplicant</ID>
+    <ID>UnusedPrivateMember:SelectCertificateTest.kt$SelectCertificateTest$private fun provideStatusesInWhichSelectIsNotAllowed(): Stream&lt;Arguments&gt;</ID>
     <ID>UnusedPrivateMember:UpdateCallTest.kt$UpdateCallTest$private fun provideNotAllowedChangesToPublishedCall(): Stream&lt;Arguments&gt;</ID>
     <ID>UnusedPrivateMember:UpdateFundsTest.kt$UpdateFundsTest$private fun providePreDefinedProgramFundTypes()</ID>
     <ID>UnusedPrivateMember:UpdateLegalStatusInteractorTest.kt$UpdateLegalStatusInteractorTest$private fun providePreDefinedLegalStatusTypes()</ID>

@@ -27,36 +27,38 @@ internal class GetMyProjectReportsTest: UnitTest() {
         private val HOUR_AGO = ZonedDateTime.now().minusHours(1)
         private val DAYS_AGO_2 = YESTERDAY.minusDays(1).toLocalDate()
 
-        private fun report(id: Long, status: ProjectReportStatus, projectId: String) = ProjectReportModel(
+        private fun report(id: Long, status: ProjectReportStatus, projectId: Long) = ProjectReportModel(
             id = id,
-            projectId = 55L,
+            projectId = projectId,
             reportNumber = id.toInt(),
             status = status,
             startDate = DAYS_AGO_2,
             endDate = DAYS_AGO_2,
             type = ContractingDeadlineType.Both,
             linkedFormVersion = "V4.4",
-            firstSubmission = YESTERDAY,
             reportingDate = DAYS_AGO_2,
-            verificationDate = DAYS_AGO_2,
-            verificationEndDate = HOUR_AGO,
             createdAt = YESTERDAY,
             deadlineId = null,
             leadPartnerNameInEnglish = "",
             leadPartnerNameInOriginalLanguage = "",
             periodNumber = id.toInt(),
             projectAcronym = "project",
-            projectIdentifier = projectId,
-            riskBasedVerification = false,
-            riskBasedVerificationDescription = null,
+            projectIdentifier = "iden-$projectId",
+            firstSubmission = YESTERDAY,
+            lastReSubmission = YESTERDAY,
+            verificationDate = DAYS_AGO_2,
+            verificationEndDate = HOUR_AGO,
             amountRequested = BigDecimal.TEN,
             totalEligibleAfterVerification = BigDecimal.ONE,
+            lastVerificationReOpening = HOUR_AGO,
+            riskBasedVerification = false,
+            riskBasedVerificationDescription = null,
         )
 
-        private fun reportSummary(id: Long, status: ProjectReportStatus, projectId: String) = ProjectReportSummary(
+        private fun reportSummary(id: Long, status: ProjectReportStatus, projectId: Long) = ProjectReportSummary(
             id = id,
-            projectId = 55L,
-            projectIdentifier = projectId,
+            projectId = projectId,
+            projectIdentifier = "iden-$projectId",
             reportNumber = id.toInt(),
             status = status,
             startDate = DAYS_AGO_2,
@@ -64,6 +66,7 @@ internal class GetMyProjectReportsTest: UnitTest() {
             type = ContractingDeadlineType.Both,
             linkedFormVersion = "V4.4",
             firstSubmission = YESTERDAY,
+            lastReSubmission = YESTERDAY,
             reportingDate = DAYS_AGO_2,
             verificationDate = DAYS_AGO_2,
             verificationEndDate = HOUR_AGO,
@@ -110,19 +113,21 @@ internal class GetMyProjectReportsTest: UnitTest() {
             ProjectPeriod(102, 10, 15))
         every { reportPersistence.listProjectReports(
             setOf(firstProjectId, secondProjectId),
-            ProjectReportStatus.SUBMITTED_STATUSES,
-            Pageable.unpaged()
+            setOf(ProjectReportStatus.Submitted, ProjectReportStatus.InVerification, ProjectReportStatus.Finalized,
+                ProjectReportStatus.ReOpenFinalized, ProjectReportStatus.ReOpenSubmittedLimited, ProjectReportStatus.VerificationReOpenedLimited,
+            ),
+            pageable = Pageable.unpaged(),
         ) } returns
             PageImpl(
                 listOf(
-                    report(101L, ProjectReportStatus.Submitted, "id 101"),
-                    report(102L, ProjectReportStatus.Finalized, "id 102"),
+                    report(101L, ProjectReportStatus.Submitted, firstProjectId),
+                    report(102L, ProjectReportStatus.Finalized, secondProjectId),
                 )
             )
 
-        assertThat(getMyProjectReports.findAllOfMine(Pageable.unpaged()).content).containsExactly(
-            reportSummary(101L, ProjectReportStatus.Submitted, "id 101"),
-            reportSummary(102L, ProjectReportStatus.Finalized, "id 102"),
+        assertThat(getMyProjectReports.findAllOfMine(Pageable.unpaged())).containsExactly(
+            reportSummary(101L, ProjectReportStatus.Submitted, firstProjectId),
+            reportSummary(102L, ProjectReportStatus.Finalized, secondProjectId),
         )
     }
 }

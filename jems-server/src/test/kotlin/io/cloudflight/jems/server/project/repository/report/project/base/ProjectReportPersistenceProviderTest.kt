@@ -9,7 +9,6 @@ import com.querydsl.jpa.impl.JPAQuery
 import com.querydsl.jpa.impl.JPAQueryFactory
 import io.cloudflight.jems.plugin.contract.models.report.project.identification.ProjectReportBaseData
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
 import io.cloudflight.jems.server.project.entity.contracting.reporting.ProjectContractingReportingEntity
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
 import io.cloudflight.jems.server.project.entity.report.project.financialOverview.ReportProjectCertificateCoFinancingEntity
@@ -32,6 +31,8 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -43,6 +44,8 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
     companion object {
         private val LAST_WEEK = ZonedDateTime.now().minusWeeks(1)
         private val LAST_YEAR = ZonedDateTime.now().minusYears(1)
+        private val DAY_AGO = ZonedDateTime.now().minusDays(1)
+        private val DAY_AGO_2 = ZonedDateTime.now().minusMonths(2)
         private val YESTERDAY = LocalDate.now().minusDays(1)
         private val MONTH_AGO = LocalDate.now().minusMonths(1)
         private val WEEK_AGO = LocalDate.now().minusWeeks(1)
@@ -68,12 +71,14 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
 
             createdAt = LAST_WEEK,
             firstSubmission = LAST_YEAR,
+            lastReSubmission = DAY_AGO,
             verificationDate = null,
             verificationEndDate = null,
 
             verificationConclusionJs = null,
             verificationConclusionMa = null,
             verificationFollowup = null,
+            lastVerificationReOpening = DAY_AGO_2,
             riskBasedVerification = false,
             riskBasedVerificationDescription = "RISK BASED DESCRIPTION"
         )
@@ -105,10 +110,12 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
 
             createdAt = LAST_WEEK,
             firstSubmission = LAST_YEAR,
+            lastReSubmission = DAY_AGO,
             verificationDate = null,
             verificationEndDate = null,
             amountRequested = BigDecimal.ONE,
             totalEligibleAfterVerification = BigDecimal.ONE,
+            lastVerificationReOpening = DAY_AGO_2,
             riskBasedVerification = false,
             riskBasedVerificationDescription = "RISK BASED DESCRIPTION"
         )
@@ -133,10 +140,12 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
 
             createdAt = LAST_WEEK,
             firstSubmission = LAST_YEAR,
+            lastReSubmission = DAY_AGO,
             verificationDate = null,
             verificationEndDate = null,
             amountRequested = null,
             totalEligibleAfterVerification = null,
+            lastVerificationReOpening = DAY_AGO_2,
             riskBasedVerification = false,
             riskBasedVerificationDescription = "RISK BASED DESCRIPTION"
         )
@@ -220,7 +229,7 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
         val result = mockk<QueryResults<Tuple>>()
         every { result.total } returns 1
         every { result.results } returns listOf(tuple)
-        every { query.  fetchResults() } returns result
+        every { query.fetchResults() } returns result
 
         assertThat(persistence.listReports(projectId, Pageable.ofSize(1))).containsExactly(reportForListing(42L, projectId))
         assertThat(slotWhere.captured.toString()).isEqualTo("projectReportEntity.projectId = 95")
@@ -355,6 +364,47 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
         assertThat(persistence.countForProject(projectId)).isEqualTo(15)
     }
 
+    @ParameterizedTest(name = "existsHavingTypeAndStatusIn - with {0} || without {1} - type {2}")
+    @CsvSource(value = [
+        "35,48,Content,35|48",
+        "35,0,Content,35",
+        "0,48,Content,48",
+        "0,0,Content,",
+        "35,48,Finance,35|48",
+        "35,0,Finance,35",
+        "0,48,Finance,48",
+        "0,0,Finance,",
+    ])
+    fun existsHavingTypeAndStatusIn(reportWithNr: Int, reportWithoutNr: Int, type: ContractingDeadlineType, expectedResultString: String?) {
+        val expectedResult = expectedResultString?.split("|")?.map { it.toInt() } ?: emptyList()
+        val projectId = 88L
+        val statusesWithExistingDeadlines = slot<Set<ProjectReportStatus>>()
+        val typesWithExistingDeadlines = slot<Set<ContractingDeadlineType>>()
+        val statusesWithoutExistingDeadlines = slot<Set<ProjectReportStatus>>()
+        val typesWithoutExistingDeadlines = slot<Set<ContractingDeadlineType>>()
+
+        val reportWith = mockk<ProjectReportEntity>()
+        every { reportWith.number } returns 35
+        val reportWithout = mockk<ProjectReportEntity>()
+        every { reportWithout.number } returns 48
+
+        every { projectReportRepository.findByProjectIdAndStatusInAndTypeInOrderByIdDesc(
+            projectId, capture(statusesWithExistingDeadlines), capture(typesWithExistingDeadlines)
+        ) } returns if (reportWithNr != 0) listOf(reportWith) else emptyList()
+        every { projectReportRepository.findByProjectIdAndStatusInAndDeadlineTypeInOrderByIdDesc(
+            projectId, capture(statusesWithoutExistingDeadlines), capture(typesWithoutExistingDeadlines)
+        ) } returns if (reportWithoutNr != 0) listOf(reportWithout) else emptyList()
+
+        val mockedSet = mockk<Set<ProjectReportStatus>>()
+        assertThat(persistence.existsHavingTypeAndStatusIn(projectId, type, mockedSet)).isEqualTo(expectedResult)
+
+        assertThat(statusesWithExistingDeadlines.captured).isEqualTo(mockedSet)
+        assertThat(statusesWithoutExistingDeadlines.captured).isEqualTo(mockedSet)
+
+        assertThat(typesWithExistingDeadlines.captured).containsExactlyInAnyOrder(type, ContractingDeadlineType.Both)
+        assertThat(typesWithoutExistingDeadlines.captured).containsExactlyInAnyOrder(type, ContractingDeadlineType.Both)
+    }
+
     @Test
     fun getCurrentSpendingProfile() {
         val projectReportId = 1L
@@ -366,19 +416,36 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
     }
 
     @Test
-    fun submitReport() {
+    fun submitReportInitially() {
         val projectId = 8L
         val report = reportEntity(id = 49L, projectId)
-        val YESTERDAY = ZonedDateTime.now().minusDays(1)
+        val submissionTime = ZonedDateTime.now().minusDays(2).plusHours(5)
 
         every { projectReportRepository.getByIdAndProjectId(49L, projectId) } returns report
 
-        assertThat(persistence.submitReport(projectId, 49L, YESTERDAY)).isEqualTo(
+        assertThat(persistence.submitReportInitially(projectId, 49L, submissionTime)).isEqualTo(
             draftReportSubmissionEntity(49L, projectId).copy(
                 status = ProjectReportStatus.Submitted,
-                firstSubmission = YESTERDAY
+                firstSubmission = submissionTime,
             )
         )
+    }
+
+    @Test
+    fun reSubmitReport() {
+        val projectId = 9L
+        val report = reportEntity(id = 57L, projectId)
+        assertThat(report.lastReSubmission).isEqualTo(DAY_AGO)
+        val reSubmissionTime = ZonedDateTime.now().minusDays(3).plusHours(7)
+
+        every { projectReportRepository.getByIdAndProjectId(57L, projectId) } returns report
+
+        assertThat(persistence.reSubmitReport(projectId, 57L, ProjectReportStatus.ReOpenFinalized, reSubmissionTime))
+            .isEqualTo(draftReportSubmissionEntity(57L, projectId).copy(
+                status = ProjectReportStatus.ReOpenFinalized,
+            )
+        )
+        assertThat(report.lastReSubmission).isEqualTo(reSubmissionTime)
     }
 
     @Test
@@ -390,6 +457,9 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
                     ProjectReportStatus.Submitted,
                     ProjectReportStatus.InVerification,
                     ProjectReportStatus.Finalized,
+                    ProjectReportStatus.ReOpenFinalized,
+                    ProjectReportStatus.ReOpenSubmittedLimited,
+                    ProjectReportStatus.VerificationReOpenedLimited,
                 )
             )
         } returns listOf(
@@ -469,4 +539,61 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
         )
         assertThat(report.verificationEndDate).isEqualTo(LAST_WEEK)
     }
+
+    @ParameterizedTest(name = "getCurrentLatestReportOfType {0}")
+    @CsvSource(
+        value = [
+            "Content,Content|Both",
+            "Finance,Finance|Both",
+            "Both,Content|Finance|Both",
+        ]
+    )
+    fun getCurrentLatestReportOfType(type: ContractingDeadlineType, expectedEqualTypesString: String) {
+        val expectedEqualTypes = expectedEqualTypesString.split("|").mapTo(HashSet()) { ContractingDeadlineType.valueOf(it) }
+        val projectId = 14L
+
+        val reportWithDeadline = reportEntity(32L, projectId)
+        reportWithDeadline.number = 62
+        val statusesSlotWithDeadline = slot<Set<ProjectReportStatus>>()
+        every { projectReportRepository.findByProjectIdAndStatusInAndTypeInOrderByIdDesc(
+            projectId = projectId,
+            statuses = capture(statusesSlotWithDeadline),
+            types = expectedEqualTypes,
+        ) } returns listOf(reportWithDeadline)
+
+        val reportWithoutDeadline = reportEntity(39L, projectId)
+        reportWithoutDeadline.number = 69
+        val statusesSlotWithoutDeadline = slot<Set<ProjectReportStatus>>()
+        every { projectReportRepository.findByProjectIdAndStatusInAndDeadlineTypeInOrderByIdDesc(
+            projectId = projectId,
+            statuses = capture(statusesSlotWithoutDeadline),
+            types = expectedEqualTypes,
+        ) } returns listOf(reportWithoutDeadline)
+
+        assertThat(persistence.getCurrentLatestReportOfType(projectId, type))
+            .isEqualTo(report(39L, projectId).copy(reportNumber = 69))
+
+        assertThat(statusesSlotWithDeadline.captured).containsAll(ProjectReportStatus.values().toSet())
+        assertThat(statusesSlotWithoutDeadline.captured).containsAll(ProjectReportStatus.values().toSet())
+    }
+
+    @Test
+    fun `getCurrentLatestReportOfType - empty`() {
+        val projectId = 14L
+
+        every { projectReportRepository.findByProjectIdAndStatusInAndTypeInOrderByIdDesc(
+            projectId = projectId,
+            statuses = any(),
+            types = any(),
+        ) } returns emptyList()
+
+        every { projectReportRepository.findByProjectIdAndStatusInAndDeadlineTypeInOrderByIdDesc(
+            projectId = projectId,
+            statuses = any(),
+            types = any(),
+        ) } returns emptyList()
+
+        assertThat(persistence.getCurrentLatestReportOfType(projectId, ContractingDeadlineType.Both)).isNull()
+    }
+
 }

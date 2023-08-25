@@ -31,9 +31,11 @@ enum class NotificationType {
 
     // Project Report
     ProjectReportSubmitted,
+    ProjectReportReOpen,
     ProjectReportVerificationOngoing,
     ProjectReportVerificationDoneNotificationSent,
     ProjectReportVerificationFinalized,
+    ProjectReportVerificationReOpen,
 
     // Project File
     SharedFolderFileUpload,
@@ -78,9 +80,11 @@ enum class NotificationType {
 
         val projectReportNotifications = setOf(
             ProjectReportSubmitted,
+            ProjectReportReOpen,
             ProjectReportVerificationOngoing,
             ProjectReportVerificationDoneNotificationSent,
-            ProjectReportVerificationFinalized
+            ProjectReportVerificationFinalized,
+            ProjectReportVerificationReOpen,
         )
 
         val projectFileSharedFolderNotifications = setOf(SharedFolderFileUpload, SharedFolderFileDelete)

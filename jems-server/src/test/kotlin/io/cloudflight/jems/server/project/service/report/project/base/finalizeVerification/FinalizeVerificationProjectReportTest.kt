@@ -5,6 +5,8 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
+import io.cloudflight.jems.server.audit.model.AuditProject
+import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.notification.handler.ProjectReportStatusChanged
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerToCreate
@@ -417,7 +419,7 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
         assertThat(auditSlot.captured.auditCandidate.project?.name).isEqualTo("acronym")
         assertThat(auditSlot.captured.auditCandidate.entityRelatedId).isEqualTo(reportId)
         assertThat(auditSlot.captured.auditCandidate.description)
-            .isEqualTo("[NS-AQ01] Project report R.4 verification was finalised and following expenditure items were parked:  [PP4] - item [R48.71], ")
+            .isEqualTo("[NS-AQ01] Project report R.4 verification was finalised and following expenditure items were parked:  [PP4] - item [R48.71]")
     }
 
     @ParameterizedTest(name = "startVerification - wrong status (status {0})")
@@ -511,11 +513,10 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
         every { projectReportFinancialOverviewPersistence.storeOverviewPerFund(reportId, any()) } returns reportCertificatesOverviewPerFund
         every { projectReportCertificateCoFinancingPersistence.updateAfterVerificationValues(PROJECT_ID, reportId, any()) } returns Unit
 
-        every {  reportExpenditureCostCategoryPersistence.getCostCategoriesFor(setOf(PARTNER_REPORT_ID)) } returns mapOf(PARTNER_REPORT_ID to partner_costs)
-        every { projectReportCertificateCostCategoryPersistenceProvider.updateAfterVerification(PROJECT_ID, reportId, any()) } returns Unit
-
-        every { auditPublisher.publishEvent(any()) } returns Unit
-        every { auditPublisher.publishEvent(ofType(ProjectReportStatusChanged::class)) } returns Unit
+        val slotAudit = slot<ProjectReportStatusChanged>()
+        every { auditPublisher.publishEvent(capture(slotAudit)) } answers { }
+        val slotStatusChanged = slot<AuditCandidateEvent>()
+        every { auditPublisher.publishEvent(capture(slotStatusChanged)) } answers { }
 
         val paymentsToSaveSlot = slot<List<PaymentRegularToCreate>>()
         every { paymentPersistence.saveRegularPayments(reportId, capture(paymentsToSaveSlot)) } returns Unit
@@ -523,5 +524,12 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
         assertThat(interactor.finalizeVerification(reportId)).isEqualTo(Finalized)
         assertThat(paymentsToSaveSlot.captured).isEqualTo(expectedPaymentsToSave)
 
+        assertThat(slotAudit.captured.projectReportSummary).isEqualTo(reportSubmissionSummary)
+        assertThat(slotAudit.captured.previousReportStatus).isEqualTo(InVerification)
+        assertThat(slotStatusChanged.captured.auditCandidate).isEqualTo(
+            AuditCandidate(AuditAction.PROJECT_REPORT_VERIFICATION_FINALIZED,
+                AuditProject("21", "NS-AQ01", "acronym"), 52L,
+                "[NS-AQ01] Project report R.4 verification was finalised and following expenditure items were parked:  [LP1] - item [R1.1]")
+        )
     }
 }

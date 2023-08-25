@@ -70,11 +70,13 @@ internal class ProjectReportIdentificationPersistenceProviderTest: UnitTest() {
 
             createdAt = ZonedDateTime.now().minusWeeks(1),
             firstSubmission = ZonedDateTime.now().minusYears(1),
+            lastReSubmission = mockk(),
             verificationDate = null,
             verificationEndDate = null,
             verificationConclusionJs = null,
             verificationConclusionMa = null,
             verificationFollowup = null,
+            lastVerificationReOpening = mockk(),
             riskBasedVerification = false,
             riskBasedVerificationDescription = "Description"
         )

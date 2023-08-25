@@ -119,7 +119,7 @@ fun projectReportStartedVerification(
             .description(
                 "[" +
                     report.projectIdentifier +
-                    "] Project report R.${report.reportNumber} verification started"
+                    "] Project report PR.${report.reportNumber} verification started"
             )
             .build()
     )
@@ -185,14 +185,10 @@ fun verificationCertificateCreated(
         .build()
 )
 
-private fun getParkedExpendituresDescription(parkedExpenditure: List<ProjectReportVerificationExpenditureLine>): String {
-    val expenditureString = StringBuilder()
-    parkedExpenditure.forEach {
-        expenditureString.append("[${getPartnerName(it.expenditure)}] - item [${getReportNumber(it.expenditure)}], ")
+private fun getParkedExpendituresDescription(parkedExpenditure: List<ProjectReportVerificationExpenditureLine>) =
+    parkedExpenditure.joinToString(", ") {
+        "[${getPartnerName(it.expenditure)}] - item [${getReportNumber(it.expenditure)}]"
     }
-
-    return expenditureString.toString()
-}
 
 private fun getPartnerName(expenditure: ProjectPartnerReportExpenditureItem): String =
     if (expenditure.partnerRole == ProjectPartnerRole.LEAD_PARTNER) {
@@ -202,3 +198,19 @@ private fun getPartnerName(expenditure: ProjectPartnerReportExpenditureItem): St
 private fun getReportNumber(expenditureLine: ProjectPartnerReportExpenditureItem): String =
     "R${expenditureLine.partnerReportNumber}.${expenditureLine.number}"
 
+fun projectReportReOpenedAudit(
+    context: Any,
+    report: ProjectReportSubmissionSummary,
+): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.PROJECT_REPORT_REOPENED)
+            .project(
+                projectId = report.projectId,
+                customIdentifier = report.projectIdentifier,
+                acronym = report.projectAcronym,
+            )
+            .entityRelatedId(entityRelatedId = report.id)
+            .description("PR.${report.reportNumber} was reopened")
+            .build()
+    )

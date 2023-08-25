@@ -21,6 +21,7 @@ import io.cloudflight.jems.server.project.service.report.project.base.finalizeVe
 import io.cloudflight.jems.server.project.service.report.project.base.getMyProjectReports.GetMyProjectReportsInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.getProjectReport.GetProjectReportInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.getProjectReportList.GetProjectReportListInteractor
+import io.cloudflight.jems.server.project.service.report.project.base.reOpenProjectReport.ReOpenProjectReportInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.runProjectReportPreSubmissionCheck.RunProjectReportPreSubmissionCheck
 import io.cloudflight.jems.server.project.service.report.project.base.startVerificationProjectReport.StartVerificationProjectReportInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.submitProjectReport.SubmitProjectReportInteractor
@@ -48,6 +49,7 @@ internal class ProjectReportControllerTest : UnitTest() {
     private val WEEK_AGO = LocalDate.now().minusWeeks(1)
     private val TOMORROW = LocalDate.now().plusDays(1)
     private val MONTH_AGO = ZonedDateTime.now().minusMonths(1)
+    private val DAY_AGO = ZonedDateTime.now().minusDays(1)
     private val YEAR_AGO = ZonedDateTime.now().minusYears(1)
     private val TODAY = ZonedDateTime.now()
 
@@ -109,6 +111,7 @@ internal class ProjectReportControllerTest : UnitTest() {
         reportingDate = null,
         createdAt = YEAR_AGO,
         firstSubmission = MONTH_AGO,
+        lastReSubmission = DAY_AGO,
         verificationDate = YESTERDAY.toLocalDate(),
         deletable = false,
         verificationEndDate = ZonedDateTime.of(YESTERDAY, ZoneId.systemDefault()),
@@ -133,6 +136,7 @@ internal class ProjectReportControllerTest : UnitTest() {
         reportingDate = null,
         createdAt = YEAR_AGO,
         firstSubmission = MONTH_AGO,
+        lastReSubmission = DAY_AGO,
         verificationDate = YESTERDAY.toLocalDate(),
         deletable = false,
         verificationEndDate = ZonedDateTime.of(YESTERDAY, ZoneId.systemDefault()),
@@ -163,6 +167,9 @@ internal class ProjectReportControllerTest : UnitTest() {
 
     @MockK
     private lateinit var submitReport: SubmitProjectReportInteractor
+
+    @MockK
+    private lateinit var reOpenReport: ReOpenProjectReportInteractor
 
     @MockK
     private lateinit var startVerificationReport: StartVerificationProjectReportInteractor
@@ -271,8 +278,13 @@ internal class ProjectReportControllerTest : UnitTest() {
     @Test
     fun submitProjectReport() {
         every { submitReport.submit(21L, reportId = 10L) } returns ProjectReportStatus.Submitted
-        controller.submitProjectReport(21L, reportId = 10L)
-        assertThat(submitReport.submit(21L, reportId = 10L)).isEqualTo(ProjectReportStatus.Submitted)
+        assertThat(controller.submitProjectReport(21L, reportId = 10L)).isEqualTo(ProjectReportStatusDTO.Submitted)
+    }
+
+    @Test
+    fun reOpenProjectReport() {
+        every { reOpenReport.reOpen(21L, reportId = 10L) } returns ProjectReportStatus.ReOpenSubmittedLast
+        assertThat(controller.reOpenProjectReport(21L, reportId = 10L)).isEqualTo(ProjectReportStatusDTO.ReOpenSubmittedLast)
     }
 
     @Test

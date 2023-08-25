@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.repository.report.project.base
 
 import io.cloudflight.jems.plugin.contract.models.report.project.identification.ProjectReportBaseData
 import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
+import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import java.util.stream.Stream
 import org.springframework.data.jpa.repository.JpaRepository
@@ -40,4 +41,17 @@ interface ProjectReportRepository : JpaRepository<ProjectReportEntity, Long> {
     fun findAllByProjectIdAndNumberGreaterThan(projectId: Long, number: Number): List<ProjectReportEntity>
 
     fun existsByProjectIdAndId(projectId: Long, id: Long): Boolean
+
+    fun findByProjectIdAndStatusInAndTypeInOrderByIdDesc(
+        projectId: Long,
+        statuses: Set<ProjectReportStatus>,
+        types: Set<ContractingDeadlineType>,
+    ): List<ProjectReportEntity>
+
+    fun findByProjectIdAndStatusInAndDeadlineTypeInOrderByIdDesc(
+        projectId: Long,
+        statuses: Set<ProjectReportStatus>,
+        types: Set<ContractingDeadlineType>,
+    ): List<ProjectReportEntity>
+
 }

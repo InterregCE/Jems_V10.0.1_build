@@ -4,12 +4,10 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanEditProjectReport
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
-import io.cloudflight.jems.server.project.service.contracting.model.reporting.ProjectContractingReportingSchedule
 import io.cloudflight.jems.server.project.service.contracting.reporting.ContractingReportingPersistence
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReport
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportUpdate
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportDeadline
-import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.toServiceModel
 import io.cloudflight.jems.server.project.service.report.project.certificate.ProjectReportCertificatePersistence
@@ -82,12 +80,12 @@ class UpdateProjectReport(
 
         private fun ProjectReportUpdate.isManual() = !isLink()
 
-        private fun ProjectReportUpdate.toDeadlineObject(validDeadlineIdResolver: (Long) -> Long) =
+        private fun ProjectReportUpdate.toDeadlineObject() =
             if (isManual())
                 deadlineManual()
             else
                 ProjectReportDeadline(
-                    deadlineId = validDeadlineIdResolver.invoke(deadlineId!!),
+                    deadlineId = deadlineId!!,
                     type = null,
                     periodNumber = null,
                     reportingDate = null,
@@ -99,7 +97,8 @@ class UpdateProjectReport(
     @Transactional
     @ExceptionWrapper(UpdateProjectReportException::class)
     override fun updateReport(projectId: Long, reportId: Long, data: ProjectReportUpdate): ProjectReport {
-        val version = reportPersistence.getReportById(projectId, reportId).linkedFormVersion
+        val report = reportPersistence.getReportById(projectId, reportId)
+        val version = report.linkedFormVersion
         val periods = projectPersistence.getProjectPeriods(projectId, version).associateBy { it.number }
 
         data.validateInput(validPeriodNumbers = periods.keys,
@@ -109,46 +108,26 @@ class UpdateProjectReport(
             periodNumberExceptionResolver = { PeriodNumberInvalid(it) },
         )
 
-        val existingDeadlineType = getExistingDeadlineType(projectId, reportPersistence.getReportById(projectId, reportId))
-        val linkedDeadline = if (data.deadlineId != null) deadlinePersistence.getContractingReportingDeadline(projectId, data.deadlineId) else null
-        if (isFinanceTypeExcluded(existingDeadlineType, data, linkedDeadline)) {
-            val certificates = certificatePersistence.listCertificatesOfProjectReport(reportId)
-            if (certificates.isNotEmpty()) {
-                certificates.forEach {
-                    certificatePersistence.deselectCertificate(reportId, it.id)
-                }
-            }
-        }
+        val oldType = report.type
+        val newType = data.deadlineId?.let { deadlinePersistence.getContractingReportingDeadline(projectId, it).type } ?: data.type
+        val thereAreChangesToBaseData = oldType != newType || report.deadlineId != data.deadlineId
+
+        if (report.status.hasBeenClosed() && thereAreChangesToBaseData)
+            throw TypeChangeIsForbiddenWhenReportIsReOpened()
+
+        if (oldType.hasFinance() && newType.doesNotHaveFinance())
+            certificatePersistence.deselectCertificatesOfProjectReport(projectReportId = reportId)
 
         return reportPersistence.updateReport(
             projectId = projectId,
             reportId = reportId,
             startDate = data.startDate,
             endDate = data.endDate,
-            deadline =  data.toDeadlineObject(validDeadlineIdResolver = { getValidDeadlineId(linkedDeadline!!) }),
+            deadline =  data.toDeadlineObject(),
         ).toServiceModel(periodResolver = { periodNumber -> periods[periodNumber]!! })
     }
 
-    private fun getValidDeadlineId(deadline: ProjectContractingReportingSchedule) = deadline.id
+    private fun ContractingDeadlineType?.hasFinance() = this?.hasFinance() ?: false
+    private fun ContractingDeadlineType?.doesNotHaveFinance() = this == ContractingDeadlineType.Content
 
-    private fun getExistingDeadlineType(projectId: Long, existingReport: ProjectReportModel): ContractingDeadlineType? {
-        return if (existingReport.deadlineId == null)
-            existingReport.type
-        else
-            deadlinePersistence.getContractingReportingDeadline(projectId, existingReport.deadlineId).type
-    }
-
-    private fun isFinanceTypeExcluded(
-        existingDeadlineType: ContractingDeadlineType?,
-        data: ProjectReportUpdate,
-        newLinkedDeadline: ProjectContractingReportingSchedule?
-    ): Boolean {
-        if (existingDeadlineType == ContractingDeadlineType.Content)
-            return false
-        return if (data.isManual()) {
-            data.type == ContractingDeadlineType.Content
-        } else {
-            newLinkedDeadline?.type == ContractingDeadlineType.Content
-        }
-    }
 }

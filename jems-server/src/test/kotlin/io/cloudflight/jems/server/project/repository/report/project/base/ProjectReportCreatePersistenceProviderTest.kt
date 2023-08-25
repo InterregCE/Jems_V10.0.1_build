@@ -94,6 +94,8 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
     companion object {
         private val LAST_WEEK = ZonedDateTime.now().minusWeeks(1)
         private val LAST_YEAR = ZonedDateTime.now().minusYears(1)
+        private val DAY_AGO = ZonedDateTime.now().minusDays(1)
+        private val HOUR_AGO = ZonedDateTime.now().minusHours(1)
         private val YESTERDAY = LocalDate.now().minusDays(1)
         private val MONTH_AGO = LocalDate.now().minusMonths(1)
 
@@ -117,10 +119,12 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
 
             createdAt = LAST_WEEK,
             firstSubmission = LAST_YEAR,
+            lastReSubmission = DAY_AGO,
             verificationDate = null,
             verificationEndDate = null,
             amountRequested = null,
             totalEligibleAfterVerification = null,
+            lastVerificationReOpening = HOUR_AGO,
             riskBasedVerification = false,
             riskBasedVerificationDescription = "Description"
         )

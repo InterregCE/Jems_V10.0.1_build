@@ -42,7 +42,7 @@ class GetProjectReportList(
     }
 
     private fun getAmountsForDraftReports(reports: List<ProjectReportSummary>): Map<Long, BigDecimal> {
-        val draftReportIds = reports.filter { it.status.isOpen() }.mapTo(HashSet()) { it.id }
+        val draftReportIds = reports.filter { it.status.isOpenForNumbersChanges() }.mapTo(HashSet()) { it.id }
         return if (draftReportIds.isEmpty()) emptyMap() else
             certificateCoFinancingPersistence.getTotalsForProjectReports(projectReportIds = draftReportIds)
     }

@@ -17,8 +17,12 @@ class DeselectCertificate(
     @Transactional
     @ExceptionWrapper(DeselectCertificateException::class)
     override fun deselectCertificate(projectId: Long, reportId: Long, certificateId: Long) {
-        val reportIdValidated = projectReportPersistence.getReportById(projectId, reportId = reportId).id
-        projectReportCertificatePersistence.deselectCertificate(projectReportId = reportIdValidated, certificateId)
+        val report = projectReportPersistence.getReportById(projectId, reportId = reportId)
+
+        if (!report.status.isOpenForNumbersChanges())
+            throw CertificatesCannotBeChangedWhenReOpenModeIsLimited()
+
+        projectReportCertificatePersistence.deselectCertificate(projectReportId = report.id, certificateId)
     }
 
 }

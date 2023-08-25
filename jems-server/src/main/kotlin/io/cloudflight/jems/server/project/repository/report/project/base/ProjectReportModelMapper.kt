@@ -45,12 +45,15 @@ fun ProjectReportEntity.toModel() = ProjectReportModel(
 
     createdAt = createdAt,
     firstSubmission = firstSubmission,
+    lastReSubmission = lastReSubmission,
     verificationDate = verificationDate,
     verificationEndDate = verificationEndDate,
     amountRequested = null,
     totalEligibleAfterVerification = null,
+    lastVerificationReOpening = lastVerificationReOpening,
+
     riskBasedVerification = riskBasedVerification,
-    riskBasedVerificationDescription = riskBasedVerificationDescription
+    riskBasedVerificationDescription = riskBasedVerificationDescription,
 )
 
 fun Pair<ProjectReportEntity, ReportProjectCertificateCoFinancingEntity?>.toModel() = ProjectReportModel(
@@ -74,12 +77,15 @@ fun Pair<ProjectReportEntity, ReportProjectCertificateCoFinancingEntity?>.toMode
 
     createdAt = first.createdAt,
     firstSubmission = first.firstSubmission,
+    lastReSubmission = first.lastReSubmission,
     verificationDate = first.verificationDate,
     verificationEndDate = first.verificationEndDate,
     amountRequested = second?.sumCurrent,
     totalEligibleAfterVerification = second?.sumCurrentVerified,
+    lastVerificationReOpening = first.lastVerificationReOpening,
+
     riskBasedVerification = first.riskBasedVerification,
-    riskBasedVerificationDescription = first.riskBasedVerificationDescription
+    riskBasedVerificationDescription = first.riskBasedVerificationDescription,
 )
 
 fun ProjectReportModel.toEntity(
@@ -104,14 +110,16 @@ fun ProjectReportModel.toEntity(
 
     createdAt = createdAt,
     firstSubmission = firstSubmission,
+    lastReSubmission = lastReSubmission,
     verificationDate = verificationDate,
-    verificationEndDate = null,
+    verificationEndDate = verificationEndDate,
+    lastVerificationReOpening = lastVerificationReOpening,
 
     verificationConclusionJs = null,
     verificationConclusionMa = null,
     verificationFollowup = null,
     riskBasedVerification = riskBasedVerification,
-    riskBasedVerificationDescription = riskBasedVerificationDescription
+    riskBasedVerificationDescription = riskBasedVerificationDescription,
 )
 
 fun ProjectReportEntity.toSubmissionSummary() =

@@ -29,7 +29,7 @@ class GetMyProjectReports(
     @ExceptionWrapper(GetMyProjectReportsException::class)
     override fun findAllOfMine(pageable: Pageable): Page<ProjectReportSummary> {
         val projectIds = getAllProjectIdsRelatedToCurrentUser()
-        return reportPersistence.listProjectReports(projectIds, ProjectReportStatus.SUBMITTED_STATUSES, pageable)
+        return reportPersistence.listProjectReports(projectIds, ProjectReportStatus.FINANCIALLY_CLOSED_STATUSES, pageable)
             .map { it.toServiceSummaryModel(it.periodResolver()) }
     }
 

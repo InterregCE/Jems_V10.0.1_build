@@ -86,7 +86,7 @@ class FinalizeVerificationProjectReport(
         paymentRegularPersistence.saveRegularPayments(projectReportId = reportId, paymentsToSave)
 
         return reportPersistence.finalizeVerificationOnReportById(projectId = report.projectId, reportId, ZonedDateTime.now()).also {
-            auditPublisher.publishEvent(ProjectReportStatusChanged(this, it))
+            auditPublisher.publishEvent(ProjectReportStatusChanged(this, it, report.status))
             auditPublisher.publishEvent(
                 projectReportFinalizedVerification(
                     context = this,

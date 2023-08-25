@@ -43,3 +43,15 @@ class PeriodNumberInvalid(periodNumber: Int) : ApplicationUnprocessableException
     i18nMessage = I18nMessage("$CREATE_PROJECT_REPORT_ERROR_KEY_PREFIX.specified.period.is.not.available"),
     message = "period number $periodNumber is not available",
 )
+
+class LastReOpenedReportException(reOpenedReportNumbers: List<Int>): ApplicationUnprocessableException(
+    code = "$CREATE_PROJECT_REPORT_ERROR_CODE_PREFIX-007",
+    i18nMessage = I18nMessage(
+        i18nKey = "$CREATE_PROJECT_REPORT_ERROR_KEY_PREFIX.reopened.report.exists",
+        i18nArguments = mapOf(
+            "blockingReportNumbers" to reOpenedReportNumbers.joinToString(", ") { "PR.$it" },
+        ),
+    ),
+    message = "Following reports are blocking new report creation: " +
+            reOpenedReportNumbers.joinToString(", ") { "PR.$it" },
+)

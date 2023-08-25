@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.notification.handler
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationVariable
 import io.cloudflight.jems.server.notification.inApp.service.project.GlobalProjectNotificationServiceInteractor
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
@@ -22,6 +23,7 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import java.time.ZonedDateTime
@@ -78,24 +80,34 @@ class ProjectReportNotificationEventListenerTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "send ProjectReport - {0} notification")
-    @EnumSource(value = ProjectReportStatus::class, names = ["Submitted"], mode = EnumSource.Mode.INCLUDE)
-    fun sendProjectReportNotification(projectReportStatus: ProjectReportStatus) {
+    @CsvSource(value = [
+        "Draft,Submitted,ProjectReportSubmitted",
+        "Submitted,ReOpenSubmittedLast,ProjectReportReOpen",
+        "Submitted,ReOpenSubmittedLimited,ProjectReportReOpen",
+        "Submitted,VerificationReOpenedLast,ProjectReportReOpen",
+        "Submitted,VerificationReOpenedLimited,ProjectReportReOpen",
+        "Submitted,VerificationReOpenedLimited,ProjectReportReOpen",
+        "VerificationReOpenedLast,InVerification,ProjectReportSubmitted",
+        "VerificationReOpenedLimited,InVerification,ProjectReportSubmitted",
+        "Submitted,InVerification,ProjectReportVerificationOngoing",
+        "InVerification,Finalized,ProjectReportVerificationFinalized",
+        "VerificationReOpenedLast,ReOpenFinalized,ProjectReportSubmitted",
+        "VerificationReOpenedLimited,ReOpenFinalized,ProjectReportSubmitted",
+        "Finalized,ReOpenFinalized,ProjectReportVerificationReOpen",
+    ])
+    fun sendProjectReportNotification(statusFrom: ProjectReportStatus, statusTo: ProjectReportStatus, expectedNotifType: NotificationType) {
+        val slotType = slot<NotificationType>()
         val slotVariable = slot<Map<NotificationVariable, Any>>()
-        every { notificationProjectService.sendNotifications(any(), capture(slotVariable)) } answers { }
+        every { notificationProjectService.sendNotifications(capture(slotType), capture(slotVariable)) } answers { }
         every { securityService.currentUser } returns currentUser
 
-        val projectReportSummary = projectReportSummary(projectReportStatus)
+        val projectReportSummary = projectReportSummary(statusTo)
         listener.sendNotifications(
-            ProjectReportStatusChanged(mockk(), projectReportSummary)
+            ProjectReportStatusChanged(mockk(), projectReportSummary, statusFrom)
         )
 
-
-        verify(exactly = 1) {
-            notificationProjectService.sendNotifications(
-                projectReportStatus.toNotificationType()!!,
-                any()
-            )
-        }
+        verify(exactly = 1) { notificationProjectService.sendNotifications(any(), any()) }
+        assertThat(slotType.captured).isEqualTo(expectedNotifType)
         assertThat(slotVariable.captured).containsExactly(
             entry(NotificationVariable.ProjectId, PROJECT_ID),
             entry(NotificationVariable.ProjectIdentifier, "01"),

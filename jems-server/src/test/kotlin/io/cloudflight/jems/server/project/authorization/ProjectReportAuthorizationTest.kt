@@ -3,11 +3,13 @@ package io.cloudflight.jems.server.project.authorization
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.model.CurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
+import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectReportingProjectEdit
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectReportingProjectView
 import io.mockk.clearMocks
@@ -34,6 +36,9 @@ internal class ProjectReportAuthorizationTest : UnitTest() {
     private lateinit var projectPersistence: ProjectPersistence
 
     @MockK
+    private lateinit var controllerInstitutionPersistence: ControllerInstitutionPersistence
+
+    @MockK
     private lateinit var currentUser: CurrentUser
 
     @InjectMockKs
@@ -41,7 +46,7 @@ internal class ProjectReportAuthorizationTest : UnitTest() {
 
     @BeforeEach
     fun resetMocks() {
-        clearMocks(securityService, reportPersistence, projectPersistence)
+        clearMocks(securityService, reportPersistence, projectPersistence, controllerInstitutionPersistence)
         clearMocks(currentUser)
         every { securityService.currentUser } returns currentUser
     }
@@ -68,7 +73,7 @@ internal class ProjectReportAuthorizationTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "canEditReport - wrong status")
-    @EnumSource(value = ProjectReportStatus::class, names = ["Draft"], mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = ProjectReportStatus::class, names = ["Submitted", "InVerification", "Finalized"])
     fun `canEditReport - wrong status`(status: ProjectReportStatus) {
         val projectId = 43L
         val reportId = 114L + status.ordinal
@@ -154,4 +159,43 @@ internal class ProjectReportAuthorizationTest : UnitTest() {
         every { project.getUserIdsWithViewLevel() } returns if (isCreator) setOf(userId) else emptySet()
         every { projectPersistence.getApplicantAndStatusById(projectId) } returns project
     }
+
+    @Test
+    fun `canReOpenProjectReport - monitor user with permission`() {
+        val projectId = 715L
+
+        every { currentUser.hasPermission(UserRolePermission.ProjectReportingProjectReOpen) } returns true
+        every { currentUser.user.assignedProjects } returns setOf(projectId)
+
+        assertThat(reportAuthorization.canReOpenProjectReport(projectId)).isTrue()
+    }
+
+    @Test
+    fun `canReOpenProjectReport - controller with permission`() {
+        val projectId = 718L
+        val userId = 96L
+
+        every { currentUser.hasPermission(UserRolePermission.ProjectRetrieve) } returns false
+        every { currentUser.hasPermission(UserRolePermission.ProjectReportingProjectReOpen) } returns true
+        every { currentUser.user.assignedProjects } returns emptySet()
+
+        every { controllerInstitutionPersistence.getRelatedUserIdsForProject(projectId) } returns setOf(96L)
+        every { securityService.getUserIdOrThrow() } returns userId
+
+        assertThat(reportAuthorization.canReOpenProjectReport(projectId)).isTrue()
+    }
+
+    @Test
+    fun `canReOpenProjectReport - false`() {
+        val projectId = 714L
+        val userId = 97L
+
+        every { currentUser.hasPermission(UserRolePermission.ProjectReportingProjectReOpen) } returns false
+        every { controllerInstitutionPersistence.getRelatedUserIdsForProject(projectId) } returns emptySet()
+
+        every { securityService.getUserIdOrThrow() } returns userId
+
+        assertThat(reportAuthorization.canReOpenProjectReport(projectId)).isFalse()
+    }
+
 }

@@ -44,7 +44,8 @@ class UpdateProjectReportVerificationExpenditureRiskBasedTest : UnitTest() {
     private lateinit var updateProjectReportVerificationExpenditureRiskBased: UpdateProjectReportVerificationExpenditureRiskBased
 
     @ParameterizedTest(name = "updateExpenditureVerificationRiskBased - {0}")
-    @EnumSource(value = ProjectReportStatus::class, names = ["InVerification"])
+    @EnumSource(value = ProjectReportStatus::class,
+        names = ["InVerification", "VerificationReOpenedLast", "VerificationReOpenedLimited", "ReOpenFinalized"])
     fun updateExpenditureVerificationRiskBased(status: ProjectReportStatus) {
         val report = mockk<ProjectReportModel>()
         every { report.status } returns status
@@ -68,7 +69,8 @@ class UpdateProjectReportVerificationExpenditureRiskBasedTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "updateExpenditureVerificationRiskBased - wrong status {0}")
-    @EnumSource(value = ProjectReportStatus::class, names = ["InVerification"], mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = ProjectReportStatus::class, mode = EnumSource.Mode.EXCLUDE,
+        names = ["InVerification", "VerificationReOpenedLast", "VerificationReOpenedLimited", "ReOpenFinalized"])
     fun `updateExpenditureVerificationRiskBased - wrong status`(status: ProjectReportStatus) {
         val report = mockk<ProjectReportModel>()
         every { report.status } returns status
@@ -82,10 +84,11 @@ class UpdateProjectReportVerificationExpenditureRiskBasedTest : UnitTest() {
         }
     }
 
-    @Test
-    fun `updateExpenditureVerificationRiskBased - throw maxLength exception`() {
+    @ParameterizedTest(name = "updateExpenditureVerificationRiskBased - throw maxLength exception {0}")
+    @EnumSource(value = ProjectReportStatus::class, names = ["InVerification", "VerificationReOpenedLast", "VerificationReOpenedLimited"])
+    fun `updateExpenditureVerificationRiskBased - throw maxLength exception`(status: ProjectReportStatus) {
         val report = mockk<ProjectReportModel>()
-        every { report.status } returns ProjectReportStatus.InVerification
+        every { report.status } returns status
         every { reportPersistence.getReportByIdUnSecured(PROJECT_REPORT_ID) } returns report
 
         every {

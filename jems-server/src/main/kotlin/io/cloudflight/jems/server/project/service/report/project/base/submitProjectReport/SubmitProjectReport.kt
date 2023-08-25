@@ -54,24 +54,36 @@ class SubmitProjectReport(
     @ExceptionWrapper(SubmitProjectReportException::class)
     override fun submit(projectId: Long, reportId: Long): ProjectReportStatus {
         val report = reportPersistence.getReportById(projectId, reportId)
-        validateReportIsStillDraft(report)
-
-        deleteDataBasedOnContractingDeadlineType(projectId, report)
         val certificates = reportCertificatePersistence.listCertificatesOfProjectReport(reportId)
+        validateReportIsStillOpen(report)
 
-        saveCurrentSpendingProfile(reportId)
-        saveCurrentCoFinancing(certificates, projectId, reportId)
-        saveCurrentCostCategories(certificates, projectId, reportId)
-        saveCurrentUnitCosts(certificates, projectId, reportId)
-        saveCurrentLumpSums(certificates, projectId, reportId)
-        saveCurrentInvestments(certificates, projectId, reportId)
+        if (report.status.isOpenForNumbersChanges()) {
+            saveCurrentSpendingProfile(reportId)
+            saveCurrentCoFinancing(certificates, projectId, reportId)
+            saveCurrentCostCategories(certificates, projectId, reportId)
+            saveCurrentUnitCosts(certificates, projectId, reportId)
+            saveCurrentLumpSums(certificates, projectId, reportId)
+            saveCurrentInvestments(certificates, projectId, reportId)
 
-        return reportPersistence.submitReport(
-            projectId = projectId,
-            reportId = reportId,
-            submissionTime = ZonedDateTime.now()
-        ).also { projectReportSummary ->
-            auditPublisher.publishEvent(ProjectReportStatusChanged(this, projectReportSummary))
+            deleteDataBasedOnContractingDeadlineType(projectId, report)
+        }
+
+        val reportSubmitted = if (report.status.isOpenInitially())
+            reportPersistence.submitReportInitially(
+                projectId = projectId,
+                reportId = reportId,
+                submissionTime = ZonedDateTime.now(),
+            )
+        else
+            reportPersistence.reSubmitReport(
+                projectId = projectId,
+                reportId = reportId,
+                newStatus = report.status.submitStatus(hasVerificationStartedBefore = report.hasControlReopenedBefore()),
+                submissionTime = ZonedDateTime.now(),
+            )
+
+        return reportSubmitted.also { projectReportSummary ->
+            auditPublisher.publishEvent(ProjectReportStatusChanged(this, projectReportSummary, report.status))
             auditPublisher.publishEvent(
                 projectReportSubmitted(
                     context = this,
@@ -88,7 +100,7 @@ class SubmitProjectReport(
         reportIdentificationPersistence.updateSpendingProfile(reportId, currentValuesByPartnerId = currentSpendingProfile)
     }
 
-    private fun validateReportIsStillDraft(report: ProjectReportModel) {
+    private fun validateReportIsStillOpen(report: ProjectReportModel) {
         if (report.status.isClosed())
             throw ProjectReportAlreadyClosed()
     }
@@ -162,7 +174,7 @@ class SubmitProjectReport(
     private fun deleteDataBasedOnContractingDeadlineType(projectId: Long, report: ProjectReportModel) =
         when(report.type!!) {
             ContractingDeadlineType.Finance -> {
-                reportResultPrinciplePersistence.deleteProjectResultPrinciples(report.id)
+                reportResultPrinciplePersistence.deleteProjectResultPrinciplesIfExist(report.id)
                 reportWorkPlanPersistence.deleteWorkPlan(projectId, report.id)
             }
             ContractingDeadlineType.Content -> {
@@ -172,5 +184,7 @@ class SubmitProjectReport(
                 // intentionally left empty
             }
         }
+
+    private fun ProjectReportModel.hasControlReopenedBefore() = this.lastVerificationReOpening != null
 
 }

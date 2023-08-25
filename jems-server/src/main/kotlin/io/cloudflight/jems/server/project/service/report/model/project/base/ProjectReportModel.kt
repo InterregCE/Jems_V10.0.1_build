@@ -28,11 +28,13 @@ data class ProjectReportModel(
 
     val createdAt: ZonedDateTime,
     val firstSubmission: ZonedDateTime?,
+    val lastReSubmission: ZonedDateTime?,
     val verificationDate: LocalDate?,
 
     val verificationEndDate: ZonedDateTime?,
     val amountRequested: BigDecimal?,
     val totalEligibleAfterVerification: BigDecimal?,
+    val lastVerificationReOpening: ZonedDateTime?,
 
     val riskBasedVerification: Boolean,
     val riskBasedVerificationDescription: String?

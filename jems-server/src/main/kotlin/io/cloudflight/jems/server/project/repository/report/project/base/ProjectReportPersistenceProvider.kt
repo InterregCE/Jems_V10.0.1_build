@@ -14,6 +14,7 @@ import io.cloudflight.jems.server.project.entity.report.project.financialOvervie
 import io.cloudflight.jems.server.project.repository.contracting.reporting.ProjectContractingReportingRepository
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.project.identification.ProjectReportSpendingProfileRepository
+import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportDeadline
@@ -161,8 +162,24 @@ class ProjectReportPersistenceProvider(
     override fun countForProject(projectId: Long): Int =
         projectReportRepository.countAllByProjectId(projectId)
 
+    @Transactional(readOnly = true)
+    override fun existsHavingTypeAndStatusIn(
+        projectId: Long,
+        havingType: ContractingDeadlineType,
+        statuses: Set<ProjectReportStatus>,
+    ): List<Int> {
+        val types = havingType.toEqualTypes()
+
+        val withDeadlineLinked = projectReportRepository
+            .findByProjectIdAndStatusInAndTypeInOrderByIdDesc(projectId, statuses, types).map { it.number }
+        val withoutDeadlineLinked = projectReportRepository
+            .findByProjectIdAndStatusInAndDeadlineTypeInOrderByIdDesc(projectId, statuses, types).map { it.number }
+
+        return withDeadlineLinked.plus(withoutDeadlineLinked)
+    }
+
     @Transactional
-    override fun submitReport(
+    override fun submitReportInitially(
         projectId: Long,
         reportId: Long,
         submissionTime: ZonedDateTime
@@ -173,9 +190,22 @@ class ProjectReportPersistenceProvider(
                 firstSubmission = submissionTime
             }.toSubmissionSummary()
 
+    @Transactional
+    override fun reSubmitReport(
+        projectId: Long,
+        reportId: Long,
+        newStatus: ProjectReportStatus,
+        submissionTime: ZonedDateTime,
+    ): ProjectReportSubmissionSummary =
+        projectReportRepository.getByIdAndProjectId(id = reportId, projectId = projectId)
+            .apply {
+                status = newStatus
+                lastReSubmission = submissionTime
+            }.toSubmissionSummary()
+
     @Transactional(readOnly = true)
     override fun getSubmittedProjectReports(projectId: Long): List<ProjectReportStatusAndType> =
-        projectReportRepository.findAllByProjectIdAndStatusInOrderByNumberDesc(projectId, statuses = ProjectReportStatus.SUBMITTED_STATUSES)
+        projectReportRepository.findAllByProjectIdAndStatusInOrderByNumberDesc(projectId, statuses = ProjectReportStatus.FINANCIALLY_CLOSED_STATUSES)
             .map { ProjectReportStatusAndType(it.id, it.status, it.fetchType()) }
 
     @Transactional(readOnly = true)
@@ -187,7 +217,7 @@ class ProjectReportPersistenceProvider(
     @Transactional
     override fun decreaseNewerReportNumbersIfAllOpen(projectId: Long, number: Int) {
         val lastReports = projectReportRepository.findAllByProjectIdAndNumberGreaterThan(projectId, number)
-        if (lastReports.all { it.status.isOpen() }) {
+        if (lastReports.all { it.status.isOpenInitially() }) {
             lastReports.onEach { it.number -= 1 }
         }
     }
@@ -215,6 +245,28 @@ class ProjectReportPersistenceProvider(
                 verificationEndDate = time
             }.toSubmissionSummary()
 
+    @Transactional(readOnly = true)
+    override fun getCurrentLatestReportOfType(projectId: Long, havingType: ContractingDeadlineType): ProjectReportModel? {
+        val reportCandidateManual = projectReportRepository.findByProjectIdAndStatusInAndTypeInOrderByIdDesc(
+            projectId = projectId, statuses = ProjectReportStatus.values().toSet(), types = havingType.toEqualTypes(),
+        ).firstOrNull()
+        val reportCandidateDeadline = projectReportRepository.findByProjectIdAndStatusInAndDeadlineTypeInOrderByIdDesc(
+            projectId = projectId, statuses = ProjectReportStatus.values().toSet(), types = havingType.toEqualTypes(),
+        ).firstOrNull()
+
+        return listOf(reportCandidateManual, reportCandidateDeadline)
+            .mapNotNull { it }
+            .maxByOrNull { it.id }
+            ?.toModel()
+    }
+
+    @Transactional
+    override fun reOpenReportTo(reportId: Long, newStatus: ProjectReportStatus, submissionTime: ZonedDateTime): ProjectReportSubmissionSummary =
+        projectReportRepository.getById(reportId)
+            .apply {
+                status = newStatus
+                lastReSubmission = submissionTime
+            }.toSubmissionSummary()
 
     private fun Sort.toQueryDslOrderBy(): OrderSpecifier<*> {
         val orderBy = if (isSorted) this.get().findFirst().get() else Sort.Order.desc("id")

@@ -27,6 +27,7 @@ import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -68,10 +69,12 @@ class SendProjectReportVerificationNotificationTest : UnitTest() {
 
             createdAt = LAST_WEEK,
             firstSubmission = LAST_YEAR,
+            lastReSubmission = mockk(),
             verificationDate = null,
             verificationEndDate = null,
             amountRequested = null,
             totalEligibleAfterVerification = null,
+            lastVerificationReOpening = mockk(),
             riskBasedVerification = false,
             riskBasedVerificationDescription = "RISK BASED DESCRIPTION"
         )

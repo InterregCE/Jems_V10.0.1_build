@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.project.base
 
 import io.cloudflight.jems.plugin.contract.models.report.project.identification.ProjectReportBaseData
+import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportDeadline
@@ -48,7 +49,16 @@ interface ProjectReportPersistence {
 
     fun countForProject(projectId: Long): Int
 
-    fun submitReport(projectId: Long, reportId: Long, submissionTime: ZonedDateTime): ProjectReportSubmissionSummary
+    fun existsHavingTypeAndStatusIn(projectId: Long, havingType: ContractingDeadlineType, statuses: Set<ProjectReportStatus>): List<Int>
+
+    fun submitReportInitially(projectId: Long, reportId: Long, submissionTime: ZonedDateTime): ProjectReportSubmissionSummary
+
+    fun reSubmitReport(
+        projectId: Long,
+        reportId: Long,
+        newStatus: ProjectReportStatus,
+        submissionTime: ZonedDateTime,
+    ): ProjectReportSubmissionSummary
 
     fun getSubmittedProjectReports(projectId: Long): List<ProjectReportStatusAndType>
 
@@ -64,5 +74,9 @@ interface ProjectReportPersistence {
     ): ProjectReportSubmissionSummary
 
     fun finalizeVerificationOnReportById(projectId: Long, reportId: Long, time: ZonedDateTime): ProjectReportSubmissionSummary
+
+    fun getCurrentLatestReportOfType(projectId: Long, havingType: ContractingDeadlineType): ProjectReportModel?
+
+    fun reOpenReportTo(reportId: Long, newStatus: ProjectReportStatus, submissionTime: ZonedDateTime): ProjectReportSubmissionSummary
 
 }

@@ -30,7 +30,7 @@ class GetReportCertificateInvestmentCalculatorService(
 
         val data = reportCertificateInvestmentPersistence.getInvestments(projectId = projectId, reportId = reportId)
 
-        if (report.isOpen()) {
+        if (report.isOpenForNumbersChanges()) {
             val certificates = reportCertificatePersistence.listCertificatesOfProjectReport(reportId)
             val currentInvestments = reportInvestmentPersistence.getInvestmentsCumulativeAfterControl(certificates.map {it.id}.toSet())
             data.fillInCurrent(current = currentInvestments)

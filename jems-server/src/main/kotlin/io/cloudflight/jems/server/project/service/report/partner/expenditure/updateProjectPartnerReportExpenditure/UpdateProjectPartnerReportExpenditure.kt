@@ -31,8 +31,7 @@ class UpdateProjectPartnerReportExpenditure(
     private val generalValidator: GeneralValidatorService,
     private val sensitiveDataAuthorization: SensitiveDataAuthorizationService,
     private val securityService: SecurityService,
-
-    ) : UpdateProjectPartnerReportExpenditureInteractor {
+) : UpdateProjectPartnerReportExpenditureInteractor {
 
     companion object {
         private const val TO_CREATE = 0L
@@ -53,7 +52,6 @@ class UpdateProjectPartnerReportExpenditure(
         validateInputs(expenditureCosts = expenditureCosts)
 
         val report = reportPersistence.getPartnerReportById(partnerId, reportId = reportId)
-        validateReportNotClosed(status = report.status)
 
         val validationData = ExpenditureValidationData(
             allowedLumpSumsById = reportExpenditurePersistence.getAvailableLumpSums(partnerId, reportId = reportId).associateBy { it.id },
@@ -97,11 +95,6 @@ class UpdateProjectPartnerReportExpenditure(
         ).also { updatedExpenditureCosts ->
             updatedExpenditureCosts.anonymizeSensitiveDataIf(canNotWorkWithSensitive = !canEditPartnerSensitiveData)
         }
-    }
-
-    private fun validateReportNotClosed(status: ReportStatus) {
-        if (status.isClosed())
-            throw ReportAlreadyClosed()
     }
 
     private fun validateInputs(expenditureCosts: List<ProjectPartnerReportExpenditureCost>) {

@@ -32,7 +32,7 @@ class StartVerificationProjectReport(
             projectId = projectId,
             reportId = reportId
         ).also {
-            auditPublisher.publishEvent(ProjectReportStatusChanged(this, it))
+            auditPublisher.publishEvent(ProjectReportStatusChanged(this, it, report.status))
 
             auditPublisher.publishEvent(
                 projectReportStartedVerification(

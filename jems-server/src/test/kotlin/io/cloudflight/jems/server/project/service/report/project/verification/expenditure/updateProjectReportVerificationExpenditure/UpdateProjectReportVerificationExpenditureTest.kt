@@ -205,8 +205,9 @@ class UpdateProjectReportVerificationExpenditureTest : UnitTest() {
     @InjectMockKs
     lateinit var updateProjectReportVerificationExpenditure: UpdateProjectReportVerificationExpenditure
 
-    @ParameterizedTest(name = "updateExpenditureVerification - {0}")
-    @EnumSource(value = ProjectReportStatus::class, names = ["InVerification"])
+    @ParameterizedTest(name = "updateExpenditureVerification {0}")
+    @EnumSource(value = ProjectReportStatus::class,
+        names = ["InVerification", "VerificationReOpenedLast", "VerificationReOpenedLimited", "ReOpenFinalized"])
     fun updateExpenditureVerification(status: ProjectReportStatus) {
         val report = mockk<ProjectReportModel>()
         every { report.status } returns status
@@ -239,7 +240,8 @@ class UpdateProjectReportVerificationExpenditureTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "updateExpenditureVerification - wrong status {0}")
-    @EnumSource(value = ProjectReportStatus::class, names = ["InVerification"], mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = ProjectReportStatus::class, mode = EnumSource.Mode.EXCLUDE,
+        names = ["InVerification", "VerificationReOpenedLast", "VerificationReOpenedLimited", "ReOpenFinalized"])
     fun `updateExpenditureVerification - wrong status`(status: ProjectReportStatus) {
         val report = mockk<ProjectReportModel>()
         every { report.status } returns status

@@ -13,6 +13,7 @@ import io.cloudflight.jems.server.project.service.report.project.base.finalizeVe
 import io.cloudflight.jems.server.project.service.report.project.base.getMyProjectReports.GetMyProjectReportsInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.getProjectReport.GetProjectReportInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.getProjectReportList.GetProjectReportListInteractor
+import io.cloudflight.jems.server.project.service.report.project.base.reOpenProjectReport.ReOpenProjectReportInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.runProjectReportPreSubmissionCheck.RunProjectReportPreSubmissionCheck
 import io.cloudflight.jems.server.project.service.report.project.base.startVerificationProjectReport.StartVerificationProjectReportInteractor
 import io.cloudflight.jems.server.project.service.report.project.base.submitProjectReport.SubmitProjectReportInteractor
@@ -30,6 +31,7 @@ class ProjectReportController(
     private val deleteReport: DeleteProjectReportInteractor,
     private val runProjectReportPreSubmissionCheck: RunProjectReportPreSubmissionCheck,
     private val submitReport: SubmitProjectReportInteractor,
+    private val reOpenReport: ReOpenProjectReportInteractor,
     private val startVerificationReport: StartVerificationProjectReportInteractor,
     private val finalizeVerificationProjectReport: FinalizeVerificationProjectReportInteractor,
     private val getMyProjectReports: GetMyProjectReportsInteractor
@@ -58,6 +60,9 @@ class ProjectReportController(
 
     override fun submitProjectReport(projectId: Long, reportId: Long): ProjectReportStatusDTO =
         submitReport.submit(projectId = projectId, reportId = reportId).toDto()
+
+    override fun reOpenProjectReport(projectId: Long, reportId: Long): ProjectReportStatusDTO =
+        reOpenReport.reOpen(projectId = projectId, reportId = reportId).toDto()
 
     override fun startVerificationOnProjectReport(projectId: Long, reportId: Long) =
         startVerificationReport.startVerification(projectId = projectId, reportId = reportId).toDto()

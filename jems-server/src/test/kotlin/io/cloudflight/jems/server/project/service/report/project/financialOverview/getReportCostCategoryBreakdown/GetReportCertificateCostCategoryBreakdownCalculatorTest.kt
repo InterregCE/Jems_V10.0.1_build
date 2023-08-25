@@ -22,7 +22,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import java.math.BigDecimal
 
-internal class GetReportCertificateCostCategoryCalculatorServiceTest: UnitTest() {
+internal class GetReportCertificateCostCategoryBreakdownCalculatorTest: UnitTest() {
 
     companion object {
         private const val PROJECT_ID = 15L
@@ -327,7 +327,7 @@ internal class GetReportCertificateCostCategoryCalculatorServiceTest: UnitTest()
     }
 
     @ParameterizedTest(name = "getSubmittedOrCalculateCurrent (status {0})")
-    @EnumSource(value = ProjectReportStatus::class, names = ["Draft"], mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = ProjectReportStatus::class, names = ["Draft", "ReOpenSubmittedLast", "VerificationReOpenedLast"], mode = EnumSource.Mode.EXCLUDE)
     fun getSubmittedOrCalculateCurrent(status: ProjectReportStatus) {
         every { reportPersistence.getReportById(projectId = PROJECT_ID, REPORT_ID).status } returns status
         every { reportCertificateCostCategoryPersistence.getCostCategories(projectId = PROJECT_ID, REPORT_ID) } returns
@@ -336,7 +336,7 @@ internal class GetReportCertificateCostCategoryCalculatorServiceTest: UnitTest()
     }
 
     @ParameterizedTest(name = "getSubmittedOrCalculateCurrent - closed (status {0})")
-    @EnumSource(value = ProjectReportStatus::class, names = ["Draft"])
+    @EnumSource(value = ProjectReportStatus::class, names = ["Draft", "ReOpenSubmittedLast", "VerificationReOpenedLast"])
     fun `getSubmittedOrCalculateCurrent - closed`(status: ProjectReportStatus) {
         every { reportPersistence.getReportById(projectId = PROJECT_ID, REPORT_ID).status } returns status
         every { reportCertificateCostCategoryPersistence.getCostCategories(projectId = PROJECT_ID, REPORT_ID) } returns

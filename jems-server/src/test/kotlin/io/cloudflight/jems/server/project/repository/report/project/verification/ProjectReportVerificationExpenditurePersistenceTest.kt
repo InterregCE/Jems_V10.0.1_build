@@ -67,11 +67,13 @@ class ProjectReportVerificationExpenditurePersistenceTest : UnitTest() {
 
             createdAt = ZonedDateTime.now().minusWeeks(1),
             firstSubmission = ZonedDateTime.now().minusYears(1),
+            lastReSubmission = mockk(),
             verificationDate = null,
             verificationEndDate = null,
             verificationConclusionJs = "CONCLUSION JS",
             verificationConclusionMa = "CONCLUSION MA",
             verificationFollowup = "CONCLUSION FOLLOWUP",
+            lastVerificationReOpening = mockk(),
             riskBasedVerification = false,
             riskBasedVerificationDescription = "Description"
         )

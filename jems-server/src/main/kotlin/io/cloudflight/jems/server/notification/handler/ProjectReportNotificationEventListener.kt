@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationType
 import io.cloudflight.jems.server.notification.inApp.service.model.NotificationVariable
 import io.cloudflight.jems.server.notification.inApp.service.project.GlobalProjectNotificationServiceInteractor
+import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import org.springframework.context.event.EventListener
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service
 data class ProjectReportStatusChanged(
     val context: Any,
     val projectReportSummary: ProjectReportSubmissionSummary,
+    val previousReportStatus: ProjectReportStatus,
 )
 
 data class ProjectReportDoneByJs(
@@ -43,7 +45,7 @@ data class ProjectReportNotificationEventListener(
         )
     }
 
-    private fun ProjectReportStatusChanged.type() = projectReportSummary.status.toNotificationType()
+    private fun ProjectReportStatusChanged.type() = projectReportSummary.status.toNotificationType(previousReportStatus)
 
     private fun ProjectReportStatusChanged.projectReportVariables() = mapOf(
         NotificationVariable.ProjectId to projectReportSummary.projectId,

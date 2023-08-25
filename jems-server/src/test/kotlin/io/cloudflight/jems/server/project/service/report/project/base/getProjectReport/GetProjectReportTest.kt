@@ -13,6 +13,7 @@ import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
@@ -28,6 +29,7 @@ internal class GetProjectReportTest : UnitTest() {
         private val MONTH_AGO = LocalDate.now().minusMonths(1)
         private val NOW = ZonedDateTime.now()
         private val WEEK_AGO = ZonedDateTime.now().minusWeeks(1)
+        private val DAY_AGO = ZonedDateTime.now().minusDays(1)
         private val NEXT_MONTH = ZonedDateTime.now().plusMonths(1)
 
         val report = ProjectReportModel(
@@ -48,10 +50,12 @@ internal class GetProjectReportTest : UnitTest() {
             leadPartnerNameInEnglish = "LP english",
             createdAt = NOW,
             firstSubmission = WEEK_AGO,
+            lastReSubmission = DAY_AGO,
             verificationDate = NEXT_MONTH.toLocalDate(),
             verificationEndDate = NEXT_MONTH,
             amountRequested = BigDecimal.valueOf(15L),
             totalEligibleAfterVerification = BigDecimal.valueOf(19L),
+            lastVerificationReOpening = mockk(),
             riskBasedVerification = false,
             riskBasedVerificationDescription = "Description"
         )
@@ -95,6 +99,7 @@ internal class GetProjectReportTest : UnitTest() {
             reportingDate = MONTH_AGO,
             createdAt = NOW,
             firstSubmission = WEEK_AGO,
+            lastReSubmission = DAY_AGO,
             verificationDate = NEXT_MONTH.toLocalDate(),
             deletable = false,
             verificationEndDate = NEXT_MONTH,

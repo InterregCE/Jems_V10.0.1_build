@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.authorization
 
 import io.cloudflight.jems.server.authentication.authorization.Authorization
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
@@ -28,16 +29,21 @@ annotation class CanRetrieveProjectReport
 @PreAuthorize("@projectReportAuthorization.canStartReportVerification(#projectId)")
 annotation class CanStartProjectReportVerification
 
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@projectReportAuthorization.canReOpenProjectReport(#projectId)")
+annotation class CanReOpenProjectReport
+
 @Component
 class ProjectReportAuthorization(
     override val securityService: SecurityService,
     private val reportPersistence: ProjectReportPersistence,
     private val projectPersistence: ProjectPersistence,
+    private val controllerInstitutionPersistence: ControllerInstitutionPersistence,
 ) : Authorization(securityService) {
 
     fun canEditReport(projectId: Long, reportId: Long): Boolean {
         val report = reportPersistence.getReportById(projectId = projectId, reportId = reportId)
-        return report.status.isOpen() && canEditReportNotSpecific(projectId)
+        return !report.status.isClosed() && canEditReportNotSpecific(projectId)
     }
 
     fun canEditReportNotSpecific(projectId: Long): Boolean {
@@ -71,5 +77,16 @@ class ProjectReportAuthorization(
     fun canStartReportVerification(projectId: Long): Boolean {
         return hasPermission(UserRolePermission.ProjectReportingVerificationProjectEdit, projectId)
     }
+
+    fun canReOpenProjectReport(projectId: Long): Boolean {
+        val permission = UserRolePermission.ProjectReportingProjectReOpen
+
+        return hasPermissionForProject(permission, projectId = projectId) // assigned programme user with reopen
+                || hasControllerPermission(permission, projectId = projectId) // controller with reopen
+    }
+
+    private fun hasControllerPermission(permission: UserRolePermission, projectId: Long) =
+        isActiveUserIdEqualToOneOf(controllerInstitutionPersistence.getRelatedUserIdsForProject(projectId))
+                && hasNonProjectAuthority(permission)
 
 }

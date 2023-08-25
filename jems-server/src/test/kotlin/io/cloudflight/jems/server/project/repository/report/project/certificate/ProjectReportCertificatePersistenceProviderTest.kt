@@ -29,6 +29,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import java.util.*
 
 class ProjectReportCertificatePersistenceProviderTest : UnitTest() {
 
@@ -105,7 +106,7 @@ class ProjectReportCertificatePersistenceProviderTest : UnitTest() {
         every { projectReport.id } returns 978L
 
         val certificate = partnerReport(projectReport)
-        every { partnerReportRepository.getById(75L) } returns certificate
+        every { partnerReportRepository.findById(75L) } returns Optional.of(certificate)
 
         persistence.deselectCertificate(projectReportId = 978L, certificateId = 75L)
 
@@ -118,7 +119,7 @@ class ProjectReportCertificatePersistenceProviderTest : UnitTest() {
         every { projectReport.id } returns 911L
 
         val certificate = partnerReport(projectReport)
-        every { partnerReportRepository.getById(76L) } returns certificate
+        every { partnerReportRepository.findById(76L) } returns Optional.of(certificate)
 
         persistence.deselectCertificate(projectReportId = 9999L, certificateId = 76L)
 

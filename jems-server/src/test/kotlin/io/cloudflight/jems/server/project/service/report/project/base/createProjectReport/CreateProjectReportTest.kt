@@ -15,6 +15,7 @@ import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
+import io.cloudflight.jems.server.project.service.contracting.reporting.ContractingReportingPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectHorizontalPrinciples
 import io.cloudflight.jems.server.project.service.model.ProjectManagement
@@ -159,10 +160,12 @@ internal class CreateProjectReportTest : UnitTest() {
 
             createdAt = ZonedDateTime.now(),
             firstSubmission = null,
+            lastReSubmission = mockk(),
             verificationDate = null,
             verificationEndDate = null,
             amountRequested = BigDecimal.ZERO,
             totalEligibleAfterVerification = BigDecimal.ZERO,
+            lastVerificationReOpening = mockk(),
             riskBasedVerification = false,
             riskBasedVerificationDescription = null
         )
@@ -458,10 +461,12 @@ internal class CreateProjectReportTest : UnitTest() {
                 leadPartnerNameInEnglish = "lead-en",
                 createdAt = created,
                 firstSubmission = null,
+                lastReSubmission = null,
                 verificationDate = null,
                 verificationEndDate = null,
                 amountRequested = BigDecimal.ZERO,
                 totalEligibleAfterVerification = BigDecimal.ZERO,
+                lastVerificationReOpening = null,
                 riskBasedVerification = false,
                 riskBasedVerificationDescription = null
                 ),
@@ -757,6 +762,9 @@ internal class CreateProjectReportTest : UnitTest() {
     @MockK
     private lateinit var workPlanPersistence: ProjectReportWorkPlanPersistence
 
+    @MockK
+    private lateinit var deadlinePersistence: ContractingReportingPersistence
+
     @InjectMockKs
     lateinit var interactor: CreateProjectReport
 
@@ -773,7 +781,8 @@ internal class CreateProjectReportTest : UnitTest() {
             projectReportIdentificationPersistence,
             createProjectReportBudget,
             projectResultPersistence,
-            projectReportResultPersistence
+            projectReportResultPersistence,
+            deadlinePersistence,
         )
     }
 
@@ -788,6 +797,8 @@ internal class CreateProjectReportTest : UnitTest() {
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns "version"
         every { projectPersistence.getProject(projectId, "version") } returns project(projectId, status)
         every { projectPersistence.getProjectPeriods(projectId, "version") } returns listOf(ProjectPeriod(4, 17, 22))
+        every { reportPersistence.existsHavingTypeAndStatusIn(projectId, ContractingDeadlineType.Both,
+            setOf(ProjectReportStatus.ReOpenSubmittedLast, ProjectReportStatus.VerificationReOpenedLast)) } returns emptyList()
         every { reportPersistence.getCurrentLatestReportFor(projectId) } returns currentLatestReport()
         every { projectPartnerPersistence.findTop50ByProjectId(projectId, "version") } returns listOf(leadPartner())
         every { projectDescriptionPersistence.getBenefits(projectId, "version") } returns projectRelevanceBenefits()
@@ -874,6 +885,33 @@ internal class CreateProjectReportTest : UnitTest() {
                 description = "[proj-custom-iden] Project report PR.8 added",
             )
         )
+    }
+
+    @ParameterizedTest(name = "createReportFor - forbidden because other reopened {0}")
+    @EnumSource(
+        value = ApplicationStatus::class,
+        names = ["CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED"],
+    )
+    fun `createReportFor - forbidden because other reopened`(status: ApplicationStatus) {
+        val projectId = 354L + status.ordinal
+        every { reportPersistence.countForProject(projectId) } returns 1
+        every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns "version"
+        every { projectPersistence.getProject(projectId, "version") } returns project(projectId, status)
+        every { projectPersistence.getProjectPeriods(projectId, "version") } returns listOf(ProjectPeriod(4, 17, 22))
+        every { reportPersistence.existsHavingTypeAndStatusIn(projectId, ContractingDeadlineType.Both,
+            setOf(ProjectReportStatus.ReOpenSubmittedLast, ProjectReportStatus.VerificationReOpenedLast)) } returns listOf(1966, 1985)
+
+        val data = ProjectReportUpdate(
+            startDate = YESTERDAY,
+            endDate = TOMORROW,
+            deadlineId = null,
+            type = ContractingDeadlineType.Both,
+            periodNumber = 4,
+            reportingDate = YESTERDAY.minusDays(1),
+        )
+        val ex = assertThrows<LastReOpenedReportException> { interactor.createReportFor(projectId, data) }
+        assertThat(ex.i18nMessage.i18nArguments).containsEntry("blockingReportNumbers", "PR.1966, PR.1985")
+        assertThat(ex.i18nMessage.i18nKey).isEqualTo("use.case.create.project.report.reopened.report.exists")
     }
 
     @ParameterizedTest(name = "createReportFor - not contracted {0}")

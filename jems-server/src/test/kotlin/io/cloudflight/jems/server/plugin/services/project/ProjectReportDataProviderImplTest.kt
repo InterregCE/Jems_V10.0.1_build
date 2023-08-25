@@ -96,6 +96,7 @@ import io.cloudflight.jems.server.project.service.report.project.workPlan.Projec
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.Pageable
@@ -220,10 +221,12 @@ class ProjectReportDataProviderImplTest : UnitTest() {
             leadPartnerNameInEnglish = "Lead Partner EN",
             createdAt = createdAt,
             firstSubmission = firstSubmission,
+            lastReSubmission = mockk(),
             verificationDate = verificationDate.toLocalDate(),
             totalEligibleAfterVerification = BigDecimal.ZERO,
             amountRequested = BigDecimal.ZERO,
             verificationEndDate = verificationDate,
+            lastVerificationReOpening = mockk(),
             riskBasedVerification = false,
             riskBasedVerificationDescription = "Description"
         )

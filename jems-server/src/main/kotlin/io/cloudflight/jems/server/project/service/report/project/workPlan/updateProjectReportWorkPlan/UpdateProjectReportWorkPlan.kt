@@ -3,7 +3,6 @@ package io.cloudflight.jems.server.project.service.report.project.workPlan.updat
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.authorization.CanEditProjectReport
-import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackage
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageActivity
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageActivityDeliverable
@@ -15,7 +14,6 @@ import io.cloudflight.jems.server.project.service.report.model.project.workPlan.
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageOutput
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageOutputUpdate
 import io.cloudflight.jems.server.project.service.report.model.project.workPlan.ProjectReportWorkPackageUpdate
-import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.workPlan.ProjectReportWorkPlanPersistence
 import io.cloudflight.jems.server.project.service.report.project.workPlan.fillInFlags
 import org.springframework.stereotype.Service
@@ -23,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UpdateProjectReportWorkPlan(
-    private val reportPersistence: ProjectReportPersistence,
+//    private val reportPersistence: ProjectReportPersistence,
     private val reportWorkPlanPersistence: ProjectReportWorkPlanPersistence,
     private val generalValidator: GeneralValidatorService,
 ) : UpdateProjectReportWorkPlanInteractor {
@@ -36,7 +34,8 @@ class UpdateProjectReportWorkPlan(
         reportId: Long,
         workPlan: List<ProjectReportWorkPackageUpdate>,
     ): List<ProjectReportWorkPackage> {
-        validateReportNotClosed(status = reportPersistence.getReportById(projectId, reportId = reportId).status)
+        // TODO validate only changes to comments are allowed when limited
+//        validateReportNotClosed(status = reportPersistence.getReportById(projectId, reportId = reportId).status)
         validateInputs(workPlan = workPlan)
 
         val existingWpsById = reportWorkPlanPersistence.getReportWorkPlanById(projectId = projectId, reportId = reportId)
@@ -63,11 +62,6 @@ class UpdateProjectReportWorkPlan(
         }
 
         return reportWorkPlanPersistence.getReportWorkPlanById(projectId = projectId, reportId = reportId).fillInFlags()
-    }
-
-    private fun validateReportNotClosed(status: ProjectReportStatus) {
-        if (status.isClosed())
-            throw ReportAlreadyClosed()
     }
 
     private fun validateInputs(workPlan: List<ProjectReportWorkPackageUpdate>) {

@@ -184,14 +184,14 @@ internal class SubmitProjectReportTest : UnitTest() {
 
         if (type == ContractingDeadlineType.Finance) {
             every { reportWorkPlanPersistence.deleteWorkPlan(PROJECT_ID, REPORT_ID) } answers { }
-            every { reportResultPrinciplePersistence.deleteProjectResultPrinciples(REPORT_ID) } answers { }
+            every { reportResultPrinciplePersistence.deleteProjectResultPrinciplesIfExist(REPORT_ID) } answers { }
         }
         if (type == ContractingDeadlineType.Content) {
             every { reportCertificatePersistence.deselectCertificatesOfProjectReport(REPORT_ID) } answers { }
         }
 
         val submissionTime = slot<ZonedDateTime>()
-        every { reportPersistence.submitReport(any(), any(), capture(submissionTime)) } returns mockedResult
+        every { reportPersistence.submitReportInitially(any(), any(), capture(submissionTime)) } returns mockedResult
 
         every { reportCertificatePersistence.listCertificatesOfProjectReport(REPORT_ID) } returns listOf(certificate)
         val auditSlot = slot<AuditCandidateEvent>()
@@ -220,7 +220,7 @@ internal class SubmitProjectReportTest : UnitTest() {
 
         submitReport.submit(PROJECT_ID, REPORT_ID)
 
-        verify(exactly = 1) { reportPersistence.submitReport(PROJECT_ID, REPORT_ID, any()) }
+        verify(exactly = 1) { reportPersistence.submitReportInitially(PROJECT_ID, REPORT_ID, any()) }
         assertThat(submissionTime.captured).isAfter(ZonedDateTime.now().minusMinutes(1))
         assertThat(submissionTime.captured).isBefore(ZonedDateTime.now().plusMinutes(1))
         assertThat(auditSlot.captured.auditCandidate).isEqualTo(
@@ -249,7 +249,7 @@ internal class SubmitProjectReportTest : UnitTest() {
         every { reportPersistence.getReportById(PROJECT_ID, REPORT_ID) } returns report
 
         assertThrows<ProjectReportAlreadyClosed> { submitReport.submit(PROJECT_ID, REPORT_ID) }
-        verify(exactly = 0) { reportPersistence.submitReport(any(), any(), any()) }
+        verify(exactly = 0) { reportPersistence.submitReportInitially(any(), any(), any()) }
         verify(exactly = 0) { auditPublisher.publishEvent(any()) }
     }
 }

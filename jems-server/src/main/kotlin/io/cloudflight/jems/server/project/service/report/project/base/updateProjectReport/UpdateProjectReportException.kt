@@ -33,3 +33,8 @@ class PeriodNumberInvalid(periodNumber: Int) : ApplicationUnprocessableException
     i18nMessage = I18nMessage("$UPDATE_PROJECT_REPORT_ERROR_KEY_PREFIX.specified.period.is.not.available"),
     message = "period number $periodNumber is not available",
 )
+
+class TypeChangeIsForbiddenWhenReportIsReOpened : ApplicationUnprocessableException(
+    code = "$UPDATE_PROJECT_REPORT_ERROR_CODE_PREFIX-005",
+    i18nMessage = I18nMessage("$UPDATE_PROJECT_REPORT_ERROR_KEY_PREFIX.type.change.forbidden"),
+)
