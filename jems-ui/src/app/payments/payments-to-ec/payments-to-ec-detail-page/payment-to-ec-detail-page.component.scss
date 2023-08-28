@@ -1,0 +1,21 @@
+.status-and-action-header {
+  display: flex;
+  align-items: center;
+}
+.finish-button {
+  margin-left: 1rem;
+}
+
+.status-label {
+  font-weight: 600;
+}
+
+#status {
+  .draft {
+    background-color: var(--status-draft);
+  }
+
+  .finished {
+    background-color: var(--status-contracted);
+  }
+}

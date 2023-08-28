@@ -1,18 +1,14 @@
 package io.cloudflight.jems.server.payments.repository.applicationToEc
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.common.file.repository.JemsFileMetadataRepository
 import io.cloudflight.jems.server.common.file.service.JemsSystemFileService
-import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.payments.accountingYears.repository.AccountingYearRepository
 import io.cloudflight.jems.server.payments.entity.AccountingYearEntity
 import io.cloudflight.jems.server.payments.entity.PaymentApplicationToEcEntity
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEc
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummary
-import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcUpdate
 import io.cloudflight.jems.server.payments.model.regular.AccountingYear
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
@@ -22,12 +18,10 @@ import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.mockk
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.time.LocalDate
@@ -56,6 +50,7 @@ class PaymentApplicationsToEcPersistenceProviderTest : UnitTest() {
         private const val expectedAccountingYearId = 4L
         private const val programmeFundId = 10L
         private const val expectedProgrammeFundId = 11L
+        private val submissionDate = LocalDate.now()
 
         private val programmeFundEntity = ProgrammeFundEntity(programmeFundId, true)
         private val expectedProgrammeFundEntity = ProgrammeFundEntity(expectedProgrammeFundId, true)
@@ -71,52 +66,114 @@ class PaymentApplicationsToEcPersistenceProviderTest : UnitTest() {
         private val expectedAccountingYear =
             AccountingYear(expectedAccountingYearId, 2021, LocalDate.of(2021, 1, 1), LocalDate.of(2022, 6, 30))
 
-        private val paymentApplicationToEcCreate = PaymentApplicationToEcUpdate(
+        private val paymentApplicationToEcCreate = PaymentApplicationToEcSummaryUpdate(
             id = null,
             programmeFundId = programmeFund.id,
-            accountingYearId = accountingYearId
+            accountingYearId = accountingYearId,
+            nationalReference = "National Reference",
+            technicalAssistanceEur = BigDecimal.valueOf(105.32),
+            submissionToSfcDate = submissionDate,
+            sfcNumber = "SFC number",
+            comment = "Comment"
         )
 
-        private val paymentApplicationToEcUpdate = PaymentApplicationToEcUpdate(
+        private val paymentApplicationToEcUpdate = PaymentApplicationToEcSummaryUpdate(
             id = paymentApplicationsToEcId,
             programmeFundId = 11L,
-            accountingYearId = 4L
+            accountingYearId = 4L,
+            nationalReference = "National Reference",
+            technicalAssistanceEur = BigDecimal.valueOf(105.32),
+            submissionToSfcDate = submissionDate,
+            sfcNumber = "SFC number",
+            comment = "Comment"
         )
 
         private val paymentApplicationsToEcSummary = PaymentApplicationToEcSummary(
             programmeFund = programmeFund,
-            accountingYear = accountingYear
+            accountingYear = accountingYear,
+            nationalReference = "National Reference",
+            technicalAssistanceEur = BigDecimal.valueOf(105.32),
+            submissionToSfcDate = submissionDate,
+            sfcNumber = "SFC number",
+            comment = "Comment"
         )
 
         private val expectedPaymentApplicationsToEcSummary = PaymentApplicationToEcSummary(
+            programmeFund = programmeFund,
+            accountingYear = accountingYear,
+            nationalReference = "National Reference",
+            technicalAssistanceEur = BigDecimal.valueOf(105.32),
+            submissionToSfcDate = submissionDate,
+            sfcNumber = "SFC number",
+            comment = "Comment"
+        )
+
+        private val expectedUpdatedPaymentApplicationsToEcSummary = PaymentApplicationToEcSummary(
             programmeFund = expectedProgrammeFund,
-            accountingYear = expectedAccountingYear
+            accountingYear = expectedAccountingYear,
+            nationalReference = "National Reference",
+            technicalAssistanceEur = BigDecimal.valueOf(105.32),
+            submissionToSfcDate = submissionDate,
+            sfcNumber = "SFC number",
+            comment = "Comment"
+        )
+
+        private val expectedPaymentApplicationsToEcCreateSummary = PaymentApplicationToEcSummary(
+            programmeFund = programmeFund,
+            accountingYear = accountingYear,
+            nationalReference = "National Reference",
+            technicalAssistanceEur = BigDecimal.valueOf(105.32),
+            submissionToSfcDate = submissionDate,
+            sfcNumber = "SFC number",
+            comment = "Comment"
         )
 
         private val expectedPaymentApplicationToEcCreate = PaymentApplicationToEcDetail(
             id = 0,
             status = PaymentEcStatus.Draft,
-            paymentApplicationsToEcSummary = paymentApplicationsToEcSummary
+            paymentApplicationToEcSummary = expectedPaymentApplicationsToEcCreateSummary
         )
 
         private val expectedPaymentApplicationToEcUpdate = PaymentApplicationToEcDetail(
             id = paymentApplicationsToEcId,
             status = PaymentEcStatus.Draft,
-            paymentApplicationsToEcSummary = expectedPaymentApplicationsToEcSummary
+            paymentApplicationToEcSummary = expectedUpdatedPaymentApplicationsToEcSummary
         )
 
-        private val paymentApplicationsToEcEntity = PaymentApplicationToEcEntity(
+        private val expectedPaymentApplicationToEc = PaymentApplicationToEcDetail(
+            id = paymentApplicationsToEcId,
+            status = PaymentEcStatus.Draft,
+            paymentApplicationToEcSummary = paymentApplicationsToEcSummary
+        )
+
+        private val expectedPaymentApplicationToEcFinalized = PaymentApplicationToEcDetail(
+            id = paymentApplicationsToEcId,
+            status = PaymentEcStatus.Finished,
+            paymentApplicationToEcSummary = expectedPaymentApplicationsToEcSummary
+        )
+
+        private fun paymentApplicationsToEcEntity() = PaymentApplicationToEcEntity(
             id = paymentApplicationsToEcId,
             programmeFund = programmeFundEntity,
             accountingYear = accountingYearEntity,
-            status = PaymentEcStatus.Draft
+            status = PaymentEcStatus.Draft,
+            nationalReference = "National Reference",
+            technicalAssistanceEur = BigDecimal.valueOf(105.32),
+            submissionToSfcDate = submissionDate,
+            sfcNumber = "SFC number",
+            comment = "Comment"
         )
 
         private val paymentApplicationToEcEntity = PaymentApplicationToEcEntity(
             id = paymentApplicationsToEcId,
             programmeFund = programmeFundEntity,
             accountingYear = accountingYearEntity,
-            status = PaymentEcStatus.Draft
+            status = PaymentEcStatus.Draft,
+            nationalReference = "National Reference",
+            technicalAssistanceEur = BigDecimal.valueOf(105.32),
+            submissionToSfcDate = submissionDate,
+            sfcNumber = "SFC number",
+            comment = "Comment"
         )
 
         private val paymentApplicationToEc = PaymentApplicationToEc(
@@ -157,9 +214,9 @@ class PaymentApplicationsToEcPersistenceProviderTest : UnitTest() {
 
     @Test
     fun getPaymentApplicationToEcDetail() {
-        every { paymentApplicationsToEcRepository.getById(paymentApplicationsToEcId) } returns paymentApplicationsToEcEntity
+        every { paymentApplicationsToEcRepository.getById(paymentApplicationsToEcId) } returns paymentApplicationsToEcEntity()
         assertThat(persistenceProvider.getPaymentApplicationToEcDetail(paymentApplicationsToEcId)).isEqualTo(
-            expectedPaymentApplicationToEcUpdate
+            expectedPaymentApplicationToEc
         )
     }
 
@@ -167,10 +224,19 @@ class PaymentApplicationsToEcPersistenceProviderTest : UnitTest() {
     fun updatePaymentApplicationToEc() {
         every { programmeFundRepository.getById(expectedProgrammeFundId) } returns expectedProgrammeFundEntity
         every { accountingYearRepository.getById(expectedAccountingYearId) } returns expectedAccountingYearEntity
-        every { paymentApplicationsToEcRepository.getById(paymentApplicationsToEcId) } returns paymentApplicationsToEcEntity
+        every { paymentApplicationsToEcRepository.getById(paymentApplicationsToEcId) } returns paymentApplicationsToEcEntity()
 
         assertThat(persistenceProvider.updatePaymentApplicationToEc(paymentApplicationToEcUpdate)).isEqualTo(
             expectedPaymentApplicationToEcUpdate
+        )
+    }
+
+    @Test
+    fun updatePaymentApplicationToEcSummaryOtherSection() {
+        every { paymentApplicationsToEcRepository.getById(paymentApplicationsToEcId) } returns paymentApplicationsToEcEntity()
+
+        assertThat(persistenceProvider.updatePaymentToEcSummaryOtherSection(paymentApplicationToEcUpdate)).isEqualTo(
+            expectedPaymentApplicationToEc
         )
     }
 
@@ -196,5 +262,11 @@ class PaymentApplicationsToEcPersistenceProviderTest : UnitTest() {
         every { reportFileRepository.findByTypeAndId(JemsFileType.PaymentToEcAttachment, -1L) } returns null
         assertThrows<ResourceNotFoundException> { persistenceProvider.deletePaymentToEcAttachment(-1L) }
         verify(exactly = 0) { fileRepository.delete(any()) }
+    }
+
+    @Test
+    fun finalizePaymentToEc() {
+        every { paymentApplicationsToEcRepository.getById(paymentApplicationsToEcId) } returns paymentApplicationsToEcEntity()
+        assertThat(persistenceProvider.finalizePaymentApplicationToEc(paymentApplicationsToEcId)).isEqualTo(expectedPaymentApplicationToEcFinalized)
     }
 }

@@ -14,7 +14,7 @@ import org.mapstruct.factory.Mappers
 import org.springframework.data.domain.Page
 
 
-private val mapper = Mappers.getMapper(PaymentApplicationsToEcModelMapper::class.java)
+private val mapper = Mappers.getMapper(PaymentApplicationToEcModelMapper::class.java)
 
 fun PaymentApplicationToEcEntity.toModel(): PaymentApplicationToEc = mapper.map(this)
 fun PaymentApplicationToEc.toEntity(): PaymentApplicationToEcEntity = mapper.map(this)
@@ -23,14 +23,19 @@ fun Page<PaymentApplicationToEcEntity>.toModel() = map { it.toModel() }
 fun PaymentApplicationToEcEntity.toDetailModel() = PaymentApplicationToEcDetail(
     id = id,
     status = status,
-    paymentApplicationsToEcSummary = PaymentApplicationToEcSummary(
-        programmeFund.toModel(),
-        accountingYear.toModel()
+    paymentApplicationToEcSummary = PaymentApplicationToEcSummary(
+        programmeFund = programmeFund.toModel(),
+        accountingYear = accountingYear.toModel(),
+        nationalReference = nationalReference,
+        technicalAssistanceEur = technicalAssistanceEur,
+        submissionToSfcDate = submissionToSfcDate,
+        sfcNumber = sfcNumber,
+        comment = comment
     )
 )
 
 @Mapper
-interface PaymentApplicationsToEcModelMapper {
+interface PaymentApplicationToEcModelMapper {
     @Named("toFundModel")
     fun toFundModel(entity: ProgrammeFundEntity) = entity.toModel()
 

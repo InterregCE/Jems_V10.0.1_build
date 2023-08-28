@@ -1,13 +1,12 @@
 package io.cloudflight.jems.api.payments.dto
 
-import io.cloudflight.jems.api.accountingYear.AccountingYearDTO
-import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundDTO
 import java.math.BigDecimal
 import java.time.LocalDate
 
-data class PaymentApplicationToEcSummaryDTO (
-    val programmeFund: ProgrammeFundDTO,
-    val accountingYear: AccountingYearDTO,
+data class PaymentApplicationToEcSummaryUpdateDTO(
+    val id: Long?,
+    val programmeFundId: Long,
+    val accountingYearId: Long,
     val nationalReference: String?,
     val technicalAssistanceEur: BigDecimal,
     val submissionToSfcDate: LocalDate?,

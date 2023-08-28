@@ -2,7 +2,8 @@ package io.cloudflight.jems.api.payments
 
 import io.cloudflight.jems.api.payments.dto.PaymentApplicationToEcDTO
 import io.cloudflight.jems.api.payments.dto.PaymentApplicationToEcDetailDTO
-import io.cloudflight.jems.api.payments.dto.PaymentApplicationToEcUpdateDTO
+import io.cloudflight.jems.api.payments.dto.PaymentApplicationToEcSummaryUpdateDTO
+import io.cloudflight.jems.api.payments.dto.PaymentEcStatusDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -26,13 +27,13 @@ interface PaymentApplicationToEcApi {
     @ApiOperation("Create payment applications to ec")
     @PostMapping("$ENDPOINT_API_EC_PAYMENTS/create", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun createPaymentApplicationToEc(
-        @RequestBody paymentApplicationToEcUpdate: PaymentApplicationToEcUpdateDTO
+        @RequestBody paymentApplicationToEcUpdate: PaymentApplicationToEcSummaryUpdateDTO
     ): PaymentApplicationToEcDetailDTO
 
     @ApiOperation("Update payment applications to ec")
     @PutMapping("$ENDPOINT_API_EC_PAYMENTS/detail", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updatePaymentApplicationToEc(
-        @RequestBody paymentApplicationToEcUpdate: PaymentApplicationToEcUpdateDTO
+        @RequestBody paymentApplicationToEcUpdate: PaymentApplicationToEcSummaryUpdateDTO
     ): PaymentApplicationToEcDetailDTO
 
     @ApiOperation("Get payment applications to ec detail")
@@ -53,4 +54,10 @@ interface PaymentApplicationToEcApi {
     @ApiOperation("Delete payment application to ec by id")
     @DeleteMapping("${ENDPOINT_API_EC_PAYMENTS}/{id}")
     fun deletePaymentApplicationToEc(@PathVariable id: Long)
+
+    @ApiOperation("Finalize payment application to ec")
+    @PostMapping("$ENDPOINT_API_EC_PAYMENTS/{paymentId}/finalize")
+    fun finalizePaymentApplicationToEc(
+        @PathVariable paymentId: Long
+    ): PaymentEcStatusDTO
 }

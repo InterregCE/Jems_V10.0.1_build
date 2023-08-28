@@ -35,7 +35,7 @@
         {{ payment.accountingYear.startDate | localeDate }} - {{ payment.accountingYear.endDate | localeDate }}</span>
 </ng-template>
 <ng-template #deleteButtonCell let-payment>
-    <button *ngIf="userCanEdit$ | async"
+    <button *ngIf="payment.status === paymentStatusEnum.Draft && (userCanEdit$ | async)"
             (click)="$event.stopPropagation(); removeItem(payment.id);"
             class="delete-button"
             color="accent" mat-icon-button

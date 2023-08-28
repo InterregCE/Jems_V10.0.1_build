@@ -6,7 +6,7 @@ import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummary
-import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcUpdate
+import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummaryUpdate
 import io.cloudflight.jems.server.payments.model.regular.AccountingYear
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.PaymentApplicationToEcPersistence
@@ -19,6 +19,7 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
+import java.math.BigDecimal
 import java.time.LocalDate
 
 class CreatePaymentApplicationToEcTest : UnitTest() {
@@ -28,22 +29,33 @@ class CreatePaymentApplicationToEcTest : UnitTest() {
 
         private val accountingYear = AccountingYear(2L, 2021, LocalDate.of(2021, 1, 1), LocalDate.of(2022, 6, 30))
         private val fund = ProgrammeFund(id = 3L, selected = true)
+        private val submissionDate = LocalDate.now()
 
         private val paymentApplicationsToEcSummary = PaymentApplicationToEcSummary(
             programmeFund = fund,
-            accountingYear = accountingYear
+            accountingYear = accountingYear,
+            nationalReference = "National Reference",
+            technicalAssistanceEur = BigDecimal.valueOf(105.32),
+            submissionToSfcDate = submissionDate,
+            sfcNumber = "SFC number",
+            comment = "Comment"
         )
 
-        private val paymentApplicationsToEcUpdate = PaymentApplicationToEcUpdate(
+        private val paymentApplicationsToEcUpdate = PaymentApplicationToEcSummaryUpdate(
             id = null,
             programmeFundId = fund.id,
-            accountingYearId = accountingYear.id
+            accountingYearId = accountingYear.id,
+            nationalReference = "National Reference",
+            technicalAssistanceEur = BigDecimal.valueOf(105.32),
+            submissionToSfcDate = submissionDate,
+            sfcNumber = "SFC number",
+            comment = "Comment"
         )
 
         private val paymentApplicationsToEcDetail = PaymentApplicationToEcDetail(
             id = paymentApplicationsToEcId,
             status = PaymentEcStatus.Draft,
-            paymentApplicationsToEcSummary = paymentApplicationsToEcSummary
+            paymentApplicationToEcSummary = paymentApplicationsToEcSummary
         )
 
     }

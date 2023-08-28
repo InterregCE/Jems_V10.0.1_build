@@ -216,11 +216,29 @@ fun paymentApplicationToEcCreated(
     auditCandidate = AuditBuilder(AuditAction.PAYMENT_APPLICATION_TO_EC_IS_CREATED)
         .description(
             "Payment application to EC number ${paymentApplicationToEc.id} " +
-                "was created for Fund (${paymentApplicationToEc.paymentApplicationsToEcSummary.programmeFund.id}, " +
-                "${paymentApplicationToEc.paymentApplicationsToEcSummary.programmeFund.type}) " +
-                "for accounting Year ${computeYearNumber(paymentApplicationToEc.paymentApplicationsToEcSummary.accountingYear.startDate)}: ${
-                    paymentApplicationToEc.paymentApplicationsToEcSummary.accountingYear.startDate
-                } - ${paymentApplicationToEc.paymentApplicationsToEcSummary.accountingYear.endDate}"
+                "was created for Fund (${paymentApplicationToEc.paymentApplicationToEcSummary.programmeFund.id}, " +
+                "${paymentApplicationToEc.paymentApplicationToEcSummary.programmeFund.type}) " +
+                "for accounting Year ${computeYearNumber(paymentApplicationToEc.paymentApplicationToEcSummary.accountingYear.startDate)}: ${
+                    paymentApplicationToEc.paymentApplicationToEcSummary.accountingYear.startDate
+                } - ${paymentApplicationToEc.paymentApplicationToEcSummary.accountingYear.endDate}"
+        )
+        .build()
+)
+
+fun paymentApplicationToEcFinalized(
+    context: Any,
+    paymentApplicationToEc: PaymentApplicationToEcDetail
+): AuditCandidateEvent = AuditCandidateEvent(
+    context = context,
+    auditCandidate = AuditBuilder(AuditAction.PAYMENT_APPLICATION_TO_EC_STATUS_CHANGED)
+        .description(
+            "Payment application to EC number ${paymentApplicationToEc.id} " +
+                "created for Fund (${paymentApplicationToEc.paymentApplicationToEcSummary.programmeFund.id}, " +
+                "${paymentApplicationToEc.paymentApplicationToEcSummary.programmeFund.type}) " +
+                "for accounting Year ${computeYearNumber(paymentApplicationToEc.paymentApplicationToEcSummary.accountingYear.startDate)}: ${
+                    paymentApplicationToEc.paymentApplicationToEcSummary.accountingYear.startDate
+                } - ${paymentApplicationToEc.paymentApplicationToEcSummary.accountingYear.endDate}" +
+            " changes status from Draft to ${paymentApplicationToEc.status.name}"
         )
         .build()
 )
@@ -233,11 +251,11 @@ fun paymentApplicationToEcDeleted(
     auditCandidate = AuditBuilder(AuditAction.PAYMENT_APPLICATION_TO_EC_IS_DELETED)
         .description(
             "Payment application to EC number ${paymentApplicationToEc.id} " +
-                "created for Fund (${paymentApplicationToEc.paymentApplicationsToEcSummary.programmeFund.id}, " +
-                "${paymentApplicationToEc.paymentApplicationsToEcSummary.programmeFund.type}) " +
-                "for accounting Year ${computeYearNumber(paymentApplicationToEc.paymentApplicationsToEcSummary.accountingYear.startDate)}: ${
-                        paymentApplicationToEc.paymentApplicationsToEcSummary.accountingYear.startDate
-                } - ${paymentApplicationToEc.paymentApplicationsToEcSummary.accountingYear.endDate} was deleted"
+                "created for Fund (${paymentApplicationToEc.paymentApplicationToEcSummary.programmeFund.id}, " +
+                "${paymentApplicationToEc.paymentApplicationToEcSummary.programmeFund.type}) " +
+                "for accounting Year ${computeYearNumber(paymentApplicationToEc.paymentApplicationToEcSummary.accountingYear.startDate)}: ${
+                        paymentApplicationToEc.paymentApplicationToEcSummary.accountingYear.startDate
+                } - ${paymentApplicationToEc.paymentApplicationToEcSummary.accountingYear.endDate} was deleted"
         )
         .build()
 )

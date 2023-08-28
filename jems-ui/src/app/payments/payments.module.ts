@@ -23,8 +23,8 @@ import {
 import {PaymentsPageSidenavService} from './payments-page-sidenav.service';
 import {PaymentsToEcPageComponent} from './payments-to-ec/payments-to-ec-page.component';
 import {
-  PaymentsToEcDetailPageComponent
-} from './payments-to-ec/payments-to-ec-detail-page/payments-to-ec-detail-page.component';
+  PaymentToEcDetailPageComponent
+} from './payments-to-ec/payments-to-ec-detail-page/payment-to-ec-detail-page.component';
 import {
   PaymentToEcSummaryTabComponent
 } from './payments-to-ec/payments-to-ec-detail-page/summary-tab/payment-to-ec-summary-tab.component';
@@ -36,7 +36,7 @@ import { PaymentToEcSummaryAttachmentsComponent } from './payments-to-ec/payment
         PaymentsToProjectPageComponent,
         AdvancePaymentsPageComponent,
         PaymentsToEcPageComponent,
-        PaymentsToEcDetailPageComponent,
+        PaymentToEcDetailPageComponent,
         PaymentToEcSummaryTabComponent,
         PaymentsToProjectDetailPageComponent,
         PaymentsToProjectAttachmentsComponent,

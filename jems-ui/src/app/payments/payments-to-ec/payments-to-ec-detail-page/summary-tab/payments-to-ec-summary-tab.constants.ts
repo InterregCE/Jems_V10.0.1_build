@@ -5,5 +5,11 @@ export class PaymentsToEcSummaryTabConstants {
     programmeFund: 'programmeFund',
     accountingYear: 'accountingYear',
     paymentToEc: 'paymentToEc',
+    nationalReference: 'nationalReference',
+    technicalAssistanceEur: 'technicalAssistanceEur',
+    submissionToSFCDate: 'submissionToSFCDate',
+    sfcNumber: 'sfcNumber',
+    comment: 'comment'
+
   };
 }

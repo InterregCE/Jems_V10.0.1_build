@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.crea
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.payments.authorization.CanUpdatePaymentApplicationsToEc
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
-import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcUpdate
+import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummaryUpdate
 import io.cloudflight.jems.server.payments.service.paymentApplicationToEcCreated
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.PaymentApplicationToEcPersistence
 import org.springframework.context.ApplicationEventPublisher
@@ -19,7 +19,7 @@ class CreatePaymentApplicationToEc(
     @CanUpdatePaymentApplicationsToEc
     @Transactional
     @ExceptionWrapper(CreatePaymentApplicationToEcException::class)
-    override fun createPaymentApplicationToEc(paymentApplicationToEcUpdate: PaymentApplicationToEcUpdate): PaymentApplicationToEcDetail =
+    override fun createPaymentApplicationToEc(paymentApplicationToEcUpdate: PaymentApplicationToEcSummaryUpdate): PaymentApplicationToEcDetail =
         paymentApplicationsToEcPersistence.createPaymentApplicationToEc(paymentApplicationToEcUpdate).also{
             auditPublisher.publishEvent(paymentApplicationToEcCreated(context = this, paymentApplicationToEc = it))
         }

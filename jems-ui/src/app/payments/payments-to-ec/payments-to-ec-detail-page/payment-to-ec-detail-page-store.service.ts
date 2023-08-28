@@ -1,10 +1,12 @@
 import {Injectable} from '@angular/core';
-import {merge, Observable, of, Subject} from 'rxjs';
+import {BehaviorSubject, merge, Observable, of, Subject} from 'rxjs';
 import {
-  AccountingYearDTO, AccountingYearService,
+  AccountingYearDTO,
+  AccountingYearService,
   PaymentApplicationToEcDetailDTO,
+  PaymentApplicationToEcDTO,
   PaymentApplicationToECService,
-  PaymentApplicationToEcUpdateDTO,
+  PaymentApplicationToEcSummaryUpdateDTO,
   ProgrammeFundDTO,
   ProgrammeFundService,
   UserRoleCreateDTO,
@@ -16,6 +18,7 @@ import {Log} from '@common/utils/log';
 import {MatSort} from '@angular/material/sort';
 import {UntilDestroy} from '@ngneat/until-destroy';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
+import PaymentEcStatusEnum = PaymentApplicationToEcDTO.StatusEnum;
 
 @UntilDestroy()
 @Injectable({
@@ -27,6 +30,7 @@ export class PaymentsToEcDetailPageStore {
   paymentToEcId$: Observable<number>;
   paymentToEcDetail$: Observable<PaymentApplicationToEcDetailDTO>;
   savedPaymentToEcDetail$ = new Subject<PaymentApplicationToEcDetailDTO>();
+  updatedPaymentApplicationStatus$ = new BehaviorSubject<PaymentApplicationToEcDetailDTO.StatusEnum>(PaymentEcStatusEnum.Draft);
   programmeFunds$: Observable<ProgrammeFundDTO[]>;
   accountingYears$: Observable<AccountingYearDTO[]>;
   newPageSize$ = new Subject<number>();
@@ -51,7 +55,8 @@ export class PaymentsToEcDetailPageStore {
   private paymentDetail(): Observable<PaymentApplicationToEcDetailDTO> {
     const initialPaymentDetail$ = this.paymentToEcId$
       .pipe(
-        switchMap((paymentId: number) => paymentId ? this.paymentApplicationToECService.getPaymentApplicationToEcDetail(paymentId) : of({}) as Observable<PaymentApplicationToEcDetailDTO>),
+        switchMap((paymentId: number) => paymentId ? this.paymentApplicationToECService.getPaymentApplicationToEcDetail(paymentId) : of({status: PaymentEcStatusEnum.Draft}) as Observable<PaymentApplicationToEcDetailDTO>),
+        tap(data => this.updatedPaymentApplicationStatus$.next(data.status)),
         tap(data => Log.info('Fetched payment to ec detail', this, data))
       );
 
@@ -72,18 +77,27 @@ export class PaymentsToEcDetailPageStore {
       );
   }
 
-  updatePaymentToEcSummary(paymentToEcSummaryData: PaymentApplicationToEcUpdateDTO): Observable<PaymentApplicationToEcDetailDTO> {
+  updatePaymentToEcSummary(paymentToEcSummaryData: PaymentApplicationToEcSummaryUpdateDTO): Observable<PaymentApplicationToEcDetailDTO> {
     return this.paymentApplicationToECService.updatePaymentApplicationToEc(paymentToEcSummaryData).pipe(
       tap(saved => Log.info('Payment to Ec summary data updated!', saved)),
       tap(data => this.savedPaymentToEcDetail$.next(data))
     );
   }
 
-  createPaymentToEc(paymentToEcSummaryData: PaymentApplicationToEcUpdateDTO): Observable<PaymentApplicationToEcDetailDTO> {
+  createPaymentToEc(paymentToEcSummaryData: PaymentApplicationToEcSummaryUpdateDTO): Observable<PaymentApplicationToEcDetailDTO> {
     return this.paymentApplicationToECService.createPaymentApplicationToEc(paymentToEcSummaryData).pipe(
       tap(saved => Log.info('Payment to Ec created!', saved)),
       tap(data => this.savedPaymentToEcDetail$.next(data))
     );
+  }
+
+  finalizePaymentApplicationToEc(paymentId: number): Observable<PaymentApplicationToEcDetailDTO.StatusEnum> {
+    return this.paymentApplicationToECService.finalizePaymentApplicationToEc(paymentId)
+      .pipe(
+        map(status => status as PaymentApplicationToEcDetailDTO.StatusEnum),
+        tap(status => this.updatedPaymentApplicationStatus$.next(status)),
+        tap(status => Log.info('Changed status for payment application to EC', paymentId, status))
+      );
   }
 
    private allFunds(): Observable<ProgrammeFundDTO[]> {

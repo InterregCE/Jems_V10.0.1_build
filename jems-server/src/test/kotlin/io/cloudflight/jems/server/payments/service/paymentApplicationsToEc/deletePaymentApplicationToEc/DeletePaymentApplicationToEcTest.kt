@@ -20,6 +20,7 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
+import java.math.BigDecimal
 import java.time.LocalDate
 
 class DeletePaymentApplicationToEcTest : UnitTest() {
@@ -29,16 +30,22 @@ class DeletePaymentApplicationToEcTest : UnitTest() {
 
         private val accountingYear = AccountingYear(2L, 2021, LocalDate.of(2021, 1, 1), LocalDate.of(2022, 6, 30))
         private val fund = ProgrammeFund(id = 3L, selected = true)
+        private val submissionDate = LocalDate.now()
 
         private val paymentApplicationsToEcSummary = PaymentApplicationToEcSummary(
             programmeFund = fund,
-            accountingYear = accountingYear
+            accountingYear = accountingYear,
+            nationalReference = "National Reference",
+            technicalAssistanceEur = BigDecimal.valueOf(105.32),
+            submissionToSfcDate = submissionDate,
+            sfcNumber = "SFC number",
+            comment = "Comment"
         )
 
         private val paymentApplicationsToEcDetail = PaymentApplicationToEcDetail(
             id = paymentApplicationsToEcId,
             status = PaymentEcStatus.Draft,
-            paymentApplicationsToEcSummary = paymentApplicationsToEcSummary
+            paymentApplicationToEcSummary = paymentApplicationsToEcSummary
         )
 
     }

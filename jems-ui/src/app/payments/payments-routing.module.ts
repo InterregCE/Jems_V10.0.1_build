@@ -15,8 +15,8 @@ import {PaymentsToEcPageComponent} from './payments-to-ec/payments-to-ec-page.co
 import {AdvancePaymentsPageComponent} from './advance-payments-page/advance-payments-page.component';
 import {PaymentsToProjectPageComponent} from './payments-to-projects-page/payments-to-project-page.component';
 import {
-  PaymentsToEcDetailPageComponent
-} from './payments-to-ec/payments-to-ec-detail-page/payments-to-ec-detail-page.component';
+  PaymentToEcDetailPageComponent
+} from './payments-to-ec/payments-to-ec-detail-page/payment-to-ec-detail-page.component';
 import {PermissionGuard} from '../security/permission.guard';
 
 export const paymentsRoutes: Routes = [
@@ -126,8 +126,8 @@ export const paymentsRoutes: Routes = [
       },
       {
         path: 'paymentApplicationsToEc/create',
+        component: PaymentToEcDetailPageComponent,
         canActivate: [PermissionGuard],
-        component: PaymentsToEcDetailPageComponent,
         data: {
           breadcrumb: 'payments.to.ec.breadcrumb',
           permissionsOnly: [
@@ -138,8 +138,8 @@ export const paymentsRoutes: Routes = [
       },
       {
         path: 'paymentApplicationsToEc/:paymentToEcId',
+        component: PaymentToEcDetailPageComponent,
         canActivate: [PermissionGuard],
-        component: PaymentsToEcDetailPageComponent,
         data: {
           breadcrumb: 'payments.to.ec.breadcrumb',
           permissionsOnly: [

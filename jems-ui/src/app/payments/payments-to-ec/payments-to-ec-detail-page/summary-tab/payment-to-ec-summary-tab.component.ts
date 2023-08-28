@@ -3,7 +3,7 @@ import {combineLatest, Observable} from 'rxjs';
 import {
   AccountingYearDTO,
   PaymentApplicationToEcDetailDTO,
-  PaymentApplicationToEcUpdateDTO,
+  PaymentApplicationToEcSummaryUpdateDTO,
   ProgrammeFundDTO
 } from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
@@ -14,7 +14,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {Alert} from '@common/components/forms/alert';
 import {RoutingService} from '@common/services/routing.service';
 import {PaymentsToEcSummaryTabConstants} from './payments-to-ec-summary-tab.constants';
-import {PaymentsToEcDetailPageStore} from '../payments-to-ec-detail-page-store.service';
+import {PaymentsToEcDetailPageStore} from '../payment-to-ec-detail-page-store.service';
 
 @UntilDestroy()
 @Component({
@@ -33,6 +33,11 @@ export class PaymentToEcSummaryTabComponent implements OnInit {
     id: '',
     programmeFund: this.formBuilder.control(''),
     accountingYear: this.formBuilder.control(''),
+    nationalReference: this.formBuilder.control(''),
+    technicalAssistanceEur: this.formBuilder.control(''),
+    submissionToSFCDate: this.formBuilder.control(''),
+    sfcNumber: this.formBuilder.control(''),
+    comment: this.formBuilder.control(''),
   });
   initialPaymentToEcDetail: PaymentApplicationToEcDetailDTO;
   data$: Observable<{
@@ -46,21 +51,22 @@ export class PaymentToEcSummaryTabComponent implements OnInit {
   constructor(private activatedRoute: ActivatedRoute,
               private formBuilder: FormBuilder,
               private formService: FormService,
-              private paymentsToEcDetailPageStoreStore: PaymentsToEcDetailPageStore,
+              private paymentsToEcDetailPageStore: PaymentsToEcDetailPageStore,
               private router: RoutingService,
   ) {
-    this.userCanEdit$ = this.paymentsToEcDetailPageStoreStore.userCanEdit$;
+    this.userCanEdit$ = this.paymentsToEcDetailPageStore.userCanEdit$;
   }
 
   ngOnInit(): void {
     this.data$ = combineLatest([
-      this.paymentsToEcDetailPageStoreStore.paymentToEcDetail$,
-      this.paymentsToEcDetailPageStoreStore.programmeFunds$,
-      this.paymentsToEcDetailPageStoreStore.accountingYears$,
+      this.paymentsToEcDetailPageStore.paymentToEcDetail$,
+      this.paymentsToEcDetailPageStore.programmeFunds$,
+      this.paymentsToEcDetailPageStore.accountingYears$,
+      this.paymentsToEcDetailPageStore.updatedPaymentApplicationStatus$
     ])
       .pipe(
-        map(([paymentDetail, programmeFunds, accountingYears]: any) => ({
-          paymentDetail,
+        map(([paymentDetail, programmeFunds, accountingYears, updatedPaymentStatus]: any) => ({
+          paymentDetail: this.getUpdatePayment(paymentDetail, updatedPaymentStatus),
           programmeFunds,
           accountingYears,
         })),
@@ -71,32 +77,50 @@ export class PaymentToEcSummaryTabComponent implements OnInit {
     this.formService.init(this.summaryForm, this.userCanEdit$);
   }
 
-  resetForm(paymentDetail: PaymentApplicationToEcDetailDTO) {
-    this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.id)?.setValue(this.paymentId ? this.paymentId : null);
-    this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.programmeFund)?.setValue(this.getValueOrEmpty(paymentDetail?.paymentApplicationsToEcSummary?.programmeFund.id));
-    this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.accountingYear)?.setValue(this.getValueOrEmpty(paymentDetail?.paymentApplicationsToEcSummary?.accountingYear.id));
-
-    this.setValidators();
+  getUpdatePayment(savedPayment: PaymentApplicationToEcDetailDTO, newStatus: PaymentApplicationToEcDetailDTO.StatusEnum): PaymentApplicationToEcDetailDTO {
+    const updatedPayment = savedPayment;
+    updatedPayment.status = newStatus;
+    return updatedPayment;
   }
 
-  private getValueOrEmpty(object: any) {
-    return object ? object : '';
+  resetForm(paymentDetail: PaymentApplicationToEcDetailDTO) {
+    this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.id)?.setValue(this.paymentId ? this.paymentId : null);
+    this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.programmeFund)?.setValue(paymentDetail?.paymentApplicationToEcSummary?.programmeFund.id ?? '');
+    this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.accountingYear)?.setValue(paymentDetail?.paymentApplicationToEcSummary?.accountingYear.id ?? '');
+
+    this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.nationalReference)?.setValue(paymentDetail?.paymentApplicationToEcSummary?.nationalReference ?? null);
+    this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.technicalAssistanceEur)?.setValue(paymentDetail?.paymentApplicationToEcSummary?.technicalAssistanceEur ?? 0.0);
+    this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.submissionToSFCDate)?.setValue(paymentDetail?.paymentApplicationToEcSummary?.submissionToSfcDate ?? null);
+    this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.sfcNumber)?.setValue(paymentDetail?.paymentApplicationToEcSummary?.sfcNumber ?? null);
+    this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.comment)?.setValue(paymentDetail?.paymentApplicationToEcSummary?.comment ?? null);
+
+    this.setValidators();
+    this.disableFieldsOnFinishStatus(paymentDetail);
+  }
+
+  private disableFieldsOnFinishStatus(paymentDetail: PaymentApplicationToEcDetailDTO) {
+    if(paymentDetail?.status == PaymentApplicationToEcDetailDTO.StatusEnum.Finished) {
+      this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.programmeFund)?.disable();
+      this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.accountingYear)?.disable();
+    }
   }
 
   setValidators() {
     this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.programmeFund)?.setValidators([Validators.required]);
     this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.accountingYear)?.setValidators([Validators.required]);
+    this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.nationalReference)?.setValidators([Validators.maxLength(50)]);
+    this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.sfcNumber)?.setValidators([Validators.maxLength(50)]);
+    this.summaryForm.get(this.constants.FORM_CONTROL_NAMES.comment)?.setValidators([Validators.maxLength(5000)]);
   }
 
   get summary(): FormGroup {
     return this.summaryForm;
   }
-
   updatePaymentApplicationToEc() {
     const dataToUpdate = this.prepareDataForSave(this.summaryForm.getRawValue());
 
     if(dataToUpdate.id === null) {
-      this.paymentsToEcDetailPageStoreStore.createPaymentToEc(dataToUpdate).pipe(
+      this.paymentsToEcDetailPageStore.createPaymentToEc(dataToUpdate).pipe(
         take(1),
         tap(() => this.formService.setSuccess('payments.to.ec.detail.save.success')),
         tap(data =>  this.redirectToPartnerDetailAfterCreate(dataToUpdate.id === null, data.id)),
@@ -104,7 +128,7 @@ export class PaymentToEcSummaryTabComponent implements OnInit {
         untilDestroyed(this)
       ).subscribe();
     } else {
-      this.paymentsToEcDetailPageStoreStore.updatePaymentToEcSummary(dataToUpdate).pipe(
+      this.paymentsToEcDetailPageStore.updatePaymentToEcSummary(dataToUpdate).pipe(
         take(1),
         tap(() => this.formService.setSuccess('payments.to.ec.detail.save.success')),
         catchError(err => this.formService.setError(err)),
@@ -122,11 +146,16 @@ export class PaymentToEcSummaryTabComponent implements OnInit {
     }
   }
 
-  prepareDataForSave(data: any): PaymentApplicationToEcUpdateDTO {
+  prepareDataForSave(data: any): PaymentApplicationToEcSummaryUpdateDTO {
     return {
       id: data.id,
       programmeFundId: data.programmeFund,
       accountingYearId: data.accountingYear,
+      nationalReference: data.nationalReference,
+      technicalAssistanceEur: data.technicalAssistanceEur,
+      submissionToSfcDate: data.submissionToSFCDate,
+      sfcNumber: data.sfcNumber,
+      comment: data.comment
     };
   }
 }

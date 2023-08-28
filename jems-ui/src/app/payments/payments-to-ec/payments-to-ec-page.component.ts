@@ -2,7 +2,7 @@ import {AfterViewInit, ChangeDetectionStrategy, Component, OnInit, TemplateRef, 
 import {combineLatest, Observable} from 'rxjs';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
-import {PagePaymentApplicationToEcDTO} from '@cat/api';
+import {PagePaymentApplicationToEcDTO, PaymentApplicationToEcDTO} from '@cat/api';
 import {ColumnWidth} from '@common/components/table/model/column-width';
 import {filter, map, take, tap} from 'rxjs/operators';
 import {PaymentsToEcPageStore} from './payments-to-ec-page.store';
@@ -10,6 +10,7 @@ import {Forms} from '@common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {PaymentsPageSidenavService} from '../payments-page-sidenav.service';
+import PaymentEcStatusEnum = PaymentApplicationToEcDTO.StatusEnum;
 
 @UntilDestroy()
 @Component({
@@ -36,6 +37,7 @@ export class PaymentsToEcPageComponent implements OnInit, AfterViewInit {
   }>;
   userCanEdit$: Observable<boolean>;
   tableConfiguration: TableConfiguration;
+  paymentStatusEnum = PaymentEcStatusEnum;
 
   constructor(public paymentsToEcPageStore: PaymentsToEcPageStore,
               private dialog: MatDialog,

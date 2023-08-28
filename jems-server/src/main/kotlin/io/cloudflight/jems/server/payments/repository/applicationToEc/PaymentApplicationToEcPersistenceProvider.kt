@@ -9,7 +9,7 @@ import io.cloudflight.jems.server.payments.entity.AccountingYearEntity
 import io.cloudflight.jems.server.payments.entity.PaymentApplicationToEcEntity
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEc
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
-import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcUpdate
+import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcSummaryUpdate
 import io.cloudflight.jems.server.payments.model.regular.PaymentEcStatus
 import io.cloudflight.jems.server.payments.service.paymentApplicationsToEc.PaymentApplicationToEcPersistence
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
@@ -29,7 +29,7 @@ class PaymentApplicationToEcPersistenceProvider(
 ) : PaymentApplicationToEcPersistence {
 
     @Transactional
-    override fun createPaymentApplicationToEc(paymentApplicationsToEcUpdate: PaymentApplicationToEcUpdate): PaymentApplicationToEcDetail {
+    override fun createPaymentApplicationToEc(paymentApplicationsToEcUpdate: PaymentApplicationToEcSummaryUpdate): PaymentApplicationToEcDetail {
         val programmeFund = programmeFundRepository.getById(paymentApplicationsToEcUpdate.programmeFundId)
         val accountingYear = accountingYearRepository.getById(paymentApplicationsToEcUpdate.accountingYearId)
 
@@ -37,28 +37,57 @@ class PaymentApplicationToEcPersistenceProvider(
             PaymentApplicationToEcEntity(
                 programmeFund = programmeFund,
                 accountingYear = accountingYear,
-                status = PaymentEcStatus.Draft
+                status = PaymentEcStatus.Draft,
+                nationalReference = paymentApplicationsToEcUpdate.nationalReference,
+                technicalAssistanceEur = paymentApplicationsToEcUpdate.technicalAssistanceEur,
+                submissionToSfcDate = paymentApplicationsToEcUpdate.submissionToSfcDate,
+                sfcNumber = paymentApplicationsToEcUpdate.sfcNumber,
+                comment = paymentApplicationsToEcUpdate.comment
             )
         ).toDetailModel()
     }
 
     @Transactional
-    override fun updatePaymentApplicationToEc(paymentApplicationsToEcUpdate: PaymentApplicationToEcUpdate): PaymentApplicationToEcDetail {
+    override fun updatePaymentApplicationToEc(paymentApplicationsToEcUpdate: PaymentApplicationToEcSummaryUpdate): PaymentApplicationToEcDetail {
         val programmeFund = programmeFundRepository.getById(paymentApplicationsToEcUpdate.programmeFundId)
         val accountingYear = accountingYearRepository.getById(paymentApplicationsToEcUpdate.accountingYearId)
         val existingEcPayment = paymentApplicationsToEcRepository.getById(paymentApplicationsToEcUpdate.id!!)
 
-        existingEcPayment.update(programmeFund, accountingYear)
+        existingEcPayment.update(programmeFund, accountingYear, paymentApplicationsToEcUpdate)
+
+        return existingEcPayment.toDetailModel()
+    }
+
+    @Transactional
+    override fun updatePaymentToEcSummaryOtherSection(paymentToEcUpdate: PaymentApplicationToEcSummaryUpdate): PaymentApplicationToEcDetail {
+        val existingEcPayment = paymentApplicationsToEcRepository.getById(paymentToEcUpdate.id!!)
+
+        existingEcPayment.updateOther(paymentToEcUpdate)
 
         return existingEcPayment.toDetailModel()
     }
 
     private fun PaymentApplicationToEcEntity.update(
         programmeFundEntity: ProgrammeFundEntity,
-        accountingYearEntity: AccountingYearEntity
+        accountingYearEntity: AccountingYearEntity,
+        newData: PaymentApplicationToEcSummaryUpdate
     ): PaymentApplicationToEcEntity {
         this.programmeFund = programmeFundEntity
         this.accountingYear = accountingYearEntity
+        this.nationalReference = newData.nationalReference
+        this.technicalAssistanceEur = newData.technicalAssistanceEur
+        this.submissionToSfcDate = newData.submissionToSfcDate
+        this.sfcNumber = newData.sfcNumber
+        this.comment = newData.comment
+        return this
+    }
+
+    private fun PaymentApplicationToEcEntity.updateOther(newData: PaymentApplicationToEcSummaryUpdate): PaymentApplicationToEcEntity {
+        this.nationalReference = newData.nationalReference
+        this.technicalAssistanceEur = newData.technicalAssistanceEur
+        this.submissionToSfcDate = newData.submissionToSfcDate
+        this.sfcNumber = newData.sfcNumber
+        this.comment = newData.comment
         return this
     }
 
@@ -69,6 +98,12 @@ class PaymentApplicationToEcPersistenceProvider(
     @Transactional(readOnly = true)
     override fun findAll(pageable: Pageable): Page<PaymentApplicationToEc> =
         paymentApplicationsToEcRepository.findAll(pageable).toModel()
+
+    @Transactional
+    override fun finalizePaymentApplicationToEc(paymentId: Long): PaymentApplicationToEcDetail =
+        paymentApplicationsToEcRepository.getById(paymentId).apply {
+            this.status = PaymentEcStatus.Finished
+        }.toDetailModel()
 
     @Transactional
     override fun deleteById(id: Long) {
