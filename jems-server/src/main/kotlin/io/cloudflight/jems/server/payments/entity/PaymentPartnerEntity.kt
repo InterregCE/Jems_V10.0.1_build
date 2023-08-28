@@ -1,5 +1,7 @@
 package io.cloudflight.jems.server.payments.entity
 
+import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
+import io.cloudflight.jems.server.project.entity.report.partner.ProjectPartnerReportEntity
 import java.math.BigDecimal
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
@@ -21,8 +23,15 @@ class PaymentPartnerEntity (
     @field:NotNull
     val payment: PaymentEntity,
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "partner_id")
     @field:NotNull
-    val partnerId: Long,
+    val projectPartner: ProjectPartnerEntity,
+
+
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "partner_certificate_id")
+    val partnerCertificate: ProjectPartnerReportEntity?,
 
     val amountApprovedPerPartner: BigDecimal?
 )

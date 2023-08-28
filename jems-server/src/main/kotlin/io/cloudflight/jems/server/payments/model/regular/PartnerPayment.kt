@@ -6,8 +6,10 @@ import java.math.BigDecimal
 data class PartnerPayment(
     val id: Long,
     val projectId: Long,
-    val orderNr: Int,
-    val programmeLumpSumId: Long,
+    val orderNr: Int?,
+    val programmeLumpSumId: Long?,
+    val partnerReportId: Long?,
+    val partnerReportNumber: Int?,
     val programmeFundId: Long,
     val partnerId: Long,
     val partnerRole: ProjectPartnerRole,

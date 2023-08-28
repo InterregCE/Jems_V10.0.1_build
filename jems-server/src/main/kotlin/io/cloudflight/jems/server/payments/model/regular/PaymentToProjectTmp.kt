@@ -7,5 +7,7 @@ import java.time.LocalDate
 data class PaymentToProjectTmp (
     val payment: PaymentEntity,
     val amountPaid: BigDecimal?,
+    val amountAuthorized: BigDecimal?,
     val lastPaymentDate: LocalDate?,
+    val totalEligibleForRegular: BigDecimal?
 )

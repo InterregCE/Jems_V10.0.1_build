@@ -39,7 +39,7 @@
       "reason": "queryDSL extension is inside repository wrapping other repository methods, thus it should be considered as Transactional"
     },
     {
-      "hash": "7ddc5aaf",
+      "hash": "da53ad27",
       "reason": "queryDSL JPAQueryFactory is called to fetch data, but somehow this verifier can't get it as Transactional"
     },
     {

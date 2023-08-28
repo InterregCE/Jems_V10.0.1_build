@@ -1,11 +1,13 @@
 package io.cloudflight.jems.server.payments.repository.regular
 
+import com.querydsl.core.types.dsl.CaseBuilder
 import com.querydsl.jpa.impl.JPAQueryFactory
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.common.file.repository.JemsFileMetadataRepository
 import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType.PaymentAttachment
 import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
+import io.cloudflight.jems.server.payments.entity.PaymentPartnerEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentPartnerEntity
 import io.cloudflight.jems.server.payments.entity.QPaymentPartnerInstallmentEntity
@@ -16,6 +18,7 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallmentUpdate
 import io.cloudflight.jems.server.payments.model.regular.PaymentPerPartner
+import io.cloudflight.jems.server.payments.model.regular.PaymentRegularToCreate
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequest
 import io.cloudflight.jems.server.payments.model.regular.PaymentToCreate
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
@@ -24,14 +27,21 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.payments.model.regular.contributionMeta.ContributionMeta
 import io.cloudflight.jems.server.payments.repository.toDetailModel
 import io.cloudflight.jems.server.payments.repository.toEntity
+import io.cloudflight.jems.server.payments.repository.toFTLSPaymentEntity
+import io.cloudflight.jems.server.payments.repository.toFTLSPaymentModel
 import io.cloudflight.jems.server.payments.repository.toListModel
 import io.cloudflight.jems.server.payments.repository.toModelList
-import io.cloudflight.jems.server.payments.service.regular.PaymentRegularPersistence
+import io.cloudflight.jems.server.payments.repository.toRegularPaymentEntity
+import io.cloudflight.jems.server.payments.repository.toRegularPaymentModel
+import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
+import io.cloudflight.jems.server.project.entity.report.project.financialOverview.QReportProjectCertificateCoFinancingEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.lumpsum.ProjectLumpSumRepository
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
-import io.cloudflight.jems.server.project.repository.partner.toProjectPartnerDetail
+import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
+import io.cloudflight.jems.server.project.repository.report.project.ProjectReportCoFinancingRepository
+import io.cloudflight.jems.server.project.repository.report.project.base.ProjectReportRepository
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.PaymentCumulativeAmounts
@@ -47,7 +57,7 @@ import java.time.LocalDate
 
 
 @Repository
-class PaymentRegularPersistenceProvider(
+class PaymentPersistenceProvider(
     private val paymentRepository: PaymentRepository,
     private val paymentPartnerRepository: PaymentPartnerRepository,
     private val paymentPartnerInstallmentRepository: PaymentPartnerInstallmentRepository,
@@ -59,9 +69,12 @@ class PaymentRegularPersistenceProvider(
     private val userRepository: UserRepository,
     private val fundRepository: ProgrammeFundRepository,
     private val projectFileMetadataRepository: JemsFileMetadataRepository,
+    private val projectReportCoFinancingRepository: ProjectReportCoFinancingRepository,
+    private val projectReportRepository: ProjectReportRepository,
     private val fileRepository: JemsProjectFileService,
+    private val projectPartnerReportRepository: ProjectPartnerReportRepository,
     private val jpaQueryFactory: JPAQueryFactory,
-) : PaymentRegularPersistence {
+) : PaymentPersistence {
 
     @Transactional(readOnly = true)
     override fun existsById(id: Long) =
@@ -69,40 +82,35 @@ class PaymentRegularPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getAllPaymentToProject(pageable: Pageable, filters: PaymentSearchRequest): Page<PaymentToProject> {
-        return fetchPayments(pageable, filters).map { with(it) {
-            PaymentToProject(
-                id = payment.id,
-                paymentType = payment.type,
-                projectCustomIdentifier = payment.projectCustomIdentifier,
-                projectAcronym = payment.projectAcronym,
-                paymentClaimNo = 0,
-                paymentClaimSubmissionDate = payment.project.contractedDecision?.updated,
-                lumpSumId = payment.projectLumpSum.programmeLumpSum.id,
-                orderNr = payment.projectLumpSum.id.orderNr,
-                paymentApprovalDate = payment.projectLumpSum.paymentEnabledDate,
-                totalEligibleAmount = payment.projectLumpSum.programmeLumpSum.cost,
-                fundId = payment.fund.id,
-                fundName = payment.fund.type.name,
-                amountApprovedPerFund = payment.amountApprovedPerFund!!,
-                amountPaidPerFund = amountPaid ?: BigDecimal.ZERO,
-                dateOfLastPayment = lastPaymentDate,
-                lastApprovedVersionBeforeReadyForPayment = payment.projectLumpSum.lastApprovedVersionBeforeReadyForPayment,
-            )
-        } }
+        return fetchPayments(pageable, filters).map {
+            when(it.payment.type) {
+                PaymentType.REGULAR -> it.toRegularPaymentModel()
+                PaymentType.FTLS -> it.toFTLSPaymentModel()
+            }
+        }
     }
 
     private fun fetchPayments(pageable: Pageable, filters: PaymentSearchRequest): Page<PaymentToProjectTmp> {
         val specPayment = QPaymentEntity.paymentEntity
         val specPaymentPartner = QPaymentPartnerEntity.paymentPartnerEntity
         val specPaymentPartnerInstallment = QPaymentPartnerInstallmentEntity.paymentPartnerInstallmentEntity
+        val specPartnerReportCertificateCoFin = QReportProjectCertificateCoFinancingEntity.reportProjectCertificateCoFinancingEntity
 
         val results = jpaQueryFactory
-            .select(specPayment, specPaymentPartnerInstallment.amountPaid.sum(), specPaymentPartnerInstallment.paymentDate.max())
+            .select(
+                specPayment,
+                specPaymentPartnerInstallment.amountPaid(),
+                specPaymentPartnerInstallment.amountAuthorized(),
+                specPaymentPartnerInstallment.paymentDate.max(),
+                specPartnerReportCertificateCoFin.sumCurrentVerified
+            )
             .from(specPayment)
             .leftJoin(specPaymentPartner)
                 .on(specPaymentPartner.payment.id.eq(specPayment.id))
             .leftJoin(specPaymentPartnerInstallment)
-                .on(specPaymentPartnerInstallment.paymentPartner.id.eq(specPaymentPartner.id).and(specPaymentPartnerInstallment.isPaymentConfirmed.isTrue))
+                .on(specPaymentPartnerInstallment.paymentPartner.id.eq(specPaymentPartner.id))
+            .leftJoin(specPartnerReportCertificateCoFin)
+                .on(specPartnerReportCertificateCoFin.reportEntity.id.eq(specPayment.projectReport.id))
             .where(filters.transformToWhereClause())
             .groupBy(specPayment)
             .having(filters.transformToHavingClause())
@@ -116,23 +124,25 @@ class PaymentRegularPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getConfirmedInfosForPayment(paymentId: Long): PaymentConfirmedInfo {
-        val paymentPartners = paymentPartnerRepository.findAllByPaymentId(paymentId)
         var amountPaid = BigDecimal.ZERO
+        var amountAuthorized = BigDecimal.ZERO
         var lastPaymentDate: LocalDate? = null
-        paymentPartners.forEach { paymentPartner ->
-            val installments = paymentPartnerInstallmentRepository.findAllByPaymentPartnerId(paymentPartner.id)
-            installments
-                .filter { it.isPaymentConfirmed == true }
-                .forEach { installment ->
-                    amountPaid = amountPaid.add(installment.amountPaid)
-                    if (installment.paymentDate != null &&
-                        (lastPaymentDate == null || installment.paymentDate!!.isAfter(lastPaymentDate))
-                    ) {
-                        lastPaymentDate = installment.paymentDate
-                    }
-                }
+        val paymentInstallments = paymentPartnerInstallmentRepository.findAllByPaymentPartnerPaymentId(paymentId)
+
+        paymentInstallments.forEach { installment ->
+            if (installment.isPaymentConfirmed == true) {
+                amountPaid = amountPaid.add(installment.amountPaid)
+                lastPaymentDate =  if (installment.paymentDate != null && (lastPaymentDate == null || installment.paymentDate!!.isAfter(lastPaymentDate)))
+                    installment.paymentDate else lastPaymentDate
+            }
+            amountAuthorized = if (installment.isSavePaymentInfo == true) amountAuthorized.add(installment.amountPaid) else amountAuthorized
         }
-        return PaymentConfirmedInfo(id = paymentId, amountPaidPerFund = amountPaid, dateOfLastPayment = lastPaymentDate)
+        return PaymentConfirmedInfo(
+            id = paymentId,
+            amountPaidPerFund = amountPaid,
+            amountAuthorizedPerFund = amountAuthorized,
+            dateOfLastPayment = lastPaymentDate
+        )
     }
 
     @Transactional
@@ -150,49 +160,91 @@ class PaymentRegularPersistenceProvider(
             .toListModel()
 
     @Transactional
-    override fun savePaymentToProjects(projectId: Long, paymentsToBeSaved: Map<PaymentGroupingId, PaymentToCreate>) {
+    override fun saveFTLSPayments(projectId: Long, paymentsToBeSaved: Map<PaymentGroupingId, PaymentToCreate>) {
         val projectEntity = projectRepository.getById(projectId)
         val paymentEntities = paymentRepository.saveAll(paymentsToBeSaved.map { (id, model) ->
-            model.toEntity(
+            model.toFTLSPaymentEntity(
                 projectEntity = projectEntity,
-                paymentType = PaymentType.FTLS,
                 lumpSum = projectLumpSumRepository.getByIdProjectIdAndIdOrderNr(projectId, id.orderNr),
                 fundEntity = fundRepository.getById(id.programmeFundId)
             )
-        }).associateBy { PaymentGroupingId(it.projectLumpSum.id.orderNr, it.fund.id) }
+        }).associateBy { PaymentGroupingId(it.projectLumpSum!!.id.orderNr, it.fund.id) }
 
         paymentEntities.forEach { (paymentId, entity) ->
             paymentPartnerRepository.saveAll(
-                paymentsToBeSaved[paymentId]!!.partnerPayments.map { it.toEntity(entity) }
+                paymentsToBeSaved[paymentId]!!.partnerPayments.map {
+                    it.toEntity(
+                        paymentEntity = entity,
+                        partnerEntity = projectPartnerRepository.getById(it.partnerId),
+                        partnerReportEntity = null
+                    )
+                }
             )
         }
+    }
+
+    @Transactional
+    override fun saveRegularPayments(projectReportId: Long, paymentsToBeSaved: List<PaymentRegularToCreate>) {
+        val projectReportEntity = projectReportRepository.getById(projectReportId)
+        val projectEntity = projectRepository.getById(projectReportEntity.projectId)
+        val fundIdToFundEntity = projectReportCoFinancingRepository.findAllByIdReportIdOrderByIdFundSortNumber(projectReportId)
+            .mapNotNull { it.programmeFund }.associateBy { it.id }
+
+        val paymentEntitiesByFundId = paymentRepository.saveAll(
+            paymentsToBeSaved.map {
+                val fund = fundIdToFundEntity.getOrElse(it.fundId) { throw PaymentFinancingSourceNotFoundException() }
+                it.toRegularPaymentEntity(projectEntity, projectReportEntity, fund)
+            }
+        ).associateBy { it.fund.id }
+
+
+        val paymentPartnerEntities = paymentsToBeSaved.flatMap { regular ->
+            regular.partnerPayments.map {
+                PaymentPartnerEntity(
+                    payment = paymentEntitiesByFundId.get(regular.fundId)!!,
+                    projectPartner = projectPartnerRepository.getById(it.partnerId),
+                    partnerCertificate = projectPartnerReportRepository.getById(it.partnerReportId!!),
+                    amountApprovedPerPartner = it.amountApprovedPerPartner,
+                )
+            }
+        }
+        paymentPartnerRepository.saveAll(paymentPartnerEntities)
     }
 
     @Transactional(readOnly = true)
     override fun getPaymentDetails(paymentId: Long): PaymentDetail =
         paymentRepository.getById(paymentId).toDetailModel(
-            partnerPayments = getAllPartnerPayments(paymentId)
-        )
+             partnerPayments = getAllPartnerPayments(paymentId)
+         )
 
     @Transactional(readOnly = true)
-    override fun getAllPartnerPayments(paymentId: Long): List<PartnerPayment> =
+    override fun getAllPartnerPayments(
+        paymentId: Long
+    ): List<PartnerPayment> =
         paymentPartnerRepository.findAllByPaymentId(paymentId)
             .map {
                 it.toDetailModel(
-                    projectPartnerRepository.getById(it.partnerId).toProjectPartnerDetail(),
-                    findPaymentPartnerInstallments(it.id)
+                    partnerEntity = it.projectPartner,
+                    installments = findPaymentPartnerInstallments(it.id),
+                    partnerReportId = it.partnerCertificate?.id,
+                    partnerReportNumber = it.partnerCertificate?.number
                 )
             }
 
     @Transactional(readOnly = true)
     override fun getAllPartnerPaymentsForPartner(partnerId: Long) =
-        paymentPartnerRepository.findAllByPartnerId(partnerId).map {
+        paymentPartnerRepository.findAllByProjectPartnerId(partnerId).map {
             PartnerPaymentSimple(fundId = it.payment.fund.id, it.amountApprovedPerPartner ?: BigDecimal.ZERO)
         }
 
     @Transactional(readOnly = true)
     override fun getPaymentPartnerId(paymentId: Long, partnerId: Long): Long =
-        this.paymentPartnerRepository.getIdByPaymentIdAndPartnerId(paymentId, partnerId)
+        paymentPartnerRepository.getIdByPaymentIdAndPartnerId(paymentId, partnerId)
+
+    @Transactional(readOnly = true)
+    override fun getPaymentPartnersIdsByPaymentId(paymentId: Long): List<Long> =
+        paymentPartnerRepository.findAllByPaymentId(paymentId).map { it.id }
+
 
     @Transactional(readOnly = true)
     override fun findPaymentPartnerInstallments(paymentPartnerId: Long): List<PaymentPartnerInstallment> =
@@ -200,7 +252,7 @@ class PaymentRegularPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun findByPartnerId(partnerId: Long) =
-        paymentPartnerInstallmentRepository.findAllByPaymentPartnerPartnerId(partnerId).toModelList()
+        paymentPartnerInstallmentRepository.findAllByPaymentPartnerProjectPartnerId(partnerId).toModelList()
 
     @Transactional
     override fun updatePaymentPartnerInstallments(
@@ -266,7 +318,7 @@ class PaymentRegularPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getPaymentsCumulativeForProject(projectId: Long): PaymentCumulativeData {
         val contribution = paymentContributionMetaRepository.getContributionCumulativePerProject(projectId)
-        val funds = paymentPartnerRepository.getPaymentCumulativeForProject(projectId).toMap()
+        val funds = paymentPartnerRepository.getPaymentOfTypeCumulativeForProject(PaymentType.FTLS, projectId).toMap()
 
         val cumulativeAmounts = PaymentCumulativeAmounts(
             funds = funds,
@@ -287,4 +339,9 @@ class PaymentRegularPersistenceProvider(
             userRepository.getById(userId)
         } else null
 
+    private fun QPaymentPartnerInstallmentEntity.amountPaid() =
+        CaseBuilder().`when`(this.isPaymentConfirmed.isTrue).then(this.amountPaid).otherwise(BigDecimal.ZERO).sum()
+
+    private fun QPaymentPartnerInstallmentEntity.amountAuthorized() =
+        CaseBuilder().`when`(this.isSavePaymentInfo.isTrue).then(this.amountPaid).otherwise(BigDecimal.ZERO).sum()
 }

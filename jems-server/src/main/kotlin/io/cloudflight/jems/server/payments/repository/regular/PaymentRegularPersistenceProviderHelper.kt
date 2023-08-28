@@ -29,6 +29,8 @@ fun Sort.toQueryDslOrderBy(): OrderSpecifier<*> {
         "project.contractedDecision.updated" -> specPayment.project.contractedDecision.updated
         "fund.type" -> specPayment.fund.type
         "id" -> specPayment.id
+        "projectReport.number" -> specPayment.projectReport?.number
+        "projectReport.verificationEndDate" -> specPayment.projectReport?.verificationEndDate
         else -> specPayment.id
     }
 
@@ -39,7 +41,9 @@ fun QueryResults<Tuple>.toPageResult(pageable: Pageable) = PageImpl(
     results.map { it: Tuple -> PaymentToProjectTmp(
         payment = it.get(0, PaymentEntity::class.java)!!,
         amountPaid = it.get(1, BigDecimal::class.java),
-        lastPaymentDate = it.get(2, LocalDate::class.java),
+        amountAuthorized  = it.get(2, BigDecimal::class.java),
+        lastPaymentDate = it.get(3, LocalDate::class.java),
+        totalEligibleForRegular = it.get(4, BigDecimal::class.java)
     ) },
     pageable,
     total,

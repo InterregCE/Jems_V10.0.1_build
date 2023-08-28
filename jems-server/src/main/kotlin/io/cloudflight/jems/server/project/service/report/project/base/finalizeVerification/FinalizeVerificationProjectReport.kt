@@ -2,11 +2,15 @@ package io.cloudflight.jems.server.project.service.report.project.base.finalizeV
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.notification.handler.ProjectReportStatusChanged
+import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerToCreate
+import io.cloudflight.jems.server.payments.model.regular.PaymentRegularToCreate
+import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.project.authorization.CanFinalizeReportVerification
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.ReportCertificateCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.FinancingSourceBreakdownLine
+import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.PartnerCertificateFundSplit
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.project.projectReportFinalizedVerification
@@ -27,6 +31,7 @@ class FinalizeVerificationProjectReport(
     private val projectReportCertificateCoFinancingPersistence: ProjectReportCertificateCoFinancingPersistence,
     private val projectReportFinancialOverviewPersistence: ProjectReportFinancialOverviewPersistence,
     private val getPartnerReportFinancialData: GetPartnerReportFinancialData,
+    private val paymentRegularPersistence: PaymentPersistence,
 ) : FinalizeVerificationProjectReportInteractor {
 
     @Transactional
@@ -44,25 +49,24 @@ class FinalizeVerificationProjectReport(
             partnerReportFinancialDataResolver = { getPartnerReportFinancialData.retrievePartnerReportFinancialData(it) },
         )
 
-        projectReportFinancialOverviewPersistence.storeOverviewPerFund(reportId, toStore = financialData)
-        projectReportCertificateCoFinancingPersistence.updateAfterVerificationValues(
-            report.projectId,
-            reportId,
-            financialData.sumUp().totalLineToColumn()
-        )
+        val reportCertificatesOverviewPerFund = projectReportFinancialOverviewPersistence.storeOverviewPerFund(reportId, toStore = financialData)
+        projectReportCertificateCoFinancingPersistence.updateAfterVerificationValues(report.projectId, reportId, financialData.sumUp().totalLineToColumn())
 
-        return reportPersistence.finalizeVerificationOnReportById(projectId = report.projectId, reportId = reportId)
-            .also {
-                auditPublisher.publishEvent(ProjectReportStatusChanged(this, it))
-                auditPublisher.publishEvent(
-                    projectReportFinalizedVerification(
-                        context = this,
-                        projectId = report.projectId,
-                        report = it,
-                        parkedExpenditures
-                    )
+
+        val paymentsToSave = createPaymentsForReport(reportCertificatesOverviewPerFund, report)
+        paymentRegularPersistence.saveRegularPayments(projectReportId = reportId, paymentsToSave)
+
+        return reportPersistence.finalizeVerificationOnReportById(projectId = report.projectId, reportId = reportId).also {
+            auditPublisher.publishEvent(ProjectReportStatusChanged(this, it))
+            auditPublisher.publishEvent(
+                projectReportFinalizedVerification(
+                    context = this,
+                    projectId = report.projectId,
+                    report = it,
+                    parkedExpenditures
                 )
-            }.status
+            )
+        }.status
     }
 
     private fun validateReportIsInVerification(report: ProjectReportModel) {
@@ -79,5 +83,30 @@ class FinalizeVerificationProjectReport(
         privateContribution = privateContribution,
         sum = total,
     )
+
+    private fun createPaymentsForReport(
+        reportCertificatesOverviewPerFund: Map<Long, List<PartnerCertificateFundSplit>>,
+        projectReport: ProjectReportModel,
+    ): List<PaymentRegularToCreate> {
+
+        val paymentsToCreate = reportCertificatesOverviewPerFund.map { (fundId, certificateFundSplits) ->
+            PaymentRegularToCreate(
+                    projectId = projectReport.projectId,
+                    fundId = fundId,
+                    amountApprovedPerFund = certificateFundSplits.getTotalPaymentForFund(),
+                    partnerPayments = certificateFundSplits.map {
+                        PaymentPartnerToCreate(
+                            partnerId = it.partnerId,
+                            partnerReportId = it.partnerReportId,
+                            amountApprovedPerPartner = it.value
+                        )
+                    }
+                )
+        }
+
+        return paymentsToCreate
+    }
+
+    private fun List<PartnerCertificateFundSplit>.getTotalPaymentForFund() = this.sumOf { it.value }
 
 }

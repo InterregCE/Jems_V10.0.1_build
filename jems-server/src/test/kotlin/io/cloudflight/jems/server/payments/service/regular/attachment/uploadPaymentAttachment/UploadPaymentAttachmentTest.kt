@@ -9,7 +9,7 @@ import io.cloudflight.jems.server.common.file.service.model.JemsFileCreate
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
-import io.cloudflight.jems.server.payments.service.regular.PaymentRegularPersistence
+import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.mockk.clearMocks
 import io.mockk.every
@@ -33,7 +33,7 @@ class UploadPaymentAttachmentTest : UnitTest() {
     }
 
     @MockK
-    lateinit var paymentPersistence: PaymentRegularPersistence
+    lateinit var paymentPersistence: PaymentPersistence
 
     @MockK
     lateinit var filePersistence: JemsFilePersistence

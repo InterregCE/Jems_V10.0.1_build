@@ -97,6 +97,7 @@
 <ng-template #remainingToBePaidCell let-payment>
     {{(payment.amountApprovedPerFund - payment.amountPaidPerFund) | asMoney}}
 </ng-template>
+
 <ng-template #idCell let-payment>
     <span matTooltip="{{'payments.payment.to.project.table.indicator.tooltip' | translate}}"
           [matTooltipDisabled]="(payment.amountApprovedPerFund - payment.amountPaidPerFund) === 0">
@@ -104,6 +105,14 @@
         <mat-icon *ngIf="(payment.amountApprovedPerFund - payment.amountPaidPerFund) > 0" class="open-payment-indicator">circle</mat-icon>
     </span>
 </ng-template>
+
 <ng-template #typeCell let-payment>
     <mat-icon class="mr-1">{{ payment.paymentType === PaymentTypeEnum.FTLS ? 'fast_forward' : 'receipt_long' }}</mat-icon>{{ payment.paymentType }}
+</ng-template>
+
+<ng-template #claimNoCell let-payment>
+    <span *ngIf="payment.paymentType === PaymentTypeEnum.FTLS">{{payment.paymentClaimNo}}</span>
+    <span *ngIf="payment.paymentType === PaymentTypeEnum.REGULAR">
+        {{'payments.payment.to.project.table.column.payment.project.report.id.abbreviation' | translate : {id: payment.paymentClaimNo} }}
+    </span>
 </ng-template>

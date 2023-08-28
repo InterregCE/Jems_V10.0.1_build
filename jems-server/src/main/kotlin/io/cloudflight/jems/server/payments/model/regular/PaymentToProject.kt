@@ -4,7 +4,7 @@ import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
 
-data class PaymentToProject (
+data class PaymentToProject(
     val id: Long,
     val paymentType: PaymentType,
     val projectCustomIdentifier: String,
@@ -19,6 +19,7 @@ data class PaymentToProject (
     val fundName: String,
     val amountApprovedPerFund: BigDecimal,
     val amountPaidPerFund: BigDecimal,
+    val amountAuthorizedPerFund: BigDecimal,
     val dateOfLastPayment: LocalDate? = null,
     val lastApprovedVersionBeforeReadyForPayment: String?
 )

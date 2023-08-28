@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.project.base.createProjectReport
 
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
-import io.cloudflight.jems.server.payments.service.regular.PaymentRegularPersistence
+import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.project.repository.report.project.financialOverview.coFinancing.ProjectReportCertificateCoFinancingPersistenceProvider
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
 import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_funds.GetPartnerBudgetPerFundService
@@ -41,7 +41,7 @@ class CreateProjectReportBudget(
     private val lumpSumPersistence: ProjectLumpSumPersistence,
     private val getProjectBudget: GetProjectBudget,
     private val reportCertificateCoFinancingPersistence: ProjectReportCertificateCoFinancingPersistenceProvider,
-    private val paymentPersistence: PaymentRegularPersistence,
+    private val paymentPersistence: PaymentPersistence,
     private val reportCertificateCostCategoryPersistence: ProjectReportCertificateCostCategoryPersistence,
     private val getPartnerBudgetPerFundService: GetPartnerBudgetPerFundService,
     private val reportCertificateLumpSumPersistence: ProjectReportCertificateLumpSumPersistence,
@@ -134,7 +134,7 @@ class CreateProjectReportBudget(
 
     companion object {
 
-        private fun ProjectLumpSum.isReady() = fastTrack && readyForPayment
+        private fun ProjectLumpSum.isReady() = readyForPayment
 
         private fun toCreateModel(
             totalFromAF: ProjectPartnerBudgetPerFund,
@@ -266,7 +266,7 @@ class CreateProjectReportBudget(
     ) = map {
         val lumpSumPartnerShare = it.lumpSumContributions.sumOf { contribution -> contribution.amount }
 
-        var fromPrevious = previouslyReported.get(it.orderNr) ?: ZERO
+        var fromPrevious = previouslyReported[it.orderNr] ?: ZERO
         if (it.isReady()) {
             fromPrevious += lumpSumPartnerShare
         }
@@ -277,7 +277,7 @@ class CreateProjectReportBudget(
             period = it.period,
             total = lumpSumPartnerShare,
             previouslyReported = fromPrevious,
-            previouslyPaid = previouslyPaid.get(it.programmeLumpSumId)?.get(it.orderNr) ?: ZERO,
+            previouslyPaid = previouslyPaid[it.programmeLumpSumId]?.get(it.orderNr) ?: ZERO,
         )
     }
 

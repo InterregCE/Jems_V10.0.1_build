@@ -7,7 +7,7 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerToCreate
 import io.cloudflight.jems.server.payments.model.regular.PaymentToCreate
 import io.cloudflight.jems.server.payments.model.regular.contributionMeta.ContributionMeta
 import io.cloudflight.jems.server.payments.service.monitoringFtlsReadyForPayment
-import io.cloudflight.jems.server.payments.service.regular.PaymentRegularPersistence
+import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.project.authorization.CanSetProjectToContracted
 import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
@@ -40,7 +40,7 @@ class UpdateContractingMonitoring(
     private val getProjectBudget: GetProjectBudget,
     private val validator: ContractingValidator,
     private val auditPublisher: ApplicationEventPublisher,
-    private val paymentPersistence: PaymentRegularPersistence,
+    private val paymentPersistence: PaymentPersistence,
 ) : UpdateContractingMonitoringInteractor {
 
     @CanSetProjectToContracted
@@ -166,6 +166,7 @@ class UpdateContractingMonitoring(
                         partnerPayments.map { o ->
                             PaymentPartnerToCreate(
                                 o.partnerId,
+                                null,
                                 o.amountApprovedPerPartner
                             )
                         },
@@ -175,7 +176,7 @@ class UpdateContractingMonitoring(
                     )
                 }
 
-            this.paymentPersistence.savePaymentToProjects(projectId, paymentsToUpdate)
+            this.paymentPersistence.saveFTLSPayments(projectId, paymentsToUpdate)
             orderNrsToBeAdded.forEach { orderNr ->
                 auditPublisher.publishEvent(monitoringFtlsReadyForPayment(this, project, orderNr, true))
             }

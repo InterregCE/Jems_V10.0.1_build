@@ -10,6 +10,8 @@ import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentSettlemen
 import io.cloudflight.jems.server.payments.model.ec.PaymentApplicationToEcDetail
 import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
 import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
+import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallmentUpdate
+import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import java.math.RoundingMode
@@ -32,27 +34,11 @@ fun monitoringFtlsReadyForPayment(
             .build()
     )
 
-fun paymentInstallmentCreated(
-    context: Any,
-    payment: PaymentDetail,
-    partner: PartnerPayment,
-    installmentNr: Int,
-): AuditCandidateEvent =
-    AuditCandidateEvent(
-        context = context,
-        auditCandidate = AuditBuilder(AuditAction.PAYMENT_INSTALLMENT_AUTHORISED)
-            .project(partner.projectId, payment.projectCustomIdentifier, payment.projectAcronym)
-            .description(
-                "Payment details for payment ${payment.id}, installment $installmentNr" +
-                    " of partner ${getPartnerName(partner.partnerRole, partner.partnerNumber)} are authorised"
-            )
-            .build()
-    )
-
 fun paymentInstallmentConfirmed(
     context: Any,
     payment: PaymentDetail,
     partner: PartnerPayment,
+    installment: PaymentPartnerInstallmentUpdate,
     installmentNr: Int,
 ): AuditCandidateEvent =
     AuditCandidateEvent(
@@ -60,8 +46,28 @@ fun paymentInstallmentConfirmed(
         auditCandidate = AuditBuilder(AuditAction.PAYMENT_INSTALLMENT_CONFIRMED)
             .project(partner.projectId, payment.projectCustomIdentifier, payment.projectAcronym)
             .description(
-                "Payment details for payment ${payment.id}, installment $installmentNr" +
-                    " of partner ${getPartnerName(partner.partnerRole, partner.partnerNumber)} are confirmed"
+                "Amount ${installment.amountPaid} EUR was confirmed for payment ${payment.id}, installment $installmentNr" +
+                    " of partner ${getPartnerName(partner.partnerRole, partner.partnerNumber)}" +
+                        if(payment.paymentType == PaymentType.REGULAR) " for partner report R.${partner.partnerReportNumber} " else ""
+            )
+            .build()
+    )
+
+fun paymentInstallmentAuthorized(
+    context: Any,
+    payment: PaymentDetail,
+    partner: PartnerPayment,
+    installment: PaymentPartnerInstallmentUpdate,
+    installmentNr: Int,
+): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.PAYMENT_INSTALLMENT_AUTHORISED)
+            .project(partner.projectId, payment.projectCustomIdentifier, payment.projectAcronym)
+            .description(
+                "Amount ${installment.amountPaid} EUR was authorised for payment ${payment.id}, installment $installmentNr" +
+                        " of partner ${getPartnerName(partner.partnerRole, partner.partnerNumber)}" +
+                        if(payment.paymentType == PaymentType.REGULAR) " for partner report R.${partner.partnerReportNumber} " else ""
             )
             .build()
     )
@@ -78,7 +84,8 @@ fun paymentInstallmentDeleted(
             .project(partner.projectId, payment.projectCustomIdentifier, payment.projectAcronym)
             .description(
                 "Payment installment $installmentNr for payment ${payment.id}" +
-                    " of partner ${getPartnerName(partner.partnerRole, partner.partnerNumber)} is deleted"
+                    " of partner ${getPartnerName(partner.partnerRole, partner.partnerNumber)}" +
+                        (if(payment.paymentType == PaymentType.REGULAR) " for partner report R.${partner.partnerReportNumber} " else "") + " is deleted"
             )
             .build()
     )

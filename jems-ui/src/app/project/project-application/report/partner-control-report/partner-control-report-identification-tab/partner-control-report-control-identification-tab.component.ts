@@ -37,7 +37,7 @@ import VerificationLocationsEnum = ReportOnTheSpotVerificationDTO.VerificationLo
 import GeneralMethodologiesEnum = ReportVerificationDTO.GeneralMethodologiesEnum;
 import {APIError} from '@common/models/APIError';
 import {TranslateService} from '@ngx-translate/core';
-import {MatAutocompleteTrigger} from "@angular/material/autocomplete";
+import {MatAutocompleteTrigger} from '@angular/material/autocomplete';
 
 @Component({
   selector: 'jems-partner-control-report-identification-tab',
@@ -334,7 +334,7 @@ export class PartnerControlReportControlIdentificationTabComponent implements On
   private isControllingUserNameSelected(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       if (this.controllerUsers && control.value && !this.getSelectedControllerUser(control.value)) {
-        return {controllingUserNameNotSelected : true}
+        return {controllingUserNameNotSelected : true};
       } else {
         return null;
       }
@@ -382,12 +382,12 @@ export class PartnerControlReportControlIdentificationTabComponent implements On
 
   controlUserChanged(selection: string): void {
     this.selectedControllerUser = this.getSelectedControllerUser(selection);
-    this.designatedController.get('controllingUserName')?.updateValueAndValidity()
+    this.designatedController.get('controllingUserName')?.updateValueAndValidity();
   }
 
   reviewerUserChanged(selection: string): void {
     this.selectedReviewerUser = this.getSelectedControllerUser(selection);
-    this.designatedController.get('controllerReviewerName')?.updateValueAndValidity()
+    this.designatedController.get('controllerReviewerName')?.updateValueAndValidity();
   }
 
   private getSelectedControllerUser(selection: string) {
