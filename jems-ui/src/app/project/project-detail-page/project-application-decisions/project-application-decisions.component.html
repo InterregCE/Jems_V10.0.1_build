@@ -24,7 +24,7 @@
                 <a *jemsHasPermission="[Permissions.ProjectStatusDecideEligible, Permissions.ProjectStatusDecideIneligible]"
                    class="text-overflow-ellipsis"
                    [matTooltip]="'project.assessment.eligibilityDecision.assessment' | translate"
-                   mat-stroked-button jemsFormFieldWidth="x-large"
+                   mat-stroked-button jemsFormFieldWidth="xxx-large"
                    [disabled]="!data.decision?.eligibilityAssessment"
                    [routerLink]="data.decision?.eligibilityAssessment ? ['./eligibilityDecision', step] : []" queryParamsHandling="merge">
                     {{'project.assessment.eligibilityDecision.assessment' | translate}}
@@ -35,7 +35,7 @@
                    class="text-overflow-ellipsis"
                    [matTooltip]="'project.assessment.eligibilityDecision.assessment.view' | translate"
                    [disabled]="!data.decision?.eligibilityDecision"
-                   mat-stroked-button jemsFormFieldWidth="x-large"
+                   mat-stroked-button jemsFormFieldWidth="xxx-large"
                    [routerLink]="data.decision?.eligibilityDecision ? ['./eligibilityDecision', step] : []" queryParamsHandling="merge">
                     {{'project.assessment.eligibilityDecision.assessment.view' | translate}}
                 </a>
@@ -57,7 +57,7 @@
                 <a *jemsHasPermission="Permissions.ProjectAssessmentView"
                    class="text-overflow-ellipsis"
                    [matTooltip]="'project.assessment.fundingDecision.assessment.view' | translate"
-                   mat-stroked-button jemsFormFieldWidth="x-large"
+                   mat-stroked-button jemsFormFieldWidth="xxx-large"
                    [routerLink]="['./fundingDecision', step]" queryParamsHandling="merge">
                     {{'project.assessment.fundingDecision.assessment.view' | translate}}
                 </a>
@@ -66,7 +66,7 @@
                 <a *jemsHasPermission="[Permissions.ProjectStatusDecideApproved, Permissions.ProjectStatusDecideApprovedWithConditions, Permissions.ProjectStatusDecideNotApproved]"
                    class="text-overflow-ellipsis"
                    [matTooltip]="getCurrentVersionStatusTitle(data.currentVersionOfProjectStatus.status) | translate"
-                   mat-stroked-button jemsFormFieldWidth="x-large"
+                   mat-stroked-button jemsFormFieldWidth="xxx-large"
                    [disabled]="!data.isFundingDecisionPreconditionOk"
                    [color]="data.currentVersionOfProjectStatus.status === stepStatus.approvedWithConditions ? 'primary' : null"
                    [routerLink]="data.isFundingDecisionPreconditionOk ? ['./fundingDecision', step] : []" queryParamsHandling="merge">

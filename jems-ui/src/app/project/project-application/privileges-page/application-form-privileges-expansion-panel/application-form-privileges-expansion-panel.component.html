@@ -8,64 +8,66 @@
         </mat-panel-title>
     </mat-expansion-panel-header>
 
-    <jems-form (save)="saveCollaborators()"
-               (discard)="resetForm(projectCollaboratorsData)">
-        <form jemsFormLayout [formGroup]="form">
-            <div formArrayName="projectCollaborators" id="project-collaborators-table">
-                <div *ngFor="let collaborator of projectCollaborators.controls;let i=index">
-                    <div jemsMultiColumnRow justifyContent="space-between" [formGroupName]="i">
+    <div class="overflow-scrollbar">
+        <jems-form (save)="saveCollaborators()"
+                   (discard)="resetForm(projectCollaboratorsData)">
+            <form jemsFormLayout [formGroup]="form">
+                <div formArrayName="projectCollaborators" id="project-collaborators-table">
+                    <div *ngFor="let collaborator of projectCollaborators.controls;let i=index">
+                        <div jemsMultiColumnRow justifyContent="space-between" [formGroupName]="i">
 
-                        <mat-form-field jemsFormFieldWidth="xx-large" appearance="fill">
-                            <mat-label>{{'project.application.form.section.privileges.email' | translate}}</mat-label>
-                            <input formControlName="userEmail" matInput required>
-                            <mat-error>
-                                <jems-form-field-errors
-                                        [errors]="collaborator.get('userEmail').errors">
-                                </jems-form-field-errors>
-                            </mat-error>
-                        </mat-form-field>
+                            <mat-form-field jemsFormFieldWidth="xx-large" appearance="fill">
+                                <mat-label>{{'project.application.form.section.privileges.email' | translate}}</mat-label>
+                                <input formControlName="userEmail" matInput required>
+                                <mat-error>
+                                    <jems-form-field-errors
+                                            [errors]="collaborator.get('userEmail').errors">
+                                    </jems-form-field-errors>
+                                </mat-error>
+                            </mat-form-field>
 
-                        <mat-button-toggle-group [disabled]="form.disabled"
-                                                 formControlName="level"
-                                                 class="small-toggle-group">
-                            <mat-button-toggle [value]="PROJECT_LEVEL.VIEW">
-                                    <span>
-                                        <mat-icon>visibility</mat-icon>
-                                        {{'common.permission.view' | translate}}
-                                    </span>
-                            </mat-button-toggle>
-                            <mat-button-toggle [value]="PROJECT_LEVEL.EDIT">
-                                    <span>
-                                        <mat-icon>edit</mat-icon>
-                                        {{'common.permission.edit' | translate}}
-                                    </span>
-                            </mat-button-toggle>
-                            <mat-button-toggle [value]="PROJECT_LEVEL.MANAGE">
-                                    <span>
-                                        <mat-icon>settings</mat-icon>
-                                        {{'common.permission.manage' | translate}}
-                                    </span>
-                            </mat-button-toggle>
-                        </mat-button-toggle-group>
+                            <mat-button-toggle-group [disabled]="form.disabled"
+                                                     formControlName="level"
+                                                     class="small-toggle-group">
+                                <mat-button-toggle [value]="PROJECT_LEVEL.VIEW">
+                                        <span>
+                                            <mat-icon>visibility</mat-icon>
+                                            {{'common.permission.view' | translate}}
+                                        </span>
+                                </mat-button-toggle>
+                                <mat-button-toggle [value]="PROJECT_LEVEL.EDIT">
+                                        <span>
+                                            <mat-icon>edit</mat-icon>
+                                            {{'common.permission.edit' | translate}}
+                                        </span>
+                                </mat-button-toggle>
+                                <mat-button-toggle [value]="PROJECT_LEVEL.MANAGE">
+                                        <span>
+                                            <mat-icon>settings</mat-icon>
+                                            {{'common.permission.manage' | translate}}
+                                        </span>
+                                </mat-button-toggle>
+                            </mat-button-toggle-group>
 
-                        <button *ngIf="form.enabled" type="button" mat-icon-button color="accent"
-                                (click)="projectCollaborators.removeAt(i); formService.setDirty(true)"
-                                aria-label="delete">
-                            <mat-icon>delete</mat-icon>
-                        </button>
+                            <button *ngIf="form.enabled" type="button" mat-icon-button color="accent"
+                                    (click)="projectCollaborators.removeAt(i); formService.setDirty(true)"
+                                    aria-label="delete">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <mat-error>
-                <jems-form-field-errors [errors]="projectCollaborators.errors"
-                                        [messages]="errorMessages">
-                </jems-form-field-errors>
-            </mat-error>
-        </form>
-        <button jemsText *ngIf="form.enabled" mat-stroked-button class="mt-2"
-                (click)="addCollaborator(); formService.setDirty(true)"
-                aria-label="add">
-            <mat-icon>add</mat-icon>
-        </button>
-    </jems-form>
+                <mat-error>
+                    <jems-form-field-errors [errors]="projectCollaborators.errors"
+                                            [messages]="errorMessages">
+                    </jems-form-field-errors>
+                </mat-error>
+            </form>
+            <button jemsText *ngIf="form.enabled" mat-stroked-button class="mt-2"
+                    (click)="addCollaborator(); formService.setDirty(true)"
+                    aria-label="add">
+                <mat-icon>add</mat-icon>
+            </button>
+        </jems-form>
+    </div>
 </mat-expansion-panel>

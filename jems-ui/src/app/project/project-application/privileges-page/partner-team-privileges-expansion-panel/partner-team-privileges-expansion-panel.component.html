@@ -9,74 +9,79 @@
                 <mat-chip *ngIf="partner.institutionName" [matTooltip]="partner.institutionName">
                     <span class="text-overflow-ellipsis">{{ partner.institutionName }}</span>
                 </mat-chip>
-                <mat-chip *ngIf="!partner.institutionName" color="accent" selected>
-                    <mat-icon class="mr-2">help</mat-icon>{{ 'project.application.form.section.privileges.no.institution' | translate }}</mat-chip>
+                <mat-chip *ngIf="!partner.institutionName" color="accent" selected
+                          [matTooltip]="'project.application.form.section.privileges.no.institution' | translate">
+                    <mat-icon class="help-icon mr-2">help</mat-icon>
+                    <span class="text-overflow-ellipsis">{{ 'project.application.form.section.privileges.no.institution' | translate }}</span>
+                </mat-chip>
             </mat-chip-list>
         </mat-panel-description>
     </mat-expansion-panel-header>
 
-    <jems-form (save)="savePartnerCollaborators(partner.id)"
-               (discard)="resetPartnerForm(collaborators)">
-        <form jemsFormLayout [formGroup]="partnerForm">
-            <div formArrayName="partnerCollaborators" class="partner-collaborators-table">
-                <div *ngFor="let collaborator of partnerCollaborators.controls;let i=index">
-                    <div jemsMultiColumnRow justifyContent="space-between" [formGroupName]="i">
+    <div class="overflow-scrollbar">
+        <jems-form (save)="savePartnerCollaborators(partner.id)"
+                   (discard)="resetPartnerForm(collaborators)">
+            <form jemsFormLayout [formGroup]="partnerForm">
+                <div formArrayName="partnerCollaborators" class="partner-collaborators-table">
+                    <div *ngFor="let collaborator of partnerCollaborators.controls;let i=index">
+                        <div jemsMultiColumnRow justifyContent="space-between" [formGroupName]="i">
 
-                        <mat-form-field jemsFormFieldWidth="xx-large" appearance="fill">
-                            <mat-label>{{'project.application.form.section.privileges.email' | translate}}</mat-label>
-                            <input formControlName="userEmail" matInput required>
-                            <mat-error>
-                                <jems-form-field-errors
-                                        [errors]="collaborator.get('userEmail').errors">
-                                </jems-form-field-errors>
-                            </mat-error>
-                        </mat-form-field>
+                            <mat-form-field jemsFormFieldWidth="xx-large" appearance="fill">
+                                <mat-label>{{'project.application.form.section.privileges.email' | translate}}</mat-label>
+                                <input formControlName="userEmail" matInput required>
+                                <mat-error>
+                                    <jems-form-field-errors
+                                            [errors]="collaborator.get('userEmail').errors">
+                                    </jems-form-field-errors>
+                                </mat-error>
+                            </mat-form-field>
 
-                        <mat-button-toggle-group [disabled]="partnerForm.disabled"
-                                                 formControlName="level"
-                                                 class="small-toggle-group">
-                            <mat-button-toggle [value]="PARTNER_LEVEL.VIEW">
-                                    <span>
-                                        <mat-icon>visibility</mat-icon>
-                                        {{'common.permission.view' | translate}}
-                                    </span>
-                            </mat-button-toggle>
-                            <mat-button-toggle [value]="PARTNER_LEVEL.EDIT">
-                                    <span>
-                                        <mat-icon>edit</mat-icon>
-                                        {{'common.permission.edit' | translate}}
-                                    </span>
-                            </mat-button-toggle>
-                        </mat-button-toggle-group>
+                            <mat-button-toggle-group [disabled]="partnerForm.disabled"
+                                                     formControlName="level"
+                                                     class="small-toggle-group">
+                                <mat-button-toggle [value]="PARTNER_LEVEL.VIEW">
+                                        <span>
+                                            <mat-icon>visibility</mat-icon>
+                                            {{'common.permission.view' | translate}}
+                                        </span>
+                                </mat-button-toggle>
+                                <mat-button-toggle [value]="PARTNER_LEVEL.EDIT">
+                                        <span>
+                                            <mat-icon>edit</mat-icon>
+                                            {{'common.permission.edit' | translate}}
+                                        </span>
+                                </mat-button-toggle>
+                            </mat-button-toggle-group>
 
-                        <mat-slide-toggle color="primary"
-                                          [disabled]="partnerForm.disabled || (isProjectCollaboratorNonManage$ | async)"
-                                          formControlName="gdpr" class="gdpr-toggle">
-                            <span class ="custom-icon gdpr">
-                                <mat-icon  matTooltip="{{'project.application.form.section.sensitive.data.gdpr.info' | translate}}">
-                                    privacy_tip
-                                </mat-icon>
-                            </span>
-                            <span>{{'project.application.form.section.sensitive.data.gdpr' | translate}}</span>
-                        </mat-slide-toggle>
-                        <button *ngIf="partnerForm.enabled" type="button" mat-icon-button color="accent"
-                                (click)="partnerCollaborators.removeAt(i); formService.setDirty(true)"
-                                aria-label="delete">
-                            <mat-icon>delete</mat-icon>
-                        </button>
+                            <mat-slide-toggle color="primary"
+                                              [disabled]="partnerForm.disabled || (isProjectCollaboratorNonManage$ | async)"
+                                              formControlName="gdpr" class="gdpr-toggle">
+                                <span class ="custom-icon gdpr">
+                                    <mat-icon  matTooltip="{{'project.application.form.section.sensitive.data.gdpr.info' | translate}}">
+                                        privacy_tip
+                                    </mat-icon>
+                                </span>
+                                <span>{{'project.application.form.section.sensitive.data.gdpr' | translate}}</span>
+                            </mat-slide-toggle>
+                            <button *ngIf="partnerForm.enabled" type="button" mat-icon-button color="accent"
+                                    (click)="partnerCollaborators.removeAt(i); formService.setDirty(true)"
+                                    aria-label="delete">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <mat-error>
-                <jems-form-field-errors [errors]="partnerCollaborators.errors"
-                                        [messages]="errorMessages">
-                </jems-form-field-errors>
-            </mat-error>
-        </form>
-        <button jemsText *ngIf="partnerForm.enabled" mat-stroked-button class="mt-2"
-                (click)="addPartnerCollaborator(); formService.setDirty(true)"
-                aria-label="add">
-            <mat-icon>add</mat-icon>
-        </button>
-    </jems-form>
+                <mat-error>
+                    <jems-form-field-errors [errors]="partnerCollaborators.errors"
+                                            [messages]="errorMessages">
+                    </jems-form-field-errors>
+                </mat-error>
+            </form>
+            <button jemsText *ngIf="partnerForm.enabled" mat-stroked-button class="mt-2"
+                    (click)="addPartnerCollaborator(); formService.setDirty(true)"
+                    aria-label="add">
+                <mat-icon>add</mat-icon>
+            </button>
+        </jems-form>
+    </div>
 </mat-expansion-panel>
