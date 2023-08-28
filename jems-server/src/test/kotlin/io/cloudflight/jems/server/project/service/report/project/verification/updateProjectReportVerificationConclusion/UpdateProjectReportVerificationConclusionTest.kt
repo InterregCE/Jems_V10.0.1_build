@@ -54,7 +54,7 @@ class UpdateProjectReportVerificationConclusionTest : UnitTest() {
     fun updateVerificationConclusion(status: ProjectReportStatus) {
         every { reportPersistence.getReportById(PROJECT_ID, REPORT_ID) } returns UpdateProjectReportVerificationClarificationTest.report(REPORT_ID, status)
         every {
-            verificationPersistence.updateProjectReportVerificationConclusion(
+            verificationPersistence.updateVerificationConclusion(
                 projectId = PROJECT_ID,
                 reportId = REPORT_ID,
                 projectReportVerificationConclusion = any()

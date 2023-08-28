@@ -19,14 +19,14 @@ class ProjectReportVerificationPersistenceProvider(
 ): ProjectReportVerificationPersistence {
 
     @Transactional(readOnly = true)
-    override fun getProjectReportVerificationConclusion(
+    override fun getVerificationConclusion(
         projectId: Long,
         reportId: Long
     ): ProjectReportVerificationConclusion =
         projectReportRepository.getByIdAndProjectId(id = reportId, projectId = projectId).toVerificationConclusion()
 
     @Transactional
-    override fun updateProjectReportVerificationConclusion(
+    override fun updateVerificationConclusion(
         projectId: Long,
         reportId: Long,
         projectReportVerificationConclusion: ProjectReportVerificationConclusion

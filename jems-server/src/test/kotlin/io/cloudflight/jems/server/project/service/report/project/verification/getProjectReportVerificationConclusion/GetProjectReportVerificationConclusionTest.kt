@@ -10,10 +10,10 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
-import java.time.LocalDate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.time.LocalDate
 
 class GetProjectReportVerificationConclusionTest: UnitTest() {
 
@@ -51,7 +51,7 @@ class GetProjectReportVerificationConclusionTest: UnitTest() {
     fun getVerificationConclusion() {
         every { reportPersistence.getReportById(PROJECT_ID, REPORT_ID) } returns report(REPORT_ID, ProjectReportStatus.InVerification)
         every {
-            verificationPersistence.getProjectReportVerificationConclusion(
+            verificationPersistence.getVerificationConclusion(
                 projectId = PROJECT_ID,
                 reportId = REPORT_ID
             )

@@ -6,12 +6,10 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.file.service.model.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportInvestment
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportUnitCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
-import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.investments.ExpenditureInvestmentBreakdownLine
-import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumBreakdownLine
-import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.unitCost.ExpenditureUnitCostBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurement
 import io.cloudflight.jems.server.project.service.report.model.project.verification.expenditure.ProjectPartnerReportExpenditureItem
 import io.cloudflight.jems.server.project.service.report.model.project.verification.expenditure.ProjectReportVerificationExpenditureLine
@@ -55,23 +53,14 @@ class GetProjectReportVerificationExpenditureTest: UnitTest() {
             name = setOf(InputTranslation(SystemLanguage.EN, "some lump sum 36 (or 945)")),
         )
 
-        private val dummyInvestmentLine = ExpenditureInvestmentBreakdownLine(
-            reportInvestmentId = 845L,
+        private val dummyInvestmentLine = ProjectPartnerReportInvestment(
+            id = 845L,
             investmentId = 22L,
-            investmentNumber = 1,
             workPackageNumber = 2,
+            investmentNumber = 1,
             title = setOf(InputTranslation(SystemLanguage.EN, "investment title EN")),
-            totalEligibleBudget = BigDecimal.ONE,
-            previouslyReported = BigDecimal.TEN,
-            currentReport = BigDecimal.ZERO,
-            totalEligibleAfterControl = BigDecimal.ONE,
-            totalReportedSoFar = BigDecimal.ONE,
-            totalReportedSoFarPercentage = BigDecimal.TEN,
-            remainingBudget = BigDecimal.ZERO,
-            previouslyReportedParked = BigDecimal.valueOf(100),
-            currentReportReIncluded = BigDecimal.ZERO,
             deactivated = false,
-            previouslyValidated = BigDecimal.valueOf(7)
+            total = BigDecimal.TEN
         )
 
 

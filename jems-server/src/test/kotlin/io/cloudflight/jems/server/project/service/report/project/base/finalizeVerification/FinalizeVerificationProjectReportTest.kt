@@ -14,10 +14,10 @@ import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureParkingMetadata
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportInvestment
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportUnitCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
-import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.investments.ExpenditureInvestmentBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurement
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus.Finalized
@@ -86,23 +86,14 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
         private val NEXT_WEEK = LocalDate.now().plusWeeks(1)
         private val UPLOADED = ZonedDateTime.now().minusWeeks(1)
 
-        private val dummyInvestmentLine = ExpenditureInvestmentBreakdownLine(
-            reportInvestmentId = 845L,
+        private val dummyInvestmentLine = ProjectPartnerReportInvestment(
+            id = 845L,
             investmentId = 22L,
             investmentNumber = 1,
             workPackageNumber = 2,
             title = setOf(InputTranslation(SystemLanguage.EN, "investment title EN")),
-            totalEligibleBudget = BigDecimal.ONE,
-            previouslyReported = BigDecimal.TEN,
-            currentReport = BigDecimal.ZERO,
-            totalEligibleAfterControl = BigDecimal.ONE,
-            totalReportedSoFar = BigDecimal.ONE,
-            totalReportedSoFarPercentage = BigDecimal.TEN,
-            remainingBudget = BigDecimal.ZERO,
-            previouslyReportedParked = BigDecimal.valueOf(100),
-            currentReportReIncluded = BigDecimal.ZERO,
+            total = BigDecimal.ONE,
             deactivated = false,
-            previouslyValidated = BigDecimal.valueOf(7)
         )
 
         private val procurement = ProjectPartnerReportProcurement(

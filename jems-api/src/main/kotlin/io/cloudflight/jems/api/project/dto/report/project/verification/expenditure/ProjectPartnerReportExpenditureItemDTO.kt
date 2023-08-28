@@ -4,10 +4,10 @@ import io.cloudflight.jems.api.common.dto.file.JemsFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.BudgetCategoryDTO
+import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportInvestmentDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportLumpSumDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportUnitCostDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.verification.ExpenditureParkingMetadataDTO
-import io.cloudflight.jems.api.project.dto.report.partner.financialOverview.ExpenditureInvestmentBreakdownLineDTO
 import io.cloudflight.jems.api.project.dto.report.partner.procurement.ProjectPartnerReportProcurementDTO
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -28,7 +28,7 @@ data class ProjectPartnerReportExpenditureItemDTO(
     val unitCost: ProjectPartnerReportUnitCostDTO?,
     var gdpr: Boolean,
     val costCategory: BudgetCategoryDTO,
-    val investment: ExpenditureInvestmentBreakdownLineDTO?,
+    val investment: ProjectPartnerReportInvestmentDTO?,
     val contract: ProjectPartnerReportProcurementDTO?,
     val internalReferenceNumber: String?,
     val invoiceNumber: String?,
