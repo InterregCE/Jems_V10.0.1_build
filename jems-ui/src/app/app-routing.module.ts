@@ -92,10 +92,16 @@ export const routes: Routes = [
   {
     path: 'no-auth',
     component: NoAuthWrapComponent,
+    data: {
+      breadcrumb: 'authentication.login.title.label'
+    },
     children: [
       {
         path: '',
         loadChildren: () => import('./authentication/authentication.module').then(m => m.AuthenticationModule),
+        data: {
+          breadcrumb: 'authentication.login.title.label'
+        },
       }
     ]
   },

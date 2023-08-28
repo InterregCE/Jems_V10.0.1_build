@@ -171,14 +171,18 @@ import {
 import {
   PartnerReportAnnexesTabComponent
 } from './project-application/report/partner-report-detail-page/partner-report-annexes-tab/partner-report-annexes-tab.component';
-import {ProjectManagementComponent} from '@project/project-application/contracting/project-management/project-management.component';
+import {
+  ProjectManagementComponent
+} from '@project/project-application/contracting/project-management/project-management.component';
 import {
   PartnerReportFinancialOverviewTabComponent
 } from '@project/project-application/report/partner-report-detail-page/partner-report-financial-overview-tab/partner-report-financial-overview-tab.component';
 import {
   PartnerReportProcurementDetailComponent
 } from '@project/project-application/report/partner-report-detail-page/partner-report-procurements-tab/partner-report-procurement-detail/partner-report-procurement-detail.component';
-import {ContractReportingComponent} from '@project/project-application/contracting/contract-reporting/contract-reporting.component';
+import {
+  ContractReportingComponent
+} from '@project/project-application/contracting/contract-reporting/contract-reporting.component';
 import {
   PartnerControlReportComponent
 } from '@project/project-application/report/partner-control-report/partner-control-report.component';
@@ -206,7 +210,9 @@ import {
 import {
   PartnerControlReportDocumentTabComponent
 } from '@project/project-application/report/partner-control-report/partner-control-report-document-tab/partner-control-report-document-tab.component';
-import {ContractPartnerComponent} from '@project/project-application/contracting/contract-partner/contract-partner.component';
+import {
+  ContractPartnerComponent
+} from '@project/project-application/contracting/contract-partner/contract-partner.component';
 import {
   PartnerControlReportControlIdentificationTabComponent
 } from '@project/project-application/report/partner-control-report/partner-control-report-identification-tab/partner-control-report-control-identification-tab.component';
@@ -258,7 +264,9 @@ import {SharedFolderPageComponent} from '@project/project-application/shared-fol
 import {
   ProjectReportExportsTabComponent
 } from '@project/project-application/report/project-report/project-report-detail-page/project-report-exports-tab/project-report-exports-tab.component';
-import {ProjectVerificationReportComponent} from '@project/project-application/report/project-verification-report/project-verification-report.component';
+import {
+  ProjectVerificationReportComponent
+} from '@project/project-application/report/project-verification-report/project-verification-report.component';
 import {
   ProjectVerificationReportDocumentTabComponent
 } from '@project/project-application/report/project-verification-report/project-verification-report-document-tab/project-verification-report-document-tab.component';
@@ -287,7 +295,10 @@ export const routes: Routes = [
         path: '',
         component: ProjectApplicationComponent,
         canActivate: [PermissionGuard],
-        data: {permissionsOnly: [PermissionsEnum.ProjectRetrieve]},
+        data: {
+          breadcrumb: 'project.list.header',
+          permissionsOnly: [PermissionsEnum.ProjectRetrieve]
+        },
       },
       {
         path: 'applyTo/:callId',

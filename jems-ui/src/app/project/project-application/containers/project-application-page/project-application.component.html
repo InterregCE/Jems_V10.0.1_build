@@ -1,14 +1,15 @@
-<jems-main-page-template [needsCard]="true">
+<jems-main-page-template [needsCard]="true" titleKey="project.breadcrumb.list" subTitleKey="project.list.header">
     <ng-container page-title *ngIf="currentUser$ | async as currentUser">
-        <h1>{{'project.welcome' | translate: {name: currentUser.name, surname: currentUser.surname} }}</h1>
     </ng-container>
 
     <mat-tab-group>
         <mat-tab label="{{'topbar.main.project' | translate}}">
             <jems-project-application-list jemsNoWidthLimit></jems-project-application-list>
         </mat-tab>
-        <mat-tab label="{{'project.list.assign.header' | translate}}" *jemsHasPermission="PermissionsEnum.ProjectRetrieveEditUserAssignments">
-            <jems-project-application-list-user-assignments jemsNoWidthLimit></jems-project-application-list-user-assignments>
+        <mat-tab label="{{'project.list.assign.header' | translate}}"
+                 *jemsHasPermission="PermissionsEnum.ProjectRetrieveEditUserAssignments">
+            <jems-project-application-list-user-assignments
+                    jemsNoWidthLimit></jems-project-application-list-user-assignments>
         </mat-tab>
     </mat-tab-group>
 
