@@ -213,7 +213,7 @@
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <div class="custom-wrapper"
-                                     [matTooltip]="getLimitedTextInputTooltip(data.expendituresCosts[i]?.description[0]?.translation, constants.MAX_LENGTH)"
+                                     [matTooltip]="getLimitedTextInputTooltip(data.expendituresCosts[i].description | translateByInputLanguage | async, constants.MAX_LENGTH)"
                                      [matTooltipClass]="'tooltip'">
                                     <div class="custom-text-area" [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}">
                                         {{data.expendituresCosts[i].description | translateByInputLanguage | async}}
@@ -236,7 +236,7 @@
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <div class="custom-wrapper"
-                                     [matTooltip]="getLimitedTextInputTooltip(data.expendituresCosts[i].comment[0]?.translation, constants.MAX_LENGTH)"
+                                     [matTooltip]="getLimitedTextInputTooltip(data.expendituresCosts[i].comment | translateByInputLanguage | async, constants.MAX_LENGTH)"
                                      [matTooltipClass]="'tooltip'">
                                     <div class="custom-text-area" [ngClass]="{'disabled-text': control.get(constants.FORM_CONTROL_NAMES.parked).value}">
                                         {{data.expendituresCosts[i].comment | translateByInputLanguage | async}}

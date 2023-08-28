@@ -402,7 +402,7 @@
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <div *ngIf="expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.description).errors"
                                      (click)="selectRow(i, 'description')" class="custom-wrapper"
-                                     [matTooltip]="getLimitedTextInputTooltip(control.get(constants.FORM_CONTROL_NAMES.description).value[0]?.translation, constants.MAX_LENGTH)"
+                                     [matTooltip]="getLimitedTextInputTooltip(control.get(constants.FORM_CONTROL_NAMES.description).value | translateByInputLanguage | async, constants.MAX_LENGTH)"
                                      [matTooltipClass]="'tooltip'"
                                      [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.description)">
                                     <div class="custom-text-area">
@@ -439,7 +439,7 @@
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <div *ngIf="expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.comment).errors"
                                      (click)="selectRow(i, 'comment')" class="custom-wrapper"
-                                     [matTooltip]="getLimitedTextInputTooltip(control.get(constants.FORM_CONTROL_NAMES.comment).value[0]?.translation, constants.MAX_LENGTH)"
+                                     [matTooltip]="getLimitedTextInputTooltip(control.get(constants.FORM_CONTROL_NAMES.comment).value | translateByInputLanguage | async, constants.MAX_LENGTH)"
                                      [matTooltipClass]="'tooltip'"
                                      [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.comment)">
                                     <div class="custom-text-area">

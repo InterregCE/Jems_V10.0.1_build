@@ -215,7 +215,7 @@
                                     </mat-header-cell>
                                     <mat-cell *matCellDef="let item;  let i = index" [formGroupName]="i">
                                         <div class="custom-wrapper"
-                                             [matTooltip]="getLimitedTextInputTooltip(expenditureItem(item, EXPENDITURE_CONTROL.description)[0]?.translation, constants.MAX_CHARS)"
+                                             [matTooltip]="getLimitedTextInputTooltip(expenditureItem(item, EXPENDITURE_CONTROL.description) | translateByInputLanguage | async, constants.MAX_CHARS)"
                                              [matTooltipClass]="'tooltip'">
                                             <div class="custom-text-area" [ngClass]="{'disabled-text': expenditureItem(item, EXPENDITURE_CONTROL.parked).value}">
                                                 {{expenditureItem(item, EXPENDITURE_CONTROL.description) | translateByInputLanguage | async}}
@@ -238,7 +238,7 @@
                                     </mat-header-cell>
                                     <mat-cell *matCellDef="let item;  let i = index" [formGroupName]="i">
                                         <div class="custom-wrapper"
-                                             [matTooltip]="getLimitedTextInputTooltip(expenditureItem(item, EXPENDITURE_CONTROL.comment)[0]?.translation, constants.MAX_CHARS)"
+                                             [matTooltip]="getLimitedTextInputTooltip(expenditureItem(item, EXPENDITURE_CONTROL.comment) | translateByInputLanguage | async, constants.MAX_CHARS)"
                                              [matTooltipClass]="'tooltip'">
                                             <div class="custom-text-area" [ngClass]="{'disabled-text': expenditureItem(item, EXPENDITURE_CONTROL.parked)}">
                                                 {{expenditureItem(item, EXPENDITURE_CONTROL.comment) | translateByInputLanguage | async}}
