@@ -56,6 +56,7 @@ class FirstStepDraftApplicationStateTest : UnitTest() {
             preSubmissionCheckPluginKey = null,
             firstStepPreSubmissionCheckPluginKey = null,
             costOption = mockk(),
+            jsNotifiable = false
         )
 
         private val actionInfo = ApplicationActionInfo(

@@ -509,6 +509,7 @@ internal class BudgetCostValidatorTest : UnitTest() {
             preSubmissionCheckPluginKey = null,
             firstStepPreSubmissionCheckPluginKey = null,
             costOption = mockk(),
+            jsNotifiable = false
         )
     }
 }

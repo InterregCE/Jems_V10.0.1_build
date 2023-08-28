@@ -35,7 +35,8 @@ class FinalizeVerificationProjectReport(
     override fun finalizeVerification(projectId: Long, reportId: Long): ProjectReportStatus {
         val report = reportPersistence.getReportByIdUnSecured(reportId = reportId)
         validateReportIsInVerification(report)
-        val parkedExpenditures = expenditureVerificationPersistence.getParkedProjectReportExpenditureVerification(reportId)
+        val parkedExpenditures =
+            expenditureVerificationPersistence.getParkedProjectReportExpenditureVerification(reportId)
 
         val financialData = calculateSourcesAndSplits(
             verification = expenditureVerificationPersistence.getProjectReportExpenditureVerification(reportId),
@@ -44,19 +45,24 @@ class FinalizeVerificationProjectReport(
         )
 
         projectReportFinancialOverviewPersistence.storeOverviewPerFund(reportId, toStore = financialData)
-        projectReportCertificateCoFinancingPersistence.updateAfterVerificationValues(report.projectId, reportId, financialData.sumUp().totalLineToColumn())
+        projectReportCertificateCoFinancingPersistence.updateAfterVerificationValues(
+            report.projectId,
+            reportId,
+            financialData.sumUp().totalLineToColumn()
+        )
 
-        return reportPersistence.finalizeVerificationOnReportById(projectId = report.projectId, reportId = reportId).also {
-            auditPublisher.publishEvent(ProjectReportStatusChanged(this, it))
-            auditPublisher.publishEvent(
-                projectReportFinalizedVerification(
-                    context = this,
-                    projectId = report.projectId,
-                    report = it,
-                    parkedExpenditures
+        return reportPersistence.finalizeVerificationOnReportById(projectId = report.projectId, reportId = reportId)
+            .also {
+                auditPublisher.publishEvent(ProjectReportStatusChanged(this, it))
+                auditPublisher.publishEvent(
+                    projectReportFinalizedVerification(
+                        context = this,
+                        projectId = report.projectId,
+                        report = it,
+                        parkedExpenditures
+                    )
                 )
-            )
-        }.status
+            }.status
     }
 
     private fun validateReportIsInVerification(report: ProjectReportModel) {

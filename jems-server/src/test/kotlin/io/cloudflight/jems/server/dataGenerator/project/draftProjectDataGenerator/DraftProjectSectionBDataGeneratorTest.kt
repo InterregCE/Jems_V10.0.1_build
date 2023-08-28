@@ -34,7 +34,7 @@ class DraftProjectSectionBDataGeneratorTest(@LocalServerPort private val port: I
 
     @Test
     @Order(1)
-    @ExpectSelect(25)
+    @ExpectSelect(26)
     @ExpectInsert(1)
     @ExpectUpdate(1)
     @ExpectDelete(1)
@@ -45,7 +45,7 @@ class DraftProjectSectionBDataGeneratorTest(@LocalServerPort private val port: I
 
     @Test
     @Order(1)
-    @ExpectSelect(25)
+    @ExpectSelect(26)
     @ExpectInsert(1)
     @ExpectUpdate(1)
     @ExpectDelete(1)

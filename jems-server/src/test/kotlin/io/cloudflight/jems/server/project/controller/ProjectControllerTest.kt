@@ -105,6 +105,7 @@ class ProjectControllerTest {
                 projectDefinedUnitCostAllowed = true,
                 projectDefinedLumpSumAllowed = false,
             ),
+            jsNotifiable = false
         )
 
         private val partner1 = ProjectPartnerSummary(
@@ -355,6 +356,7 @@ class ProjectControllerTest {
                 projectDefinedUnitCostAllowed = true,
                 projectDefinedLumpSumAllowed = false,
             ),
+            jsNotifiable = false
         )
         every { getProjectInteractor.getProjectCallSettings(1L) } returns callSettings
         assertThat(controller.getProjectCallSettingsById(1L)).isEqualTo(
@@ -403,6 +405,7 @@ class ProjectControllerTest {
                     projectDefinedUnitCostAllowed = true,
                     projectDefinedLumpSumAllowed = false,
                 ),
+                jsNotifiable = false
             )
         )
     }
@@ -483,6 +486,7 @@ class ProjectControllerTest {
                         projectDefinedUnitCostAllowed = true,
                         projectDefinedLumpSumAllowed = false,
                     ),
+                    jsNotifiable = false
                 ),
                 acronym = project.acronym,
                 title = project.title,

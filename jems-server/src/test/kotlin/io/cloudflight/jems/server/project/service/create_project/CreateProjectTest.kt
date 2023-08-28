@@ -97,6 +97,7 @@ internal class CreateProjectTest : UnitTest() {
             preSubmissionCheckPluginKey = null,
             firstStepPreSubmissionCheckPluginKey = null,
             costOption = mockk(),
+            jsNotifiable = false
         )
 
         private val userEntity = UserEntity(

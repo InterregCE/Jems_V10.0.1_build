@@ -55,6 +55,7 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
             preSubmissionCheckPluginKey = null,
             firstStepPreSubmissionCheckPluginKey = null,
             costOption = mockk(),
+            jsNotifiable = false
         )
 
         private val periods = listOf(

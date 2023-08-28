@@ -1,6 +1,8 @@
 package io.cloudflight.jems.server.notification.inApp.service.model
 
 enum class NotificationVariable(val variable: String) {
+    UserName("userName"),
+
     ProgrammeName("programmeName"),
 
     CallId("callId"),

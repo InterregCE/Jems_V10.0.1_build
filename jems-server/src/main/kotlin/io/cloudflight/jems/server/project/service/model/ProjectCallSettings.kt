@@ -27,6 +27,7 @@ data class ProjectCallSettings(
     val preSubmissionCheckPluginKey: String?,
     val firstStepPreSubmissionCheckPluginKey: String?,
     val costOption: CallCostOption,
+    val jsNotifiable: Boolean,
 ) {
     fun isCallStep1Closed(): Boolean {
         return if (endDateStep1 == null) {

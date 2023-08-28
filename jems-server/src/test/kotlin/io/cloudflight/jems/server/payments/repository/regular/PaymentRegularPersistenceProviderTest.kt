@@ -587,7 +587,7 @@ class PaymentRegularPersistenceProviderTest: UnitTest() {
         every { paymentRepository.findAllByProjectId(projectId) } returns mutableListOf(paymentEntity())
         every {
             projectPersistence.getProject(projectId, "V4.7")
-        } returns dummyProject.toModel(null, null, mutableSetOf(), mutableSetOf())
+        } returns dummyProject.toModel(null, null, mutableSetOf(), mutableSetOf(), false)
 
         assertThat(paymentPersistenceProvider.getPaymentsByProjectId(projectId))
             .containsExactly(expectedPayments)

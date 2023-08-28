@@ -58,6 +58,7 @@ internal class UpdateBudgetSpfCostsTest : UnitTest() {
             preSubmissionCheckPluginKey = null,
             firstStepPreSubmissionCheckPluginKey = null,
             costOption = mockk(),
+            jsNotifiable = false
         )
     }
 

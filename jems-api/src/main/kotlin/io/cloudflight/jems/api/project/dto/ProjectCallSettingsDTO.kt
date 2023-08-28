@@ -25,4 +25,5 @@ data class ProjectCallSettingsDTO(
     val stateAids: List<ProgrammeStateAidDTO>,
     var applicationFormFieldConfigurations: MutableSet<ApplicationFormFieldConfigurationDTO>,
     val costOption: CallCostOptionDTO,
-)
+    val jsNotifiable: Boolean,
+    )

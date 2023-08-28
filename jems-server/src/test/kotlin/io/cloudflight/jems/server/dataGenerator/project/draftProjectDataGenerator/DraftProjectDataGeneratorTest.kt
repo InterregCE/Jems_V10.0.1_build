@@ -24,7 +24,7 @@ class DraftProjectDataGeneratorTest(@LocalServerPort private val port: Int) : Da
         FeignTestClientFactory.createClientApi(ProjectApi::class.java, port, config)
 
     @Test
-    @ExpectSelect(33)
+    @ExpectSelect(34)
     @ExpectInsert(4)
     @ExpectUpdate(3)
     @ExpectDelete(1)

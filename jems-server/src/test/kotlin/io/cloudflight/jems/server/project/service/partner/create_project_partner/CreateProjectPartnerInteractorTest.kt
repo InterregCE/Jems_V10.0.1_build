@@ -65,6 +65,7 @@ internal class CreateProjectPartnerInteractorTest : UnitTest() {
                 preSubmissionCheckPluginKey = null,
                 firstStepPreSubmissionCheckPluginKey = null,
                 costOption = mockk(),
+                jsNotifiable = false
             )
     }
 

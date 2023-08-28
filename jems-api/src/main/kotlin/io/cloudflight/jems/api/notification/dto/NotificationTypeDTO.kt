@@ -37,6 +37,7 @@ enum class NotificationTypeDTO {
     // Project Report
     ProjectReportSubmitted,
     ProjectReportVerificationOngoing,
+    ProjectReportVerificationDoneNotificationSent,
     ProjectReportVerificationFinalized,
     ProjectReportVerificationFileUpload,
     ProjectReportVerificationFileDelete;

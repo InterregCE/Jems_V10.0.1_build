@@ -65,7 +65,7 @@ class DeleteAdvancePaymentTest: UnitTest() {
         private val project = ProjectFull(
             customIdentifier = "identifier",
             id = projectId,
-            callSettings = dummyCall.toSettingsModel(mutableSetOf(), mutableSetOf()),
+            callSettings = dummyCall.toSettingsModel(mutableSetOf(), mutableSetOf(), false),
             acronym = "acronym",
             applicant = mockk(),
             projectStatus = ProjectStatus(

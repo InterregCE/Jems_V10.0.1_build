@@ -47,6 +47,7 @@ internal class GetProjectTest : UnitTest() {
             preSubmissionCheckPluginKey = null,
             firstStepPreSubmissionCheckPluginKey = null,
             costOption = mockk(),
+            jsNotifiable = false
         )
 
         val dummyProject = ProjectSummary(

@@ -15,8 +15,6 @@ import io.cloudflight.jems.server.project.service.report.model.partner.expenditu
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportUnitCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.investments.ExpenditureInvestmentBreakdownLine
-import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumBreakdownLine
-import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.unitCost.ExpenditureUnitCostBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurement
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
 import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus.Finalized
@@ -279,13 +277,26 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
         } returns reportSubmissionSummary
 
 
-        every { expenditureVerificationPersistence.getProjectReportExpenditureVerification(reportId) } returns listOf(aggregatedExpenditures)
+        every { expenditureVerificationPersistence.getProjectReportExpenditureVerification(reportId) } returns listOf(
+            aggregatedExpenditures
+        )
         every { projectReportCertificateCoFinancingPersistence.getAvailableFunds(reportId) } returns listOf(ERDF)
         every { getPartnerReportFinancialData.retrievePartnerReportFinancialData(reportId) } returns mockk()
 
 
-        every { projectReportFinancialOverviewPersistence.storeOverviewPerFund(PROJECT_REPORT_ID, any()) } returns listOf(financialData)
-        every { projectReportCertificateCoFinancingPersistence.updateAfterVerificationValues(PROJECT_ID, PROJECT_REPORT_ID, any()) } returns Unit
+        every {
+            projectReportFinancialOverviewPersistence.storeOverviewPerFund(
+                PROJECT_REPORT_ID,
+                any()
+            )
+        } returns listOf(financialData)
+        every {
+            projectReportCertificateCoFinancingPersistence.updateAfterVerificationValues(
+                PROJECT_ID,
+                PROJECT_REPORT_ID,
+                any()
+            )
+        } returns Unit
 
 
         val auditSlot = slot<AuditCandidateEvent>()

@@ -27,6 +27,35 @@
                                   [maxRows]="5">
         </jems-expandable-textarea>
 
+        <div class="send-notification-button" *ngIf="data.projectDetail.callSettings.jsNotifiable && !data.reportFinalised">
+          <jems-pending-button
+                           [confirm]="{ title: 'project.application.project.verification.work.tab.finalise.js.notify.confirmation.title', message: 'project.application.project.verification.work.tab.finalise.js.notify.confirmation.message' }"
+                           [pending]="finalizationLoading"
+                           [disabled]="!data.userCanSendNotification"
+                           icon="send"
+                           [type]="'secondary'"
+                           (clicked)="sendNotificationDoneByJs(data.projectId, data.reportId)"
+                           class="mr-2 mt-2">
+            {{ 'project.application.project.verification.work.tab.finalise.js.notify' | translate }}
+          </jems-pending-button>
+
+           <jems-context-info class="mt-2"
+                     infoText="{{'project.application.project.verification.work.tab.finalise.js.button.info'| translate}}"
+                     infoPosition="right">
+            </jems-context-info>
+          </div>
+
+        <jems-alert
+              [show]="true"
+              [type]="Alert.INFO"
+              [closable]="false">
+            <span *ngIf="data.verificationNotification">{{'project.application.project.verification.work.tab.finalise.js.notify.info' | translate : {
+                notificationDate: data.verificationNotification.createdAt | localeDate : 'L' : 'LT' ,
+                triggeredByUser: data.verificationNotification.triggeredByUser.email
+            } }} </span>
+          <span *ngIf="!data.verificationNotification">{{'project.application.project.verification.work.tab.finalise.js.not.notified.info' | translate}}</span>
+        </jems-alert>
+
         <h3>{{'project.application.project.verification.work.tab.finalise.ma.title' | translate}}</h3>
         <p>{{'project.application.project.verification.work.tab.finalise.ma.subtitle' | translate}}</p>
 

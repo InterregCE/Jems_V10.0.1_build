@@ -81,6 +81,7 @@ class GetProjectReportNotificationConfigurationsTest: UnitTest() {
         assertThat(notifications.map { it.id }).containsExactly(
             NotificationType.ProjectReportSubmitted,
             NotificationType.ProjectReportVerificationOngoing,
+            NotificationType.ProjectReportVerificationDoneNotificationSent,
             NotificationType.ProjectReportVerificationFinalized,
             NotificationType.ProjectReportVerificationFileUpload,
             NotificationType.ProjectReportVerificationFileDelete
