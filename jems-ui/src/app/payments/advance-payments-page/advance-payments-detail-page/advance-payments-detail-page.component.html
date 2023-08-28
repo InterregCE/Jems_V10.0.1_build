@@ -226,10 +226,12 @@
 
                                             <div>
                                                 <mat-form-field class="w-100">
-                                                    <input name="settlementDate"
-                                                           class="placeholder-required"
-                                                           [formControlName]="constants.FORM_CONTROL_NAMES.settlementDate" matInput
-                                                           [matDatepicker]="settlementDatePicker">
+                                                    <span [ngClass]="{'marked-as-required' : !inputSettlementDate.value}">
+                                                        <input #inputSettlementDate name="settlementDate"
+                                                               class="placeholder-required empty"
+                                                               [formControlName]="constants.FORM_CONTROL_NAMES.settlementDate" matInput
+                                                               [matDatepicker]="settlementDatePicker">
+                                                    </span>
                                                     <mat-error>
                                                         <jems-form-field-errors [errors]="advancePayment.get(constants.FORM_CONTROL_NAMES.settlementDate)?.errors"
                                                                                 [messages]="constants.inputErrorMessages"
