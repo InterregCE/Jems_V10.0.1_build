@@ -622,7 +622,9 @@
     <ID>TooManyFunctions:JemsFilePersistenceProvider.kt$JemsFilePersistenceProvider : JemsFilePersistence</ID>
     <ID>TooManyFunctions:PartnerPersistence.kt$PartnerPersistence</ID>
     <ID>TooManyFunctions:PartnerPersistenceProvider.kt$PartnerPersistenceProvider : PartnerPersistence</ID>
-    <ID>TooManyFunctions:PaymentRegularPersistenceProvider.kt$PaymentRegularPersistenceProvider : PaymentRegularPersistence</ID>
+    <ID>TooManyFunctions:PaymentModelMapper.kt$io.cloudflight.jems.server.payments.repository.PaymentModelMapper.kt</ID>
+    <ID>TooManyFunctions:PaymentPersistence.kt$PaymentPersistence</ID>
+    <ID>TooManyFunctions:PaymentPersistenceProvider.kt$PaymentPersistenceProvider : PaymentPersistence</ID>
     <ID>TooManyFunctions:ProgrammeAuditFactory.kt$io.cloudflight.jems.server.programme.service.ProgrammeAuditFactory.kt</ID>
     <ID>TooManyFunctions:ProjectAuditFactory.kt$io.cloudflight.jems.server.project.service.ProjectAuditFactory.kt</ID>
     <ID>TooManyFunctions:ProjectDataModelMapper.kt$PluginDataMapper</ID>

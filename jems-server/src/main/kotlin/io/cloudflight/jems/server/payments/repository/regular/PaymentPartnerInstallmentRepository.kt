@@ -11,14 +11,16 @@ interface PaymentPartnerInstallmentRepository: JpaRepository<PaymentPartnerInsta
 
     fun findAllByPaymentPartnerId(paymentPartnerId: Long): List<PaymentPartnerInstallmentEntity>
 
-    fun findAllByPaymentPartnerPartnerId(partnerId: Long): List<PaymentPartnerInstallmentEntity>
+    fun findAllByPaymentPartnerProjectPartnerId(partnerId: Long): List<PaymentPartnerInstallmentEntity>
 
     @Query("""
         SELECT new kotlin.Pair(ppi.paymentPartner.payment.fund.id, COALESCE(SUM(ppi.amountPaid), 0))
         FROM #{#entityName} ppi
-        WHERE ppi.paymentPartner.payment.project.id = :projectId
+        WHERE ppi.paymentPartner.payment.project.id = :projectId and ppi.isPaymentConfirmed = true
         GROUP BY ppi.paymentPartner.payment.fund.id
     """)
     fun getConfirmedCumulativeForProject(projectId: Long): List<Pair<Long, BigDecimal>>
+
+    fun findAllByPaymentPartnerPaymentId(paymentId: Long): List<PaymentPartnerInstallmentEntity>
 
 }

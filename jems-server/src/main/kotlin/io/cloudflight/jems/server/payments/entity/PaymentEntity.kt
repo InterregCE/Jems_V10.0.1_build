@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumEntity
+import io.cloudflight.jems.server.project.entity.report.project.ProjectReportEntity
 import java.math.BigDecimal
 import javax.persistence.Entity
 import javax.persistence.EnumType
@@ -36,14 +37,17 @@ class PaymentEntity (
     @field:NotNull
     val projectAcronym: String,
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = true)
     // join 2 columns
     @JoinColumns(
         JoinColumn(name = "project_lump_sum_id", referencedColumnName = "project_id"),
         JoinColumn(name = "order_nr", referencedColumnName = "order_nr")
     )
-    @field:NotNull
-    val projectLumpSum: ProjectLumpSumEntity,
+    val projectLumpSum: ProjectLumpSumEntity?,
+
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "project_report_id", referencedColumnName = "id")
+    val projectReport: ProjectReportEntity?,
 
     @ManyToOne
     @JoinColumn(name = "programme_fund_id")

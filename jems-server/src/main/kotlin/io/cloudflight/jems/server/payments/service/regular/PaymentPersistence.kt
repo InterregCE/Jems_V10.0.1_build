@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
 import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallmentUpdate
 import io.cloudflight.jems.server.payments.model.regular.PaymentPerPartner
+import io.cloudflight.jems.server.payments.model.regular.PaymentRegularToCreate
 import io.cloudflight.jems.server.payments.model.regular.PaymentSearchRequest
 import io.cloudflight.jems.server.payments.model.regular.PaymentToCreate
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
@@ -17,7 +18,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.financial
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
-interface PaymentRegularPersistence {
+interface PaymentPersistence {
 
     fun existsById(id: Long): Boolean
 
@@ -38,7 +39,11 @@ interface PaymentRegularPersistence {
         orderNrsToBeAdded: MutableSet<Int>
     ): List<PaymentPerPartner>
 
-    fun savePaymentToProjects(projectId: Long, paymentsToBeSaved:  Map<PaymentGroupingId, PaymentToCreate>)
+    fun saveFTLSPayments(projectId: Long, paymentsToBeSaved:  Map<PaymentGroupingId, PaymentToCreate>)
+
+    fun saveRegularPayments(projectReportId:Long, paymentsToBeSaved: List<PaymentRegularToCreate>)
+
+    fun getPaymentPartnersIdsByPaymentId(paymentId: Long): List<Long>
 
     fun getPaymentPartnerId(paymentId: Long, partnerId: Long): Long
 

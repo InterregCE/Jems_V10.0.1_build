@@ -41,6 +41,7 @@ fun PaymentToProject.toDTO() = PaymentToProjectDTO(
     fundName = fundName,
     amountApprovedPerFund = amountApprovedPerFund,
     amountPaidPerFund = amountPaidPerFund,
+    amountAuthorizedPerFund = amountAuthorizedPerFund,
     dateOfLastPayment = dateOfLastPayment,
     lastApprovedVersionBeforeReadyForPayment = lastApprovedVersionBeforeReadyForPayment
 )
@@ -63,6 +64,8 @@ fun PartnerPayment.toDTO() = PaymentPartnerDTO(
     partnerType = ProjectPartnerRoleDTO.valueOf(partnerRole.name),
     partnerNumber = partnerNumber,
     partnerAbbreviation = partnerAbbreviation,
+    partnerReportId = partnerReportId,
+    partnerReportNumber = partnerReportNumber,
     amountApproved = amountApprovedPerPartner,
     installments = installments.map { it.toDTO() }
 )

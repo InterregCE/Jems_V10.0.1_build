@@ -28,6 +28,9 @@ export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
   @ViewChild('typeCell', {static: true})
   typeCell: TemplateRef<any>;
 
+  @ViewChild('claimNoCell', {static: true})
+  claimNoCell: TemplateRef<any>;
+
   data$: Observable<{
     userCanView: boolean;
     page: PagePaymentToProjectDTO;
@@ -120,7 +123,8 @@ export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
         },
         {
           displayedColumn: 'payments.payment.to.project.table.column.payment.claim.no',
-          elementProperty: 'paymentClaimNo',
+          customCellTemplate: this.claimNoCell,
+          sortProperty: 'projectReport.number',
           columnWidth: ColumnWidth.SmallColumn,
           infoMessage: 'payments.payment.to.project.table.column.payment.claim.no.info'
         },
@@ -137,6 +141,7 @@ export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
           columnType: ColumnType.DateOnlyColumn,
           columnWidth: ColumnWidth.DateColumn,
           elementProperty: 'paymentApprovalDate',
+          sortProperty: 'projectReport.verificationEndDate',
           infoMessage: 'payments.payment.to.project.table.column.payment.claim.approval.date.info'
         },
         {
@@ -161,6 +166,12 @@ export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
           infoMessage: 'payments.payment.to.project.table.column.amount.approved.per.fund.info'
         },
         {
+          displayedColumn: 'payments.payment.to.project.table.column.authorised',
+          elementProperty: 'amountAuthorizedPerFund',
+          columnWidth: ColumnWidth.ChipColumn,
+          columnType: ColumnType.Decimal,
+        },
+        {
           displayedColumn: 'payments.payment.to.project.table.column.amount.paid.per.fund',
           elementProperty: 'amountPaidPerFund',
           columnWidth: ColumnWidth.ChipColumn,
@@ -171,12 +182,13 @@ export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
           columnType: ColumnType.DateOnlyColumn,
           columnWidth: ColumnWidth.DateColumn,
           elementProperty: 'dateOfLastPayment',
+          sortProperty: 'lastPaymentDate',
         },
         {
           displayedColumn: 'payments.payment.to.project.table.column.remaining.to.be.paid',
           columnType: ColumnType.Decimal,
           columnWidth: ColumnWidth.ChipColumn,
-          customCellTemplate: this.remainingToBePaidCell
+          customCellTemplate: this.remainingToBePaidCell,
         }
       ]
     });

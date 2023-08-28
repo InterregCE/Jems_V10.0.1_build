@@ -24,7 +24,7 @@ import {BehaviorSubject, Observable} from 'rxjs';
 import {SecurityService} from '../../../../security/security.service';
 import {v4 as uuid} from 'uuid';
 import {FileListTableConstants} from './file-list-table-constants';
-import {RoutingService} from "@common/services/routing.service";
+import {RoutingService} from '@common/services/routing.service';
 
 @UntilDestroy()
 @Component({
@@ -124,7 +124,7 @@ export class FileListTableComponent implements OnChanges, AfterViewInit {
   }
 
   editDescription(file: FileListItem) {
-    this.routingService.confirmLeaveMap.set(this.serviceId, true)
+    this.routingService.confirmLeaveMap.set(this.serviceId, true);
     this.descriptionForm.patchValue({
       id: file.id,
       fileName: file.name,
@@ -133,7 +133,7 @@ export class FileListTableComponent implements OnChanges, AfterViewInit {
   }
 
   deleteFile(file: FileListItem) {
-    this.routingService.confirmLeaveMap.delete(this.serviceId)
+    this.routingService.confirmLeaveMap.delete(this.serviceId);
     Forms.confirm(
       this.dialog, {
         title: file.name,

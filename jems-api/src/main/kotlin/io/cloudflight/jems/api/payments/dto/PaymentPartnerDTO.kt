@@ -11,5 +11,8 @@ data class PaymentPartnerDTO(
     val partnerAbbreviation: String,
     val amountApproved: BigDecimal?,
 
+    val partnerReportId: Long?,
+    val partnerReportNumber: Int?,
+
     val installments: List<PaymentPartnerInstallmentDTO>
 )

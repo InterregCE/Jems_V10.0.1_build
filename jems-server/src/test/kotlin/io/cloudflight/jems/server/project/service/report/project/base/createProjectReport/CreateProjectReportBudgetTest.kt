@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.service.report.project.base.createPro
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
-import io.cloudflight.jems.server.payments.service.regular.PaymentRegularPersistence
+import io.cloudflight.jems.server.payments.service.regular.PaymentPersistence
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.repository.report.project.financialOverview.coFinancing.ProjectReportCertificateCoFinancingPersistenceProvider
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
@@ -151,6 +151,7 @@ internal class CreateProjectReportBudgetTest : UnitTest() {
         fundId = fundId,
         amountApprovedPerFund = BigDecimal(100),
         amountPaidPerFund = BigDecimal.valueOf(6789L, 2),
+        amountAuthorizedPerFund = BigDecimal.valueOf(6789L, 2),
         paymentApprovalDate = currentTime,
         paymentClaimSubmissionDate = null,
         totalEligibleAmount = BigDecimal(10),
@@ -373,7 +374,7 @@ internal class CreateProjectReportBudgetTest : UnitTest() {
     @MockK private lateinit var lumpSumPersistence: ProjectLumpSumPersistence
     @MockK private lateinit var getProjectBudget: GetProjectBudget
     @MockK private lateinit var reportCertificateCoFinancingPersistence: ProjectReportCertificateCoFinancingPersistenceProvider
-    @MockK private lateinit var paymentPersistence: PaymentRegularPersistence
+    @MockK private lateinit var paymentPersistence: PaymentPersistence
     @MockK private lateinit var reportCertificateCostCategoryPersistence: ProjectReportCertificateCostCategoryPersistence
     @MockK private lateinit var getPartnerBudgetPerFundService: GetPartnerBudgetPerFundService
     @MockK private lateinit var reportCertificateLumpSumPersistence: ProjectReportCertificateLumpSumPersistence

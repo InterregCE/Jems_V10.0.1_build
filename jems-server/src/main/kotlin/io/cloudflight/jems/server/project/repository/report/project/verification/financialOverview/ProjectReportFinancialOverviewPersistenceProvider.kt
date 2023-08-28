@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.programme.repository.fund.toModel
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.project.ProjectReportCoFinancingRepository
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.FinancingSourceBreakdownLine
+import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.PartnerCertificateFundSplit
 import io.cloudflight.jems.server.project.service.report.project.verification.financialOverview.ProjectReportFinancialOverviewPersistence
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -54,7 +55,7 @@ class ProjectReportFinancialOverviewPersistenceProvider(
     override fun storeOverviewPerFund(
         projectReportId: Long,
         toStore: List<FinancingSourceBreakdownLine>
-    ): List<FinancingSourceBreakdownLine> {
+    ): Map<Long, List<PartnerCertificateFundSplit>>  {
         val certificates = partnerReportRepository.findAllByProjectReportId(projectReportId).associateBy { it.id }
         val availableFunds =
             projectReportCoFinancingRepository.findAllByIdReportIdOrderByIdFundSortNumber(projectReportId)
@@ -82,6 +83,31 @@ class ProjectReportFinancialOverviewPersistenceProvider(
         }
 
         projectReportCoFinancingOverviewRepository.saveAll(financingSourcesOverview)
-        return getOverviewPerFund(projectReportId)
+        return getFundsToPartnerCertificateSplit(projectReportId)
+    }
+
+    @Transactional(readOnly = true)
+    override fun getFundsToPartnerCertificateSplit(projectReportId: Long): Map<Long, List<PartnerCertificateFundSplit>> {
+        val certificateFinancingSources =
+            projectReportCoFinancingOverviewRepository.findAllByPartnerReportProjectReportId(projectReportId)
+                .filter { it.programmeFund != null && it.fundValue != null }
+
+        val fundsToCertificateCoFinancingSplits = certificateFinancingSources.map {
+            PartnerCertificateFundSplit(
+                partnerReportId = it.partnerReport.id,
+                partnerReportNumber = it.partnerReport.number,
+                partnerId = it.partnerReport.partnerId,
+                partnerRole = it.partnerReport.identification.partnerRole,
+                partnerNumber = it.partnerReport.identification.partnerNumber,
+                fundId = it.programmeFund!!.id,
+                value = it.fundValue!!,
+                partnerContribution = it.partnerContribution,
+                publicContribution = it.publicContribution,
+                automaticPublicContribution = it.automaticPublicContribution,
+                privateContribution = it.privateContribution,
+                total = it.total
+            )
+        }.groupBy { it.fundId }
+        return fundsToCertificateCoFinancingSplits
     }
 }

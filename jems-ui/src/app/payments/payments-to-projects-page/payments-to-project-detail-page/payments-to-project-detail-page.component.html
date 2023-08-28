@@ -44,6 +44,9 @@
                                     infoText="{{ 'payments.detail.table.header.partner.name.contextinfo' | adaptTranslationKeyByCallType | async | translate }}">
                             </jems-context-info>
                         </div>
+                        <div *ngIf="data.paymentDetail.paymentType === PaymentTypeEnum.REGULAR" class="column-partner-name justify-start">
+                            {{ 'payments.detail.table.header.partner.report.no' | translate }}
+                        </div>
                         <div class="column-amount-approved justify-end">
                             {{ 'payments.detail.table.header.amount.approved' | translate }}
                             <jems-context-info
@@ -67,6 +70,9 @@
                                 </span>
                             </div>
                             <div class="column-partner-name justify-left">{{partnerPayment.partnerAbbreviation}}</div>
+                            <div *ngIf="data.paymentDetail.paymentType === PaymentTypeEnum.REGULAR" class="column-partner-name justify-left">
+                                {{'payment.detail.table.partner.report.number.abbreviation' | translate : {number: partnerPayment.partnerReportNumber} }}
+                            </div>
                             <div class="column-amount-approved justify-end">{{partnerPayment.amountApproved | asMoney}}</div>
                             <div class="column-payments-remaining justify-end">{{this.getUnauthorisedAmountForIndex(index) | asMoney}}</div>
                             <div class="column-action-buttons justify-end">

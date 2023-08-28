@@ -2,17 +2,17 @@ package io.cloudflight.jems.server.plugin.services.payments
 
 import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.plugin.contract.models.common.UserSummaryData
+import io.cloudflight.jems.plugin.contract.models.payments.regular.PartnerPaymentData
 import io.cloudflight.jems.plugin.contract.models.payments.regular.PaymentDetailData
+import io.cloudflight.jems.plugin.contract.models.payments.regular.PaymentPartnerInstallmentData
 import io.cloudflight.jems.plugin.contract.models.payments.regular.PaymentToProjectData
 import io.cloudflight.jems.plugin.contract.models.payments.regular.PaymentTypeData
-import io.cloudflight.jems.plugin.contract.models.payments.regular.PartnerPaymentData
-import io.cloudflight.jems.plugin.contract.models.payments.regular.PaymentPartnerInstallmentData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerRoleData
+import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
 import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
+import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
 import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
 import io.cloudflight.jems.server.payments.model.regular.PaymentType
-import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
-import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
 import java.time.ZoneId
 
 fun PaymentDetail.toDataModel() = PaymentDetailData(
@@ -55,6 +55,8 @@ fun PartnerPayment.toDataModel() = PartnerPaymentData(
     orderNr = orderNr,
     programmeLumpSumId = programmeLumpSumId,
     programmeFundId = programmeFundId,
+    partnerReportId = partnerReportId,
+    partnerReportNumber = partnerReportNumber,
     partnerId = partnerId,
     partnerRole = ProjectPartnerRoleData.valueOf(this.partnerRole.name),
     partnerNumber = partnerNumber,

@@ -42,6 +42,7 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
   updateInstallmentsSuccess$ = new Subject<boolean>();
   toggleStatesOfPaymentRows: boolean[] = [];
   userCanEdit$: Observable<boolean>;
+  PaymentTypeEnum = PaymentDetailDTO.PaymentTypeEnum;
 
   partnerPaymentsForm = this.formBuilder.group({
     id: '',
@@ -148,6 +149,7 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
 
   addPartnerPayment(partnerPayment: PaymentPartnerDTO, paymentIndex: number): void {
     this.partnerPayments.push(this.formBuilder.group({
+        id: partnerPayment.id,
         partnerId: partnerPayment.partnerId,
         partnerNumber: this.formBuilder.control(partnerPayment.partnerNumber),
         partnerType: this.formBuilder.control(partnerPayment.partnerType),

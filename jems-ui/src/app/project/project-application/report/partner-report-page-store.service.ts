@@ -18,7 +18,7 @@ import {PermissionService} from 'src/app/security/permissions/permission.service
 import {ProgrammeEditableStateStore} from '../../../programme/programme-page/services/programme-editable-state-store.service';
 import {PrivilegesPageStore} from '@project/project-application/privileges-page/privileges-page-store.service';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
-import {MatSort} from "@angular/material/sort";
+import {MatSort} from '@angular/material/sort';
 
 @Injectable({providedIn: 'root'})
 export class PartnerReportPageStore {
