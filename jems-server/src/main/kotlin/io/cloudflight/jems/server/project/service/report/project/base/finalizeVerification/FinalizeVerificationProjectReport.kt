@@ -37,7 +37,7 @@ class FinalizeVerificationProjectReport(
     @Transactional
     @CanFinalizeReportVerification
     @ExceptionWrapper(FinalizeVerificationProjectReportException::class)
-    override fun finalizeVerification(projectId: Long, reportId: Long): ProjectReportStatus {
+    override fun finalizeVerification(reportId: Long): ProjectReportStatus {
         val report = reportPersistence.getReportByIdUnSecured(reportId = reportId)
         validateReportIsInVerification(report)
         val parkedExpenditures =

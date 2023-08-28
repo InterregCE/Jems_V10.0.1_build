@@ -55,5 +55,5 @@ class ProjectReportController(
         startVerificationReport.startVerification(projectId = projectId, reportId = reportId).toDto()
 
     override fun finalizeVerificationOnProjectReport(projectId: Long, reportId: Long) =
-        finalizeVerificationProjectReport.finalizeVerification(projectId, reportId).toDto()
+        finalizeVerificationProjectReport.finalizeVerification(reportId).toDto()
 }
