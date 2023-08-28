@@ -27,7 +27,7 @@
 </jems-main-page-template>
 
 <ng-template #partnerRoleCell let-payment>
-    {{ payment.partnerType === 'LEAD_PARTNER' ? 'LP' : 'PP' + payment.partnerNumber }}
+    {{ payment.partnerType === 'LEAD_PARTNER' ? 'LP' : 'PP' + payment.partnerSortNumber }}
 </ng-template>
 
 <ng-template #sourceForAdvanceCell let-payment>

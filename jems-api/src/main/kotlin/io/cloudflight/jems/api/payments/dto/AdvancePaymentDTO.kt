@@ -12,7 +12,7 @@ data class AdvancePaymentDTO(
     val projectAcronym: String,
 
     val partnerType: ProjectPartnerRoleDTO,
-    val partnerNumber: Int?,
+    val partnerSortNumber: Int?,
     val partnerAbbreviation: String,
 
     val programmeFund: ProgrammeFundDTO? = null,

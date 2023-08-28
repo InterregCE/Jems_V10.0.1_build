@@ -38,8 +38,8 @@ export class ExpenditureItemParkedByChipComponent {
   };
 
   static getParkedBy(parkingMetadata: ExpenditureParkingMetadataDTO, parkedByControl = false): ExpenditureParkedByEnum {
-    if (parkedByControl) return ExpenditureParkedByEnum.CONTROL;
-    if (!parkingMetadata) return ExpenditureParkedByEnum.NONE;
+    if (parkedByControl) {return ExpenditureParkedByEnum.CONTROL;}
+    if (!parkingMetadata) {return ExpenditureParkedByEnum.NONE;}
     return parkingMetadata.reportProjectOfOriginId ? ExpenditureParkedByEnum.JSMA : ExpenditureParkedByEnum.CONTROL;
   }
 }

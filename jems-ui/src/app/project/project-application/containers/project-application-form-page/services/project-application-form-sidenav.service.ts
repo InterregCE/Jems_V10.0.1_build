@@ -21,6 +21,9 @@ import {ContractingSection} from '@project/project-application/contracting/contr
 import {ContractingStore} from '@project/project-application/contracting/contracting.store';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import StatusEnum = ProjectStatusDTO.StatusEnum;
+import {
+  ProjectAdvancePaymentsPageStore
+} from '@project/project-application/report/report-advance-payments-overview/project-advance-payments-page.store';
 
 @Injectable()
 @UntilDestroy()
@@ -38,6 +41,15 @@ export class ProjectApplicationFormSidenavService {
   ]).pipe(
     map(([hasContractingViewPermission, hasSetToContractedPermission, projectStatus]) =>
       (hasContractingViewPermission || hasSetToContractedPermission) && ProjectUtil.isInApprovedOrAnyStatusAfterApproved(projectStatus)
+    ),
+  );
+
+  private readonly canSeeAdvancePayment$: Observable<boolean> = combineLatest([
+    this.permissionService.hasPermission(PermissionsEnum.ProjectReportingView),
+    this.advancePaymentStore.projectAdvancePaymentDTO$,
+  ]).pipe(
+    map(([hasProjectReportingView, payments]) =>
+      (hasProjectReportingView && !payments.empty)
     ),
   );
 
@@ -335,7 +347,8 @@ export class ProjectApplicationFormSidenavService {
               private visibilityStatusService: FormVisibilityStatusService,
               private partnerUserCollaboratorService: ProjectPartnerUserCollaboratorService,
               private contractingStore: ContractingStore,
-              private contractingSectionLockStore: ContractingSectionLockStore
+              private contractingSectionLockStore: ContractingSectionLockStore,
+              private advancePaymentStore: ProjectAdvancePaymentsPageStore
   ) {
 
     const headlines$ = combineLatest([
@@ -361,6 +374,7 @@ export class ProjectApplicationFormSidenavService {
       this.contractingPartnerSection$,
       this.contractingSectionLockStore.lockedSections$,
       this.canSeeSharedFolder$,
+      this.canSeeAdvancePayment$
     ])
       .pipe(
         debounceTime(50), // there's race condition with SidenavService.resetOnLeave
@@ -387,11 +401,12 @@ export class ProjectApplicationFormSidenavService {
                canSeePrivilegesSection,
                contractingPartnerSection,
                lockedContractingSections,
-               canSeeSharedFolder
+               canSeeSharedFolder,
+               canSeeAdvancePayment
              ]: any) => {
           this.sideNavService.setHeadlines(ProjectPaths.PROJECT_DETAIL_PATH, [
             this.getProjectOverviewHeadline(project.id),
-            ...canSeeReporting ? this.getReportingHeadline(reportSectionPartners, project.id, canSeeProjectReporting) : [],
+            ...canSeeReporting ? this.getReportingHeadline(reportSectionPartners, project.id, canSeeProjectReporting, canSeeAdvancePayment) : [],
             ...!canSeeReporting && canSeeProjectReporting ? this.getPartialReportingHeadline(project.id) : [],
             ...(canSeeProjectManagement || canSeeProjectContracts || canSeeContractMonitoring || canSeeContractReporting || canSeeContractPartner) ?
               this.getContractingHeadlines(project.id, canSeeContractMonitoring, canSeeProjectContracts, canSeeProjectManagement, canSeeContractReporting,
@@ -495,10 +510,23 @@ export class ProjectApplicationFormSidenavService {
   }
 
 
-  private getReportingHeadline(partners: HeadlineRoute[], projectId: number, canSeeProjectReporting: boolean): HeadlineRoute[] {
-    return [{
+  private getReportingHeadline(
+    partners: HeadlineRoute[],
+    projectId: number,
+    canSeeProjectReporting: boolean,
+    canSeeAdvancedPayments: boolean
+  ): HeadlineRoute[] {
+    return [
+      {
       headline: {i18nKey: 'project.application.reporting.title'},
       bullets: [
+        ...canSeeAdvancedPayments ? [{
+          headline: {i18nKey: 'project.application.reporting.payments.overview.title'},
+          bullets: [{
+            headline: {i18nKey: 'project.application.reporting.advance.payments.title'},
+            route: `/app/project/detail/${projectId}/advancePayments`
+          }]
+        }] : [],
         ...canSeeProjectReporting ? this.getProjectReportingHeadline(projectId) : [],
         ...this.getPartnerReportingSections(partners)
       ]

@@ -14,6 +14,8 @@ import org.springframework.stereotype.Repository
 interface AdvancePaymentRepository: JpaRepository<AdvancePaymentEntity, Long>, QuerydslPredicateExecutor<AdvancePaymentEntity> {
 
     fun findAllByProjectId(projectId: Long): List<AdvancePaymentEntity>
+
+    fun findAllByProjectIdAndIsPaymentConfirmedTrue(projectId: Long, pageable: Pageable): Page<AdvancePaymentEntity>
 }
 
 fun AdvancePaymentRepository.filterPayments(

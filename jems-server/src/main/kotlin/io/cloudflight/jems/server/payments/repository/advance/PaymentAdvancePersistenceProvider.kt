@@ -93,6 +93,10 @@ class PaymentAdvancePersistenceProvider(
         )
     }
 
+    @Transactional(readOnly = true)
+    override fun getConfirmedPaymentsForProject(projectId: Long, pageable: Pageable): Page<AdvancePayment> =
+        advancePaymentRepository.findAllByProjectIdAndIsPaymentConfirmedTrue(projectId, pageable).toModelList()
+
     private fun setSourceOfContribution(
         entity: AdvancePaymentEntity,
         fundId: Long?,

@@ -75,7 +75,6 @@
     <ID>MaxLineLength:FileHelper.kt$private val ALLOWED_EXTENSIONS = arrayOf("ddoc", "asice", "asics", "adoc", "bdoc", "edoc", "sce", "scs", "csv","dat","db","dbf","log","mdb","xml","email","eml","emlx","msg","oft","ost","pst","vcf","bmp","gif","jpeg","jpg","png","psd","svg","tif","tiff","htm","html","key","odp","pps","ppt","pptx","ods","xls","xlsm","xlsx","doc","docx","odt","pdf","rtf","tex","txt","wpd","mov","avi","mp4","zip","rar","ace","7z","url","p7m")</ID>
     <ID>MaxLineLength:FinalizeVerificationProjectReportTest.kt$FinalizeVerificationProjectReportTest$assertThat(auditSlot.captured.auditCandidate.description).isEqualTo("[NS-AQ01] Project report R.4 verification was finalised and following expenditure items were parked: [LP1] - item [R1.1], ")</ID>
     <ID>MaxLineLength:GetBudgetTotalCostCalculatorTest.kt$GetBudgetTotalCostCalculatorTest$fun</ID>
-    <ID>MaxLineLength:InModificationApplicationStateTest.kt$InModificationApplicationStateTest$every { projectPersistence.getProjectCallSettings(InModificationApplicationStateTest.PROJECT_ID) } returns InModificationApplicationStateTest.projectCallSettings</ID>
     <ID>MaxLineLength:MinioStorageTest.kt$MinioStorageTest$fun</ID>
     <ID>MaxLineLength:NotApprovedApplicationState.kt$NotApprovedApplicationState$ApplicationStatus.APPROVED_WITH_CONDITIONS</ID>
     <ID>MaxLineLength:OutputIndicatorControllerTest.kt$OutputIndicatorControllerTest$fun</ID>
