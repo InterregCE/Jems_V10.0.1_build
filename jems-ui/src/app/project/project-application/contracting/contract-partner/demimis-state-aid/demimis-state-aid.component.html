@@ -37,7 +37,7 @@
             </mat-select>
         </mat-form-field>
 
-        <mat-form-field [matTooltip]="aidGrantedByCountry.value">
+        <mat-form-field [matTooltip]="getTooltipWithLength(aidGrantedByCountry.value, 250)">
             <mat-label>{{'project.application.contract.monitoring.project.de.minimis.aid.grant.country' | translate}}</mat-label>
             <input #aidGrantedByCountry name="country" formControlName="country" matInput [ngModel]="deMinimis?.aidGrantedByCountry">
             <mat-hint [jemsHintFor]="aidGrantedByCountry" [hide]="deMinimisForm?.controls?.country?.errors !== null">

@@ -192,6 +192,10 @@ export class DemimisStateAidComponent implements OnInit {
     this.formService.setDirty(true);
   }
 
+  getTooltipWithLength(content: string, maxLength: number): string {
+    return `${content} (${ content.length}/${maxLength})`;
+  }
+
   private initForm(data: any): void {
     this.deMinimisForm = this.formBuilder.group({
       dateOfGrantingAid: [''],
