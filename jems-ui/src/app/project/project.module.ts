@@ -484,6 +484,7 @@ import {
 import {
   VerificationWorkOverviewComponent
 } from '@project/project-application/report/project-verification-report/project-verification-report-overview-tab/verification-work-overview/verification-work-overview.component';
+import { ReportAdvancePaymentsOverviewComponent } from './project-application/report/report-advance-payments-overview/report-advance-payments-overview.component';
 
 @NgModule({
   declarations: [
@@ -683,6 +684,7 @@ import {
     VerificationReportTotalEligiblePerSourcesComponent,
     VerificationWorkOverviewComponent,
     ExpenditureItemParkedByChipComponent,
+    ReportAdvancePaymentsOverviewComponent,
   ],
   imports: [
     SharedModule,

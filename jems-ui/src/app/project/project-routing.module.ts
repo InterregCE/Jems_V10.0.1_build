@@ -285,6 +285,9 @@ import {
 import {
   ProjectVerificationReportOverviewTabComponent
 } from '@project/project-application/report/project-verification-report/project-verification-report-overview-tab/project-verification-report-overview-tab.component';
+import {
+  ReportAdvancePaymentsOverviewComponent
+} from '@project/project-application/report/report-advance-payments-overview/report-advance-payments-overview.component';
 
 export const routes: Routes = [
   {
@@ -417,6 +420,19 @@ export const routes: Routes = [
                     ]
                   }
                 ]
+              }
+            ]
+          },
+          {
+            path: 'advancePayments',
+            data: {
+              breadcrumb: 'project.breadcrumb.applicationForm.reporting.overview'
+            },
+            children: [
+              {
+                path: '',
+                component: ReportAdvancePaymentsOverviewComponent,
+                data: {breadcrumb: 'project.breadcrumb.applicationForm.reporting.overview.advance.payments'}
               }
             ]
           },

@@ -23,4 +23,6 @@ interface PaymentAdvancePersistence {
 
     fun deletePaymentAdvanceAttachment(fileId: Long)
 
+    fun getConfirmedPaymentsForProject(projectId: Long, pageable: Pageable): Page<AdvancePayment>
+
 }

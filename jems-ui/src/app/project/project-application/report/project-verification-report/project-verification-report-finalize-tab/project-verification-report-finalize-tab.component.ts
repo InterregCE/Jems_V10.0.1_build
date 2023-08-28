@@ -23,7 +23,7 @@ import {
 } from '@project/project-application/report/project-verification-report/project-verification-report-finalize-tab/project-verification-report-finalize-store.service';
 import {
   ProjectStore
-} from "@project/project-application/containers/project-application-detail/services/project-store.service";
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 
 @Component({
   selector: 'jems-project-verification-report-finalize-tab',

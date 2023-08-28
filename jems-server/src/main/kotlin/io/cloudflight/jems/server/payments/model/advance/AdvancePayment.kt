@@ -12,7 +12,7 @@ data class AdvancePayment (
     val projectAcronym: String,
 
     val partnerType: ProjectPartnerRole,
-    val partnerNumber: Int?,
+    val partnerSortNumber: Int?,
     val partnerAbbreviation: String,
 
     val programmeFund: ProgrammeFund? = null,

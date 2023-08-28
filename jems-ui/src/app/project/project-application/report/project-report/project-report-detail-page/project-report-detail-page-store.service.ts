@@ -44,7 +44,7 @@ export class ProjectReportDetailPageStore {
               public projectStore: ProjectStore) {
     this.projectReportId$ = this.projectReportId();
     this.projectReport$ = this.projectReport();
-    this.projectReportVerificationNotification$ = this.projectReportVerificationNotification()
+    this.projectReportVerificationNotification$ = this.projectReportVerificationNotification();
     this.reportStatus$ = this.reportStatus();
     this.reportEditable$ = this.reportEditable();
     this.canUserAccessCall$ = partnerReportDetailPageStore.canUserAccessCall$;

@@ -32,7 +32,7 @@ class GetAdvancePaymentsTest: UnitTest() {
             projectCustomIdentifier = "dummyProj1",
             projectAcronym = "dummyAcronym",
             partnerType = ProjectPartnerRole.LEAD_PARTNER,
-            partnerNumber = null,
+            partnerSortNumber = null,
             partnerAbbreviation = "abbr.",
             programmeFund = fund,
             amountPaid = 120.87.toScaledBigDecimal(),

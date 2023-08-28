@@ -213,7 +213,7 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
             projectCustomIdentifier = project.customIdentifier,
             projectAcronym = project.acronym,
             partnerType = ProjectPartnerRole.PARTNER,
-            partnerNumber = partnerDetail.sortNumber,
+            partnerSortNumber = partnerDetail.sortNumber,
             partnerAbbreviation = partnerDetail.abbreviation,
             programmeFund = fund,
             paymentAuthorized= true,
@@ -223,6 +223,7 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
             amountSettled = BigDecimal.ZERO,
             paymentSettlements = listOf(paymentSettlement)
         )
+
         private val advancePaymentDetail = AdvancePaymentDetail(
             id = paymentId,
             projectId = projectId,
@@ -485,5 +486,13 @@ class PaymentAdvancePersistenceProviderTest: UnitTest() {
         every { reportFileRepository.findByTypeAndId(JemsFileType.PaymentAdvanceAttachment, -1L) } returns null
         assertThrows<ResourceNotFoundException> { advancePaymentPersistenceProvider.deletePaymentAdvanceAttachment(-1L) }
         verify(exactly = 0) { fileRepository.delete(any()) }
+    }
+
+    @Test
+    fun listForProject() {
+        every {
+            advancePaymentRepository.findAllByProjectIdAndIsPaymentConfirmedTrue(86L, Pageable.unpaged())
+        } returns  PageImpl(listOf(advancePaymentEntity(mutableSetOf(advancePaymentSettlementEntity))))
+        assertThat(advancePaymentPersistenceProvider.getConfirmedPaymentsForProject(86L, Pageable.unpaged()).content).containsExactly(advancePayment)
     }
 }

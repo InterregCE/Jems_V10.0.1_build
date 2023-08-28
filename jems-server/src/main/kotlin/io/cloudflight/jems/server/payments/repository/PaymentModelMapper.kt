@@ -304,7 +304,7 @@ fun AdvancePaymentEntity.toModel(): AdvancePayment {
         projectCustomIdentifier = projectCustomIdentifier,
         projectAcronym = projectAcronym ?: "",
         partnerType = ProjectPartnerRole.valueOf(partnerRole.name),
-        partnerNumber = partnerSortNumber,
+        partnerSortNumber = partnerSortNumber,
         partnerAbbreviation = partnerAbbreviation ?: "",
         paymentAuthorized = isPaymentAuthorizedInfo,
         amountPaid = amountPaid,

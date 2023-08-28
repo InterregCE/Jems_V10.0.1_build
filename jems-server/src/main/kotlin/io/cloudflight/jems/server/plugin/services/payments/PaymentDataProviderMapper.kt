@@ -62,7 +62,7 @@ fun PartnerPayment.toDataModel() = PartnerPaymentData(
     partnerNumber = partnerNumber,
     partnerAbbreviation = partnerAbbreviation,
     amountApprovedPerPartner = amountApprovedPerPartner,
-    installments = installments.map { it.toDataModel() }
+    installments = installments.map { it.toDataModel() },
 )
 
 fun PaymentPartnerInstallment.toDataModel() = PaymentPartnerInstallmentData(
