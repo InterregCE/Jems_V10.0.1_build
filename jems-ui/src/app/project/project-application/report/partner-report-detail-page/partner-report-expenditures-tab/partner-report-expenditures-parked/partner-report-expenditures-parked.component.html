@@ -120,7 +120,9 @@
         <mat-header-cell *matHeaderCellDef>
             <span jemsText maxLines="2">{{ 'project.application.partner.report.expenditures.tab.description' | translate }}</span>
         </mat-header-cell>
-        <mat-cell *matCellDef="let exp">
+        <mat-cell *matCellDef="let exp"
+                  [matTooltip]="exp.expenditure.description | translateByInputLanguage | async"
+                  [matTooltipClass]="'tooltip'">
             {{ exp.expenditure.description | translateByInputLanguage | async }}
         </mat-cell>
     </ng-container>
@@ -129,7 +131,9 @@
         <mat-header-cell *matHeaderCellDef>
             <span jemsText maxLines="2">{{ 'project.application.partner.report.expenditures.tab.comment' | translate }}</span>
         </mat-header-cell>
-        <mat-cell *matCellDef="let exp">
+        <mat-cell *matCellDef="let exp"
+                  [matTooltip]="exp.expenditure.comment | translateByInputLanguage | async"
+                  [matTooltipClass]="'tooltip'">
             {{ exp.expenditure.comment | translateByInputLanguage | async }}
         </mat-cell>
     </ng-container>
