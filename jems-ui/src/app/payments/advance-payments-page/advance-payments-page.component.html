@@ -38,6 +38,7 @@
 <ng-template #advanceAmountPaidCell let-payment>
     {{payment.amountPaid | asMoney}}
 </ng-template>
+
 <ng-template #remainingToBeSettledCell let-payment>
     {{(payment.amountPaid - payment.amountSettled) | asMoney}}
 </ng-template>

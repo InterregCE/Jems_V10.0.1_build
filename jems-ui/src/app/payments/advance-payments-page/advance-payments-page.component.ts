@@ -122,6 +122,7 @@ export class AdvancePaymentsPageComponent implements OnInit, AfterViewInit {
           displayedColumn: 'payments.advance.payment.table.header.amount.settled',
           elementProperty: 'amountSettled',
           columnWidth: ColumnWidth.ChipColumn,
+          columnType: ColumnType.Decimal,
         },
         {
           displayedColumn: 'payments.advance.payment.table.header.remaining.amount.to.be.settled',
