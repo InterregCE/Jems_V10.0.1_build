@@ -52,14 +52,17 @@ class GetProjectReportList(
             it.amountRequested = byId[it.id]
     }
 
-    private fun Page<ProjectReportSummary>.removeZeroAmountsFromContentReports() = this.onEach {
-        if (it.type?.hasFinance() == true) {
-            return@onEach
-        }
-        it.apply {
-            amountRequested = if (amountRequested?.compareTo(BigDecimal.ZERO) == 0) null else amountRequested
-            totalEligibleAfterVerification = if (totalEligibleAfterVerification?.compareTo(BigDecimal.ZERO) == 0) null else totalEligibleAfterVerification
-        }
+    private fun Page<ProjectReportSummary>.removeZeroAmountsFromContentReports() = this.onEach { report ->
+        val amount = report.amountRequested
+        val totalEligible = report.totalEligibleAfterVerification
+
+        if (amount.isZero() && report.doesNotHaveFinance())
+            report.amountRequested = null
+
+        if (totalEligible.isZero() && (report.doesNotHaveFinance() || !report.status.isFinalized()))
+            report.totalEligibleAfterVerification = null
     }
+
+    private fun BigDecimal?.isZero() = this != null && this.compareTo(BigDecimal.ZERO) == 0
 
 }

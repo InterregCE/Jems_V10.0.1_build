@@ -50,13 +50,14 @@ internal class GetProjectReportTest : UnitTest() {
             firstSubmission = WEEK_AGO,
             verificationDate = NEXT_MONTH.toLocalDate(),
             verificationEndDate = NEXT_MONTH,
-            amountRequested = BigDecimal.ZERO,
-            totalEligibleAfterVerification = BigDecimal.ZERO,
+            amountRequested = BigDecimal.valueOf(15L),
+            totalEligibleAfterVerification = BigDecimal.valueOf(19L),
             riskBasedVerification = false,
             riskBasedVerificationDescription = "Description"
         )
 
-        val period = ProjectPeriod(7, 13, 14)
+        val period7 = ProjectPeriod(7, 13, 14)
+        val period8 = ProjectPeriod(8, 15, 16)
 
         val expectedReport = ProjectReport(
             id = 14L,
@@ -67,7 +68,7 @@ internal class GetProjectReportTest : UnitTest() {
             endDate = TOMORROW,
             deadlineId = 14L,
             type = ContractingDeadlineType.Content,
-            periodDetail = period,
+            periodDetail = period7,
             reportingDate = MONTH_AGO,
             projectId = 114L,
             projectIdentifier = "proj identifier",
@@ -88,18 +89,18 @@ internal class GetProjectReportTest : UnitTest() {
             startDate = YESTERDAY,
             endDate = TOMORROW,
             type = ContractingDeadlineType.Content,
-            periodDetail = period,
+            periodDetail = period7,
             reportingDate = MONTH_AGO,
             createdAt = NOW,
             firstSubmission = WEEK_AGO,
             verificationDate = NEXT_MONTH.toLocalDate(),
             deletable = false,
             verificationEndDate = NEXT_MONTH,
-            amountRequested = BigDecimal.ONE,
-            totalEligibleAfterVerification = BigDecimal.ZERO,
+            amountRequested = BigDecimal.valueOf(15L),
+            totalEligibleAfterVerification = BigDecimal.valueOf(19L),
             verificationConclusionJS = null,
             verificationConclusionMA = null,
-            verificationFollowup = null
+            verificationFollowup = null,
         )
 
     }
@@ -121,7 +122,7 @@ internal class GetProjectReportTest : UnitTest() {
     fun findById() {
         val projectId = 114L
         every { reportPersistence.getReportById(projectId, reportId = 14L) } returns report
-        every { projectPersistence.getProjectPeriods(projectId, "v4") } returns listOf(period)
+        every { projectPersistence.getProjectPeriods(projectId, "v4") } returns listOf(period7)
         assertThat(interactor.findById(projectId, reportId = 14L)).isEqualTo(expectedReport)
     }
 
