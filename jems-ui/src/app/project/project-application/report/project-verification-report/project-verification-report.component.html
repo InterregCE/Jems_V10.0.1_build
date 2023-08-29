@@ -39,7 +39,7 @@
             </span>
         </a>
 
-        <a *ngIf="data.isVisibleForMonitoringUser || (data.isVisibleForApplicantUser && data.projectReport.status === StatusEnum.Finalized)" [active]="activeTab('overview')" mat-tab-link
+        <a *ngIf="isFinance(data.projectReport.type) && (data.isVisibleForMonitoringUser || (data.isVisibleForApplicantUser && data.projectReport.status === StatusEnum.Finalized))" [active]="activeTab('overview')" mat-tab-link
            (click)="routeTo('overview')">
             <span jemsText maxWidth="230">
                 {{'project.application.project.verification.work.tab.overview' | translate}}
