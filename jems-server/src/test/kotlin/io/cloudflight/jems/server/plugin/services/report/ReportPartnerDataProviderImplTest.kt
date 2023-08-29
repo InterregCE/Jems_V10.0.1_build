@@ -386,7 +386,9 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
             currencyConversionRate = BigDecimal.valueOf(0.84),
             declaredAmountAfterSubmission = BigDecimal.valueOf(8.4),
             attachment = JemsFileMetadataData(47L, "file.xlsx", DATE_TIME_1),
-            parkingMetadata = ExpenditureParkingMetadataDTO(75L, 4, 3)
+            parkingMetadata = ExpenditureParkingMetadataDTO(75L, 4, 3),
+            number = 1,
+            gdpr = false
         )
 
         private val dummyLineCoFin = ExpenditureCoFinancingBreakdownLine(
