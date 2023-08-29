@@ -1,12 +1,12 @@
 <jems-form (save)="save()"
            (discard)="resetForm(riskBasedVerification)">
 
-    <h3>{{'project.application.project.verification.tab.expenditure' | translate}}</h3>
-    <p>{{'project.application.project.verification.tab.expenditure.info' | translate}}</p>
-
-    <h4>{{'project.application.project.verification.tab.expenditure.risk' | translate}}</h4>
-
     <form jemsFormLayout [formGroup]="form">
+        <h3>{{'project.application.project.verification.tab.expenditure' | translate}}</h3>
+        <p>{{'project.application.project.verification.tab.expenditure.info' | translate}}</p>
+
+        <h4>{{'project.application.project.verification.tab.expenditure.risk' | translate}}</h4>
+
         <div>
             <mat-button-toggle-group [formControlName]="FORM_CONTROL.riskBasedVerification">
                 <mat-button-toggle [value]="true">{{'common.yes' | translate}}</mat-button-toggle>

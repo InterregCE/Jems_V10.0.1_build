@@ -10,8 +10,10 @@
                        (discard)="resetForm(data.aggregatedExpenditures)">
 
                 <div id="table-container" jemsNoWidthLimit>
-                    <h4 class="pt-3">{{'project.application.project.verification.tab.expenditure.items' | translate}}</h4>
-                    <p>{{'project.application.project.verification.tab.expenditure.items.info' | translate}}</p>
+                    <div jemsFormLayout>
+                        <h4 class="pt-3">{{'project.application.project.verification.tab.expenditure.items' | translate}}</h4>
+                        <p>{{'project.application.project.verification.tab.expenditure.items.info' | translate}}</p>
+                    </div>
 
                     <form jemsFormLayout [formGroup]="form">
 
@@ -89,7 +91,7 @@
                                     <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                                 </ng-container>
 
-                                <ng-container matColumnDef="costOption">
+                                <ng-container matColumnDef="costOption" sticky>
                                     <mat-header-cell *matHeaderCellDef>
                                         <span jemsText
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.cost.lump.sum' | translate}}</span>
@@ -107,7 +109,7 @@
                                     <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                                 </ng-container>
 
-                                <ng-container matColumnDef="costCategory">
+                                <ng-container matColumnDef="costCategory" sticky>
                                     <mat-header-cell *matHeaderCellDef>
                                 <span jemsText
                                       maxLines="2">{{'project.application.partner.report.expenditures.tab.cost.category' | translate}}</span>
