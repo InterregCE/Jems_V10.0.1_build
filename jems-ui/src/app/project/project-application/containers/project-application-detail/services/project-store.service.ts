@@ -23,7 +23,7 @@ import {
   UserRoleCreateDTO,
   WorkPackageActivitySummaryDTO
 } from '@cat/api';
-import {filter, map, mergeMap, shareReplay, startWith, switchMap, take, tap, withLatestFrom} from 'rxjs/operators';
+import {filter, map, mergeMap, shareReplay, startWith, switchMap, tap, withLatestFrom} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
 import {BudgetCostCategoryEnum} from '@project/model/lump-sums/BudgetCostCategoryEnum';
@@ -31,9 +31,7 @@ import {RoutingService} from '@common/services/routing.service';
 import {ProjectPaths, ProjectUtil} from '@project/common/project-util';
 import {SecurityService} from '../../../../../security/security.service';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
-import {
-  InvestmentSummary
-} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
+import {InvestmentSummary} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
 import {AllowedBudgetCategories, AllowedBudgetCategory} from '@project/model/allowed-budget-category';
 import {NumberService} from '@common/services/number.service';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
@@ -101,7 +99,6 @@ export class ProjectStore {
   private projectAcronym$ = new ReplaySubject<string>(1);
   private updatedProjectData$ = new Subject<void>();
   private updatedProjectForm$ = new Subject<ProjectDetailFormDTO>();
-  private projectCallSettingsSubject$ = new ReplaySubject<ProjectCallSettingsDTO>(1);
 
   constructor(private projectService: ProjectService,
               private router: RoutingService,
@@ -123,8 +120,7 @@ export class ProjectStore {
     this.projectStatus$ = ProjectStore.projectStatus(this.project$);
     this.projectCallType$ = ProjectStore.projectCallType(this.project$);
     this.currentVersionOfProjectStatus$ = ProjectStore.projectStatus(this.currentVersionOfProject$);
-    this.projectCallSettings();
-    this.projectCallSettings$ = this.projectCallSettingsSubject$.asObservable().pipe(shareReplay(1));
+    this.projectCallSettings$ = this.projectCallSettings();
     this.currentVersionOfProjectTitle$ = this.currentVersionOfProject$
       .pipe(
         map(project => `${project.customIdentifier} – ${project.acronym}`)
@@ -292,15 +288,14 @@ export class ProjectStore {
       );
   }
 
-  private projectCallSettings(): void {
-    this.projectId$
-      .pipe(
-        filter(projectId => projectId !== 0),
-        switchMap(projectId => this.projectService.getProjectCallSettingsById(projectId)),
-        take(1),
-        tap(value => this.projectCallSettingsSubject$.next(value)),
-        tap(value => Log.info('Fetched Project call settings:', this, value))
-      ).subscribe();
+  private projectCallSettings(): Observable<ProjectCallSettingsDTO> {
+    return this.projectId$.pipe(
+      filter(Boolean),
+      map(Number),
+      switchMap(projectId => this.projectService.getProjectCallSettingsById(projectId)),
+      tap(value => Log.info('Fetched Project call settings:', this, value)),
+      shareReplay(1),
+    );
   }
 
   private allowedBudgetCategories(): Observable<AllowedBudgetCategories> {
