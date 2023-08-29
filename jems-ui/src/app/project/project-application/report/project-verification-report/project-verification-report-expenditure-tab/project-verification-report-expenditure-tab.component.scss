@@ -96,7 +96,20 @@
   border-left: 1px solid var(--table-border-color);;
 }
 
+.mat-column-partner, .mat-column-report, .mat-column-costItemId {
+  min-width: 3.55rem;
+  max-width: 3.55rem;
+  width: 3.55rem;
+}
+.mat-column-report {
+  left: 5rem !important;
+}
+.mat-column-costItemID {
+  left: 9.4rem !important;
+}
+
 .mat-column-costGDPR {
+  left: 13.65rem !important;
   padding-left: 0.4rem;
   border-left: 1px solid var(--table-border-color);
   border-right: 1px solid var(--table-border-color);
@@ -106,6 +119,11 @@
   margin-left: -0.25rem;
 }
 
-.mat-column-costOptions {
+.mat-column-costOption {
+  left: 15.65rem !important;
+}
+
+.mat-column-costCategory {
+  left: 27.5rem !important;
   border-right: 1px solid var(--table-border-color);
 }
