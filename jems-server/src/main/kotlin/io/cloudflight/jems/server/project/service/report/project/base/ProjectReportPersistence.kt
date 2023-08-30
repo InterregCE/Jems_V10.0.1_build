@@ -61,6 +61,6 @@ interface ProjectReportPersistence {
         reportId: Long
     ): ProjectReportSubmissionSummary
 
-    fun finalizeVerificationOnReportById(projectId: Long, reportId: Long): ProjectReportSubmissionSummary
+    fun finalizeVerificationOnReportById(projectId: Long, reportId: Long, time: ZonedDateTime): ProjectReportSubmissionSummary
 
 }

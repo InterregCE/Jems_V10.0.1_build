@@ -26,20 +26,20 @@ class PartnerReportParkedExpenditurePersistenceProvider(
     @Transactional(readOnly = true)
     override fun getParkedExpendituresByIdForPartner(
         partnerId: Long,
-        onlyAllowedStatusOfOrigin: ReportStatus,
     ): Map<Long, ExpenditureParkingMetadata> =
-        reportParkedExpenditureRepository.findAllByParkedFromPartnerReportPartnerIdAndParkedFromPartnerReportStatus(
-            partnerId = partnerId,
-            status = onlyAllowedStatusOfOrigin,
-        ).mapTo(HashSet()) { Pair(
-            it.parkedFromExpenditureId,
-            ExpenditureParkingMetadata(
-                reportOfOriginId = it.reportOfOrigin.id,
-                reportOfOriginNumber = it.reportOfOrigin.number,
-                reportProjectOfOriginId = it.reportProjectOfOrigin?.id,
-                originalExpenditureNumber = it.originalNumber
-            )
-        ) }.toMap()
+        reportParkedExpenditureRepository
+            .findAllAvailableForPartnerReport(partnerId)
+            .associate {
+                Pair(
+                    it.parkedFromExpenditureId,
+                    ExpenditureParkingMetadata(
+                        reportOfOriginId = it.reportOfOrigin.id,
+                        reportOfOriginNumber = it.reportOfOrigin.number,
+                        reportProjectOfOriginId = it.parkedInProjectReport?.id,
+                        originalExpenditureNumber = it.originalNumber
+                    )
+                )
+            }
 
     @Transactional
     override fun parkExpenditures(toPark: Collection<ParkExpenditureData>) {
@@ -48,7 +48,7 @@ class PartnerReportParkedExpenditurePersistenceProvider(
                 parkedFromExpenditureId = it.expenditureId,
                 parkedFrom = reportExpenditureRepository.getById(it.expenditureId),
                 reportOfOrigin = reportRepository.getById(it.originalReportId),
-                reportProjectOfOrigin = it.originalProjectReportId?.let { id -> projectReportRepository.getById(id) },
+                parkedInProjectReport = it.parkedInProjectReportId?.let { id -> projectReportRepository.getById(id) },
                 originalNumber = it.originalNumber,
                 parkedOn = it.parkedOn
             )

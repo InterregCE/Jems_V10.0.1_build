@@ -60,19 +60,15 @@ class PartnerReportParkedExpenditurePersistenceProviderTest : UnitTest() {
             parkedFromExpenditureId = 5499L,
             mockk(),
             originalReport,
-            originalProjectReport,
             21,
+            originalProjectReport,
             parkedOn = dateTime
         )
         every {
-            reportParkedExpenditureRepository
-                .findAllByParkedFromPartnerReportPartnerIdAndParkedFromPartnerReportStatus(
-                    partnerId = 12L,
-                    status = ReportStatus.Certified,
-                )
+            reportParkedExpenditureRepository.findAllAvailableForPartnerReport(partnerId = 12L)
         } returns listOf(expenditure)
 
-        assertThat(persistence.getParkedExpendituresByIdForPartner(partnerId = 12L, ReportStatus.Certified)).containsExactlyEntriesOf(
+        assertThat(persistence.getParkedExpendituresByIdForPartner(partnerId = 12L)).containsExactlyEntriesOf(
             mapOf(
                 5499L to ExpenditureParkingMetadata(
                     reportOfOriginId = 40L,
@@ -98,7 +94,7 @@ class PartnerReportParkedExpenditurePersistenceProviderTest : UnitTest() {
         every { reportRepository.getById(444L) } returns report
 
         val toPark = setOf(
-            ParkExpenditureData(expenditureId = 24L, originalReportId = 444L, originalNumber = 7, originalProjectReportId = 3L, parkedOn = dateTime)
+            ParkExpenditureData(expenditureId = 24L, originalReportId = 444L, originalNumber = 7, parkedInProjectReportId = 3L, parkedOn = dateTime)
         )
         persistence.parkExpenditures(toPark)
 

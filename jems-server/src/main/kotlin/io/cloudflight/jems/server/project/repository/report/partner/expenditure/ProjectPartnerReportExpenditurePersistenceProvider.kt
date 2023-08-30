@@ -104,11 +104,7 @@ class ProjectPartnerReportExpenditurePersistenceProvider(
         val reportEntity = reportRepository.findByIdAndPartnerId(partnerId = partnerId, id = reportId)
 
         val parkedExpenditure = reportExpenditureParkedRepository
-            .findByParkedFromPartnerReportPartnerIdAndParkedFromPartnerReportStatusAndParkedFromExpenditureId(
-                partnerId = partnerId,
-                status = ReportStatus.Certified,
-                id = expenditureId,
-            )
+            .findParkedExpenditure(partnerId = partnerId, id = expenditureId)
 
         return reportExpenditureRepository.save(
             parkedExpenditure.clone(
@@ -139,11 +135,8 @@ class ProjectPartnerReportExpenditurePersistenceProvider(
     @Transactional(readOnly = true)
     override fun getExpenditureAttachment(partnerId: Long, expenditureId: Long): JemsFile? =
         reportExpenditureParkedRepository
-            .findByParkedFromPartnerReportPartnerIdAndParkedFromPartnerReportStatusAndParkedFromExpenditureId(
-                partnerId = partnerId,
-                status = ReportStatus.Certified,
-                id = expenditureId,
-            ).parkedFrom.attachment?.toFullModel()
+            .findParkedExpenditure(partnerId = partnerId, id = expenditureId)
+            .parkedFrom.attachment?.toFullModel()
 
     @Transactional(readOnly = true)
     override fun getAvailableLumpSums(partnerId: Long, reportId: Long): List<ProjectPartnerReportLumpSum> =

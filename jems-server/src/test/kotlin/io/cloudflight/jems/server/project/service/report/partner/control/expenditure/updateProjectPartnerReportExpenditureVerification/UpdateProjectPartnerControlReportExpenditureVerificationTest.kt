@@ -340,7 +340,7 @@ internal class UpdateProjectPartnerControlReportExpenditureVerificationTest : Un
 
         val parkedOn = parkedItems.captured.toList().get(0).parkedOn
         assertThat(parkedItems.captured).containsExactly(
-            ParkExpenditureData(expenditureId=14L, originalReportId=14L, originalProjectReportId = null, originalNumber=9, parkedOn = parkedOn)
+            ParkExpenditureData(expenditureId=14L, originalReportId=14L, parkedInProjectReportId = null, originalNumber=9, parkedOn = parkedOn)
         )
         assertThat(unParkedIds.captured).isEmpty()
     }

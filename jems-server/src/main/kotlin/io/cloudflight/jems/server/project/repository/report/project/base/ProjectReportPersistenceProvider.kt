@@ -186,11 +186,11 @@ class ProjectReportPersistenceProvider(
             }.toSubmissionSummary()
 
     @Transactional
-    override fun finalizeVerificationOnReportById(projectId: Long, reportId: Long): ProjectReportSubmissionSummary =
+    override fun finalizeVerificationOnReportById(projectId: Long, reportId: Long, time: ZonedDateTime): ProjectReportSubmissionSummary =
         projectReportRepository.getByIdAndProjectId(id = reportId, projectId = projectId)
             .apply {
                 status = ProjectReportStatus.Finalized
-                verificationEndDate = ZonedDateTime.now()
+                verificationEndDate = time
             }.toSubmissionSummary()
 
 

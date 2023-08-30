@@ -323,10 +323,12 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
             aggregatedExpenditures
         )
 
+        val slotTime = slot<ZonedDateTime>()
         every {
             reportPersistence.finalizeVerificationOnReportById(
                 PROJECT_ID,
-                reportId
+                reportId,
+                capture(slotTime),
             )
         } returns reportSubmissionSummary
 
@@ -355,7 +357,9 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
 
         assertThat(interactor.finalizeVerification(reportId)).isEqualTo(Finalized)
 
-        verify(exactly = 1) { reportPersistence.finalizeVerificationOnReportById(PROJECT_ID, reportId) }
+        verify(exactly = 1) { reportPersistence.finalizeVerificationOnReportById(PROJECT_ID, reportId, any()) }
+        assertThat(slotTime.captured).isAfter(ZonedDateTime.now().minusMinutes(1))
+        assertThat(slotTime.captured).isBefore(ZonedDateTime.now().plusMinutes(1))
 
         assertThat(auditSlot.captured.auditCandidate.action).isEqualTo(AuditAction.PROJECT_REPORT_VERIFICATION_FINALIZED)
         assertThat(auditSlot.captured.auditCandidate.project?.id).isEqualTo(PROJECT_ID.toString())
@@ -374,7 +378,7 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
         every { reportPersistence.getReportByIdUnSecured(reportId) } returns report
         assertThrows<ReportVerificationNotStartedException> { interactor.finalizeVerification(reportId) }
 
-        verify(exactly = 0) { reportPersistence.finalizeVerificationOnReportById(any(), any()) }
+        verify(exactly = 0) { reportPersistence.finalizeVerificationOnReportById(any(), any(), any()) }
         verify(exactly = 0) { auditPublisher.publishEvent(any()) }
     }
 
@@ -442,10 +446,7 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
         )
 
         every {
-            reportPersistence.finalizeVerificationOnReportById(
-                PROJECT_ID,
-                reportId
-            )
+            reportPersistence.finalizeVerificationOnReportById(PROJECT_ID, reportId, any())
         } returns reportSubmissionSummary
 
 

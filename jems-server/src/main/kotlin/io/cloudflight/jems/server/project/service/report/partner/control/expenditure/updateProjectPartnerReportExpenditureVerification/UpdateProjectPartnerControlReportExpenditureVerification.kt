@@ -149,7 +149,7 @@ class UpdateProjectPartnerControlReportExpenditureVerification(
         ParkExpenditureData(
             expenditureId = it.id,
             originalReportId = it.parkingMetadata?.reportOfOriginId ?: reportId,
-            originalProjectReportId = null,
+            parkedInProjectReportId = null,
             originalNumber = it.parkingMetadata?.originalExpenditureNumber ?: it.number,
             parkedOn = ZonedDateTime.now()
         )

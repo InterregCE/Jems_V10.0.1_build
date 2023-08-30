@@ -84,16 +84,14 @@ class PartnerReportExpenditureCostEntity(
 
 
     @OneToOne
-    @JoinColumn(name = "un_parked_from_expenditure_id")
-    val unParkedFrom: PartnerReportExpenditureCostEntity?,
+    val reIncludedFromExpenditure: PartnerReportExpenditureCostEntity?,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "report_of_origin_id")
     val reportOfOrigin: ProjectPartnerReportEntity?,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "report_project_of_origin_id")
-    val reportProjectOfOrigin: ProjectReportEntity?,
+    val parkedInProjectReport: ProjectReportEntity?,
 
     val originalNumber: Int?,
 

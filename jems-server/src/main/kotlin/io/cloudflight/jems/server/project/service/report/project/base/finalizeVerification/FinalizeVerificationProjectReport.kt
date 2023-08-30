@@ -22,6 +22,7 @@ import io.cloudflight.jems.server.project.service.report.project.verification.fi
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.ZonedDateTime
 
 @Service
 class FinalizeVerificationProjectReport(
@@ -60,7 +61,7 @@ class FinalizeVerificationProjectReport(
         val paymentsToSave = createPaymentsForReport(reportPartnerCertificateSplits, report)
         paymentRegularPersistence.saveRegularPayments(projectReportId = reportId, paymentsToSave)
 
-        return reportPersistence.finalizeVerificationOnReportById(projectId = report.projectId, reportId = reportId).also {
+        return reportPersistence.finalizeVerificationOnReportById(projectId = report.projectId, reportId, ZonedDateTime.now()).also {
             auditPublisher.publishEvent(ProjectReportStatusChanged(this, it))
             auditPublisher.publishEvent(
                 projectReportFinalizedVerification(
