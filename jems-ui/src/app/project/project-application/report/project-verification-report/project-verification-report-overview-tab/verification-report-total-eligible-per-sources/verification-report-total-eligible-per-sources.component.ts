@@ -4,7 +4,9 @@ import {FormService} from '@common/components/section/form/form.service';
 import {MatTableDataSource} from '@angular/material/table';
 import {
   FinancingSourceBreakdownDTO,
-  FinancingSourceBreakdownLineDTO, FinancingSourceFundDTO, InputTranslation
+  FinancingSourceBreakdownLineDTO,
+  FinancingSourceFundDTO,
+  InputTranslation
 } from '@cat/api';
 
 @UntilDestroy()
@@ -38,6 +40,7 @@ export class VerificationReportTotalEligiblePerSourcesComponent implements OnCha
 
   ngOnChanges(changes: SimpleChanges): void {
     this.funds = this.breakdown.total.fundsSorted;
+    const projectReportAvailableFundIds = this.breakdown.total.fundsSorted.map(fund => fund.id);
     const fundColumns = this.breakdown.total.fundsSorted.map(fund => fund.id.toString());
     this.displayedColumns = [...this.initialColumns, ...fundColumns, ...this.lastColumns];
     const financingSourceBreakdownLines: FinancingSourceBreakdownLine[] = [];

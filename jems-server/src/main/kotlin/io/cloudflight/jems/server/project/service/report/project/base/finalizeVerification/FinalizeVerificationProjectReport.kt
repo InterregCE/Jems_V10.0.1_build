@@ -43,17 +43,21 @@ class FinalizeVerificationProjectReport(
         val parkedExpenditures =
             expenditureVerificationPersistence.getParkedProjectReportExpenditureVerification(reportId)
 
+        val projectReportAvailableFunds = projectReportCertificateCoFinancingPersistence.getAvailableFunds(reportId)
         val financialData = calculateSourcesAndSplits(
             verification = expenditureVerificationPersistence.getProjectReportExpenditureVerification(reportId),
-            availableFunds = projectReportCertificateCoFinancingPersistence.getAvailableFunds(reportId),
+            availableFunds = projectReportAvailableFunds,
             partnerReportFinancialDataResolver = { getPartnerReportFinancialData.retrievePartnerReportFinancialData(it) },
         )
 
-        val reportCertificatesOverviewPerFund = projectReportFinancialOverviewPersistence.storeOverviewPerFund(reportId, toStore = financialData)
-        projectReportCertificateCoFinancingPersistence.updateAfterVerificationValues(report.projectId, reportId, financialData.sumUp().totalLineToColumn())
+        val reportPartnerCertificateSplits = projectReportFinancialOverviewPersistence.storeOverviewPerFund(reportId, toStore = financialData)
+        projectReportCertificateCoFinancingPersistence.updateAfterVerificationValues(
+            projectId = report.projectId,
+            reportId = reportId,
+            afterVerification = financialData.sumUp(projectReportAvailableFunds).totalLineToColumn()
+        )
 
-
-        val paymentsToSave = createPaymentsForReport(reportCertificatesOverviewPerFund, report)
+        val paymentsToSave = createPaymentsForReport(reportPartnerCertificateSplits, report)
         paymentRegularPersistence.saveRegularPayments(projectReportId = reportId, paymentsToSave)
 
         return reportPersistence.finalizeVerificationOnReportById(projectId = report.projectId, reportId = reportId).also {
@@ -85,12 +89,12 @@ class FinalizeVerificationProjectReport(
     )
 
     private fun createPaymentsForReport(
-        reportCertificatesOverviewPerFund: Map<Long, List<PartnerCertificateFundSplit>>,
+        certificateSplits: List<PartnerCertificateFundSplit>,
         projectReport: ProjectReportModel,
-    ): List<PaymentRegularToCreate> {
-
-        val paymentsToCreate = reportCertificatesOverviewPerFund.map { (fundId, certificateFundSplits) ->
-            PaymentRegularToCreate(
+    ): List<PaymentRegularToCreate> =
+        certificateSplits.groupBy { it.fundId }
+            .map { (fundId, certificateFundSplits) ->
+                PaymentRegularToCreate(
                     projectId = projectReport.projectId,
                     fundId = fundId,
                     amountApprovedPerFund = certificateFundSplits.getTotalPaymentForFund(),
@@ -102,10 +106,8 @@ class FinalizeVerificationProjectReport(
                         )
                     }
                 )
-        }
+            }
 
-        return paymentsToCreate
-    }
 
     private fun List<PartnerCertificateFundSplit>.getTotalPaymentForFund() = this.sumOf { it.value }
 

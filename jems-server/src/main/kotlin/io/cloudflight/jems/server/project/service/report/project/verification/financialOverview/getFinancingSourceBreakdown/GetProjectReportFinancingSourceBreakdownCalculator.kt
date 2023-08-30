@@ -29,19 +29,21 @@ class GetProjectReportFinancingSourceBreakdownCalculator(
 
     fun projectReportFinalized(projectId: Long, reportId: Long): FinancingSourceBreakdown {
         val sources = projectReportFinancialOverviewPersistence.getOverviewPerFund(reportId)
+        val projectReportAvailableFunds = projectReportCertificateCoFinancingPersistence.getAvailableFunds(reportId)
         val total = projectReportCertificateCoFinancingPersistence
             .getCoFinancing(projectId = projectId, reportId).currentVerified
-            .toTotalLine(availableFunds = projectReportCertificateCoFinancingPersistence.getAvailableFunds(reportId))
+            .toTotalLine(availableFunds = projectReportAvailableFunds)
         return FinancingSourceBreakdown(sources, total)
     }
 
     fun projectReportInVerification(reportId: Long): FinancingSourceBreakdown {
+        val projectReportAvailableFunds = projectReportCertificateCoFinancingPersistence.getAvailableFunds(reportId)
         val sources = calculateSourcesAndSplits(
             verification = projectReportVerificationExpenditurePersistence.getProjectReportExpenditureVerification(reportId),
-            availableFunds = projectReportCertificateCoFinancingPersistence.getAvailableFunds(reportId),
+            availableFunds = projectReportAvailableFunds,
             partnerReportFinancialDataResolver = { getPartnerReportFinancialData.retrievePartnerReportFinancialData(it) },
         )
-        val total = sources.sumUp()
+        val total = sources.sumUp(availableFunds = projectReportAvailableFunds)
         return FinancingSourceBreakdown(sources, total)
     }
 }

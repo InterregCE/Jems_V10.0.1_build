@@ -230,119 +230,58 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
             fundId = ERDF.id,
             value = BigDecimal.ZERO,
             partnerReportId = 23L,
-            partnerReportNumber = 2,
             partnerId = PARTNER_ID,
-            partnerRole = ProjectPartnerRole.LEAD_PARTNER,
-            partnerNumber = 1,
-            partnerContribution = BigDecimal.ZERO,
-            publicContribution = BigDecimal.ZERO,
-            automaticPublicContribution = BigDecimal.ZERO,
-            privateContribution = BigDecimal.ZERO,
             total = BigDecimal.ZERO,
         )
 
-        val reportCertificatesOverviewPerFund = mapOf(
-            1L to listOf(PartnerCertificateFundSplit(
+        val reportCertificatesOverviewPerFund = listOf(PartnerCertificateFundSplit(
                     partnerReportId = 106,
-                    partnerReportNumber = 2,
                     partnerId = 92,
-                    partnerRole = ProjectPartnerRole.PARTNER,
-                    partnerNumber = 2,
                     fundId = 1,
                     value = BigDecimal(800.00),
-                    partnerContribution = BigDecimal(200.00),
-                    publicContribution = BigDecimal(200.00),
-                    automaticPublicContribution = BigDecimal(0.00),
-                    privateContribution = BigDecimal(0.00),
                     total = BigDecimal(1000.00)
                 ), PartnerCertificateFundSplit(
                     partnerReportId = 107,
-                    partnerReportNumber = 3,
                     partnerId = 91,
-                    partnerRole = ProjectPartnerRole.LEAD_PARTNER,
-                    partnerNumber = 1,
                     fundId = 1,
                     value = BigDecimal(400.00),
-                    partnerContribution = BigDecimal(197.01),
-                    publicContribution = BigDecimal(102.93),
-                    automaticPublicContribution = BigDecimal(45.74),
-                    privateContribution = BigDecimal(48.32),
                     total = BigDecimal(597.01)
                 ), PartnerCertificateFundSplit(
                     partnerReportId = 108,
-                    partnerReportNumber = 4,
                     partnerId = 91,
-                    partnerRole = ProjectPartnerRole.LEAD_PARTNER,
-                    partnerNumber = 1,
                     fundId = 1,
                     value = BigDecimal(400.00),
-                    partnerContribution = BigDecimal(197.01),
-                    publicContribution = BigDecimal(102.93),
-                    automaticPublicContribution = BigDecimal(45.74),
-                    privateContribution = BigDecimal(48.32),
                     total = BigDecimal(597.01)
-                )),
-            4L to listOf(
+                ),
                 PartnerCertificateFundSplit(
                     partnerReportId = 107,
-                    partnerReportNumber = 3,
                     partnerId = 91,
-                    partnerRole = ProjectPartnerRole.LEAD_PARTNER,
-                    partnerNumber = 1,
                     fundId = 4,
                     value = BigDecimal(180.00),
-                    partnerContribution = BigDecimal(88.66),
-                    publicContribution = BigDecimal(46.32),
-                    automaticPublicContribution = BigDecimal(20.58),
-                    privateContribution = BigDecimal(21.74),
                     total = BigDecimal(268.66)
                 ),
                 PartnerCertificateFundSplit(
                     partnerReportId = 108,
-                    partnerReportNumber = 4,
                     partnerId = 91,
-                    partnerRole = ProjectPartnerRole.LEAD_PARTNER,
-                    partnerNumber = 1,
                     fundId = 4,
                     value = BigDecimal(180.00),
-                    partnerContribution = BigDecimal(88.66),
-                    publicContribution = BigDecimal(46.32),
-                    automaticPublicContribution = BigDecimal(20.58),
-                    privateContribution = BigDecimal(21.74),
                     total = BigDecimal(268.66)
-                )
-            ),
-            5L to listOf(
+                ),
                 PartnerCertificateFundSplit(
                     partnerReportId = 107,
-                    partnerReportNumber = 3,
                     partnerId = 91,
-                    partnerRole = ProjectPartnerRole.LEAD_PARTNER,
-                    partnerNumber = 1,
                     fundId = 5,
                     value = BigDecimal(90.00),
-                    partnerContribution = BigDecimal(44.33),
-                    publicContribution = BigDecimal(23.16),
-                    automaticPublicContribution = BigDecimal(10.29),
-                    privateContribution = BigDecimal(10.87),
                     total = BigDecimal(134.33)
                 ),
                 PartnerCertificateFundSplit(
                     partnerReportId = 108,
-                    partnerReportNumber = 4,
                     partnerId = 91,
-                    partnerRole = ProjectPartnerRole.LEAD_PARTNER,
-                    partnerNumber = 1,
                     fundId = 5,
                     value = BigDecimal(90.00),
-                    partnerContribution = BigDecimal(44.33),
-                    publicContribution = BigDecimal(23.16),
-                    automaticPublicContribution = BigDecimal(10.29),
-                    privateContribution = BigDecimal(10.87),
                     total = BigDecimal(134.33)
                 )
             )
-        )
     }
 
     @MockK
@@ -404,7 +343,7 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
                 PROJECT_REPORT_ID,
                 any()
             )
-        } returns emptyMap()
+        } returns emptyList()
 
         every { projectReportCertificateCoFinancingPersistence.updateAfterVerificationValues(PROJECT_ID, PROJECT_REPORT_ID, any()) } returns Unit
         every { paymentPersistence.saveRegularPayments(PROJECT_REPORT_ID, emptyList()) } returns Unit
