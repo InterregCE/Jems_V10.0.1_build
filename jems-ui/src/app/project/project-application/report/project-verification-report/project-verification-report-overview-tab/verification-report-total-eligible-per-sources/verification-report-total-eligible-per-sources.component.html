@@ -31,7 +31,7 @@
             </mat-header-cell>
             <mat-cell *matCellDef="let line" class="text-right fund-column">
                 <span *ngIf="line.isSplit && line.splitFundId === fund.id">{{ line.splitFundValue | asMoney }}</span>
-                <span *ngIf="!line.isSplit">{{ line.fundValues.get(fund.id) ? (line.fundValues.get(fund.id) | asMoney) : 'N/A' }}</span>
+                <span *ngIf="!line.isSplit">{{ line.fundValues.get(fund.id) !== undefined ? (line.fundValues.get(fund.id) | asMoney) : 'N/A' }}</span>
             </mat-cell>
             <mat-footer-cell *matFooterCellDef class="text-right fund-column">{{ fund.amount | asMoney }}</mat-footer-cell>
         </ng-container>

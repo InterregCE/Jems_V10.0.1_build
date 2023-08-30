@@ -65,7 +65,6 @@ import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepos
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.project.ProjectReportCoFinancingRepository
 import io.cloudflight.jems.server.project.repository.report.project.base.ProjectReportRepository
-import io.cloudflight.jems.server.project.repository.toModel
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
@@ -852,12 +851,9 @@ class PaymentPersistenceProviderTest: UnitTest() {
     @Test
     fun getPaymentsByProjectIdToProject() {
         every { paymentRepository.findAllByProjectId(projectId) } returns mutableListOf(paymentFtlsEntity())
-        every {
-            projectPersistence.getProject(projectId, "V4.7")
-        } returns dummyProject.toModel(null, null, mutableSetOf(), mutableSetOf(), false)
 
         assertThat(paymentPersistenceProvider.getPaymentsByProjectId(projectId))
-            .containsExactly(expectedPayments)
+            .containsExactly(expectedPayments.copy(projectCustomIdentifier = "proj-cust", projectAcronym = "proj-acr"))
     }
 
     @Test
