@@ -79,7 +79,7 @@
   .level-4 {
     padding-left: 1rem;
     max-height: 40rem;
-    overflow-y: scroll;
+    overflow-y: auto;
 
     .link {
       &:hover {
