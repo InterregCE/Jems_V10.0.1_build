@@ -127,3 +127,35 @@
   left: 27.5rem !important;
   border-right: 1px solid var(--table-border-color);
 }
+
+.section-header {
+  background-color: var(--table-backaground-color);
+
+  mat-icon {
+    margin-right: 0.25em;
+  }
+  &:first-child {
+    position: sticky;
+    left: 0 !important;
+    max-width: 37.95rem;
+    min-width: 37.95rem;
+    width: 37.95rem;
+    z-index: 3;
+  }
+  &.spacer {
+  }
+  &.control {
+    min-width: 48.25rem;
+    max-width: 48.25rem;
+    width: 48.25rem;
+    border-left: 1px solid var(--parked-by-control);
+    border-bottom: 4px solid var(--parked-by-control);
+  }
+  &.jsma {
+    border-left: 1px solid var(--parked-by-jsma);
+    border-bottom: 4px solid var(--parked-by-jsma);
+    min-width: 56.7rem;
+    max-width: 56.7rem;
+    width: 56.7rem;
+  }
+}
