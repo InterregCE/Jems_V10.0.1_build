@@ -7,7 +7,5 @@ interface ProjectReportFinancialOverviewPersistence {
 
     fun getOverviewPerFund(projectReportId: Long): List<FinancingSourceBreakdownLine>
 
-    fun storeOverviewPerFund(projectReportId: Long, toStore: List<FinancingSourceBreakdownLine>): Map<Long, List<PartnerCertificateFundSplit>>
-
-    fun getFundsToPartnerCertificateSplit(projectReportId: Long): Map<Long, List<PartnerCertificateFundSplit>>
+    fun storeOverviewPerFund(projectReportId: Long, toStore: List<FinancingSourceBreakdownLine>): List<PartnerCertificateFundSplit>
 }

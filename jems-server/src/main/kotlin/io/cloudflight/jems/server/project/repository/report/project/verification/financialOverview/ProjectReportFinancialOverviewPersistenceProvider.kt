@@ -55,59 +55,20 @@ class ProjectReportFinancialOverviewPersistenceProvider(
     override fun storeOverviewPerFund(
         projectReportId: Long,
         toStore: List<FinancingSourceBreakdownLine>
-    ): Map<Long, List<PartnerCertificateFundSplit>>  {
+    ): List<PartnerCertificateFundSplit>  {
         val certificates = partnerReportRepository.findAllByProjectReportId(projectReportId).associateBy { it.id }
         val availableFunds =
             projectReportCoFinancingRepository.findAllByIdReportIdOrderByIdFundSortNumber(projectReportId)
                 .mapNotNull { it.programmeFund }.associateBy { it.id }
 
-        val financingSourcesOverview = buildList {
-            toStore.map { financingSource ->
-                val partnerReport = certificates[financingSource.partnerReportId]!!
-
-                val lineTotal = financingSource.toOverviewEntity(partnerReport = partnerReport, fund = null, fundValue = null)
-                add(lineTotal)
-
-                val splits = if ( financingSource.split.isEmpty()) {
-                    val fundAndValue = financingSource.fundsSorted.first()
-                    listOf(
-                        financingSource.toOverviewEntity(
-                            partnerReport,
-                            fund = availableFunds[fundAndValue.first.id],
-                            fundValue = fundAndValue.second
-                        )
-                    )
-                } else { financingSource.split.toOverviewEntityList(partnerReport, availableFunds) }
-                addAll(splits)
-            }
+        val lines = toStore.flatMap { certificate ->
+            val partnerReport = certificates[certificate.partnerReportId]!!
+            val certificateLine = certificate.toEntity(partnerReport)
+            val certificateSplits = certificate.split.toEntities(partnerReport, fundsResolver = { availableFunds[it]!! })
+            return@flatMap listOf(certificateLine).plus(certificateSplits)
         }
 
-        projectReportCoFinancingOverviewRepository.saveAll(financingSourcesOverview)
-        return getFundsToPartnerCertificateSplit(projectReportId)
-    }
+        return projectReportCoFinancingOverviewRepository.saveAll(lines).filter { it.programmeFund != null }.toModel()
 
-    @Transactional(readOnly = true)
-    override fun getFundsToPartnerCertificateSplit(projectReportId: Long): Map<Long, List<PartnerCertificateFundSplit>> {
-        val certificateFinancingSources =
-            projectReportCoFinancingOverviewRepository.findAllByPartnerReportProjectReportId(projectReportId)
-                .filter { it.programmeFund != null && it.fundValue != null }
-
-        val fundsToCertificateCoFinancingSplits = certificateFinancingSources.map {
-            PartnerCertificateFundSplit(
-                partnerReportId = it.partnerReport.id,
-                partnerReportNumber = it.partnerReport.number,
-                partnerId = it.partnerReport.partnerId,
-                partnerRole = it.partnerReport.identification.partnerRole,
-                partnerNumber = it.partnerReport.identification.partnerNumber,
-                fundId = it.programmeFund!!.id,
-                value = it.fundValue!!,
-                partnerContribution = it.partnerContribution,
-                publicContribution = it.publicContribution,
-                automaticPublicContribution = it.automaticPublicContribution,
-                privateContribution = it.privateContribution,
-                total = it.total
-            )
-        }.groupBy { it.fundId }
-        return fundsToCertificateCoFinancingSplits
     }
 }
