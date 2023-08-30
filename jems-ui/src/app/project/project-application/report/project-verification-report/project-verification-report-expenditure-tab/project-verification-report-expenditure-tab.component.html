@@ -25,8 +25,29 @@
                                        [dataSource]="tableData"
                                        [formArrayName]="constants.EXPENDITURE_FORM_CONTROL_NAMES.expenditureLines">
 
-                                <!-- EXPENDITURE -->
+                                <!-- SECTION HEADERS -->
+                                <ng-container matColumnDef="section-expenditure">
+                                    <mat-header-cell *matHeaderCellDef [attr.colspan]="24" class="section-header">
+                                        <span jemsText maxLines="2">{{'project.application.reporting.section.expenditure' | translate}}</span>
+                                    </mat-header-cell>
+                                </ng-container>
+                                <ng-container matColumnDef="section-spacer">
+                                    <mat-header-cell *matHeaderCellDef class="section-header spacer"></mat-header-cell>
+                                </ng-container>
+                                <ng-container matColumnDef="section-control">
+                                    <mat-header-cell *matHeaderCellDef [attr.colspan]="6" class="section-header control">
+                                        <mat-icon>supervised_user_circle</mat-icon>
+                                            <span jemsText maxLines="2">{{'project.application.reporting.section.control' | translate}}</span>
+                                    </mat-header-cell>
+                                </ng-container>
+                                <ng-container matColumnDef="section-jsma">
+                                    <mat-header-cell *matHeaderCellDef class="section-header jsma">
+                                        <mat-icon>person_search</mat-icon>
+                                        <span jemsText maxLines="2">{{'project.application.reporting.section.jsma' | translate}}</span>
+                                    </mat-header-cell>
+                                </ng-container>
 
+                                <!-- EXPENDITURE -->
                                 <ng-container matColumnDef="partner" sticky>
                                     <mat-header-cell *matHeaderCellDef>
                                     <span jemsText
@@ -560,6 +581,7 @@
                                     <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                                 </ng-container>
 
+                                <mat-header-row *matHeaderRowDef="['section-expenditure', 'section-spacer', 'section-control', 'section-jsma']"></mat-header-row>
                                 <mat-header-row *matHeaderRowDef="columnsToDisplay"></mat-header-row>
                                 <mat-row *matRowDef="let myRowData; columns: columnsToDisplay; let rowIndex = index"
                                          [class.row-has-error]="form.controls[rowIndex]?.invalid"></mat-row>

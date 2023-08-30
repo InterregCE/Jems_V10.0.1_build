@@ -109,3 +109,29 @@
 .mat-column-costOptions {
   border-right: 1px solid var(--table-border-color);
 }
+
+.section-header {
+  background-color: var(--table-backaground-color);
+
+  mat-icon {
+    margin-right: 0.25em;
+  }
+  &:first-child {
+    position: sticky;
+    left: 0 !important;
+    max-width: 29.55rem;
+    min-width: 29.55rem;
+    width: 29.55rem;
+    z-index: 3;
+  }
+  &.spacer {
+    max-width: unset;
+  }
+  &.control {
+    min-width: 49.05rem;
+    max-width: 49.05rem;
+    width: 49.05rem;
+    border-left: 1px solid var(--parked-by-control);
+    border-bottom: 4px solid var(--parked-by-control);
+  }
+}

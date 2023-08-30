@@ -97,6 +97,9 @@
   --report-type-finance: #bfddde;
   --report-type-both: #f7dcc4;
 
+  --parked-by-control: rgba(38,165,192, 0.3); // azure
+  --parked-by-jsma: rgba(255,164,69, 0.5); // sunny
+
   --navigation-shadow: 0.5rem 0 0.75rem rgba(0,0,0,0.5);
 
   @include custom-global-styles($is-dark-theme);
