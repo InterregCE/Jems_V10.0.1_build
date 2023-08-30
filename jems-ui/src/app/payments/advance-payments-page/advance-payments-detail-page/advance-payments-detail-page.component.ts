@@ -206,6 +206,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
   }
 
   resetForm(paymentDetail: AdvancePaymentDetailDTO) {
+    this.advancePaymentsDetailPageStore.searchProjectsByName$.next(paymentDetail.projectCustomIdentifier ? paymentDetail.projectCustomIdentifier : ' ');
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.id)?.setValue(this.paymentId ? this.paymentId : null);
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.projectCustomIdentifier)?.setValue('');
     this.advancePaymentForm.get(this.constants.FORM_CONTROL_NAMES.partnerAbbreviation)?.setValue('');
