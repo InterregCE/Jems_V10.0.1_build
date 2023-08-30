@@ -6,8 +6,6 @@ import application from "../../fixtures/api/application/application.json";
 import partnerReportIdentification from "../../fixtures/api/partnerReport/partnerReportIdentification.json";
 import partnerReportExpenditures from "../../fixtures/api/partnerReport/partnerReportExpenditures.json";
 import partnerParkedExpenditures from "../../fixtures/api/partnerReport/partnerParkedExpenditures.json";
-import controllerUser from "../../fixtures/api/users/controllerUser.json";
-import controllerRole from "../../fixtures/api/roles/controllerRole.json";
 import approvalInfo from "../../fixtures/api/application/modification/approval.info.json";
 import partner from '../../fixtures/api/application/partner/partner.json';
 
@@ -1424,7 +1422,7 @@ context('Partner reports tests', () => {
             testData.controllerUserEdit.email = faker.internet.email();
             cy.createRole(testData.controllerRole).then(roleId => {
               testData.controllerUserEdit.userRoleId = roleId;
-              cy.createUser(testData.controllerUserEdit);;
+              cy.createUser(testData.controllerUserEdit);
               testData.controllerInstitution.name = `${faker.word.adjective()} ${faker.word.noun()}`;
               testData.controllerInstitution.institutionUsers[0].userEmail = testData.controllerUserEdit.email;
               cy.createInstitution(testData.controllerInstitution).then(institutionId => {
