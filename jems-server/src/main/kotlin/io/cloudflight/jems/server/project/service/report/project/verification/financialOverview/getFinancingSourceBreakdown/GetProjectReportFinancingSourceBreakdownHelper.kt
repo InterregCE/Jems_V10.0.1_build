@@ -135,7 +135,7 @@ fun calculateSourcesAndSplits(
             .filter { it.first.id in fundIdsAvailable }
         val expenditure = verifications.first().expenditure
 
-        val certificateLine = FinancingSourceBreakdownLine(
+        return@map FinancingSourceBreakdownLine(
             partnerReportId = certificateId,
             partnerReportNumber = expenditure.partnerReportNumber,
             partnerId = expenditure.partnerId,
@@ -148,12 +148,11 @@ fun calculateSourcesAndSplits(
             privateContribution = splitForCertificateLine.privateContribution,
             total = splitForCertificateLine.sum,
             split = emptyList(),
+        ).fillInAdditionalSplitsForEachFund(
+            reportFinancialData,
+            splitForCertificateLine.sum,
+            splitForCertificateLine.partnerContribution
         )
-
-        if (certificateLine.fundsSorted.size > 1)
-            certificateLine.fillInAdditionalSplitsForEachFund(reportFinancialData, splitForCertificateLine.sum, splitForCertificateLine.partnerContribution)
-
-        return@map certificateLine
     }
     return certificateLines
 }

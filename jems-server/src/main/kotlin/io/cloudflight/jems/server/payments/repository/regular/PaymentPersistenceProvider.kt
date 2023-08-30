@@ -42,7 +42,6 @@ import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepos
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.project.ProjectReportCoFinancingRepository
 import io.cloudflight.jems.server.project.repository.report.project.base.ProjectReportRepository
-import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.PaymentCumulativeAmounts
 import io.cloudflight.jems.server.project.service.report.model.project.financialOverview.coFinancing.PaymentCumulativeData
@@ -65,7 +64,6 @@ class PaymentPersistenceProvider(
     private val projectRepository: ProjectRepository,
     private val projectPartnerRepository: ProjectPartnerRepository,
     private val projectLumpSumRepository: ProjectLumpSumRepository,
-    private val projectPersistence: ProjectPersistence,
     private val userRepository: UserRepository,
     private val fundRepository: ProgrammeFundRepository,
     private val projectFileMetadataRepository: JemsFileMetadataRepository,
@@ -283,7 +281,6 @@ class PaymentPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getPaymentsByProjectId(projectId: Long): List<PaymentToProject> {
         return paymentRepository.findAllByProjectId(projectId).toListModel(
-            getProject = { internalProjectId, version -> projectPersistence.getProject(internalProjectId, version) },
             getConfirm = { id -> getConfirmedInfosForPayment(id) }
         )
     }

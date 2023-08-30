@@ -39,26 +39,23 @@ import org.springframework.data.domain.Page
 import java.math.BigDecimal
 
 fun List<PaymentEntity>.toListModel(
-    getProject: (Long, String?) -> ProjectFull,
     getConfirm: (Long) -> PaymentConfirmedInfo
 ) = map {
     val lumpSum = it.projectLumpSum
     it.toDetailModel(
         lumpSum,
-        getProject.invoke(it.project.id, lumpSum?.lastApprovedVersionBeforeReadyForPayment),
         getConfirm.invoke(it.id)
     )
 }
 
 fun PaymentEntity.toDetailModel(
     lumpSum: ProjectLumpSumEntity?,
-    projectFull: ProjectFull,
     paymentConfirmedInfo: PaymentConfirmedInfo
 ) = PaymentToProject(
     id = id,
     paymentType = type,
-    projectCustomIdentifier = projectFull.customIdentifier,
-    projectAcronym = projectFull.acronym,
+    projectCustomIdentifier = this.projectCustomIdentifier,
+    projectAcronym = this.projectAcronym,
     paymentClaimNo = if (type == PaymentType.FTLS) 0 else projectReport!!.number,
     paymentClaimSubmissionDate = project.contractedDecision?.updated,
     lumpSumId = lumpSum?.programmeLumpSum?.id,
