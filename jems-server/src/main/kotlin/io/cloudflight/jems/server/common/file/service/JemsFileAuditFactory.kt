@@ -58,20 +58,6 @@ private fun fileUploadSuccess(
             .build()
     )
 
-fun systemFileUploadSuccess(
-    context: Any,
-    fileMeta: JemsFileMetadata,
-    location: String,
-    type: JemsFileType,
-): AuditCandidateEvent =
-    AuditCandidateEvent(
-        context = context,
-        auditCandidate = AuditBuilder(AuditAction.SYSTEM_FILE_UPLOADED_SUCCESSFULLY)
-            .entityRelatedId(fileMeta.id)
-            .description("File (of type $type) \"${fileMeta.name}\" has been uploaded to $location")
-            .build()
-    )
-
 fun fileDescriptionChanged(
     context: Any,
     fileMeta: JemsFileMetadata,
@@ -84,21 +70,6 @@ fun fileDescriptionChanged(
         context = context,
         auditCandidate = AuditBuilder(AuditAction.PROJECT_FILE_DESCRIPTION_CHANGED)
             .project(projectSummary)
-            .entityRelatedId(fileMeta.id)
-            .description("Description of file \"${fileMeta.name}\" uploaded to $location has changed from \"$oldValue\" to \"$newValue\"")
-            .build()
-    )
-
-fun systemFileDescriptionChanged(
-    context: Any,
-    fileMeta: JemsFileMetadata,
-    location: String,
-    oldValue: String,
-    newValue: String,
-): AuditCandidateEvent =
-    AuditCandidateEvent(
-        context = context,
-        auditCandidate = AuditBuilder(AuditAction.SYSTEM_FILE_DESCRIPTION_CHANGED)
             .entityRelatedId(fileMeta.id)
             .description("Description of file \"${fileMeta.name}\" uploaded to $location has changed from \"$oldValue\" to \"$newValue\"")
             .build()
@@ -131,20 +102,6 @@ fun fileDeleted(
             .project(project)
             .entityRelatedId(fileId)
             .description(location)
-            .build()
-    )
-
-fun systemFileDeleted(
-    context: Any,
-    fileMeta: JemsFileMetadata,
-    location: String,
-    type: JemsFileType
-): AuditCandidateEvent =
-    AuditCandidateEvent(
-        context = context,
-        auditCandidate = AuditBuilder(AuditAction.SYSTEM_FILE_DELETED)
-            .entityRelatedId(fileMeta.id)
-            .description("File (of type $type) \"${fileMeta.name}\" has been deleted from $location")
             .build()
     )
 
