@@ -167,7 +167,7 @@
             <mat-header-cell *matHeaderCellDef>
                 <span jemsText maxLines="3">{{ 'project.application.partner.reports.table.control' | translate }}</span>
             </mat-header-cell>
-            <mat-cell *matCellDef="let report">
+            <mat-cell *matCellDef="let report" class="z-index-5">
                 <jems-start-control-report [reportId]="report.id"
                                            [reportStatus]="report.status"
                                            (onError)="showErrorMessage($event)"></jems-start-control-report>
@@ -178,7 +178,7 @@
             <mat-header-cell *matHeaderCellDef>
                 <span jemsText maxLines="3">{{ 'common.delete.entry' | translate }}</span>
             </mat-header-cell>
-            <mat-cell *matCellDef="let report">
+            <mat-cell *matCellDef="let report" class="z-index-5">
                 <span matTooltip="{{ (report.deletable ? 'common.delete.entry.tooltip' : 'project.application.partner.report.deletion.not.possible.tooltip') | translate }}">
                     <button *ngIf="report.status === ProjectPartnerReportSummaryDTO.StatusEnum.Draft"
                             mat-icon-button color="accent" [disabled]="!report.deletable"

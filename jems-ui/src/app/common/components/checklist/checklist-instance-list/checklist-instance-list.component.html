@@ -60,7 +60,7 @@
 </mat-tab-group>
 
 <ng-template #downloadCell let-checklist>
-    <button class="ml-1" mat-icon-button color="primary"
+    <button class="ml-1 z-index-5" mat-icon-button color="primary"
             (click)="download(checklist.id)"
             matTooltip="{{'programme.checklists.export' | translate}}">
         <mat-icon>download</mat-icon>
@@ -68,19 +68,19 @@
 </ng-template>
 
 <ng-template #actionsCell let-checklist>
-    <button class="ml-1" [disabled]="(pageStore.currentUserEmail$ | async) !== checklist.creatorEmail && (pageStore.userCanConsolidate$ | async) === false"
+    <button class="ml-1 z-index-5" [disabled]="(pageStore.currentUserEmail$ | async) !== checklist.creatorEmail && (pageStore.userCanConsolidate$ | async) === false"
             mat-icon-button color="primary"
             (click)="setDescriptionEditable(checklist);$event.stopPropagation();"
             matTooltip="{{'programme.checklists.edit.comment' | translate}}"
             aria-label="edit">
         <mat-icon>edit</mat-icon>
     </button>
-    <button class="ml-1" mat-icon-button color="primary"
+    <button class="ml-1 z-index-5" mat-icon-button color="primary"
             (click)="download(checklist.id)"
             matTooltip="{{'programme.checklists.export' | translate}}">
         <mat-icon>download</mat-icon>
     </button>
-    <button class="ml-1" *ngIf="checklist.status === Status.DRAFT && (pageStore.currentUserEmail$ | async) === checklist.creatorEmail"
+    <button class="ml-1 z-index-5" *ngIf="checklist.status === Status.DRAFT && (pageStore.currentUserEmail$ | async) === checklist.creatorEmail"
             mat-icon-button color="accent"
             (click)="delete(checklist);$event.stopPropagation();"
             matTooltip="{{'common.delete.entry.tooltip' | translate}}"
@@ -102,10 +102,10 @@
 </ng-template>
 
 <ng-template #descriptionCell let-checklist>
-    <span *ngIf="this.editableChecklistId !== checklist.id" class="description" matTooltip="{{checklist.description}}">
+    <span *ngIf="this.editableChecklistId !== checklist.id" class="description z-index-5" matTooltip="{{checklist.description}}">
         {{checklist.description}}
     </span>
-    <div *ngIf="this.editableChecklistId === checklist.id">
+    <div *ngIf="this.editableChecklistId === checklist.id" class="z-index-5">
         <div (click)="$event.stopPropagation()" >
             <form [formGroup]="descriptionForm" class="description-form">
                 <jems-expandable-textarea class="w-100"
@@ -114,7 +114,7 @@
                                           [errors]="descriptionForm.controls.description.errors"
                                           characterLimit="150">
                 </jems-expandable-textarea>
-                <div class="mb-2 mt-2 description-button">
+                <div class="mb-2 mt-2 description-button z-index-5">
                     <button (click)="$event.stopPropagation(); resetDescription()" mat-stroked-button
                             class="small-stroked-btn"
                             [disabled]="(savingDescriptionId$ | async) === checklist.id">

@@ -73,7 +73,7 @@
                     <span jemsText maxLines="3">{{ 'project.application.project.report.table.reporting.period' | translate }}</span>
                 </mat-header-cell>
                 <mat-cell *matCellDef="let projectReport">
-                    <span *ngIf="projectReport.periodDetail"
+                    <span *ngIf="projectReport.periodDetail" class="z-index-5"
                           matTooltip="{{ (projectReport.startDate | localeDate) || 'X' }} - {{ (projectReport.endDate | localeDate) || 'X' }}">
                         {{ 'project.application.form.work.package.output.delivery.period.entry' | translate : {
                         periodNumber: projectReport.periodDetail.number,
@@ -153,7 +153,7 @@
                 <mat-header-cell *matHeaderCellDef class="text-left">
                     <span jemsText maxLines="3">{{ 'project.application.project.report.table.verification' | translate }}</span>
                 </mat-header-cell>
-                <mat-cell *matCellDef="let projectReport" class="text-left">
+                <mat-cell *matCellDef="let projectReport" class="text-left z-index-5">
                     <jems-start-verification-report [reportId]="projectReport.id"
                                                     [reportStatus]="projectReport.status"
                                                     (onError)="showErrorMessage($event)">
@@ -165,7 +165,7 @@
                 <mat-header-cell *matHeaderCellDef class="text-center">
                     {{ 'common.delete.entry' | translate }}
                 </mat-header-cell>
-                <mat-cell *matCellDef="let projectReport" class="text-center">
+                <mat-cell *matCellDef="let projectReport" class="text-center z-index-5">
                     <span matTooltip="{{ (projectReport.deletable ? 'common.delete.entry.tooltip' : 'project.application.project.report.deletion.not.possible.tooltip') | translate }}">
                         <button *ngIf="projectReport.status === ProjectReportSummaryDTO.StatusEnum.Draft && data.canEditReports"
                                 mat-icon-button color="accent"
