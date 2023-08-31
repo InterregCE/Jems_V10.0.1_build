@@ -17,4 +17,6 @@ interface PaymentApplicationToEcPersistence {
     fun findAll(pageable: Pageable): Page<PaymentApplicationToEc>
 
     fun deleteById(id: Long)
+
+    fun deletePaymentToEcAttachment(fileId: Long)
 }

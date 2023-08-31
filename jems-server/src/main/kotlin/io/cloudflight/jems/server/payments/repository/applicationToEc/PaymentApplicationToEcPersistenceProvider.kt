@@ -1,5 +1,9 @@
 package io.cloudflight.jems.server.payments.repository.applicationToEc
 
+import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.common.file.repository.JemsFileMetadataRepository
+import io.cloudflight.jems.server.common.file.service.JemsSystemFileService
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.payments.accountingYears.repository.AccountingYearRepository
 import io.cloudflight.jems.server.payments.entity.AccountingYearEntity
 import io.cloudflight.jems.server.payments.entity.PaymentApplicationToEcEntity
@@ -20,6 +24,8 @@ class PaymentApplicationToEcPersistenceProvider(
     private val paymentApplicationsToEcRepository: PaymentApplicationsToEcRepository,
     private val programmeFundRepository: ProgrammeFundRepository,
     private val accountingYearRepository: AccountingYearRepository,
+    private val fileRepository: JemsSystemFileService,
+    private val reportFileRepository: JemsFileMetadataRepository,
 ) : PaymentApplicationToEcPersistence {
 
     @Transactional
@@ -67,6 +73,14 @@ class PaymentApplicationToEcPersistenceProvider(
     @Transactional
     override fun deleteById(id: Long) {
         paymentApplicationsToEcRepository.deleteById(id)
+    }
+
+    @Transactional
+    override fun deletePaymentToEcAttachment(fileId: Long) {
+        fileRepository.delete(
+            reportFileRepository.findByTypeAndId(JemsFileType.PaymentToEcAttachment, fileId)
+                ?: throw ResourceNotFoundException("file")
+        )
     }
 
 }

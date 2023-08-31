@@ -1,6 +1,11 @@
 package io.cloudflight.jems.server.payments.repository.applicationToEc
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
+import io.cloudflight.jems.server.common.file.repository.JemsFileMetadataRepository
+import io.cloudflight.jems.server.common.file.service.JemsSystemFileService
+import io.cloudflight.jems.server.common.file.service.model.JemsFileType
 import io.cloudflight.jems.server.payments.accountingYears.repository.AccountingYearRepository
 import io.cloudflight.jems.server.payments.entity.AccountingYearEntity
 import io.cloudflight.jems.server.payments.entity.PaymentApplicationToEcEntity
@@ -17,10 +22,12 @@ import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.time.LocalDate
@@ -34,6 +41,11 @@ class PaymentApplicationsToEcPersistenceProviderTest : UnitTest() {
 
     @MockK
     lateinit var accountingYearRepository: AccountingYearRepository
+
+    @MockK
+    lateinit var reportFileRepository: JemsFileMetadataRepository
+    @MockK
+    lateinit var fileRepository: JemsSystemFileService
 
     @InjectMockKs
     private lateinit var persistenceProvider: PaymentApplicationToEcPersistenceProvider
@@ -168,5 +180,21 @@ class PaymentApplicationsToEcPersistenceProviderTest : UnitTest() {
         persistenceProvider.deleteById(paymentApplicationsToEcId)
 
         verify(exactly = 1) { paymentApplicationsToEcRepository.deleteById(paymentApplicationsToEcId) }
+    }
+
+    @Test
+    fun deletePaymentToEcAttachment() {
+        val file = mockk<JemsFileMetadataEntity>()
+        every { fileRepository.delete(file) } answers { }
+        every { reportFileRepository.findByTypeAndId(JemsFileType.PaymentToEcAttachment, 16L) } returns file
+        persistenceProvider.deletePaymentToEcAttachment(16L)
+        verify(exactly = 1) { fileRepository.delete(file) }
+    }
+
+    @Test
+    fun `deletePaymentToEcAttachment - not existing`() {
+        every { reportFileRepository.findByTypeAndId(JemsFileType.PaymentToEcAttachment, -1L) } returns null
+        assertThrows<ResourceNotFoundException> { persistenceProvider.deletePaymentToEcAttachment(-1L) }
+        verify(exactly = 0) { fileRepository.delete(any()) }
     }
 }
