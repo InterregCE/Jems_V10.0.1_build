@@ -124,6 +124,7 @@ class ProjectResultControllerTest: UnitTest() {
                 name = setOf(InputTranslation(EN, "output indicator name")),
                 measurementUnit = setOf(InputTranslation(EN, "km/h")),
                 targetValueSumUp = BigDecimal.ONE,
+                code = "outputCode"
             ),
             projectOutput = ProjectOutput(
                 projectOutputNumber = "2.1",
@@ -144,6 +145,7 @@ class ProjectResultControllerTest: UnitTest() {
                 measurementUnit = setOf(InputTranslation(EN, "persons")),
                 baseline = setOf(BigDecimal.ZERO, BigDecimal.ONE),
                 targetValueSumUp = BigDecimal.ONE,
+                code = "resultCode"
             ),
             onlyResultWithoutOutputs = true,
         )
@@ -171,6 +173,8 @@ class ProjectResultControllerTest: UnitTest() {
                 resultIndicatorTargetValueSumUp = null,
 
                 onlyResultWithoutOutputs = false,
+                outputIndicatorCode = "outputCode",
+                resultIndicatorCode = null
             ),
             IndicatorOverviewLineDTO(
                 outputIndicatorId = null,
@@ -191,6 +195,8 @@ class ProjectResultControllerTest: UnitTest() {
                 resultIndicatorTargetValueSumUp = BigDecimal.ONE,
 
                 onlyResultWithoutOutputs = true,
+                outputIndicatorCode = null,
+                resultIndicatorCode = "resultCode"
             ),
         )
     }

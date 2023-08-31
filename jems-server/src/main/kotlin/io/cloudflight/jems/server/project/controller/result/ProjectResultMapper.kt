@@ -51,5 +51,7 @@ fun List<IndicatorOverviewLine>.toIndicatorOverviewLinesDto() = map {
         resultIndicatorTargetValueSumUp = it.resultIndicator?.targetValueSumUp,
 
         onlyResultWithoutOutputs = it.onlyResultWithoutOutputs,
+        resultIndicatorCode = it.resultIndicator?.code,
+        outputIndicatorCode = it.outputIndicator?.code
     )
 }
