@@ -28,12 +28,11 @@ class PartnerReportParkedExpenditureEntity(
     @field:NotNull
     val reportOfOrigin: ProjectPartnerReportEntity,
 
-    @ManyToOne
-    @JoinColumn(name = "report_project_of_origin_id")
-    val reportProjectOfOrigin: ProjectReportEntity?,
-
     @field:NotNull
     val originalNumber: Int,
+
+    @ManyToOne
+    val parkedInProjectReport: ProjectReportEntity?,
 
     @field:NotNull
     val parkedOn: ZonedDateTime

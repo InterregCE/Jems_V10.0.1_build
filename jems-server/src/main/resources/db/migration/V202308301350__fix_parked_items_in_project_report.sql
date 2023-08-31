@@ -1,0 +1,3 @@
+ALTER TABLE report_project_partner_expenditure_parked RENAME COLUMN report_project_of_origin_id TO parked_in_project_report_id;
+ALTER TABLE report_project_partner_expenditure RENAME COLUMN report_project_of_origin_id TO parked_in_project_report_id;
+ALTER TABLE report_project_partner_expenditure RENAME COLUMN un_parked_from_expenditure_id TO re_included_from_expenditure_id;

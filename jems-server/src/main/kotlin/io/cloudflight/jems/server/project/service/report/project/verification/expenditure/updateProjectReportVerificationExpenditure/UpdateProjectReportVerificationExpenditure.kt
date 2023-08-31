@@ -38,7 +38,7 @@ class UpdateProjectReportVerificationExpenditure(
             .getProjectReportExpenditureVerification(reportId)
 
         val parkedOldIds = existingExpenditures.getParkedIds()
-        val unparkedOldIds = existingExpenditures.getNotParkedIds()
+        val unParkedOldIds = existingExpenditures.getNotParkedIds()
 
         return projectReportExpenditureVerificationPersistence.updateProjectReportExpenditureVerification(
             projectReportId = reportId, expenditureVerificationUpdate
@@ -46,7 +46,7 @@ class UpdateProjectReportVerificationExpenditure(
             updateParkedItems(
                 projectReportId = reportId,
                 parkedOldIds = parkedOldIds,
-                unparkedOldIds = unparkedOldIds,
+                unparkedOldIds = unParkedOldIds,
                 newVerifications = it
             )
         }
@@ -79,11 +79,13 @@ class UpdateProjectReportVerificationExpenditure(
     private fun Collection<ProjectReportVerificationExpenditureLine>.toParkData(projectReportId: Long) = map {
         ParkExpenditureData(
             expenditureId = it.expenditure.id,
+            // partner report, where this item was parked for the first time (if parked more times, we are interested in first)
             originalReportId = it.expenditure.parkingMetadata?.reportOfOriginId
-                ?: it.expenditure.partnerReportId, // if it was not parked, current report is report of origin
-            originalProjectReportId = it.expenditure.parkingMetadata?.reportProjectOfOriginId ?: projectReportId,
+                ?: it.expenditure.partnerReportId,
+            // project report, in which item was parked (not the first time, if parked more times, we are interested in last one)
+            parkedInProjectReportId = projectReportId,
             originalNumber = it.expenditure.parkingMetadata?.originalExpenditureNumber ?: it.expenditure.number,
-            parkedOn = ZonedDateTime.now()
+            parkedOn = ZonedDateTime.now(),
         )
     }
 

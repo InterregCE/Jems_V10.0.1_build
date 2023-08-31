@@ -420,14 +420,16 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
     @Test
     fun finalizeVerificationOnReportById() {
         val projectId = 3L
-        val report = reportEntity(id = 48L, projectId)
+        val reportId = 48L
+        val report = reportEntity(id = reportId, projectId)
+        every { projectReportRepository.getByIdAndProjectId(reportId, projectId) } returns report
+        assertThat(report.verificationEndDate).isNull()
 
-        every { projectReportRepository.getByIdAndProjectId(48L, projectId) } returns report
-
-        assertThat(persistence.finalizeVerificationOnReportById(projectId, 48L)).isEqualTo(
-            draftReportSubmissionEntity(48L, projectId).copy(
+        assertThat(persistence.finalizeVerificationOnReportById(projectId, reportId, LAST_WEEK)).isEqualTo(
+            draftReportSubmissionEntity(reportId, projectId).copy(
                 status = ProjectReportStatus.Finalized
             )
         )
+        assertThat(report.verificationEndDate).isEqualTo(LAST_WEEK)
     }
 }

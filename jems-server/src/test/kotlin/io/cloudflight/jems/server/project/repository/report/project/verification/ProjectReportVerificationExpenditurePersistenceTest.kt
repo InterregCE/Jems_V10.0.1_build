@@ -134,9 +134,9 @@ class ProjectReportVerificationExpenditurePersistenceTest : UnitTest() {
             typologyOfErrorId = null,
             verificationComment = "CONTROL VERIFICATION COMMENT",
             parked = false,
-            unParkedFrom = null,
+            reIncludedFromExpenditure = null,
             reportOfOrigin = null,
-            reportProjectOfOrigin = null,
+            parkedInProjectReport = null,
             originalNumber = 1,
             partOfSampleLocked = false
         )
@@ -169,9 +169,9 @@ class ProjectReportVerificationExpenditurePersistenceTest : UnitTest() {
             typologyOfErrorId = null,
             verificationComment = "CONTROL VERIFICATION COMMENT",
             parked = true,
-            unParkedFrom = firstExpenditure,
+            reIncludedFromExpenditure = firstExpenditure,
             reportOfOrigin = partnerReport,
-            reportProjectOfOrigin = null,
+            parkedInProjectReport = null,
             originalNumber = 1,
             partOfSampleLocked = false,
         )

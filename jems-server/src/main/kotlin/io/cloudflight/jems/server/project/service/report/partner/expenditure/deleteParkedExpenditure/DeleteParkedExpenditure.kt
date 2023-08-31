@@ -27,7 +27,7 @@ class DeleteParkedExpenditure(
         if (!report.status.isOpenForNumbersChanges())
             throw DeletingParkedForbiddenIfReOpenedReportIsNotLast()
 
-        val parked = reportParkedExpenditurePersistence.getParkedExpendituresByIdForPartner(partnerId, ReportStatus.Certified)
+        val parked = reportParkedExpenditurePersistence.getParkedExpendituresByIdForPartner(partnerId)
         if (expenditureId !in parked.keys)
             throw ParkedExpenditureNotFound(expenditureId)
 

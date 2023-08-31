@@ -125,10 +125,10 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
             typologyOfErrorId = null,
             verificationComment = null,
             parked = false,
-            unParkedFrom = unParkedFrom,
+            reIncludedFromExpenditure = unParkedFrom,
             reportOfOrigin = if (unParkedFrom == null) null else report,
             originalNumber = if (unParkedFrom == null) null else 14,
-            reportProjectOfOrigin = null,
+            parkedInProjectReport = null,
             partOfSampleLocked = false
         ).apply {
             translatedValues.add(
@@ -410,10 +410,10 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
                 PartnerReportExpenditureCostTranslEntity(TranslationId(mockk(), SystemLanguage.EN), "comm", "desc"),
             ),
             attachment = null,
-            unParkedFrom = unParkedFrom,
+            reIncludedFromExpenditure = unParkedFrom,
             reportOfOrigin = reportOfOrigin,
             originalNumber = if (reportOfOrigin == null) null else 42,
-            reportProjectOfOrigin = null,
+            parkedInProjectReport = null,
             partOfSampleLocked = false,
         )
 
@@ -617,10 +617,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
         every { parked.parkedFrom.attachment } returns attachment
 
         every {
-            reportExpenditureParkedRepository
-                .findByParkedFromPartnerReportPartnerIdAndParkedFromPartnerReportStatusAndParkedFromExpenditureId(
-                    PARTNER_ID, ReportStatus.Certified, 46L
-                )
+            reportExpenditureParkedRepository.findParkedExpenditure(PARTNER_ID, 46L)
         } returns parked
 
         assertThat(persistence.getExpenditureAttachment(PARTNER_ID, 46L)).isEqualTo(
@@ -643,10 +640,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
         every { parked.parkedFrom.attachment } returns null
 
         every {
-            reportExpenditureParkedRepository
-                .findByParkedFromPartnerReportPartnerIdAndParkedFromPartnerReportStatusAndParkedFromExpenditureId(
-                    PARTNER_ID, ReportStatus.Certified, -1L
-                )
+            reportExpenditureParkedRepository.findParkedExpenditure(PARTNER_ID, -1L)
         } returns parked
 
         assertThat(persistence.getExpenditureAttachment(PARTNER_ID, -1L)).isNull()
@@ -863,13 +857,10 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
         } returns proInvestment
 
         every {
-            reportExpenditureParkedRepository
-                .findByParkedFromPartnerReportPartnerIdAndParkedFromPartnerReportStatusAndParkedFromExpenditureId(
-                    partnerId = partnerId, status = ReportStatus.Certified, id = expenditureId
-                )
+            reportExpenditureParkedRepository.findParkedExpenditure(partnerId = partnerId, id = expenditureId)
         } returns PartnerReportParkedExpenditureEntity(
             parkedFromExpenditureId = expenditureId,
-            reportProjectOfOrigin = null,
+            parkedInProjectReport = null,
             parkedFrom = parkedFrom(
                 report = report,
                 lumpSum = lumpSum,
@@ -913,13 +904,10 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
         every { reportRepository.findByIdAndPartnerId(partnerId = partnerId, id = 600L) } returns report
 
         every {
-            reportExpenditureParkedRepository
-                .findByParkedFromPartnerReportPartnerIdAndParkedFromPartnerReportStatusAndParkedFromExpenditureId(
-                    partnerId = partnerId, status = ReportStatus.Certified, id = expenditureId
-                )
+            reportExpenditureParkedRepository.findParkedExpenditure(partnerId = partnerId, id = expenditureId)
         } returns PartnerReportParkedExpenditureEntity(
             parkedFromExpenditureId = expenditureId,
-            reportProjectOfOrigin = null,
+            parkedInProjectReport = null,
             parkedFrom = parkedFrom(
                 report = report,
                 lumpSum = lumpSum,
@@ -980,10 +968,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
         every { reportRepository.findByIdAndPartnerId(partnerId = partnerId, id = 600L) } returns report
 
         every {
-            reportExpenditureParkedRepository
-                .findByParkedFromPartnerReportPartnerIdAndParkedFromPartnerReportStatusAndParkedFromExpenditureId(
-                    partnerId = partnerId, status = ReportStatus.Certified, id = expenditureId
-                )
+            reportExpenditureParkedRepository.findParkedExpenditure(partnerId = partnerId, id = expenditureId)
         } returns PartnerReportParkedExpenditureEntity(
             parkedFromExpenditureId = expenditureId,
             parkedFrom = parkedFrom(
@@ -995,7 +980,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
                 reportOfOrigin = null,
             ),
             reportOfOrigin = reportOfOrigin,
-            reportProjectOfOrigin = null,
+            parkedInProjectReport = null,
             originalNumber = 4,
             parkedOn = parkedOn
         )

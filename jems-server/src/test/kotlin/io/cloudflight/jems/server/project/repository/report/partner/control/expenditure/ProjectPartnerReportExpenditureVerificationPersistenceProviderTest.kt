@@ -95,9 +95,9 @@ class ProjectPartnerReportExpenditureVerificationPersistenceProviderTest : UnitT
             typologyOfErrorId = 1L,
             verificationComment = "dummy comment",
             parked = false,
-            unParkedFrom = unParkedFrom,
+            reIncludedFromExpenditure = unParkedFrom,
             reportOfOrigin = report,
-            reportProjectOfOrigin = null,
+            parkedInProjectReport = null,
             originalNumber = 12,
             partOfSampleLocked = false
         ).apply {

@@ -120,10 +120,10 @@ class ProjectPartnerReportFilePersistenceProviderTest : UnitTest() {
             typologyOfErrorId = null,
             verificationComment = null,
             parked = false,
-            unParkedFrom = null,
+            reIncludedFromExpenditure = null,
             reportOfOrigin = null,
             originalNumber = null,
-            reportProjectOfOrigin = null,
+            parkedInProjectReport = null,
             partOfSampleLocked = false
         )
 

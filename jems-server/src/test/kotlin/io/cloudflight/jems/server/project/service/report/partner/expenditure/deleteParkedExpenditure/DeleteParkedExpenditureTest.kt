@@ -81,7 +81,7 @@ internal class DeleteParkedExpenditureTest : UnitTest() {
             reportProjectOfOriginId = null,
             originalExpenditureNumber = 2
         )
-        every { reportParkedExpenditurePersistence.getParkedExpendituresByIdForPartner(partnerId, ReportStatus.Certified) } returns
+        every { reportParkedExpenditurePersistence.getParkedExpendituresByIdForPartner(partnerId) } returns
             mapOf(845L to expenditure)
         every { reportParkedExpenditurePersistence.unParkExpenditures(setOf(845L)) } answers { }
 
@@ -111,7 +111,7 @@ internal class DeleteParkedExpenditureTest : UnitTest() {
         val report = report(250L, status)
         every { reportPersistence.getPartnerReportById(partnerId = 48L, reportId = 250L) } returns report
 
-        every { reportParkedExpenditurePersistence.getParkedExpendituresByIdForPartner(48L, ReportStatus.Certified) } returns emptyMap()
+        every { reportParkedExpenditurePersistence.getParkedExpendituresByIdForPartner(48L) } returns emptyMap()
         assertThrows<ParkedExpenditureNotFound> {
             interactor.deleteParkedExpenditure(48L, reportId = 250L, expenditureId = -1L)
         }

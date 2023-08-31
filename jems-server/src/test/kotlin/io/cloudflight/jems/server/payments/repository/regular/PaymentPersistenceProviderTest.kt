@@ -121,8 +121,6 @@ class PaymentPersistenceProviderTest: UnitTest() {
     @RelaxedMockK
     lateinit var projectPartnerRepository: ProjectPartnerRepository
     @RelaxedMockK
-    lateinit var projectPersistence: ProjectPersistence
-    @RelaxedMockK
     lateinit var projectLumpSumRepository: ProjectLumpSumRepository
 
     @RelaxedMockK
