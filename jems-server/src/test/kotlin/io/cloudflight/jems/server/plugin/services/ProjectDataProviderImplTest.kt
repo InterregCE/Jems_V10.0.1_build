@@ -1000,7 +1000,9 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                             ),
                             resultIndicatorBaseline = setOf(BigDecimal.ONE),
                             resultIndicatorTargetValueSumUp = BigDecimal.TEN,
-                            onlyResultWithoutOutputs = false
+                            onlyResultWithoutOutputs = false,
+                            outputIndicatorCode = "outputCode",
+                            resultIndicatorCode = "resultCode"
                         ),
                         IndicatorOverviewLine(
                             outputIndicatorId = 2L,
@@ -1037,7 +1039,9 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                             ),
                             resultIndicatorBaseline = setOf(BigDecimal.ONE),
                             resultIndicatorTargetValueSumUp = BigDecimal.TEN,
-                            onlyResultWithoutOutputs = false
+                            onlyResultWithoutOutputs = false,
+                            outputIndicatorCode = "outputCode",
+                            resultIndicatorCode = "resultCode"
                         )
                     )
                 ),

@@ -12,6 +12,7 @@ data class IndicatorOverviewLine(
 
 data class IndicatorOutput(
     val id: Long,
+    val code: String?,
     val identifier: String,
     val name: Set<InputTranslation>,
     val measurementUnit: Set<InputTranslation>,
@@ -20,6 +21,7 @@ data class IndicatorOutput(
 
 data class IndicatorResult(
     val id: Long,
+    val code: String?,
     val identifier: String,
     val name: Set<InputTranslation> = emptySet(),
     val measurementUnit: Set<InputTranslation> = emptySet(),
