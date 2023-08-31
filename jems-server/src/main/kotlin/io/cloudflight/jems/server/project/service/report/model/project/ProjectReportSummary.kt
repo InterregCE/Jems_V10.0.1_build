@@ -27,4 +27,6 @@ data class ProjectReportSummary(
     val verificationConclusionJS: String?,
     val verificationConclusionMA: String?,
     val verificationFollowup: String?
-)
+) {
+    fun doesNotHaveFinance() = type?.hasFinance() != true
+}
