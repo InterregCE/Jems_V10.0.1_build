@@ -28,7 +28,6 @@ import {
 import {
   PaymentToEcSummaryTabComponent
 } from './payments-to-ec/payments-to-ec-detail-page/summary-tab/payment-to-ec-summary-tab.component';
-import { PaymentToEcSummaryAttachmentsComponent } from './payments-to-ec/payments-to-ec-detail-page/summary-tab/attachments/payment-to-ec-summary-attachments.component';
 
 @NgModule({
     declarations: [
@@ -41,8 +40,7 @@ import { PaymentToEcSummaryAttachmentsComponent } from './payments-to-ec/payment
         PaymentsToProjectDetailPageComponent,
         PaymentsToProjectAttachmentsComponent,
         AdvancePaymentsDetailPageComponent,
-        AdvancePaymentsAttachmentsComponent,
-        PaymentToEcSummaryAttachmentsComponent
+        AdvancePaymentsAttachmentsComponent
     ],
     imports: [
         SharedModule,
