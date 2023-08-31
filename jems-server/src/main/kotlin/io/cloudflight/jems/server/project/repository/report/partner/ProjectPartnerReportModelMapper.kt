@@ -239,7 +239,8 @@ fun List<PreviouslyReportedFund>.toEntity(
         previouslyPaid = fund.previouslyPaid,
         currentParked = ZERO,
         currentReIncluded = ZERO,
-        previouslyReportedParked = fund.previouslyReportedParked
+        previouslyReportedParked = fund.previouslyReportedParked,
+        disabled = fund.disabled,
     )
 }
 

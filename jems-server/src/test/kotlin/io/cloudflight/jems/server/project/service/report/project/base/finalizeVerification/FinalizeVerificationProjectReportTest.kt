@@ -26,8 +26,8 @@ import io.cloudflight.jems.server.project.service.report.model.project.ProjectRe
 import io.cloudflight.jems.server.project.service.report.model.project.base.ProjectReportModel
 import io.cloudflight.jems.server.project.service.report.model.project.verification.expenditure.ProjectPartnerReportExpenditureItem
 import io.cloudflight.jems.server.project.service.report.model.project.verification.expenditure.ProjectReportVerificationExpenditureLine
-import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.FinancingSourceBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.PartnerCertificateFundSplit
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.project.verification.expenditure.ProjectReportVerificationExpenditurePersistence
@@ -196,6 +196,17 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
                 parked = true,
                 verificationComment = "VERIFICATION COMM"
             )
+        private fun parkedExpenditure(): ProjectReportVerificationExpenditureLine {
+            val expenditure = mockk<ProjectPartnerReportExpenditureItem>()
+            every { expenditure.number } returns 71
+            every { expenditure.partnerRole } returns ProjectPartnerRole.PARTNER
+            every { expenditure.partnerNumber } returns 4
+            every { expenditure.partnerReportNumber } returns 48
+
+            val parked = mockk<ProjectReportVerificationExpenditureLine>()
+            every { parked.expenditure } returns expenditure
+            return parked
+        }
 
         val ERDF = ProgrammeFund(
             id = 1L, type = ProgrammeFundType.ERDF, selected = true,
@@ -209,29 +220,6 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
                 InputTranslation(SystemLanguage.EN, "EN desc"),
                 InputTranslation(SystemLanguage.SK, "SK desc")
             )
-        )
-
-        val financialData = FinancingSourceBreakdownLine(
-            partnerReportId = 23L,
-            partnerReportNumber = 2,
-            partnerId = PARTNER_ID,
-            partnerRole = ProjectPartnerRole.LEAD_PARTNER,
-            partnerNumber = 1,
-            fundsSorted = listOf(Pair(ERDF, BigDecimal.ZERO)),
-            partnerContribution = BigDecimal.ZERO,
-            publicContribution = BigDecimal.ZERO,
-            automaticPublicContribution = BigDecimal.ZERO,
-            privateContribution = BigDecimal.ZERO,
-            total = BigDecimal.ZERO,
-            split = emptyList()
-        )
-
-        val partnerCertificateFundSplit = PartnerCertificateFundSplit(
-            fundId = ERDF.id,
-            value = BigDecimal.ZERO,
-            partnerReportId = 23L,
-            partnerId = PARTNER_ID,
-            total = BigDecimal.ZERO,
         )
 
         val reportCertificatesOverviewPerFund = listOf(PartnerCertificateFundSplit(
@@ -305,6 +293,9 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
     @RelaxedMockK
     lateinit var paymentPersistence: PaymentPersistence
 
+    @MockK
+    private lateinit var partnerReportCoFinancingPersistence: ProjectPartnerReportExpenditureCoFinancingPersistence
+
     @InjectMockKs
     lateinit var interactor: FinalizeVerificationProjectReport
 
@@ -319,9 +310,7 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
         val report = report(InVerification)
 
         every { reportPersistence.getReportByIdUnSecured(reportId) } returns report
-        every { expenditureVerificationPersistence.getParkedProjectReportExpenditureVerification(reportId) } returns listOf(
-            aggregatedExpenditures
-        )
+        every { expenditureVerificationPersistence.getParkedProjectReportExpenditureVerification(reportId) } returns listOf(parkedExpenditure())
 
         val slotTime = slot<ZonedDateTime>()
         every {
@@ -336,7 +325,7 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
         every { expenditureVerificationPersistence.getProjectReportExpenditureVerification(reportId) } returns listOf(
             aggregatedExpenditures
         )
-        every { projectReportCertificateCoFinancingPersistence.getAvailableFunds(reportId) } returns listOf(ERDF)
+        every { partnerReportCoFinancingPersistence.getAvailableFunds(REPORT_ID) } returns listOf(ERDF)
         every { getPartnerReportFinancialData.retrievePartnerReportFinancialData(reportId) } returns mockk()
 
 
@@ -366,7 +355,8 @@ class FinalizeVerificationProjectReportTest : UnitTest() {
         assertThat(auditSlot.captured.auditCandidate.project?.customIdentifier).isEqualTo("NS-AQ01")
         assertThat(auditSlot.captured.auditCandidate.project?.name).isEqualTo("acronym")
         assertThat(auditSlot.captured.auditCandidate.entityRelatedId).isEqualTo(reportId)
-        assertThat(auditSlot.captured.auditCandidate.description).isEqualTo("[NS-AQ01] Project report R.4 verification was finalised and following expenditure items were parked:  [LP1] - item [R1.1], ")
+        assertThat(auditSlot.captured.auditCandidate.description)
+            .isEqualTo("[NS-AQ01] Project report R.4 verification was finalised and following expenditure items were parked:  [PP4] - item [R48.71], ")
     }
 
     @ParameterizedTest(name = "startVerification - wrong status (status {0})")

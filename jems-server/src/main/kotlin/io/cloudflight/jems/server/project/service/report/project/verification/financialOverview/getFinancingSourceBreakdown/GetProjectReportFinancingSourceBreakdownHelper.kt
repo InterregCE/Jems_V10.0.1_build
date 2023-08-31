@@ -32,10 +32,9 @@ private val emptySumUp = FinancingSourceBreakdownLine(
     split = emptyList(),
 )
 
-fun List<FinancingSourceBreakdownLine>.sumUp(availableFunds: List<ProgrammeFund>): FinancingSourceBreakdownLine  {
+fun List<FinancingSourceBreakdownLine>.sumUp(): FinancingSourceBreakdownLine  {
 
     val financingSourcesTotal = fold(emptySumUp) { first, second -> first.plus(second) }
-    val fundsSorted = financingSourcesTotal.fundsSorted.associateBy({ it.first }, valueTransform = {it.second})
 
     return  FinancingSourceBreakdownLine(
         partnerReportId = null,
@@ -45,7 +44,7 @@ fun List<FinancingSourceBreakdownLine>.sumUp(availableFunds: List<ProgrammeFund>
         partnerRole = null,
         partnerNumber = null,
 
-        fundsSorted = availableFunds.map { Pair(it, fundsSorted.getOrDefault(it, BigDecimal.ZERO)) },
+        fundsSorted = financingSourcesTotal.fundsSorted,
 
         partnerContribution = financingSourcesTotal.partnerContribution,
         publicContribution = financingSourcesTotal.publicContribution,
@@ -120,7 +119,7 @@ fun Collection<ProjectReportVerificationExpenditureLine>.calculateAfterVerificat
 
 fun calculateSourcesAndSplits(
     verification: List<ProjectReportVerificationExpenditureLine>,
-    availableFunds: List<ProgrammeFund>,
+    availableFundsResolver: (Long) -> List<ProgrammeFund>,
     partnerReportFinancialDataResolver: (Long) -> PartnerReportFinancialData,
 ): List<FinancingSourceBreakdownLine> {
     val expendituresByCertificate = verification.groupBy { it.expenditure.partnerReportId }
@@ -131,7 +130,9 @@ fun calculateSourcesAndSplits(
         val splitForCertificateLine = reportFinancialData.splitThisValue(certificateTotal)
         val fundIdsAvailable = splitForCertificateLine.funds.mapNotNull { it.key }
 
-        val fundsSorted = availableFunds.map { Pair(it, splitForCertificateLine.funds.getOrDefault(it.id, BigDecimal.ZERO)) }
+        val certificateAvailableFunds = availableFundsResolver.invoke(certificateId)
+
+        val fundsSorted = certificateAvailableFunds.map { Pair(it, splitForCertificateLine.funds.getOrDefault(it.id, BigDecimal.ZERO)) }
             .filter { it.first.id in fundIdsAvailable }
         val expenditure = verifications.first().expenditure
 

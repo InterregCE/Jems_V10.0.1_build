@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.project.verification.financialOverview.getFinancingSourceBreakdown
 
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.FinancingSourceBreakdown
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.project.verification.expenditure.ProjectReportVerificationExpenditurePersistence
@@ -16,6 +17,7 @@ class GetProjectReportFinancingSourceBreakdownCalculator(
     private val projectReportCertificateCoFinancingPersistence: ProjectReportCertificateCoFinancingPersistence,
     private val projectReportVerificationExpenditurePersistence: ProjectReportVerificationExpenditurePersistence,
     private val getPartnerReportFinancialData: GetPartnerReportFinancialData,
+    private val partnerReportCoFinancingPersistence: ProjectPartnerReportExpenditureCoFinancingPersistence,
 ) {
 
     @Transactional(readOnly = true)
@@ -29,21 +31,21 @@ class GetProjectReportFinancingSourceBreakdownCalculator(
 
     fun projectReportFinalized(projectId: Long, reportId: Long): FinancingSourceBreakdown {
         val sources = projectReportFinancialOverviewPersistence.getOverviewPerFund(reportId)
-        val projectReportAvailableFunds = projectReportCertificateCoFinancingPersistence.getAvailableFunds(reportId)
+        val allAvailableFunds = sources.flatMap { it.fundsSorted.map { it.first } }
         val total = projectReportCertificateCoFinancingPersistence
             .getCoFinancing(projectId = projectId, reportId).currentVerified
-            .toTotalLine(availableFunds = projectReportAvailableFunds)
+            .toTotalLine(availableFunds = allAvailableFunds)
         return FinancingSourceBreakdown(sources, total)
     }
 
     fun projectReportInVerification(reportId: Long): FinancingSourceBreakdown {
-        val projectReportAvailableFunds = projectReportCertificateCoFinancingPersistence.getAvailableFunds(reportId)
         val sources = calculateSourcesAndSplits(
             verification = projectReportVerificationExpenditurePersistence.getProjectReportExpenditureVerification(reportId),
-            availableFunds = projectReportAvailableFunds,
+            availableFundsResolver = { certificateId -> partnerReportCoFinancingPersistence.getAvailableFunds(certificateId) },
             partnerReportFinancialDataResolver = { getPartnerReportFinancialData.retrievePartnerReportFinancialData(it) },
         )
-        val total = sources.sumUp(availableFunds = projectReportAvailableFunds)
+        val total = sources.sumUp()
         return FinancingSourceBreakdown(sources, total)
     }
+
 }

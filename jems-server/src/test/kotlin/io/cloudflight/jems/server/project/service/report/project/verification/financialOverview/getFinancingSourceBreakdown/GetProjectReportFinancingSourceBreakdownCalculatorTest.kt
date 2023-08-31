@@ -17,6 +17,7 @@ import io.cloudflight.jems.server.project.service.report.model.project.verificat
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.FinancingSourceBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.FinancingSourceBreakdownSplitLine
 import io.cloudflight.jems.server.project.service.report.model.project.verification.financialOverview.financingSource.PartnerReportFinancialData
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.project.base.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.project.financialOverview.ProjectReportCertificateCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.project.verification.expenditure.ProjectReportVerificationExpenditurePersistence
@@ -247,6 +248,9 @@ class GetProjectReportFinancingSourceBreakdownCalculatorTest : UnitTest() {
     @MockK
     lateinit var getPartnerReportFinancialData: GetPartnerReportFinancialData
 
+    @MockK
+    lateinit var partnerReportCoFinancingPersistence: ProjectPartnerReportExpenditureCoFinancingPersistence
+
     @InjectMockKs
     lateinit var calculator: GetProjectReportFinancingSourceBreakdownCalculator
 
@@ -257,7 +261,8 @@ class GetProjectReportFinancingSourceBreakdownCalculatorTest : UnitTest() {
             projectReportFinancialOverviewPersistence,
             projectReportCertificateCoFinancingPersistence,
             projectReportVerificationExpenditurePersistence,
-            getPartnerReportFinancialData
+            getPartnerReportFinancialData,
+            partnerReportCoFinancingPersistence,
         )
     }
 
@@ -267,7 +272,7 @@ class GetProjectReportFinancingSourceBreakdownCalculatorTest : UnitTest() {
         every { projectReportFinancialOverviewPersistence.getOverviewPerFund(REPORT_ID) } returns listOf(finalizedExpenditureLine)
         val coFinancing = mockk<ReportCertificateCoFinancing> { every { currentVerified } returns finalizedCoFinancingCurrentVerified }
         every { projectReportCertificateCoFinancingPersistence.getCoFinancing(PROJECT_ID, REPORT_ID) } returns coFinancing
-        every { projectReportCertificateCoFinancingPersistence.getAvailableFunds(REPORT_ID) } returns listOf(ERDF_FUND, IPA_III_FUND, NDCI_FUND)
+        every { partnerReportCoFinancingPersistence.getAvailableFunds(1L) } returns listOf(ERDF_FUND, IPA_III_FUND, NDCI_FUND)
 
         assertThat(calculator.getFinancingSource(PROJECT_ID, REPORT_ID)).isEqualTo(financingSourceBreakdown)
     }
@@ -276,9 +281,9 @@ class GetProjectReportFinancingSourceBreakdownCalculatorTest : UnitTest() {
     fun `getFinancingSource - ProjectReport InVerification`() {
         every { projectReportPersistence.getReportById(PROJECT_ID, REPORT_ID) } returns mockk { every { status } returns ProjectReportStatus.InVerification }
         every { projectReportVerificationExpenditurePersistence.getProjectReportExpenditureVerification(REPORT_ID) } returns listOf(inVerificationExpenditure)
-        every { projectReportCertificateCoFinancingPersistence.getAvailableFunds(REPORT_ID) } returns listOf(ERDF_FUND, IPA_III_FUND, NDCI_FUND)
         every { getPartnerReportFinancialData.retrievePartnerReportFinancialData(inVerificationExpenditure.expenditure.partnerReportId) } returns
                 inVerificationPartnerReportFinancialData
+        every { partnerReportCoFinancingPersistence.getAvailableFunds(1L) } returns listOf(ERDF_FUND, IPA_III_FUND, NDCI_FUND)
 
         assertThat(calculator.getFinancingSource(PROJECT_ID, REPORT_ID)).isEqualTo(financingSourceBreakdown)
     }

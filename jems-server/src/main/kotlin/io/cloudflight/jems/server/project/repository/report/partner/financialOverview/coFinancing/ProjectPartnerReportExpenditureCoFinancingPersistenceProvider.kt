@@ -1,5 +1,7 @@
 package io.cloudflight.jems.server.project.repository.report.partner.financialOverview.coFinancing
 
+import io.cloudflight.jems.server.programme.repository.fund.toModel
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.repository.report.partner.ProjectPartnerReportCoFinancingRepository
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ExpenditureCoFinancingCurrent
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ExpenditureCoFinancingCurrentWithReIncluded
@@ -151,5 +153,10 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProvider(
         expenditureCoFinancingRepository
             .findCumulativeTotalsForProjectReportIds(projectReportIds = projectReportIds)
             .associate { it.first to it.second }
+
+    @Transactional(readOnly = true)
+    override fun getAvailableFunds(reportId: Long): List<ProgrammeFund> =
+        partnerReportCoFinancingRepository.findAllByIdReportIdAndDisabledFalse(reportId)
+            .mapNotNull { it.programmeFund?.toModel() }
 
 }
