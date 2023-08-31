@@ -7,9 +7,11 @@
         <p>{{'project.application.partner.report.control.tab.overviewAndFinalize.info' | translate}}</p>
         <jems-control-report-work-overview jemsNoWidthLimit [overviewData]="data.overview"></jems-control-report-work-overview>
 
-        <h3>{{'project.application.partner.report.control.tab.overviewAndFinalize.deductions.by.type.of.errors' | translate}}</h3>
-        <p>{{'project.application.partner.report.control.tab.overviewAndFinalize.deductions.by.type.of.errors.info' | translate}}</p>
-        <jems-control-report-deduction-overview jemsNoWidthLimit [deductionData]="data.deduction"></jems-control-report-deduction-overview>
+        <ng-container *ngIf="data.controlHasDeductions">
+            <h3>{{'project.application.partner.report.control.tab.overviewAndFinalize.deductions.by.type.of.errors' | translate}}</h3>
+            <p>{{'project.application.partner.report.control.tab.overviewAndFinalize.deductions.by.type.of.errors.info' | translate}}</p>
+            <jems-control-report-deduction-overview jemsNoWidthLimit [deductionData]="data.deduction"></jems-control-report-deduction-overview>
+        </ng-container>
 
         <h3>{{'project.application.partner.report.control.tab.overviewAndFinalize.control.timing' | translate}}</h3>
         <p>{{'project.application.partner.report.control.tab.overviewAndFinalize.control.timing.info' | translate}}</p>
