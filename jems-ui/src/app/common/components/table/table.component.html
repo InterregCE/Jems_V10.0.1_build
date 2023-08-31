@@ -107,9 +107,13 @@
 
         <mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></mat-header-row>
         <mat-row [class.clickable-table-row]="configuration.isTableClickable"
-                 (click)="rowClicked(row)"
                  *matRowDef="let row; columns: columnsToDisplay;"
                  queryParamsHandling="merge"></mat-row>
+
+        <ng-container matColumnDef="anchor">
+            <mat-header-cell *matHeaderCellDef class="anchor-column-header"></mat-header-cell>
+            <mat-cell *matCellDef="let row" class="anchor-column"><a [href]="getRowLink(row)"></a></mat-cell>
+        </ng-container>
     </table>
 </div>
 

@@ -12,6 +12,7 @@ mat-row, mat-header-row {
   mat-header-cell {
     line-height: 1.2em;
   }
+  z-index: 1;
 }
 
 .mat-column-delete {
@@ -63,4 +64,23 @@ mat-row, mat-header-row {
 }
 .mat-column-verification {
   min-width: 11rem;
+}
+.mat-row, .mat-header-row {
+  position: relative;
+}
+
+.mat-column-anchor {
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+}
+
+a {
+  display: block;
+  height: 100%;
+  width: 100%;
 }

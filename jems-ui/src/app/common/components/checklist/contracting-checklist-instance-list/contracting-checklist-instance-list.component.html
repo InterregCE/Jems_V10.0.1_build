@@ -36,10 +36,10 @@
 
 <ng-template #descriptionCell let-checklist class="text-center border-cell-left">
     <span *ngIf="contractingDescriptionForm.value.id !== checklist.id" jemsText maxLines="2"
-          class="mr-1 text-left fill-space-left-to-button"
+          class="mr-1 text-left fill-space-left-to-button z-index-5"
           [matTooltip]="checklist.description">{{ checklist.description }}</span>
 
-    <div (click)="$event.stopPropagation()">
+    <div (click)="$event.stopPropagation()" class="z-index-5">
         <form [formGroup]="contractingDescriptionForm" *ngIf="contractingDescriptionForm.value.id === checklist.id" class="w-100">
             <jems-expandable-textarea class="w-100"
                                       label="file.table.column.name.description"
@@ -73,6 +73,7 @@
     <ng-container>
         <button (click)="editContractingDescription(checklist)"
                 [disabled]="(userCanEditContractingChecklists$ | async) === false"
+                class="z-index-5"
                 color="primary" mat-icon-button
                 matTooltip="{{ 'file.table.action.description.tooltip' | translate }}"
                 aria-label="edit">
@@ -82,6 +83,7 @@
 
     <ng-container>
         <button mat-icon-button color="primary"
+                class="z-index-5"
                 matTooltip="{{'programme.checklists.export' | translate }}"
                 (click)="download(checklist.id)">
             <mat-icon>download</mat-icon>
@@ -93,6 +95,7 @@
                 (click)="delete(projectId, checklist);$event.stopPropagation();"
                 [disabled]="checklist.status !== Status.DRAFT || (userCanEditContractingChecklists$ | async) === false || (pageStore.currentUserEmail$ | async) !== checklist.creatorEmail"
                 color="accent"
+                class="z-index-5"
                 mat-icon-button
                 matTooltip="{{'common.delete.entry.tooltip' | translate}}"
                 aria-label="delete">

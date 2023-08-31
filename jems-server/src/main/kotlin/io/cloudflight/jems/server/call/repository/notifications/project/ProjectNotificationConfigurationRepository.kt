@@ -14,3 +14,4 @@ interface ProjectNotificationConfigurationRepository : JpaRepository<ProjectNoti
     fun findByActiveTrueAndIdCallEntityIdAndIdId(callId: Long, type: NotificationType): ProjectNotificationConfigurationEntity?
 
 }
+

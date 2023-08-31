@@ -60,6 +60,13 @@ mat-card {
       }
     }
   }
+
+  .anchor-column {
+    a, a:hover {
+      box-shadow: none;
+    }
+  }
+
   a.unstyled-link, .section-link, .support-links a {
     cursor: pointer;
     color: var(--primary-color) !important;
@@ -166,4 +173,8 @@ mat-card {
       }
     }
   }
+}
+
+.z-index-5 {
+  z-index: 5;
 }

@@ -26,11 +26,11 @@
 </ng-template>
 
 <ng-template #partnerReportStatusCell let-report>
-    <jems-partner-report-status [status]="report.status"></jems-partner-report-status>
+    <jems-partner-report-status class="z-index-5" [status]="report.status"></jems-partner-report-status>
 </ng-template>
 
 <ng-template #reportingPeriodCell let-report>
-    <span *ngIf="report.periodDetail" matTooltip="{{ (report.startDate | localeDate) || 'X' }} - {{ (report.endDate | localeDate) || 'X' }}">
+    <span *ngIf="report.periodDetail" class="z-index-5" matTooltip="{{ (report.startDate | localeDate) || 'X' }} - {{ (report.endDate | localeDate) || 'X' }}">
         {{ 'project.application.form.work.package.output.delivery.period.entry' | translate : {
             periodNumber: report.periodDetail.number,
             start: report.periodDetail.start,

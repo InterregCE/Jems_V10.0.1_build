@@ -84,3 +84,39 @@ mat-footer-cell {
 .multi-languages-table {
   background: initial;
 }
+
+.mat-row, .mat-header-row {
+  position: relative;
+}
+
+.mat-column-anchor {
+  opacity: .1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height:100%;
+  width: 100%;
+  z-index: 2;
+}
+
+.anchor-column-header {
+  display: none;
+}
+
+.anchor-column {
+  z-index: 2 !important;
+}
+
+a {
+  display: block;
+  height: 100%;
+  width: 100%;
+  z-index: 2;
+}
+
+a:focus {
+  background: var(--primary-color);
+  height: inherit !important;
+}

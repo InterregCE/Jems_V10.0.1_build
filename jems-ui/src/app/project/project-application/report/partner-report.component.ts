@@ -22,7 +22,7 @@ import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @UntilDestroy()
 @Component({
-  selector: 'jems-contract-monitoring',
+  selector: 'jems-partner-report-list',
   templateUrl: './partner-report.component.html',
   styleUrls: ['./partner-report.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -34,7 +34,7 @@ export class PartnerReportComponent {
   StatusEnum = ProjectPartnerReportSummaryDTO.StatusEnum;
 
   private allColumns: string[] = ['id', 'status', 'projectReport', 'version', 'period', 'createdAt', 'firstSubmission',
-    'lastReSubmission', 'totalAfterSubmitted', 'controlEnd', 'totalEligible', 'control', 'delete'];
+    'lastReSubmission', 'totalAfterSubmitted', 'controlEnd', 'totalEligible', 'control', 'delete', 'anchor'];
   displayedColumns: string[] = [];
   dataSource = new MatTableDataSource<ProjectPartnerReportSummaryDTO>();
 

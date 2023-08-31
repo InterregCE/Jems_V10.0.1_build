@@ -26,6 +26,11 @@
         background-color: var(--table-highlight-color);
       }
 
+      &:nth-child(odd),
+      &:nth-child(odd) .mat-cell { // should be always applied to cell instead of line
+        background-color: #FFF;
+      }
+
       &:hover,
       &:hover .mat-cell { // should be always applied to cell instead of line
         background-color: var(--table-hover-color);
@@ -55,6 +60,6 @@
 }
 
 mat-cell.mat-table-sticky {
-  z-index: 2 !important;
+  z-index: 10 !important;
 }
 
